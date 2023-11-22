@@ -4,18 +4,13 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxRules
-import ms.mattschlenkrich.paydaycalculator.model.Employers
-import ms.mattschlenkrich.paydaycalculator.model.WorkDates
-import ms.mattschlenkrich.paydaycalculator.model.WorkDatesExtras
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtraFrequencies
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
-import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
-import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodTax
-import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriods
-import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_VERSION
+import ms.mattschlenkrich.paydaycalculator.model.Employers
+import ms.mattschlenkrich.paydaycalculator.model.WorkDates
+import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriods
+import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
+import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
 
 
 @Database(
@@ -23,13 +18,14 @@ import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_VERSION
         Employers::class,
         WorkPayPeriods::class,
         WorkDates::class,
-        WorkDatesExtras::class,
-        WorkPayPeriodExtras::class,
-        WorkPayPeriodTax::class,
-        WorkExtrasDefinitions::class,
-        WorkExtraFrequencies::class,
+//        WorkDatesExtras::class,
+//        WorkPayPeriodExtras::class,
+//        WorkPayPeriodTax::class,
+//        WorkExtrasDefinitions::class,
+//        WorkExtraFrequencies::class,
         WorkTaxRules::class,
-        EmployerTaxRules::class,
+        WorkTaxTypes::class,
+//        EmployerTaxRules::class,
     ],
     version = PAY_DB_VERSION,
 )
