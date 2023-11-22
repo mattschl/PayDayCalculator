@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.common
+package ms.mattschlenkrich.paydaycalculator.common
 
 import java.text.NumberFormat
 import java.util.Locale
