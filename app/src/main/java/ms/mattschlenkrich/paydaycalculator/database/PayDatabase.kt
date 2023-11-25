@@ -7,24 +7,20 @@ import androidx.room.RoomDatabase
 import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_VERSION
 import ms.mattschlenkrich.paydaycalculator.model.Employers
-import ms.mattschlenkrich.paydaycalculator.model.WorkDates
-import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriods
-import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
-import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
 
 
 @Database(
     entities = [
         Employers::class,
-        WorkPayPeriods::class,
-        WorkDates::class,
+//        WorkPayPeriods::class,
+//        WorkDates::class,
 //        WorkDatesExtras::class,
 //        WorkPayPeriodExtras::class,
 //        WorkPayPeriodTax::class,
 //        WorkExtrasDefinitions::class,
 //        WorkExtraFrequencies::class,
-        WorkTaxRules::class,
-        WorkTaxTypes::class,
+//        WorkTaxRules::class,
+//        WorkTaxTypes::class,
 //        EmployerTaxRules::class,
     ],
     version = PAY_DB_VERSION,
