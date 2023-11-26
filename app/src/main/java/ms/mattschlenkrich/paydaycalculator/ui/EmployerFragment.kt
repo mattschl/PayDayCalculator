@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import ms.mattschlenkrich.paydaycalculator.R
 
-class EmployerFragment : Fragment() {
+class EmployerFragment : Fragment(R.layout.fragment_employer) {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

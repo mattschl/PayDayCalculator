@@ -15,6 +15,7 @@ data class Employers(
     @PrimaryKey
     val employerId: Long,
     val employerName: String,
+    val payFrequency: String,
     val employerIsDeleted: Boolean,
     val employerUpdateTime: String,
 ) : Parcelable
