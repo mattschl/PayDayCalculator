@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.paydaycalculator.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -9,7 +10,10 @@ import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 
-class EmployerAdapter(mainActivity: MainActivity) :
+class EmployerAdapter(
+    private val mainActivity: MainActivity,
+    private val mView: View
+) :
     RecyclerView.Adapter<EmployerAdapter.EmployerViewHolder>() {
 
     class EmployerViewHolder(val itemBinding: ListEmployerItemBinding) :

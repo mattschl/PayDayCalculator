@@ -16,4 +16,7 @@ class EmployerViewModel(
         viewModelScope.launch {
             employerRepository.insertEmployer(employers)
         }
+
+    fun getCurrentEmployers() =
+        employerRepository.getCurrentEmployers()
 }

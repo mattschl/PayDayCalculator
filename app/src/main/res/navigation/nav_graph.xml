@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_start" />
     <fragment
         android:id="@+id/employerFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.EmployerFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerFragment"
         android:label="fragment_employer"
         tools:layout="@layout/fragment_employer" />
     <action

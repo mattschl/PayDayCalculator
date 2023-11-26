@@ -8,4 +8,6 @@
     <string name="employer">Employer</string>
     <string name="add_new">New</string>
     <string name="employer_name">Employer Name</string>
+    <string name="view_employers">View Employers</string>
+    <string name="enter_employer_name">Enter employer name</string>
 </resources>

@@ -20,6 +20,6 @@ interface EmployerDao {
                 "WHERE $EMPLOYER_IS_DELETED = 0 " +
                 "ORDER BY $EMPLOYER_NAME COLLATE NOCASE"
     )
-    fun getEmployers(): LiveData<List<Employers>>
+    fun getCurrentEmployers(): LiveData<List<Employers>>
 
 }
