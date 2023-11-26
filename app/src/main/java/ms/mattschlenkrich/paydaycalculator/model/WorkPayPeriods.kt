@@ -16,10 +16,12 @@ data class Employers(
     val employerId: Long,
     val employerName: String,
     val payFrequency: String,
+    val startDate: String,
+    val dayOfWeek: String,
     val employerIsDeleted: Boolean,
     val employerUpdateTime: String,
 ) : Parcelable
-//
+
 //@Entity(
 //    tableName = TABLE_WORK_PAY_PERIODS,
 //    primaryKeys = [PAY_PERIOD_CUTOFF_DATE, PAY_PERIOD_EMPLOYER_ID],

@@ -10,4 +10,6 @@
     <color name="deep_red">#531611</color>
     <color name="red">#bc131f</color>
     <color name="yellow">#ffff00</color>
+    <color name="green">#00a86b</color>
+    <color name="dark_green">#0b8441</color>
 </resources>

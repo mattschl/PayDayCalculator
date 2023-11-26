@@ -6,4 +6,6 @@
     <string name="pay_day_calculator">Pay Day Calculator</string>
     <string name="save">SAVE</string>
     <string name="employer">Employer</string>
+    <string name="add_new">New</string>
+    <string name="employer_name">Employer Name</string>
 </resources>

@@ -15,7 +15,6 @@
         <item>Saturday</item>
         <item>Sunday</item>
         <item>Week Day</item>
-        <item>Week End</item>
         <item>Any Day</item>
     </string-array>
 </resources>
