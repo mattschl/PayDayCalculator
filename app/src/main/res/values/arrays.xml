@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="pay_frequencies">
-        <item>Weekly</item>
         <item>Bi-Weekly</item>
+        <item>Weekly</item>
         <item>Semi-Monthly</item>
         <item>Monthly</item>
     </string-array>
     <string-array name="pay_days">
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
         <item>Monday</item>
         <item>Tuesday</item>
         <item>Wednesday</item>
         <item>Thursday</item>
-        <item>Friday</item>
-        <item>Saturday</item>
-        <item>Sunday</item>
         <item>Week Day</item>
         <item>Any Day</item>
     </string-array>

@@ -25,7 +25,7 @@ class EmployerFragment : Fragment(R.layout.fragment_employer) {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentEmployerBinding.inflate(layoutInflater)
+        _binding = FragmentEmployerBinding.inflate(inflater, container, false)
         mView = binding.root
         mainActivity = (activity as MainActivity)
         mainActivity.title = getString(R.string.view_employers)
@@ -39,7 +39,8 @@ class EmployerFragment : Fragment(R.layout.fragment_employer) {
         binding.apply {
             fabNew.setOnClickListener {
                 mView.findNavController().navigate(
-
+                    EmployerFragmentDirections
+                        .actionEmployerFragmentToEmployerAddFragment()
                 )
             }
         }
@@ -64,5 +65,10 @@ class EmployerFragment : Fragment(R.layout.fragment_employer) {
                 employerAdapter.differ.submitList(employer)
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

@@ -36,11 +36,12 @@ class MainActivity : AppCompatActivity() {
         setupEmployerViewModel()
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menu.add("${R.string.app_name}")
+                menu.add(resources.getString(R.string.app_name))
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                TODO("Not yet implemented")
+                //set action
+                return false
             }
         })
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav_view)

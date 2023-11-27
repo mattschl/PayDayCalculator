@@ -13,7 +13,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/employer_name"
-            android:textSize="16sp"
+            android:textSize="@dimen/label_text_size"
+            android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@id/etName"
             app:layout_constraintEnd_toStartOf="@id/etName"
             app:layout_constraintStart_toStartOf="parent" />
@@ -23,11 +24,121 @@
             android:layout_width="@dimen/text_box_wide"
             android:layout_height="wrap_content"
             android:hint="@string/enter_employer_name"
+            android:importantForAutofill="no"
+            android:inputType="text"
             android:minHeight="@dimen/minimum_touch_height"
             android:textColor="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/lblName"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="@+id/spFrequency"
+            app:layout_constraintStart_toStartOf="@+id/spFrequency"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/lblFrequency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pay_day_frequency"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/spFrequency"
+            app:layout_constraintEnd_toStartOf="@id/spFrequency"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Spinner
+            android:id="@+id/spFrequency"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="@dimen/minimum_touch_height"
+            app:layout_constraintEnd_toEndOf="@+id/tvStartDate"
+            app:layout_constraintStart_toStartOf="@+id/tvStartDate"
+            app:layout_constraintTop_toBottomOf="@id/etName" />
+
+        <TextView
+            android:id="@+id/lblStartDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/first_cheque_date"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvStartDate"
+            app:layout_constraintEnd_toStartOf="@id/tvStartDate"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tvStartDate"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:text="@string/choose_date"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/spDayOfWeek"
+            app:layout_constraintStart_toStartOf="@+id/spDayOfWeek"
+            app:layout_constraintTop_toBottomOf="@id/spFrequency" />
+
+        <TextView
+            android:id="@+id/lblDayOfWeek"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/day_of_week"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/spDayOfWeek"
+            app:layout_constraintEnd_toStartOf="@id/spDayOfWeek"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Spinner
+            android:id="@+id/spDayOfWeek"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="@dimen/minimum_touch_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblDayOfWeek"
+            app:layout_constraintTop_toBottomOf="@id/tvStartDate" />
+
+        <TextView
+            android:id="@+id/lblDaysBefore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/how_many_days_before_is_cutoff"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/etDaysBefore"
+            app:layout_constraintEnd_toStartOf="@id/etDaysBefore"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/etDaysBefore"
+            android:layout_width="@dimen/text_box_narrow"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblDaysBefore"
+            app:layout_constraintTop_toBottomOf="@id/spDayOfWeek" />
+
+        <TextView
+            android:id="@+id/lblMidMonthDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mid_month_pay_day"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/etMidMonthDate"
+            app:layout_constraintEnd_toStartOf="@id/etMidMonthDate"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/etMidMonthDate"
+            android:layout_width="@dimen/text_box_narrow"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:selectAllOnFocus="true"
+            android:text="@string/fifteen"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblMidMonthDate"
+            app:layout_constraintTop_toBottomOf="@id/etDaysBefore" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

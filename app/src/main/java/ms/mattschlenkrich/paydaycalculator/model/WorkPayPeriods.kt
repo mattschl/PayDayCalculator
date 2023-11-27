@@ -18,6 +18,8 @@ data class Employers(
     val payFrequency: String,
     val startDate: String,
     val dayOfWeek: String,
+    val cutoffDaysBefore: Int,
+    val midMonthDate: Int,
     val employerIsDeleted: Boolean,
     val employerUpdateTime: String,
 ) : Parcelable
