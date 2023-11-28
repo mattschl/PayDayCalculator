@@ -45,6 +45,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         _binding = FragmentEmployerAddBinding.inflate(inflater, container, false)
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainActivity.title = getString(R.string.add_an_employer)
         return mView
     }
 
@@ -66,9 +67,13 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
                         if (spFrequency.selectedItem.toString() == INTERVAL_SEMI_MONTHLY) {
                             lblMidMonthDate.visibility = View.VISIBLE
                             etMidMonthDate.visibility = View.VISIBLE
+                            lblMainMonthDate.visibility = View.VISIBLE
+                            etMainMonthDate.visibility = View.VISIBLE
                         } else {
                             lblMidMonthDate.visibility = View.GONE
                             etMidMonthDate.visibility = View.GONE
+                            lblMainMonthDate.visibility = View.GONE
+                            etMainMonthDate.visibility = View.GONE
                         }
                     }
 
@@ -160,6 +165,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
                 spDayOfWeek.selectedItem.toString(),
                 etDaysBefore.text.toString().toInt(),
                 etMidMonthDate.text.toString().toInt(),
+                etMainMonthDate.text.toString().toInt(),
                 false,
                 df.getCurrentTimeAsString()
             )

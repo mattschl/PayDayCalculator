@@ -19,7 +19,8 @@ data class Employers(
     val startDate: String,
     val dayOfWeek: String,
     val cutoffDaysBefore: Int,
-    val midMonthDate: Int,
+    val midMonthlyDate: Int,
+    val mainMonthlyDay: Int,
     val employerIsDeleted: Boolean,
     val employerUpdateTime: String,
 ) : Parcelable

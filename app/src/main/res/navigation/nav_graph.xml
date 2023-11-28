@@ -18,6 +18,9 @@
         <action
             android:id="@+id/action_employerFragment_to_employerAddFragment"
             app:destination="@id/employerAddFragment" />
+        <action
+            android:id="@+id/action_employerFragment_to_employerUpdateFragment"
+            app:destination="@id/employerUpdateFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_employerFragment"
@@ -29,6 +32,15 @@
         tools:layout="@layout/fragment_employer_add">
         <action
             android:id="@+id/action_employerAddFragment_to_employerFragment"
+            app:destination="@id/employerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/employerUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragment"
+        android:label="fragment_employer_update"
+        tools:layout="@layout/fragment_employer_update">
+        <action
+            android:id="@+id/action_employerUpdateFragment_to_employerFragment"
             app:destination="@id/employerFragment" />
     </fragment>
 </navigation>

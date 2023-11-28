@@ -21,4 +21,6 @@
     <string name="fifteen">15</string>
     <string name="thirty_one">31</string>
     <string name="main_monthly_pay_date">Main monthly pay date</string>
+    <string name="add_an_employer">Add an employer</string>
+    <string name="update_this_employer">Update this Employer</string>
 </resources>

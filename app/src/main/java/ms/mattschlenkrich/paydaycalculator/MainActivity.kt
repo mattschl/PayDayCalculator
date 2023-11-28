@@ -15,11 +15,14 @@ import ms.mattschlenkrich.paydaycalculator.databinding.ActivityMainBinding
 import ms.mattschlenkrich.paydaycalculator.repository.EmployerRepository
 import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModel
 import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModelFactory
+import ms.mattschlenkrich.paydaycalculator.viewModel.MainViewModel
+import ms.mattschlenkrich.paydaycalculator.viewModel.MainViewModelFactory
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var mView: View
     lateinit var employerViewModel: EmployerViewModel
+    lateinit var mainViewModel: MainViewModel
 
     private fun gotoEmployer() {
         findNavController(R.id.nav_host_fragment_container).navigate(
@@ -33,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         mView = binding.root
         setContentView(mView)
+        setupMainViewModel()
         setupEmployerViewModel()
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -57,6 +61,15 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun setupMainViewModel() {
+        val mainViewModelFactory =
+            MainViewModelFactory(application)
+        mainViewModel = ViewModelProvider(
+            this,
+            mainViewModelFactory
+        )[MainViewModel::class.java]
     }
 
     private fun setupEmployerViewModel() {
