@@ -19,4 +19,6 @@
     <string name="zero">0</string>
     <string name="mid_month_pay_day">Mid month pay day</string>
     <string name="fifteen">15</string>
+    <string name="thirty_one">31</string>
+    <string name="main_monthly_pay_date">Main monthly pay date</string>
 </resources>

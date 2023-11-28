@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.employer.EmployerAddFragment">
+    tools:context=".ui.employer.EmployerUpdateFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -131,6 +131,8 @@
             android:id="@+id/etMidMonthDate"
             android:layout_width="@dimen/text_box_narrow"
             android:layout_height="@dimen/minimum_touch_height"
+            android:importantForAutofill="no"
+            android:inputType="number"
             android:selectAllOnFocus="true"
             android:text="@string/fifteen"
             android:textAlignment="center"
@@ -138,8 +140,6 @@
             android:textSize="@dimen/text_size_large"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lblMidMonthDate"
-            android:importantForAutofill="no"
-            android:inputType="number"
             app:layout_constraintTop_toBottomOf="@id/etDaysBefore"
             tools:ignore="TextFields" />
 
@@ -168,5 +168,6 @@
             app:layout_constraintStart_toEndOf="@id/lblMainMonthDate"
             app:layout_constraintTop_toBottomOf="@id/etMidMonthDate"
             tools:ignore="TextFields" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

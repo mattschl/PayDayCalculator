@@ -48,5 +48,6 @@ class EmployerAdapter(
     override fun onBindViewHolder(holder: EmployerViewHolder, position: Int) {
         val employer = differ.currentList[position]
         holder.itemBinding.employerName.text = employer.employerName
+        holder.itemBinding.tvFrequency.text = employer.payFrequency
     }
 }
