@@ -18,8 +18,8 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
-import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_SEMI_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
@@ -33,7 +33,8 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     private lateinit var mainActivity: MainActivity
     private lateinit var employerViewModel: EmployerViewModel
     private val df = DateFunctions()
-    private val cf = CommonFunctions()
+
+    // private val cf = CommonFunctions()
     private val employerList = ArrayList<Employers>()
     private var newEmployer: Employers? = null
     private var startDate = ""
@@ -71,7 +72,8 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
                         break
                     }
                 }
-                tvStartDate.text = df.getDisplayDate(newEmployer!!.startDate)
+                startDate = newEmployer!!.startDate
+                tvStartDate.text = df.getDisplayDate(startDate)
                 for (i in 0 until spDayOfWeek.adapter.count) {
                     if (spDayOfWeek.getItemAtPosition(i) == newEmployer!!.dayOfWeek) {
                         spDayOfWeek.setSelection(i)
@@ -90,16 +92,27 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
             spFrequency.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                        if (spFrequency.selectedItem.toString() == INTERVAL_SEMI_MONTHLY) {
-                            lblMidMonthDate.visibility = View.VISIBLE
-                            etMidMonthDate.visibility = View.VISIBLE
-                            lblMainMonthDate.visibility = View.VISIBLE
-                            etMainMonthDate.visibility = View.VISIBLE
-                        } else {
-                            lblMidMonthDate.visibility = View.GONE
-                            etMidMonthDate.visibility = View.GONE
-                            lblMainMonthDate.visibility = View.GONE
-                            etMainMonthDate.visibility = View.GONE
+                        when (spFrequency.selectedItem.toString()) {
+                            INTERVAL_SEMI_MONTHLY -> {
+                                lblMidMonthDate.visibility = View.VISIBLE
+                                etMidMonthDate.visibility = View.VISIBLE
+                                lblMainMonthDate.visibility = View.VISIBLE
+                                etMainMonthDate.visibility = View.VISIBLE
+                            }
+
+                            INTERVAL_MONTHLY -> {
+                                lblMidMonthDate.visibility = View.GONE
+                                etMidMonthDate.visibility = View.GONE
+                                lblMainMonthDate.visibility = View.VISIBLE
+                                etMainMonthDate.visibility = View.VISIBLE
+                            }
+
+                            else -> {
+                                lblMidMonthDate.visibility = View.GONE
+                                etMidMonthDate.visibility = View.GONE
+                                lblMainMonthDate.visibility = View.GONE
+                                etMainMonthDate.visibility = View.GONE
+                            }
                         }
                     }
 

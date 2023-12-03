@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paydaycalculator.ui.employer
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -20,11 +21,13 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_SEMI_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModel
 
+private const val TAG = "EmployerAddFragment"
 
 class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
 
@@ -64,16 +67,27 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
             spFrequency.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                        if (spFrequency.selectedItem.toString() == INTERVAL_SEMI_MONTHLY) {
-                            lblMidMonthDate.visibility = View.VISIBLE
-                            etMidMonthDate.visibility = View.VISIBLE
-                            lblMainMonthDate.visibility = View.VISIBLE
-                            etMainMonthDate.visibility = View.VISIBLE
-                        } else {
-                            lblMidMonthDate.visibility = View.GONE
-                            etMidMonthDate.visibility = View.GONE
-                            lblMainMonthDate.visibility = View.GONE
-                            etMainMonthDate.visibility = View.GONE
+                        when (spFrequency.selectedItem.toString()) {
+                            INTERVAL_SEMI_MONTHLY -> {
+                                lblMidMonthDate.visibility = View.VISIBLE
+                                etMidMonthDate.visibility = View.VISIBLE
+                                lblMainMonthDate.visibility = View.VISIBLE
+                                etMainMonthDate.visibility = View.VISIBLE
+                            }
+
+                            INTERVAL_MONTHLY -> {
+                                lblMidMonthDate.visibility = View.GONE
+                                etMidMonthDate.visibility = View.GONE
+                                lblMainMonthDate.visibility = View.VISIBLE
+                                etMainMonthDate.visibility = View.VISIBLE
+                            }
+
+                            else -> {
+                                lblMidMonthDate.visibility = View.GONE
+                                etMidMonthDate.visibility = View.GONE
+                                lblMainMonthDate.visibility = View.GONE
+                                etMainMonthDate.visibility = View.GONE
+                            }
                         }
                     }
 
@@ -156,6 +170,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun getCurrentEmployer(): Employers {
+        Log.d(TAG, "start date is $startDate")
         binding.apply {
             return Employers(
                 cf.generateId(),
@@ -191,7 +206,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
                         "This employer already exists!"
             } else if (etDaysBefore.text.isNullOrBlank()) {
                 "    ERROR!!\n" +
-                        "A number of days before the pay day is required!"
+                        "The number of days before the pay day is required!"
             } else if (etMidMonthDate.text.isNullOrBlank()) {
                 "    ERROR!!\n" +
                         "For semi-monthly pay days there needs to be a mid month pay day"

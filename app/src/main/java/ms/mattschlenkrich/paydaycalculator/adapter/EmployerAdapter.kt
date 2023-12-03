@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,8 @@ import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerFragmentDirections
+
+private const val TAG = "EmployerAdapter"
 
 class EmployerAdapter(
     private val mainActivity: MainActivity,
@@ -53,6 +56,7 @@ class EmployerAdapter(
         holder.itemBinding.tvFrequency.text = employer.payFrequency
         holder.itemView.setOnLongClickListener {
             mainActivity.mainViewModel.setEmployer(employer)
+            Log.d(TAG, "start date is ${employer.startDate}")
             mView.findNavController().navigate(
                 EmployerFragmentDirections
                     .actionEmployerFragmentToEmployerUpdateFragment()
