@@ -81,7 +81,6 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
                                 lblMainMonthDate.visibility = View.VISIBLE
                                 etMainMonthDate.visibility = View.VISIBLE
                             }
-
                             else -> {
                                 lblMidMonthDate.visibility = View.GONE
                                 etMidMonthDate.visibility = View.GONE

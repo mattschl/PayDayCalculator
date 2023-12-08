@@ -33,7 +33,6 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     private lateinit var mainActivity: MainActivity
     private lateinit var employerViewModel: EmployerViewModel
     private val df = DateFunctions()
-
     // private val cf = CommonFunctions()
     private val employerList = ArrayList<Employers>()
     private var newEmployer: Employers? = null

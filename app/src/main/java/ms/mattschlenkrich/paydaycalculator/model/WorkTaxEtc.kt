@@ -1,16 +1,22 @@
 package ms.mattschlenkrich.paydaycalculator.model
 
-//
-//@Entity(
-//    tableName = TABLE_WORK_TAX_TYPES
-//)
-//@Parcelize
-//data class WorkTaxTypes(
-//    @PrimaryKey
-//    val workTaxType: String,
-//    val wttIsDeleted: Boolean,
-//    val wttUpdateTime: String,
-//) : Parcelable
+import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_TYPES
+
+
+@Entity(
+    tableName = TABLE_WORK_TAX_TYPES
+)
+@Parcelize
+data class WorkTaxTypes(
+    @PrimaryKey
+    val workTaxType: String,
+    val wttIsDeleted: Boolean,
+    val wttUpdateTime: String,
+) : Parcelable
 
 //@Entity(
 //    tableName = TABLE_WORK_TAX_RULES,

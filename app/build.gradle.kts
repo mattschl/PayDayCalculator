@@ -1,9 +1,9 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id ("com.google.devtools.ksp")
-    id ("androidx.navigation.safeargs.kotlin")
-    id ("kotlin-parcelize")
+    id("com.google.devtools.ksp")
+    id("androidx.navigation.safeargs.kotlin")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -56,13 +56,13 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     val room_version = "2.6.1"
-    implementation ("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-runtime:$room_version")
     // To use Kotlin symbol processing tool (ksp)id("androidx.navigation.safeargs.kotlin")
     ksp("androidx.room:room-compiler:$room_version")
 
     //coRoutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation ("androidx.room:room-ktx:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
 
     val nav_version = "2.7.5"
     // Kotlin Navigation
@@ -82,6 +82,6 @@ dependencies {
 
     val material3_version = "1.1.2"
 
-    implementation ("androidx.compose.material3:material3:$material3_version")
+    implementation("androidx.compose.material3:material3:$material3_version")
 
 }

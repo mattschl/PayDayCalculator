@@ -23,5 +23,8 @@ class TaxTypeFragment : Fragment(R.layout.fragment_tax_type) {
         return mView
     }
 
-
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 }
