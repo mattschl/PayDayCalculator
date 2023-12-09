@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_VERSION
 import ms.mattschlenkrich.paydaycalculator.model.Employers
+import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
 
 
 @Database(
@@ -20,7 +21,7 @@ import ms.mattschlenkrich.paydaycalculator.model.Employers
 //        WorkExtrasDefinitions::class,
 //        WorkExtraFrequencies::class,
 //        WorkTaxRules::class,
-//        WorkTaxTypes::class,
+        WorkTaxTypes::class,
 //        EmployerTaxRules::class,
     ],
     version = PAY_DB_VERSION,
@@ -28,6 +29,7 @@ import ms.mattschlenkrich.paydaycalculator.model.Employers
 abstract class PayDatabase : RoomDatabase() {
 
     abstract fun getEmployerDao(): EmployerDao
+    abstract fun getTaxTypeDao(): WorkTaxDao
 
     companion object {
         @Volatile
@@ -36,12 +38,12 @@ abstract class PayDatabase : RoomDatabase() {
 
         operator fun invoke(context: Context) =
             instance ?: synchronized(LOCK) {
-                instance ?: creatDatabase(context).also {
+                instance ?: createDatabase(context).also {
                     instance = it
                 }
             }
 
-        private fun creatDatabase(context: Context): PayDatabase {
+        private fun createDatabase(context: Context): PayDatabase {
             return Room.databaseBuilder(
                 context.applicationContext,
                 PayDatabase::class.java,

@@ -20,6 +20,7 @@ class TaxTypeFragment : Fragment(R.layout.fragment_tax_type) {
     ): View {
         _binding = FragmentTaxTypeBinding.inflate(inflater, container, false)
         mView = binding.root
+
         return mView
     }
 

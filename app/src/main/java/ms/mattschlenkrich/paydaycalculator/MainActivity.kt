@@ -13,16 +13,20 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
 import ms.mattschlenkrich.paydaycalculator.databinding.ActivityMainBinding
 import ms.mattschlenkrich.paydaycalculator.repository.EmployerRepository
+import ms.mattschlenkrich.paydaycalculator.repository.WorkTaxRepository
 import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModel
 import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModelFactory
 import ms.mattschlenkrich.paydaycalculator.viewModel.MainViewModel
 import ms.mattschlenkrich.paydaycalculator.viewModel.MainViewModelFactory
+import ms.mattschlenkrich.paydaycalculator.viewModel.WorkTaxViewModel
+import ms.mattschlenkrich.paydaycalculator.viewModel.WorkTaxViewModelFactory
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var mView: View
     lateinit var employerViewModel: EmployerViewModel
     lateinit var mainViewModel: MainViewModel
+    lateinit var workTaxViewModel: WorkTaxViewModel
 
     private fun gotoEmployer() {
         findNavController(R.id.nav_host_fragment_container).navigate(
@@ -38,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(mView)
         setupMainViewModel()
         setupEmployerViewModel()
+        setupWorkTaxViewModel()
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menu.add(resources.getString(R.string.app_name))
@@ -85,5 +90,14 @@ class MainActivity : AppCompatActivity() {
         employerViewModel = ViewModelProvider(
             this, employerViewModelFactory
         )[EmployerViewModel::class.java]
+    }
+
+    private fun setupWorkTaxViewModel() {
+        val workTaxRepository = WorkTaxRepository(PayDatabase(this))
+        val workTaxViewModelFactory =
+            WorkTaxViewModelFactory(application, workTaxRepository)
+        workTaxViewModel = ViewModelProvider(
+            this, workTaxViewModelFactory
+        )[WorkTaxViewModel::class.java]
     }
 }
