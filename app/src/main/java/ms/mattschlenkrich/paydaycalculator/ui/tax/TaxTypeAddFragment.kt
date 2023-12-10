@@ -8,12 +8,15 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
+import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
@@ -25,15 +28,16 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
-
-    //    private val cf = CommonFunctions()
+    private val cf = CommonFunctions()
     private val taxTypeList = ArrayList<WorkTaxTypes>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentTaxTypeAddBinding.inflate(inflater, container, false)
+        _binding = FragmentTaxTypeAddBinding.inflate(
+            inflater, container, false
+        )
         mView = binding.root
         mainActivity = (activity as MainActivity)
         mainActivity.title = getString(R.string.add_a_new_tax_type)
@@ -50,6 +54,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         mainActivity.workTaxViewModel.getTaxTypes().observe(
             viewLifecycleOwner
         ) { list ->
+            taxTypeList.clear()
             list.listIterator().forEach {
                 taxTypeList.add(it)
             }
@@ -57,7 +62,8 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     }
 
     private fun fillMenu() {
-        mainActivity.addMenuProvider(object : MenuProvider {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.save_menu, menu)
             }
@@ -74,7 +80,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
                     }
                 }
             }
-        })
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
     private fun saveTaxType() {
@@ -83,8 +89,10 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
             if (message == ANSWER_OK) {
                 mainActivity.workTaxViewModel.insertTaxType(
                     WorkTaxTypes(
+                        cf.generateId(),
                         etTaxType.text.toString(),
-                        false, df.getCurrentTimeAsString()
+                        false,
+                        df.getCurrentTimeAsString()
                     )
                 )
                 gotoCallingFragment()

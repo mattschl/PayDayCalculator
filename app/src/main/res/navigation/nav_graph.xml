@@ -51,6 +51,9 @@
         <action
             android:id="@+id/action_taxTypeFragment_to_taxTypeAddFragment"
             app:destination="@id/taxTypeAddFragment" />
+        <action
+            android:id="@+id/action_taxTypeFragment_to_taxTypeUpdateFragment"
+            app:destination="@id/taxTypeUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/taxTypeAddFragment"
@@ -64,4 +67,13 @@
     <action
         android:id="@+id/action_global_taxTypeFragment"
         app:destination="@id/taxTypeFragment" />
+    <fragment
+        android:id="@+id/taxTypeUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.tax.TaxTypeUpdateFragment"
+        android:label="fragment_tax_type_update"
+        tools:layout="@layout/fragment_tax_type_update">
+        <action
+            android:id="@+id/action_taxTypeUpdateFragment_to_taxTypeFragment"
+            app:destination="@id/taxTypeFragment" />
+    </fragment>
 </navigation>

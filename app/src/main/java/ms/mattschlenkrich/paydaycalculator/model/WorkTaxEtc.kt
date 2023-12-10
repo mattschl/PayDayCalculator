@@ -13,6 +13,7 @@ import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_TYPES
 @Parcelize
 data class WorkTaxTypes(
     @PrimaryKey
+    val workTaxTypeId: Long,
     val workTaxType: String,
     val wttIsDeleted: Boolean,
     val wttUpdateTime: String,

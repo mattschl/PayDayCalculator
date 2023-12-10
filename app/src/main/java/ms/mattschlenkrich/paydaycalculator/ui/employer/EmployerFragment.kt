@@ -11,7 +11,6 @@ import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.EmployerAdapter
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerBinding
-import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModel
 
 class EmployerFragment : Fragment(R.layout.fragment_employer) {
 
@@ -19,7 +18,6 @@ class EmployerFragment : Fragment(R.layout.fragment_employer) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private lateinit var employerViewModel: EmployerViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,7 +27,6 @@ class EmployerFragment : Fragment(R.layout.fragment_employer) {
         mView = binding.root
         mainActivity = (activity as MainActivity)
         mainActivity.title = getString(R.string.view_employers)
-        employerViewModel = mainActivity.employerViewModel
         return mView
     }
 
@@ -62,7 +59,7 @@ class EmployerFragment : Fragment(R.layout.fragment_employer) {
             adapter = employerAdapter
         }
         activity?.let {
-            employerViewModel.getCurrentEmployers().observe(
+            mainActivity.employerViewModel.getCurrentEmployers().observe(
                 viewLifecycleOwner
             ) { employer ->
                 employerAdapter.differ.submitList(employer)
