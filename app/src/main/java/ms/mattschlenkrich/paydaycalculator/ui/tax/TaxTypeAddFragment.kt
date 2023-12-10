@@ -10,10 +10,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
-import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
@@ -25,7 +25,8 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
-    private val cf = CommonFunctions()
+
+    //    private val cf = CommonFunctions()
     private val taxTypeList = ArrayList<WorkTaxTypes>()
 
     override fun onCreateView(
@@ -46,7 +47,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     }
 
     private fun getTaxTypeList() {
-        mainActivity.workTaxViewModel.getWorkTypes().observe(
+        mainActivity.workTaxViewModel.getTaxTypes().observe(
             viewLifecycleOwner
         ) { list ->
             list.listIterator().forEach {
@@ -86,6 +87,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
                         false, df.getCurrentTimeAsString()
                     )
                 )
+                gotoCallingFragment()
             } else {
                 Toast.makeText(
                     mView.context,
@@ -95,6 +97,13 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
             }
 
         }
+    }
+
+    private fun gotoCallingFragment() {
+        mView.findNavController().navigate(
+            TaxTypeAddFragmentDirections
+                .actionTaxTypeAddFragmentToTaxTypeFragment()
+        )
     }
 
     private fun checkTaxType(): String {

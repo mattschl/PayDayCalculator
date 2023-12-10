@@ -30,9 +30,12 @@ class EmployerFragment : Fragment(R.layout.fragment_employer) {
         mainActivity = (activity as MainActivity)
         mainActivity.title = getString(R.string.view_employers)
         employerViewModel = mainActivity.employerViewModel
+        return mView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         fillEmployers()
         setActions()
-        return mView
     }
 
     private fun setActions() {

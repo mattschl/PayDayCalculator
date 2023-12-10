@@ -45,12 +45,22 @@ class MainActivity : AppCompatActivity() {
         setupWorkTaxViewModel()
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menu.add(getString(R.string.review_tax_types))
                 menu.add(resources.getString(R.string.app_name))
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                //set action
-                return false
+                return when (menuItem.title) {
+                    getString(R.string.review_tax_types) -> {
+                        gotoTaxTypes()
+                        false
+                    }
+
+                    else -> {
+                        false
+                    }
+                }
+
             }
         })
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
@@ -66,6 +76,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun gotoTaxTypes() {
+        findNavController(R.id.nav_host_fragment_container).navigate(
+            NavGraphDirections.actionGlobalTaxTypeFragment()
+        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

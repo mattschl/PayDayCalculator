@@ -22,6 +22,6 @@ class WorkTaxViewModel(
             workTaxRepository.updateWorkTaxType(workTaxType)
         }
 
-    fun getWorkTypes() =
-        workTaxRepository.getWorkTypes()
+    fun getTaxTypes() =
+        workTaxRepository.getTaxTypes()
 }

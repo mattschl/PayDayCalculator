@@ -43,4 +43,25 @@
             android:id="@+id/action_employerUpdateFragment_to_employerFragment"
             app:destination="@id/employerFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/taxTypeFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.tax.TaxTypeFragment"
+        android:label="fragment_tax_type"
+        tools:layout="@layout/fragment_tax_type">
+        <action
+            android:id="@+id/action_taxTypeFragment_to_taxTypeAddFragment"
+            app:destination="@id/taxTypeAddFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/taxTypeAddFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.tax.TaxTypeAddFragment"
+        android:label="fragment_tax_type_add"
+        tools:layout="@layout/fragment_tax_type_add">
+        <action
+            android:id="@+id/action_taxTypeAddFragment_to_taxTypeFragment"
+            app:destination="@id/taxTypeFragment" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_taxTypeFragment"
+        app:destination="@id/taxTypeFragment" />
 </navigation>

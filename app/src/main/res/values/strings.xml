@@ -26,4 +26,7 @@
     <string name="tax_type">Tax Type</string>
     <string name="enter_tax_type">Enter Tax Type</string>
     <string name="add_a_new_tax_type">Add a new tax Type</string>
+    <string name="choose_a_tax_type">Choose a Tax Type</string>
+    <string name="review_tax_types">Review Tax Types</string>
+    <string name="no_tax_types_to_view">No Tax Types to view</string>
 </resources>
