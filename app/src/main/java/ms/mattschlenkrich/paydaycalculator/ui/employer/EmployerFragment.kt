@@ -11,6 +11,7 @@ import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.EmployerAdapter
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerBinding
+import ms.mattschlenkrich.paydaycalculator.model.Employers
 
 class EmployerFragment : Fragment(R.layout.fragment_employer) {
 
@@ -63,6 +64,19 @@ class EmployerFragment : Fragment(R.layout.fragment_employer) {
                 viewLifecycleOwner
             ) { employer ->
                 employerAdapter.differ.submitList(employer)
+                updateUI(employer)
+            }
+        }
+    }
+
+    private fun updateUI(employer: List<Employers>?) {
+        binding.apply {
+            if (employer!!.isEmpty()) {
+                rvEmployers.visibility = View.GONE
+                crdNoInfo.visibility = View.VISIBLE
+            } else {
+                rvEmployers.visibility = View.VISIBLE
+                crdNoInfo.visibility = View.GONE
             }
         }
     }

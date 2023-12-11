@@ -30,4 +30,5 @@
     <string name="review_tax_types">Review Tax Types</string>
     <string name="no_tax_types_to_view">No Tax Types to view</string>
     <string name="update_tax_type">Update Tax Type</string>
+    <string name="no_employers_to_view">No Employers to View</string>
 </resources>
