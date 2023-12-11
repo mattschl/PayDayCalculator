@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
@@ -63,7 +64,6 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
         binding.apply {
             fabDone.setOnClickListener {
                 updateWorkTaxType()
-                gotoCallingFragment()
             }
         }
     }
@@ -94,7 +94,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
                     }
                 }
             }
-        })
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
     private fun deleteTaxType() {
@@ -145,7 +145,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
             val errorMessage = if (etTaxType.text.isNullOrBlank()) {
                 "    ERROR!!\n" +
                         "The tax type must have a description"
-            } else if (nameFound) {
+            } else if (nameFound && etTaxType.text.toString() != curTaxType.workTaxType) {
                 "    ERROR!!\n" +
                         "This tax type already exists!"
             } else {
@@ -164,6 +164,11 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
                 taxTypeList.add(it)
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 }
