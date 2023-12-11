@@ -1,10 +1,16 @@
 package ms.mattschlenkrich.paydaycalculator.model
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
+import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_ID
+import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_CUTOFF_DATE
+import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_PAY_PERIODS
 
 
 @Entity(
@@ -25,24 +31,24 @@ data class Employers(
     val employerUpdateTime: String,
 ) : Parcelable
 
-//@Entity(
-//    tableName = TABLE_WORK_PAY_PERIODS,
-//    primaryKeys = [PAY_PERIOD_CUTOFF_DATE, PAY_PERIOD_EMPLOYER_ID],
-//    foreignKeys = [ForeignKey(
-//        entity = Employers::class,
-//        parentColumns = [EMPLOYER_ID],
-//        childColumns = [PAY_PERIOD_EMPLOYER_ID]
-//    )]
-//)
-//@Parcelize
-//data class WorkPayPeriods(
-//    val ppCutoffDate: String,
-//    val ppEmployerId: Long,
-//    @ColumnInfo(defaultValue = "0")
-//    val ppIsDeleted: Boolean,
-//    val ppUpdateTime: String,
-//) : Parcelable
-//
+@Entity(
+    tableName = TABLE_WORK_PAY_PERIODS,
+    primaryKeys = [PAY_PERIOD_CUTOFF_DATE, PAY_PERIOD_EMPLOYER_ID],
+    foreignKeys = [ForeignKey(
+        entity = Employers::class,
+        parentColumns = [EMPLOYER_ID],
+        childColumns = [PAY_PERIOD_EMPLOYER_ID]
+    )]
+)
+@Parcelize
+data class WorkPayPeriods(
+    val ppCutoffDate: String,
+    val ppEmployerId: Long,
+    @ColumnInfo(defaultValue = "0")
+    val ppIsDeleted: Boolean,
+    val ppUpdateTime: String,
+) : Parcelable
+
 //@Entity(
 //    tableName = TABLE_WORK_DATES,
 //    primaryKeys = [WORK_DATES_EMPLOYER_ID,

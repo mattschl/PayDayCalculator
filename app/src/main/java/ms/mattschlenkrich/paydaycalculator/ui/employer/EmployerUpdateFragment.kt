@@ -57,8 +57,17 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         fillSpinners()
         fillMenu()
         setDateAction()
+        setActions()
         setSpinnerActions()
         fillValues()
+    }
+
+    private fun setActions() {
+        binding.apply {
+            fabDone.setOnClickListener {
+                updateEmployer()
+            }
+        }
     }
 
     private fun fillValues() {
@@ -151,13 +160,13 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     private fun fillMenu() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.save_menu, menu)
+                menuInflater.inflate(R.menu.menu_delete, menu)
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        updateEmployer()
+                    R.id.menu_delete -> {
+                        deleteEmployer()
                         true
                     }
 
@@ -167,6 +176,26 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
+    }
+
+    private fun deleteEmployer() {
+        binding.apply {
+            employerViewModel.updateEmployer(
+                Employers(
+                    newEmployer!!.employerId,
+                    etName.text.toString(),
+                    spFrequency.selectedItem.toString(),
+                    startDate,
+                    spDayOfWeek.selectedItem.toString(),
+                    etDaysBefore.text.toString().toInt(),
+                    etMidMonthDate.text.toString().toInt(),
+                    etMainMonthDate.text.toString().toInt(),
+                    true,
+                    df.getCurrentTimeAsString()
+                )
+            )
+        }
+        gotoCallingFragment()
     }
 
     private fun updateEmployer() {
@@ -225,7 +254,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
             val errorMessage = if (etName.text.isNullOrBlank()) {
                 "    ERROR!!\n" +
                         "The employer must have a name!"
-            } else if (nameFound) {
+            } else if (nameFound && etName.text.toString() != newEmployer!!.employerName) {
                 "    ERROR!!\n" +
                         "This employer already exists!"
             } else if (etDaysBefore.text.isNullOrBlank()) {
