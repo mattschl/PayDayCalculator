@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
@@ -40,7 +41,10 @@ class ExtraFrequencyTypesFragment : Fragment() {
     private fun setActions() {
         binding.apply {
             fabNew.setOnClickListener {
-                mView.
+                mView.findNavController().navigate(
+                    ExtraFrequencyTypesFragmentDirections
+                        .actionExtraFrequencyTypesFragmentToExtraFrequencyTypeAddFragment()
+                )
             }
         }
     }

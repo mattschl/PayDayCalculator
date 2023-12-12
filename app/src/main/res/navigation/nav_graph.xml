@@ -80,8 +80,21 @@
         android:id="@+id/extraFrequencyTypesFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.ExtraFrequencyTypesFragment"
         android:label="fragment_extra_frequency_types"
-        tools:layout="@layout/fragment_extra_frequency_types" />
+        tools:layout="@layout/fragment_extra_frequency_types">
+        <action
+            android:id="@+id/action_extraFrequencyTypesFragment_to_extraFrequencyTypeAddFragment"
+            app:destination="@id/extraFrequencyTypeAddFragment" />
+    </fragment>
     <action
         android:id="@+id/action_global_extraFrequencyTypesFragment"
         app:destination="@id/extraFrequencyTypesFragment" />
+    <fragment
+        android:id="@+id/extraFrequencyTypeAddFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.ExtraFrequencyTypeAddFragment"
+        android:label="fragment_extra_frequency_type_add"
+        tools:layout="@layout/fragment_extra_frequency_type_add">
+        <action
+            android:id="@+id/action_extraFrequencyTypeAddFragment_to_extraFrequencyTypesFragment"
+            app:destination="@id/extraFrequencyTypesFragment" />
+    </fragment>
 </navigation>

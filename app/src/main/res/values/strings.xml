@@ -33,4 +33,8 @@
     <string name="no_employers_to_view">No Employers to View</string>
     <string name="no_work_extra_frequency_types">No work extra frequency types</string>
     <string name="choose_extra_frequency_types">Choose Extra Frequency Types</string>
+    <string name="review_work_extra_frequencies">Review Work Extra Frequencies</string>
+    <string name="extra_frequency">Extra Frequency</string>
+    <string name="enter_extra_frequency">Enter Extra Frequency</string>
+    <string name="add_a_new_extra_frequency">Add a new Extra Frequency</string>
 </resources>

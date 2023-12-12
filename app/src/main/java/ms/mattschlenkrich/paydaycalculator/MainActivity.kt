@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menu.add(getString(R.string.review_tax_types))
+                menu.add(getString(R.string.review_work_extra_frequencies))
                 menu.add(resources.getString(R.string.app_name))
             }
 
@@ -58,6 +59,11 @@ class MainActivity : AppCompatActivity() {
                 return when (menuItem.title) {
                     getString(R.string.review_tax_types) -> {
                         gotoTaxTypes()
+                        false
+                    }
+
+                    getString(R.string.review_work_extra_frequencies) -> {
+                        gotoWorkExtraFrequencies()
                         false
                     }
 
@@ -81,6 +87,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun gotoWorkExtraFrequencies() {
+        findNavController(R.id.nav_host_fragment_container).navigate(
+            NavGraphDirections.actionGlobalExtraFrequencyTypesFragment()
+        )
     }
 
 
