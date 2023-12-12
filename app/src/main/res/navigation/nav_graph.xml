@@ -76,4 +76,12 @@
             android:id="@+id/action_taxTypeUpdateFragment_to_taxTypeFragment"
             app:destination="@id/taxTypeFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/extraFrequencyTypesFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.ExtraFrequencyTypesFragment"
+        android:label="fragment_extra_frequency_types"
+        tools:layout="@layout/fragment_extra_frequency_types" />
+    <action
+        android:id="@+id/action_global_extraFrequencyTypesFragment"
+        app:destination="@id/extraFrequencyTypesFragment" />
 </navigation>

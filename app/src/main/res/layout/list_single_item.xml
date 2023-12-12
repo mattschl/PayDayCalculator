@@ -21,7 +21,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tvTaxType"
+                    android:id="@+id/tvDisplay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dimen_8dp"

@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.MainActivity
-import ms.mattschlenkrich.paydaycalculator.databinding.ListTaxTypeItemBinding
+import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
 import ms.mattschlenkrich.paydaycalculator.ui.tax.TaxTypeFragmentDirections
 
@@ -18,7 +18,7 @@ class TaxTypeAdapter(
     private val mView: View
 ) : RecyclerView.Adapter<TaxTypeAdapter.TaxTypeViewHolder>() {
 
-    class TaxTypeViewHolder(val itemBinding: ListTaxTypeItemBinding) :
+    class TaxTypeViewHolder(val itemBinding: ListSingleItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCallBack =
@@ -36,7 +36,7 @@ class TaxTypeAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaxTypeViewHolder {
         return TaxTypeViewHolder(
-            ListTaxTypeItemBinding.inflate(
+            ListSingleItemBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
         )
@@ -51,11 +51,11 @@ class TaxTypeAdapter(
         var disp = taxType.workTaxType
         if (taxType.wttIsDeleted) {
             disp += "*Deleted*"
-            holder.itemBinding.tvTaxType.setTextColor(Color.RED)
+            holder.itemBinding.tvDisplay.setTextColor(Color.RED)
         } else {
-            holder.itemBinding.tvTaxType.setTextColor(Color.BLACK)
+            holder.itemBinding.tvDisplay.setTextColor(Color.BLACK)
         }
-        holder.itemBinding.tvTaxType.text = disp
+        holder.itemBinding.tvDisplay.text = disp
         holder.itemView.setOnLongClickListener {
             mainActivity.mainViewModel.setTaxType(taxType)
             mView.findNavController().navigate(

@@ -13,11 +13,14 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
 import ms.mattschlenkrich.paydaycalculator.databinding.ActivityMainBinding
 import ms.mattschlenkrich.paydaycalculator.repository.EmployerRepository
+import ms.mattschlenkrich.paydaycalculator.repository.WorkExtraRepository
 import ms.mattschlenkrich.paydaycalculator.repository.WorkTaxRepository
 import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModel
 import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModelFactory
 import ms.mattschlenkrich.paydaycalculator.viewModel.MainViewModel
 import ms.mattschlenkrich.paydaycalculator.viewModel.MainViewModelFactory
+import ms.mattschlenkrich.paydaycalculator.viewModel.WorkExtraViewModel
+import ms.mattschlenkrich.paydaycalculator.viewModel.WorkExtraViewModelFactory
 import ms.mattschlenkrich.paydaycalculator.viewModel.WorkTaxViewModel
 import ms.mattschlenkrich.paydaycalculator.viewModel.WorkTaxViewModelFactory
 
@@ -27,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var employerViewModel: EmployerViewModel
     lateinit var mainViewModel: MainViewModel
     lateinit var workTaxViewModel: WorkTaxViewModel
+    lateinit var workExtraViewModel: WorkExtraViewModel
 
     private fun gotoEmployer() {
         findNavController(R.id.nav_host_fragment_container).navigate(
@@ -43,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         setupMainViewModel()
         setupEmployerViewModel()
         setupWorkTaxViewModel()
+        setupWorkExtraViewModel()
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menu.add(getString(R.string.review_tax_types))
@@ -78,6 +83,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     private fun gotoTaxTypes() {
         findNavController(R.id.nav_host_fragment_container).navigate(
             NavGraphDirections.actionGlobalTaxTypeFragment()
@@ -95,6 +101,18 @@ class MainActivity : AppCompatActivity() {
             this,
             mainViewModelFactory
         )[MainViewModel::class.java]
+    }
+
+    private fun setupWorkExtraViewModel() {
+        val workExtraRepository = WorkExtraRepository(
+            PayDatabase(this)
+        )
+        val workExtraViewModelFactory =
+            WorkExtraViewModelFactory(application, workExtraRepository)
+        workExtraViewModel = ViewModelProvider(
+            this,
+            workExtraViewModelFactory
+        )[WorkExtraViewModel::class.java]
     }
 
     private fun setupEmployerViewModel() {

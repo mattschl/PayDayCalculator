@@ -50,5 +50,8 @@ data class WorkExtrasDefinitions(
 @Parcelize
 data class WorkExtraFrequencies(
     @PrimaryKey
-    val workExtraFrequencyName: String
+    val workExtraFrequencyId: Long,
+    val workExtraFrequencyName: String,
+    val wefIsDeleted: Boolean,
+    val wefUpdateTime: String,
 ) : Parcelable
