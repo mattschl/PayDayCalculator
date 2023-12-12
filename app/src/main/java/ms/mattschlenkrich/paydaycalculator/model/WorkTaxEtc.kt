@@ -11,8 +11,9 @@ import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_TAX_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYER_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_TYPES
-import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_TYPE
+import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_TYPE_ID
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
+import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE_ID
 
 
 @Entity(
@@ -31,15 +32,15 @@ data class WorkTaxTypes(
     tableName = TABLE_WORK_TAX_RULES,
     foreignKeys = [ForeignKey(
         entity = WorkTaxTypes::class,
-        parentColumns = [WORK_TAX_TYPE],
-        childColumns = [WORK_TAX_RULE_TYPE]
+        parentColumns = [WORK_TAX_TYPE_ID],
+        childColumns = [WORK_TAX_RULE_TYPE_ID]
     )]
 )
 @Parcelize
 data class WorkTaxRules(
     @PrimaryKey
     val workTaxRuleId: Long,
-    val workTaxRuleType: String,
+    val wtTypeId: String,
     val wtPercent: Double,
     val wtHasExemption: Boolean,
     val wtExemptionAmount: Double,
