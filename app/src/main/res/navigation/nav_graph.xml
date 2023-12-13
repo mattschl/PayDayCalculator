@@ -84,6 +84,9 @@
         <action
             android:id="@+id/action_extraFrequencyTypesFragment_to_extraFrequencyTypeAddFragment"
             app:destination="@id/extraFrequencyTypeAddFragment" />
+        <action
+            android:id="@+id/action_extraFrequencyTypesFragment_to_extraFrequencyTypeUpdateFragment2"
+            app:destination="@id/extraFrequencyTypeUpdateFragment2" />
     </fragment>
     <action
         android:id="@+id/action_global_extraFrequencyTypesFragment"
@@ -95,6 +98,14 @@
         tools:layout="@layout/fragment_extra_frequency_type_add">
         <action
             android:id="@+id/action_extraFrequencyTypeAddFragment_to_extraFrequencyTypesFragment"
+            app:destination="@id/extraFrequencyTypesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/extraFrequencyTypeUpdateFragment2"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.ExtraFrequencyTypeUpdateFragment"
+        android:label="ExtraFrequencyTypeUpdateFragment">
+        <action
+            android:id="@+id/action_extraFrequencyTypeUpdateFragment2_to_extraFrequencyTypesFragment"
             app:destination="@id/extraFrequencyTypesFragment" />
     </fragment>
 </navigation>
