@@ -1,4 +1,4 @@
-//@file:Suppress("unused")
+@file:Suppress("unused")
 
 package ms.mattschlenkrich.paydaycalculator.common
 
@@ -124,9 +124,6 @@ const val INTERVAL_BI_WEEKLY = "Bi-Weekly"
 const val INTERVAL_MONTHLY = "Monthly"
 const val INTERVAL_SEMI_MONTHLY = "Semi-Monthly"
 const val INTERVAL_YEARLY = "Yearly"
-const val INTERVAL_ON_PAY_DAY = "On Payday"
-const val INTERVAL_SPECIAL = "Special"
-const val INTERVAL_ONE_TIME = "One Time"
 
 const val FREQ_MONTHLY = 0
 const val FREQ_WEEKLY = 1
@@ -135,9 +132,6 @@ const val FREQ_PAYDAY = 3
 const val FREQ_MANUALLY = 4
 const val FREQ_SPECIAL = 5
 
-const val BALANCE = "Balance"
-const val OWING = "Owing"
-const val BUDGETED = "Budgeted"
 
 const val WAIT_250 = 250L
 const val WAIT_500 = 500L
