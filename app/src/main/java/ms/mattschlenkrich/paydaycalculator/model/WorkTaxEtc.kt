@@ -2,9 +2,11 @@ package ms.mattschlenkrich.paydaycalculator.model
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_EMPLOYER_ID
@@ -41,6 +43,7 @@ data class WorkTaxRules(
     @PrimaryKey
     val workTaxRuleId: Long,
     @ColumnInfo(index = true)
+    val wtName: String,
     val wtTypeId: String,
     val wtPercent: Double,
     val wtHasExemption: Boolean,
@@ -75,5 +78,17 @@ data class EmployerTaxRules(
     val etrTaxTypeId: Long,
     val etrInclude: Boolean,
     val etrIsDeleted: Boolean,
-    val etrUpdateTime: String,
+    val etrUpdateTime: String
+) : Parcelable
+
+@Parcelize
+data class TaxRuleWithType(
+    @Embedded
+    val taxRule: WorkTaxRules,
+    @Relation(
+        entity = WorkTaxTypes::class,
+        parentColumn = WORK_TAX_RULE_TYPE_ID,
+        entityColumn = WORK_TAX_TYPE_ID
+    )
+    val taxType: WorkTaxTypes,
 ) : Parcelable

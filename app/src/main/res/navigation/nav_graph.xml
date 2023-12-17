@@ -116,6 +116,9 @@
         <action
             android:id="@+id/action_taxRulesFragment_to_taxRuleAddFragment"
             app:destination="@id/taxRuleAddFragment" />
+        <action
+            android:id="@+id/action_taxRulesFragment_to_taxRuleUpdateFragment"
+            app:destination="@id/taxRuleUpdateFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_taxRulesFragment"
@@ -126,6 +129,15 @@
         android:label="TaxRuleAddFragment">
         <action
             android:id="@+id/action_taxRuleAddFragment_to_taxRulesFragment"
+            app:destination="@id/taxRulesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/taxRuleUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.tax.TaxRuleUpdateFragment"
+        android:label="fragment_tax_rule_update"
+        tools:layout="@layout/fragment_tax_rule_update">
+        <action
+            android:id="@+id/action_taxRuleUpdateFragment_to_taxRulesFragment"
             app:destination="@id/taxRulesFragment" />
     </fragment>
 </navigation>

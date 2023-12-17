@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxRulesBinding
@@ -19,7 +20,7 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentTaxRulesBinding.inflate(
             inflater, container, false
         )
@@ -27,10 +28,26 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
         mainActivity = (activity as MainActivity)
         mainActivity.title = "View Tax Rules"
         return mView
-
-        return mView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setActions()
+        setTaxRuleList()
+    }
+
+    private fun setTaxRuleList() {
+        TODO("Not yet implemented")
+    }
+
+    private fun setActions() {
+        binding.fabNew.setOnClickListener {
+            mView.findNavController().navigate(
+                TaxRulesFragmentDirections
+                    .actionTaxRulesFragmentToTaxRuleAddFragment()
+            )
+        }
+    }
 
     override fun onDestroy() {
         super.onDestroy()
