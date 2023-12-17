@@ -108,4 +108,24 @@
             android:id="@+id/action_extraFrequencyTypeUpdateFragment2_to_extraFrequencyTypesFragment"
             app:destination="@id/extraFrequencyTypesFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/taxRulesFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.tax.TaxRulesFragment"
+        android:label="fragment_tax_rule_add"
+        tools:layout="@layout/fragment_tax_rule_add">
+        <action
+            android:id="@+id/action_taxRulesFragment_to_taxRuleAddFragment"
+            app:destination="@id/taxRuleAddFragment" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_taxRulesFragment"
+        app:destination="@id/taxRulesFragment" />
+    <fragment
+        android:id="@+id/taxRuleAddFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.tax.TaxRuleAddFragment"
+        android:label="TaxRuleAddFragment">
+        <action
+            android:id="@+id/action_taxRuleAddFragment_to_taxRulesFragment"
+            app:destination="@id/taxRulesFragment" />
+    </fragment>
 </navigation>

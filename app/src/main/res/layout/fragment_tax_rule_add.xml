@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.tax.TaxRuleAddFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/lblTaxRuleName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tax_rule_name"
+            android:textSize="@dimen/label_text_size"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/etTaxRuleName"
+            app:layout_constraintEnd_toStartOf="@id/etTaxRuleName"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/etTaxRuleName"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_tax_rule_name"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:minHeight="@dimen/minimum_touch_height"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblTaxRuleName"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/lblTaxType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tax_type"
+            android:textSize="@dimen/label_text_size"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/spTaxType"
+            app:layout_constraintEnd_toStartOf="@id/spTaxType"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Spinner
+            android:id="@+id/spTaxType"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/minimum_touch_height"
+            app:layout_constraintEnd_toEndOf="@+id/etTaxRuleName"
+            app:layout_constraintStart_toStartOf="@+id/etTaxRuleName"
+            app:layout_constraintTop_toBottomOf="@id/etTaxRuleName" />
+
+        <TextView
+            android:id="@+id/lblPercentage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/percentage"
+            android:textSize="@dimen/label_text_size"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/etPercentage"
+            app:layout_constraintEnd_toStartOf="@id/etPercentage"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/etPercentage"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_percentage"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:minHeight="@dimen/minimum_touch_height"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="@+id/spTaxType"
+            app:layout_constraintStart_toStartOf="@+id/spTaxType"
+            app:layout_constraintTop_toBottomOf="@+id/spTaxType" />
+
+        <CheckBox
+            android:id="@+id/chkExemption"
+            android:layout_width="@dimen/text_box_medium"
+            android:layout_height="wrap_content"
+            android:text="@string/has_exemption_amount"
+            android:textSize="@dimen/label_text_size"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/etExemption"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/etExemption" />
+
+        <EditText
+            android:id="@+id/etExemption"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_exemption_amount"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:minHeight="@dimen/minimum_touch_height"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="@+id/etPercentage"
+            app:layout_constraintStart_toStartOf="@+id/etPercentage"
+            app:layout_constraintTop_toBottomOf="@id/etPercentage" />
+
+        <CheckBox
+            android:id="@+id/chkUpperLimit"
+            android:layout_width="@dimen/text_box_medium"
+            android:layout_height="wrap_content"
+            android:text="@string/has_upper_limit"
+            android:textSize="@dimen/label_text_size"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/etUpperLimit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etExemption" />
+
+        <EditText
+            android:id="@+id/etUpperLimit"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_upper_limit"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:minHeight="@dimen/minimum_touch_height"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="@+id/etExemption"
+            app:layout_constraintStart_toStartOf="@+id/etExemption"
+            app:layout_constraintTop_toBottomOf="@+id/etExemption" />
+
+        <TextView
+            android:id="@+id/lblEffectiveDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/effective_date"
+            android:textSize="@dimen/label_text_size"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@+id/etEffectiveDate"
+            app:layout_constraintEnd_toStartOf="@+id/etEffectiveDate"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/etEffectiveDate"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_effective_date"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:minHeight="@dimen/minimum_touch_height"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="@+id/etUpperLimit"
+            app:layout_constraintStart_toStartOf="@+id/etUpperLimit"
+            app:layout_constraintTop_toBottomOf="@+id/etUpperLimit"
+            tools:ignore="TextFields" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

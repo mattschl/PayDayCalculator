@@ -37,4 +37,18 @@
     <string name="extra_frequency">Extra Frequency</string>
     <string name="enter_extra_frequency">Enter Extra Frequency</string>
     <string name="add_a_new_extra_frequency">Add a new Extra Frequency</string>
+    <string name="tax_rule_name">Tax Rule Name</string>
+    <string name="enter_tax_rule_name">Enter Tax Rule Name</string>
+    <string name="percentage">Percentage</string>
+    <string name="enter_percentage">Enter Percentage</string>
+    <string name="has_exemption_amount">Has Exemption Amount</string>
+    <string name="enter_exemption_amount">Enter Exemption Amount</string>
+    <string name="has_upper_limit">Has Upper Limit</string>
+    <string name="enter_upper_limit">Enter Upper Limit</string>
+    <string name="effective_date">Effective Date</string>
+    <string name="enter_effective_date">Enter Effective Date</string>
+    <string name="no_tax_rules_to_view">No Tax Rules to View</string>
+    <string name="add_tax_rule">Add Tax Rule</string>
+    <string name="review_tax_rules">Review Tax Rules</string>
+    <string name="tax_rules">Tax Rules</string>
 </resources>

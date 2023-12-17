@@ -4,4 +4,9 @@
         android:id="@+id/nav_employer_view"
         android:icon="@drawable/ic_employer_foreground"
         android:title="@string/employer" />
+    <item
+        android:id="@+id/nav_tax_rules"
+        android:icon="@drawable/ic_tax"
+        android:title="@string/tax_rules" />
+
 </menu>

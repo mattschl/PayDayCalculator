@@ -82,11 +82,22 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
 
+                R.id.nav_tax_rules -> {
+                    gotoTaxRules()
+                    true
+                }
+
                 else -> {
                     false
                 }
             }
         }
+    }
+
+    private fun gotoTaxRules() {
+        findNavController(R.id.nav_host_fragment_container).navigate(
+            NavGraphDirections.actionGlobalTaxRulesFragment()
+        )
     }
 
     private fun gotoWorkExtraFrequencies() {

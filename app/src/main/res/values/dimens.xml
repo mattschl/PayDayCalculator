@@ -10,4 +10,5 @@
     <dimen name="label_text_size">16sp</dimen>
     <dimen name="text_size_large">20sp</dimen>
     <dimen name="text_box_narrow">100dp</dimen>
+    <dimen name="text_box_medium">150dp</dimen>
 </resources>
