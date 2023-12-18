@@ -103,4 +103,9 @@ class DateFunctions {
         val mDate = LocalDate.parse(date).minusMonths(1)
         return getLastOfMonth(mDate.toString())
     }
+
+    fun getFirstDayOfYear(date: String): String {
+        val mDate = LocalDate.parse(date)
+        return mDate.year.toString() + "-01-01"
+    }
 }

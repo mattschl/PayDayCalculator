@@ -2,11 +2,9 @@ package ms.mattschlenkrich.paydaycalculator.model
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_EMPLOYER_ID
@@ -14,7 +12,8 @@ import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_TAX_TYPE_ID
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYER_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_TYPES
-import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_TYPE_ID
+import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_TYPE
+import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE_ID
 
 
@@ -34,8 +33,8 @@ data class WorkTaxTypes(
     tableName = TABLE_WORK_TAX_RULES,
     foreignKeys = [ForeignKey(
         entity = WorkTaxTypes::class,
-        parentColumns = [WORK_TAX_TYPE_ID],
-        childColumns = [WORK_TAX_RULE_TYPE_ID]
+        parentColumns = [WORK_TAX_TYPE],
+        childColumns = [WORK_TAX_RULE_TYPE]
     )]
 )
 @Parcelize
@@ -44,7 +43,7 @@ data class WorkTaxRules(
     val workTaxRuleId: Long,
     @ColumnInfo(index = true)
     val wtName: String,
-    val wtTypeId: String,
+    val wtType: String,
     val wtPercent: Double,
     val wtHasExemption: Boolean,
     val wtExemptionAmount: Double,
@@ -81,14 +80,3 @@ data class EmployerTaxRules(
     val etrUpdateTime: String
 ) : Parcelable
 
-@Parcelize
-data class TaxRuleWithType(
-    @Embedded
-    val taxRule: WorkTaxRules,
-    @Relation(
-        entity = WorkTaxTypes::class,
-        parentColumn = WORK_TAX_RULE_TYPE_ID,
-        entityColumn = WORK_TAX_TYPE_ID
-    )
-    val taxType: WorkTaxTypes,
-) : Parcelable

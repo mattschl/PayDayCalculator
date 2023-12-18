@@ -32,7 +32,7 @@ class TaxTypeFragment : Fragment(R.layout.fragment_tax_type) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        updateTaxTypeList()
+        fillTaxTypeList()
         setActions()
     }
 
@@ -47,7 +47,7 @@ class TaxTypeFragment : Fragment(R.layout.fragment_tax_type) {
         }
     }
 
-    private fun updateTaxTypeList() {
+    private fun fillTaxTypeList() {
         val taxTypeAdapter = TaxTypeAdapter(
             mainActivity, mView
         )

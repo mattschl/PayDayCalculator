@@ -27,8 +27,8 @@ import ms.mattschlenkrich.paydaycalculator.viewModel.WorkTaxViewModelFactory
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var mView: View
-    lateinit var employerViewModel: EmployerViewModel
     lateinit var mainViewModel: MainViewModel
+    lateinit var employerViewModel: EmployerViewModel
     lateinit var workTaxViewModel: WorkTaxViewModel
     lateinit var workExtraViewModel: WorkExtraViewModel
 

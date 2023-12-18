@@ -38,7 +38,7 @@ import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
 abstract class PayDatabase : RoomDatabase() {
 
     abstract fun getEmployerDao(): EmployerDao
-    abstract fun getTaxTypeDao(): WorkTaxDao
+    abstract fun getWorkTaxDao(): WorkTaxDao
     abstract fun getWorkExtraDao(): WorkExtraDao
 
     companion object {

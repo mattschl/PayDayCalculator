@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxRuleAddBinding
@@ -27,6 +28,7 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
     private val df = DateFunctions()
     private val cf = CommonFunctions()
     private val taxRuleList = ArrayList<WorkTaxRules>()
+    private lateinit var effectiveDate: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,10 +47,18 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
         super.onViewCreated(view, savedInstanceState)
         getTaxRuleList()
         fillMenu()
+        effectiveDate = df.getFirstDayOfYear(df.getCurrentDateAsString())
     }
 
     private fun getTaxRuleList() {
-        TODO("Not yet implemented")
+        mainActivity.workTaxViewModel.getTaxRules().observe(
+            viewLifecycleOwner
+        ) { taxRules ->
+            taxRuleList.clear()
+            taxRules.listIterator().forEach {
+                taxRuleList.add(it)
+            }
+        }
     }
 
     private fun fillMenu() {
@@ -74,7 +84,68 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
     }
 
     private fun saveTaxRule() {
-        TODO("Not yet implemented")
+        binding.apply {
+            val message = checkTaxRule()
+            if (message == ANSWER_OK) {
+                mainActivity.workTaxViewModel.insertTaxRule(
+                    WorkTaxRules(
+                        workTaxRuleId = cf.generateId(),
+                        wtName = etTaxRuleName.text.toString(),
+                        wtType = spTaxType.selectedItem.toString(),
+                        wtPercent = cf.getDoubleFromPercent(etPercentage.text.toString()),
+                        wtHasExemption = chkExemption.isChecked,
+                        wtExemptionAmount = if (chkExemption.isChecked)
+                            cf.getDoubleFromDollars(etExemption.text.toString()) else 0.0,
+                        wtHasBracket = chkUpperLimit.isChecked,
+                        wtBracketAmount = if (chkUpperLimit.isChecked)
+                            cf.getDoubleFromDollars(etUpperLimit.text.toString()) else 0.0,
+                        wtEffectiveDate = etEffectiveDate.text.toString(),
+                        wtIsDeleted = false,
+                        wtUpdateTime = df.getCurrentTimeAsString()
+                    )
+                )
+            }
+        }
+    }
+
+    private fun checkTaxRule(): String {
+        binding.apply {
+            var nameFound = false
+            if (taxRuleList.isNotEmpty()) {
+                for (taxRule in taxRuleList) {
+                    if (taxRule.wtName == etTaxRuleName.text.toString()) {
+                        nameFound = true
+                        break
+                    }
+                }
+            }
+            val errorMessage = if (etTaxRuleName.text.isNullOrBlank()) {
+                "    ERROR!!\n" +
+                        "The tax rule must have a unique name!"
+            } else if (nameFound) {
+                "    ERROR!!\n" +
+                        "This Tax Rule already exists!"
+            } else if (etEffectiveDate.text.isNullOrBlank()) {
+                "    ERROR!!\n" +
+                        "There has to be an effective date!"
+            } else if (etPercentage.text.isNullOrBlank()) {
+                "    ERROR!!\n" +
+                        "There should be a percentage here!"
+            } else if (etExemption.text.isNullOrBlank() &&
+                chkExemption.isChecked
+            ) {
+                "    ERROR!!\n" +
+                        "An exemption is indicated but no amount was entered!"
+            } else if (etUpperLimit.text.isNullOrBlank() &&
+                chkUpperLimit.isChecked
+            ) {
+                "    ERROR!!\n" +
+                        "An upper limit is indicated but no amount was entered!"
+            } else {
+                ANSWER_OK
+            }
+            return errorMessage
+        }
     }
 
     override fun onDestroy() {

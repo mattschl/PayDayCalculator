@@ -6,8 +6,10 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_TYPES
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
+import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
 
 @Dao
@@ -23,5 +25,17 @@ interface WorkTaxDao {
                 "ORDER BY $WORK_TAX_TYPE COLLATE NOCASE"
     )
     fun getTaxTypes(): LiveData<List<WorkTaxTypes>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertTaxRule(taxRule: WorkTaxRules)
+
+    @Update
+    suspend fun updateTaxRule(taxRule: WorkTaxRules)
+
+    @Query(
+        "SELECT * FROM $TABLE_WORK_TAX_RULES " +
+                "ORDER BY wtName COLLATE NOCASE"
+    )
+    fun getTaxRules(): LiveData<List<WorkTaxRules>>
 
 }

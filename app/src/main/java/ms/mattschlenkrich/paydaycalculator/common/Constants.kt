@@ -80,7 +80,7 @@ const val WORK_TAX_TYPE_UPDATE_TIME = "wttUpdateTime"
 
 const val TABLE_WORK_TAX_RULES = "workTaxRules"
 const val WORK_TAX_RULE_ID = "workTaxRuleId"
-const val WORK_TAX_RULE_TYPE_ID = "wtTypeId"
+const val WORK_TAX_RULE_TYPE = "wtType"
 const val WORK_TAX_RULE_PERCENT = "wtPercent"
 const val WORK_TAX_RULE_HAS_EXEMPTION = "wtHasExemption"
 const val WORK_TAX_RULE_EXEMPTION_AMOuNT = "wtExemptionAmount"
