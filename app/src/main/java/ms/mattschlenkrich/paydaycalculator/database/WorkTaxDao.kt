@@ -34,7 +34,7 @@ interface WorkTaxDao {
 
     @Query(
         "SELECT * FROM $TABLE_WORK_TAX_RULES " +
-                "ORDER BY wtName COLLATE NOCASE"
+                "ORDER BY wtType COLLATE NOCASE"
     )
     fun getTaxRules(): LiveData<List<WorkTaxRules>>
 

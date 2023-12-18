@@ -4,21 +4,21 @@ import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_EMPLOYER_ID
-import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_TAX_TYPE_ID
+import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_TAX_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYER_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_TYPES
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
-import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE_ID
-
 
 @Entity(
-    tableName = TABLE_WORK_TAX_TYPES
+    tableName = TABLE_WORK_TAX_TYPES,
+    indices = [Index(value = ["workTaxType"], unique = true)]
 )
 @Parcelize
 data class WorkTaxTypes(
@@ -31,6 +31,7 @@ data class WorkTaxTypes(
 
 @Entity(
     tableName = TABLE_WORK_TAX_RULES,
+    primaryKeys = ["wtType", "wtLevel", "wtEffectiveDate"],
     foreignKeys = [ForeignKey(
         entity = WorkTaxTypes::class,
         parentColumns = [WORK_TAX_TYPE],
@@ -39,17 +40,18 @@ data class WorkTaxTypes(
 )
 @Parcelize
 data class WorkTaxRules(
-    @PrimaryKey
     val workTaxRuleId: Long,
     @ColumnInfo(index = true)
-    val wtName: String,
     val wtType: String,
+    @ColumnInfo(index = true)
+    val wtLevel: Int,
+    @ColumnInfo(index = true)
+    val wtEffectiveDate: String,
     val wtPercent: Double,
     val wtHasExemption: Boolean,
     val wtExemptionAmount: Double,
     val wtHasBracket: Boolean,
     val wtBracketAmount: Double,
-    val wtEffectiveDate: String,
     val wtIsDeleted: Boolean,
     val wtUpdateTime: String,
 ) : Parcelable
@@ -58,7 +60,7 @@ data class WorkTaxRules(
     tableName = TABLE_EMPLOYER_TAX_RULES,
     primaryKeys = [
         EMPLOYER_TAX_RULES_EMPLOYER_ID,
-        EMPLOYER_TAX_RULES_TAX_TYPE_ID
+        EMPLOYER_TAX_RULES_TAX_TYPE
     ],
     foreignKeys = [ForeignKey(
         entity = Employers::class,
@@ -66,15 +68,15 @@ data class WorkTaxRules(
         childColumns = [EMPLOYER_TAX_RULES_EMPLOYER_ID]
     ), ForeignKey(
         entity = WorkTaxTypes::class,
-        parentColumns = [WORK_TAX_TYPE_ID],
-        childColumns = [EMPLOYER_TAX_RULES_TAX_TYPE_ID]
+        parentColumns = [WORK_TAX_TYPE],
+        childColumns = [EMPLOYER_TAX_RULES_TAX_TYPE]
     )]
 )
 @Parcelize
 data class EmployerTaxRules(
     val etrEmployerId: Long,
     @ColumnInfo(index = true)
-    val etrTaxTypeId: Long,
+    val etrTaxType: Long,
     val etrInclude: Boolean,
     val etrIsDeleted: Boolean,
     val etrUpdateTime: String

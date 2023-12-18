@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.databinding.ListTaxRuleItemBinding
-import ms.mattschlenkrich.paydaycalculator.model.TaxRuleWithType
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.ui.tax.TaxRulesFragmentDirections
 
@@ -23,18 +22,20 @@ class TaxRuleAdapter(
         RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCallBack =
-        object : DiffUtil.ItemCallback<TaxRuleWithType>() {
+        object : DiffUtil.ItemCallback<WorkTaxRules>() {
             override fun areContentsTheSame(
-                oldItem: TaxRuleWithType,
-                newItem: TaxRuleWithType
+                oldItem: WorkTaxRules,
+                newItem: WorkTaxRules
             ): Boolean {
-                return oldItem.taxRule.workTaxRuleId == newItem.taxRule.workTaxRuleId &&
-                        oldItem.taxRule.wtTypeId == newItem.taxRule.wtTypeId
+                return oldItem.workTaxRuleId == newItem.workTaxRuleId &&
+                        oldItem.wtType == newItem.wtType &&
+                        oldItem.wtLevel == newItem.wtLevel &&
+                        oldItem.wtEffectiveDate == newItem.wtEffectiveDate
             }
 
             override fun areItemsTheSame(
-                oldItem: TaxRuleWithType,
-                newItem: TaxRuleWithType
+                oldItem: WorkTaxRules,
+                newItem: WorkTaxRules
             ): Boolean {
                 return oldItem == newItem
             }
@@ -54,17 +55,16 @@ class TaxRuleAdapter(
 
     override fun onBindViewHolder(holder: TaxRuleViewHolder, position: Int) {
         val taxRule = differ.currentList[position]
-        var disp = taxRule.taxRule.wtName
-        if (taxRule.taxRule.wtIsDeleted) {
+        var disp = taxRule.wtType
+        if (taxRule.wtIsDeleted) {
             disp += "*Deleted*"
             holder.itemBinding.TaxName.setTextColor(Color.RED)
         } else {
             holder.itemBinding.TaxName.setTextColor(Color.BLACK)
         }
         holder.itemBinding.TaxName.text = disp
-        holder.itemBinding.taxType.text = taxRule.taxType.workTaxType
         holder.itemView.setOnLongClickListener {
-            chooseOptions(taxRule.taxRule)
+            chooseOptions(taxRule)
             false
         }
     }

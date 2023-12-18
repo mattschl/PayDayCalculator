@@ -87,45 +87,30 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
         binding.apply {
             val message = checkTaxRule()
             if (message == ANSWER_OK) {
-                mainActivity.workTaxViewModel.insertTaxRule(
-                    WorkTaxRules(
-                        workTaxRuleId = cf.generateId(),
-                        wtName = etTaxRuleName.text.toString(),
-                        wtType = spTaxType.selectedItem.toString(),
-                        wtPercent = cf.getDoubleFromPercent(etPercentage.text.toString()),
-                        wtHasExemption = chkExemption.isChecked,
-                        wtExemptionAmount = if (chkExemption.isChecked)
-                            cf.getDoubleFromDollars(etExemption.text.toString()) else 0.0,
-                        wtHasBracket = chkUpperLimit.isChecked,
-                        wtBracketAmount = if (chkUpperLimit.isChecked)
-                            cf.getDoubleFromDollars(etUpperLimit.text.toString()) else 0.0,
-                        wtEffectiveDate = etEffectiveDate.text.toString(),
-                        wtIsDeleted = false,
-                        wtUpdateTime = df.getCurrentTimeAsString()
-                    )
-                )
+//                mainActivity.workTaxViewModel.insertTaxRule(
+//                    WorkTaxRules(
+//                        workTaxRuleId = cf.generateId(),
+//                        wtName = etTaxRuleName.text.toString(),
+//                        wtType = spTaxType.selectedItem.toString(),
+//                        wtPercent = cf.getDoubleFromPercent(etPercentage.text.toString()),
+//                        wtHasExemption = chkExemption.isChecked,
+//                        wtExemptionAmount = if (chkExemption.isChecked)
+//                            cf.getDoubleFromDollars(etExemption.text.toString()) else 0.0,
+//                        wtHasBracket = chkUpperLimit.isChecked,
+//                        wtBracketAmount = if (chkUpperLimit.isChecked)
+//                            cf.getDoubleFromDollars(etUpperLimit.text.toString()) else 0.0,
+//                        wtEffectiveDate = etEffectiveDate.text.toString(),
+//                        wtIsDeleted = false,
+//                        wtUpdateTime = df.getCurrentTimeAsString()
+//                    )
+//                )
             }
         }
     }
 
     private fun checkTaxRule(): String {
         binding.apply {
-            var nameFound = false
-            if (taxRuleList.isNotEmpty()) {
-                for (taxRule in taxRuleList) {
-                    if (taxRule.wtName == etTaxRuleName.text.toString()) {
-                        nameFound = true
-                        break
-                    }
-                }
-            }
-            val errorMessage = if (etTaxRuleName.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "The tax rule must have a unique name!"
-            } else if (nameFound) {
-                "    ERROR!!\n" +
-                        "This Tax Rule already exists!"
-            } else if (etEffectiveDate.text.isNullOrBlank()) {
+            val errorMessage = if (etEffectiveDate.text.isNullOrBlank()) {
                 "    ERROR!!\n" +
                         "There has to be an effective date!"
             } else if (etPercentage.text.isNullOrBlank()) {
