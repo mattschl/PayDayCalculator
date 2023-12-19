@@ -15,7 +15,6 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
-import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
 
@@ -26,7 +25,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private val df = DateFunctions()
+//    private val df = DateFunctions()
 
     //    private val cf = CommonFunctions()
     private val taxTypeList = ArrayList<WorkTaxTypes>()
@@ -100,10 +99,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     private fun deleteTaxType() {
         mainActivity.workTaxViewModel.updateWorkTaxType(
             WorkTaxTypes(
-                curTaxType.workTaxTypeId,
-                curTaxType.workTaxType,
-                true,
-                df.getCurrentTimeAsString()
+                curTaxType.workTaxType
             )
         )
         gotoCallingFragment()
@@ -114,10 +110,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
         if (message == ANSWER_OK) {
             mainActivity.workTaxViewModel.updateWorkTaxType(
                 WorkTaxTypes(
-                    curTaxType.workTaxTypeId,
-                    binding.etTaxType.text.toString(),
-                    false,
-                    df.getCurrentTimeAsString()
+                    binding.etTaxType.text.toString()
                 )
             )
             gotoCallingFragment()

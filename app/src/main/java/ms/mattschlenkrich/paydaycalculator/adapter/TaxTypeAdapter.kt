@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paydaycalculator.adapter
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,8 +23,7 @@ class TaxTypeAdapter(
     private val differCallBack =
         object : DiffUtil.ItemCallback<WorkTaxTypes>() {
             override fun areContentsTheSame(oldItem: WorkTaxTypes, newItem: WorkTaxTypes): Boolean {
-                return oldItem.workTaxType == newItem.workTaxType &&
-                        oldItem.wttIsDeleted == newItem.wttIsDeleted
+                return oldItem.workTaxType == newItem.workTaxType
             }
 
             override fun areItemsTheSame(oldItem: WorkTaxTypes, newItem: WorkTaxTypes): Boolean {
@@ -48,14 +46,7 @@ class TaxTypeAdapter(
 
     override fun onBindViewHolder(holder: TaxTypeViewHolder, position: Int) {
         val taxType = differ.currentList[position]
-        var disp = taxType.workTaxType
-        if (taxType.wttIsDeleted) {
-            disp += "*Deleted*"
-            holder.itemBinding.tvDisplay.setTextColor(Color.RED)
-        } else {
-            holder.itemBinding.tvDisplay.setTextColor(Color.BLACK)
-        }
-        holder.itemBinding.tvDisplay.text = disp
+        holder.itemBinding.tvDisplay.text = taxType.workTaxType
         holder.itemView.setOnLongClickListener {
             mainActivity.mainViewModel.setTaxType(taxType)
             mView.findNavController().navigate(

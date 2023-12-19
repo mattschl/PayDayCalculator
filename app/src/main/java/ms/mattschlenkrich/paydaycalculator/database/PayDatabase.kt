@@ -8,6 +8,7 @@ import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_VERSION
 import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxRules
 import ms.mattschlenkrich.paydaycalculator.model.Employers
+import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkDatesExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraFrequencies
@@ -31,6 +32,7 @@ import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
         WorkExtraFrequencies::class,
         WorkTaxRules::class,
         WorkTaxTypes::class,
+        TaxEffectiveDates::class,
         EmployerTaxRules::class,
     ],
     version = PAY_DB_VERSION,

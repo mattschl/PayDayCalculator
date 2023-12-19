@@ -11,41 +11,55 @@ import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_TAX_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYER_TAX_RULES
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_TAX_EFFECTIVE_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_TYPES
+import ms.mattschlenkrich.paydaycalculator.common.TAX_EFFECTIVE_DATE
+import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_EFFECTIVE_DATE
+import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_LEVEL
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
 
 @Entity(
-    tableName = TABLE_WORK_TAX_TYPES,
-    indices = [Index(value = ["workTaxType"], unique = true)]
+    tableName = TABLE_WORK_TAX_TYPES
 )
 @Parcelize
 data class WorkTaxTypes(
     @PrimaryKey
-    val workTaxTypeId: Long,
     val workTaxType: String,
-    val wttIsDeleted: Boolean,
-    val wttUpdateTime: String,
+) : Parcelable
+
+
+@Entity(
+    tableName = TABLE_TAX_EFFECTIVE_DATES
+)
+@Parcelize
+data class TaxEffectiveDates(
+    @PrimaryKey
+    val tdEffectiveDate: String,
 ) : Parcelable
 
 @Entity(
     tableName = TABLE_WORK_TAX_RULES,
-    primaryKeys = ["wtType", "wtLevel", "wtEffectiveDate"],
+    primaryKeys = [WORK_TAX_RULE_TYPE, WORK_TAX_RULE_LEVEL, WORK_TAX_RULE_EFFECTIVE_DATE],
     foreignKeys = [ForeignKey(
         entity = WorkTaxTypes::class,
         parentColumns = [WORK_TAX_TYPE],
         childColumns = [WORK_TAX_RULE_TYPE]
+    ), ForeignKey(
+        entity = TaxEffectiveDates::class,
+        parentColumns = [TAX_EFFECTIVE_DATE],
+        childColumns = [WORK_TAX_RULE_EFFECTIVE_DATE]
+    )],
+    indices = [Index(
+        value = [WORK_TAX_RULE_EFFECTIVE_DATE]
     )]
 )
 @Parcelize
 data class WorkTaxRules(
     val workTaxRuleId: Long,
-    @ColumnInfo(index = true)
     val wtType: String,
-    @ColumnInfo(index = true)
     val wtLevel: Int,
-    @ColumnInfo(index = true)
     val wtEffectiveDate: String,
     val wtPercent: Double,
     val wtHasExemption: Boolean,
@@ -69,7 +83,7 @@ data class WorkTaxRules(
     ), ForeignKey(
         entity = WorkTaxTypes::class,
         parentColumns = [WORK_TAX_TYPE],
-        childColumns = [EMPLOYER_TAX_RULES_TAX_TYPE]
+        childColumns = [EMPLOYER_TAX_RULES_EMPLOYER_ID]
     )]
 )
 @Parcelize

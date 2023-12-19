@@ -16,8 +16,6 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
-import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
-import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
 
@@ -27,8 +25,9 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private val df = DateFunctions()
-    private val cf = CommonFunctions()
+
+    //    private val df = DateFunctions()
+//    private val cf = CommonFunctions()
     private val taxTypeList = ArrayList<WorkTaxTypes>()
 
     override fun onCreateView(
@@ -89,10 +88,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
             if (message == ANSWER_OK) {
                 mainActivity.workTaxViewModel.insertTaxType(
                     WorkTaxTypes(
-                        cf.generateId(),
-                        etTaxType.text.toString(),
-                        false,
-                        df.getCurrentTimeAsString()
+                        etTaxType.text.toString()
                     )
                 )
                 gotoCallingFragment()

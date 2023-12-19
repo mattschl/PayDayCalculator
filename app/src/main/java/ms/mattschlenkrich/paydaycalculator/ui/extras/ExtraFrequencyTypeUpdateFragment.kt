@@ -66,10 +66,7 @@ class ExtraFrequencyTypeUpdateFragment : Fragment(R.layout.fragment_extra_freque
             if (message == ANSWER_OK) {
                 mainActivity.workExtraViewModel.updateExtraFrequency(
                     WorkExtraFrequencies(
-                        curFrequencyType.workExtraFrequencyId,
-                        etFrequency.text.toString(),
-                        false,
-                        df.getCurrentTimeAsString()
+                        etFrequency.text.toString()
                     )
                 )
                 gotoCallingFragment()
@@ -88,7 +85,7 @@ class ExtraFrequencyTypeUpdateFragment : Fragment(R.layout.fragment_extra_freque
             var nameFound = false
             if (extraFrequencies.isNotEmpty()) {
                 for (frequency in extraFrequencies) {
-                    if (frequency.workExtraFrequencyName == etFrequency.text.toString()) {
+                    if (frequency.workExtraFrequency == etFrequency.text.toString()) {
                         nameFound = true
                         break
                     }
@@ -98,7 +95,7 @@ class ExtraFrequencyTypeUpdateFragment : Fragment(R.layout.fragment_extra_freque
                 "    ERROR!!\n" +
                         "The extra needs frequency name"
             } else if (nameFound
-                && etFrequency.text.toString() != curFrequencyType.workExtraFrequencyName
+                && etFrequency.text.toString() != curFrequencyType.workExtraFrequency
             ) {
                 "    ERROR!!\n" +
                         "This extra frequency already exists!"
@@ -113,7 +110,7 @@ class ExtraFrequencyTypeUpdateFragment : Fragment(R.layout.fragment_extra_freque
         binding.apply {
             if (mainActivity.mainViewModel.getExtraFrequencyType() != null) {
                 curFrequencyType = mainActivity.mainViewModel.getExtraFrequencyType()!!
-                etFrequency.setText(curFrequencyType.workExtraFrequencyName)
+                etFrequency.setText(curFrequencyType.workExtraFrequency)
             }
         }
     }
@@ -142,10 +139,7 @@ class ExtraFrequencyTypeUpdateFragment : Fragment(R.layout.fragment_extra_freque
     private fun deleteEmployer() {
         mainActivity.workExtraViewModel.updateExtraFrequency(
             WorkExtraFrequencies(
-                curFrequencyType.workExtraFrequencyId,
-                curFrequencyType.workExtraFrequencyName,
-                true,
-                df.getCurrentTimeAsString()
+                curFrequencyType.workExtraFrequency
             )
         )
         gotoCallingFragment()

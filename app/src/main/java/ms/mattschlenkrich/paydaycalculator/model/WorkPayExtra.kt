@@ -10,16 +10,16 @@ import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRA_FREQUENCIES
 import ms.mattschlenkrich.paydaycalculator.common.WORK_EXTRA_DEFINITIONS_EMPLOYER_ID
-import ms.mattschlenkrich.paydaycalculator.common.WORK_EXTRA_DEFINITIONS_FREQUENCY_ID
-import ms.mattschlenkrich.paydaycalculator.common.WORK_EXTRA_FREQUENCY_ID
+import ms.mattschlenkrich.paydaycalculator.common.WORK_EXTRA_DEFINITIONS_FREQUENCY
+import ms.mattschlenkrich.paydaycalculator.common.WORK_EXTRA_FREQUENCY
 
 
 @Entity(
     tableName = TABLE_WORK_EXTRAS_DEFINITIONS,
     foreignKeys = [ForeignKey(
         entity = WorkExtraFrequencies::class,
-        parentColumns = [WORK_EXTRA_FREQUENCY_ID],
-        childColumns = [WORK_EXTRA_DEFINITIONS_FREQUENCY_ID]
+        parentColumns = [WORK_EXTRA_FREQUENCY],
+        childColumns = [WORK_EXTRA_DEFINITIONS_FREQUENCY]
     ), ForeignKey(
         entity = Employers::class,
         parentColumns = [EMPLOYER_ID],
@@ -34,7 +34,7 @@ data class WorkExtrasDefinitions(
     val weEmployerId: Long,
     val weName: String,
     @ColumnInfo(index = true)
-    val weFrequencyId: Long,
+    val weFrequency: String,
     val weValue: Double,
     val weIsCredit: Boolean,
     val weIsDefault: Boolean,
@@ -49,9 +49,5 @@ data class WorkExtrasDefinitions(
 @Parcelize
 data class WorkExtraFrequencies(
     @PrimaryKey
-    val workExtraFrequencyId: Long,
-    @ColumnInfo(index = true)
-    val workExtraFrequencyName: String,
-    val wefIsDeleted: Boolean,
-    val wefUpdateTime: String,
+    val workExtraFrequency: String
 ) : Parcelable

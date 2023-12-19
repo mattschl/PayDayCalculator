@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+//@file:Suppress("unused")
 
 package ms.mattschlenkrich.paydaycalculator.common
 
@@ -25,7 +25,6 @@ const val EMPLOYER_TAX_RULES_INCLUDE = "etrInclude"
 const val EMPLOYER_TAX_RULES_IS_DELETED = "etrIsDeleted"
 const val EMPLOYER_TAX_RULES_UPDATE_TIME = "etrUpdateTime"
 
-
 const val TABLE_WORK_PAY_PERIODS = "workPayPeriods"
 const val PAY_PERIOD_CUTOFF_DATE = "ppCutoffDate"
 const val PAY_PERIOD_EMPLOYER_ID = "ppEmployerId"
@@ -48,17 +47,15 @@ const val WORK_EXTRA_DEFINITIONS_ID = "workExtraId"
 const val WORK_EXTRA_DEFINITIONS_EMPLOYER_ID = "weEmployerId"
 const val WORK_EXTRA_DEFINITIONS_NAME = "weName"
 const val WORK_EXTRA_DEFINITIONS_VALUE = "weValue"
-const val WORK_EXTRA_DEFINITIONS_FREQUENCY_ID = "weFrequencyId"
+const val WORK_EXTRA_DEFINITIONS_FREQUENCY = "weFrequency"
 const val WORK_EXTRA_DEFINITIONS_IS_CREDIT = "weIsCredit"
-
 const val WORK_EXTRA_IS_DEFAULT = "weIsDefault"
 const val WORK_EXTRA_EFFECTIVE_DATE = "weEffectiveDate"
 const val WORK_EXTRA_IS_DELETED = "wedIsDeleted"
 const val WORK_EXTRA_UPDATE_TIME = "weUpdateTime"
 
 const val TABLE_WORK_EXTRA_FREQUENCIES = "workExtraFrequencies"
-const val WORK_EXTRA_FREQUENCY_ID = "workExtraFrequencyId"
-const val WORK_EXTRA_FREQUENCY_NAME = "workExtraFrequencyName"
+const val WORK_EXTRA_FREQUENCY = "workExtraFrequency"
 
 const val TABLE_WORK_DATES_EXTRAS = "workDatesExtras"
 const val WORK_DATES_EXTRAS_EMPLOYER_ID = "wdeEmployerId"
@@ -73,7 +70,6 @@ const val WORK_EXTRA_FREQUENCY_DAILY = "daily"
 const val WORK_EXTRA_FREQUENCY_PER_PAY = "per pay"
 
 const val TABLE_WORK_TAX_TYPES = "workTaxTypes"
-const val WORK_TAX_TYPE_ID = "workTaxTypeId"
 const val WORK_TAX_TYPE = "workTaxType"
 const val WORK_TAX_TYPE_IS_DELETED = "wttIsDeleted"
 const val WORK_TAX_TYPE_UPDATE_TIME = "wttUpdateTime"
@@ -81,12 +77,13 @@ const val WORK_TAX_TYPE_UPDATE_TIME = "wttUpdateTime"
 const val TABLE_WORK_TAX_RULES = "workTaxRules"
 const val WORK_TAX_RULE_ID = "workTaxRuleId"
 const val WORK_TAX_RULE_TYPE = "wtType"
+const val WORK_TAX_RULE_EFFECTIVE_DATE = "wtEffectiveDate"
+const val WORK_TAX_RULE_LEVEL = "wtLevel"
 const val WORK_TAX_RULE_PERCENT = "wtPercent"
 const val WORK_TAX_RULE_HAS_EXEMPTION = "wtHasExemption"
 const val WORK_TAX_RULE_EXEMPTION_AMOuNT = "wtExemptionAmount"
 const val WORK_TAX_RULE_HAS_BRACKET = "wtHasBracket"
 const val WORK_TAX_RULE_BRACKET_AMOuNT = "wtBracketAmount"
-const val WORK_TAX_RULE_EFFECTIVE_DATE = "wtEffectiveDate"
 const val WORK_TAX_RULE_IS_DELETED = "wtIsDeleted"
 const val WORK_TAX_RULE_UPDATE_TIME = "wtUpdateTime"
 
@@ -105,6 +102,9 @@ const val PAY_PERIOD_TAX_EMPLOYER_ID = "wppEmployerId"
 const val PAY_PERIOD_TAX_TYPE_ID = "wppTaxTypeId"
 const val PAY_PERIOD_TAX_IS_DELETED = "wppIsDeleted"
 const val PAY_PERIOD_TAX_UPDATE_TIME = "wppUpdateTime"
+
+const val TABLE_TAX_EFFECTIVE_DATES = "taxEffectiveDates"
+const val TAX_EFFECTIVE_DATE = "tdEffectiveDate"
 
 const val ANSWER_OK = "Ok"
 

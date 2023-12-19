@@ -78,10 +78,7 @@ class ExtraFrequencyTypeAddFragment : Fragment(R.layout.fragment_extra_frequency
             if (message == ANSWER_OK) {
                 mainActivity.workExtraViewModel.insertExtraFrequency(
                     WorkExtraFrequencies(
-                        cf.generateId(),
-                        etFrequency.text.toString(),
-                        false,
-                        df.getCurrentTimeAsString()
+                        etFrequency.text.toString()
                     )
                 )
                 gotoCallingFragment()
@@ -107,7 +104,7 @@ class ExtraFrequencyTypeAddFragment : Fragment(R.layout.fragment_extra_frequency
             var nameFound = false
             if (extraFrequencies.isNotEmpty()) {
                 for (frequency in extraFrequencies) {
-                    if (frequency.workExtraFrequencyName == etFrequency.text.toString()) {
+                    if (frequency.workExtraFrequency == etFrequency.text.toString()) {
                         nameFound = true
                         break
                     }

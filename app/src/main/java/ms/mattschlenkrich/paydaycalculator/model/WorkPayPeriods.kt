@@ -12,7 +12,6 @@ import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_CUTOFF_DATE
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_TAX_CUTOFF_DATE
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_TAX_EMPLOYER_ID
-import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_TAX_TYPE_ID
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES_EXTRAS
@@ -29,7 +28,6 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_EXTRA_DEFINITIONS_ID
 import ms.mattschlenkrich.paydaycalculator.common.WORK_PAY_PERIOD_EXTRA_CUTOFF_DATE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_PAY_PERIOD_EXTRA_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.WORK_PAY_PERIOD_EXTRA_ID
-import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE_ID
 
 
 @Entity(
@@ -153,15 +151,15 @@ data class WorkPayPeriodExtras(
     tableName = TABLE_WORK_PAY_PERIOD_TAX,
     primaryKeys = [PAY_PERIOD_TAX_CUTOFF_DATE,
         PAY_PERIOD_TAX_EMPLOYER_ID,
-        PAY_PERIOD_TAX_TYPE_ID],
+        "wppTaxType"],
     foreignKeys = [ForeignKey(
         entity = WorkPayPeriods::class,
         parentColumns = [PAY_PERIOD_CUTOFF_DATE, PAY_PERIOD_EMPLOYER_ID],
         childColumns = [PAY_PERIOD_TAX_CUTOFF_DATE, PAY_PERIOD_TAX_EMPLOYER_ID]
     ), ForeignKey(
         entity = WorkTaxTypes::class,
-        parentColumns = [WORK_TAX_TYPE_ID],
-        childColumns = [PAY_PERIOD_TAX_TYPE_ID]
+        parentColumns = ["workTaxType"],
+        childColumns = ["wppTaxType"]
     )]
 )
 @Parcelize
@@ -169,7 +167,7 @@ data class WorkPayPeriodTax(
     val wppCutoffDate: String,
     val wppEmployerId: Long,
     @ColumnInfo(index = true)
-    val wppTaxTypeId: Long,
+    val wppTaxType: String,
     val wppIsDeleted: Boolean,
     val wppUpdateTime: String,
 ) : Parcelable

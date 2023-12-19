@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paydaycalculator.adapter
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,8 +26,7 @@ class WorkExtraFrequencyAdapter(
                 oldItem: WorkExtraFrequencies,
                 newItem: WorkExtraFrequencies
             ): Boolean {
-                return oldItem.workExtraFrequencyId == newItem.workExtraFrequencyId &&
-                        oldItem.workExtraFrequencyName == newItem.workExtraFrequencyName
+                return oldItem.workExtraFrequency == newItem.workExtraFrequency
             }
 
             override fun areItemsTheSame(
@@ -54,14 +52,7 @@ class WorkExtraFrequencyAdapter(
 
     override fun onBindViewHolder(holder: ExtraFrequencyViewHolder, position: Int) {
         val extraFrequency = differ.currentList[position]
-        var disp = extraFrequency.workExtraFrequencyName
-        if (extraFrequency.wefIsDeleted) {
-            disp += "*Deleted"
-            holder.itemBinding.tvDisplay.setTextColor(Color.RED)
-        } else {
-            holder.itemBinding.tvDisplay.setTextColor(Color.BLACK)
-        }
-        holder.itemBinding.tvDisplay.text = disp
+        holder.itemBinding.tvDisplay.text = extraFrequency.workExtraFrequency
         holder.itemView.setOnClickListener {
             mainActivity.mainViewModel.setExtraFrequencyType(extraFrequency)
             mView.findNavController().navigate(
