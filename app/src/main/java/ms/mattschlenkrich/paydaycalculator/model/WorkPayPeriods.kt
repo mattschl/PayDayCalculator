@@ -12,6 +12,7 @@ import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_CUTOFF_DATE
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_TAX_CUTOFF_DATE
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_TAX_EMPLOYER_ID
+import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_TAX_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES_EXTRAS
@@ -28,6 +29,7 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_EXTRA_DEFINITIONS_ID
 import ms.mattschlenkrich.paydaycalculator.common.WORK_PAY_PERIOD_EXTRA_CUTOFF_DATE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_PAY_PERIOD_EXTRA_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.WORK_PAY_PERIOD_EXTRA_ID
+import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
 
 
 @Entity(
@@ -151,15 +153,15 @@ data class WorkPayPeriodExtras(
     tableName = TABLE_WORK_PAY_PERIOD_TAX,
     primaryKeys = [PAY_PERIOD_TAX_CUTOFF_DATE,
         PAY_PERIOD_TAX_EMPLOYER_ID,
-        "wppTaxType"],
+        PAY_PERIOD_TAX_TYPE],
     foreignKeys = [ForeignKey(
         entity = WorkPayPeriods::class,
         parentColumns = [PAY_PERIOD_CUTOFF_DATE, PAY_PERIOD_EMPLOYER_ID],
         childColumns = [PAY_PERIOD_TAX_CUTOFF_DATE, PAY_PERIOD_TAX_EMPLOYER_ID]
     ), ForeignKey(
         entity = WorkTaxTypes::class,
-        parentColumns = ["workTaxType"],
-        childColumns = ["wppTaxType"]
+        parentColumns = [WORK_TAX_TYPE],
+        childColumns = [PAY_PERIOD_TAX_TYPE]
     )]
 )
 @Parcelize

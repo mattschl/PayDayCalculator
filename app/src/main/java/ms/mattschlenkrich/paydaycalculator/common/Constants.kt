@@ -1,4 +1,4 @@
-//@file:Suppress("unused")
+@file:Suppress("unused")
 
 package ms.mattschlenkrich.paydaycalculator.common
 
@@ -8,7 +8,8 @@ const val PAY_DB_VERSION = 1
 const val SQLITE_DATE = "yyyy-LL-dd"
 const val SQLITE_TIME = "yyyy-LL-dd HH:mm:ss"
 const val DATE_CHECK = "yyyy-MM-dd"
-const val DATE_CHECK_WITH_YEAR = "?"
+
+//const val DATE_CHECK_WITH_YEAR = "?"
 const val DISPLAY_DATE = "EEE dd LLL"
 const val DISPLAY_DATE_WITH_YEAR = "EEE dd LLL /yy"
 
@@ -74,6 +75,10 @@ const val WORK_TAX_TYPE = "workTaxType"
 const val WORK_TAX_TYPE_IS_DELETED = "wttIsDeleted"
 const val WORK_TAX_TYPE_UPDATE_TIME = "wttUpdateTime"
 
+const val TABLE_TAX_TYPES_EFFECTIVE_DATES = "taxTypeEffectiveDates"
+const val TAX_TYPE_EFFECTIVE_DATE = "tteType"
+const val TAX_TYPE_EFFECTIVE_TYPE = "tteType"
+
 const val TABLE_WORK_TAX_RULES = "workTaxRules"
 const val WORK_TAX_RULE_ID = "workTaxRuleId"
 const val WORK_TAX_RULE_TYPE = "wtType"
@@ -99,7 +104,7 @@ const val WORK_PAY_PERIOD_EXTRA_UPDATE_TIME = "ppeUpdateTime"
 const val TABLE_WORK_PAY_PERIOD_TAX = "workPayPeriodTax"
 const val PAY_PERIOD_TAX_CUTOFF_DATE = "wppCutoffDate"
 const val PAY_PERIOD_TAX_EMPLOYER_ID = "wppEmployerId"
-const val PAY_PERIOD_TAX_TYPE_ID = "wppTaxTypeId"
+const val PAY_PERIOD_TAX_TYPE = "wppTaxType"
 const val PAY_PERIOD_TAX_IS_DELETED = "wppIsDeleted"
 const val PAY_PERIOD_TAX_UPDATE_TIME = "wppUpdateTime"
 
@@ -115,23 +120,11 @@ const val DAY_THURSDAY = "Thursday"
 const val DAY_FRIDAY = "Friday"
 const val DAY_SATURDAY = "Saturday"
 const val DAY_SUNDAY = "Sunday"
-const val DAY_WEEK_DAY = "Week Day"
-const val DAY_ANY_DAY = "Any Day"
-const val DAY_PAY_DAY = "Pay Day"
 
 const val INTERVAL_WEEKLY = "Weekly"
 const val INTERVAL_BI_WEEKLY = "Bi-Weekly"
 const val INTERVAL_MONTHLY = "Monthly"
 const val INTERVAL_SEMI_MONTHLY = "Semi-Monthly"
-const val INTERVAL_YEARLY = "Yearly"
-
-const val FREQ_MONTHLY = 0
-const val FREQ_WEEKLY = 1
-const val FREQ_YEARLY = 2
-const val FREQ_PAYDAY = 3
-const val FREQ_MANUALLY = 4
-const val FREQ_SPECIAL = 5
-
 
 const val WAIT_250 = 250L
 const val WAIT_500 = 500L

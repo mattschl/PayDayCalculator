@@ -15,7 +15,6 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
-import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentExtraFrequencyTypeUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraFrequencies
 
@@ -24,7 +23,7 @@ class ExtraFrequencyTypeUpdateFragment : Fragment(R.layout.fragment_extra_freque
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private val df = DateFunctions()
+//    private val df = DateFunctions()
 
     //    private val cf = CommonFunctions()
     private val extraFrequencies = ArrayList<WorkExtraFrequencies>()
