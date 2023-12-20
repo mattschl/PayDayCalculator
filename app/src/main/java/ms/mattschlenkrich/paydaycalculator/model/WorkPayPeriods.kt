@@ -45,7 +45,7 @@ data class Employers(
     val dayOfWeek: String,
     val cutoffDaysBefore: Int,
     val midMonthlyDate: Int,
-    val mainMonthlyDay: Int,
+    val mainMonthlyDate: Int,
     val employerIsDeleted: Boolean,
     val employerUpdateTime: String,
 ) : Parcelable
@@ -64,7 +64,6 @@ data class WorkPayPeriods(
     val ppCutoffDate: String,
     @ColumnInfo(index = true)
     val ppEmployerId: Long,
-    @ColumnInfo(defaultValue = "0")
     val ppIsDeleted: Boolean,
     val ppUpdateTime: String,
 ) : Parcelable
@@ -91,7 +90,6 @@ data class WorkDates(
     val wdOtHours: Double,
     val wdDblOtHours: Double,
     val wdStatHours: Double,
-    @ColumnInfo(defaultValue = "0")
     val wdIsDeleted: Boolean,
     val wdUpdateTime: String,
 ) : Parcelable

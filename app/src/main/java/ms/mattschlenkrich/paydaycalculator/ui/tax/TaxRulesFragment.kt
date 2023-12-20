@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -36,7 +37,32 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setActions()
+        fillTaxTypes()
+        fillEffectiveDates()
         fillTaxRuleList()
+    }
+
+    private fun fillEffectiveDates() {
+        val dateAdapter = ArrayAdapter<Any>(
+            mView.context,
+            R.layout.spinner_item_bold
+        )
+    }
+
+    private fun fillTaxTypes() {
+        val taxTypeAdapter = ArrayAdapter<Any>(
+            mView.context,
+            R.layout.spinner_item_bold
+        )
+        mainActivity.workTaxViewModel.getTaxTypes().observe(
+            viewLifecycleOwner
+        ) { types ->
+            taxTypeAdapter.clear()
+            types.listIterator().forEach {
+                taxTypeAdapter.add(it.workTaxType)
+            }
+        }
+        binding.spTaxType.adapter = taxTypeAdapter
     }
 
     private fun fillTaxRuleList() {

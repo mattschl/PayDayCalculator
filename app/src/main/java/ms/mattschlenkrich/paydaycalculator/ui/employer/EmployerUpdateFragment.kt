@@ -91,7 +91,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
                 }
                 etDaysBefore.setText(newEmployer!!.cutoffDaysBefore.toString())
                 etMidMonthDate.setText(newEmployer!!.midMonthlyDate.toString())
-                etMainMonthDate.setText(newEmployer!!.mainMonthlyDay.toString())
+                etMainMonthDate.setText(newEmployer!!.mainMonthlyDate.toString())
             }
         }
     }

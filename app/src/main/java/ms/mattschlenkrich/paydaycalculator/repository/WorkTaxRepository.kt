@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.paydaycalculator.repository
 
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
+import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
 
@@ -22,4 +23,10 @@ class WorkTaxRepository(private val db: PayDatabase) {
 
     fun getTaxRules() =
         db.getWorkTaxDao().getTaxRules()
+
+    suspend fun insertEffectiveDate(effectiveDate: TaxEffectiveDates) =
+        db.getWorkTaxDao().insertEffectiveDate(effectiveDate)
+
+    fun getTaxEffectiveDates() =
+        db.getWorkTaxDao().getTaxEffectiveDates()
 }

@@ -8,6 +8,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <Spinner
+            android:id="@+id/spTaxType"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:minWidth="@dimen/text_box_medium"
+            app:layout_constraintEnd_toStartOf="@id/spEffectiveDate"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Spinner
+            android:id="@+id/spEffectiveDate"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:minWidth="@dimen/text_box_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/spTaxType"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvTaxRules"
             android:layout_width="match_parent"
@@ -19,7 +37,7 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/spTaxType" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/crdNoInfo"
