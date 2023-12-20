@@ -5,18 +5,22 @@ import androidx.lifecycle.AndroidViewModel
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraFrequencies
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
-import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
 
 class MainViewModel(
     app: Application,
 ) : AndroidViewModel(app) {
     private var employer: Employers? = null
-    private var taxType: WorkTaxTypes? = null
+    private var taxType: String? = null
     private var extraFrequencyType: WorkExtraFrequencies? = null
     private var taxRule: WorkTaxRules? = null
     private var effectiveDate: String? = null
+    private var taxLevel: Int? = null
 
-    fun setEffectiveDate(newDate: String) {
+    fun setTaxLevel(newLevel: Int?) {
+        taxLevel = newLevel
+    }
+
+    fun setEffectiveDate(newDate: String?) {
         effectiveDate = newDate
     }
 
@@ -24,7 +28,7 @@ class MainViewModel(
         employer = newEmployer
     }
 
-    fun setTaxType(newTaxType: WorkTaxTypes?) {
+    fun setTaxType(newTaxType: String?) {
         taxType = newTaxType
     }
 
@@ -36,6 +40,10 @@ class MainViewModel(
         taxRule = newTaxRule
     }
 
+    fun getTaxLevel(): Int? {
+        return taxLevel
+    }
+
     fun getEffectiveDate(): String? {
         return effectiveDate
     }
@@ -44,7 +52,7 @@ class MainViewModel(
         return employer
     }
 
-    fun getTaxType(): WorkTaxTypes? {
+    fun getTaxType(): String? {
         return taxType
     }
 

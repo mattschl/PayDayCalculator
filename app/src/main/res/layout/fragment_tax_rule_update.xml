@@ -12,21 +12,19 @@
             android:id="@+id/lblTaxRuleType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/tax_rule_name"
+            android:text="@string/tax_type"
             android:textSize="@dimen/label_text_size"
             android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@id/tvTaxRuleType"
             app:layout_constraintEnd_toStartOf="@id/tvTaxRuleType"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <EditText
+        <TextView
             android:id="@+id/tvTaxRuleType"
             android:layout_width="@dimen/text_box_wide"
             android:layout_height="wrap_content"
-            android:hint="@string/enter_tax_rule_name"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            android:minHeight="@dimen/minimum_touch_height"
+            android:text="@string/tax_type"
+            android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_large"
             app:layout_constraintEnd_toEndOf="parent"
@@ -37,21 +35,47 @@
             android:id="@+id/lblTaxRuleLevel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/tax_type"
+            android:text="@string/level_bracket"
             android:textSize="@dimen/label_text_size"
             android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@id/tvTaxRuleLevel"
             app:layout_constraintEnd_toStartOf="@id/tvTaxRuleLevel"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <Spinner
+        <TextView
             android:id="@+id/tvTaxRuleLevel"
             android:layout_width="@dimen/text_box_wide"
             android:layout_height="wrap_content"
-            android:minHeight="@dimen/minimum_touch_height"
+            android:text="@string/level"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
             app:layout_constraintEnd_toEndOf="@+id/tvTaxRuleType"
             app:layout_constraintStart_toStartOf="@+id/tvTaxRuleType"
             app:layout_constraintTop_toBottomOf="@id/tvTaxRuleType" />
+
+        <TextView
+            android:id="@+id/lblEffectiveDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/effective_date"
+            android:textSize="@dimen/label_text_size"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tvEffectiveDate"
+            app:layout_constraintEnd_toStartOf="@+id/tvEffectiveDate"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tvEffectiveDate"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="wrap_content"
+            android:text="@string/effective_date"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="@+id/tvTaxRuleLevel"
+            app:layout_constraintStart_toStartOf="@+id/tvTaxRuleLevel"
+            app:layout_constraintTop_toBottomOf="@+id/tvTaxRuleLevel" />
 
         <TextView
             android:id="@+id/lblPercentage"
@@ -72,18 +96,20 @@
             android:importantForAutofill="no"
             android:inputType="numberDecimal"
             android:minHeight="@dimen/minimum_touch_height"
+            android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_large"
             app:layout_constraintEnd_toEndOf="@+id/tvTaxRuleLevel"
             app:layout_constraintStart_toStartOf="@+id/tvTaxRuleLevel"
-            app:layout_constraintTop_toBottomOf="@+id/tvTaxRuleLevel" />
+            app:layout_constraintTop_toBottomOf="@+id/tvEffectiveDate" />
 
         <CheckBox
             android:id="@+id/chkExemption"
-            android:layout_width="@dimen/text_box_medium"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:minHeight="@dimen/minimum_touch_height"
+            android:maxWidth="@dimen/text_box_medium"
             android:text="@string/has_exemption_amount"
+            android:textAlignment="center"
             android:textSize="@dimen/label_text_size"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/etExemption"
@@ -98,6 +124,7 @@
             android:importantForAutofill="no"
             android:inputType="numberDecimal"
             android:minHeight="@dimen/minimum_touch_height"
+            android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_large"
             app:layout_constraintEnd_toEndOf="@+id/etPercentage"
@@ -106,10 +133,11 @@
 
         <CheckBox
             android:id="@+id/chkUpperLimit"
-            android:layout_width="@dimen/text_box_medium"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:minHeight="@dimen/minimum_touch_height"
+            android:maxWidth="@dimen/text_box_medium"
             android:text="@string/has_upper_limit"
+            android:textAlignment="center"
             android:textSize="@dimen/label_text_size"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/etUpperLimit"
@@ -124,37 +152,24 @@
             android:importantForAutofill="no"
             android:inputType="numberDecimal"
             android:minHeight="@dimen/minimum_touch_height"
+            android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_large"
             app:layout_constraintEnd_toEndOf="@+id/etExemption"
             app:layout_constraintStart_toStartOf="@+id/etExemption"
             app:layout_constraintTop_toBottomOf="@+id/etExemption" />
 
-        <TextView
-            android:id="@+id/lblEffectiveDate"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabDone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/effective_date"
-            android:textSize="@dimen/label_text_size"
-            android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@+id/etEffectiveDate"
-            app:layout_constraintEnd_toStartOf="@+id/etEffectiveDate"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <EditText
-            android:id="@+id/etEffectiveDate"
-            android:layout_width="@dimen/text_box_wide"
-            android:layout_height="wrap_content"
-            android:hint="@string/enter_effective_date"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            android:minHeight="@dimen/minimum_touch_height"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_size_large"
-            app:layout_constraintEnd_toEndOf="@+id/etUpperLimit"
-            app:layout_constraintStart_toStartOf="@+id/etUpperLimit"
-            app:layout_constraintTop_toBottomOf="@+id/etUpperLimit"
-            tools:ignore="TextFields" />
+            android:layout_marginEnd="@dimen/dimen_25dp"
+            android:layout_marginBottom="@dimen/dimen_25dp"
+            android:backgroundTint="@color/dark_green"
+            android:contentDescription="@string/add_new"
+            android:src="@drawable/ic_done"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -11,6 +11,7 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
@@ -27,8 +28,6 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
     private val cf = CommonFunctions()
-    private val taxRuleList = ArrayList<WorkTaxRules>()
-    private lateinit var effectiveDate: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,19 +44,15 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getTaxRuleList()
         fillMenu()
-        effectiveDate = df.getFirstDayOfYear(df.getCurrentDateAsString())
+        fillValues()
     }
 
-    private fun getTaxRuleList() {
-        mainActivity.workTaxViewModel.getTaxRules().observe(
-            viewLifecycleOwner
-        ) { taxRules ->
-            taxRuleList.clear()
-            taxRules.listIterator().forEach {
-                taxRuleList.add(it)
-            }
+    private fun fillValues() {
+        binding.apply {
+            tvTaxRuleType.text = mainActivity.mainViewModel.getTaxType()
+            tvEffectiveDate.text = mainActivity.mainViewModel.getEffectiveDate()
+            tvTaxRuleLevel.text = mainActivity.mainViewModel.getTaxLevel().toString()
         }
     }
 
@@ -87,33 +82,38 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
         binding.apply {
             val message = checkTaxRule()
             if (message == ANSWER_OK) {
-//                mainActivity.workTaxViewModel.insertTaxRule(
-//                    WorkTaxRules(
-//                        workTaxRuleId = cf.generateId(),
-//                        wtName = etTaxRuleName.text.toString(),
-//                        wtType = spTaxType.selectedItem.toString(),
-//                        wtPercent = cf.getDoubleFromPercent(etPercentage.text.toString()),
-//                        wtHasExemption = chkExemption.isChecked,
-//                        wtExemptionAmount = if (chkExemption.isChecked)
-//                            cf.getDoubleFromDollars(etExemption.text.toString()) else 0.0,
-//                        wtHasBracket = chkUpperLimit.isChecked,
-//                        wtBracketAmount = if (chkUpperLimit.isChecked)
-//                            cf.getDoubleFromDollars(etUpperLimit.text.toString()) else 0.0,
-//                        wtEffectiveDate = etEffectiveDate.text.toString(),
-//                        wtIsDeleted = false,
-//                        wtUpdateTime = df.getCurrentTimeAsString()
-//                    )
-//                )
+                mainActivity.workTaxViewModel.insertTaxRule(
+                    WorkTaxRules(
+                        cf.generateId(),
+                        tvTaxRuleType.text.toString(),
+                        tvTaxRuleLevel.text.toString().toInt(),
+                        wtEffectiveDate = tvEffectiveDate.text.toString(),
+                        cf.getDoubleFromPercent(etPercentage.text.toString()),
+                        chkExemption.isChecked,
+                        if (chkExemption.isChecked)
+                            cf.getDoubleFromDollars(etExemption.text.toString()) else 0.0,
+                        chkUpperLimit.isChecked,
+                        if (chkUpperLimit.isChecked)
+                            cf.getDoubleFromDollars(etUpperLimit.text.toString()) else 0.0,
+                        false,
+                        df.getCurrentTimeAsString()
+                    )
+                )
+                gotoCallingFragment()
             }
         }
     }
 
+    private fun gotoCallingFragment() {
+        mView.findNavController().navigate(
+            TaxRuleAddFragmentDirections
+                .actionTaxRuleAddFragmentToTaxRulesFragment()
+        )
+    }
+
     private fun checkTaxRule(): String {
         binding.apply {
-            val errorMessage = if (etEffectiveDate.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "There has to be an effective date!"
-            } else if (etPercentage.text.isNullOrBlank()) {
+            val errorMessage = if (etPercentage.text.isNullOrBlank()) {
                 "    ERROR!!\n" +
                         "There should be a percentage here!"
             } else if (etExemption.text.isNullOrBlank() &&

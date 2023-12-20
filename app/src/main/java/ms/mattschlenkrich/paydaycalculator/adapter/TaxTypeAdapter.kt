@@ -48,7 +48,7 @@ class TaxTypeAdapter(
         val taxType = differ.currentList[position]
         holder.itemBinding.tvDisplay.text = taxType.workTaxType
         holder.itemView.setOnLongClickListener {
-            mainActivity.mainViewModel.setTaxType(taxType)
+            mainActivity.mainViewModel.setTaxType(taxType.workTaxType)
             mView.findNavController().navigate(
                 TaxTypeFragmentDirections
                     .actionTaxTypeFragmentToTaxTypeUpdateFragment()

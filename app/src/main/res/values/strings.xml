@@ -55,4 +55,5 @@
     <string name="add_new_effective_date">* Add New Effective Date *</string>
     <string name="level">Level</string>
     <string name="level_bracket">Level/Bracket</string>
+    <string name="choose_a_universal_effective_date">Choose a Universal Effective Date</string>
 </resources>

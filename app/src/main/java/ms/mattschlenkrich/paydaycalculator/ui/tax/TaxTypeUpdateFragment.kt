@@ -29,7 +29,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
 
     //    private val cf = CommonFunctions()
     private val taxTypeList = ArrayList<WorkTaxTypes>()
-    private lateinit var curTaxType: WorkTaxTypes
+    private lateinit var curTaxType: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,7 +54,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
         if (mainActivity.mainViewModel.getTaxType() != null) {
             curTaxType = mainActivity.mainViewModel.getTaxType()!!
             binding.apply {
-                etTaxType.setText(curTaxType.workTaxType)
+                etTaxType.setText(curTaxType)
             }
         }
     }
@@ -99,7 +99,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     private fun deleteTaxType() {
         mainActivity.workTaxViewModel.updateWorkTaxType(
             WorkTaxTypes(
-                curTaxType.workTaxType
+                curTaxType
             )
         )
         gotoCallingFragment()
@@ -138,7 +138,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
             val errorMessage = if (etTaxType.text.isNullOrBlank()) {
                 "    ERROR!!\n" +
                         "The tax type must have a description"
-            } else if (nameFound && etTaxType.text.toString() != curTaxType.workTaxType) {
+            } else if (nameFound && etTaxType.text.toString() != curTaxType) {
                 "    ERROR!!\n" +
                         "This tax type already exists!"
             } else {

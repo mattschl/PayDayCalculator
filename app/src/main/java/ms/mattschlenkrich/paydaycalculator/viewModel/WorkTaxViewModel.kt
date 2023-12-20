@@ -40,6 +40,9 @@ class WorkTaxViewModel(
     fun getTaxRules() =
         workTaxRepository.getTaxRules()
 
+    fun getTaxRules(taxType: String, effectiveDate: String) =
+        workTaxRepository.getTaxRules(taxType, effectiveDate)
+
     fun insertEffectiveDate(effectiveDate: TaxEffectiveDates) =
         viewModelScope.launch {
             workTaxRepository.insertEffectiveDate(effectiveDate)

@@ -10,6 +10,9 @@ import ms.mattschlenkrich.paydaycalculator.common.TABLE_TAX_EFFECTIVE_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_TYPES
 import ms.mattschlenkrich.paydaycalculator.common.TAX_EFFECTIVE_DATE
+import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_EFFECTIVE_DATE
+import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_LEVEL
+import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
@@ -41,6 +44,16 @@ interface WorkTaxDao {
     )
     fun getTaxRules(): LiveData<List<WorkTaxRules>>
 
+    @Query(
+        "SELECT * FROM $TABLE_WORK_TAX_RULES " +
+                "WHERE $WORK_TAX_RULE_TYPE = :taxType " +
+                "AND $WORK_TAX_RULE_EFFECTIVE_DATE = :effectiveDate " +
+                "ORDER BY $WORK_TAX_RULE_LEVEL"
+    )
+    fun getTaxRules(taxType: String, effectiveDate: String):
+            LiveData<List<WorkTaxRules>>
+
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertEffectiveDate(effectiveDate: TaxEffectiveDates)
 
@@ -49,4 +62,5 @@ interface WorkTaxDao {
                 "ORDER BY $TAX_EFFECTIVE_DATE DESC"
     )
     fun getTaxEffectiveDates(): LiveData<List<TaxEffectiveDates>>
+
 }
