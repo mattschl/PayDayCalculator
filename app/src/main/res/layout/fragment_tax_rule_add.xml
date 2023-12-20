@@ -90,18 +90,20 @@
 
         <EditText
             android:id="@+id/etPercentage"
-            android:layout_width="@dimen/text_box_wide"
+            android:layout_width="@dimen/text_box_narrow"
             android:layout_height="wrap_content"
-            android:hint="@string/enter_percentage"
             android:importantForAutofill="no"
             android:inputType="numberDecimal"
             android:minHeight="@dimen/minimum_touch_height"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero_percent"
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_large"
             app:layout_constraintEnd_toEndOf="@+id/tvTaxRuleLevel"
             app:layout_constraintStart_toStartOf="@+id/tvTaxRuleLevel"
-            app:layout_constraintTop_toBottomOf="@+id/tvEffectiveDate" />
+            app:layout_constraintTop_toBottomOf="@+id/tvEffectiveDate"
+            tools:ignore="LabelFor" />
 
         <CheckBox
             android:id="@+id/chkExemption"
@@ -118,18 +120,21 @@
 
         <EditText
             android:id="@+id/etExemption"
-            android:layout_width="@dimen/text_box_wide"
+            android:layout_width="@dimen/text_box_medium"
             android:layout_height="wrap_content"
-            android:hint="@string/enter_exemption_amount"
             android:importantForAutofill="no"
             android:inputType="numberDecimal"
             android:minHeight="@dimen/minimum_touch_height"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero_dollars"
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_large"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="@+id/etPercentage"
             app:layout_constraintStart_toStartOf="@+id/etPercentage"
-            app:layout_constraintTop_toBottomOf="@id/etPercentage" />
+            app:layout_constraintTop_toBottomOf="@id/etPercentage"
+            tools:ignore="DuplicateSpeakableTextCheck,LabelFor" />
 
         <CheckBox
             android:id="@+id/chkUpperLimit"
@@ -146,18 +151,21 @@
 
         <EditText
             android:id="@+id/etUpperLimit"
-            android:layout_width="@dimen/text_box_wide"
+            android:layout_width="@dimen/text_box_medium"
             android:layout_height="wrap_content"
-            android:hint="@string/enter_upper_limit"
             android:importantForAutofill="no"
             android:inputType="numberDecimal"
             android:minHeight="@dimen/minimum_touch_height"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero_dollars"
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_large"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="@+id/etExemption"
             app:layout_constraintStart_toStartOf="@+id/etExemption"
-            app:layout_constraintTop_toBottomOf="@+id/etExemption" />
+            app:layout_constraintTop_toBottomOf="@+id/etExemption"
+            tools:ignore="LabelFor" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

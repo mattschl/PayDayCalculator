@@ -44,10 +44,8 @@ class CommonFunctions {
     }
 
     fun getDoubleFromPercent(percent: String): Double {
-        var num = 0.0
-        num = percent.trim().replace("%", "")
+        return percent.trim().replace("%", "")
             .toDouble() / 100
-        return num
     }
 
     fun displayPercentFromDouble(num: Double): String {

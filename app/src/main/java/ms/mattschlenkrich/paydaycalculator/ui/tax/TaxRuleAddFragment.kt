@@ -46,6 +46,28 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
         super.onViewCreated(view, savedInstanceState)
         fillMenu()
         fillValues()
+        setCheckBoxActions()
+    }
+
+    private fun setCheckBoxActions() {
+        binding.apply {
+            chkExemption.setOnClickListener {
+                if (chkExemption.isChecked) {
+                    etExemption.visibility = View.VISIBLE
+                } else {
+                    etExemption.visibility = View.INVISIBLE
+                    etExemption.setText("0.0")
+                }
+            }
+            chkUpperLimit.setOnClickListener {
+                if (chkUpperLimit.isChecked) {
+                    etUpperLimit.visibility = View.VISIBLE
+                } else {
+                    etUpperLimit.visibility = View.INVISIBLE
+                    etUpperLimit.setText("0.0")
+                }
+            }
+        }
     }
 
     private fun fillValues() {

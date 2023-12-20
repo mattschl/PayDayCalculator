@@ -59,4 +59,6 @@
     <string name="tax_level">Tax Level</string>
     <string name="exemption">Exemption</string>
     <string name="upper_limit">Upper Limit</string>
+    <string name="zero_percent">0.0%</string>
+    <string name="zero_dollars">$0.00</string>
 </resources>
