@@ -21,22 +21,38 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/TaxName"
+                    android:id="@+id/tvTaxLevel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/employer_name"
+                    android:text="@string/tax_level"
                     android:textColor="@color/black"
                     android:textSize="@dimen/dimen_20sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/taxType"
+                    android:id="@+id/tvPercent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/pay_day_frequency"
+                    android:text="@string/percentage"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/label_text_size"
+                    android:textSize="@dimen/text_size_large"
                     android:textStyle="italic" />
+
+                <TextView
+                    android:id="@+id/tvExemption"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/exemption"
+                    android:textSize="@dimen/label_text_size"
+                    android:textStyle="italic|bold" />
+
+                <TextView
+                    android:id="@+id/tvLimit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/upper_limit"
+                    android:textSize="@dimen/label_text_size"
+                    android:textStyle="bold" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>

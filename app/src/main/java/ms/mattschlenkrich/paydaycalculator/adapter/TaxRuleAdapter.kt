@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paydaycalculator.adapter
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +8,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.MainActivity
+import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListTaxRuleItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.ui.tax.TaxRulesFragmentDirections
@@ -17,6 +17,8 @@ class TaxRuleAdapter(
     private val mainActivity: MainActivity,
     private val mView: View
 ) : RecyclerView.Adapter<TaxRuleAdapter.TaxRuleViewHolder>() {
+
+    private val cf = CommonFunctions()
 
     class TaxRuleViewHolder(val itemBinding: ListTaxRuleItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -55,14 +57,24 @@ class TaxRuleAdapter(
 
     override fun onBindViewHolder(holder: TaxRuleViewHolder, position: Int) {
         val taxRule = differ.currentList[position]
-        var disp = taxRule.wtType
-        if (taxRule.wtIsDeleted) {
-            disp += "*Deleted*"
-            holder.itemBinding.TaxName.setTextColor(Color.RED)
+        var disp = "Level " + taxRule.wtLevel
+        holder.itemBinding.tvTaxLevel.text = disp
+        disp = cf.displayPercentFromDouble(taxRule.wtPercent)
+        holder.itemBinding.tvPercent.text = disp
+        if (taxRule.wtHasExemption) {
+            holder.itemBinding.tvExemption.visibility = View.VISIBLE
+            disp = "Exemption: " + cf.displayDollars(taxRule.wtExemptionAmount)
+            holder.itemBinding.tvExemption.text = disp
         } else {
-            holder.itemBinding.TaxName.setTextColor(Color.BLACK)
+            holder.itemBinding.tvExemption.visibility = View.GONE
         }
-        holder.itemBinding.TaxName.text = disp
+        if (taxRule.wtHasBracket) {
+            holder.itemBinding.tvLimit.visibility = View.VISIBLE
+            disp = "Upper Limit: " + cf.displayDollars(taxRule.wtBracketAmount)
+            holder.itemBinding.tvLimit.text = disp
+        } else {
+            holder.itemBinding.tvLimit.visibility = View.GONE
+        }
         holder.itemView.setOnLongClickListener {
             chooseOptions(taxRule)
             false

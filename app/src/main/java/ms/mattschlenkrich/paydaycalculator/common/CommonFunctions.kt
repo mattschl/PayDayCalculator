@@ -3,13 +3,13 @@ package ms.mattschlenkrich.paydaycalculator.common
 import java.text.NumberFormat
 import java.util.Locale
 import java.util.Random
+import kotlin.math.roundToInt
 
 @Suppress("unused")
 class CommonFunctions {
     private val currencyFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
     private val dollarFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
     private val numberDisplay: NumberFormat = NumberFormat.getNumberInstance(Locale.CANADA)
-    private val percentFormat = NumberFormat.getPercentInstance()
 
     fun getDoubleFromDollars(dollars: String): Double {
         return if (dollars != "") {
@@ -45,14 +45,12 @@ class CommonFunctions {
 
     fun getDoubleFromPercent(percent: String): Double {
         var num = 0.0
-        if (percent.contains("%")) {
-            num = percent.trim().replace("%", "")
-                .toDouble() / 100
-        }
+        num = percent.trim().replace("%", "")
+            .toDouble() / 100
         return num
     }
 
     fun displayPercentFromDouble(num: Double): String {
-        return percentFormat.format(num)
+        return ((num * 10000).roundToInt() / 100.0).toString() + "%"
     }
 }

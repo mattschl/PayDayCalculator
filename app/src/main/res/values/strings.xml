@@ -56,4 +56,7 @@
     <string name="level">Level</string>
     <string name="level_bracket">Level/Bracket</string>
     <string name="choose_a_universal_effective_date">Choose a Universal Effective Date</string>
+    <string name="tax_level">Tax Level</string>
+    <string name="exemption">Exemption</string>
+    <string name="upper_limit">Upper Limit</string>
 </resources>
