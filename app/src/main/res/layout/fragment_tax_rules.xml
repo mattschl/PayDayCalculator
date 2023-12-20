@@ -8,23 +8,45 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:id="@+id/lblTaxType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tax_type"
+            android:textSize="@dimen/label_text_size"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/spTaxType"
+            app:layout_constraintEnd_toStartOf="@id/spTaxType"
+            app:layout_constraintStart_toStartOf="parent" />
+
         <Spinner
             android:id="@+id/spTaxType"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/minimum_touch_height"
-            android:minWidth="@dimen/text_box_medium"
-            app:layout_constraintEnd_toStartOf="@id/spEffectiveDate"
-            app:layout_constraintStart_toStartOf="parent"
+            android:minWidth="@dimen/text_box_wide"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblTaxType"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/lblEffectiveDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/effective_date"
+            android:textSize="@dimen/label_text_size"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/spEffectiveDate"
+            app:layout_constraintEnd_toStartOf="@id/spEffectiveDate"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Spinner
             android:id="@+id/spEffectiveDate"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/minimum_touch_height"
-            android:minWidth="@dimen/text_box_medium"
+            android:minWidth="@dimen/text_box_wide"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/spTaxType"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@id/lblEffectiveDate"
+            app:layout_constraintTop_toBottomOf="@id/spTaxType" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvTaxRules"
@@ -51,7 +73,7 @@
             app:layout_constraintBottom_toTopOf="@id/fabNew"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/spEffectiveDate">
 
             <TextView
                 android:id="@+id/tvNoAccounts"

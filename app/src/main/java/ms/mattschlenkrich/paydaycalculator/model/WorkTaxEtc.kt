@@ -12,12 +12,9 @@ import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_TAX_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYER_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_TAX_EFFECTIVE_DATES
-import ms.mattschlenkrich.paydaycalculator.common.TABLE_TAX_TYPES_EFFECTIVE_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_TYPES
 import ms.mattschlenkrich.paydaycalculator.common.TAX_EFFECTIVE_DATE
-import ms.mattschlenkrich.paydaycalculator.common.TAX_TYPE_EFFECTIVE_DATE
-import ms.mattschlenkrich.paydaycalculator.common.TAX_TYPE_EFFECTIVE_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_EFFECTIVE_DATE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_LEVEL
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_TYPE
@@ -40,25 +37,25 @@ data class TaxEffectiveDates(
     @PrimaryKey
     val tdEffectiveDate: String,
 ) : Parcelable
-
-@Entity(
-    tableName = TABLE_TAX_TYPES_EFFECTIVE_DATES,
-    primaryKeys = [TAX_TYPE_EFFECTIVE_TYPE, TAX_TYPE_EFFECTIVE_DATE],
-    foreignKeys = [ForeignKey(
-        entity = WorkTaxTypes::class,
-        parentColumns = [WORK_TAX_TYPE],
-        childColumns = [TAX_TYPE_EFFECTIVE_TYPE]
-    ), ForeignKey(
-        entity = TaxEffectiveDates::class,
-        parentColumns = [TAX_EFFECTIVE_DATE],
-        childColumns = [TAX_TYPE_EFFECTIVE_DATE]
-    )]
-)
-@Parcelize
-data class TaxTypesEffectiveDates(
-    val tteType: String,
-    val tteDate: String,
-) : Parcelable
+//
+//@Entity(
+//    tableName = TABLE_TAX_TYPES_EFFECTIVE_DATES,
+//    primaryKeys = [TAX_TYPE_EFFECTIVE_TYPE, TAX_TYPE_EFFECTIVE_DATE],
+//    foreignKeys = [ForeignKey(
+//        entity = WorkTaxTypes::class,
+//        parentColumns = [WORK_TAX_TYPE],
+//        childColumns = [TAX_TYPE_EFFECTIVE_TYPE]
+//    ), ForeignKey(
+//        entity = TaxEffectiveDates::class,
+//        parentColumns = [TAX_EFFECTIVE_DATE],
+//        childColumns = [TAX_TYPE_EFFECTIVE_DATE]
+//    )]
+//)
+//@Parcelize
+//data class TaxTypesEffectiveDates(
+//    val tteType: String,
+//    val tteDate: String,
+//) : Parcelable
 
 @Entity(
     tableName = TABLE_WORK_TAX_RULES,

@@ -25,7 +25,7 @@
     <string name="update_this_employer">Update this Employer</string>
     <string name="tax_type">Tax Type</string>
     <string name="enter_tax_type">Enter Tax Type</string>
-    <string name="add_a_new_tax_type">Add a new tax Type</string>
+    <string name="add_a_new_tax_type">* Add a New tax Type *</string>
     <string name="choose_a_tax_type">Choose a Tax Type</string>
     <string name="review_tax_types">Review Tax Types</string>
     <string name="no_tax_types_to_view">No Tax Types to view</string>
@@ -51,4 +51,8 @@
     <string name="add_tax_rule">Add Tax Rule</string>
     <string name="review_tax_rules">Review Tax Rules</string>
     <string name="tax_rules">Tax Rules</string>
+    <string name="choose_an_action">Choose an Action</string>
+    <string name="add_new_effective_date">* Add New Effective Date *</string>
+    <string name="level">Level</string>
+    <string name="level_bracket">Level/Bracket</string>
 </resources>

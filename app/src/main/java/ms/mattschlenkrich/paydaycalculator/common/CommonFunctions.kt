@@ -4,6 +4,7 @@ import java.text.NumberFormat
 import java.util.Locale
 import java.util.Random
 
+@Suppress("unused")
 class CommonFunctions {
     private val currencyFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
     private val dollarFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)

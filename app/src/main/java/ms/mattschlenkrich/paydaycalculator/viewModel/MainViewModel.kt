@@ -14,6 +14,11 @@ class MainViewModel(
     private var taxType: WorkTaxTypes? = null
     private var extraFrequencyType: WorkExtraFrequencies? = null
     private var taxRule: WorkTaxRules? = null
+    private var effectiveDate: String? = null
+
+    fun setEffectiveDate(newDate: String) {
+        effectiveDate = newDate
+    }
 
     fun setEmployer(newEmployer: Employers?) {
         employer = newEmployer
@@ -29,6 +34,10 @@ class MainViewModel(
 
     fun setTaxRule(newTaxRule: WorkTaxRules?) {
         taxRule = newTaxRule
+    }
+
+    fun getEffectiveDate(): String? {
+        return effectiveDate
     }
 
     fun getEmployer(): Employers? {

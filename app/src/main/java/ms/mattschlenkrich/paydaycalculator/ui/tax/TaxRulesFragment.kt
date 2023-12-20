@@ -47,6 +47,16 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
             mView.context,
             R.layout.spinner_item_bold
         )
+        mainActivity.workTaxViewModel.getTaxEffectiveDates().observe(
+            viewLifecycleOwner
+        ) { dates ->
+            dateAdapter.clear()
+            dates.listIterator().forEach {
+                dateAdapter.add(it.tdEffectiveDate)
+            }
+            dateAdapter.add(getString(R.string.add_new_effective_date))
+        }
+        binding.spEffectiveDate.adapter = dateAdapter
     }
 
     private fun fillTaxTypes() {
@@ -61,6 +71,7 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
             types.listIterator().forEach {
                 taxTypeAdapter.add(it.workTaxType)
             }
+            taxTypeAdapter.add(getString(R.string.add_a_new_tax_type))
         }
         binding.spTaxType.adapter = taxTypeAdapter
     }
@@ -101,11 +112,15 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
 
     private fun setActions() {
         binding.fabNew.setOnClickListener {
-            mView.findNavController().navigate(
-                TaxRulesFragmentDirections
-                    .actionTaxRulesFragmentToTaxRuleAddFragment()
-            )
+            gotoTaxRuleAdd()
         }
+    }
+
+    private fun gotoTaxRuleAdd() {
+        mView.findNavController().navigate(
+            TaxRulesFragmentDirections
+                .actionTaxRulesFragmentToTaxRuleAddFragment()
+        )
     }
 
     override fun onDestroy() {

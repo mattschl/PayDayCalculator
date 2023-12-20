@@ -9,18 +9,18 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/lblTaxRuleName"
+            android:id="@+id/lblTaxRuleType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/tax_rule_name"
             android:textSize="@dimen/label_text_size"
             android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/etTaxRuleName"
-            app:layout_constraintEnd_toStartOf="@id/etTaxRuleName"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvTaxRuleType"
+            app:layout_constraintEnd_toStartOf="@id/tvTaxRuleType"
             app:layout_constraintStart_toStartOf="parent" />
 
         <EditText
-            android:id="@+id/etTaxRuleName"
+            android:id="@+id/tvTaxRuleType"
             android:layout_width="@dimen/text_box_wide"
             android:layout_height="wrap_content"
             android:hint="@string/enter_tax_rule_name"
@@ -30,28 +30,28 @@
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_large"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/lblTaxRuleName"
+            app:layout_constraintStart_toEndOf="@id/lblTaxRuleType"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/lblTaxType"
+            android:id="@+id/lblTaxRuleLevel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/tax_type"
             android:textSize="@dimen/label_text_size"
             android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/spTaxType"
-            app:layout_constraintEnd_toStartOf="@id/spTaxType"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvTaxRuleLevel"
+            app:layout_constraintEnd_toStartOf="@id/tvTaxRuleLevel"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Spinner
-            android:id="@+id/spTaxType"
+            android:id="@+id/tvTaxRuleLevel"
             android:layout_width="@dimen/text_box_wide"
             android:layout_height="wrap_content"
             android:minHeight="@dimen/minimum_touch_height"
-            app:layout_constraintEnd_toEndOf="@+id/etTaxRuleName"
-            app:layout_constraintStart_toStartOf="@+id/etTaxRuleName"
-            app:layout_constraintTop_toBottomOf="@id/etTaxRuleName" />
+            app:layout_constraintEnd_toEndOf="@+id/tvTaxRuleType"
+            app:layout_constraintStart_toStartOf="@+id/tvTaxRuleType"
+            app:layout_constraintTop_toBottomOf="@id/tvTaxRuleType" />
 
         <TextView
             android:id="@+id/lblPercentage"
@@ -74,9 +74,9 @@
             android:minHeight="@dimen/minimum_touch_height"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_large"
-            app:layout_constraintEnd_toEndOf="@+id/spTaxType"
-            app:layout_constraintStart_toStartOf="@+id/spTaxType"
-            app:layout_constraintTop_toBottomOf="@+id/spTaxType" />
+            app:layout_constraintEnd_toEndOf="@+id/tvTaxRuleLevel"
+            app:layout_constraintStart_toStartOf="@+id/tvTaxRuleLevel"
+            app:layout_constraintTop_toBottomOf="@+id/tvTaxRuleLevel" />
 
         <CheckBox
             android:id="@+id/chkExemption"
