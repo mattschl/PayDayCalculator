@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var employerViewModel: EmployerViewModel
     lateinit var workTaxViewModel: WorkTaxViewModel
     lateinit var workExtraViewModel: WorkExtraViewModel
+//    private val df = DateFunctions()
 
     private fun gotoEmployer() {
         findNavController(R.id.nav_host_fragment_container).navigate(
@@ -52,6 +53,7 @@ class MainActivity : AppCompatActivity() {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menu.add(getString(R.string.review_tax_types))
                 menu.add(getString(R.string.review_work_extra_frequencies))
+//                menu.add(getString(R.string.update_future_pay_dates))
                 menu.add(resources.getString(R.string.app_name))
             }
 
@@ -59,13 +61,18 @@ class MainActivity : AppCompatActivity() {
                 return when (menuItem.title) {
                     getString(R.string.review_tax_types) -> {
                         gotoTaxTypes()
-                        false
+                        true
                     }
 
                     getString(R.string.review_work_extra_frequencies) -> {
                         gotoWorkExtraFrequencies()
-                        false
+                        true
                     }
+
+//                    getString(R.string.update_future_pay_dates) -> {
+//                        updatePayDayPredictions()
+//                        true
+//                    }
 
                     else -> {
                         false

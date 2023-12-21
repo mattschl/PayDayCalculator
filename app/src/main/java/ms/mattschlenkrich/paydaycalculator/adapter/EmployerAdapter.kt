@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.adapter
 
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +12,6 @@ import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerFragmentDirections
-
-private const val TAG = "EmployerAdapter"
 
 class EmployerAdapter(
     private val mainActivity: MainActivity,
@@ -63,13 +60,16 @@ class EmployerAdapter(
         }
         holder.itemBinding.tvFrequency.text = disp
         holder.itemView.setOnLongClickListener {
-            mainActivity.mainViewModel.setEmployer(employer)
-            Log.d(TAG, "start date is ${employer.startDate}")
-            mView.findNavController().navigate(
-                EmployerFragmentDirections
-                    .actionEmployerFragmentToEmployerUpdateFragment()
-            )
+            gotoUpdateEmployer(employer)
             true
         }
+    }
+
+    private fun gotoUpdateEmployer(employer: Employers) {
+        mainActivity.mainViewModel.setEmployer(employer)
+        mView.findNavController().navigate(
+            EmployerFragmentDirections
+                .actionEmployerFragmentToEmployerUpdateFragment()
+        )
     }
 }

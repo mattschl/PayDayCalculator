@@ -62,4 +62,6 @@
     <string name="zero_percent">0.0%</string>
     <string name="zero_dollars">$0.00</string>
     <string name="view_or_update_tax_rule">View or Update Tax Rule</string>
+    <string name="update_future_pay_dates">Update future pay dates</string>
+    <string name="choose_a_date_to_project_forward_to">Choose a date to project forward to</string>
 </resources>
