@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.ui.tax
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -114,7 +115,7 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
                         if (spTaxType.selectedItem.toString() ==
                             getString(R.string.add_a_new_tax_type)
                         ) {
-                            gotTaxTypeAdd()
+                            gotoTaxTypeAdd()
                         } else {
                             fillTaxRuleList()
                         }
@@ -161,9 +162,12 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
         binding.spTaxType.adapter = taxTypeAdapter
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun fillTaxRuleList() {
         binding.apply {
-            if (!spTaxType.adapter.isEmpty && !spEffectiveDate.adapter.isEmpty) {
+            if (spTaxType.adapter.count > 1 &&
+                spEffectiveDate.adapter.count > 1
+            ) {
                 val taxRuleAdapter = TaxRuleAdapter(
                     mainActivity, mView
                 )
@@ -182,6 +186,7 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
                     ).observe(
                         viewLifecycleOwner
                     ) { taxRules ->
+                        rvTaxRules.adapter!!.notifyDataSetChanged()
                         taxRuleAdapter.differ.submitList(taxRules)
                         updateUI(taxRules)
                     }
@@ -233,7 +238,7 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
         )
     }
 
-    private fun gotTaxTypeAdd() {
+    private fun gotoTaxTypeAdd() {
         mView.findNavController().navigate(
             TaxRulesFragmentDirections
                 .actionTaxRulesFragmentToTaxTypeAddFragment()
