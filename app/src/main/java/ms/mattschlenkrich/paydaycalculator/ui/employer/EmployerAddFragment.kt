@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.ui.employer
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
@@ -24,6 +25,7 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_SEMI_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerAddBinding
+import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModel
 
@@ -148,10 +150,12 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         binding.apply {
             val message = checkEmployer()
             if (message == ANSWER_OK) {
+                val curEmployer = getCurrentEmployer()
                 employerViewModel.insertEmployer(
-                    getCurrentEmployer()
+                    curEmployer
                 )
-                gotoCallingFragment()
+                addEmployerTaxRules(curEmployer.employerId)
+                chooseNextSteps(curEmployer)
             } else {
                 Toast.makeText(
                     mView.context,
@@ -160,6 +164,51 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
                 ).show()
             }
         }
+    }
+
+    private fun addEmployerTaxRules(employerId: Long) {
+        val taxTypes = ArrayList<String>()
+        mainActivity.workTaxViewModel.getTaxTypes().observe(
+            viewLifecycleOwner
+        ) { type ->
+            type.listIterator().forEach {
+                taxTypes.add(it.workTaxType)
+            }
+        }
+        for (type in taxTypes) {
+            mainActivity.workTaxViewModel.insertEmployerTaxRule(
+                EmployerTaxTypes(
+                    etrEmployerId = employerId,
+                    etrTaxType = type,
+                    etrInclude = true,
+                    etrIsDeleted = false,
+                    etrUpdateTime = df.getCurrentTimeAsString()
+                )
+            )
+        }
+    }
+
+    private fun chooseNextSteps(curEmployer: Employers) {
+        AlertDialog.Builder(mView.context)
+            .setTitle("Choose next steps for ${curEmployer.employerName}")
+            .setMessage(
+                "The taxes have been set up to be deducted automatically. \n" +
+                        "Would you like to open this employer in EDIT mode to edit taxes, " +
+                        "create extra deductions or extra items added to paychecks?"
+            )
+            .setPositiveButton("Yes") { _, _ ->
+                gotoEmployerExtras(curEmployer)
+            }
+            .setNegativeButton("No", null)
+            .show()
+    }
+
+    private fun gotoEmployerExtras(curEmployer: Employers) {
+        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mView.findNavController().navigate(
+            EmployerAddFragmentDirections
+                .actionEmployerAddFragmentToEmployerUpdateFragment()
+        )
     }
 
     private fun gotoCallingFragment() {

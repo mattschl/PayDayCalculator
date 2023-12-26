@@ -19,7 +19,7 @@ const val EMPLOYER_NAME = "employerName"
 const val EMPLOYER_IS_DELETED = "employerIsDeleted"
 const val EMPLOYER_UPDATE_TIME = "employerUpdateTime"
 
-const val TABLE_EMPLOYER_TAX_RULES = "employerTaxRules"
+const val TABLE_EMPLOYER_TAX_RULES = "employerTaxTypes"
 const val EMPLOYER_TAX_RULES_EMPLOYER_ID = "etrEmployerId"
 const val EMPLOYER_TAX_RULES_TAX_TYPE = "etrTaxType"
 const val EMPLOYER_TAX_RULES_INCLUDE = "etrInclude"

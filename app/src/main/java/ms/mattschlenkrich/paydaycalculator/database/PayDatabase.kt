@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_VERSION
-import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxRules
+import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
@@ -33,7 +33,7 @@ import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
         WorkTaxRules::class,
         WorkTaxTypes::class,
         TaxEffectiveDates::class,
-        EmployerTaxRules::class,
+        EmployerTaxTypes::class,
     ],
     version = PAY_DB_VERSION,
 )

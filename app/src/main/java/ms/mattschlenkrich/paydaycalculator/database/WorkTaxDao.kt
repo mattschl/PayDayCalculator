@@ -14,6 +14,7 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_EFFECTIVE_DATE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_LEVEL
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
+import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
@@ -62,5 +63,8 @@ interface WorkTaxDao {
                 "ORDER BY $TAX_EFFECTIVE_DATE DESC"
     )
     fun getTaxEffectiveDates(): LiveData<List<TaxEffectiveDates>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertEmployerTaxRule(employerTaxTypes: EmployerTaxTypes)
 
 }

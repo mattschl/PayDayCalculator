@@ -103,14 +103,14 @@ data class WorkTaxRules(
     ), ForeignKey(
         entity = WorkTaxTypes::class,
         parentColumns = [WORK_TAX_TYPE],
-        childColumns = [EMPLOYER_TAX_RULES_EMPLOYER_ID]
+        childColumns = [EMPLOYER_TAX_RULES_TAX_TYPE]
     )]
 )
 @Parcelize
-data class EmployerTaxRules(
+data class EmployerTaxTypes(
     val etrEmployerId: Long,
     @ColumnInfo(index = true)
-    val etrTaxType: Long,
+    val etrTaxType: String,
     val etrInclude: Boolean,
     val etrIsDeleted: Boolean,
     val etrUpdateTime: String

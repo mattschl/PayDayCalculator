@@ -93,7 +93,12 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
                 etMidMonthDate.setText(newEmployer!!.midMonthlyDate.toString())
                 etMainMonthDate.setText(newEmployer!!.mainMonthlyDate.toString())
             }
+            fillTaxes(newEmployer!!.employerId)
         }
+    }
+
+    private fun fillTaxes(employerId: Long) {
+
     }
 
     private fun setSpinnerActions() {

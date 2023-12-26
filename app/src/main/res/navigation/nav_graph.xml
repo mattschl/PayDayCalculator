@@ -33,6 +33,9 @@
         <action
             android:id="@+id/action_employerAddFragment_to_employerFragment"
             app:destination="@id/employerFragment" />
+        <action
+            android:id="@+id/action_employerAddFragment_to_employerUpdateFragment"
+            app:destination="@id/employerUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/employerUpdateFragment"

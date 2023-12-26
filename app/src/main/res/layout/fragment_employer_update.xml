@@ -169,6 +169,78 @@
             app:layout_constraintTop_toBottomOf="@id/etMidMonthDate"
             tools:ignore="TextFields" />
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/crdTaxes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="32dp"
+            android:backgroundTint="@color/white"
+            android:elevation="10dp"
+            app:cardCornerRadius="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etMainMonthDate">
+
+            <LinearLayout
+                android:id="@+id/llTaxes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/lblTaxes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/taxes"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_large" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvTaxes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxHeight="@dimen/text_box_medium" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/crdExtras"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="32dp"
+            android:backgroundTint="@color/white"
+            android:elevation="10dp"
+            app:cardCornerRadius="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/crdTaxes">
+
+            <LinearLayout
+                android:id="@+id/llExtras"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/lblExtras"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/extra_pay_items"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_large" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvExtras"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxHeight="@dimen/text_box_medium" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabDone"
             android:layout_width="wrap_content"
