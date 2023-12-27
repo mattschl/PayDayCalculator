@@ -1,16 +1,11 @@
 package ms.mattschlenkrich.paydaycalculator.model
 
 import android.os.Parcelable
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
-import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_ID
-import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_EMPLOYER_ID
-import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_TAX_TYPE
-import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYER_TAX_TYPES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_TAX_EFFECTIVE_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_TYPES
@@ -37,25 +32,7 @@ data class TaxEffectiveDates(
     @PrimaryKey
     val tdEffectiveDate: String,
 ) : Parcelable
-//
-//@Entity(
-//    tableName = TABLE_TAX_TYPES_EFFECTIVE_DATES,
-//    primaryKeys = [TAX_TYPE_EFFECTIVE_TYPE, TAX_TYPE_EFFECTIVE_DATE],
-//    foreignKeys = [ForeignKey(
-//        entity = WorkTaxTypes::class,
-//        parentColumns = [WORK_TAX_TYPE],
-//        childColumns = [TAX_TYPE_EFFECTIVE_TYPE]
-//    ), ForeignKey(
-//        entity = TaxEffectiveDates::class,
-//        parentColumns = [TAX_EFFECTIVE_DATE],
-//        childColumns = [TAX_TYPE_EFFECTIVE_DATE]
-//    )]
-//)
-//@Parcelize
-//data class TaxTypesEffectiveDates(
-//    val tteType: String,
-//    val tteDate: String,
-//) : Parcelable
+
 
 @Entity(
     tableName = TABLE_WORK_TAX_RULES,
@@ -89,30 +66,3 @@ data class WorkTaxRules(
     val wtIsDeleted: Boolean,
     val wtUpdateTime: String,
 ) : Parcelable
-
-@Entity(
-    tableName = TABLE_EMPLOYER_TAX_TYPES,
-    primaryKeys = [
-        EMPLOYER_TAX_RULES_EMPLOYER_ID,
-        EMPLOYER_TAX_RULES_TAX_TYPE
-    ],
-    foreignKeys = [ForeignKey(
-        entity = Employers::class,
-        parentColumns = [EMPLOYER_ID],
-        childColumns = [EMPLOYER_TAX_RULES_EMPLOYER_ID]
-    ), ForeignKey(
-        entity = WorkTaxTypes::class,
-        parentColumns = [WORK_TAX_TYPE],
-        childColumns = [EMPLOYER_TAX_RULES_TAX_TYPE]
-    )]
-)
-@Parcelize
-data class EmployerTaxTypes(
-    val etrEmployerId: Long,
-    @ColumnInfo(index = true)
-    val etrTaxType: String,
-    val etrInclude: Boolean,
-    val etrIsDeleted: Boolean,
-    val etrUpdateTime: String
-) : Parcelable
-

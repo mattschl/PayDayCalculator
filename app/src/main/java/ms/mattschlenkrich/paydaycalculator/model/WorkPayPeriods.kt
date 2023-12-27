@@ -5,7 +5,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
-import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_CUTOFF_DATE
@@ -13,7 +12,6 @@ import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_TAX_CUTOFF_DATE
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_TAX_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_TAX_TYPE
-import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES_EXTRAS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_PAY_PERIODS
@@ -31,24 +29,6 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_PAY_PERIOD_EXTRA_EMPLOYER
 import ms.mattschlenkrich.paydaycalculator.common.WORK_PAY_PERIOD_EXTRA_ID
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
 
-
-@Entity(
-    tableName = TABLE_EMPLOYERS
-)
-@Parcelize
-data class Employers(
-    @PrimaryKey
-    val employerId: Long,
-    val employerName: String,
-    val payFrequency: String,
-    val startDate: String,
-    val dayOfWeek: String,
-    val cutoffDaysBefore: Int,
-    val midMonthlyDate: Int,
-    val mainMonthlyDate: Int,
-    val employerIsDeleted: Boolean,
-    val employerUpdateTime: String,
-) : Parcelable
 
 @Entity(
     tableName = TABLE_WORK_PAY_PERIODS,
