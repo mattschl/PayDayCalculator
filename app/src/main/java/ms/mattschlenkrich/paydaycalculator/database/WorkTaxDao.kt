@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYER_TAX_TYPES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_TAX_EFFECTIVE_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_TYPES
@@ -64,7 +65,21 @@ interface WorkTaxDao {
     )
     fun getTaxEffectiveDates(): LiveData<List<TaxEffectiveDates>>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertEmployerTaxRule(employerTaxTypes: EmployerTaxTypes)
+    @Insert()
+    suspend fun insertEmployerTaxType(employerTaxTypes: EmployerTaxTypes)
 
+    @Query(
+        "UPDATE $TABLE_EMPLOYER_TAX_TYPES " +
+                "SET etrInclude = :include " +
+                "WHERE etrEmployerId = :employerId AND " +
+                "etrTaxType = :taxType"
+    )
+    suspend fun updateEmployerTaxIncluded(employerId: Long, taxType: String, include: Boolean)
+
+    @Query(
+        "SELECT * FROM $TABLE_EMPLOYER_TAX_TYPES " +
+                "WHERE etrEmployerId = :employerId " +
+                "ORDER BY etrTaxType"
+    )
+    fun getEmployerTaxTypes(employerId: Long): LiveData<List<EmployerTaxTypes>>
 }

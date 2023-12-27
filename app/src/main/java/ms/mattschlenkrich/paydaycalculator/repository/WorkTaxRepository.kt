@@ -34,6 +34,16 @@ class WorkTaxRepository(private val db: PayDatabase) {
     fun getTaxEffectiveDates() =
         db.getWorkTaxDao().getTaxEffectiveDates()
 
-    suspend fun insertEmployerTaxRule(employerTaxTypes: EmployerTaxTypes) =
-        db.getWorkTaxDao().insertEmployerTaxRule(employerTaxTypes)
+    suspend fun insertEmployerTaxType(employerTaxTypes: EmployerTaxTypes) =
+        db.getWorkTaxDao().insertEmployerTaxType(employerTaxTypes)
+
+    suspend fun updateEmployerTaxIncluded(
+        employerId: Long, taxType: String, include: Boolean
+    ) =
+        db.getWorkTaxDao().updateEmployerTaxIncluded(
+            employerId, taxType, include
+        )
+
+    fun getEmployerTaxTypes(employerId: Long) =
+        db.getWorkTaxDao().getEmployerTaxTypes(employerId)
 }

@@ -10,7 +10,7 @@ import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_TAX_TYPE
-import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYER_TAX_RULES
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYER_TAX_TYPES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_TAX_EFFECTIVE_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_TYPES
@@ -91,7 +91,7 @@ data class WorkTaxRules(
 ) : Parcelable
 
 @Entity(
-    tableName = TABLE_EMPLOYER_TAX_RULES,
+    tableName = TABLE_EMPLOYER_TAX_TYPES,
     primaryKeys = [
         EMPLOYER_TAX_RULES_EMPLOYER_ID,
         EMPLOYER_TAX_RULES_TAX_TYPE

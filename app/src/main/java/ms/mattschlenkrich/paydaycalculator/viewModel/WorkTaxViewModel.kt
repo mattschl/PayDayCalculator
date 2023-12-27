@@ -52,8 +52,17 @@ class WorkTaxViewModel(
     fun getTaxEffectiveDates() =
         workTaxRepository.getTaxEffectiveDates()
 
-    fun insertEmployerTaxRule(employerTaxTypes: EmployerTaxTypes) =
+    fun insertEmployerTaxType(employerTaxTypes: EmployerTaxTypes) =
         viewModelScope.launch {
-            workTaxRepository.insertEmployerTaxRule(employerTaxTypes)
+            workTaxRepository.insertEmployerTaxType(employerTaxTypes)
         }
+
+    fun updateEmployerTaxIncluded(
+        employerId: Long, taxType: String, include: Boolean
+    ) = viewModelScope.launch {
+        workTaxRepository.updateEmployerTaxIncluded(employerId, taxType, include)
+    }
+
+    fun getEmployerTaxTypes(employerId: Long) =
+        workTaxRepository.getEmployerTaxTypes(employerId)
 }

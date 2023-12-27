@@ -167,24 +167,20 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun addEmployerTaxRules(employerId: Long) {
-        val taxTypes = ArrayList<String>()
         mainActivity.workTaxViewModel.getTaxTypes().observe(
             viewLifecycleOwner
         ) { type ->
-            type.listIterator().forEach {
-                taxTypes.add(it.workTaxType)
-            }
-        }
-        for (type in taxTypes) {
-            mainActivity.workTaxViewModel.insertEmployerTaxRule(
-                EmployerTaxTypes(
-                    etrEmployerId = employerId,
-                    etrTaxType = type,
-                    etrInclude = true,
-                    etrIsDeleted = false,
-                    etrUpdateTime = df.getCurrentTimeAsString()
+            type.forEach {
+                mainActivity.workTaxViewModel.insertEmployerTaxType(
+                    EmployerTaxTypes(
+                        etrEmployerId = employerId,
+                        etrTaxType = it.workTaxType,
+                        etrInclude = true,
+                        etrIsDeleted = false,
+                        etrUpdateTime = df.getCurrentTimeAsString()
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -199,7 +195,9 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
             .setPositiveButton("Yes") { _, _ ->
                 gotoEmployerExtras(curEmployer)
             }
-            .setNegativeButton("No", null)
+            .setNegativeButton("No") { _, _ ->
+                gotoCallingFragment()
+            }
             .show()
     }
 

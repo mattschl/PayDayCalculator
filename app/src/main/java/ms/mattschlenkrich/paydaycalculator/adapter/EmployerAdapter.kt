@@ -15,7 +15,7 @@ import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerFragmentDirection
 
 class EmployerAdapter(
     private val mainActivity: MainActivity,
-    private val mView: View
+    private val mView: View,
 ) :
     RecyclerView.Adapter<EmployerAdapter.EmployerViewHolder>() {
 
