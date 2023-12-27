@@ -11,7 +11,7 @@ import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.TaxTypeAdapter
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeBinding
-import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
 
 class TaxTypeFragment : Fragment(R.layout.fragment_tax_type) {
 
@@ -69,7 +69,7 @@ class TaxTypeFragment : Fragment(R.layout.fragment_tax_type) {
         }
     }
 
-    private fun updateUI(taxTypes: List<WorkTaxTypes>) {
+    private fun updateUI(taxTypes: List<TaxTypes>) {
         binding.apply {
             if (taxTypes.isEmpty()) {
                 crdNoInfo.visibility = View.VISIBLE

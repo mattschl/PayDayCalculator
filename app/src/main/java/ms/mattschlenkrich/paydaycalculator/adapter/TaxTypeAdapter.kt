@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
-import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.ui.tax.TaxTypeFragmentDirections
 
 class TaxTypeAdapter(
@@ -21,12 +21,12 @@ class TaxTypeAdapter(
         RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCallBack =
-        object : DiffUtil.ItemCallback<WorkTaxTypes>() {
-            override fun areContentsTheSame(oldItem: WorkTaxTypes, newItem: WorkTaxTypes): Boolean {
-                return oldItem.workTaxType == newItem.workTaxType
+        object : DiffUtil.ItemCallback<TaxTypes>() {
+            override fun areContentsTheSame(oldItem: TaxTypes, newItem: TaxTypes): Boolean {
+                return oldItem.taxType == newItem.taxType
             }
 
-            override fun areItemsTheSame(oldItem: WorkTaxTypes, newItem: WorkTaxTypes): Boolean {
+            override fun areItemsTheSame(oldItem: TaxTypes, newItem: TaxTypes): Boolean {
                 return oldItem == newItem
             }
         }
@@ -46,9 +46,9 @@ class TaxTypeAdapter(
 
     override fun onBindViewHolder(holder: TaxTypeViewHolder, position: Int) {
         val taxType = differ.currentList[position]
-        holder.itemBinding.tvDisplay.text = taxType.workTaxType
+        holder.itemBinding.tvDisplay.text = taxType.taxType
         holder.itemView.setOnLongClickListener {
-            mainActivity.mainViewModel.setTaxType(taxType.workTaxType)
+            mainActivity.mainViewModel.setTaxType(taxType.taxType)
             mView.findNavController().navigate(
                 TaxTypeFragmentDirections
                     .actionTaxTypeFragmentToTaxTypeUpdateFragment()

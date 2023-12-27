@@ -12,9 +12,9 @@ import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_TAX_CUTOFF_DATE
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_TAX_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_TAX_TYPE
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES_EXTRAS
-import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_PAY_PERIODS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_PAY_PERIOD_EXTRAS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_PAY_PERIOD_TAX
 import ms.mattschlenkrich.paydaycalculator.common.WORK_DATES_CUTOFF_DATE
@@ -31,7 +31,7 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
 
 
 @Entity(
-    tableName = TABLE_WORK_PAY_PERIODS,
+    tableName = TABLE_PAY_PERIODS,
     primaryKeys = [PAY_PERIOD_CUTOFF_DATE, PAY_PERIOD_EMPLOYER_ID],
     foreignKeys = [ForeignKey(
         entity = Employers::class,
@@ -40,7 +40,7 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
     )]
 )
 @Parcelize
-data class WorkPayPeriods(
+data class PayPeriods(
     val ppCutoffDate: String,
     @ColumnInfo(index = true)
     val ppEmployerId: Long,
@@ -55,7 +55,7 @@ data class WorkPayPeriods(
         WORK_DATES_DATE],
     foreignKeys = [
         ForeignKey(
-            entity = WorkPayPeriods::class,
+            entity = PayPeriods::class,
             parentColumns = [PAY_PERIOD_EMPLOYER_ID, PAY_PERIOD_CUTOFF_DATE],
             childColumns = [WORK_DATES_EMPLOYER_ID, WORK_DATES_CUTOFF_DATE]
         )
@@ -110,7 +110,7 @@ data class WorkDatesExtras(
         WORK_PAY_PERIOD_EXTRA_CUTOFF_DATE,
         WORK_PAY_PERIOD_EXTRA_ID],
     foreignKeys = [ForeignKey(
-        entity = WorkPayPeriods::class,
+        entity = PayPeriods::class,
         parentColumns = [PAY_PERIOD_EMPLOYER_ID, PAY_PERIOD_CUTOFF_DATE],
         childColumns = [WORK_PAY_PERIOD_EXTRA_EMPLOYER_ID,
             WORK_PAY_PERIOD_EXTRA_CUTOFF_DATE]
@@ -133,11 +133,11 @@ data class WorkPayPeriodExtras(
         PAY_PERIOD_TAX_EMPLOYER_ID,
         PAY_PERIOD_TAX_TYPE],
     foreignKeys = [ForeignKey(
-        entity = WorkPayPeriods::class,
+        entity = PayPeriods::class,
         parentColumns = [PAY_PERIOD_CUTOFF_DATE, PAY_PERIOD_EMPLOYER_ID],
         childColumns = [PAY_PERIOD_TAX_CUTOFF_DATE, PAY_PERIOD_TAX_EMPLOYER_ID]
     ), ForeignKey(
-        entity = WorkTaxTypes::class,
+        entity = TaxTypes::class,
         parentColumns = [WORK_TAX_TYPE],
         childColumns = [PAY_PERIOD_TAX_TYPE]
     )]

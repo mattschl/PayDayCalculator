@@ -17,7 +17,7 @@ import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeAddBinding
-import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
 
 class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
 
@@ -28,7 +28,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
 
     //    private val df = DateFunctions()
 //    private val cf = CommonFunctions()
-    private val taxTypeList = ArrayList<WorkTaxTypes>()
+    private val taxTypeList = ArrayList<TaxTypes>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -87,7 +87,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
             val message = checkTaxType()
             if (message == ANSWER_OK) {
                 mainActivity.workTaxViewModel.insertTaxType(
-                    WorkTaxTypes(
+                    TaxTypes(
                         etTaxType.text.toString()
                     )
                 )
@@ -115,7 +115,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
             var nameFound = false
             if (taxTypeList.isNotEmpty()) {
                 for (taxType in taxTypeList) {
-                    if (taxType.workTaxType == etTaxType.text.toString()) {
+                    if (taxType.taxType == etTaxType.text.toString()) {
                         nameFound = true
                         break
                     }

@@ -8,22 +8,22 @@ import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_VERSION
 import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.Employers
+import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
+import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkDatesExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraFrequencies
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
 import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodTax
-import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
-import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
 
 
 @Database(
     entities = [
         Employers::class,
-        WorkPayPeriods::class,
+        PayPeriods::class,
         WorkDates::class,
         WorkDatesExtras::class,
         WorkPayPeriodExtras::class,
@@ -31,7 +31,7 @@ import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
         WorkExtrasDefinitions::class,
         WorkExtraFrequencies::class,
         WorkTaxRules::class,
-        WorkTaxTypes::class,
+        TaxTypes::class,
         TaxEffectiveDates::class,
         EmployerTaxTypes::class,
     ],

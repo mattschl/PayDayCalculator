@@ -16,7 +16,7 @@ import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeUpdateBinding
-import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
 
 
 class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
@@ -28,7 +28,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
 //    private val df = DateFunctions()
 
     //    private val cf = CommonFunctions()
-    private val taxTypeList = ArrayList<WorkTaxTypes>()
+    private val taxTypeList = ArrayList<TaxTypes>()
     private lateinit var curTaxType: String
 
     override fun onCreateView(
@@ -98,7 +98,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
 
     private fun deleteTaxType() {
         mainActivity.workTaxViewModel.updateWorkTaxType(
-            WorkTaxTypes(
+            TaxTypes(
                 curTaxType
             )
         )
@@ -109,7 +109,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
         val message = checkTaxType()
         if (message == ANSWER_OK) {
             mainActivity.workTaxViewModel.updateWorkTaxType(
-                WorkTaxTypes(
+                TaxTypes(
                     binding.etTaxType.text.toString()
                 )
             )
@@ -128,7 +128,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
             var nameFound = false
             if (taxTypeList.isNotEmpty()) {
                 for (taxType in taxTypeList) {
-                    if (taxType.workTaxType == etTaxType.text.toString()) {
+                    if (taxType.taxType == etTaxType.text.toString()) {
                         nameFound = true
                         break
                     }

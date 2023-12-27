@@ -8,8 +8,8 @@ import androidx.room.Query
 import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYER_TAX_TYPES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_TAX_EFFECTIVE_DATES
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_TAX_TYPES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_RULES
-import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_TYPES
 import ms.mattschlenkrich.paydaycalculator.common.TAX_EFFECTIVE_DATE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_EFFECTIVE_DATE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_LEVEL
@@ -17,22 +17,22 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
 import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
+import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
-import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
 
 @Dao
 interface WorkTaxDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertTaxType(workTaxType: WorkTaxTypes)
+    suspend fun insertTaxType(workTaxType: TaxTypes)
 
     @Update
-    suspend fun updateWorkTaxType(workTaxType: WorkTaxTypes)
+    suspend fun updateWorkTaxType(workTaxType: TaxTypes)
 
     @Query(
-        "SELECT * FROM $TABLE_WORK_TAX_TYPES " +
+        "SELECT * FROM $TABLE_TAX_TYPES " +
                 "ORDER BY $WORK_TAX_TYPE COLLATE NOCASE"
     )
-    fun getTaxTypes(): LiveData<List<WorkTaxTypes>>
+    fun getTaxTypes(): LiveData<List<TaxTypes>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTaxRule(taxRule: WorkTaxRules)

@@ -155,7 +155,7 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
         ) { types ->
             taxTypeAdapter.clear()
             types.listIterator().forEach {
-                taxTypeAdapter.add(it.workTaxType)
+                taxTypeAdapter.add(it.taxType)
             }
             taxTypeAdapter.add(getString(R.string.add_a_new_tax_type))
         }
@@ -198,9 +198,9 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
         }
     }
 
-    private fun updateUI(taxRules: List<WorkTaxRules>?) {
+    private fun updateUI(workTaxRules: List<WorkTaxRules>?) {
         binding.apply {
-            if (taxRules.isNullOrEmpty()) {
+            if (workTaxRules.isNullOrEmpty()) {
                 rvTaxRules.visibility = View.GONE
                 crdNoInfo.visibility = View.VISIBLE
             } else {

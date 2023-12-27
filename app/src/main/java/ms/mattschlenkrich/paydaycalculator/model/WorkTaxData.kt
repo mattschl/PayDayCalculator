@@ -7,8 +7,8 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_TAX_EFFECTIVE_DATES
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_TAX_TYPES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_RULES
-import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_TYPES
 import ms.mattschlenkrich.paydaycalculator.common.TAX_EFFECTIVE_DATE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_EFFECTIVE_DATE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_LEVEL
@@ -16,12 +16,12 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
 
 @Entity(
-    tableName = TABLE_WORK_TAX_TYPES
+    tableName = TABLE_TAX_TYPES
 )
 @Parcelize
-data class WorkTaxTypes(
+data class TaxTypes(
     @PrimaryKey
-    val workTaxType: String,
+    val taxType: String,
 ) : Parcelable
 
 @Entity(
@@ -40,7 +40,7 @@ data class TaxEffectiveDates(
         WORK_TAX_RULE_LEVEL,
         WORK_TAX_RULE_EFFECTIVE_DATE],
     foreignKeys = [ForeignKey(
-        entity = WorkTaxTypes::class,
+        entity = TaxTypes::class,
         parentColumns = [WORK_TAX_TYPE],
         childColumns = [WORK_TAX_RULE_TYPE]
     ), ForeignKey(

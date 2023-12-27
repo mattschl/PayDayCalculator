@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
+import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
-import ms.mattschlenkrich.paydaycalculator.model.WorkTaxTypes
 import ms.mattschlenkrich.paydaycalculator.repository.WorkTaxRepository
 
 class WorkTaxViewModel(
@@ -15,12 +15,12 @@ class WorkTaxViewModel(
     private val workTaxRepository: WorkTaxRepository
 ) : AndroidViewModel(app) {
 
-    fun insertTaxType(workTaxType: WorkTaxTypes) =
+    fun insertTaxType(workTaxType: TaxTypes) =
         viewModelScope.launch {
             workTaxRepository.insertTaxType(workTaxType)
         }
 
-    fun updateWorkTaxType(workTaxType: WorkTaxTypes) =
+    fun updateWorkTaxType(workTaxType: TaxTypes) =
         viewModelScope.launch {
             workTaxRepository.updateWorkTaxType(workTaxType)
         }

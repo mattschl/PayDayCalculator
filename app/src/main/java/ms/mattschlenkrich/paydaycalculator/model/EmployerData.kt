@@ -44,7 +44,7 @@ data class Employers(
         parentColumns = [EMPLOYER_ID],
         childColumns = [EMPLOYER_TAX_RULES_EMPLOYER_ID]
     ), ForeignKey(
-        entity = WorkTaxTypes::class,
+        entity = TaxTypes::class,
         parentColumns = [WORK_TAX_TYPE],
         childColumns = [EMPLOYER_TAX_RULES_TAX_TYPE]
     )]

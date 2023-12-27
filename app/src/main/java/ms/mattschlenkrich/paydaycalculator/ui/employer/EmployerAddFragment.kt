@@ -174,7 +174,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
                 mainActivity.workTaxViewModel.insertEmployerTaxType(
                     EmployerTaxTypes(
                         etrEmployerId = employerId,
-                        etrTaxType = it.workTaxType,
+                        etrTaxType = it.taxType,
                         etrInclude = true,
                         etrIsDeleted = false,
                         etrUpdateTime = df.getCurrentTimeAsString()
