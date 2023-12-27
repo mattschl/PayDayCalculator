@@ -40,11 +40,11 @@ interface WorkTaxDao {
     @Update
     suspend fun updateTaxRule(taxRule: WorkTaxRules)
 
-    @Query(
-        "SELECT * FROM $TABLE_WORK_TAX_RULES " +
-                "ORDER BY wtType COLLATE NOCASE"
-    )
-    fun getTaxRules(): LiveData<List<WorkTaxRules>>
+//    @Query(
+//        "SELECT * FROM $TABLE_WORK_TAX_RULES " +
+//                "ORDER BY wtType COLLATE NOCASE"
+//    )
+//    fun getTaxRules(): LiveData<List<WorkTaxRules>>
 
     @Query(
         "SELECT * FROM $TABLE_WORK_TAX_RULES " +
@@ -65,7 +65,7 @@ interface WorkTaxDao {
     )
     fun getTaxEffectiveDates(): LiveData<List<TaxEffectiveDates>>
 
-    @Insert()
+    @Insert
     suspend fun insertEmployerTaxType(employerTaxTypes: EmployerTaxTypes)
 
     @Query(

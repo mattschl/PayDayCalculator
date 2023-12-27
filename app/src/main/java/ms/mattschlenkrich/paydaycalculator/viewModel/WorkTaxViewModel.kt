@@ -38,9 +38,6 @@ class WorkTaxViewModel(
             workTaxRepository.updateTaxRule(taxRule)
         }
 
-    fun getTaxRules() =
-        workTaxRepository.getTaxRules()
-
     fun getTaxRules(taxType: String, effectiveDate: String) =
         workTaxRepository.getTaxRules(taxType, effectiveDate)
 

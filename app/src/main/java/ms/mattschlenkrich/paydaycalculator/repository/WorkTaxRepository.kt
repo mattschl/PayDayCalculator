@@ -22,9 +22,6 @@ class WorkTaxRepository(private val db: PayDatabase) {
     suspend fun updateTaxRule(taxRule: WorkTaxRules) =
         db.getWorkTaxDao().updateTaxRule(taxRule)
 
-    fun getTaxRules() =
-        db.getWorkTaxDao().getTaxRules()
-
     fun getTaxRules(taxType: String, effectiveDate: String) =
         db.getWorkTaxDao().getTaxRules(taxType, effectiveDate)
 
