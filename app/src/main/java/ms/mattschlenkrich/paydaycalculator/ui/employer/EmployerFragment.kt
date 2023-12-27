@@ -60,7 +60,7 @@ class EmployerFragment : Fragment(R.layout.fragment_employer) {
             adapter = employerAdapter
         }
         activity?.let {
-            mainActivity.employerViewModel.getCurrentEmployers().observe(
+            mainActivity.employerViewModel.getEmployers().observe(
                 viewLifecycleOwner
             ) { employer ->
                 employerAdapter.differ.submitList(employer)

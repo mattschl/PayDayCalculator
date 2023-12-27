@@ -66,4 +66,5 @@
     <string name="choose_a_date_to_project_forward_to">Choose a date to project forward to</string>
     <string name="taxes">Taxes</string>
     <string name="extra_pay_items">Extra pay Items</string>
+    <string name="tax_levels">Tax Levels</string>
 </resources>

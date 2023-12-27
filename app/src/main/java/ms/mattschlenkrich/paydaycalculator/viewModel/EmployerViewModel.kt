@@ -22,6 +22,6 @@ class EmployerViewModel(
             employerRepository.updateEmployer(employers)
         }
 
-    fun getCurrentEmployers() =
-        employerRepository.getCurrentEmployers()
+    fun getEmployers() =
+        employerRepository.getEmployers()
 }

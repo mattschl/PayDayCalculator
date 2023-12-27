@@ -13,10 +13,17 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
+import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeAddBinding
+import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
 
 class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
@@ -26,8 +33,9 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
 
-    //    private val df = DateFunctions()
-//    private val cf = CommonFunctions()
+    private val df = DateFunctions()
+
+    //    private val cf = CommonFunctions()
     private val taxTypeList = ArrayList<TaxTypes>()
 
     override fun onCreateView(
@@ -86,12 +94,18 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         binding.apply {
             val message = checkTaxType()
             if (message == ANSWER_OK) {
+                val taxType = etTaxType.text.toString()
                 mainActivity.workTaxViewModel.insertTaxType(
                     TaxTypes(
-                        etTaxType.text.toString()
+                        taxType
                     )
                 )
-                gotoCallingFragment()
+                CoroutineScope(Dispatchers.Main).launch {
+                    delay(WAIT_250)
+                    attachToEmployers(taxType)
+                    delay(WAIT_250)
+                    gotoCallingFragment()
+                }
             } else {
                 Toast.makeText(
                     mView.context,
@@ -100,6 +114,24 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
                 ).show()
             }
 
+        }
+    }
+
+    private fun attachToEmployers(taxType: String) {
+        mainActivity.employerViewModel.getEmployers().observe(
+            viewLifecycleOwner
+        ) { employers ->
+            employers.forEach {
+                mainActivity.workTaxViewModel.insertEmployerTaxType(
+                    EmployerTaxTypes(
+                        etrEmployerId = it.employerId,
+                        etrTaxType = taxType,
+                        etrInclude = false,
+                        etrIsDeleted = false,
+                        etrUpdateTime = df.getCurrentTimeAsString()
+                    )
+                )
+            }
         }
     }
 

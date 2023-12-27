@@ -27,7 +27,6 @@ import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_SEMI_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.Employers
-import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModel
 
 private const val TAG = "EmployerAddFragment"
 
@@ -37,7 +36,6 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private lateinit var employerViewModel: EmployerViewModel
     private val df = DateFunctions()
     private val cf = CommonFunctions()
     private val employerList = ArrayList<Employers>()
@@ -56,12 +54,35 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        employerViewModel = mainActivity.employerViewModel
         getEmployerList()
         fillSpinners()
         fillMenu()
         setDateAction()
         setSpinnerActions()
+        setOtherActions()
+    }
+
+    private fun setOtherActions() {
+        binding.apply {
+            crdTaxes.setOnClickListener {
+                AlertDialog.Builder(mView.context)
+                    .setMessage(
+                        "You cannot add taxes until the employer is saved. " +
+                                "Save the employer first and go to edit mode."
+                    )
+                    .setNegativeButton("OK", null)
+                    .show()
+            }
+            crdExtras.setOnClickListener {
+                AlertDialog.Builder(mView.context)
+                    .setMessage(
+                        "You cannot add any extra credits or deductions until the employer is saved. " +
+                                "Save the employer first and go to edit mode."
+                    )
+                    .setNegativeButton("OK", null)
+                    .show()
+            }
+        }
     }
 
     private fun setSpinnerActions() {
@@ -151,7 +172,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
             val message = checkEmployer()
             if (message == ANSWER_OK) {
                 val curEmployer = getCurrentEmployer()
-                employerViewModel.insertEmployer(
+                mainActivity.employerViewModel.insertEmployer(
                     curEmployer
                 )
                 addEmployerTaxRules(curEmployer.employerId)
@@ -175,7 +196,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
                     EmployerTaxTypes(
                         etrEmployerId = employerId,
                         etrTaxType = it.taxType,
-                        etrInclude = true,
+                        etrInclude = false,
                         etrIsDeleted = false,
                         etrUpdateTime = df.getCurrentTimeAsString()
                     )
@@ -188,7 +209,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         AlertDialog.Builder(mView.context)
             .setTitle("Choose next steps for ${curEmployer.employerName}")
             .setMessage(
-                "The taxes have been set up to be deducted automatically. \n" +
+                "The taxes have been set up automatically. \n" +
                         "Would you like to open this employer in EDIT mode to edit taxes, " +
                         "create extra deductions or extra items added to paychecks?"
             )
@@ -286,7 +307,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun getEmployerList() {
-        employerViewModel.getCurrentEmployers().observe(viewLifecycleOwner) { employers ->
+        mainActivity.employerViewModel.getEmployers().observe(viewLifecycleOwner) { employers ->
             employerList.clear()
             employers.listIterator().forEach {
                 employerList.add(it)

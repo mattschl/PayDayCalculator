@@ -65,7 +65,7 @@ interface WorkTaxDao {
     )
     fun getTaxEffectiveDates(): LiveData<List<TaxEffectiveDates>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertEmployerTaxType(employerTaxTypes: EmployerTaxTypes)
 
     @Query(

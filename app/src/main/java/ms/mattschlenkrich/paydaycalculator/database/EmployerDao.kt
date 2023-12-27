@@ -22,6 +22,6 @@ interface EmployerDao {
         "SELECT * FROM $TABLE_EMPLOYERS " +
                 "ORDER BY $EMPLOYER_NAME COLLATE NOCASE"
     )
-    fun getCurrentEmployers(): LiveData<List<Employers>>
+    fun getEmployers(): LiveData<List<Employers>>
 
 }

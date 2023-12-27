@@ -13,6 +13,6 @@ class EmployerRepository(private val db: PayDatabase) {
     suspend fun updateEmployer(employers: Employers) =
         db.getEmployerDao().updateEmployer(employers)
 
-    fun getCurrentEmployers() =
-        db.getEmployerDao().getCurrentEmployers()
+    fun getEmployers() =
+        db.getEmployerDao().getEmployers()
 }

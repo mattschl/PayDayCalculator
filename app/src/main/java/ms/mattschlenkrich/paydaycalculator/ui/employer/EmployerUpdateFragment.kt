@@ -318,7 +318,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     }
 
     private fun getEmployerList() {
-        employerViewModel.getCurrentEmployers().observe(
+        employerViewModel.getEmployers().observe(
             viewLifecycleOwner
         ) { employers ->
             employerList.clear()
