@@ -15,9 +15,9 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
+import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
-
 
 class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
 
@@ -25,11 +25,11 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-//    private val df = DateFunctions()
+    private val df = DateFunctions()
 
     //    private val cf = CommonFunctions()
     private val taxTypeList = ArrayList<TaxTypes>()
-    private lateinit var curTaxType: String
+    private lateinit var curTaxType: TaxTypes
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,7 +54,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
         if (mainActivity.mainViewModel.getTaxType() != null) {
             curTaxType = mainActivity.mainViewModel.getTaxType()!!
             binding.apply {
-                etTaxType.setText(curTaxType)
+                etTaxType.setText(curTaxType.taxType)
             }
         }
     }
@@ -98,9 +98,10 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
 
     private fun deleteTaxType() {
         mainActivity.workTaxViewModel.updateWorkTaxType(
-            TaxTypes(
-                curTaxType
-            )
+            curTaxType.taxType,
+            curTaxType.taxTypeId,
+            true,
+            df.getCurrentTimeAsString()
         )
         gotoCallingFragment()
     }
@@ -109,9 +110,10 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
         val message = checkTaxType()
         if (message == ANSWER_OK) {
             mainActivity.workTaxViewModel.updateWorkTaxType(
-                TaxTypes(
-                    binding.etTaxType.text.toString()
-                )
+                binding.etTaxType.text.toString(),
+                curTaxType.taxTypeId,
+                false,
+                df.getCurrentTimeAsString()
             )
             gotoCallingFragment()
         } else {
@@ -138,7 +140,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
             val errorMessage = if (etTaxType.text.isNullOrBlank()) {
                 "    ERROR!!\n" +
                         "The tax type must have a description"
-            } else if (nameFound && etTaxType.text.toString() != curTaxType) {
+            } else if (nameFound && etTaxType.text.toString() != curTaxType.taxType) {
                 "    ERROR!!\n" +
                         "This tax type already exists!"
             } else {

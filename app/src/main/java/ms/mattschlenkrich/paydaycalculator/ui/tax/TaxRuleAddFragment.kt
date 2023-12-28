@@ -73,8 +73,8 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
 
     private fun fillValues() {
         binding.apply {
-            tvTaxRuleType.text = mainActivity.mainViewModel.getTaxType()
-            tvEffectiveDate.text = mainActivity.mainViewModel.getEffectiveDate()
+            tvTaxRuleType.text = mainActivity.mainViewModel.getTaxType()!!.taxType
+            tvEffectiveDate.text = mainActivity.mainViewModel.getEffectiveDate()!!.tdEffectiveDate
             tvTaxRuleLevel.text = mainActivity.mainViewModel.getTaxLevel().toString()
         }
     }

@@ -16,21 +16,29 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
 
 @Entity(
-    tableName = TABLE_TAX_TYPES
+    tableName = TABLE_TAX_TYPES,
+    indices = [Index(value = ["taxTypeId"], unique = true)]
 )
 @Parcelize
 data class TaxTypes(
     @PrimaryKey
     val taxType: String,
+    val taxTypeId: Long,
+    val ttIsDeleted: Boolean,
+    val ttUpdateTime: String,
 ) : Parcelable
 
 @Entity(
-    tableName = TABLE_TAX_EFFECTIVE_DATES
+    tableName = TABLE_TAX_EFFECTIVE_DATES,
+    indices = [Index(value = ["tdEffectiveDateId"], unique = true)]
 )
 @Parcelize
 data class TaxEffectiveDates(
     @PrimaryKey
     val tdEffectiveDate: String,
+    val tdEffectiveDateId: Long,
+    val tdIsDeleted: Boolean,
+    val tdUpdateTime: String,
 ) : Parcelable
 
 

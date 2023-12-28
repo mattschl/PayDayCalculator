@@ -10,8 +10,10 @@ class WorkTaxRepository(private val db: PayDatabase) {
     suspend fun insertTaxType(workTaxType: TaxTypes) =
         db.getWorkTaxDao().insertTaxType(workTaxType)
 
-    suspend fun updateWorkTaxType(workTaxType: TaxTypes) =
-        db.getWorkTaxDao().updateWorkTaxType(workTaxType)
+    suspend fun updateWorkTaxType(
+        taxType: String, taxTypeId: Long, isDeleted: Boolean, updateTime: String
+    ) =
+        db.getWorkTaxDao().updateWorkTaxType(taxType, taxTypeId, isDeleted, updateTime)
 
     fun getTaxTypes() =
         db.getWorkTaxDao().getTaxTypes()

@@ -25,11 +25,20 @@ interface WorkTaxDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTaxType(workTaxType: TaxTypes)
 
-    @Update
-    suspend fun updateWorkTaxType(workTaxType: TaxTypes)
+    @Query(
+        "UPDATE $TABLE_TAX_TYPES " +
+                "SET taxType = :taxType, " +
+                "ttIsDeleted = :isDeleted, " +
+                "ttUpdateTime = :updateTime " +
+                "WHERE taxTypeId = :taxTypeId"
+    )
+    suspend fun updateWorkTaxType(
+        taxType: String, taxTypeId: Long, isDeleted: Boolean, updateTime: String
+    )
 
     @Query(
         "SELECT * FROM $TABLE_TAX_TYPES " +
+                "WHERE ttIsDeleted = 0 " +
                 "ORDER BY $WORK_TAX_TYPE COLLATE NOCASE"
     )
     fun getTaxTypes(): LiveData<List<TaxTypes>>

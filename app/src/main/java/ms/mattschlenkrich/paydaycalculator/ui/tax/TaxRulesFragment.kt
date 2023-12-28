@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.TaxRuleAdapter
+import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxRulesBinding
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
@@ -26,6 +27,7 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
+    private val cf = CommonFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -90,7 +92,10 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
                 }"
                 mainActivity.workTaxViewModel.insertEffectiveDate(
                     TaxEffectiveDates(
-                        display
+                        display,
+                        cf.generateId(),
+                        false,
+                        df.getCurrentTimeAsString()
                     )
                 )
             },
@@ -218,10 +223,10 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
 
     private fun gotoTaxRuleAdd() {
         binding.apply {
-            mainActivity.mainViewModel.setTaxType(
+            mainActivity.mainViewModel.setTaxTypeString(
                 spTaxType.selectedItem.toString()
             )
-            mainActivity.mainViewModel.setEffectiveDate(
+            mainActivity.mainViewModel.setEffectiveDateString(
                 spEffectiveDate.selectedItem.toString()
             )
             if (rvTaxRules.adapter != null) {

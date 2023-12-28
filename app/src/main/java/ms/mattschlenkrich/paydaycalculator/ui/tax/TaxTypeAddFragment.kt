@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
+import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeAddBinding
@@ -34,8 +35,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     private lateinit var mainActivity: MainActivity
 
     private val df = DateFunctions()
-
-    //    private val cf = CommonFunctions()
+    private val cf = CommonFunctions()
     private val taxTypeList = ArrayList<TaxTypes>()
 
     override fun onCreateView(
@@ -97,7 +97,10 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
                 val taxType = etTaxType.text.toString()
                 mainActivity.workTaxViewModel.insertTaxType(
                     TaxTypes(
-                        taxType
+                        taxType,
+                        cf.generateId(),
+                        false,
+                        df.getCurrentTimeAsString()
                     )
                 )
                 CoroutineScope(Dispatchers.Main).launch {
