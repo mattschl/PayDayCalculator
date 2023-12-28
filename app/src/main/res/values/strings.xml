@@ -68,4 +68,16 @@
     <string name="extra_pay_items">Extra pay Items</string>
     <string name="tax_levels">Tax Levels</string>
     <string name="no_extras_or_deductions_to_view">No extras or deductions to view</string>
+    <string name="for_employer">For Employer</string>
+    <string name="description">Description</string>
+    <string name="enter_description">Enter Description</string>
+    <string name="apply_to">Apply to:</string>
+    <string name="attach_this_to">Attach this to:</string>
+    <string name="apply_this_to">Apply this to:</string>
+    <string name="rate_or_value">Rate or Value</string>
+    <string name="enter_rate_or_value">Enter rate or value</string>
+    <string name="check_if_this_is_a_fixed_amount">Check if this is a fixed amount\n otherwise it will be a percentage</string>
+    <string name="enter_amount_or_percentage">Enter amount or percentage</string>
+    <string name="check_if_this_is_a_credit_n_otherwise_it_will_be_a_deduction">Check if this is a credit\n otherwise it will be a deduction</string>
+    <string name="check_if_this_is_a_default_n_otherwise_it_will_not_automatically_apply">Check if this is a default\n otherwise it will not automatically\n apply</string>
 </resources>

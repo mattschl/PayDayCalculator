@@ -7,14 +7,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerExtraDefinitionsBinding
+import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerExtraDefinitionsAddBinding
 
 
-class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_extra_definitions) {
+class EmployerExtraDefinitionsAddFragment : Fragment(
+    R.layout.fragment_employer_extra_definitions_add
+) {
 
-    @Suppress("PropertyName")
-    var _binding: FragmentEmployerExtraDefinitionsBinding? = null
-    val binding get() = _binding!!
+    private var _binding: FragmentEmployerExtraDefinitionsAddBinding? = null
+    private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
 
@@ -22,12 +23,12 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentEmployerExtraDefinitionsBinding.inflate(
+        _binding = FragmentEmployerExtraDefinitionsAddBinding.inflate(
             inflater, container, false
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "View Extra income or deductions"
+        mainActivity.title = "Add a definition"
         return mView
     }
 
