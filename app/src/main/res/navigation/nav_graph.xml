@@ -45,6 +45,9 @@
         <action
             android:id="@+id/action_employerUpdateFragment_to_employerFragment"
             app:destination="@id/employerFragment" />
+        <action
+            android:id="@+id/action_employerUpdateFragment_to_taxTypeFragment"
+            app:destination="@id/taxTypeFragment" />
     </fragment>
     <fragment
         android:id="@+id/taxTypeFragment"
@@ -57,6 +60,9 @@
         <action
             android:id="@+id/action_taxTypeFragment_to_taxTypeUpdateFragment"
             app:destination="@id/taxTypeUpdateFragment" />
+        <action
+            android:id="@+id/action_taxTypeFragment_to_employerUpdateFragment"
+            app:destination="@id/employerUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/taxTypeAddFragment"

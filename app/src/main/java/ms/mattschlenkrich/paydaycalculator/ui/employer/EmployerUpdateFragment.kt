@@ -39,7 +39,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
 
     // private val cf = CommonFunctions()
     private val employerList = ArrayList<Employers>()
-    private var newEmployer: Employers? = null
+    private var curEmployer: Employers? = null
     private var startDate = ""
 
     override fun onCreateView(
@@ -49,7 +49,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         _binding = FragmentEmployerUpdateBinding.inflate(inflater, container, false)
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = getString(R.string.update_this_employer)
+
         return mView
     }
 
@@ -70,33 +70,46 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
             fabDone.setOnClickListener {
                 updateEmployer()
             }
+            fabAddTax.setOnClickListener {
+                gotoTaxTypes()
+            }
         }
+    }
+
+    private fun gotoTaxTypes() {
+        mainActivity.mainViewModel.setEmployer(getCurrentEmployer())
+        mView.findNavController().navigate(
+            EmployerUpdateFragmentDirections
+                .actionEmployerUpdateFragmentToTaxTypeFragment()
+        )
     }
 
     private fun fillValues() {
         if (mainActivity.mainViewModel.getEmployer() != null) {
-            newEmployer = mainActivity.mainViewModel.getEmployer()!!
+            curEmployer = mainActivity.mainViewModel.getEmployer()!!
             binding.apply {
-                etName.setText(newEmployer!!.employerName)
+                mainActivity.title = getString(R.string.update) +
+                        curEmployer!!.employerName
+                etName.setText(curEmployer!!.employerName)
                 for (i in 0 until spFrequency.adapter.count) {
-                    if (spFrequency.getItemAtPosition(i) == newEmployer!!.payFrequency) {
+                    if (spFrequency.getItemAtPosition(i) == curEmployer!!.payFrequency) {
                         spFrequency.setSelection(i)
                         break
                     }
                 }
-                startDate = newEmployer!!.startDate
+                startDate = curEmployer!!.startDate
                 tvStartDate.text = df.getDisplayDate(startDate)
                 for (i in 0 until spDayOfWeek.adapter.count) {
-                    if (spDayOfWeek.getItemAtPosition(i) == newEmployer!!.dayOfWeek) {
+                    if (spDayOfWeek.getItemAtPosition(i) == curEmployer!!.dayOfWeek) {
                         spDayOfWeek.setSelection(i)
                         break
                     }
                 }
-                etDaysBefore.setText(newEmployer!!.cutoffDaysBefore.toString())
-                etMidMonthDate.setText(newEmployer!!.midMonthlyDate.toString())
-                etMainMonthDate.setText(newEmployer!!.mainMonthlyDate.toString())
+                etDaysBefore.setText(curEmployer!!.cutoffDaysBefore.toString())
+                etMidMonthDate.setText(curEmployer!!.midMonthlyDate.toString())
+                etMainMonthDate.setText(curEmployer!!.mainMonthlyDate.toString())
             }
-            fillTaxes(newEmployer!!.employerId)
+            fillTaxes(curEmployer!!.employerId)
         }
     }
 
@@ -211,7 +224,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         binding.apply {
             employerViewModel.updateEmployer(
                 Employers(
-                    newEmployer!!.employerId,
+                    curEmployer!!.employerId,
                     etName.text.toString(),
                     spFrequency.selectedItem.toString(),
                     startDate,
@@ -255,7 +268,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     private fun getCurrentEmployer(): Employers {
         binding.apply {
             return Employers(
-                newEmployer!!.employerId,
+                curEmployer!!.employerId,
                 etName.text.toString(),
                 spFrequency.selectedItem.toString(),
                 startDate,
@@ -283,7 +296,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
             val errorMessage = if (etName.text.isNullOrBlank()) {
                 "    ERROR!!\n" +
                         "The employer must have a name!"
-            } else if (nameFound && etName.text.toString() != newEmployer!!.employerName) {
+            } else if (nameFound && etName.text.toString() != curEmployer!!.employerName) {
                 "    ERROR!!\n" +
                         "This employer already exists!"
             } else if (etDaysBefore.text.isNullOrBlank()) {

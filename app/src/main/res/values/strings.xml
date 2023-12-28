@@ -83,4 +83,7 @@
     <string name="review_extra_credits_deductions">Review Extra Credits/Deductions</string>
     <string name="add_a_new_employer">* Add a New Employer *</string>
     <string name="no_employers_add_an_employer_through_the_employer_tab">No Employers - Add an Employer through the Employer Tab</string>
+    <string name="add_new_extra">Add New Extra</string>
+    <string name="update_employer">"Update Employer: "</string>
+    <string name="update">"Update: "</string>
 </resources>
