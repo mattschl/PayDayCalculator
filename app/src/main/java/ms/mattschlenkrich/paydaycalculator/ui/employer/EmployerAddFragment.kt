@@ -290,7 +290,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         binding.apply {
             val frequencyAdapter = ArrayAdapter(
                 mView.context, R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.pay_frequencies)
+                resources.getStringArray(R.array.pay_day_frequencies)
             )
             frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spFrequency.adapter = frequencyAdapter

@@ -80,4 +80,5 @@
     <string name="enter_amount_or_percentage">Enter amount or percentage</string>
     <string name="check_if_this_is_a_credit_n_otherwise_it_will_be_a_deduction">Check if this is a credit\n otherwise it will be a deduction</string>
     <string name="check_if_this_is_a_default_n_otherwise_it_will_not_automatically_apply">Check if this is a default\n otherwise it will not automatically\n apply</string>
+    <string name="review_extra_credits_deductions">Review Extra Credits/Deductions</string>
 </resources>

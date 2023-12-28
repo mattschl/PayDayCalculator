@@ -52,7 +52,8 @@ class MainActivity : AppCompatActivity() {
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menu.add(getString(R.string.review_tax_types))
-                menu.add(getString(R.string.review_work_extra_frequencies))
+                menu.add(getString(R.string.review_extra_credits_deductions))
+//                menu.add(getString(R.string.review_work_extra_frequencies))
 //                menu.add(getString(R.string.update_future_pay_dates))
                 menu.add(resources.getString(R.string.app_name))
             }
@@ -64,15 +65,10 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
 
-//                    getString(R.string.review_work_extra_frequencies) -> {
-//                        gotoWorkExtraFrequencies()
-//                        true
-//                    }
-
-//                    getString(R.string.update_future_pay_dates) -> {
-//                        updatePayDayPredictions()
-//                        true
-//                    }
+                    getString(R.string.review_extra_credits_deductions) -> {
+                        gotoExtras()
+                        true
+                    }
 
                     else -> {
                         false
@@ -101,18 +97,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun gotoExtras() {
+        findNavController(R.id.nav_host_fragment_container).navigate(
+            NavGraphDirections.actionGlobalEmployerExtraDefinitionsFragment()
+        )
+    }
+
     private fun gotoTaxRules() {
         findNavController(R.id.nav_host_fragment_container).navigate(
             NavGraphDirections.actionGlobalTaxRulesFragment()
         )
     }
-
-//    private fun gotoWorkExtraFrequencies() {
-//        findNavController(R.id.nav_host_fragment_container).navigate(
-//            NavGraphDirections.actionGlobalExtraFrequencyTypesFragment()
-//        )
-//    }
-
 
     private fun gotoTaxTypes() {
         findNavController(R.id.nav_host_fragment_container).navigate(

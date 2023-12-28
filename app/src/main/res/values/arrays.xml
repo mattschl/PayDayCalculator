@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="pay_frequencies">
+    <string-array name="pay_day_frequencies">
         <item>Bi-Weekly</item>
         <item>Weekly</item>
         <item>Semi-Monthly</item>
@@ -16,5 +16,12 @@
         <item>Thursday</item>
         <item>Week Day</item>
         <item>Any Day</item>
+    </string-array>
+    <string-array name="extra_frequencies">
+        <item>Hourly</item>
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Per Pay</item>
+        <item>Monthly</item>
     </string-array>
 </resources>
