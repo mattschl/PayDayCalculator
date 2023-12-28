@@ -67,4 +67,5 @@
     <string name="taxes">Taxes</string>
     <string name="extra_pay_items">Extra pay Items</string>
     <string name="tax_levels">Tax Levels</string>
+    <string name="no_extras_or_deductions_to_view">No extras or deductions to view</string>
 </resources>
