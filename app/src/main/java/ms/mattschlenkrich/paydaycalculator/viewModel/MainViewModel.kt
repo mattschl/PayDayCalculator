@@ -3,7 +3,6 @@ package ms.mattschlenkrich.paydaycalculator.viewModel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import ms.mattschlenkrich.paydaycalculator.model.Employers
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtraFrequencies
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
 
 class MainViewModel(
@@ -11,7 +10,6 @@ class MainViewModel(
 ) : AndroidViewModel(app) {
     private var employer: Employers? = null
     private var taxType: String? = null
-    private var extraFrequencyType: WorkExtraFrequencies? = null
     private var taxRule: WorkTaxRules? = null
     private var effectiveDate: String? = null
     private var taxLevel: Int? = null
@@ -32,10 +30,6 @@ class MainViewModel(
         taxType = newTaxType
     }
 
-    fun setExtraFrequencyType(newExtraFrequencyType: WorkExtraFrequencies?) {
-        extraFrequencyType = newExtraFrequencyType
-    }
-
     fun setTaxRule(newTaxRule: WorkTaxRules?) {
         taxRule = newTaxRule
     }
@@ -54,10 +48,6 @@ class MainViewModel(
 
     fun getTaxType(): String? {
         return taxType
-    }
-
-    fun getExtraFrequencyType(): WorkExtraFrequencies? {
-        return extraFrequencyType
     }
 
     fun getTaxRule(): WorkTaxRules? {

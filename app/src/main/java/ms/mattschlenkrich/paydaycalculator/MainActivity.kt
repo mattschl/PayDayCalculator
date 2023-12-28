@@ -64,10 +64,10 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
 
-                    getString(R.string.review_work_extra_frequencies) -> {
-                        gotoWorkExtraFrequencies()
-                        true
-                    }
+//                    getString(R.string.review_work_extra_frequencies) -> {
+//                        gotoWorkExtraFrequencies()
+//                        true
+//                    }
 
 //                    getString(R.string.update_future_pay_dates) -> {
 //                        updatePayDayPredictions()
@@ -107,11 +107,11 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun gotoWorkExtraFrequencies() {
-        findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalExtraFrequencyTypesFragment()
-        )
-    }
+//    private fun gotoWorkExtraFrequencies() {
+//        findNavController(R.id.nav_host_fragment_container).navigate(
+//            NavGraphDirections.actionGlobalExtraFrequencyTypesFragment()
+//        )
+//    }
 
 
     private fun gotoTaxTypes() {
