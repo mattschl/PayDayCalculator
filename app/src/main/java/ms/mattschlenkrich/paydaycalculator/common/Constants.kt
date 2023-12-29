@@ -139,3 +139,6 @@ const val WAIT_250 = 250L
 const val WAIT_500 = 500L
 const val WAIT_1000 = 1000L
 
+const val FRAG_EMPLOYER_UPDATE = "EmployerUpdateFragment"
+const val FRAG_TAX_RULES = "TaxRulesFragment"
+

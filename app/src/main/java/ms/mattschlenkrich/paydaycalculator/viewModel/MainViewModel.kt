@@ -17,6 +17,31 @@ class MainViewModel(
     private var effectiveDate: TaxEffectiveDates? = null
     private var effectiveDateString: String? = null
     private var taxLevel: Int? = null
+    private var callingFragment: String? = null
+
+    fun setCallingFragment(newFragment: String?) {
+        callingFragment = newFragment
+    }
+
+    fun addCallingFragment(newFragment: String) {
+        if (callingFragment != null) {
+            callingFragment += ", $newFragment"
+        } else {
+            callingFragment = newFragment
+        }
+    }
+
+    fun removeCallingFragment(oldFragment: String) {
+        callingFragment = if (callingFragment != null) {
+            callingFragment!!.replace(", $oldFragment", "")
+        } else {
+            null
+        }
+    }
+
+    fun getCallingFragment(): String? {
+        return callingFragment
+    }
 
     fun setEffectiveDateString(newDate: String?) {
         effectiveDateString = newDate

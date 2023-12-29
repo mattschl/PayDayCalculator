@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.ui.tax
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -22,6 +23,7 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_EMPLOYER_UPDATE
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
@@ -94,20 +96,20 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         binding.apply {
             val message = checkTaxType()
             if (message == ANSWER_OK) {
-                val taxType = etTaxType.text.toString()
+                val taxType = TaxTypes(
+                    etTaxType.text.toString(),
+                    cf.generateId(),
+                    false,
+                    df.getCurrentTimeAsString()
+                )
                 mainActivity.workTaxViewModel.insertTaxType(
-                    TaxTypes(
-                        taxType,
-                        cf.generateId(),
-                        false,
-                        df.getCurrentTimeAsString()
-                    )
+                    taxType
                 )
                 CoroutineScope(Dispatchers.Main).launch {
                     delay(WAIT_250)
                     attachToEmployers(taxType)
                     delay(WAIT_250)
-                    gotoCallingFragment()
+                    gotoNextStep(taxType)
                 }
             } else {
                 Toast.makeText(
@@ -120,7 +122,24 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         }
     }
 
-    private fun attachToEmployers(taxType: String) {
+    private fun gotoNextStep(taxType: TaxTypes) {
+        AlertDialog.Builder(mView.context)
+            .setTitle("Choose next steps for ${taxType.taxType}")
+            .setMessage(
+                "The tax type has been added but there are no rules yet. " +
+                        "Would you like to edit those rules now?"
+            )
+            .setPositiveButton("Yes") { _, _ ->
+                mainActivity.mainViewModel.setTaxType(taxType)
+                gotoTaxRules()
+            }
+            .setNegativeButton("No") { _, _ ->
+                gotoCallingFragment()
+            }
+            .show()
+    }
+
+    private fun attachToEmployers(taxType: TaxTypes) {
         mainActivity.employerViewModel.getEmployers().observe(
             viewLifecycleOwner
         ) { employers ->
@@ -128,7 +147,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
                 mainActivity.workTaxViewModel.insertEmployerTaxType(
                     EmployerTaxTypes(
                         etrEmployerId = it.employerId,
-                        etrTaxType = taxType,
+                        etrTaxType = taxType.taxType,
                         etrInclude = false,
                         etrIsDeleted = false,
                         etrUpdateTime = df.getCurrentTimeAsString()
@@ -139,9 +158,34 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     }
 
     private fun gotoCallingFragment() {
+        val callingFragment = mainActivity.mainViewModel.getCallingFragment()
+        if (callingFragment != null) {
+            if (callingFragment.contains(FRAG_EMPLOYER_UPDATE)) {
+                gotoEmployerUpdate()
+            } else {
+                gotoTaxTypes()
+            }
+        }
+    }
+
+    private fun gotoEmployerUpdate() {
+        mView.findNavController().navigate(
+            TaxTypeAddFragmentDirections
+                .actionTaxTypeAddFragmentToEmployerUpdateFragment()
+        )
+    }
+
+    private fun gotoTaxTypes() {
         mView.findNavController().navigate(
             TaxTypeAddFragmentDirections
                 .actionTaxTypeAddFragmentToTaxTypeFragment()
+        )
+    }
+
+    private fun gotoTaxRules() {
+        mView.findNavController().navigate(
+            TaxTypeAddFragmentDirections
+                .actionTaxTypeAddFragmentToTaxRulesFragment()
         )
     }
 

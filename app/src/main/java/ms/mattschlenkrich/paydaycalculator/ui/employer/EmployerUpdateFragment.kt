@@ -22,11 +22,14 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.EmployerTaxTypeAdapter
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_EMPLOYER_UPDATE
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_SEMI_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModel
+
+private const val TAG = FRAG_EMPLOYER_UPDATE
 
 class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
 
@@ -71,16 +74,30 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
                 updateEmployer()
             }
             fabAddTax.setOnClickListener {
-                gotoTaxTypes()
+                gotoTaxTypesAdd()
+            }
+            lblTaxes.setOnLongClickListener {
+                gotoTaxRules()
+                false
             }
         }
     }
 
-    private fun gotoTaxTypes() {
+    private fun gotoTaxRules() {
         mainActivity.mainViewModel.setEmployer(getCurrentEmployer())
+        mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
             EmployerUpdateFragmentDirections
-                .actionEmployerUpdateFragmentToTaxTypeFragment()
+                .actionEmployerUpdateFragmentToTaxRulesFragment()
+        )
+    }
+
+    private fun gotoTaxTypesAdd() {
+        mainActivity.mainViewModel.setEmployer(getCurrentEmployer())
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mView.findNavController().navigate(
+            EmployerUpdateFragmentDirections
+                .actionEmployerUpdateFragmentToTaxTypeAddFragment()
         )
     }
 

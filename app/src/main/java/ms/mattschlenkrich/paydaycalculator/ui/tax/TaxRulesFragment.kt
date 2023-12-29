@@ -16,9 +16,12 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.TaxRuleAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxRulesBinding
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
+
+const val TAG = FRAG_TAX_RULES
 
 class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
 
@@ -47,8 +50,24 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
         setActions()
         fillTaxTypes()
         fillEffectiveDates()
+        fillValues()
         selectTaxType()
         selectEffectiveDate()
+    }
+
+    private fun fillValues() {
+        binding.apply {
+            if (mainActivity.mainViewModel.getTaxType() != null) {
+                for (i in 0 until spTaxType.adapter.count) {
+                    if (spTaxType.getItemAtPosition(i) ==
+                        mainActivity.mainViewModel.getTaxType()!!.taxType
+                    ) {
+                        spTaxType.setSelection(i)
+                        break
+                    }
+                }
+            }
+        }
     }
 
     private fun selectEffectiveDate() {
@@ -62,7 +81,9 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
                         id: Long
                     ) {
                         if (spEffectiveDate.selectedItem.toString() ==
-                            getString(R.string.add_new_effective_date)
+                            getString(R.string.add_new_effective_date) &&
+                            spTaxType.selectedItem.toString() !=
+                            getString(R.string.add_a_new_tax_type)
                         ) {
                             getNewEffectiveDate()
                         } else {
@@ -98,6 +119,7 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
                         df.getCurrentTimeAsString()
                     )
                 )
+                fillTaxRuleList()
             },
             curDateAll[0].toInt(),
             curDateAll[1].toInt() - 1,
@@ -244,6 +266,7 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
     }
 
     private fun gotoTaxTypeAdd() {
+        mainActivity.mainViewModel.addCallingFragment(TAG)
         mView.findNavController().navigate(
             TaxRulesFragmentDirections
                 .actionTaxRulesFragmentToTaxTypeAddFragment()

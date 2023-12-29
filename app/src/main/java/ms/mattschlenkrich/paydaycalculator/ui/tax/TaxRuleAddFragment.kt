@@ -18,6 +18,7 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxRuleAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
 
@@ -73,8 +74,8 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
 
     private fun fillValues() {
         binding.apply {
-            tvTaxRuleType.text = mainActivity.mainViewModel.getTaxType()!!.taxType
-            tvEffectiveDate.text = mainActivity.mainViewModel.getEffectiveDate()!!.tdEffectiveDate
+            tvTaxRuleType.text = mainActivity.mainViewModel.getTaxTypeString()
+            tvEffectiveDate.text = mainActivity.mainViewModel.getEffectiveDateString()
             tvTaxRuleLevel.text = mainActivity.mainViewModel.getTaxLevel().toString()
         }
     }
@@ -134,6 +135,16 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
     }
 
     private fun gotoCallingFragment() {
+        val callingFragment = mainActivity.mainViewModel.getCallingFragment()
+        if (callingFragment != null) {
+            if (callingFragment.contains(FRAG_TAX_RULES)) {
+                gotoTaxRules()
+            }
+        }
+
+    }
+
+    private fun gotoTaxRules() {
         mView.findNavController().navigate(
             TaxRuleAddFragmentDirections
                 .actionTaxRuleAddFragmentToTaxRulesFragment()
