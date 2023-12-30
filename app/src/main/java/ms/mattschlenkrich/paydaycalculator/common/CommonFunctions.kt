@@ -51,4 +51,15 @@ class CommonFunctions {
     fun displayPercentFromDouble(num: Double): String {
         return ((num * 10000).roundToInt() / 100.0).toString() + "%"
     }
+
+    fun getDoubleFromDollarOrPercent(numString: String): Double {
+        return if (numString.contains("%")) {
+            numString.replace("%", "").toDouble()
+        } else if (numString.contains("$")) {
+            numString.replace("$", "").replace(",", "")
+                .toDouble()
+        } else {
+            numString.toDouble()
+        }
+    }
 }

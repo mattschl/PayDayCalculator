@@ -24,7 +24,8 @@ import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_EMPLOYER_UPDATE
-import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_TAX_RULES
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
@@ -106,9 +107,9 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
                     taxType
                 )
                 CoroutineScope(Dispatchers.Main).launch {
-                    delay(WAIT_250)
+                    delay(WAIT_500)
                     attachToEmployers(taxType)
-                    delay(WAIT_250)
+                    delay(WAIT_500)
                     gotoNextStep(taxType)
                 }
             } else {
@@ -131,9 +132,12 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
             )
             .setPositiveButton("Yes") { _, _ ->
                 mainActivity.mainViewModel.setTaxType(taxType)
+                mainActivity.mainViewModel.setTaxTypeString(taxType.taxType)
                 gotoTaxRules()
             }
             .setNegativeButton("No") { _, _ ->
+                mainActivity.mainViewModel.setTaxType(taxType)
+                mainActivity.mainViewModel.setTaxTypeString(taxType.taxType)
                 gotoCallingFragment()
             }
             .show()
@@ -162,6 +166,9 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         if (callingFragment != null) {
             if (callingFragment.contains(FRAG_EMPLOYER_UPDATE)) {
                 gotoEmployerUpdate()
+            } else if (callingFragment.contains(FRAG_TAX_RULES)) {
+
+                gotoTaxRules()
             } else {
                 gotoTaxTypes()
             }

@@ -3,6 +3,7 @@ package ms.mattschlenkrich.paydaycalculator.ui.tax
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,17 +51,17 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
         setActions()
         fillTaxTypes()
         fillEffectiveDates()
-        fillValues()
         selectTaxType()
         selectEffectiveDate()
     }
 
     private fun fillValues() {
         binding.apply {
-            if (mainActivity.mainViewModel.getTaxType() != null) {
+            if (mainActivity.mainViewModel.getTaxTypeString() != null) {
                 for (i in 0 until spTaxType.adapter.count) {
+                    Log.d(TAG, "checking tax type ${spTaxType.getItemAtPosition(i)}")
                     if (spTaxType.getItemAtPosition(i) ==
-                        mainActivity.mainViewModel.getTaxType()!!.taxType
+                        mainActivity.mainViewModel.getTaxTypeString()!!
                     ) {
                         spTaxType.setSelection(i)
                         break

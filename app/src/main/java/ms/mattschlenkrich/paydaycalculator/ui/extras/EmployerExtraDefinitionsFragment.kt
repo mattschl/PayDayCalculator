@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
@@ -19,6 +21,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private val employerList = ArrayList<Employers>()
     private var curEmployer: Employers? = null
 
     override fun onCreateView(
@@ -38,6 +41,31 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         super.onViewCreated(view, savedInstanceState)
         setActions()
         fillEmployers()
+        selectEmployer()
+    }
+
+    private fun selectEmployer() {
+        binding.apply {
+            spEmployers.onItemSelectedListener = object : OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    for (employer in employerList) {
+                        if (employer.employerName == spEmployers.selectedItem.toString()) {
+                            curEmployer = employer
+                            break
+                        }
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    //not needed
+                }
+            }
+        }
     }
 
     private fun setActions() {
@@ -63,8 +91,10 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
             viewLifecycleOwner
         ) { employers ->
             employerAdapter.clear()
+            employerList.clear()
             employers.listIterator().forEach {
                 employerAdapter.add(it.employerName)
+                employerList.add(it)
             }
             if (employerAdapter.isEmpty) {
                 employerAdapter.add(getString(R.string.no_employers_add_an_employer_through_the_employer_tab))
@@ -77,11 +107,11 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     private fun updateUI(employers: List<Employers>) {
         binding.apply {
             if (employers.isEmpty()) {
-                rvExtras.visibility = View.VISIBLE
-                crdNoInfo.visibility = View.GONE
-            } else {
                 rvExtras.visibility = View.GONE
                 crdNoInfo.visibility = View.VISIBLE
+            } else {
+                rvExtras.visibility = View.VISIBLE
+                crdNoInfo.visibility = View.GONE
             }
             if (spEmployers.getItemAtPosition(0).toString() ==
                 getString(R.string.no_employers_add_an_employer_through_the_employer_tab)
