@@ -124,10 +124,10 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                 employerAdapter.add(it.employerName)
                 employerList.add(it)
             }
+            updateUI(employers)
             if (employerAdapter.isEmpty) {
                 employerAdapter.add(getString(R.string.no_employers_add_an_employer_through_the_employer_tab))
             }
-            updateUI(employers)
         }
         binding.spEmployers.adapter = employerAdapter
     }
@@ -135,7 +135,8 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     private fun updateUI(employers: List<Employers>) {
         binding.apply {
             if (spEmployers.getItemAtPosition(0).toString() ==
-                getString(R.string.no_employers_add_an_employer_through_the_employer_tab)
+                getString(R.string.no_employers_add_an_employer_through_the_employer_tab) ||
+                employers.isEmpty()
             ) {
                 fabNew.visibility = View.GONE
             } else {

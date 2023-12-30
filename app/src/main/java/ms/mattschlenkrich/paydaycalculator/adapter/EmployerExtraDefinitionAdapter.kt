@@ -70,12 +70,12 @@ class EmployerExtraDefinitionAdapter(
         } else {
             holder.itemBinding.tvValue.setTextColor(Color.RED)
         }
-        if (definition.definition.weIsFixed) {
-            display += cf.displayDollars(
+        display += if (definition.definition.weIsFixed) {
+            cf.displayDollars(
                 definition.definition.weValue
             )
         } else {
-            display += cf.displayPercentFromDouble(
+            cf.displayPercentFromDouble(
                 definition.definition.weValue / 100
             )
         }
