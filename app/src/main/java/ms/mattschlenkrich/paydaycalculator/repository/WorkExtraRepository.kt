@@ -12,4 +12,7 @@ class WorkExtraRepository(private val db: PayDatabase) {
 
     fun getActiveWorkExtraDefinitions() =
         db.getWorkExtraDao().getActiveWorkExtraDefinitions()
+
+    fun getActiveExtraDefinitionsFull() =
+        db.getWorkExtraDao().getActiveExtraDefinitionsFull()
 }

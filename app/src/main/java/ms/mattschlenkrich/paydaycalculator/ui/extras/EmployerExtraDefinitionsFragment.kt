@@ -9,10 +9,13 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.adapter.EmployerExtraDefinitionAdapter
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerExtraDefinitionsBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
+import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
 
 
 class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_extra_definitions) {
@@ -59,10 +62,35 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                             break
                         }
                     }
+                    fillExtrasList()
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                     //not needed
+                }
+            }
+        }
+    }
+
+    private fun fillExtrasList() {
+        binding.apply {
+            val employerExtraDefinitionAdapter = EmployerExtraDefinitionAdapter(
+                mainActivity, mView
+            )
+            rvExtras.apply {
+                layoutManager = StaggeredGridLayoutManager(
+                    2,
+                    StaggeredGridLayoutManager.VERTICAL
+                )
+                setHasFixedSize(true)
+                adapter = employerExtraDefinitionAdapter
+            }
+            activity.let {
+                mainActivity.workExtraViewModel.getActiveExtraDefinitionsFull().observe(
+                    viewLifecycleOwner
+                ) { extras ->
+                    employerExtraDefinitionAdapter.differ.submitList(extras)
+                    updateRecycler(extras)
                 }
             }
         }
@@ -106,19 +134,24 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
 
     private fun updateUI(employers: List<Employers>) {
         binding.apply {
-            if (employers.isEmpty()) {
-                rvExtras.visibility = View.GONE
-                crdNoInfo.visibility = View.VISIBLE
-            } else {
-                rvExtras.visibility = View.VISIBLE
-                crdNoInfo.visibility = View.GONE
-            }
             if (spEmployers.getItemAtPosition(0).toString() ==
                 getString(R.string.no_employers_add_an_employer_through_the_employer_tab)
             ) {
                 fabNew.visibility = View.GONE
             } else {
                 fabNew.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun updateRecycler(extras: List<ExtraDefinitionFull>) {
+        binding.apply {
+            if (extras.isEmpty()) {
+                rvExtras.visibility = View.GONE
+                crdNoInfo.visibility = View.VISIBLE
+            } else {
+                rvExtras.visibility = View.VISIBLE
+                crdNoInfo.visibility = View.GONE
             }
         }
     }

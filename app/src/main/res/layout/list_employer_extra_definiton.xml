@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dim_5dp"
+        android:backgroundTint="@color/white"
+        android:elevation="10dp"
+        app:cardCornerRadius="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/add_new_extra"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_large"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/value"
+
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_large"
+                android:textStyle="italic|bold" />
+
+            <TextView
+                android:id="@+id/tvEffectiveDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/effective_date"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/label_text_size" />
+
+            <TextView
+                android:id="@+id/tvAppliesTo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/applies_to"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/label_text_size" />
+
+            <TextView
+                android:id="@+id/tvAttachTo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/attach_to"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/label_text_size" />
+
+            <TextView
+                android:id="@+id/tvIsDefault"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/is_default"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/label_text_size" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

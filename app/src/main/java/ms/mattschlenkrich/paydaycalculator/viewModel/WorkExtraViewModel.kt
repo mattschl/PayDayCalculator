@@ -24,4 +24,7 @@ class WorkExtraViewModel(
 
     fun getActiveWorkExtraDefinitions() =
         workExtraRepository.getActiveWorkExtraDefinitions()
+
+    fun getActiveExtraDefinitionsFull() =
+        workExtraRepository.getActiveExtraDefinitionsFull()
 }

@@ -2,9 +2,11 @@ package ms.mattschlenkrich.paydaycalculator.model
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
@@ -36,3 +38,14 @@ data class WorkExtrasDefinitions(
     val weUpdateTime: String,
 ) : Parcelable
 
+@Parcelize
+data class ExtraDefinitionFull(
+    @Embedded
+    val definition: WorkExtrasDefinitions,
+    @Relation(
+        entity = Employers::class,
+        parentColumn = "weEmployerId",
+        entityColumn = "employerId"
+    )
+    var employer: Employers
+) : Parcelable

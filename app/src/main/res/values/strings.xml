@@ -86,4 +86,8 @@
     <string name="add_new_extra">Add New Extra</string>
     <string name="update_employer">"Update Employer: "</string>
     <string name="update">"Update: "</string>
+    <string name="applies_to">Applies To</string>
+    <string name="attach_to">Attach To</string>
+    <string name="value">Value</string>
+    <string name="is_default">Is Default</string>
 </resources>
