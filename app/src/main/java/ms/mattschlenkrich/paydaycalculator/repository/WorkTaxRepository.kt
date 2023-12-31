@@ -18,6 +18,9 @@ class WorkTaxRepository(private val db: PayDatabase) {
     fun getTaxTypes() =
         db.getWorkTaxDao().getTaxTypes()
 
+    fun searchTaxTypes(query: String?) =
+        db.getWorkTaxDao().searchTaxTypes(query)
+
     suspend fun insertTaxRule(taxRule: WorkTaxRules) =
         db.getWorkTaxDao().insertTaxRule(taxRule)
 

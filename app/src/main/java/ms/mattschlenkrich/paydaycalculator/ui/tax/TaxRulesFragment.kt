@@ -28,7 +28,8 @@ import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
 
 const val TAG = FRAG_TAX_RULES
 
-class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
+class TaxRulesFragment :
+    Fragment(R.layout.fragment_tax_rules) {
 
     private var _binding: FragmentTaxRulesBinding? = null
     private val binding get() = _binding!!

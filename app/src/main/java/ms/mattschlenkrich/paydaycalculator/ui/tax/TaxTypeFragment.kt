@@ -2,9 +2,16 @@ package ms.mattschlenkrich.paydaycalculator.ui.tax
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paydaycalculator.MainActivity
@@ -13,12 +20,16 @@ import ms.mattschlenkrich.paydaycalculator.adapter.TaxTypeAdapter
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeBinding
 import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
 
-class TaxTypeFragment : Fragment(R.layout.fragment_tax_type) {
+class TaxTypeFragment :
+    Fragment(R.layout.fragment_tax_type),
+    SearchView.OnQueryTextListener,
+    MenuProvider {
 
     private var _binding: FragmentTaxTypeBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var taxTypeAdapter: TaxTypeAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,6 +44,8 @@ class TaxTypeFragment : Fragment(R.layout.fragment_tax_type) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         fillTaxTypeList()
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         setActions()
     }
 
@@ -48,7 +61,7 @@ class TaxTypeFragment : Fragment(R.layout.fragment_tax_type) {
     }
 
     private fun fillTaxTypeList() {
-        val taxTypeAdapter = TaxTypeAdapter(
+        taxTypeAdapter = TaxTypeAdapter(
             mainActivity, mView
         )
         binding.rvTaxTypes.apply {
@@ -78,6 +91,38 @@ class TaxTypeFragment : Fragment(R.layout.fragment_tax_type) {
                 crdNoInfo.visibility = View.GONE
                 rvTaxTypes.visibility = View.VISIBLE
             }
+        }
+    }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.search_menu, menu)
+        val mMenuSearch = menu.findItem(R.id.menu_search)
+            .actionView as SearchView
+        mMenuSearch.isSubmitButtonEnabled = false
+        mMenuSearch.setOnQueryTextListener(this)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        return false
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return false
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        if (newText != null) {
+            searchTaxTypes(newText)
+        }
+        return true
+    }
+
+    private fun searchTaxTypes(query: String) {
+        val searchQuery = "%$query%"
+        mainActivity.workTaxViewModel.searchTaxTypes(searchQuery).observe(
+            viewLifecycleOwner
+        ) { list ->
+            taxTypeAdapter.differ.submitList(list)
         }
     }
 

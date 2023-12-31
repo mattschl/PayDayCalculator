@@ -43,6 +43,13 @@ interface WorkTaxDao {
     )
     fun getTaxTypes(): LiveData<List<TaxTypes>>
 
+    @Query(
+        "SELECT * FROM $TABLE_TAX_TYPES " +
+                "WHERE taxType LIKE :query " +
+                "ORDER BY taxType COLLATE NOCASE"
+    )
+    fun searchTaxTypes(query: String?): LiveData<List<TaxTypes>>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTaxRule(taxRule: WorkTaxRules)
 

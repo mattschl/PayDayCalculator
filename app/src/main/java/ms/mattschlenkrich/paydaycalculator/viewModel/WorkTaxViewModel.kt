@@ -32,6 +32,9 @@ class WorkTaxViewModel(
     fun getTaxTypes() =
         workTaxRepository.getTaxTypes()
 
+    fun searchTaxTypes(query: String?) =
+        workTaxRepository.searchTaxTypes(query)
+
     fun insertTaxRule(taxRule: WorkTaxRules) =
         viewModelScope.launch {
             workTaxRepository.insertTaxRule(taxRule)
