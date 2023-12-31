@@ -3,7 +3,6 @@ package ms.mattschlenkrich.paydaycalculator.ui.tax
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,12 +11,17 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.TaxRuleAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_TAX_RULES
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxRulesBinding
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
@@ -42,7 +46,7 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "View Tax Rules"
+        mainActivity.title = getString(R.string.view_universal_tax_rules)
         return mView
     }
 
@@ -53,18 +57,21 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
         fillEffectiveDates()
         selectTaxType()
         selectEffectiveDate()
+        fillValues()
     }
 
     private fun fillValues() {
-        binding.apply {
-            if (mainActivity.mainViewModel.getTaxTypeString() != null) {
-                for (i in 0 until spTaxType.adapter.count) {
-                    Log.d(TAG, "checking tax type ${spTaxType.getItemAtPosition(i)}")
-                    if (spTaxType.getItemAtPosition(i) ==
-                        mainActivity.mainViewModel.getTaxTypeString()!!
-                    ) {
-                        spTaxType.setSelection(i)
-                        break
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_500)
+            binding.apply {
+                if (mainActivity.mainViewModel.getTaxTypeString() != null) {
+                    for (i in 0 until spTaxType.adapter.count) {
+                        if (spTaxType.getItemAtPosition(i) ==
+                            mainActivity.mainViewModel.getTaxTypeString()!!
+                        ) {
+                            spTaxType.setSelection(i)
+                            break
+                        }
                     }
                 }
             }

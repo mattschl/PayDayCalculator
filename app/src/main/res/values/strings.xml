@@ -90,4 +90,6 @@
     <string name="attach_to">Attach To</string>
     <string name="value">Value</string>
     <string name="is_default">Is Default</string>
+    <string name="edit">EDIT</string>
+    <string name="view_universal_tax_rules">View Universal Tax Rules</string>
 </resources>

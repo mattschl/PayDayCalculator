@@ -3,6 +3,7 @@ package ms.mattschlenkrich.paydaycalculator.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -10,6 +11,7 @@ import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerTaxItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
 import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragment
+import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragmentDirections
 
 class EmployerTaxTypeAdapter(
     private val mainActivity: MainActivity,
@@ -63,6 +65,13 @@ class EmployerTaxTypeAdapter(
                 holder.itemBinding.chEmployerTax.isChecked
             )
             parentFragment.fillTaxes(employerTaxType.etrEmployerId)
+        }
+        holder.itemBinding.btnEdit.setOnClickListener {
+            mainActivity.mainViewModel.setTaxTypeString(employerTaxType.etrTaxType)
+            mView.findNavController().navigate(
+                EmployerUpdateFragmentDirections
+                    .actionEmployerUpdateFragmentToTaxRulesFragment()
+            )
         }
     }
 }

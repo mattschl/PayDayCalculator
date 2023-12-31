@@ -16,7 +16,11 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.EmployerTaxTypeAdapter
@@ -25,6 +29,7 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_EMPLOYER_UPDATE
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_SEMI_MONTHLY
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModel
@@ -102,31 +107,34 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     }
 
     private fun fillValues() {
-        if (mainActivity.mainViewModel.getEmployer() != null) {
-            curEmployer = mainActivity.mainViewModel.getEmployer()!!
-            binding.apply {
-                mainActivity.title = getString(R.string.update) +
-                        curEmployer!!.employerName
-                etName.setText(curEmployer!!.employerName)
-                for (i in 0 until spFrequency.adapter.count) {
-                    if (spFrequency.getItemAtPosition(i) == curEmployer!!.payFrequency) {
-                        spFrequency.setSelection(i)
-                        break
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_500)
+            if (mainActivity.mainViewModel.getEmployer() != null) {
+                curEmployer = mainActivity.mainViewModel.getEmployer()!!
+                binding.apply {
+                    mainActivity.title = getString(R.string.update) +
+                            curEmployer!!.employerName
+                    etName.setText(curEmployer!!.employerName)
+                    for (i in 0 until spFrequency.adapter.count) {
+                        if (spFrequency.getItemAtPosition(i) == curEmployer!!.payFrequency) {
+                            spFrequency.setSelection(i)
+                            break
+                        }
                     }
-                }
-                startDate = curEmployer!!.startDate
-                tvStartDate.text = df.getDisplayDate(startDate)
-                for (i in 0 until spDayOfWeek.adapter.count) {
-                    if (spDayOfWeek.getItemAtPosition(i) == curEmployer!!.dayOfWeek) {
-                        spDayOfWeek.setSelection(i)
-                        break
+                    startDate = curEmployer!!.startDate
+                    tvStartDate.text = df.getDisplayDate(startDate)
+                    for (i in 0 until spDayOfWeek.adapter.count) {
+                        if (spDayOfWeek.getItemAtPosition(i) == curEmployer!!.dayOfWeek) {
+                            spDayOfWeek.setSelection(i)
+                            break
+                        }
                     }
+                    etDaysBefore.setText(curEmployer!!.cutoffDaysBefore.toString())
+                    etMidMonthDate.setText(curEmployer!!.midMonthlyDate.toString())
+                    etMainMonthDate.setText(curEmployer!!.mainMonthlyDate.toString())
                 }
-                etDaysBefore.setText(curEmployer!!.cutoffDaysBefore.toString())
-                etMidMonthDate.setText(curEmployer!!.midMonthlyDate.toString())
-                etMainMonthDate.setText(curEmployer!!.mainMonthlyDate.toString())
+                fillTaxes(curEmployer!!.employerId)
             }
-            fillTaxes(curEmployer!!.employerId)
         }
     }
 
@@ -137,11 +145,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
                 mainActivity, mView, this@EmployerUpdateFragment
             )
             rvTaxes.apply {
-                layoutManager = StaggeredGridLayoutManager(
-                    2,
-                    StaggeredGridLayoutManager.VERTICAL
-                )
-                setHasFixedSize(true)
+                layoutManager = LinearLayoutManager(mView.context)
                 adapter = employerTaxTypeAdapter
             }
             activity.let {
