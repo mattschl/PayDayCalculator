@@ -3,6 +3,7 @@ package ms.mattschlenkrich.paydaycalculator.viewModel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import ms.mattschlenkrich.paydaycalculator.model.Employers
+import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
@@ -18,6 +19,15 @@ class MainViewModel(
     private var effectiveDateString: String? = null
     private var taxLevel: Int? = null
     private var callingFragment: String? = null
+    private var extraDefinitionFull: ExtraDefinitionFull? = null
+
+    fun setExtraDefinitionFull(newExtra: ExtraDefinitionFull?) {
+        extraDefinitionFull = newExtra
+    }
+
+    fun getExtraDefinitionFull(): ExtraDefinitionFull? {
+        return extraDefinitionFull
+    }
 
     fun setCallingFragment(newFragment: String?) {
         callingFragment = newFragment

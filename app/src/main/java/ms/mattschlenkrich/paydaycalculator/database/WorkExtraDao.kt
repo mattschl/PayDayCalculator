@@ -39,4 +39,11 @@ interface WorkExtraDao {
     )
     fun getActiveExtraDefinitionsFull(): LiveData<List<ExtraDefinitionFull>>
 
+    @Query(
+        "SELECT weName FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
+                "WHERE weEmployerId = :employerId " +
+                "ORDER BY weName COLLATE NOCASE"
+    )
+    fun getExtraDefinitionNamesByEmployer(employerId: Long): LiveData<List<String>>
+
 }

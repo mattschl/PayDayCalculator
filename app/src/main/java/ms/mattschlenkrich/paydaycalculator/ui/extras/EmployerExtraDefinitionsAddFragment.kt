@@ -54,10 +54,10 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fillSpinners()
+        fillMenu()
         fillValues()
         chooseDate()
         chooseFixedOrPercent()
-        fillMenu()
     }
 
     private fun fillMenu() {
