@@ -140,6 +140,8 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
             if (callingFragment.contains(FRAG_TAX_RULES)) {
                 gotoTaxRules()
             }
+        } else {
+            gotoTaxRules()
         }
 
     }
