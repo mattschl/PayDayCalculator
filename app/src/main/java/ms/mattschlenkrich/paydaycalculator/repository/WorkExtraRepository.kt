@@ -10,12 +10,13 @@ class WorkExtraRepository(private val db: PayDatabase) {
     suspend fun updateWorkExtraDefinition(definition: WorkExtrasDefinitions) =
         db.getWorkExtraDao().updateWorkExtraDefinition(definition)
 
-    fun getActiveWorkExtraDefinitions() =
-        db.getWorkExtraDao().getActiveWorkExtraDefinitions()
+    suspend fun deleteWorkExtraDefinition(id: Long, updateTime: String) =
+        db.getWorkExtraDao().deleteWorkExtraDefinition(id, updateTime)
+
+    fun getWorkExtraDefinitions(employerId: Long) =
+        db.getWorkExtraDao().getWorkExtraDefinitions(employerId)
 
     fun getActiveExtraDefinitionsFull(employerId: Long) =
         db.getWorkExtraDao().getActiveExtraDefinitionsFull(employerId)
 
-    fun getExtraDefinitionNamesByEmployer(employerId: Long) =
-        db.getWorkExtraDao().getExtraDefinitionNamesByEmployer(employerId)
 }

@@ -150,21 +150,8 @@ class EmployerExtraDefinitionAdapter(
     }
 
     private fun deleteExtra(definition: WorkExtrasDefinitions) {
-        mainActivity.workExtraViewModel.updateWorkExtraDefinition(
-            WorkExtrasDefinitions(
-                definition.workExtraId,
-                definition.weEmployerId,
-                definition.weName,
-                definition.weAppliesTo,
-                definition.weAttachTo,
-                definition.weValue,
-                definition.weIsFixed,
-                definition.weIsCredit,
-                definition.weIsDefault,
-                definition.weEffectiveDate,
-                true,
-                df.getCurrentTimeAsString()
-            )
+        mainActivity.workExtraViewModel.deleteWorkExtraDefinition(
+            definition.workExtraId, df.getCurrentTimeAsString()
         )
     }
 }

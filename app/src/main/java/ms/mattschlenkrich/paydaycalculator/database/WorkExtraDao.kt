@@ -20,11 +20,19 @@ interface WorkExtraDao {
     suspend fun updateWorkExtraDefinition(definition: WorkExtrasDefinitions)
 
     @Query(
+        "UPDATE $TABLE_WORK_EXTRAS_DEFINITIONS " +
+                "SET weIsDeleted = 1, " +
+                "weUpdateTime = :updateTime " +
+                "WHERE workExtraId = :id"
+    )
+    suspend fun deleteWorkExtraDefinition(id: Long, updateTime: String)
+
+    @Query(
         "SELECT * FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
-                "WHERE weIsDeleted = 0 " +
+                "WHERE weEmployerId = :employerId " +
                 "ORDER BY weName COLLATE NOCASE"
     )
-    fun getActiveWorkExtraDefinitions(): LiveData<List<WorkExtrasDefinitions>>
+    fun getWorkExtraDefinitions(employerId: Long): LiveData<List<WorkExtrasDefinitions>>
 
     @Query(
         "SELECT $TABLE_WORK_EXTRAS_DEFINITIONS.*, " +
@@ -39,11 +47,5 @@ interface WorkExtraDao {
     )
     fun getActiveExtraDefinitionsFull(employerId: Long): LiveData<List<ExtraDefinitionFull>>
 
-    @Query(
-        "SELECT weName FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
-                "WHERE weEmployerId = :employerId " +
-                "ORDER BY weName COLLATE NOCASE"
-    )
-    fun getExtraDefinitionNamesByEmployer(employerId: Long): LiveData<List<String>>
 
 }

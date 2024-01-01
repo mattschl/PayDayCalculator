@@ -262,20 +262,18 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     }
 
     private fun updateEmployer() {
-        binding.apply {
-            val message = checkEmployer()
-            if (message == ANSWER_OK) {
-                employerViewModel.updateEmployer(
-                    getCurrentEmployer()
-                )
-                gotoCallingFragment()
-            } else {
-                Toast.makeText(
-                    mView.context,
-                    message,
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+        val message = checkEmployer()
+        if (message == ANSWER_OK) {
+            employerViewModel.updateEmployer(
+                getCurrentEmployer()
+            )
+            gotoCallingFragment()
+        } else {
+            Toast.makeText(
+                mView.context,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 

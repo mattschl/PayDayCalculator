@@ -36,7 +36,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     private lateinit var curEmployer: Employers
     private val df = DateFunctions()
     private val cf = CommonFunctions()
-    private val extraList = ArrayList<WorkExtrasDefinitions>()
+    private val extraList = ArrayList<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -130,7 +130,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
             var nameFound = false
             if (extraList.isNotEmpty()) {
                 for (extra in extraList) {
-                    if (extra.weName == etName.text.toString()) {
+                    if (extra == etName.text.toString()) {
                         nameFound = true
                         break
                     }
@@ -205,12 +205,14 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
             tvEmployer.text = curEmployer.employerName
             tvEffectiveDate.text = df.getCurrentDateAsString()
         }
-        mainActivity.workExtraViewModel.getActiveWorkExtraDefinitions().observe(
+        mainActivity.workExtraViewModel.getWorkExtraDefinitions(
+            curEmployer.employerId
+        ).observe(
             viewLifecycleOwner
-        ) { workExtrasDefinitions ->
+        ) { name ->
             extraList.clear()
-            workExtrasDefinitions.listIterator().forEach {
-                extraList.add(it)
+            name.listIterator().forEach {
+                extraList.add(it.weName)
             }
 
         }

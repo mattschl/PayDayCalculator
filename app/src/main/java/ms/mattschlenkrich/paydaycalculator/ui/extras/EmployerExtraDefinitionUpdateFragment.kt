@@ -9,11 +9,14 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerExtraDefinitionUpdateBinding
@@ -30,7 +33,7 @@ class EmployerExtraDefinitionUpdateFragment :
     private lateinit var curExtraDefinitionFull: ExtraDefinitionFull
     private val df = DateFunctions()
     private val cf = CommonFunctions()
-    private val definitionList = ArrayList<WorkExtrasDefinitions>()
+    private val definitionList = ArrayList<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,7 +66,64 @@ class EmployerExtraDefinitionUpdateFragment :
     }
 
     private fun updateDefinition() {
-        TODO("Not yet implemented")
+        val message = checkExtra()
+        if (message == ANSWER_OK) {
+            mainActivity.workExtraViewModel.updateWorkExtraDefinition(
+                getCurrentDefinition()
+            )
+            gotoCallingFragment()
+        } else {
+            Toast.makeText(
+                mView.context,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun getCurrentDefinition(): WorkExtrasDefinitions {
+        binding.apply {
+            return WorkExtrasDefinitions(
+                curExtraDefinitionFull.definition.workExtraId,
+                curExtraDefinitionFull.definition.weEmployerId,
+                etName.text.toString(),
+                spAppliesTo.selectedItemPosition,
+                spAttachTo.selectedItemPosition,
+                cf.getDoubleFromDollarOrPercent(etValue.text.toString()),
+                chkIsFixed.isChecked,
+                chkIsCredit.isChecked,
+                chkIsDefault.isChecked,
+                tvEffectiveDate.text.toString(),
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
+    private fun checkExtra(): String {
+        binding.apply {
+            var nameFound = false
+            if (definitionList.isNotEmpty()) {
+                for (name in definitionList) {
+                    if (name == etName.text.toString().trim()) {
+                        nameFound = true
+                        break
+                    }
+                }
+            }
+            val errorMessage = if (etName.text.isNullOrBlank()) {
+                "    ERROR!!\n" +
+                        "There needs to be a description!"
+            } else if (nameFound && etName.text.toString() !=
+                curExtraDefinitionFull.definition.weName
+            ) {
+                "    ERROE!!\n" +
+                        "This extra item already exists!"
+            } else {
+                ANSWER_OK
+            }
+            return errorMessage
+        }
     }
 
     private fun chooseFixedOrPercent() {
@@ -120,6 +180,31 @@ class EmployerExtraDefinitionUpdateFragment :
             if (mainActivity.mainViewModel.getExtraDefinitionFull() != null) {
                 curExtraDefinitionFull =
                     mainActivity.mainViewModel.getExtraDefinitionFull()!!
+                mainActivity.workExtraViewModel.getWorkExtraDefinitions(
+                    curExtraDefinitionFull.employer.employerId
+                ).observe(
+                    viewLifecycleOwner
+                ) { definition ->
+                    definitionList.clear()
+                    definition.listIterator().forEach {
+                        definitionList.add(it.weName)
+                    }
+                }
+                tvEmployer.text = curExtraDefinitionFull.employer.employerName
+                etName.setText(curExtraDefinitionFull.definition.weName)
+                spAppliesTo.setSelection(curExtraDefinitionFull.definition.weAppliesTo)
+                spAttachTo.setSelection(curExtraDefinitionFull.definition.weAttachTo)
+                etValue.setText(
+                    if (curExtraDefinitionFull.definition.weIsFixed) {
+                        cf.displayDollars(curExtraDefinitionFull.definition.weValue)
+                    } else {
+                        cf.displayPercentFromDouble(curExtraDefinitionFull.definition.weValue)
+                    }
+                )
+                chkIsFixed.isChecked = curExtraDefinitionFull.definition.weIsFixed
+                chkIsCredit.isChecked = curExtraDefinitionFull.definition.weIsCredit
+                chkIsDefault.isChecked = curExtraDefinitionFull.definition.weIsDefault
+                tvEffectiveDate.text = curExtraDefinitionFull.definition.weEffectiveDate
             }
         }
     }
@@ -146,22 +231,17 @@ class EmployerExtraDefinitionUpdateFragment :
     }
 
     private fun deleteExtra() {
-        val def = curExtraDefinitionFull.definition
-        mainActivity.workExtraViewModel.updateWorkExtraDefinition(
-            WorkExtrasDefinitions(
-                def.weEmployerId,
-                def.weEmployerId,
-                def.weName,
-                def.weAppliesTo,
-                def.weAttachTo,
-                def.weValue,
-                def.weIsFixed,
-                def.weIsCredit,
-                def.weIsDefault,
-                def.weEffectiveDate,
-                true,
-                df.getCurrentTimeAsString()
-            )
+        mainActivity.workExtraViewModel.deleteWorkExtraDefinition(
+            curExtraDefinitionFull.definition.workExtraId,
+            df.getCurrentTimeAsString()
+        )
+        gotoCallingFragment()
+    }
+
+    private fun gotoCallingFragment() {
+        mView.findNavController().navigate(
+            EmployerExtraDefinitionUpdateFragmentDirections
+                .actionEmployerExtraDefinitionUpdateFragmentToEmployerExtraDefinitionsFragment()
         )
     }
 

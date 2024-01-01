@@ -22,12 +22,15 @@ class WorkExtraViewModel(
             workExtraRepository.updateWorkExtraDefinition(definition)
         }
 
-    fun getActiveWorkExtraDefinitions() =
-        workExtraRepository.getActiveWorkExtraDefinitions()
+    fun deleteWorkExtraDefinition(id: Long, updateTime: String) =
+        viewModelScope.launch {
+            workExtraRepository.deleteWorkExtraDefinition(id, updateTime)
+        }
+
+    fun getWorkExtraDefinitions(employerId: Long) =
+        workExtraRepository.getWorkExtraDefinitions(employerId)
 
     fun getActiveExtraDefinitionsFull(employerId: Long) =
         workExtraRepository.getActiveExtraDefinitionsFull(employerId)
 
-    fun getExtraDefinitionNamesByEmployer(employerId: Long) =
-        workExtraRepository.getExtraDefinitionNamesByEmployer(employerId)
 }
