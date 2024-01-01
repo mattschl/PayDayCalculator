@@ -16,13 +16,15 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerExtraDefinitonBinding
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
+import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragment
 import ms.mattschlenkrich.paydaycalculator.ui.extras.EmployerExtraDefinitionsFragment
 import ms.mattschlenkrich.paydaycalculator.ui.extras.EmployerExtraDefinitionsFragmentDirections
 
 class EmployerExtraDefinitionFullAdapter(
     private val mainActivity: MainActivity,
     private val mView: View,
-    private val parentFragment: EmployerExtraDefinitionsFragment,
+    private val employerExtraDefinitionsFragment: EmployerExtraDefinitionsFragment?,
+    private val employerUpdateFragment: EmployerUpdateFragment?,
 ) : RecyclerView.Adapter<
         EmployerExtraDefinitionFullAdapter.DefinitionViewHolder>() {
 
@@ -76,41 +78,49 @@ class EmployerExtraDefinitionFullAdapter(
             holder.itemBinding.tvName.setTextColor(Color.BLACK)
         }
         holder.itemBinding.tvName.text = display
-        display = if (definition.definition.weIsCredit) {
-            "Add "
-        } else {
-            "Deduct "
-        }
-        if (definition.definition.weIsCredit) {
-            holder.itemBinding.tvValue.setTextColor(Color.BLACK)
-        } else {
-            holder.itemBinding.tvValue.setTextColor(Color.RED)
-        }
-        display += if (definition.definition.weIsFixed) {
-            cf.displayDollars(
-                definition.definition.weValue
+        if (employerExtraDefinitionsFragment != null) {
+            display = if (definition.definition.weIsCredit) {
+                "Add "
+            } else {
+                "Deduct "
+            }
+            if (definition.definition.weIsCredit) {
+                holder.itemBinding.tvValue.setTextColor(Color.BLACK)
+            } else {
+                holder.itemBinding.tvValue.setTextColor(Color.RED)
+            }
+            display += if (definition.definition.weIsFixed) {
+                cf.displayDollars(
+                    definition.definition.weValue
+                )
+            } else {
+                cf.displayPercentFromDouble(
+                    definition.definition.weValue / 100
+                )
+            }
+            holder.itemBinding.tvValue.text = display
+            display = "Effective starting " + definition.definition.weEffectiveDate
+            holder.itemBinding.tvEffectiveDate.text = display
+            val frequencies = mView.resources.getStringArray(
+                R.array.extra_frequencies
             )
+            display = "Calculated " + frequencies[definition.definition.weAppliesTo]
+            holder.itemBinding.tvAppliesTo.text = display
+            display = "Attaches to " + frequencies[definition.definition.weAttachTo]
+            holder.itemBinding.tvAttachTo.text = display
+            display = if (definition.definition.weIsDefault) {
+                "This is the default"
+            } else {
+                "This needs to be manually added"
+            }
+            holder.itemBinding.tvIsDefault.text = display
         } else {
-            cf.displayPercentFromDouble(
-                definition.definition.weValue / 100
-            )
+            holder.itemBinding.tvValue.visibility = View.GONE
+            holder.itemBinding.tvAppliesTo.visibility = View.GONE
+            holder.itemBinding.tvAttachTo.visibility = View.GONE
+            holder.itemBinding.tvIsDefault.visibility = View.GONE
+            holder.itemBinding.tvEffectiveDate.visibility = View.GONE
         }
-        holder.itemBinding.tvValue.text = display
-        display = "Effective starting " + definition.definition.weEffectiveDate
-        holder.itemBinding.tvEffectiveDate.text = display
-        val frequencies = mView.resources.getStringArray(
-            R.array.extra_frequencies
-        )
-        display = "Calculated " + frequencies[definition.definition.weAppliesTo]
-        holder.itemBinding.tvAppliesTo.text = display
-        display = "Attaches to " + frequencies[definition.definition.weAttachTo]
-        holder.itemBinding.tvAttachTo.text = display
-        display = if (definition.definition.weIsDefault) {
-            "This is the default"
-        } else {
-            "This needs to be manually added"
-        }
-        holder.itemBinding.tvIsDefault.text = display
         holder.itemView.setOnLongClickListener {
             AlertDialog.Builder(mView.context)
                 .setTitle(
@@ -156,6 +166,7 @@ class EmployerExtraDefinitionFullAdapter(
         mainActivity.workExtraViewModel.deleteWorkExtraDefinition(
             definition.workExtraId, df.getCurrentTimeAsString()
         )
-        parentFragment.fillExtrasList()
+        employerExtraDefinitionsFragment?.fillExtrasList()
+        employerUpdateFragment?.fillExtras(definition.weEmployerId)
     }
 }

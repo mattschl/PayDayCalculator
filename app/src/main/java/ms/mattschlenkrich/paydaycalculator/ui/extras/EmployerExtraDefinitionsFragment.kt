@@ -78,7 +78,9 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
             binding.apply {
                 employerExtraDefinitionAdapter = null
                 employerExtraDefinitionAdapter = EmployerExtraDefinitionFullAdapter(
-                    mainActivity, mView, this@EmployerExtraDefinitionsFragment
+                    mainActivity, mView,
+                    this@EmployerExtraDefinitionsFragment,
+                    null
                 )
                 rvExtras.apply {
                     layoutManager = StaggeredGridLayoutManager(

@@ -223,8 +223,7 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvTaxes"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:maxHeight="@dimen/text_box_medium" />
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -280,8 +279,7 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvExtras"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:maxHeight="@dimen/text_box_medium" />
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

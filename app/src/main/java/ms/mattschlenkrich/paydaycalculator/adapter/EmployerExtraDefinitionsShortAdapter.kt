@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerExtraDefinitonBinding
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
@@ -22,7 +21,7 @@ class EmployerExtraDefinitionsShortAdapter(
 ) : RecyclerView.Adapter<EmployerExtraDefinitionsShortAdapter.DefinitionViewHolder>() {
 
 
-    private val cf = CommonFunctions()
+    //    private val cf = CommonFunctions()
     private val df = DateFunctions()
 
     class DefinitionViewHolder(val itemBinding: ListEmployerExtraDefinitonBinding) :
