@@ -92,4 +92,7 @@
     <string name="is_default">Is Default</string>
     <string name="edit">EDIT</string>
     <string name="view_universal_tax_rules">View Universal Tax Rules</string>
+    <string name="edit_this_item">Edit this Item</string>
+    <string name="delete_this_item">Delete this Item</string>
+    <string name="cancel">Cancel</string>
 </resources>

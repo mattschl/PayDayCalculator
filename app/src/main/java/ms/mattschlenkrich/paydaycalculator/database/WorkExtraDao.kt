@@ -33,11 +33,11 @@ interface WorkExtraDao {
                 "LEFT JOIN $TABLE_EMPLOYERS ON " +
                 "$TABLE_WORK_EXTRAS_DEFINITIONS.weEmployerId = " +
                 "$TABLE_EMPLOYERS.employerId " +
-                "WHERE $TABLE_WORK_EXTRAS_DEFINITIONS.weIsDeleted = 0 " +
+                "WHERE $TABLE_WORK_EXTRAS_DEFINITIONS.weEmployerId = :employerId " +
                 "ORDER BY $TABLE_WORK_EXTRAS_DEFINITIONS.weName " +
                 "COLLATE NOCASE"
     )
-    fun getActiveExtraDefinitionsFull(): LiveData<List<ExtraDefinitionFull>>
+    fun getActiveExtraDefinitionsFull(employerId: Long): LiveData<List<ExtraDefinitionFull>>
 
     @Query(
         "SELECT weName FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +

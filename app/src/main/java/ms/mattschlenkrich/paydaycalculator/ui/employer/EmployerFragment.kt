@@ -29,7 +29,7 @@ class EmployerFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private lateinit var employerAdapter: EmployerAdapter
+    private var employerAdapter: EmployerAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,6 +61,7 @@ class EmployerFragment :
     }
 
     private fun fillEmployers() {
+        employerAdapter = null
         employerAdapter = EmployerAdapter(
             mainActivity, mView
         )
@@ -76,7 +77,7 @@ class EmployerFragment :
             mainActivity.employerViewModel.getEmployers().observe(
                 viewLifecycleOwner
             ) { employer ->
-                employerAdapter.differ.submitList(employer)
+                employerAdapter!!.differ.submitList(employer)
                 updateUI(employer)
             }
         }
@@ -118,11 +119,13 @@ class EmployerFragment :
     }
 
     private fun searchEmployers(query: String?) {
-        val searchQuery = "%$query%"
-        mainActivity.employerViewModel.searchEmployers(searchQuery).observe(
-            viewLifecycleOwner
-        ) { list ->
-            employerAdapter.differ.submitList(list)
+        if (employerAdapter != null) {
+            val searchQuery = "%$query%"
+            mainActivity.employerViewModel.searchEmployers(searchQuery).observe(
+                viewLifecycleOwner
+            ) { list ->
+                employerAdapter!!.differ.submitList(list)
+            }
         }
     }
 

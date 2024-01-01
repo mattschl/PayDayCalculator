@@ -25,8 +25,8 @@ class WorkExtraViewModel(
     fun getActiveWorkExtraDefinitions() =
         workExtraRepository.getActiveWorkExtraDefinitions()
 
-    fun getActiveExtraDefinitionsFull() =
-        workExtraRepository.getActiveExtraDefinitionsFull()
+    fun getActiveExtraDefinitionsFull(employerId: Long) =
+        workExtraRepository.getActiveExtraDefinitionsFull(employerId)
 
     fun getExtraDefinitionNamesByEmployer(employerId: Long) =
         workExtraRepository.getExtraDefinitionNamesByEmployer(employerId)

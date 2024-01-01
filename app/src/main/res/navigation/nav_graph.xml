@@ -145,6 +145,9 @@
         <action
             android:id="@+id/action_employerExtraDefinitionsFragment_to_employerExtraDefinitionsAddFragment"
             app:destination="@id/employerExtraDefinitionsAddFragment" />
+        <action
+            android:id="@+id/action_employerExtraDefinitionsFragment_to_employerExtraDefinitionUpdateFragment"
+            app:destination="@id/employerExtraDefinitionUpdateFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_employerExtraDefinitionsFragment"
@@ -156,6 +159,15 @@
         tools:layout="@layout/fragment_employer_extra_definitions_add">
         <action
             android:id="@+id/action_employerExtraDefinitionsAddFragment_to_employerExtraDefinitionsFragment"
+            app:destination="@id/employerExtraDefinitionsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/employerExtraDefinitionUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.EmployerExtraDefinitionUpdateFragment"
+        android:label="EmployerExtraDefinitionUpdateFragment"
+        tools:layout="@layout/fragment_employer_extra_definition_update">
+        <action
+            android:id="@+id/action_employerExtraDefinitionUpdateFragment_to_employerExtraDefinitionsFragment"
             app:destination="@id/employerExtraDefinitionsFragment" />
     </fragment>
 </navigation>

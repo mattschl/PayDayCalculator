@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,7 +47,14 @@ class TaxTypeAdapter(
 
     override fun onBindViewHolder(holder: TaxTypeViewHolder, position: Int) {
         val taxType = differ.currentList[position]
-        holder.itemBinding.tvDisplay.text = taxType.taxType
+        var display = taxType.taxType
+        if (taxType.ttIsDeleted) {
+            display += " *DELETE*"
+            holder.itemBinding.tvDisplay.setTextColor(Color.RED)
+        } else {
+            holder.itemBinding.tvDisplay.setTextColor(Color.BLACK)
+        }
+        holder.itemBinding.tvDisplay.text = display
         holder.itemView.setOnLongClickListener {
             mainActivity.mainViewModel.setTaxType(taxType)
             mView.findNavController().navigate(

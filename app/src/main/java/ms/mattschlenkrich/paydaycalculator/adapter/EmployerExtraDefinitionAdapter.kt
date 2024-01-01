@@ -1,17 +1,22 @@
 package ms.mattschlenkrich.paydaycalculator.adapter
 
+import android.app.AlertDialog
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
+import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerExtraDefinitonBinding
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
+import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
+import ms.mattschlenkrich.paydaycalculator.ui.extras.EmployerExtraDefinitionsFragmentDirections
 
 class EmployerExtraDefinitionAdapter(
     private val mainActivity: MainActivity,
@@ -19,6 +24,7 @@ class EmployerExtraDefinitionAdapter(
 ) : RecyclerView.Adapter<EmployerExtraDefinitionAdapter.DefinitionViewHolder>() {
 
     private val cf = CommonFunctions()
+    private val df = DateFunctions()
 
     class DefinitionViewHolder(val itemBinding: ListEmployerExtraDefinitonBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -59,8 +65,15 @@ class EmployerExtraDefinitionAdapter(
 
     override fun onBindViewHolder(holder: DefinitionViewHolder, position: Int) {
         val definition = differ.currentList[position]
-        holder.itemBinding.tvName.text = definition.definition.weName
-        var display = if (definition.definition.weIsCredit) {
+        var display = definition.definition.weName
+        if (definition.definition.weIsDeleted) {
+            holder.itemBinding.tvName.setTextColor(Color.RED)
+            display = "* $display * Deleted"
+        } else {
+            holder.itemBinding.tvName.setTextColor(Color.BLACK)
+        }
+        holder.itemBinding.tvName.text = display
+        display = if (definition.definition.weIsCredit) {
             "Add "
         } else {
             "Deduct "
@@ -95,5 +108,63 @@ class EmployerExtraDefinitionAdapter(
             "This needs to be manually added"
         }
         holder.itemBinding.tvIsDefault.text = display
+        holder.itemView.setOnLongClickListener {
+            AlertDialog.Builder(mView.context)
+                .setTitle(
+                    mView.resources.getString(R.string.choose_an_action) +
+                            " for " + definition.definition.weName
+                )
+                .setItems(
+                    arrayOf(
+                        mView.resources.getString(R.string.edit_this_item),
+                        mView.resources.getString(R.string.delete_this_item),
+                        mView.resources.getString(R.string.cancel)
+                    )
+                ) { _, pos ->
+                    when (pos) {
+                        0 -> {
+                            gotoExtraUpdate(definition)
+                        }
+
+                        1 -> {
+                            deleteExtra(definition.definition)
+                        }
+
+                        else -> {
+                            //do nothing
+                        }
+                    }
+                }.show()
+            false
+        }
+    }
+
+    private fun gotoExtraUpdate(definition: ExtraDefinitionFull) {
+        mainActivity.mainViewModel.setEmployerString(definition.employer.employerName)
+        mainActivity.mainViewModel.setEmployer(definition.employer)
+        mainActivity.mainViewModel.setExtraDefinitionFull(definition)
+        mView.findNavController().navigate(
+            EmployerExtraDefinitionsFragmentDirections
+                .actionEmployerExtraDefinitionsFragmentToEmployerExtraDefinitionUpdateFragment()
+        )
+    }
+
+    private fun deleteExtra(definition: WorkExtrasDefinitions) {
+        mainActivity.workExtraViewModel.updateWorkExtraDefinition(
+            WorkExtrasDefinitions(
+                definition.workExtraId,
+                definition.weEmployerId,
+                definition.weName,
+                definition.weAppliesTo,
+                definition.weAttachTo,
+                definition.weValue,
+                definition.weIsFixed,
+                definition.weIsCredit,
+                definition.weIsDefault,
+                definition.weEffectiveDate,
+                true,
+                df.getCurrentTimeAsString()
+            )
+        )
     }
 }

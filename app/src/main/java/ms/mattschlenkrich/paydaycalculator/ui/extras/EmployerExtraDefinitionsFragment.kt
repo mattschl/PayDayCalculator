@@ -26,6 +26,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     private lateinit var mainActivity: MainActivity
     private val employerList = ArrayList<Employers>()
     private var curEmployer: Employers? = null
+    private var employerExtraDefinitionAdapter: EmployerExtraDefinitionAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,10 +60,10 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     for (employer in employerList) {
                         if (employer.employerName == spEmployers.selectedItem.toString()) {
                             curEmployer = employer
+                            fillExtrasList()
                             break
                         }
                     }
-                    fillExtrasList()
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -73,24 +74,30 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     }
 
     private fun fillExtrasList() {
-        binding.apply {
-            val employerExtraDefinitionAdapter = EmployerExtraDefinitionAdapter(
-                mainActivity, mView
-            )
-            rvExtras.apply {
-                layoutManager = StaggeredGridLayoutManager(
-                    2,
-                    StaggeredGridLayoutManager.VERTICAL
+        if (curEmployer != null) {
+            binding.apply {
+                employerExtraDefinitionAdapter = null
+                employerExtraDefinitionAdapter = EmployerExtraDefinitionAdapter(
+                    mainActivity, mView
                 )
-                setHasFixedSize(true)
-                adapter = employerExtraDefinitionAdapter
-            }
-            activity.let {
-                mainActivity.workExtraViewModel.getActiveExtraDefinitionsFull().observe(
-                    viewLifecycleOwner
-                ) { extras ->
-                    employerExtraDefinitionAdapter.differ.submitList(extras)
-                    updateRecycler(extras)
+                rvExtras.apply {
+                    layoutManager = StaggeredGridLayoutManager(
+                        2,
+                        StaggeredGridLayoutManager.VERTICAL
+                    )
+                    setHasFixedSize(true)
+                    adapter = employerExtraDefinitionAdapter
+                }
+                activity.let {
+                    mainActivity.workExtraViewModel.getActiveExtraDefinitionsFull(
+                        curEmployer!!.employerId
+                    ).observe(
+                        viewLifecycleOwner
+                    ) { extras ->
+
+                        employerExtraDefinitionAdapter!!.differ.submitList(extras)
+                        updateRecycler(extras)
+                    }
                 }
             }
         }
@@ -120,6 +127,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         ) { employers ->
             employerAdapter.clear()
             employerList.clear()
+            employerAdapter.notifyDataSetChanged()
             employers.listIterator().forEach {
                 employerAdapter.add(it.employerName)
                 employerList.add(it)

@@ -21,7 +21,7 @@ import ms.mattschlenkrich.paydaycalculator.adapter.TaxRuleAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_TAX_RULES
-import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxRulesBinding
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
@@ -63,7 +63,7 @@ class TaxRulesFragment :
 
     private fun fillValues() {
         CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_500)
+            delay(WAIT_1000)
             binding.apply {
                 if (mainActivity.mainViewModel.getTaxTypeString() != null) {
                     for (i in 0 until spTaxType.adapter.count) {

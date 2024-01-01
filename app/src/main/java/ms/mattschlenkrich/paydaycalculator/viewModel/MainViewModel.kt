@@ -12,6 +12,7 @@ class MainViewModel(
     app: Application,
 ) : AndroidViewModel(app) {
     private var employer: Employers? = null
+    private var employerString: String? = null
     private var taxType: TaxTypes? = null
     private var taxTypeString: String? = null
     private var taxRule: WorkTaxRules? = null
@@ -20,6 +21,14 @@ class MainViewModel(
     private var taxLevel: Int? = null
     private var callingFragment: String? = null
     private var extraDefinitionFull: ExtraDefinitionFull? = null
+
+    fun setEmployerString(employer: String?) {
+        employerString = employer
+    }
+
+    fun getEmployerString(): String? {
+        return employerString
+    }
 
     fun setExtraDefinitionFull(newExtra: ExtraDefinitionFull?) {
         extraDefinitionFull = newExtra
