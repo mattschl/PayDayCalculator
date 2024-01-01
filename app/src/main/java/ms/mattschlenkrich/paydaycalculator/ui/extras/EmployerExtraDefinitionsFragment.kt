@@ -12,7 +12,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.EmployerExtraDefinitionAdapter
+import ms.mattschlenkrich.paydaycalculator.adapter.EmployerExtraDefinitionFullAdapter
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerExtraDefinitionsBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
@@ -26,7 +26,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     private lateinit var mainActivity: MainActivity
     private val employerList = ArrayList<Employers>()
     private var curEmployer: Employers? = null
-    private var employerExtraDefinitionAdapter: EmployerExtraDefinitionAdapter? = null
+    private var employerExtraDefinitionAdapter: EmployerExtraDefinitionFullAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,12 +73,12 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         }
     }
 
-    private fun fillExtrasList() {
+    fun fillExtrasList() {
         if (curEmployer != null) {
             binding.apply {
                 employerExtraDefinitionAdapter = null
-                employerExtraDefinitionAdapter = EmployerExtraDefinitionAdapter(
-                    mainActivity, mView
+                employerExtraDefinitionAdapter = EmployerExtraDefinitionFullAdapter(
+                    mainActivity, mView, this@EmployerExtraDefinitionsFragment
                 )
                 rvExtras.apply {
                     layoutManager = StaggeredGridLayoutManager(

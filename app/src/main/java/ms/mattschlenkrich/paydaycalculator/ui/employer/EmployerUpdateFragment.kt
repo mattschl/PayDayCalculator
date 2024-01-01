@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paydaycalculator.ui.employer
 
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,12 +16,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.adapter.EmployerExtraDefinitionsShortAdapter
 import ms.mattschlenkrich.paydaycalculator.adapter.EmployerTaxTypeAdapter
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
@@ -44,6 +45,8 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     private lateinit var mainActivity: MainActivity
     private lateinit var employerViewModel: EmployerViewModel
     private val df = DateFunctions()
+    private var employerTaxTypeAdapter: EmployerTaxTypeAdapter? = null
+    private var extraDefinitionsShortAdapter: EmployerExtraDefinitionsShortAdapter? = null
 
     // private val cf = CommonFunctions()
     private val employerList = ArrayList<Employers>()
@@ -134,14 +137,41 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
                     etMainMonthDate.setText(curEmployer!!.mainMonthlyDate.toString())
                 }
                 fillTaxes(curEmployer!!.employerId)
+                fillExtras(curEmployer!!.employerId)
             }
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    private fun fillExtras(employerId: Long) {
+        binding.apply {
+            extraDefinitionsShortAdapter = null
+            extraDefinitionsShortAdapter =
+                EmployerExtraDefinitionsShortAdapter(
+                    mainActivity, mView
+                )
+            rvExtras.apply {
+                layoutManager = StaggeredGridLayoutManager(
+                    2,
+                    StaggeredGridLayoutManager.VERTICAL
+                )
+                setHasFixedSize(true)
+                adapter = extraDefinitionsShortAdapter
+            }
+            activity.let {
+                mainActivity.workExtraViewModel.getActiveExtraDefinitionsFull(
+                    employerId
+                ).observe(viewLifecycleOwner) { list ->
+                    extraDefinitionsShortAdapter!!.differ.submitList(list)
+                }
+            }
+        }
+    }
+
+
     fun fillTaxes(employerId: Long) {
         binding.apply {
-            val employerTaxTypeAdapter = EmployerTaxTypeAdapter(
+            employerTaxTypeAdapter = null
+            employerTaxTypeAdapter = EmployerTaxTypeAdapter(
                 mainActivity, mView, this@EmployerUpdateFragment
             )
             rvTaxes.apply {
@@ -152,8 +182,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
                 mainActivity.workTaxViewModel.getEmployerTaxTypes(
                     employerId
                 ).observe(viewLifecycleOwner) { employerTaxType ->
-                    rvTaxes.adapter!!.notifyDataSetChanged()
-                    employerTaxTypeAdapter.differ.submitList(employerTaxType)
+                    employerTaxTypeAdapter!!.differ.submitList(employerTaxType)
                 }
             }
         }

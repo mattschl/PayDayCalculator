@@ -214,7 +214,6 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
             name.listIterator().forEach {
                 extraList.add(it.weName)
             }
-
         }
     }
 

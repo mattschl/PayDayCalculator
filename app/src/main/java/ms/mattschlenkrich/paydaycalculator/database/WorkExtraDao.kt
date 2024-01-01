@@ -47,5 +47,4 @@ interface WorkExtraDao {
     )
     fun getActiveExtraDefinitionsFull(employerId: Long): LiveData<List<ExtraDefinitionFull>>
 
-
 }

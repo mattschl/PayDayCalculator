@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -16,12 +15,12 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerExtraDefinitonBinding
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
-import ms.mattschlenkrich.paydaycalculator.ui.extras.EmployerExtraDefinitionsFragmentDirections
 
-class EmployerExtraDefinitionAdapter(
+class EmployerExtraDefinitionsShortAdapter(
     private val mainActivity: MainActivity,
-    private val mView: View
-) : RecyclerView.Adapter<EmployerExtraDefinitionAdapter.DefinitionViewHolder>() {
+    private val mView: View,
+) : RecyclerView.Adapter<EmployerExtraDefinitionsShortAdapter.DefinitionViewHolder>() {
+
 
     private val cf = CommonFunctions()
     private val df = DateFunctions()
@@ -49,6 +48,7 @@ class EmployerExtraDefinitionAdapter(
 
     val differ = AsyncListDiffer(this, differCallBack)
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DefinitionViewHolder {
         return DefinitionViewHolder(
             ListEmployerExtraDefinitonBinding.inflate(
@@ -73,41 +73,11 @@ class EmployerExtraDefinitionAdapter(
             holder.itemBinding.tvName.setTextColor(Color.BLACK)
         }
         holder.itemBinding.tvName.text = display
-        display = if (definition.definition.weIsCredit) {
-            "Add "
-        } else {
-            "Deduct "
-        }
-        if (definition.definition.weIsCredit) {
-            holder.itemBinding.tvValue.setTextColor(Color.BLACK)
-        } else {
-            holder.itemBinding.tvValue.setTextColor(Color.RED)
-        }
-        display += if (definition.definition.weIsFixed) {
-            cf.displayDollars(
-                definition.definition.weValue
-            )
-        } else {
-            cf.displayPercentFromDouble(
-                definition.definition.weValue / 100
-            )
-        }
-        holder.itemBinding.tvValue.text = display
-        display = "Effective starting " + definition.definition.weEffectiveDate
-        holder.itemBinding.tvEffectiveDate.text = display
-        val frequencies = mView.resources.getStringArray(
-            R.array.extra_frequencies
-        )
-        display = "Calculated " + frequencies[definition.definition.weAppliesTo]
-        holder.itemBinding.tvAppliesTo.text = display
-        display = "Attaches to " + frequencies[definition.definition.weAttachTo]
-        holder.itemBinding.tvAttachTo.text = display
-        display = if (definition.definition.weIsDefault) {
-            "This is the default"
-        } else {
-            "This needs to be manually added"
-        }
-        holder.itemBinding.tvIsDefault.text = display
+        holder.itemBinding.tvValue.visibility = View.GONE
+        holder.itemBinding.tvAppliesTo.visibility = View.GONE
+        holder.itemBinding.tvAttachTo.visibility = View.GONE
+        holder.itemBinding.tvIsDefault.visibility = View.GONE
+        holder.itemBinding.tvEffectiveDate.visibility = View.GONE
         holder.itemView.setOnLongClickListener {
             AlertDialog.Builder(mView.context)
                 .setTitle(
@@ -139,19 +109,15 @@ class EmployerExtraDefinitionAdapter(
         }
     }
 
-    private fun gotoExtraUpdate(definition: ExtraDefinitionFull) {
-        mainActivity.mainViewModel.setEmployerString(definition.employer.employerName)
-        mainActivity.mainViewModel.setEmployer(definition.employer)
-        mainActivity.mainViewModel.setExtraDefinitionFull(definition)
-        mView.findNavController().navigate(
-            EmployerExtraDefinitionsFragmentDirections
-                .actionEmployerExtraDefinitionsFragmentToEmployerExtraDefinitionUpdateFragment()
-        )
-    }
-
     private fun deleteExtra(definition: WorkExtrasDefinitions) {
         mainActivity.workExtraViewModel.deleteWorkExtraDefinition(
             definition.workExtraId, df.getCurrentTimeAsString()
         )
+    }
+
+    private fun gotoExtraUpdate(definition: ExtraDefinitionFull) {
+        mainActivity.mainViewModel.setEmployerString(definition.employer.employerName)
+        mainActivity.mainViewModel.setEmployer(definition.employer)
+        mainActivity.mainViewModel.setExtraDefinitionFull(definition)
     }
 }
