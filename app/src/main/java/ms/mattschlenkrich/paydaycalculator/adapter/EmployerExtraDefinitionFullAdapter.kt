@@ -17,6 +17,7 @@ import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerExtraDefinito
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
 import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragment
+import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragmentDirections
 import ms.mattschlenkrich.paydaycalculator.ui.extras.EmployerExtraDefinitionsFragment
 import ms.mattschlenkrich.paydaycalculator.ui.extras.EmployerExtraDefinitionsFragmentDirections
 
@@ -79,6 +80,7 @@ class EmployerExtraDefinitionFullAdapter(
         }
         holder.itemBinding.tvName.text = display
         if (employerExtraDefinitionsFragment != null) {
+            holder.itemBinding.tvName.textAlignment = View.TEXT_ALIGNMENT_CENTER
             display = if (definition.definition.weIsCredit) {
                 "Add "
             } else {
@@ -115,6 +117,8 @@ class EmployerExtraDefinitionFullAdapter(
             }
             holder.itemBinding.tvIsDefault.text = display
         } else {
+
+            holder.itemBinding.tvName.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
             holder.itemBinding.tvValue.visibility = View.GONE
             holder.itemBinding.tvAppliesTo.visibility = View.GONE
             holder.itemBinding.tvAttachTo.visibility = View.GONE
@@ -156,10 +160,17 @@ class EmployerExtraDefinitionFullAdapter(
         mainActivity.mainViewModel.setEmployerString(definition.employer.employerName)
         mainActivity.mainViewModel.setEmployer(definition.employer)
         mainActivity.mainViewModel.setExtraDefinitionFull(definition)
-        mView.findNavController().navigate(
-            EmployerExtraDefinitionsFragmentDirections
-                .actionEmployerExtraDefinitionsFragmentToEmployerExtraDefinitionUpdateFragment()
-        )
+        if (employerExtraDefinitionsFragment != null) {
+            mView.findNavController().navigate(
+                EmployerExtraDefinitionsFragmentDirections
+                    .actionEmployerExtraDefinitionsFragmentToEmployerExtraDefinitionUpdateFragment()
+            )
+        } else if (employerUpdateFragment != null) {
+            mView.findNavController().navigate(
+                EmployerUpdateFragmentDirections
+                    .actionEmployerUpdateFragmentToEmployerExtraDefinitionUpdateFragment()
+            )
+        }
     }
 
     private fun deleteExtra(definition: WorkExtrasDefinitions) {

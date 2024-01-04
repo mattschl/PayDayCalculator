@@ -54,6 +54,9 @@
         <action
             android:id="@+id/action_employerUpdateFragment_to_taxRulesFragment2"
             app:destination="@id/taxRulesFragment" />
+        <action
+            android:id="@+id/action_employerUpdateFragment_to_employerExtraDefinitionUpdateFragment"
+            app:destination="@id/employerExtraDefinitionUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/taxTypeFragment"
@@ -169,5 +172,8 @@
         <action
             android:id="@+id/action_employerExtraDefinitionUpdateFragment_to_employerExtraDefinitionsFragment"
             app:destination="@id/employerExtraDefinitionsFragment" />
+        <action
+            android:id="@+id/action_employerExtraDefinitionUpdateFragment_to_employerUpdateFragment"
+            app:destination="@id/employerUpdateFragment" />
     </fragment>
 </navigation>
