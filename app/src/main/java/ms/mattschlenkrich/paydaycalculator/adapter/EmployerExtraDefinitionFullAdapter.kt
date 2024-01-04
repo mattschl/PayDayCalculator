@@ -79,8 +79,30 @@ class EmployerExtraDefinitionFullAdapter(
             holder.itemBinding.tvName.setTextColor(Color.BLACK)
         }
         holder.itemBinding.tvName.text = display
+        display = if (definition.definition.weIsCredit) {
+            "Add "
+        } else {
+            "Deduct "
+        }
+        if (definition.definition.weIsCredit) {
+            holder.itemBinding.tvValue.setTextColor(Color.BLACK)
+        } else {
+            holder.itemBinding.tvValue.setTextColor(Color.RED)
+        }
+        display += if (definition.definition.weIsFixed) {
+            cf.displayDollars(
+                definition.definition.weValue
+            )
+        } else {
+            cf.displayPercentFromDouble(
+                definition.definition.weValue / 100
+            )
+        }
+        holder.itemBinding.tvValue.text = display
         if (employerExtraDefinitionsFragment != null) {
+//            holder.itemBinding.llExtras.orientation = LinearLayout.VERTICAL
             holder.itemBinding.tvName.textAlignment = View.TEXT_ALIGNMENT_CENTER
+            holder.itemBinding.tvValue.textAlignment = View.TEXT_ALIGNMENT_CENTER
             display = if (definition.definition.weIsCredit) {
                 "Add "
             } else {
@@ -117,9 +139,11 @@ class EmployerExtraDefinitionFullAdapter(
             }
             holder.itemBinding.tvIsDefault.text = display
         } else {
-
+//            holder.itemBinding.llExtras.orientation = LinearLayout.HORIZONTAL
             holder.itemBinding.tvName.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
-            holder.itemBinding.tvValue.visibility = View.GONE
+//            holder.itemBinding.tvName.width = 500
+            holder.itemBinding.tvValue.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
+//            holder.itemBinding.tvValue.width = 500
             holder.itemBinding.tvAppliesTo.visibility = View.GONE
             holder.itemBinding.tvAttachTo.visibility = View.GONE
             holder.itemBinding.tvIsDefault.visibility = View.GONE
