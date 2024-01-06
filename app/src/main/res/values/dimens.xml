@@ -13,4 +13,5 @@
     <dimen name="text_box_medium">150dp</dimen>
     <dimen name="text_size_medium">18sp</dimen>
     <dimen name="text_box_extra_wide">250dp</dimen>
+    <dimen name="layout_width_wide">275dp</dimen>
 </resources>

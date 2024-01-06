@@ -22,7 +22,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.EmployerExtraDefinitionFullAdapter
+import ms.mattschlenkrich.paydaycalculator.adapter.EmployerExtraDefinitionsShortAdapter
 import ms.mattschlenkrich.paydaycalculator.adapter.EmployerTaxTypeAdapter
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
@@ -45,7 +45,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     private lateinit var employerViewModel: EmployerViewModel
     private val df = DateFunctions()
     private var employerTaxTypeAdapter: EmployerTaxTypeAdapter? = null
-    private var extraDefinitionsAdapter: EmployerExtraDefinitionFullAdapter? = null
+    private var extraDefinitionsAdapter: EmployerExtraDefinitionsShortAdapter? = null
 
     // private val cf = CommonFunctions()
     private val employerList = ArrayList<Employers>()
@@ -87,6 +87,18 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
                 gotoTaxRules()
                 false
             }
+            fabAddExtra.setOnClickListener {
+                gotoExtraAdd(curEmployer)
+            }
+        }
+    }
+
+    private fun gotoExtraAdd(curEmployer: Employers?) {
+        if (curEmployer != null) {
+            mView.findNavController().navigate(
+                EmployerUpdateFragmentDirections
+                    .actionEmployerUpdateFragmentToEmployerExtraDefinitionsAddFragment()
+            )
         }
     }
 
@@ -145,10 +157,8 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         binding.apply {
             extraDefinitionsAdapter = null
             extraDefinitionsAdapter =
-                EmployerExtraDefinitionFullAdapter(
-                    mainActivity, mView,
-                    null,
-                    this@EmployerUpdateFragment
+                EmployerExtraDefinitionsShortAdapter(
+                    mainActivity, mView
                 )
             rvExtras.apply {
                 layoutManager = LinearLayoutManager(mView.context)

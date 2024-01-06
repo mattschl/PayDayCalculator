@@ -1,19 +1,19 @@
 package ms.mattschlenkrich.paydaycalculator.adapter
 
-import android.app.AlertDialog
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.MainActivity
-import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
-import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerExtraDefinitonBinding
+import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerExtraDefinitonShortBinding
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
+import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragmentDirections
 
 class EmployerExtraDefinitionsShortAdapter(
     private val mainActivity: MainActivity,
@@ -21,10 +21,10 @@ class EmployerExtraDefinitionsShortAdapter(
 ) : RecyclerView.Adapter<EmployerExtraDefinitionsShortAdapter.DefinitionViewHolder>() {
 
 
-    //    private val cf = CommonFunctions()
+    private val cf = CommonFunctions()
     private val df = DateFunctions()
 
-    class DefinitionViewHolder(val itemBinding: ListEmployerExtraDefinitonBinding) :
+    class DefinitionViewHolder(val itemBinding: ListEmployerExtraDefinitonShortBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCallBack =
@@ -50,7 +50,7 @@ class EmployerExtraDefinitionsShortAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DefinitionViewHolder {
         return DefinitionViewHolder(
-            ListEmployerExtraDefinitonBinding.inflate(
+            ListEmployerExtraDefinitonShortBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -72,51 +72,31 @@ class EmployerExtraDefinitionsShortAdapter(
             holder.itemBinding.tvName.setTextColor(Color.BLACK)
         }
         holder.itemBinding.tvName.text = display
-        holder.itemBinding.tvValue.visibility = View.GONE
-        holder.itemBinding.tvAppliesTo.visibility = View.GONE
-        holder.itemBinding.tvAttachTo.visibility = View.GONE
-        holder.itemBinding.tvIsDefault.visibility = View.GONE
-        holder.itemBinding.tvEffectiveDate.visibility = View.GONE
-        holder.itemView.setOnLongClickListener {
-            AlertDialog.Builder(mView.context)
-                .setTitle(
-                    mView.resources.getString(R.string.choose_an_action) +
-                            " for " + definition.definition.weName
-                )
-                .setItems(
-                    arrayOf(
-                        mView.resources.getString(R.string.edit_this_item),
-                        mView.resources.getString(R.string.delete_this_item),
-                        mView.resources.getString(R.string.cancel)
-                    )
-                ) { _, pos ->
-                    when (pos) {
-                        0 -> {
-                            gotoExtraUpdate(definition)
-                        }
-
-                        1 -> {
-                            deleteExtra(definition.definition)
-                        }
-
-                        else -> {
-                            //do nothing
-                        }
-                    }
-                }.show()
-            false
+        display = if (definition.definition.weIsFixed) {
+            cf.displayDollars(definition.definition.weValue)
+        } else {
+            cf.displayPercentFromDouble(definition.definition.weValue)
         }
-    }
-
-    private fun deleteExtra(definition: WorkExtrasDefinitions) {
-        mainActivity.workExtraViewModel.deleteWorkExtraDefinition(
-            definition.workExtraId, df.getCurrentTimeAsString()
-        )
+        if (definition.definition.weIsCredit) {
+            display = "Add $display"
+            holder.itemBinding.tvValue.setTextColor(Color.BLACK)
+        } else {
+            holder.itemBinding.tvValue.setTextColor(Color.RED)
+            display = "Deduct $display"
+        }
+        holder.itemBinding.tvValue.text = display
+        holder.itemBinding.btnEdit.setOnClickListener {
+            gotoExtraUpdate(definition)
+        }
     }
 
     private fun gotoExtraUpdate(definition: ExtraDefinitionFull) {
         mainActivity.mainViewModel.setEmployerString(definition.employer.employerName)
         mainActivity.mainViewModel.setEmployer(definition.employer)
         mainActivity.mainViewModel.setExtraDefinitionFull(definition)
+        mView.findNavController().navigate(
+            EmployerUpdateFragmentDirections
+                .actionEmployerUpdateFragmentToEmployerExtraDefinitionUpdateFragment()
+        )
     }
 }
