@@ -4,9 +4,11 @@ import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_ID
+import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_NAME
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_TAX_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
@@ -15,7 +17,8 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
 
 
 @Entity(
-    tableName = TABLE_EMPLOYERS
+    tableName = TABLE_EMPLOYERS,
+    indices = [Index(value = [EMPLOYER_NAME], unique = true)]
 )
 @Parcelize
 data class Employers(

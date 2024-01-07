@@ -182,4 +182,12 @@
             android:id="@+id/action_employerExtraDefinitionUpdateFragment_to_employerUpdateFragment"
             app:destination="@id/employerUpdateFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/timeSheetFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.TimeSheetFragment"
+        android:label="fragment_time_sheet"
+        tools:layout="@layout/fragment_time_sheet" />
+    <action
+        android:id="@+id/action_global_timeSheetFragment"
+        app:destination="@id/timeSheetFragment" />
 </navigation>

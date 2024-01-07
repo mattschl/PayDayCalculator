@@ -13,12 +13,15 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
 import ms.mattschlenkrich.paydaycalculator.databinding.ActivityMainBinding
 import ms.mattschlenkrich.paydaycalculator.repository.EmployerRepository
+import ms.mattschlenkrich.paydaycalculator.repository.PayDayRepository
 import ms.mattschlenkrich.paydaycalculator.repository.WorkExtraRepository
 import ms.mattschlenkrich.paydaycalculator.repository.WorkTaxRepository
 import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModel
 import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModelFactory
 import ms.mattschlenkrich.paydaycalculator.viewModel.MainViewModel
 import ms.mattschlenkrich.paydaycalculator.viewModel.MainViewModelFactory
+import ms.mattschlenkrich.paydaycalculator.viewModel.PayDayViewModel
+import ms.mattschlenkrich.paydaycalculator.viewModel.PayDayViewModelFactory
 import ms.mattschlenkrich.paydaycalculator.viewModel.WorkExtraViewModel
 import ms.mattschlenkrich.paydaycalculator.viewModel.WorkExtraViewModelFactory
 import ms.mattschlenkrich.paydaycalculator.viewModel.WorkTaxViewModel
@@ -31,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var employerViewModel: EmployerViewModel
     lateinit var workTaxViewModel: WorkTaxViewModel
     lateinit var workExtraViewModel: WorkExtraViewModel
+    lateinit var payDayViewModel: PayDayViewModel
 //    private val df = DateFunctions()
 
     private fun gotoEmployer() {
@@ -49,6 +53,7 @@ class MainActivity : AppCompatActivity() {
         setupEmployerViewModel()
         setupWorkTaxViewModel()
         setupWorkExtraViewModel()
+        setupPayDayViewModel()
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menu.add(getString(R.string.review_tax_types))
@@ -80,6 +85,11 @@ class MainActivity : AppCompatActivity() {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
         bottomNav.setOnItemSelectedListener {
             when (it.itemId) {
+                R.id.nav_time_sheet -> {
+                    gotoTimeSheet()
+                    true
+                }
+
                 R.id.nav_employer_view -> {
                     gotoEmployer()
                     true
@@ -95,6 +105,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun gotoTimeSheet() {
+        findNavController(R.id.nav_host_fragment_container).navigate(
+            NavGraphDirections.actionGlobalTimeSheetFragment()
+        )
     }
 
     private fun gotoExtras() {
@@ -126,6 +142,19 @@ class MainActivity : AppCompatActivity() {
             this,
             mainViewModelFactory
         )[MainViewModel::class.java]
+    }
+
+
+    private fun setupPayDayViewModel() {
+        val payDayRepository = PayDayRepository(
+            PayDatabase(this)
+        )
+        val payDayViewModelFactory =
+            PayDayViewModelFactory(application, payDayRepository)
+        payDayViewModel = ViewModelProvider(
+            this,
+            payDayViewModelFactory
+        )[PayDayViewModel::class.java]
     }
 
     private fun setupWorkExtraViewModel() {

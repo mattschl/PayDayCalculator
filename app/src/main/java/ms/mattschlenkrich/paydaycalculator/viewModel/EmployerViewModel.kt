@@ -27,4 +27,7 @@ class EmployerViewModel(
 
     fun searchEmployers(query: String?) =
         employerRepository.searchEmployers(query)
+
+    fun findEmployer(employerName: String) =
+        employerRepository.findEmployer(employerName)
 }

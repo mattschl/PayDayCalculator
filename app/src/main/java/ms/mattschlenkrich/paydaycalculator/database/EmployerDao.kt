@@ -32,4 +32,10 @@ interface EmployerDao {
     )
     fun searchEmployers(query: String?): LiveData<List<Employers>>
 
+    @Query(
+        "SELECT * FROM $TABLE_EMPLOYERS " +
+                "WHERE employerName = :employerName"
+    )
+    fun findEmployer(employerName: String): LiveData<Employers>
+
 }

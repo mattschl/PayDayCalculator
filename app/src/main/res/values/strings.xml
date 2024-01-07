@@ -97,4 +97,6 @@
     <string name="cancel">Cancel</string>
     <string name="time_sheet">Time Sheet</string>
     <string name="employers">Employers</string>
+    <string name="cut_off_date">Cut off date</string>
+    <string name="add_a_new_cut_off_date">Add a new Cut Off date</string>
 </resources>

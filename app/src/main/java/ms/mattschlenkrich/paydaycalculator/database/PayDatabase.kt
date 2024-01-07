@@ -40,6 +40,7 @@ abstract class PayDatabase : RoomDatabase() {
     abstract fun getEmployerDao(): EmployerDao
     abstract fun getWorkTaxDao(): WorkTaxDao
     abstract fun getWorkExtraDao(): WorkExtraDao
+    abstract fun getPayDayDao(): PayDayDao
 
     companion object {
         @Volatile
@@ -59,7 +60,7 @@ abstract class PayDatabase : RoomDatabase() {
                 PayDatabase::class.java,
                 PAY_DB_NAME
             )
-                .createFromAsset("pay.db")
+//                .createFromAsset("pay.db")
                 .build()
         }
     }

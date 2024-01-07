@@ -18,4 +18,7 @@ class EmployerRepository(private val db: PayDatabase) {
 
     fun searchEmployers(query: String?) =
         db.getEmployerDao().searchEmployers(query)
+
+    fun findEmployer(employerName: String) =
+        db.getEmployerDao().findEmployer(employerName)
 }

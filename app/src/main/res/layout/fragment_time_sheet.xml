@@ -28,5 +28,25 @@
             app:layout_constraintStart_toEndOf="@id/lblEmployer"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/lblCutOff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cut_off_date"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/spCutOff"
+            app:layout_constraintEnd_toEndOf="@+id/lblEmployer"
+            app:layout_constraintStart_toStartOf="@+id/lblEmployer" />
+
+        <Spinner
+            android:id="@+id/spCutOff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="@dimen/text_box_wide"
+            android:minHeight="@dimen/minimum_touch_height"
+            app:layout_constraintEnd_toEndOf="@+id/spEmployers"
+            app:layout_constraintStart_toStartOf="@+id/spEmployers"
+            app:layout_constraintTop_toBottomOf="@id/spEmployers" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
