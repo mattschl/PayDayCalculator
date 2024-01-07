@@ -18,7 +18,7 @@
             android:id="@+id/btnEdit"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/minimum_touch_height"
-            android:backgroundTint="@color/dark_green"
+            android:backgroundTint="@color/deep_red"
             android:text="@string/edit" />
 
     </LinearLayout>

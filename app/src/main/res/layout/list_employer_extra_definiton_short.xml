@@ -50,7 +50,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:backgroundTint="@color/dark_green"
+                android:backgroundTint="@color/deep_red"
                 android:text="@string/edit" />
 
         </LinearLayout>
