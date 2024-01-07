@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/nav_time_sheet"
+        android:icon="@drawable/ic_time_sheet"
+        android:title="@string/time_sheet" />
+    <item
         android:id="@+id/nav_employer_view"
         android:icon="@drawable/ic_employer_foreground"
-        android:title="@string/employer" />
+        android:title="@string/employers" />
     <item
         android:id="@+id/nav_tax_rules"
         android:icon="@drawable/ic_tax"
         android:title="@string/tax_levels" />
-
 </menu>

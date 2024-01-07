@@ -95,4 +95,6 @@
     <string name="edit_this_item">Edit this Item</string>
     <string name="delete_this_item">Delete this Item</string>
     <string name="cancel">Cancel</string>
+    <string name="time_sheet">Time Sheet</string>
+    <string name="employers">Employers</string>
 </resources>
