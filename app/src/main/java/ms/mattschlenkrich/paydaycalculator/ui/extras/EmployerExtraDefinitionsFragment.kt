@@ -62,6 +62,10 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                             curEmployer = employer
                             fillExtrasList()
                             break
+                        } else if (spEmployers.selectedItem.toString() ==
+                            getString(R.string.add_new_employer)
+                        ) {
+                            gotoEmployerAdd()
                         }
                     }
                 }
@@ -71,6 +75,13 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                 }
             }
         }
+    }
+
+    private fun gotoEmployerAdd() {
+        mView.findNavController().navigate(
+            EmployerExtraDefinitionsFragmentDirections
+                .actionEmployerExtraDefinitionsFragmentToEmployerAddFragment()
+        )
     }
 
     fun fillExtrasList() {
@@ -135,9 +146,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                 employerList.add(it)
             }
             updateUI(employers)
-            if (employerAdapter.isEmpty) {
-                employerAdapter.add(getString(R.string.no_employers_add_an_employer_through_the_employer_tab))
-            }
+            employerAdapter.add(getString(R.string.add_new_employer))
         }
         binding.spEmployers.adapter = employerAdapter
     }
@@ -166,7 +175,6 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
             }
         }
     }
-
 
     override fun onDestroy() {
         super.onDestroy()

@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetBinding
@@ -38,6 +40,41 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         super.onViewCreated(view, savedInstanceState)
         fillEmployers()
         selectEmployer()
+        selectCutOffDate()
+    }
+
+    private fun selectCutOffDate() {
+        binding.apply {
+            spCutOff.onItemSelectedListener =
+                object : OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        if (spCutOff.selectedItem.toString() !=
+                            getString(R.string.generate_a_new_cut_off_date)
+                        ) {
+                            fillCutOffDates()
+                        } else {
+                            generateCutOff()
+                        }
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                        //not needed
+                    }
+                }
+        }
+    }
+
+    private fun generateCutOff() {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.this_feature_is_not_available),
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun selectEmployer() {
@@ -50,17 +87,19 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                         position: Int,
                         id: Long
                     ) {
-                        mainActivity.title = getString(R.string.time_sheet) +
-                                " for ${spEmployers.selectedItem}"
                         if (spEmployers.selectedItem.toString() !=
-                            getString(R.string.no_employers_add_an_employer_through_the_employer_tab)
+                            getString(R.string.add_new_employer)
                         ) {
                             mainActivity.employerViewModel.findEmployer(
                                 spEmployers.selectedItem.toString()
                             ).observe(viewLifecycleOwner) { employer ->
                                 curEmployer = employer
                             }
+                            mainActivity.title = getString(R.string.time_sheet) +
+                                    " for ${spEmployers.selectedItem}"
                             fillCutOffDates()
+                        } else {
+                            gotoEmployerAdd()
                         }
                     }
 
@@ -69,6 +108,13 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                     }
                 }
         }
+    }
+
+    private fun gotoEmployerAdd() {
+        mView.findNavController().navigate(
+            TimeSheetFragmentDirections
+                .actionTimeSheetFragmentToEmployerAddFragment()
+        )
     }
 
     private fun fillCutOffDates() {
@@ -87,7 +133,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                         cutOffAdapter.add(it.ppCutoffDate)
                     }
                 }
-                cutOffAdapter.add(getString(R.string.add_a_new_cut_off_date))
+                cutOffAdapter.add(getString(R.string.generate_a_new_cut_off_date))
                 spCutOff.adapter = cutOffAdapter
             }
         }
@@ -107,9 +153,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                 employerAdapter.add(it.employerName)
             }
 //            updateUI(employers)
-            if (employerAdapter.isEmpty) {
-                employerAdapter.add(getString(R.string.no_employers_add_an_employer_through_the_employer_tab))
-            }
+            employerAdapter.add(getString(R.string.add_new_employer))
         }
         binding.spEmployers.adapter = employerAdapter
     }
