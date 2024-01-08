@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Pay Day Calculator</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="start">start</string>
     <string name="pay_day_calculator">Pay Day Calculator</string>
@@ -21,7 +20,7 @@
     <string name="fifteen">15</string>
     <string name="thirty_one">31</string>
     <string name="main_monthly_pay_date">Main monthly pay date</string>
-    <string name="add_an_employer">Add an employer</string>
+    <string name="add_an_employer">* Add an employer *</string>
     <string name="update_this_employer">Update this Employer</string>
     <string name="tax_type">Tax Type</string>
     <string name="enter_tax_type">Enter Tax Type</string>
@@ -36,7 +35,7 @@
     <string name="review_work_extra_frequencies">Review Work Extra Frequencies</string>
     <string name="extra_frequency">Extra Frequency</string>
     <string name="enter_extra_frequency">Enter Extra Frequency</string>
-    <string name="add_a_new_extra_frequency">Add a new Extra Frequency</string>
+    <string name="add_a_new_extra_frequency">* Add a new Extra Frequency *</string>
     <string name="tax_rule_name">Tax Rule Name</string>
     <string name="enter_tax_rule_name">Enter Tax Rule Name</string>
     <string name="percentage">Percentage</string>
@@ -48,7 +47,7 @@
     <string name="effective_date">Effective Date</string>
     <string name="enter_effective_date">Enter Effective Date</string>
     <string name="no_tax_rules_to_view">No Tax Rules to View</string>
-    <string name="add_tax_rule">Add Tax Rule</string>
+    <string name="add_tax_rule">* Add Tax Rule *</string>
     <string name="review_tax_rules">Review Tax Rules</string>
     <string name="tax_rules">Tax Rules</string>
     <string name="choose_an_action">Choose an Action</string>
@@ -83,7 +82,7 @@
     <string name="review_extra_credits_deductions">Review Extra Credits/Deductions</string>
     <string name="add_a_new_employer">* Add a New Employer *</string>
     <string name="no_employers_add_an_employer_through_the_employer_tab">No Employers - Add an Employer through the Employer Tab</string>
-    <string name="add_new_extra">Add New Extra</string>
+    <string name="add_new_extra">* Add New Extra *</string>
     <string name="update_employer">"Update Employer: "</string>
     <string name="update">"Update: "</string>
     <string name="applies_to">Applies To</string>
@@ -98,5 +97,5 @@
     <string name="time_sheet">Time Sheet</string>
     <string name="employers">Employers</string>
     <string name="cut_off_date">Cut off date</string>
-    <string name="add_a_new_cut_off_date">Add a new Cut Off date</string>
+    <string name="add_a_new_cut_off_date">* Add a new Cut Off date *</string>
 </resources>

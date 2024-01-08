@@ -19,7 +19,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private lateinit var curEmployer: Employers
+    private var curEmployer: Employers? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,22 +72,24 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     }
 
     private fun fillCutOffDates() {
-        binding.apply {
-            val cutOffAdapter = ArrayAdapter<Any>(
-                mView.context,
-                R.layout.spinner_item_bold
-            )
-            mainActivity.payDayViewModel.getCutOffDates(curEmployer.employerId).observe(
-                viewLifecycleOwner
-            ) { dates ->
-                cutOffAdapter.clear()
-                cutOffAdapter.notifyDataSetChanged()
-                dates.listIterator().forEach {
-                    cutOffAdapter.add(it.ppCutoffDate)
+        if (curEmployer != null) {
+            binding.apply {
+                val cutOffAdapter = ArrayAdapter<Any>(
+                    mView.context,
+                    R.layout.spinner_item_bold
+                )
+                mainActivity.payDayViewModel.getCutOffDates(curEmployer!!.employerId).observe(
+                    viewLifecycleOwner
+                ) { dates ->
+                    cutOffAdapter.clear()
+                    cutOffAdapter.notifyDataSetChanged()
+                    dates.listIterator().forEach {
+                        cutOffAdapter.add(it.ppCutoffDate)
+                    }
                 }
+                cutOffAdapter.add(getString(R.string.add_a_new_cut_off_date))
+                spCutOff.adapter = cutOffAdapter
             }
-            cutOffAdapter.add(getString(R.string.add_a_new_cut_off_date))
-            spCutOff.adapter = cutOffAdapter
         }
     }
 
