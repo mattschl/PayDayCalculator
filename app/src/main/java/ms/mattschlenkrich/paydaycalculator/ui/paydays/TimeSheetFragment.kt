@@ -56,25 +56,33 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                         if (spCutOff.selectedItem.toString() !=
                             getString(R.string.generate_a_new_cut_off_date)
                         ) {
-                            fillCutOffDates()
+                            fillWorkDates()
                         } else {
                             generateCutOff()
                         }
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
-                        //not needed
+                        fillCutOffDates()
                     }
                 }
         }
     }
 
-    private fun generateCutOff() {
+    private fun fillWorkDates() {
         Toast.makeText(
             mView.context,
             getString(R.string.this_feature_is_not_available),
             Toast.LENGTH_LONG
         ).show()
+    }
+
+    private fun generateCutOff() {
+//        Toast.makeText(
+//            mView.context,
+//            getString(R.string.this_feature_is_not_available),
+//            Toast.LENGTH_LONG
+//        ).show()
     }
 
     private fun selectEmployer() {
@@ -104,7 +112,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
-                        //not needed
+                        fillEmployers()
                     }
                 }
         }
@@ -151,9 +159,11 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
             employerAdapter.notifyDataSetChanged()
             employers.listIterator().forEach {
                 employerAdapter.add(it.employerName)
+                curEmployer = employers[0]
             }
 //            updateUI(employers)
             employerAdapter.add(getString(R.string.add_new_employer))
+            fillCutOffDates()
         }
         binding.spEmployers.adapter = employerAdapter
     }
