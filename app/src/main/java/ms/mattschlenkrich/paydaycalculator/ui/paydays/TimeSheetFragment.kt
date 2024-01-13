@@ -7,13 +7,15 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
+import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.projection.PayDayProjections
 
 class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
 
@@ -22,6 +24,9 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private var curEmployer: Employers? = null
+    private val cutOffs = ArrayList<String>()
+    private val projections = PayDayProjections()
+    private val df = DateFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,6 +46,19 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         fillEmployers()
         selectEmployer()
         selectCutOffDate()
+        setActions()
+    }
+
+    private fun setActions() {
+        binding.apply {
+            fabAddDate.setOnClickListener {
+                addWorkDate()
+            }
+        }
+    }
+
+    private fun addWorkDate() {
+        TODO("Not yet implemented")
     }
 
     private fun selectCutOffDate() {
@@ -70,19 +88,27 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     }
 
     private fun fillWorkDates() {
-        Toast.makeText(
-            mView.context,
-            getString(R.string.this_feature_is_not_available),
-            Toast.LENGTH_LONG
-        ).show()
-    }
-
-    private fun generateCutOff() {
 //        Toast.makeText(
 //            mView.context,
 //            getString(R.string.this_feature_is_not_available),
 //            Toast.LENGTH_LONG
 //        ).show()
+    }
+
+    private fun generateCutOff() {
+        val nextCutOff = projections.projectNextCutOff(
+            curEmployer!!,
+            if (cutOffs.isEmpty()) "" else cutOffs[0]
+        )
+        mainActivity.payDayViewModel.insertCutOffDate(
+            PayPeriods(
+                nextCutOff,
+                curEmployer!!.employerId,
+                false,
+                df.getCurrentTimeAsString()
+            )
+        )
+        fillCutOffDates()
     }
 
     private fun selectEmployer() {
@@ -136,9 +162,11 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                     viewLifecycleOwner
                 ) { dates ->
                     cutOffAdapter.clear()
+                    cutOffs.clear()
                     cutOffAdapter.notifyDataSetChanged()
                     dates.listIterator().forEach {
                         cutOffAdapter.add(it.ppCutoffDate)
+                        cutOffs.add(it.ppCutoffDate)
                     }
                 }
                 cutOffAdapter.add(getString(R.string.generate_a_new_cut_off_date))

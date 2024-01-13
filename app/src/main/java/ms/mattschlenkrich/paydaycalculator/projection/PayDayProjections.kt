@@ -7,46 +7,70 @@ import ms.mattschlenkrich.paydaycalculator.common.DAY_SUNDAY
 import ms.mattschlenkrich.paydaycalculator.common.DAY_THURSDAY
 import ms.mattschlenkrich.paydaycalculator.common.DAY_TUESDAY
 import ms.mattschlenkrich.paydaycalculator.common.DAY_WEDNESDAY
-import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_BI_WEEKLY
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_WEEKLY
+import ms.mattschlenkrich.paydaycalculator.model.Employers
 import java.time.DayOfWeek
 import java.time.LocalDate
 
 class PayDayProjections {
-    val df = DateFunctions()
-    fun ProjectPayDays(
-        startDate: String, endDate: String, frequency: String, dayOfWeek: String
-    )
-            : ArrayList<String> {
-        val dates = when (frequency) {
+
+    fun projectNextCutOff(
+        employer: Employers,
+        mostRecent: String,
+    ): String {
+        var newDate = ""
+        val mostRecentDate = if (mostRecent.isNotEmpty()) {
+            LocalDate.parse(mostRecent)
+        } else (
+                LocalDate.now()
+                )
+        val dates: ArrayList<LocalDate> = when (employer.payFrequency) {
             INTERVAL_WEEKLY -> {
-                projectWeekly(startDate, endDate, dayOfWeek)
+                projectWeekly(
+                    employer.startDate,
+                    LocalDate.now().plusMonths(2).toString(),
+                    employer.dayOfWeek
+                )
             }
 
             INTERVAL_BI_WEEKLY -> {
-                projectBiWeekly(startDate, endDate, dayOfWeek)
+                projectBiWeekly(
+                    employer.startDate,
+                    LocalDate.now().plusMonths(2).toString(),
+                    employer.dayOfWeek
+                )
             }
 
             else -> {
-                return ArrayList()
+                ArrayList()
             }
         }
+        if (dates.isNotEmpty()) {
+            for (date in dates) {
+                if (date > mostRecentDate) {
+                    newDate = date.minusDays(employer.cutoffDaysBefore.toLong()).toString()
+                    break
+                }
+            }
+        } else {
+            newDate = ""
+        }
 
-        return dates
+        return newDate
     }
 
     private fun projectWeekly(
         startDate: String, endDate: String, dayOfWeek: String
-    ): ArrayList<String> {
-        val dates = ArrayList<String>()
+    ): ArrayList<LocalDate> {
+        val dates = ArrayList<LocalDate>()
         var workingDate = LocalDate.parse(startDate)
         workingDate = fixDateToDay(workingDate, dayOfWeek)
-        val curDate = LocalDate.parse(df.getCurrentDateAsString())
+        val curDate = LocalDate.now()
         val lastDate = LocalDate.parse(endDate)
         while (workingDate < lastDate) {
             if (workingDate >= curDate) {
-                dates.add(workingDate.toString())
+                dates.add(workingDate)
             }
             workingDate = workingDate.plusWeeks(1)
         }
@@ -56,15 +80,15 @@ class PayDayProjections {
 
     private fun projectBiWeekly(
         startDate: String, endDate: String, dayOfWeek: String
-    ): ArrayList<String> {
-        val dates = ArrayList<String>()
+    ): ArrayList<LocalDate> {
+        val dates = ArrayList<LocalDate>()
         var workingDate = LocalDate.parse(startDate)
         workingDate = fixDateToDay(workingDate, dayOfWeek)
-        val curDate = LocalDate.parse(df.getCurrentDateAsString())
+        val curDate = LocalDate.now()
         val lastDate = LocalDate.parse(endDate)
         while (workingDate < lastDate) {
             if (workingDate >= curDate) {
-                dates.add(workingDate.toString())
+                dates.add(workingDate)
             }
             workingDate = workingDate.plusWeeks(2)
         }

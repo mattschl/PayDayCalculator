@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paydaycalculator.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Insert
 import androidx.room.Query
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
@@ -14,4 +15,7 @@ interface PayDayDao {
                 "ORDER BY ppCutoffDate DESC"
     )
     fun getCutOffDates(employerId: Long): LiveData<List<PayPeriods>>
+
+    @Insert
+    suspend fun insertCutOffDate(cutOff: PayPeriods)
 }

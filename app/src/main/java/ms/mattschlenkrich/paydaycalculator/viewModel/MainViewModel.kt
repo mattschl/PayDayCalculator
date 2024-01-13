@@ -21,6 +21,24 @@ class MainViewModel(
     private var taxLevel: Int? = null
     private var callingFragment: String? = null
     private var extraDefinitionFull: ExtraDefinitionFull? = null
+    private var workDate: String? = null
+    private var cutOffDate: String? = null
+
+    fun setCutOffDate(date: String?) {
+        cutOffDate = date
+    }
+
+    fun getCutOffDate(): String? {
+        return cutOffDate
+    }
+
+    fun setWorkDate(date: String?) {
+        workDate = date
+    }
+
+    fun getWorkDate(): String? {
+        return workDate
+    }
 
     fun setEmployerString(employer: String?) {
         employerString = employer
@@ -42,7 +60,7 @@ class MainViewModel(
         callingFragment = newFragment
     }
 
-    fun addCallingFragment(newFragment: String) {
+    fun addCallingFragment(newFragment: String?) {
         if (callingFragment != null) {
             callingFragment += ", $newFragment"
         } else {
