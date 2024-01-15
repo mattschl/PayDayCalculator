@@ -199,8 +199,20 @@
         <action
             android:id="@+id/action_timeSheetFragment_to_employerAddFragment"
             app:destination="@id/employerAddFragment" />
+        <action
+            android:id="@+id/action_timeSheetFragment_to_workDateAddFragment"
+            app:destination="@id/workDateAddFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_timeSheetFragment"
         app:destination="@id/timeSheetFragment" />
+    <fragment
+        android:id="@+id/workDateAddFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateAddFragment"
+        android:label="fragment_work_date_add"
+        tools:layout="@layout/fragment_work_date_add">
+        <action
+            android:id="@+id/action_workDateAddFragment_to_timeSheetFragment"
+            app:destination="@id/timeSheetFragment" />
+    </fragment>
 </navigation>

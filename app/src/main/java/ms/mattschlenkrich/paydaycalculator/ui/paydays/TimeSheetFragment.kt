@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
@@ -63,12 +62,22 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     }
 
     private fun addWorkDate() {
-        Toast.makeText(
-            mView.context,
-            getString(R.string.this_feature_is_not_available),
-            Toast.LENGTH_LONG
-        ).show()
+        mainActivity.mainViewModel.setPayPeriod(getPayPeriod())
+        mView.findNavController().navigate(
+            TimeSheetFragmentDirections
+                .actionTimeSheetFragmentToWorkDateAddFragment()
+        )
+    }
 
+    private fun getPayPeriod(): PayPeriods {
+        binding.apply {
+            return PayPeriods(
+                spCutOff.selectedItem.toString(),
+                curEmployer!!.employerId,
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
     }
 
     private fun selectCutOffDate() {

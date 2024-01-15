@@ -108,4 +108,11 @@
     <string name="stat_hours">Stat Hours</string>
     <string name="pay_amount">Pay Amount</string>
     <string name="work_date">Work Date</string>
+    <string name="reg_hours">Reg Hours</string>
+    <string name="zero_double">0.0</string>
+    <string name="overtime_hours">Overtime Hours</string>
+    <string name="double_overtime">Double Overtime</string>
+    <string name="add_a_new_work_date">Add a new work date</string>
+    <string name="extras_for_this_date">Extras for this date</string>
+    <string name="new_extra">New Extra</string>
 </resources>

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
+import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
@@ -23,6 +24,15 @@ class MainViewModel(
     private var extraDefinitionFull: ExtraDefinitionFull? = null
     private var workDate: String? = null
     private var cutOffDate: String? = null
+    private var payPeriod: PayPeriods? = null
+
+    fun setPayPeriod(newPayPeriod: PayPeriods?) {
+        payPeriod = newPayPeriod
+    }
+
+    fun getPayPeriod(): PayPeriods? {
+        return payPeriod
+    }
 
     fun setCutOffDate(date: String?) {
         cutOffDate = date
