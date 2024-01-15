@@ -99,7 +99,7 @@
     <string name="cut_off_date">Cut off date</string>
     <string name="add_a_new_cut_off_date">* Add a new Cut Off date *</string>
     <string name="add_new_employer">* Add New Employer *</string>
-    <string name="generate_a_new_cut_off_date">* Generate a new Cut Off date *</string>
+    <string name="generate_a_new_cut_off">* Generate a new Cut Off</string>
     <string name="this_feature_is_not_available">This feature is not available.</string>
     <string name="pay_day">Pay Day</string>
     <string name="hours">Hours</string>

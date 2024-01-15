@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.projection
+package ms.mattschlenkrich.paydaycalculator.payFunctions
 
 import ms.mattschlenkrich.paydaycalculator.common.DAY_FRIDAY
 import ms.mattschlenkrich.paydaycalculator.common.DAY_MONDAY
@@ -48,7 +48,10 @@ class PayDayProjections {
         }
         if (dates.isNotEmpty()) {
             for (date in dates) {
-                if (date > mostRecentDate) {
+                if (date > mostRecentDate.plusDays(
+                        employer.cutoffDaysBefore.toLong() + 1L
+                    )
+                ) {
                     newDate = date.minusDays(employer.cutoffDaysBefore.toLong()).toString()
                     break
                 }

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
@@ -15,7 +16,9 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.projection.PayDayProjections
+import ms.mattschlenkrich.paydaycalculator.payFunctions.PayCalculations
+import ms.mattschlenkrich.paydaycalculator.payFunctions.PayDayProjections
+import java.time.LocalDate
 
 class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
 
@@ -25,8 +28,10 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     private lateinit var mainActivity: MainActivity
     private var curEmployer: Employers? = null
     private val cutOffs = ArrayList<String>()
+    private var curCutOff = ""
     private val projections = PayDayProjections()
     private val df = DateFunctions()
+    private lateinit var payCalculations: PayCalculations
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,7 +63,12 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     }
 
     private fun addWorkDate() {
-        TODO("Not yet implemented")
+        Toast.makeText(
+            mView.context,
+            getString(R.string.this_feature_is_not_available),
+            Toast.LENGTH_LONG
+        ).show()
+
     }
 
     private fun selectCutOffDate() {
@@ -72,8 +82,10 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                         id: Long
                     ) {
                         if (spCutOff.selectedItem.toString() !=
-                            getString(R.string.generate_a_new_cut_off_date)
+                            getString(R.string.generate_a_new_cut_off)
                         ) {
+                            curCutOff = spCutOff.selectedItem.toString()
+                            fillPayDayDetails()
                             fillWorkDates()
                         } else {
                             generateCutOff()
@@ -87,12 +99,31 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         }
     }
 
+    private fun fillPayDayDetails() {
+        if (curCutOff != "" && curEmployer != null) {
+            payCalculations = PayCalculations(
+                mainActivity,
+                curEmployer!!,
+                curCutOff,
+                mView
+            )
+            binding.apply {
+                tvPayDay.text = df.getDisplayDate(
+                    LocalDate.parse(curCutOff)
+                        .plusDays(curEmployer!!.cutoffDaysBefore.toLong()).toString()
+                )
+
+            }
+        }
+    }
+
     private fun fillWorkDates() {
-//        Toast.makeText(
+        //        Toast.makeText(
 //            mView.context,
 //            getString(R.string.this_feature_is_not_available),
 //            Toast.LENGTH_LONG
 //        ).show()
+
     }
 
     private fun generateCutOff() {
@@ -168,8 +199,8 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                         cutOffAdapter.add(it.ppCutoffDate)
                         cutOffs.add(it.ppCutoffDate)
                     }
+                    cutOffAdapter.add(getString(R.string.generate_a_new_cut_off))
                 }
-                cutOffAdapter.add(getString(R.string.generate_a_new_cut_off_date))
                 spCutOff.adapter = cutOffAdapter
             }
         }
@@ -191,7 +222,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
             }
 //            updateUI(employers)
             employerAdapter.add(getString(R.string.add_new_employer))
-            fillCutOffDates()
+//            fillCutOffDates()
         }
         binding.spEmployers.adapter = employerAdapter
     }
