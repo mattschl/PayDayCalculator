@@ -17,4 +17,5 @@
     <dimen name="view_height_small">75dp</dimen>
     <dimen name="dimen_4dp">4dp</dimen>
     <dimen name="text_box_small">75dp</dimen>
+    <dimen name="dimen_15dp">15dp</dimen>
 </resources>

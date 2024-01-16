@@ -48,6 +48,7 @@
             android:layout_height="@dimen/minimum_touch_height"
             android:importantForAutofill="no"
             android:inputType="numberDecimal"
+            android:selectAllOnFocus="true"
             android:text="@string/zero_double"
             android:textAlignment="center"
             android:textSize="@dimen/text_size_large"
@@ -73,6 +74,7 @@
             android:layout_height="@dimen/minimum_touch_height"
             android:importantForAutofill="no"
             android:inputType="numberDecimal"
+            android:selectAllOnFocus="true"
             android:text="@string/zero_double"
             android:textAlignment="center"
             android:textSize="@dimen/text_size_large"
@@ -98,6 +100,7 @@
             android:layout_height="@dimen/minimum_touch_height"
             android:importantForAutofill="no"
             android:inputType="numberDecimal"
+            android:selectAllOnFocus="true"
             android:text="@string/zero_double"
             android:textAlignment="center"
             android:textSize="@dimen/text_size_large"
@@ -123,6 +126,7 @@
             android:layout_height="@dimen/minimum_touch_height"
             android:importantForAutofill="no"
             android:inputType="numberDecimal"
+            android:selectAllOnFocus="true"
             android:text="@string/zero_double"
             android:textAlignment="center"
             android:textSize="@dimen/text_size_large"
@@ -151,30 +155,33 @@
                     android:id="@+id/lblExtras"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_15dp"
                     android:text="@string/extras_for_this_date"
                     android:textSize="@dimen/text_size_large"
                     android:textStyle="bold"
-                    app:layout_constraintBaseline_toBaselineOf="@id/btnAddExtra"
-                    app:layout_constraintEnd_toStartOf="@id/btnAddExtra"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/fabAddExtra"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <Button
-                    android:id="@+id/btnAddExtra"
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fabAddExtra"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/dark_green"
-                    android:text="@string/new_extra"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/lblExtras"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:contentDescription="@string/add_new_extra"
+                    android:foregroundTint="@color/black"
+                    android:src="@drawable/ic_add"
+                    app:layout_constraintEnd_toStartOf="@id/lblExtras"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="ImageContrastCheck" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvExtras"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dimen_8dp"
+                    android:layout_marginTop="@dimen/dimen_10dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/btnAddExtra" />
+                    app:layout_constraintTop_toBottomOf="@id/fabAddExtra" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>

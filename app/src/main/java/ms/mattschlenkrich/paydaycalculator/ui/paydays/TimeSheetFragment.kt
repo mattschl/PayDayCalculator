@@ -140,7 +140,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
             curEmployer!!,
             if (cutOffs.isEmpty()) "" else cutOffs[0]
         )
-        mainActivity.payDayViewModel.insertCutOffDate(
+        mainActivity.payDayViewModel.insertPayPeriod(
             PayPeriods(
                 nextCutOff,
                 curEmployer!!.employerId,

@@ -3,6 +3,7 @@ package ms.mattschlenkrich.paydaycalculator.database
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES
@@ -19,7 +20,7 @@ interface PayDayDao {
     fun getCutOffDates(employerId: Long): LiveData<List<PayPeriods>>
 
     @Insert
-    suspend fun insertCutOffDate(cutOff: PayPeriods)
+    suspend fun insertPayPeriod(payPeriod: PayPeriods)
 
     @Query(
         "SELECT * FROM $TABLE_WORK_DATES " +
@@ -28,4 +29,7 @@ interface PayDayDao {
                 "ORDER BY wdDate"
     )
     fun getWorkDateList(employerId: Long, cutOff: String): LiveData<List<WorkDates>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertWorkDate(workDate: WorkDates)
 }

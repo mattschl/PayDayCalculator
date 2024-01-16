@@ -115,4 +115,5 @@
     <string name="add_a_new_work_date">Add a new work date</string>
     <string name="extras_for_this_date">Extras for this date</string>
     <string name="new_extra">New Extra</string>
+    <string name="choose_a_work_date">Choose a work date</string>
 </resources>
