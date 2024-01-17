@@ -29,22 +29,6 @@
                 android:text="@string/hours"
                 android:textSize="@dimen/text_size_medium" />
 
-            <TextView
-                android:id="@+id/tvOt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/dimen_8dp"
-                android:text="@string/overtime"
-                android:textSize="@dimen/text_size_medium" />
-
-            <TextView
-                android:id="@+id/tvStat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/dimen_8dp"
-                android:text="@string/stat_hours"
-                android:textSize="@dimen/text_size_medium" />
-
         </LinearLayout>
 
         <LinearLayout

@@ -63,7 +63,5 @@ class TaxTypeAdapter(
             )
             true
         }
-
-
     }
 }

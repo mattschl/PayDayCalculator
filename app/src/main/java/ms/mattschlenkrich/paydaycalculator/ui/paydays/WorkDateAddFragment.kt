@@ -128,12 +128,6 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun saveWorkDate() {
-        if (overWriteDate()) {
-            mainActivity.payDayViewModel.insertWorkDate(getCurWorkDate())
-        }
-    }
-
     private fun gotoCallingFragment() {
         mView.findNavController().navigate(
             WorkDateAddFragmentDirections
@@ -141,8 +135,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         )
     }
 
-    private fun overWriteDate(): Boolean {
-        var answer = true
+    private fun saveWorkDate() {
         for (date in usedWorkDatesList) {
             if (date == curDate) {
                 AlertDialog.Builder(mView.context)
@@ -152,14 +145,16 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                                 "this work date?"
                     )
                     .setPositiveButton("Yes") { _, _ ->
-                        answer = true
+                        mainActivity.payDayViewModel.insertWorkDate(getCurWorkDate())
                         gotoCallingFragment()
                     }
-                    .setNegativeButton("No") { _, _ -> answer = false }
+                    .setNegativeButton("No", null)
                     .show()
+            } else {
+                mainActivity.payDayViewModel.insertWorkDate(getCurWorkDate())
+                gotoCallingFragment()
             }
         }
-        return answer
     }
 
     private fun fillDate() {
@@ -173,7 +168,9 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     }
 
     private fun fillExtras() {
-        //TODO("Not yet implemented")
+        binding.apply {
+
+        }
     }
 
     private fun getCurWorkDate(): WorkDates {

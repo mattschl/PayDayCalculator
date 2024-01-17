@@ -9,12 +9,15 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayCalculations
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayDayProjections
 import java.time.LocalDate
@@ -31,6 +34,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     private val projections = PayDayProjections()
     private val df = DateFunctions()
     private lateinit var payCalculations: PayCalculations
+    private var workDateAdapter: WorkDateAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -127,12 +131,35 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     }
 
     private fun fillWorkDates() {
-        //        Toast.makeText(
-//            mView.context,
-//            getString(R.string.this_feature_is_not_available),
-//            Toast.LENGTH_LONG
-//        ).show()
+        binding.apply {
+            workDateAdapter = null
+            workDateAdapter = WorkDateAdapter(
+                mainActivity, mView
+            )
+            rvDates.apply {
+                layoutManager = LinearLayoutManager(mView.context)
+                adapter = workDateAdapter
+            }
+            activity?.let {
+                mainActivity.payDayViewModel.getWorkDateList(
+                    curEmployer!!.employerId,
+                    curCutOff
+                ).observe(viewLifecycleOwner) { workDates ->
+                    workDateAdapter!!.differ.submitList(workDates)
+                    updateUI(workDates)
+                }
+            }
+        }
+    }
 
+    private fun updateUI(workDates: List<WorkDates>) {
+        binding.apply {
+            if (workDates.isEmpty()) {
+                rvDates.visibility = View.GONE
+            } else {
+                rvDates.visibility = View.VISIBLE
+            }
+        }
     }
 
     private fun generateCutOff() {
