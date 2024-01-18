@@ -64,7 +64,7 @@ class WorkDateAdapter(
             display += " ${workDate.wdOtHours} Ot"
         }
         if (workDate.wdDblOtHours > 0) {
-            display += " ${workDate.wdDblOtHours} double Ot"
+            display += " ${workDate.wdDblOtHours} dbl Ot"
         }
         if (workDate.wdStatHours > 0) {
             display += " ${workDate.wdStatHours} Stat"

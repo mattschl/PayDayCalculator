@@ -8,11 +8,9 @@
         android:layout_marginBottom="@dimen/dimen_10dp">
 
         <CheckBox
-            android:id="@+id/chkEmployerTax"
+            android:id="@+id/chkExtra"
             android:layout_width="@dimen/text_box_extra_wide"
-            android:layout_height="wrap_content"
-            android:text="@string/tax_type"
-            android:textSize="@dimen/text_size_medium"
+            android:layout_height="@dimen/minimum_touch_height"
             app:layout_constraintEnd_toStartOf="@id/btnEdit"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -24,8 +22,7 @@
             android:backgroundTint="@color/deep_red"
             android:text="@string/edit"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/chkEmployerTax"
+            app:layout_constraintStart_toEndOf="@id/chkExtra"
             app:layout_constraintTop_toTopOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

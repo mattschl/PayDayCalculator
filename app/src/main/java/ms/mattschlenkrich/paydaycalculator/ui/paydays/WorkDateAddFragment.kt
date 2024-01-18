@@ -58,6 +58,20 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         fillMenu()
         fillExtras()
         selectDate()
+        setActions()
+    }
+
+    private fun setActions() {
+        binding.apply {
+            fabAddExtra.setOnClickListener {
+                addExtra()
+            }
+        }
+    }
+
+    private fun addExtra() {
+        AlertDialog.Builder(mView.context)
+            .setTitle("")
     }
 
     private fun selectDate() {

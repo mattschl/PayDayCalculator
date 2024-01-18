@@ -29,15 +29,15 @@ class EmployerTaxTypeAdapter(
                 oldItem: EmployerTaxTypes,
                 newItem: EmployerTaxTypes
             ): Boolean {
-                return oldItem.etrEmployerId == newItem.etrEmployerId &&
-                        oldItem.etrTaxType == newItem.etrTaxType
+                return oldItem == newItem
             }
 
             override fun areContentsTheSame(
                 oldItem: EmployerTaxTypes,
                 newItem: EmployerTaxTypes
             ): Boolean {
-                return oldItem == newItem
+                return oldItem.etrEmployerId == newItem.etrEmployerId &&
+                        oldItem.etrTaxType == newItem.etrTaxType
             }
         }
 
@@ -57,12 +57,12 @@ class EmployerTaxTypeAdapter(
 
     override fun onBindViewHolder(holder: EmployerTaxViewHolder, position: Int) {
         val employerTaxType = differ.currentList[position]
-        holder.itemBinding.chEmployerTax.text = employerTaxType.etrTaxType
-        holder.itemBinding.chEmployerTax.isChecked = employerTaxType.etrInclude
-        holder.itemBinding.chEmployerTax.setOnClickListener {
+        holder.itemBinding.chkEmployerTax.text = employerTaxType.etrTaxType
+        holder.itemBinding.chkEmployerTax.isChecked = employerTaxType.etrInclude
+        holder.itemBinding.chkEmployerTax.setOnClickListener {
             mainActivity.workTaxViewModel.updateEmployerTaxIncluded(
                 employerTaxType.etrEmployerId, employerTaxType.etrTaxType,
-                holder.itemBinding.chEmployerTax.isChecked
+                holder.itemBinding.chkEmployerTax.isChecked
             )
             parentFragment.fillTaxes(employerTaxType.etrEmployerId)
         }
