@@ -116,4 +116,10 @@
     <string name="extras_for_this_date">Extras for this date</string>
     <string name="new_extra">New Extra</string>
     <string name="choose_a_work_date">Choose a work date</string>
+    <string name="pay_summary">Pay Summary</string>
+    <string name="work_dates">Work Dates</string>
+    <string name="deductions">Deductions</string>
+    <string name="gross_pay">Gross Pay</string>
+    <string name="week_1">Week 1</string>
+    <string name="week_2">Week 2</string>
 </resources>

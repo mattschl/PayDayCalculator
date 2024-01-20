@@ -54,6 +54,14 @@ class WorkDateExtraAdapter(
 
     override fun onBindViewHolder(holder: ExtraViewHolder, position: Int) {
         val extra = differ.currentList[position]
+        holder.itemBinding.chkExtra.text = extra.wdeName
+        holder.itemBinding.btnEdit.setOnClickListener {
+            gotoExtraEdit(extra)
+        }
 
+    }
+
+    private fun gotoExtraEdit(extra: WorkDatesExtras) {
+        //need to create a new fragment to edit the extra
     }
 }

@@ -61,13 +61,16 @@ class WorkDateAdapter(
             display = "${workDate.wdRegHours} Hrs"
         }
         if (workDate.wdOtHours > 0) {
-            display += " ${workDate.wdOtHours} Ot"
+            if (display.isNotBlank()) display += " | "
+            display += "${workDate.wdOtHours} Ot hrs"
         }
         if (workDate.wdDblOtHours > 0) {
-            display += " ${workDate.wdDblOtHours} dbl Ot"
+            if (display.isNotBlank()) display += " | "
+            display += "${workDate.wdDblOtHours} Dbl Ot hr"
         }
         if (workDate.wdStatHours > 0) {
-            display += " ${workDate.wdStatHours} Stat"
+            if (display.isNotBlank()) display += " | "
+            display += "${workDate.wdStatHours} Stat or Vacation hrs"
         }
         holder.itemBinding.tvHours.text = display
     }

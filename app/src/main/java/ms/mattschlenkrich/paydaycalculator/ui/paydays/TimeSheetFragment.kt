@@ -121,10 +121,11 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                 mView
             )
             binding.apply {
-                tvPayDay.text = df.getDisplayDate(
+                var display = df.getDisplayDate(
                     LocalDate.parse(curCutOff)
                         .plusDays(curEmployer!!.cutoffDaysBefore.toLong()).toString()
-                )
+                ) + " - Pay Summary"
+                tvPaySummary.text = display
 
             }
         }

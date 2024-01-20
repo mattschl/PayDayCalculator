@@ -26,6 +26,8 @@ import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import java.time.LocalDate
 
+private const val TAG = "WorkDateAdd"
+
 class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
 
     private var _binding: FragmentWorkDateAddBinding? = null
@@ -70,8 +72,12 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     }
 
     private fun addExtra() {
-        AlertDialog.Builder(mView.context)
-            .setTitle("")
+        mainActivity.mainViewModel.setWorkDateObject(getCurWorkDate())
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mView.findNavController().navigate(
+            WorkDateAddFragmentDirections
+                .actionGlobalEmployerExtraDefinitionsFragment()
+        )
     }
 
     private fun selectDate() {
@@ -130,7 +136,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
-                        saveWorkDate()
+                        checkSaveWorkDate()
                         true
                     }
 
@@ -149,26 +155,33 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         )
     }
 
-    private fun saveWorkDate() {
-        for (date in usedWorkDatesList) {
-            if (date == curDate) {
-                AlertDialog.Builder(mView.context)
-                    .setTitle("This date is already used")
-                    .setMessage(
-                        "Would you like to REPLACE the old information for " +
-                                "this work date?"
-                    )
-                    .setPositiveButton("Yes") { _, _ ->
-                        mainActivity.payDayViewModel.insertWorkDate(getCurWorkDate())
-                        gotoCallingFragment()
-                    }
-                    .setNegativeButton("No", null)
-                    .show()
-            } else {
-                mainActivity.payDayViewModel.insertWorkDate(getCurWorkDate())
-                gotoCallingFragment()
+    private fun checkSaveWorkDate() {
+        if (usedWorkDatesList.isEmpty()) {
+            saveWorkDate()
+        } else {
+            for (date in usedWorkDatesList) {
+                if (date == curDate) {
+                    AlertDialog.Builder(mView.context)
+                        .setTitle("This date is already used")
+                        .setMessage(
+                            "Would you like to REPLACE the old information for " +
+                                    "this work date?"
+                        )
+                        .setPositiveButton("Yes") { _, _ ->
+                            saveWorkDate()
+                        }
+                        .setNegativeButton("No", null)
+                        .show()
+                } else {
+                    saveWorkDate()
+                }
             }
         }
+    }
+
+    private fun saveWorkDate() {
+        mainActivity.payDayViewModel.insertWorkDate(getCurWorkDate())
+        gotoCallingFragment()
     }
 
     private fun fillDate() {

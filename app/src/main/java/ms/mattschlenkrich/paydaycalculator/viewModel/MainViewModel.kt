@@ -7,6 +7,7 @@ import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
 
 class MainViewModel(
@@ -23,8 +24,17 @@ class MainViewModel(
     private var callingFragment: String? = null
     private var extraDefinitionFull: ExtraDefinitionFull? = null
     private var workDate: String? = null
+    private var workDateObject: WorkDates? = null
     private var cutOffDate: String? = null
     private var payPeriod: PayPeriods? = null
+
+    fun setWorkDateObject(newDate: WorkDates?) {
+        workDateObject = newDate
+    }
+
+    fun getWorkDateObject(): WorkDates? {
+        return workDateObject
+    }
 
     fun setPayPeriod(newPayPeriod: PayPeriods?) {
         payPeriod = newPayPeriod
@@ -42,11 +52,11 @@ class MainViewModel(
         return cutOffDate
     }
 
-    fun setWorkDate(date: String?) {
+    fun setWorkDateString(date: String?) {
         workDate = date
     }
 
-    fun getWorkDate(): String? {
+    fun getWorkDateString(): String? {
         return workDate
     }
 
