@@ -80,7 +80,7 @@ data class WorkDateAndExtras(
     @Relation(
         entity = WorkDatesExtras::class,
         parentColumn = "workDateId",
-        entityColumn = "wdId"
+        entityColumn = "wdeWorkDateId"
     )
     var extras: WorkDatesExtras?
 ) : Parcelable
@@ -90,7 +90,11 @@ data class WorkDateAndExtras(
     foreignKeys = [ForeignKey(
         entity = WorkDates::class,
         parentColumns = ["workDateId"],
-        childColumns = ["wdId"]
+        childColumns = ["wdeWorkDateId"]
+    ), ForeignKey(
+        entity = WorkExtrasDefinitions::class,
+        parentColumns = ["workExtraDefId"],
+        childColumns = ["wdeExtraDefinitionId"]
     )]
 )
 @Parcelize
@@ -98,7 +102,9 @@ data class WorkDatesExtras(
     @PrimaryKey
     val workDateExtraId: Long,
     @ColumnInfo(index = true)
-    val wdId: Long,
+    val wdeWorkDateId: Long,
+    @ColumnInfo(index = true)
+    val wdeExtraDefinitionId: Long?,
     @ColumnInfo(index = true)
     val wdeName: String,
     val wdeValue: Double,

@@ -41,7 +41,7 @@ interface PayDayDao {
         "SELECT $TABLE_WORK_DATES.*, $TABLE_WORK_DATES_EXTRAS.* " +
                 "FROM $TABLE_WORK_DATES " +
                 "LEFT JOIN $TABLE_WORK_DATES_EXTRAS ON " +
-                "workDateId = wdId " +
+                "workDateId = wdeWorkDateId " +
                 "WHERE wdEmployerId = :employerId " +
                 "AND wdCutoffDate = :cutOffDate " +
                 "ORDER BY $TABLE_WORK_DATES.wdDate, " +
