@@ -23,7 +23,7 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_EXTRA_DEFINITIONS_EMPLOYE
 @Parcelize
 data class WorkExtrasDefinitions(
     @PrimaryKey
-    val workExtraId: Long,
+    val workExtraDefId: Long,
     @ColumnInfo(index = true)
     val weEmployerId: Long,
     val weName: String,

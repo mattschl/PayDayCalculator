@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
@@ -23,7 +24,7 @@ interface WorkExtraDao {
         "UPDATE $TABLE_WORK_EXTRAS_DEFINITIONS " +
                 "SET weIsDeleted = 1, " +
                 "weUpdateTime = :updateTime " +
-                "WHERE workExtraId = :id"
+                "WHERE workExtraDefId = :id"
     )
     suspend fun deleteWorkExtraDefinition(id: Long, updateTime: String)
 
@@ -34,6 +35,7 @@ interface WorkExtraDao {
     )
     fun getWorkExtraDefinitions(employerId: Long): LiveData<List<WorkExtrasDefinitions>>
 
+    @Transaction
     @Query(
         "SELECT $TABLE_WORK_EXTRAS_DEFINITIONS.*, " +
                 "$TABLE_EMPLOYERS.* " +

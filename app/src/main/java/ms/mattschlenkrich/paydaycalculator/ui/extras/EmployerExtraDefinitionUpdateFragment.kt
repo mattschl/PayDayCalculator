@@ -84,7 +84,7 @@ class EmployerExtraDefinitionUpdateFragment :
     private fun getCurrentDefinition(): WorkExtrasDefinitions {
         binding.apply {
             return WorkExtrasDefinitions(
-                curExtraDefinitionFull.definition.workExtraId,
+                curExtraDefinitionFull.definition.workExtraDefId,
                 curExtraDefinitionFull.definition.weEmployerId,
                 etName.text.toString(),
                 spAppliesTo.selectedItemPosition,
@@ -232,7 +232,7 @@ class EmployerExtraDefinitionUpdateFragment :
 
     private fun deleteExtra() {
         mainActivity.workExtraViewModel.deleteWorkExtraDefinition(
-            curExtraDefinitionFull.definition.workExtraId,
+            curExtraDefinitionFull.definition.workExtraDefId,
             df.getCurrentTimeAsString()
         )
         gotoCallingFragment()

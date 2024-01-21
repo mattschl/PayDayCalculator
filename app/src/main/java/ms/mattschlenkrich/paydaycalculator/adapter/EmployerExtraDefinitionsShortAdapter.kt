@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
-import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerExtraDefinitonShortBinding
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
 import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragmentDirections
@@ -22,7 +21,7 @@ class EmployerExtraDefinitionsShortAdapter(
 
 
     private val cf = CommonFunctions()
-    private val df = DateFunctions()
+//    private val df = DateFunctions()
 
     class DefinitionViewHolder(val itemBinding: ListEmployerExtraDefinitonShortBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -34,7 +33,7 @@ class EmployerExtraDefinitionsShortAdapter(
                 newItem: ExtraDefinitionFull
             ): Boolean {
                 return oldItem.employer.employerId == newItem.employer.employerId &&
-                        oldItem.definition.workExtraId == newItem.definition.workExtraId
+                        oldItem.definition.workExtraDefId == newItem.definition.workExtraDefId
             }
 
             override fun areContentsTheSame(

@@ -42,7 +42,7 @@ class EmployerExtraDefinitionFullAdapter(
                 newItem: ExtraDefinitionFull
             ): Boolean {
                 return oldItem.employer.employerId == newItem.employer.employerId &&
-                        oldItem.definition.workExtraId == newItem.definition.workExtraId
+                        oldItem.definition.workExtraDefId == newItem.definition.workExtraDefId
             }
 
             override fun areContentsTheSame(
@@ -199,7 +199,7 @@ class EmployerExtraDefinitionFullAdapter(
 
     private fun deleteExtra(definition: WorkExtrasDefinitions) {
         mainActivity.workExtraViewModel.deleteWorkExtraDefinition(
-            definition.workExtraId, df.getCurrentTimeAsString()
+            definition.workExtraDefId, df.getCurrentTimeAsString()
         )
         employerExtraDefinitionsFragment?.fillExtrasList()
         employerUpdateFragment?.fillExtras(definition.weEmployerId)

@@ -62,6 +62,7 @@ data class WorkDates(
     @PrimaryKey
     val workDateId: Long,
     val wdEmployerId: Long,
+    @ColumnInfo(index = true)
     val wdCutoffDate: String,
     val wdDate: String,
     val wdRegHours: Double,

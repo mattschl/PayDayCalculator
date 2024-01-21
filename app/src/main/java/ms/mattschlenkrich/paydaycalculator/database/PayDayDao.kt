@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES_EXTRAS
@@ -35,6 +36,7 @@ interface PayDayDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkDate(workDate: WorkDates)
 
+    @Transaction
     @Query(
         "SELECT $TABLE_WORK_DATES.*, $TABLE_WORK_DATES_EXTRAS.* " +
                 "FROM $TABLE_WORK_DATES " +
