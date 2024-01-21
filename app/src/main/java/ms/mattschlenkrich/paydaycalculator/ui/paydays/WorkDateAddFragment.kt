@@ -19,6 +19,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateAddBinding
@@ -37,6 +38,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private lateinit var curDate: String
     private var payPeriod: PayPeriods? = null
     private val df = DateFunctions()
+    private val cf = CommonFunctions()
 
     //    private val cf = CommonFunctions()
     private val usedWorkDatesList = ArrayList<String>()
@@ -203,6 +205,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private fun getCurWorkDate(): WorkDates {
         binding.apply {
             return WorkDates(
+                cf.generateId(),
                 payPeriod!!.ppEmployerId,
                 payPeriod!!.ppCutoffDate,
                 curDate,

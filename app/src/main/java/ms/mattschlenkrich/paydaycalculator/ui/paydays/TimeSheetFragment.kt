@@ -17,7 +17,6 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayCalculations
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayDayProjections
 import java.time.LocalDate
@@ -142,7 +141,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                 adapter = workDateAdapter
             }
             activity?.let {
-                mainActivity.payDayViewModel.getWorkDateList(
+                mainActivity.payDayViewModel.getWorkDatesAndExtras(
                     curEmployer!!.employerId,
                     curCutOff
                 ).observe(viewLifecycleOwner) { workDates ->
@@ -153,7 +152,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         }
     }
 
-    private fun updateUI(workDates: List<WorkDates>) {
+    private fun updateUI(workDates: List<Any>) {
         binding.apply {
             if (workDates.isEmpty()) {
                 rvDates.visibility = View.GONE

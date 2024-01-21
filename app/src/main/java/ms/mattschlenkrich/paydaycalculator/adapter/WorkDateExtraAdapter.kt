@@ -32,8 +32,7 @@ class WorkDateExtraAdapter(
                 oldItem: WorkDatesExtras,
                 newItem: WorkDatesExtras
             ): Boolean {
-                return oldItem.wdeId == newItem.wdeId &&
-                        oldItem.wdeEmployerId == newItem.wdeEmployerId &&
+                return oldItem.workDateExtraId == newItem.workDateExtraId &&
                         oldItem.wdeName == newItem.wdeName
             }
         }

@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateBinding
-import ms.mattschlenkrich.paydaycalculator.model.WorkDates
+import ms.mattschlenkrich.paydaycalculator.model.WorkDateAndExtras
 
 class WorkDateAdapter(
     private val mainActivity: MainActivity,
@@ -23,14 +23,20 @@ class WorkDateAdapter(
         RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCallBack =
-        object : DiffUtil.ItemCallback<WorkDates>() {
-            override fun areItemsTheSame(oldItem: WorkDates, newItem: WorkDates): Boolean {
+        object : DiffUtil.ItemCallback<WorkDateAndExtras>() {
+            override fun areItemsTheSame(
+                oldItem: WorkDateAndExtras,
+                newItem: WorkDateAndExtras
+            ): Boolean {
                 return oldItem == newItem
             }
 
-            override fun areContentsTheSame(oldItem: WorkDates, newItem: WorkDates): Boolean {
-                return oldItem.wdDate == newItem.wdDate &&
-                        oldItem.wdEmployerId == newItem.wdEmployerId
+            override fun areContentsTheSame(
+                oldItem: WorkDateAndExtras,
+                newItem: WorkDateAndExtras
+            ): Boolean {
+                return oldItem.workDate.wdEmployerId == newItem.workDate.wdEmployerId &&
+                        oldItem.workDate.wdDate == newItem.workDate.wdDate
             }
         }
     val differ = AsyncListDiffer(this, differCallBack)
@@ -47,9 +53,9 @@ class WorkDateAdapter(
     }
 
     override fun onBindViewHolder(holder: WorkDateViewHolder, position: Int) {
-        val workDate = differ.currentList[position]
-        var display = df.getDisplayDate(workDate.wdDate)
-        if (workDate.wdIsDeleted) {
+        val workDateAndExtras = differ.currentList[position]
+        var display = df.getDisplayDate(workDateAndExtras.workDate.wdDate)
+        if (workDateAndExtras.workDate.wdIsDeleted) {
             display += " *Deleted*"
             holder.itemBinding.tvWorkDate.setTextColor(Color.RED)
         } else {
@@ -57,20 +63,20 @@ class WorkDateAdapter(
         }
         holder.itemBinding.tvWorkDate.text = display
         display = ""
-        if (workDate.wdRegHours > 0) {
-            display = "${workDate.wdRegHours} Hrs"
+        if (workDateAndExtras.workDate.wdRegHours > 0) {
+            display = "${workDateAndExtras.workDate.wdRegHours} Hrs"
         }
-        if (workDate.wdOtHours > 0) {
+        if (workDateAndExtras.workDate.wdOtHours > 0) {
             if (display.isNotBlank()) display += " | "
-            display += "${workDate.wdOtHours} Ot hrs"
+            display += "${workDateAndExtras.workDate.wdOtHours} Ot hrs"
         }
-        if (workDate.wdDblOtHours > 0) {
+        if (workDateAndExtras.workDate.wdDblOtHours > 0) {
             if (display.isNotBlank()) display += " | "
-            display += "${workDate.wdDblOtHours} Dbl Ot hr"
+            display += "${workDateAndExtras.workDate.wdDblOtHours} Dbl Ot hr"
         }
-        if (workDate.wdStatHours > 0) {
+        if (workDateAndExtras.workDate.wdStatHours > 0) {
             if (display.isNotBlank()) display += " | "
-            display += "${workDate.wdStatHours} Stat or Vacation hrs"
+            display += "${workDateAndExtras.workDate.wdStatHours} Stat or Vacation hrs"
         }
         holder.itemBinding.tvHours.text = display
     }

@@ -136,7 +136,7 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
 
     private fun gotoCallingFragment() {
         val callingFragment = mainActivity.mainViewModel.getCallingFragment()
-        if (callingFragment != null) {
+        if (!callingFragment.isNullOrBlank()) {
             if (callingFragment.contains(FRAG_TAX_RULES)) {
                 gotoTaxRules()
             }

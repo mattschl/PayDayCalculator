@@ -2,9 +2,12 @@ package ms.mattschlenkrich.paydaycalculator.model
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
+import androidx.room.PrimaryKey
+import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_CUTOFF_DATE
@@ -20,10 +23,6 @@ import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_PAY_PERIOD_TAX
 import ms.mattschlenkrich.paydaycalculator.common.WORK_DATES_CUTOFF_DATE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_DATES_DATE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_DATES_EMPLOYER_ID
-import ms.mattschlenkrich.paydaycalculator.common.WORK_DATES_EXTRAS_DATE
-import ms.mattschlenkrich.paydaycalculator.common.WORK_DATES_EXTRAS_EMPLOYER_ID
-import ms.mattschlenkrich.paydaycalculator.common.WORK_DATES_EXTRA_ID
-import ms.mattschlenkrich.paydaycalculator.common.WORK_EXTRA_DEFINITIONS_ID
 import ms.mattschlenkrich.paydaycalculator.common.WORK_PAY_PERIOD_EXTRA_CUTOFF_DATE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_PAY_PERIOD_EXTRA_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.WORK_PAY_PERIOD_EXTRA_ID
@@ -50,9 +49,6 @@ data class PayPeriods(
 
 @Entity(
     tableName = TABLE_WORK_DATES,
-    primaryKeys = [WORK_DATES_EMPLOYER_ID,
-        WORK_DATES_CUTOFF_DATE,
-        WORK_DATES_DATE],
     foreignKeys = [
         ForeignKey(
             entity = PayPeriods::class,
@@ -63,6 +59,8 @@ data class PayPeriods(
 )
 @Parcelize
 data class WorkDates(
+    @PrimaryKey
+    val workDateId: Long,
     val wdEmployerId: Long,
     val wdCutoffDate: String,
     val wdDate: String,
@@ -74,29 +72,33 @@ data class WorkDates(
     val wdUpdateTime: String,
 ) : Parcelable
 
+@Parcelize
+data class WorkDateAndExtras(
+    @Embedded
+    val workDate: WorkDates,
+    @Relation(
+        entity = WorkDatesExtras::class,
+        parentColumn = "workDateId",
+        entityColumn = "wdId"
+    )
+    var extras: WorkDatesExtras?
+) : Parcelable
+
 @Entity(
     tableName = TABLE_WORK_DATES_EXTRAS,
-    primaryKeys = [WORK_DATES_EXTRAS_EMPLOYER_ID,
-        WORK_DATES_EXTRAS_DATE,
-        WORK_DATES_EXTRA_ID],
     foreignKeys = [ForeignKey(
         entity = WorkDates::class,
-        parentColumns = [WORK_DATES_EMPLOYER_ID, WORK_DATES_DATE],
-        childColumns = [WORK_DATES_EXTRAS_EMPLOYER_ID, WORK_DATES_EXTRAS_DATE]
-    ), ForeignKey(
-        entity = WorkExtrasDefinitions::class,
-        parentColumns = [WORK_EXTRA_DEFINITIONS_ID],
-        childColumns = [WORK_DATES_EXTRA_ID]
-    )
-    ]
+        parentColumns = ["workDateId"],
+        childColumns = ["wdId"]
+    )]
 )
 @Parcelize
 data class WorkDatesExtras(
-    val wdeEmployerId: Long,
+    @PrimaryKey
+    val workDateExtraId: Long,
     @ColumnInfo(index = true)
-    val wdeDate: String,
+    val wdId: Long,
     @ColumnInfo(index = true)
-    val wdeId: Long,
     val wdeName: String,
     val wdeValue: Double,
     val wdeIsDeleted: Boolean,
