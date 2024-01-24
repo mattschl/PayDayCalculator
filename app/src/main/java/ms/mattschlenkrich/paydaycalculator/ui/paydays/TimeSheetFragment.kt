@@ -10,10 +10,15 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
@@ -105,7 +110,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
-                        fillCutOffDates()
+//                        fillCutOffDates()
                     }
                 }
         }
@@ -125,7 +130,6 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                         .plusDays(curEmployer!!.cutoffDaysBefore.toLong()).toString()
                 ) + " - Pay Summary"
                 tvPaySummary.text = display
-
             }
         }
     }
@@ -163,7 +167,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     }
 
     private fun generateCutOff() {
-        val nextCutOff = projections.projectNextCutOff(
+        val nextCutOff = projections.generateNextCutOff(
             curEmployer!!,
             if (cutOffs.isEmpty()) "" else cutOffs[0]
         )
@@ -235,9 +239,31 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                         cutOffAdapter.add(it.ppCutoffDate)
                         cutOffs.add(it.ppCutoffDate)
                     }
-                    cutOffAdapter.add(getString(R.string.generate_a_new_cut_off))
+                    if (dates.isEmpty()) {
+                        generateCutOff()
+                    } else {
+                        cutOffAdapter.add(getString(R.string.generate_a_new_cut_off))
+                    }
                 }
                 spCutOff.adapter = cutOffAdapter
+//                gotoCurrentCutoff()
+            }
+
+        }
+    }
+
+    private fun gotoCurrentCutoff() {
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_500)
+            binding.apply {
+                val dateNow = LocalDate.parse(df.getCurrentDateAsString())
+                for (i in 0 until spCutOff.adapter.count - 1) {
+                    val chkDate = LocalDate.parse(spCutOff.getItemAtPosition(i).toString())
+                    if (chkDate <= dateNow) {
+                        spCutOff.setSelection(i)
+                        break
+                    }
+                }
             }
         }
     }

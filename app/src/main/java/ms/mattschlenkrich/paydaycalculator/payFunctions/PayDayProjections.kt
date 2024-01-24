@@ -15,7 +15,7 @@ import java.time.LocalDate
 
 class PayDayProjections {
 
-    fun projectNextCutOff(
+    fun generateNextCutOff(
         employer: Employers,
         mostRecent: String,
     ): String {
@@ -23,7 +23,7 @@ class PayDayProjections {
         val mostRecentDate = if (mostRecent.isNotEmpty()) {
             LocalDate.parse(mostRecent)
         } else (
-                LocalDate.now()
+                LocalDate.now().minusDays(1)
                 )
         val dates: ArrayList<LocalDate> = when (employer.payFrequency) {
             INTERVAL_WEEKLY -> {
@@ -49,7 +49,7 @@ class PayDayProjections {
         if (dates.isNotEmpty()) {
             for (date in dates) {
                 if (date > mostRecentDate.plusDays(
-                        employer.cutoffDaysBefore.toLong() + 1L
+                        employer.cutoffDaysBefore.toLong()
                     )
                 ) {
                     newDate = date.minusDays(employer.cutoffDaysBefore.toLong()).toString()

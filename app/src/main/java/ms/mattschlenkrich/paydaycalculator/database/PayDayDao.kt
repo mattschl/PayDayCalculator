@@ -22,7 +22,7 @@ interface PayDayDao {
     )
     fun getCutOffDates(employerId: Long): LiveData<List<PayPeriods>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPayPeriod(payPeriod: PayPeriods)
 
     @Query(
@@ -49,4 +49,6 @@ interface PayDayDao {
     )
     fun getWorkDatesAndExtras(employerId: Long, cutOffDate: String):
             LiveData<List<WorkDateAndExtras>>
+
+    
 }

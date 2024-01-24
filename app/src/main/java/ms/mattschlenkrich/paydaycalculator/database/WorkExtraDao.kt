@@ -7,8 +7,11 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import ms.mattschlenkrich.paydaycalculator.common.PER_DAY
+import ms.mattschlenkrich.paydaycalculator.common.PER_HOUR
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRA_DEFINITION_NAMES
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
 
@@ -30,8 +33,7 @@ interface WorkExtraDao {
 
     @Query(
         "SELECT * FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
-                "WHERE weEmployerId = :employerId " +
-                "ORDER BY weName COLLATE NOCASE"
+                "WHERE weEmployerId = :employerId "
     )
     fun getWorkExtraDefinitions(employerId: Long): LiveData<List<WorkExtrasDefinitions>>
 
@@ -43,10 +45,22 @@ interface WorkExtraDao {
                 "LEFT JOIN $TABLE_EMPLOYERS ON " +
                 "$TABLE_WORK_EXTRAS_DEFINITIONS.weEmployerId = " +
                 "$TABLE_EMPLOYERS.employerId " +
+                "LEFT JOIN $TABLE_WORK_EXTRA_DEFINITION_NAMES ON " +
+                "$TABLE_WORK_EXTRAS_DEFINITIONS.weDefNameId =" +
+                "$TABLE_WORK_EXTRA_DEFINITION_NAMES.workExtraDefNameId " +
                 "WHERE $TABLE_WORK_EXTRAS_DEFINITIONS.weEmployerId = :employerId " +
-                "ORDER BY $TABLE_WORK_EXTRAS_DEFINITIONS.weName " +
+                "ORDER BY $TABLE_WORK_EXTRA_DEFINITION_NAMES.ednName " +
                 "COLLATE NOCASE"
     )
     fun getActiveExtraDefinitionsFull(employerId: Long): LiveData<List<ExtraDefinitionFull>>
 
+    @Query(
+        "SELECT * FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
+                "WHERE (weAttachTo = '$PER_HOUR'OR " +
+                "weAttachTo = '$PER_DAY') " +
+                "AND workExtraDefId = :employerId " +
+                "AND weIsDeleted  = 0"
+    )
+    fun getExtraDefinitionsPerDay(employerId: Long):
+            LiveData<List<WorkExtrasDefinitions>>
 }
