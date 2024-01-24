@@ -21,6 +21,9 @@
         <action
             android:id="@+id/action_employerFragment_to_employerUpdateFragment"
             app:destination="@id/employerUpdateFragment" />
+        <action
+            android:id="@+id/action_employerFragment_to_workExtraTypeAddFragment"
+            app:destination="@id/workExtraTypeAddFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_employerFragment"
@@ -214,5 +217,14 @@
         <action
             android:id="@+id/action_workDateAddFragment_to_timeSheetFragment"
             app:destination="@id/timeSheetFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/workExtraTypeAddFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.WorkExtraTypeAddFragment"
+        android:label="WorkExtraTypeAddFragment"
+        tools:layout="@layout/fragment_work_extra_type_add">
+        <action
+            android:id="@+id/action_workExtraTypeAddFragment_to_employerFragment"
+            app:destination="@id/employerFragment" />
     </fragment>
 </navigation>

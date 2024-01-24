@@ -10,19 +10,19 @@ import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
-import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRA_DEFINITION_NAMES
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRA_TYPES
 import ms.mattschlenkrich.paydaycalculator.common.WORK_EXTRA_DEFINITIONS_EMPLOYER_ID
 
 @Entity(
-    tableName = TABLE_WORK_EXTRA_DEFINITION_NAMES
+    tableName = TABLE_WORK_EXTRA_TYPES
 )
 @Parcelize
-data class WorkExtraDefinitionNames(
+data class WorkExtraTypes(
     @PrimaryKey
-    val workExtraDefNameId: Long,
-    val ednName: String,
-    val ednIsDeleted: Boolean,
-    val ednUpdateTime: String,
+    val workExtraTypeId: Long,
+    val wetName: String,
+    val wetIsDeleted: Boolean,
+    val wetUpdateTime: String,
 ) : Parcelable
 
 
@@ -33,7 +33,7 @@ data class WorkExtraDefinitionNames(
         parentColumns = [EMPLOYER_ID],
         childColumns = [WORK_EXTRA_DEFINITIONS_EMPLOYER_ID]
     ), ForeignKey(
-        entity = WorkExtraDefinitionNames::class,
+        entity = WorkExtraTypes::class,
         parentColumns = ["workExtraDefNameId"],
         childColumns = ["weDefNameId"]
     )]
@@ -67,9 +67,9 @@ data class ExtraDefinitionFull(
     )
     var employer: Employers,
     @Relation(
-        entity = WorkExtraDefinitionNames::class,
+        entity = WorkExtraTypes::class,
         parentColumn = "weDefNameId",
-        entityColumn = "workExtraDefNameId"
+        entityColumn = "workExtraTypeId"
     )
-    var name: WorkExtraDefinitionNames
+    var name: WorkExtraTypes
 ) : Parcelable

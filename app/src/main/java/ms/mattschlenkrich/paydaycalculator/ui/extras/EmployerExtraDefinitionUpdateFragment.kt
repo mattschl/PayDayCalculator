@@ -21,7 +21,6 @@ import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerExtraDefinitionUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
 
 class EmployerExtraDefinitionUpdateFragment :
     Fragment(R.layout.fragment_employer_extra_definition_update) {
@@ -68,10 +67,10 @@ class EmployerExtraDefinitionUpdateFragment :
     private fun updateDefinition() {
         val message = checkExtra()
         if (message == ANSWER_OK) {
-            mainActivity.workExtraViewModel.updateWorkExtraDefinition(
-                getCurrentDefinition()
-            )
-            gotoCallingFragment()
+//            mainActivity.workExtraViewModel.updateWorkExtraDefinition(
+//                getCurrentDefinition()
+//            )
+//            gotoCallingFragment()
         } else {
             Toast.makeText(
                 mView.context,
@@ -81,24 +80,24 @@ class EmployerExtraDefinitionUpdateFragment :
         }
     }
 
-    private fun getCurrentDefinition(): WorkExtrasDefinitions {
-        binding.apply {
-            return WorkExtrasDefinitions(
-                curExtraDefinitionFull.definition.workExtraDefId,
-                curExtraDefinitionFull.definition.weEmployerId,
-                etName.text.toString(),
-                spAppliesTo.selectedItemPosition,
-                spAttachTo.selectedItemPosition,
-                cf.getDoubleFromDollarOrPercent(etValue.text.toString()),
-                chkIsFixed.isChecked,
-                chkIsCredit.isChecked,
-                chkIsDefault.isChecked,
-                tvEffectiveDate.text.toString(),
-                false,
-                df.getCurrentTimeAsString()
-            )
-        }
-    }
+//    private fun getCurrentDefinition(): WorkExtrasDefinitions {
+//        binding.apply {
+//            return WorkExtrasDefinitions(
+//                curExtraDefinitionFull.definition.workExtraDefId,
+//                curExtraDefinitionFull.definition.weEmployerId,
+//                etName.text.toString(),
+//                spAppliesTo.selectedItemPosition,
+//                spAttachTo.selectedItemPosition,
+//                cf.getDoubleFromDollarOrPercent(etValue.text.toString()),
+//                chkIsFixed.isChecked,
+//                chkIsCredit.isChecked,
+//                chkIsDefault.isChecked,
+//                tvEffectiveDate.text.toString(),
+//                false,
+//                df.getCurrentTimeAsString()
+//            )
+//        }
+//    }
 
     private fun checkExtra(): String {
         binding.apply {
@@ -115,9 +114,9 @@ class EmployerExtraDefinitionUpdateFragment :
                 "    ERROR!!\n" +
                         "There needs to be a description!"
             } else if (nameFound && etName.text.toString() !=
-                curExtraDefinitionFull.definition.weName
+                curExtraDefinitionFull.name.ednName
             ) {
-                "    ERROE!!\n" +
+                "    ERROR!!\n" +
                         "This extra item already exists!"
             } else {
                 ANSWER_OK
@@ -180,18 +179,18 @@ class EmployerExtraDefinitionUpdateFragment :
             if (mainActivity.mainViewModel.getExtraDefinitionFull() != null) {
                 curExtraDefinitionFull =
                     mainActivity.mainViewModel.getExtraDefinitionFull()!!
-                mainActivity.workExtraViewModel.getWorkExtraDefinitions(
-                    curExtraDefinitionFull.employer.employerId
-                ).observe(
-                    viewLifecycleOwner
-                ) { definition ->
-                    definitionList.clear()
-                    definition.listIterator().forEach {
-                        definitionList.add(it.weName)
-                    }
-                }
+//                mainActivity.workExtraViewModel.getWorkExtraDefinitions(
+//                    curExtraDefinitionFull.employer.employerId
+//                ).observe(
+//                    viewLifecycleOwner
+//                ) { definition ->
+//                    definitionList.clear()
+//                    definition.listIterator().forEach {
+//                        definitionList.add(it.weDefNameId)
+//                    }
+//                }
                 tvEmployer.text = curExtraDefinitionFull.employer.employerName
-                etName.setText(curExtraDefinitionFull.definition.weName)
+                etName.setText(curExtraDefinitionFull.name.ednName)
                 spAppliesTo.setSelection(curExtraDefinitionFull.definition.weAppliesTo)
                 spAttachTo.setSelection(curExtraDefinitionFull.definition.weAttachTo)
                 etValue.setText(

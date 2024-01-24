@@ -47,7 +47,7 @@ const val TABLE_WORK_EXTRAS_DEFINITIONS = "workExtrasDefinitions"
 const val WORK_EXTRA_DEFINITIONS_ID = "workExtraId"
 const val WORK_EXTRA_DEFINITIONS_EMPLOYER_ID = "weEmployerId"
 
-const val TABLE_WORK_EXTRA_DEFINITION_NAMES = "workExtraDefNames"
+const val TABLE_WORK_EXTRA_TYPES = "workExtraTypes"
 
 //const val WORK_EXTRA_DEFINITIONS_NAME = "weName"
 //const val WORK_EXTRA_DEFINITIONS_VALUE = "weValue"

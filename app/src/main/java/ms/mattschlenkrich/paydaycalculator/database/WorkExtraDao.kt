@@ -11,8 +11,9 @@ import ms.mattschlenkrich.paydaycalculator.common.PER_DAY
 import ms.mattschlenkrich.paydaycalculator.common.PER_HOUR
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
-import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRA_DEFINITION_NAMES
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRA_TYPES
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
+import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
 
 @Dao
@@ -45,11 +46,11 @@ interface WorkExtraDao {
                 "LEFT JOIN $TABLE_EMPLOYERS ON " +
                 "$TABLE_WORK_EXTRAS_DEFINITIONS.weEmployerId = " +
                 "$TABLE_EMPLOYERS.employerId " +
-                "LEFT JOIN $TABLE_WORK_EXTRA_DEFINITION_NAMES ON " +
+                "LEFT JOIN $TABLE_WORK_EXTRA_TYPES ON " +
                 "$TABLE_WORK_EXTRAS_DEFINITIONS.weDefNameId =" +
-                "$TABLE_WORK_EXTRA_DEFINITION_NAMES.workExtraDefNameId " +
+                "$TABLE_WORK_EXTRA_TYPES.workExtraTypeId " +
                 "WHERE $TABLE_WORK_EXTRAS_DEFINITIONS.weEmployerId = :employerId " +
-                "ORDER BY $TABLE_WORK_EXTRA_DEFINITION_NAMES.ednName " +
+                "ORDER BY $TABLE_WORK_EXTRA_TYPES.wetName " +
                 "COLLATE NOCASE"
     )
     fun getActiveExtraDefinitionsFull(employerId: Long): LiveData<List<ExtraDefinitionFull>>
@@ -63,4 +64,13 @@ interface WorkExtraDao {
     )
     fun getExtraDefinitionsPerDay(employerId: Long):
             LiveData<List<WorkExtrasDefinitions>>
+
+    @Query(
+        "SELECT * FROM $TABLE_WORK_EXTRA_TYPES " +
+                "ORDER BY wetName COLLATE NOCASE"
+    )
+    fun getExtraDefinitionTypes(): LiveData<List<WorkExtraTypes>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertWorkExtraType(workExtraType: WorkExtraTypes)
 }

@@ -22,7 +22,6 @@ import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerExtraDefinitionsAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
 
 
 class EmployerExtraDefinitionsAddFragment : Fragment(
@@ -86,24 +85,24 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         binding.apply {
             val message = checkExtra()
             if (message == ANSWER_OK) {
-                val curExtra = WorkExtrasDefinitions(
-                    cf.generateId(),
-                    curEmployer.employerId,
-                    etName.text.toString(),
-                    spAppliesTo.selectedItemPosition,
-                    spAttachTo.selectedItemPosition,
-                    cf.getDoubleFromDollarOrPercent(etValue.text.toString()),
-                    chkIsFixed.isChecked,
-                    chkIsCredit.isChecked,
-                    chkIsDefault.isChecked,
-                    tvEffectiveDate.text.toString(),
-                    false,
-                    df.getCurrentTimeAsString()
-                )
-                mainActivity.workExtraViewModel.insertWorkExtraDefinition(
-                    curExtra
-                )
-                gotoCallingFragment()
+//                val curExtra = WorkExtrasDefinitions(
+//                    cf.generateId(),
+//                    curEmployer.employerId,
+//                    etName.text.toString(),
+//                    spAppliesTo.selectedItemPosition,
+//                    spAttachTo.selectedItemPosition,
+//                    cf.getDoubleFromDollarOrPercent(etValue.text.toString()),
+//                    chkIsFixed.isChecked,
+//                    chkIsCredit.isChecked,
+//                    chkIsDefault.isChecked,
+//                    tvEffectiveDate.text.toString(),
+//                    false,
+//                    df.getCurrentTimeAsString()
+//                )
+//                mainActivity.workExtraViewModel.insertWorkExtraDefinition(
+//                    curExtra
+//                )
+//                gotoCallingFragment()
             } else {
                 Toast.makeText(
                     mView.context,
@@ -205,16 +204,16 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
             tvEmployer.text = curEmployer.employerName
             tvEffectiveDate.text = df.getCurrentDateAsString()
         }
-        mainActivity.workExtraViewModel.getWorkExtraDefinitions(
-            curEmployer.employerId
-        ).observe(
-            viewLifecycleOwner
-        ) { name ->
-            extraList.clear()
-            name.listIterator().forEach {
-                extraList.add(it.weName)
-            }
-        }
+//        mainActivity.workExtraViewModel.getWorkExtraDefinitions(
+//            curEmployer.employerId
+//        ).observe(
+//            viewLifecycleOwner
+//        ) { name ->
+//            extraList.clear()
+//            name.listIterator().forEach {
+//                extraList.add(it.weName)
+//            }
+//        }
     }
 
     private fun fillSpinners() {
