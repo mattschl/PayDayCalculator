@@ -122,6 +122,6 @@
     <string name="gross_pay">Gross Pay</string>
     <string name="week_1">Week 1</string>
     <string name="week_2">Week 2</string>
-    <string name="extra_name_descriptopn">Extra Name/Descriptopn</string>
+    <string name="extra_name_descriptopn">Extra Name/Description</string>
     <string name="enter_extra_name">Enter Extra Name</string>
 </resources>

@@ -29,7 +29,7 @@ class WorkDateExtraAdapter(
                 newItem: WorkExtrasDefinitions
             ): Boolean {
                 return oldItem.workExtraDefId == newItem.workExtraDefId &&
-                        oldItem.weDefNameId == newItem.weDefNameId &&
+                        oldItem.weExtraTypeId == newItem.weExtraTypeId &&
                         oldItem.weEffectiveDate == newItem.weEffectiveDate
             }
         }

@@ -71,7 +71,7 @@ class EmployerExtraDefinitionFullAdapter(
 
     override fun onBindViewHolder(holder: DefinitionViewHolder, position: Int) {
         val definition = differ.currentList[position]
-        var display = definition.name.ednName
+        var display = definition.extraType.wetName
         if (definition.definition.weIsDeleted) {
             holder.itemBinding.tvName.setTextColor(Color.RED)
             display = "* $display * Deleted"
@@ -153,7 +153,7 @@ class EmployerExtraDefinitionFullAdapter(
             AlertDialog.Builder(mView.context)
                 .setTitle(
                     mView.resources.getString(R.string.choose_an_action) +
-                            " for " + definition.name.ednName
+                            " for " + definition.extraType.wetName
                 )
                 .setItems(
                     arrayOf(

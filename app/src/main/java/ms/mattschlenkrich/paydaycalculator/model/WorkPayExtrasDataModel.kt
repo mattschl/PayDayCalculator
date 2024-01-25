@@ -34,8 +34,8 @@ data class WorkExtraTypes(
         childColumns = [WORK_EXTRA_DEFINITIONS_EMPLOYER_ID]
     ), ForeignKey(
         entity = WorkExtraTypes::class,
-        parentColumns = ["workExtraDefNameId"],
-        childColumns = ["weDefNameId"]
+        parentColumns = ["workExtraTypeId"],
+        childColumns = ["weExtraTypeId"]
     )]
 )
 @Parcelize
@@ -44,7 +44,7 @@ data class WorkExtrasDefinitions(
     val workExtraDefId: Long,
     @ColumnInfo(index = true)
     val weEmployerId: Long,
-    val weDefNameId: Long,
+    val weExtraTypeId: Long,
     val weAppliesTo: Int,
     val weAttachTo: Int,
     val weValue: Double,
@@ -68,8 +68,8 @@ data class ExtraDefinitionFull(
     var employer: Employers,
     @Relation(
         entity = WorkExtraTypes::class,
-        parentColumn = "weDefNameId",
+        parentColumn = "weExtraTypeId",
         entityColumn = "workExtraTypeId"
     )
-    var name: WorkExtraTypes
+    var extraType: WorkExtraTypes
 ) : Parcelable

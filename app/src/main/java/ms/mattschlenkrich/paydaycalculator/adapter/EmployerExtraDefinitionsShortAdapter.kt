@@ -63,7 +63,7 @@ class EmployerExtraDefinitionsShortAdapter(
 
     override fun onBindViewHolder(holder: DefinitionViewHolder, position: Int) {
         val definition = differ.currentList[position]
-        var display = definition.name.ednName
+        var display = definition.extraType.wetName
         if (definition.definition.weIsDeleted) {
             holder.itemBinding.tvName.setTextColor(Color.RED)
             display = "* $display * Deleted"

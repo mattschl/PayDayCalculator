@@ -114,7 +114,7 @@ class EmployerExtraDefinitionUpdateFragment :
                 "    ERROR!!\n" +
                         "There needs to be a description!"
             } else if (nameFound && etName.text.toString() !=
-                curExtraDefinitionFull.name.ednName
+                curExtraDefinitionFull.extraType.wetName
             ) {
                 "    ERROR!!\n" +
                         "This extra item already exists!"
@@ -190,7 +190,7 @@ class EmployerExtraDefinitionUpdateFragment :
 //                    }
 //                }
                 tvEmployer.text = curExtraDefinitionFull.employer.employerName
-                etName.setText(curExtraDefinitionFull.name.ednName)
+                etName.setText(curExtraDefinitionFull.extraType.wetName)
                 spAppliesTo.setSelection(curExtraDefinitionFull.definition.weAppliesTo)
                 spAttachTo.setSelection(curExtraDefinitionFull.definition.weAttachTo)
                 etValue.setText(

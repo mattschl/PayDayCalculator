@@ -47,7 +47,7 @@ interface WorkExtraDao {
                 "$TABLE_WORK_EXTRAS_DEFINITIONS.weEmployerId = " +
                 "$TABLE_EMPLOYERS.employerId " +
                 "LEFT JOIN $TABLE_WORK_EXTRA_TYPES ON " +
-                "$TABLE_WORK_EXTRAS_DEFINITIONS.weDefNameId =" +
+                "$TABLE_WORK_EXTRAS_DEFINITIONS.weExtraTypeId =" +
                 "$TABLE_WORK_EXTRA_TYPES.workExtraTypeId " +
                 "WHERE $TABLE_WORK_EXTRAS_DEFINITIONS.weEmployerId = :employerId " +
                 "ORDER BY $TABLE_WORK_EXTRA_TYPES.wetName " +

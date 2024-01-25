@@ -152,14 +152,16 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     }
 
     private fun updateUI(employers: List<Employers>) {
-        binding.apply {
-            if (spEmployers.getItemAtPosition(0).toString() ==
-                getString(R.string.no_employers_add_an_employer_through_the_employer_tab) ||
-                employers.isEmpty()
-            ) {
-                fabNew.visibility = View.GONE
-            } else {
-                fabNew.visibility = View.VISIBLE
+        if (employers.isNotEmpty()) {
+            binding.apply {
+                if (spEmployers.getItemAtPosition(0).toString() ==
+                    getString(R.string.no_employers_add_an_employer_through_the_employer_tab) ||
+                    employers.isEmpty()
+                ) {
+                    fabNew.visibility = View.GONE
+                } else {
+                    fabNew.visibility = View.VISIBLE
+                }
             }
         }
     }
