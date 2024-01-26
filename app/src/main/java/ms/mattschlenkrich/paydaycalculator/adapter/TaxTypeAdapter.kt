@@ -49,7 +49,7 @@ class TaxTypeAdapter(
         val taxType = differ.currentList[position]
         var display = taxType.taxType
         if (taxType.ttIsDeleted) {
-            display += " *DELETE*"
+            display += " *DELETED*"
             holder.itemBinding.tvDisplay.setTextColor(Color.RED)
         } else {
             holder.itemBinding.tvDisplay.setTextColor(Color.BLACK)

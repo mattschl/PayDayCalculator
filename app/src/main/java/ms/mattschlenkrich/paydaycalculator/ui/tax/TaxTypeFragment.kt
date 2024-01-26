@@ -72,7 +72,7 @@ class TaxTypeFragment :
             setHasFixedSize(true)
             adapter = taxTypeAdapter
         }
-        activity.let {
+        activity?.let {
             mainActivity.workTaxViewModel.getTaxTypes().observe(
                 viewLifecycleOwner
             ) { taxTypes ->
