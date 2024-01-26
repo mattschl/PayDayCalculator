@@ -90,16 +90,16 @@ class WorkExtraTypeAddFragment : Fragment(
         binding.apply {
             val message = checkExtraType()
             if (message == ANSWER_OK) {
-                val extraType = WorkExtraTypes(
-                    cf.generateId(),
-                    etExtraName.text.toString().trim(),
-                    false,
-                    df.getCurrentTimeAsString()
-                )
-                mainActivity.workExtraViewModel.insertWorkExtraType(
-                    extraType
-                )
-                gotoNextStep(extraType)
+//                val extraType = WorkExtraTypes(
+//                    cf.generateId(),
+//                    etExtraName.text.toString().trim(),
+//                    false,
+//                    df.getCurrentTimeAsString()
+//                )
+//                mainActivity.workExtraViewModel.insertWorkExtraType(
+//                    extraType
+//                )
+//                gotoNextStep(extraType)
             } else {
                 Toast.makeText(
                     mView.context,

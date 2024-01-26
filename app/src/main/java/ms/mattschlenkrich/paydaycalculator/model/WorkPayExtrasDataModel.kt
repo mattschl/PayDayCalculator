@@ -14,13 +14,19 @@ import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRA_TYPES
 import ms.mattschlenkrich.paydaycalculator.common.WORK_EXTRA_DEFINITIONS_EMPLOYER_ID
 
 @Entity(
-    tableName = TABLE_WORK_EXTRA_TYPES
+    tableName = TABLE_WORK_EXTRA_TYPES,
+    foreignKeys = [ForeignKey(
+        entity = Employers::class,
+        parentColumns = ["employerId"],
+        childColumns = ["wetEmployerId"]
+    )]
 )
 @Parcelize
 data class WorkExtraTypes(
     @PrimaryKey
     val workExtraTypeId: Long,
     val wetName: String,
+    val wetEmployerId: Long,
     val wetIsDeleted: Boolean,
     val wetUpdateTime: String,
 ) : Parcelable

@@ -126,25 +126,25 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
 
     private fun checkExtra(): String {
         binding.apply {
-            var nameFound = false
-            if (extraList.isNotEmpty()) {
-                for (extra in extraList) {
-                    if (extra == etName.text.toString()) {
-                        nameFound = true
-                        break
-                    }
-                }
-            }
-            val errorMessage = if (etName.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "The description cannot be blank"
-            } else if (nameFound) {
-                "    ERROR!! \n" +
-                        "This already exists, change the description"
-            } else {
-                ANSWER_OK
-            }
-            return errorMessage
+//            var nameFound = false
+//            if (extraList.isNotEmpty()) {
+//                for (extra in extraList) {
+//                    if (extra == etName.text.toString()) {
+//                        nameFound = true
+//                        break
+//                    }
+//                }
+//            }
+//            val errorMessage = if (etName.text.isNullOrBlank()) {
+//                "    ERROR!!\n" +
+//                        "The description cannot be blank"
+//            } else if (nameFound) {
+//                "    ERROR!! \n" +
+//                        "This already exists, change the description"
+//            } else {
+//
+//            }
+            return ANSWER_OK
         }
     }
 
@@ -204,20 +204,24 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
             tvEmployer.text = curEmployer.employerName
             tvEffectiveDate.text = df.getCurrentDateAsString()
         }
-//        mainActivity.workExtraViewModel.getWorkExtraDefinitions(
-//            curEmployer.employerId
-//        ).observe(
-//            viewLifecycleOwner
-//        ) { name ->
-//            extraList.clear()
-//            name.listIterator().forEach {
-//                extraList.add(it.weName)
-//            }
-//        }
+
     }
 
     private fun fillSpinners() {
         binding.apply {
+            val extraTypeAdapter = ArrayAdapter<Any>(
+                mView.context,
+                R.layout.spinner_item_bold
+            )
+            mainActivity.workExtraViewModel.getExtraDefinitionTypes()
+                .observe(viewLifecycleOwner) { typesList ->
+                    extraTypeAdapter.clear()
+                    typesList.listIterator().forEach {
+                        extraTypeAdapter.add(it.wetName)
+                    }
+                    extraTypeAdapter.add(getString(R.string.add_a_new_extra_type))
+                }
+            spExtraTypes.adapter = extraTypeAdapter
             val frequencyAdapter = ArrayAdapter(
                 mView.context, R.layout.spinner_item_bold,
                 resources.getStringArray(R.array.extra_frequencies)

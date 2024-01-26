@@ -41,21 +41,14 @@
                 android:layout_height="wrap_content"
                 android:text="@string/description"
                 android:textSize="@dimen/label_text_size"
-                app:layout_constraintBaseline_toBaselineOf="@id/etName"
-                app:layout_constraintEnd_toStartOf="@id/etName"
+                app:layout_constraintBaseline_toBaselineOf="@id/spExtraTypes"
+                app:layout_constraintEnd_toStartOf="@id/spExtraTypes"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <EditText
-                android:id="@+id/etName"
+            <Spinner
+                android:id="@+id/spExtraTypes"
                 android:layout_width="@dimen/text_box_wide"
                 android:layout_height="@dimen/minimum_touch_height"
-                android:hint="@string/enter_description"
-                android:importantForAutofill="no"
-                android:inputType="text"
-                android:minHeight="@dimen/minimum_touch_height"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textSize="@dimen/text_size_large"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblName"
                 app:layout_constraintTop_toBottomOf="@id/tvEmployer" />
@@ -76,7 +69,7 @@
                 android:layout_height="@dimen/minimum_touch_height"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblAppliesTo"
-                app:layout_constraintTop_toBottomOf="@id/etName" />
+                app:layout_constraintTop_toBottomOf="@id/spExtraTypes" />
 
             <TextView
                 android:id="@+id/lblAttachTo"
