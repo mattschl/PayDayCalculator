@@ -37,8 +37,8 @@ class WorkExtraViewModel(
     fun getExtraDefinitionsPerDay(employerId: Long) =
         workExtraRepository.getExtraDefinitionsPerDay(employerId)
 
-    fun getExtraDefinitionTypes() =
-        workExtraRepository.getExtraDefinitionTypes()
+    fun getExtraDefTypes(employerId: Long) =
+        workExtraRepository.getExtraDefTypes(employerId)
 
     fun insertWorkExtraType(workExtraType: WorkExtraTypes) =
         viewModelScope.launch {

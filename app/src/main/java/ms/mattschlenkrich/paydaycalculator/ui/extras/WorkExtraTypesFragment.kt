@@ -54,12 +54,13 @@ class WorkExtraTypesFragment : Fragment(
             adapter = extraTypeAdapter
         }
         activity?.let {
-            mainActivity.workExtraViewModel.getExtraDefinitionTypes().observe(
-                viewLifecycleOwner
-            ) { typesList ->
-                extraTypeAdapter.differ.submitList(typesList)
-                updateUI(typesList)
-            }
+//            mainActivity.workExtraViewModel.getExtraDefinitionTypes(
+//            ).observe(
+//                viewLifecycleOwner
+//            ) { typesList ->
+//                extraTypeAdapter.differ.submitList(typesList)
+//                updateUI(typesList)
+//            }
         }
 
     }

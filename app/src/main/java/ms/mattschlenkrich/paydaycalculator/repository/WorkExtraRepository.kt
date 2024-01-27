@@ -23,8 +23,8 @@ class WorkExtraRepository(private val db: PayDatabase) {
     fun getExtraDefinitionsPerDay(employerId: Long) =
         db.getWorkExtraDao().getExtraDefinitionsPerDay(employerId)
 
-    fun getExtraDefinitionTypes() =
-        db.getWorkExtraDao().getExtraDefinitionTypes()
+    fun getExtraDefTypes(employerId: Long) =
+        db.getWorkExtraDao().getExtraDefTypes(employerId)
 
     suspend fun insertWorkExtraType(workExtraType: WorkExtraTypes) =
         db.getWorkExtraDao().insertWorkExtraType(workExtraType)

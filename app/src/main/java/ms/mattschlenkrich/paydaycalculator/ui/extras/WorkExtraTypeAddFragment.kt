@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paydaycalculator.ui.extras
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -20,6 +19,7 @@ import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkExtraTypeAddBinding
+import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 
 class WorkExtraTypeAddFragment : Fragment(
@@ -33,6 +33,7 @@ class WorkExtraTypeAddFragment : Fragment(
     private val df = DateFunctions()
     private val cf = CommonFunctions()
     private val extraTypeList = ArrayList<WorkExtraTypes>()
+    private lateinit var curEmployer: Employers
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,25 +44,29 @@ class WorkExtraTypeAddFragment : Fragment(
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "Add a new Extra Type"
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (mainActivity.mainViewModel.getEmployer() != null) {
+            curEmployer = mainActivity.mainViewModel.getEmployer()!!
+        }
+        mainActivity.title = "Add Extra Type for ${curEmployer.employerName}"
         getExtraTypeList()
         fillMenu()
     }
 
     private fun getExtraTypeList() {
-        mainActivity.workExtraViewModel.getExtraDefinitionTypes().observe(
-            viewLifecycleOwner
-        ) { names ->
-            extraTypeList.clear()
-            names.listIterator().forEach {
-                extraTypeList.add(it)
+        mainActivity.workExtraViewModel.getExtraDefTypes(curEmployer.employerId)
+            .observe(
+                viewLifecycleOwner
+            ) { names ->
+                extraTypeList.clear()
+                names.listIterator().forEach {
+                    extraTypeList.add(it)
+                }
             }
-        }
     }
 
     private fun fillMenu() {
@@ -90,16 +95,16 @@ class WorkExtraTypeAddFragment : Fragment(
         binding.apply {
             val message = checkExtraType()
             if (message == ANSWER_OK) {
-//                val extraType = WorkExtraTypes(
-//                    cf.generateId(),
-//                    etExtraName.text.toString().trim(),
-//                    false,
-//                    df.getCurrentTimeAsString()
-//                )
-//                mainActivity.workExtraViewModel.insertWorkExtraType(
-//                    extraType
-//                )
-//                gotoNextStep(extraType)
+                mainActivity.workExtraViewModel.insertWorkExtraType(
+                    WorkExtraTypes(
+                        cf.generateId(),
+                        etExtraName.text.toString(),
+                        curEmployer.employerId,
+                        false,
+                        df.getCurrentTimeAsString()
+                    )
+                )
+                gotoCallingFragment()
             } else {
                 Toast.makeText(
                     mView.context,
@@ -110,25 +115,10 @@ class WorkExtraTypeAddFragment : Fragment(
         }
     }
 
-    private fun gotoNextStep(extraType: WorkExtraTypes) {
-        AlertDialog.Builder(mView.context)
-            .setTitle("Choose the next step for ${extraType.wetName}")
-            .setMessage(
-                "The extra type has been added. " +
-                        "Would you like to add another one or go back?"
-            )
-            .setPositiveButton("Add another") { _, _ ->
-                binding.etExtraName.setText("")
-            }
-            .setNegativeButton("Go back") { _, _ ->
-                gotoCallingFragment()
-            }
-    }
-
     private fun gotoCallingFragment() {
         mView.findNavController().navigate(
             WorkExtraTypeAddFragmentDirections
-                .actionWorkExtraTypeAddFragmentToEmployerFragment()
+                .actionWorkExtraTypeAddFragmentToEmployerUpdateFragment()
         )
     }
 

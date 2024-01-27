@@ -67,9 +67,10 @@ interface WorkExtraDao {
 
     @Query(
         "SELECT * FROM $TABLE_WORK_EXTRA_TYPES " +
+                "WHERE wetEmployerId = :employerId " +
                 "ORDER BY wetName COLLATE NOCASE"
     )
-    fun getExtraDefinitionTypes(): LiveData<List<WorkExtraTypes>>
+    fun getExtraDefTypes(employerId: Long): LiveData<List<WorkExtraTypes>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWorkExtraType(workExtraType: WorkExtraTypes)
