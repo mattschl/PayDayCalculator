@@ -155,24 +155,7 @@
             android:id="@+id/action_taxRuleUpdateFragment_to_taxRulesFragment"
             app:destination="@id/taxRulesFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/employerExtraDefinitionsFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.EmployerExtraDefinitionsFragment"
-        android:label="fragment_employer_extra_definitions"
-        tools:layout="@layout/fragment_employer_extra_definitions">
-        <action
-            android:id="@+id/action_employerExtraDefinitionsFragment_to_employerExtraDefinitionsAddFragment"
-            app:destination="@id/employerExtraDefinitionsAddFragment" />
-        <action
-            android:id="@+id/action_employerExtraDefinitionsFragment_to_employerExtraDefinitionUpdateFragment"
-            app:destination="@id/employerExtraDefinitionUpdateFragment" />
-        <action
-            android:id="@+id/action_employerExtraDefinitionsFragment_to_employerAddFragment"
-            app:destination="@id/employerAddFragment" />
-        <action
-            android:id="@+id/action_employerExtraDefinitionsFragment_to_workExtraTypeAddFragment"
-            app:destination="@id/workExtraTypeAddFragment" />
-    </fragment>
+
     <action
         android:id="@+id/action_global_employerExtraDefinitionsFragment"
         app:destination="@id/employerExtraDefinitionsFragment" />
@@ -233,16 +216,23 @@
         android:label="WorkExtraTypeAddFragment"
         tools:layout="@layout/fragment_work_extra_type_add">
         <action
-            android:id="@+id/action_workExtraTypeAddFragment_to_employerFragment"
-            app:destination="@id/employerFragment" />
-        <action
             android:id="@+id/action_workExtraTypeAddFragment_to_employerUpdateFragment"
             app:destination="@id/employerUpdateFragment" />
-        <action
-            android:id="@+id/action_workExtraTypeAddFragment_to_employerExtraDefinitionsAddFragment"
-            app:destination="@id/employerExtraDefinitionsAddFragment" />
-        <action
-            android:id="@+id/action_workExtraTypeAddFragment_to_employerExtraDefinitionsFragment"
-            app:destination="@id/employerExtraDefinitionsFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/employerExtraDefinitionsFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.EmployerExtraDefinitionsFragment"
+        android:label="fragment_employer_extra_definitions"
+        tools:layout="@layout/fragment_employer_extra_definitions">
+        <action
+            android:id="@+id/action_employerExtraDefinitionsFragment_to_workExtraTypeAddFragment"
+            app:destination="@id/workExtraTypeAddFragment" />
+        <action
+            android:id="@+id/action_employerExtraDefinitionsFragment_to_employerAddFragment"
+            app:destination="@id/employerAddFragment" />
+        <action
+            android:id="@+id/action_employerExtraDefinitionsFragment_to_employerExtraDefinitionUpdateFragment"
+            app:destination="@id/employerExtraDefinitionUpdateFragment" />
+    </fragment>
+
 </navigation>

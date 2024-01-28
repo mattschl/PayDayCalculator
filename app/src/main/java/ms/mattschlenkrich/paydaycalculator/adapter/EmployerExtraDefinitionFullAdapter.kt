@@ -71,7 +71,7 @@ class EmployerExtraDefinitionFullAdapter(
 
     override fun onBindViewHolder(holder: DefinitionViewHolder, position: Int) {
         val definition = differ.currentList[position]
-        var display = df.getDisplayDate(definition.definition.weEffectiveDate)
+        var display = definition.definition.weEffectiveDate
         if (definition.definition.weIsDeleted) {
             holder.itemBinding.tvEffectiveDate.setTextColor(Color.RED)
             display = "* $display * Deleted"
@@ -102,7 +102,12 @@ class EmployerExtraDefinitionFullAdapter(
             )
         }
         holder.itemBinding.tvValue.text = display
-
+        if (definition.definition.weIsDefault) {
+            holder.itemBinding.tvInfo.text = mView.resources.getString(R.string._default)
+            holder.itemBinding.tvInfo.visibility = View.VISIBLE
+        } else {
+            holder.itemBinding.tvInfo.visibility = View.GONE
+        }
         holder.itemView.setOnLongClickListener {
             AlertDialog.Builder(mView.context)
                 .setTitle(

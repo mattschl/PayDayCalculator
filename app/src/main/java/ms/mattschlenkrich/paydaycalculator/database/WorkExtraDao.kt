@@ -50,7 +50,8 @@ interface WorkExtraDao {
     @Transaction
     @Query(
         "SELECT $TABLE_WORK_EXTRAS_DEFINITIONS.*, " +
-                "$TABLE_EMPLOYERS.* " +
+                "$TABLE_EMPLOYERS.*, " +
+                "$TABLE_WORK_EXTRA_TYPES.* " +
                 "FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
                 "LEFT JOIN $TABLE_EMPLOYERS ON " +
                 "$TABLE_WORK_EXTRAS_DEFINITIONS.weEmployerId = " +
@@ -60,8 +61,7 @@ interface WorkExtraDao {
                 "$TABLE_WORK_EXTRA_TYPES.workExtraTypeId " +
                 "WHERE $TABLE_WORK_EXTRAS_DEFINITIONS.weEmployerId = :employerId " +
                 "AND $TABLE_WORK_EXTRAS_DEFINITIONS.weExtraTypeId = :extraTypeId " +
-                "ORDER BY $TABLE_WORK_EXTRA_TYPES.wetName " +
-                "COLLATE NOCASE"
+                "ORDER BY $TABLE_WORK_EXTRAS_DEFINITIONS.weEffectiveDate DESC "
     )
     fun getActiveExtraDefinitionsFull(
         employerId: Long,
