@@ -87,4 +87,16 @@ interface WorkExtraDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWorkExtraType(workExtraType: WorkExtraTypes)
+
+    @Query(
+        "SELECT DISTINCT " +
+                "wetName, workExtraTypeId, wetEmployerId, wetIsDeleted, wetUpdateTime " +
+                "FROM $TABLE_WORK_EXTRA_TYPES " +
+                "INNER JOIN $TABLE_WORK_EXTRAS_DEFINITIONS ON " +
+                "$TABLE_WORK_EXTRA_TYPES.workExtraTypeId = " +
+                "$TABLE_WORK_EXTRAS_DEFINITIONS.weExtraTypeId " +
+                "WHERE $TABLE_WORK_EXTRAS_DEFINITIONS.weEmployerId = :employerId " +
+                "ORDER BY wetName COLLATE NOCASE"
+    )
+    fun getWorkExtraTypeList(employerId: Long): LiveData<List<WorkExtraTypes>>
 }

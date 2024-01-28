@@ -31,4 +31,7 @@ class WorkExtraRepository(private val db: PayDatabase) {
 
     suspend fun insertWorkExtraType(workExtraType: WorkExtraTypes) =
         db.getWorkExtraDao().insertWorkExtraType(workExtraType)
+
+    fun getWorkExtraTypeList(employerId: Long) =
+        db.getWorkExtraDao().getWorkExtraTypeList(employerId)
 }

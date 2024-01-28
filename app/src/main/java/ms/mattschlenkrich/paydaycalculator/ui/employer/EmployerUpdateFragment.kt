@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.ui.employer
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -44,8 +46,6 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     private lateinit var mainActivity: MainActivity
     private lateinit var employerViewModel: EmployerViewModel
     private val df = DateFunctions()
-    private var employerTaxTypeAdapter: EmployerTaxTypeAdapter? = null
-    private var extraDefinitionsAdapter: EmployerExtraDefinitionsShortAdapter? = null
 
     // private val cf = CommonFunctions()
     private val employerList = ArrayList<Employers>()
@@ -153,37 +153,37 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun fillExtras(employerId: Long) {
         binding.apply {
-            extraDefinitionsAdapter = null
-            extraDefinitionsAdapter =
+            val extraTypeAdapter =
                 EmployerExtraDefinitionsShortAdapter(
-                    mainActivity, mView
+                    curEmployer!!, mainActivity, mView
                 )
             rvExtras.apply {
-                layoutManager = LinearLayoutManager(mView.context)
-//                    StaggeredGridLayoutManager(
-//                    2,
-//                    StaggeredGridLayoutManager.VERTICAL
-//                )
-//                setHasFixedSize(true)
-                adapter = extraDefinitionsAdapter
+                layoutManager = StaggeredGridLayoutManager(
+                    2,
+                    StaggeredGridLayoutManager.VERTICAL
+                )
+                setHasFixedSize(true)
+                adapter = extraTypeAdapter
             }
-//            activity.let {
-//                mainActivity.workExtraViewModel.getActiveExtraDefinitionsFull(
-//                    employerId
-//                ).observe(viewLifecycleOwner) { list ->
-//                    extraDefinitionsAdapter!!.differ.submitList(list)
-//                }
-//            }
+            activity.let {
+                mainActivity.workExtraViewModel.getWorkExtraTypeList(
+                    employerId
+                ).observe(viewLifecycleOwner) { list ->
+                    extraTypeAdapter.notifyDataSetChanged()
+                    extraTypeAdapter.differ.submitList(list)
+
+                }
+            }
         }
     }
 
 
     fun fillTaxes(employerId: Long) {
         binding.apply {
-            employerTaxTypeAdapter = null
-            employerTaxTypeAdapter = EmployerTaxTypeAdapter(
+            val employerTaxTypeAdapter = EmployerTaxTypeAdapter(
                 mainActivity, mView, this@EmployerUpdateFragment
             )
             rvTaxes.apply {
@@ -194,7 +194,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
                 mainActivity.workTaxViewModel.getEmployerTaxTypes(
                     employerId
                 ).observe(viewLifecycleOwner) { employerTaxType ->
-                    employerTaxTypeAdapter!!.differ.submitList(employerTaxType)
+                    employerTaxTypeAdapter.differ.submitList(employerTaxType)
                 }
             }
         }
