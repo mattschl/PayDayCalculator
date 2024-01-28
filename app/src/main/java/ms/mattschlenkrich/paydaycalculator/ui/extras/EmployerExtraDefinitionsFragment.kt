@@ -12,10 +12,15 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.EmployerExtraDefinitionFullAdapter
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_EXTRA_DEFINITIONS
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerExtraDefinitionsBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
@@ -42,7 +47,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "View Extra income or deductions"
+        mainActivity.title = "View Extra Pay Items"
         return mView
     }
 
@@ -52,6 +57,38 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         fillEmployers()
         selectEmployer()
         selectExtraType()
+        fillValues()
+    }
+
+    private fun fillValues() {
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.apply {
+                delay(WAIT_250)
+                if (mainActivity.mainViewModel.getEmployer() != null) {
+                    val employerName =
+                        mainActivity.mainViewModel.getEmployer()!!.employerName
+                    Log.d(TAG, "employerName is $employerName")
+                    for (i in 0 until spEmployers.adapter.count) {
+                        if (spEmployers.getItemAtPosition(i) == employerName) {
+                            spEmployers.setSelection(i)
+                            break
+                        }
+                    }
+                }
+                delay(WAIT_250)
+                if (mainActivity.mainViewModel.getWorkExtraType() != null) {
+                    val extraType =
+                        mainActivity.mainViewModel.getWorkExtraType()!!.wetName
+                    Log.d(TAG, "taxType is $extraType")
+                    for (i in 0 until spExtraType.adapter.count) {
+                        if (spExtraType.getItemAtPosition(i) == extraType) {
+                            spExtraType.setSelection(i)
+                            break
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun selectExtraType() {
@@ -193,10 +230,11 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
 
     private fun gotoExtraAdd() {
         mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainActivity.mainViewModel.setWorkExtraType(curExtraType)
         mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
             EmployerExtraDefinitionsFragmentDirections
-                .actionEmployerExtraDefinitionsFragmentToWorkExtraTypeAddFragment()
+                .actionEmployerExtraDefinitionsFragmentToEmployerExtraDefinitionsAddFragment()
         )
     }
 

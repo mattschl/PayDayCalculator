@@ -72,6 +72,9 @@
         <action
             android:id="@+id/action_employerUpdateFragment_to_workExtraTypeAddFragment"
             app:destination="@id/workExtraTypeAddFragment" />
+        <action
+            android:id="@+id/action_employerUpdateFragment_to_employerExtraDefinitionsFragment"
+            app:destination="@id/employerExtraDefinitionsFragment" />
     </fragment>
     <fragment
         android:id="@+id/taxTypeFragment"
@@ -233,6 +236,12 @@
         <action
             android:id="@+id/action_employerExtraDefinitionsFragment_to_employerExtraDefinitionUpdateFragment"
             app:destination="@id/employerExtraDefinitionUpdateFragment" />
+        <action
+            android:id="@+id/action_employerExtraDefinitionsFragment_to_employerUpdateFragment"
+            app:destination="@id/employerUpdateFragment" />
+        <action
+            android:id="@+id/action_employerExtraDefinitionsFragment_to_employerExtraDefinitionsAddFragment"
+            app:destination="@id/employerExtraDefinitionsAddFragment" />
     </fragment>
 
 </navigation>

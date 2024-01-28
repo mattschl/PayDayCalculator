@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.MainActivity
-import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
@@ -21,7 +20,7 @@ class EmployerExtraDefinitionsShortAdapter(
 ) : RecyclerView.Adapter<EmployerExtraDefinitionsShortAdapter.DefinitionViewHolder>() {
 
 
-    private val cf = CommonFunctions()
+//    private val cf = CommonFunctions()
 //    private val df = DateFunctions()
 
     class DefinitionViewHolder(val itemBinding: ListSingleItemBinding) :
@@ -76,7 +75,7 @@ class EmployerExtraDefinitionsShortAdapter(
         mainActivity.mainViewModel.setWorkExtraType(extra)
         mView.findNavController().navigate(
             EmployerUpdateFragmentDirections
-                .actionEmployerUpdateFragmentToEmployerExtraDefinitionUpdateFragment()
+                .actionEmployerUpdateFragmentToEmployerExtraDefinitionsFragment()
         )
     }
 }
