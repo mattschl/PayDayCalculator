@@ -169,6 +169,9 @@
         <action
             android:id="@+id/action_employerExtraDefinitionsFragment_to_employerAddFragment"
             app:destination="@id/employerAddFragment" />
+        <action
+            android:id="@+id/action_employerExtraDefinitionsFragment_to_workExtraTypeAddFragment"
+            app:destination="@id/workExtraTypeAddFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_employerExtraDefinitionsFragment"
@@ -238,5 +241,8 @@
         <action
             android:id="@+id/action_workExtraTypeAddFragment_to_employerExtraDefinitionsAddFragment"
             app:destination="@id/employerExtraDefinitionsAddFragment" />
+        <action
+            android:id="@+id/action_workExtraTypeAddFragment_to_employerExtraDefinitionsFragment"
+            app:destination="@id/employerExtraDefinitionsFragment" />
     </fragment>
 </navigation>

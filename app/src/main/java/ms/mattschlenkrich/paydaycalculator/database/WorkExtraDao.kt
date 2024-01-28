@@ -38,6 +38,15 @@ interface WorkExtraDao {
     )
     fun getWorkExtraDefinitions(employerId: Long): LiveData<List<WorkExtrasDefinitions>>
 
+    @Query(
+        "SELECT * FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
+                "WHERE weEmployerId = :employerId " +
+                "AND weExtraTypeId = :extraTypeId " +
+                "ORDER BY weEffectiveDate DESC"
+    )
+    fun getWorkExtraDefinitions(employerId: Long, extraTypeId: Long):
+            LiveData<List<WorkExtrasDefinitions>>
+
     @Transaction
     @Query(
         "SELECT $TABLE_WORK_EXTRAS_DEFINITIONS.*, " +
@@ -50,10 +59,14 @@ interface WorkExtraDao {
                 "$TABLE_WORK_EXTRAS_DEFINITIONS.weExtraTypeId =" +
                 "$TABLE_WORK_EXTRA_TYPES.workExtraTypeId " +
                 "WHERE $TABLE_WORK_EXTRAS_DEFINITIONS.weEmployerId = :employerId " +
+                "AND $TABLE_WORK_EXTRAS_DEFINITIONS.weExtraTypeId = :extraTypeId " +
                 "ORDER BY $TABLE_WORK_EXTRA_TYPES.wetName " +
                 "COLLATE NOCASE"
     )
-    fun getActiveExtraDefinitionsFull(employerId: Long): LiveData<List<ExtraDefinitionFull>>
+    fun getActiveExtraDefinitionsFull(
+        employerId: Long,
+        extraTypeId: Long
+    ): LiveData<List<ExtraDefinitionFull>>
 
     @Query(
         "SELECT * FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +

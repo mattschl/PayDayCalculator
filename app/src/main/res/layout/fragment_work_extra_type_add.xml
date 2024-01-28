@@ -12,7 +12,7 @@
             android:id="@+id/lblExtra"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/extra_name_descriptopn"
+            android:text="@string/extra_name_description"
             app:layout_constraintBaseline_toBaselineOf="@id/etExtraName"
             app:layout_constraintEnd_toStartOf="@id/etExtraName"
             app:layout_constraintStart_toStartOf="parent" />

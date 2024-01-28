@@ -71,14 +71,17 @@ class EmployerExtraDefinitionFullAdapter(
 
     override fun onBindViewHolder(holder: DefinitionViewHolder, position: Int) {
         val definition = differ.currentList[position]
-        var display = definition.extraType.wetName
+        var display = df.getDisplayDate(definition.definition.weEffectiveDate)
         if (definition.definition.weIsDeleted) {
-            holder.itemBinding.tvName.setTextColor(Color.RED)
+            holder.itemBinding.tvEffectiveDate.setTextColor(Color.RED)
             display = "* $display * Deleted"
+        } else if (position == 0) {
+            display += " - CURRENT"
+            holder.itemBinding.tvEffectiveDate.setTextColor(Color.BLACK)
         } else {
-            holder.itemBinding.tvName.setTextColor(Color.BLACK)
+            holder.itemBinding.tvEffectiveDate.setTextColor(Color.BLACK)
         }
-        holder.itemBinding.tvName.text = display
+        holder.itemBinding.tvEffectiveDate.text = display
         display = if (definition.definition.weIsCredit) {
             "Add "
         } else {
@@ -99,56 +102,7 @@ class EmployerExtraDefinitionFullAdapter(
             )
         }
         holder.itemBinding.tvValue.text = display
-        if (employerExtraDefinitionsFragment != null) {
-//            holder.itemBinding.llExtras.orientation = LinearLayout.VERTICAL
-            holder.itemBinding.tvName.textAlignment = View.TEXT_ALIGNMENT_CENTER
-            holder.itemBinding.tvValue.textAlignment = View.TEXT_ALIGNMENT_CENTER
-            display = if (definition.definition.weIsCredit) {
-                "Add "
-            } else {
-                "Deduct "
-            }
-            if (definition.definition.weIsCredit) {
-                holder.itemBinding.tvValue.setTextColor(Color.BLACK)
-            } else {
-                holder.itemBinding.tvValue.setTextColor(Color.RED)
-            }
-            display += if (definition.definition.weIsFixed) {
-                cf.displayDollars(
-                    definition.definition.weValue
-                )
-            } else {
-                cf.displayPercentFromDouble(
-                    definition.definition.weValue / 100
-                )
-            }
-            holder.itemBinding.tvValue.text = display
-            display = "Effective starting " + definition.definition.weEffectiveDate
-            holder.itemBinding.tvEffectiveDate.text = display
-            val frequencies = mView.resources.getStringArray(
-                R.array.extra_frequencies
-            )
-            display = "Calculated " + frequencies[definition.definition.weAppliesTo]
-            holder.itemBinding.tvAppliesTo.text = display
-            display = "Attaches to " + frequencies[definition.definition.weAttachTo]
-            holder.itemBinding.tvAttachTo.text = display
-            display = if (definition.definition.weIsDefault) {
-                "This is the default"
-            } else {
-                "This needs to be manually added"
-            }
-            holder.itemBinding.tvIsDefault.text = display
-        } else {
-//            holder.itemBinding.llExtras.orientation = LinearLayout.HORIZONTAL
-            holder.itemBinding.tvName.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
-//            holder.itemBinding.tvName.width = 500
-            holder.itemBinding.tvValue.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
-//            holder.itemBinding.tvValue.width = 500
-            holder.itemBinding.tvAppliesTo.visibility = View.GONE
-            holder.itemBinding.tvAttachTo.visibility = View.GONE
-            holder.itemBinding.tvIsDefault.visibility = View.GONE
-            holder.itemBinding.tvEffectiveDate.visibility = View.GONE
-        }
+
         holder.itemView.setOnLongClickListener {
             AlertDialog.Builder(mView.context)
                 .setTitle(

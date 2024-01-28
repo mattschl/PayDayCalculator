@@ -17,10 +17,10 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tvName"
+                android:id="@+id/tvEffectiveDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/add_new_extra"
+                android:text="@string/effective_date"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_size_large"
@@ -38,40 +38,15 @@
                 android:textStyle="italic|bold" />
 
             <TextView
-                android:id="@+id/tvEffectiveDate"
+                android:id="@+id/tvInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/effective_date"
+                android:text="@string/other_info"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="@dimen/label_text_size" />
 
-            <TextView
-                android:id="@+id/tvAppliesTo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/applies_to"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textSize="@dimen/label_text_size" />
 
-            <TextView
-                android:id="@+id/tvAttachTo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/attach_to"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textSize="@dimen/label_text_size" />
-
-            <TextView
-                android:id="@+id/tvIsDefault"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/is_default"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textSize="@dimen/label_text_size" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </layout>

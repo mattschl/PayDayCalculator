@@ -169,13 +169,13 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
 //                setHasFixedSize(true)
                 adapter = extraDefinitionsAdapter
             }
-            activity.let {
-                mainActivity.workExtraViewModel.getActiveExtraDefinitionsFull(
-                    employerId
-                ).observe(viewLifecycleOwner) { list ->
-                    extraDefinitionsAdapter!!.differ.submitList(list)
-                }
-            }
+//            activity.let {
+//                mainActivity.workExtraViewModel.getActiveExtraDefinitionsFull(
+//                    employerId
+//                ).observe(viewLifecycleOwner) { list ->
+//                    extraDefinitionsAdapter!!.differ.submitList(list)
+//                }
+//            }
         }
     }
 

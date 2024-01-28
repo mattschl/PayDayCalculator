@@ -31,8 +31,11 @@ class WorkExtraViewModel(
     fun getWorkExtraDefinitions(employerId: Long) =
         workExtraRepository.getWorkExtraDefinitions(employerId)
 
-    fun getActiveExtraDefinitionsFull(employerId: Long) =
-        workExtraRepository.getActiveExtraDefinitionsFull(employerId)
+    fun getWorkExtraDefinitions(employerId: Long, extraTypeId: Long) =
+        workExtraRepository.getWorkExtraDefinitions(employerId, extraTypeId)
+
+    fun getActiveExtraDefinitionsFull(employerId: Long, extraTypeId: Long) =
+        workExtraRepository.getActiveExtraDefinitionsFull(employerId, extraTypeId)
 
     fun getExtraDefinitionsPerDay(employerId: Long) =
         workExtraRepository.getExtraDefinitionsPerDay(employerId)

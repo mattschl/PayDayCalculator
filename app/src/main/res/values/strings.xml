@@ -122,8 +122,10 @@
     <string name="gross_pay">Gross Pay</string>
     <string name="week_1">Week 1</string>
     <string name="week_2">Week 2</string>
-    <string name="extra_name_descriptopn">Extra Name/Description</string>
+    <string name="extra_name_description">Extra Name/Description</string>
     <string name="enter_extra_name">Enter Extra Name</string>
     <string name="view_extra_types">View Extra Types</string>
     <string name="add_a_new_extra_type">* Add a NEW Extra Type *</string>
+    <string name="extra_type">Extra Type</string>
+    <string name="other_info">Other info</string>
 </resources>

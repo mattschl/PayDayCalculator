@@ -143,4 +143,4 @@ const val WAIT_1000 = 1000L
 
 const val FRAG_EMPLOYER_UPDATE = "EmployerUpdateFragment"
 const val FRAG_TAX_RULES = "TaxRulesFragment"
-
+const val FRAG_EXTRA_DEFINITIONS = "EmployerExtraDefFragment"
