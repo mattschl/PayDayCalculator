@@ -31,7 +31,6 @@ data class WorkExtraTypes(
     val wetUpdateTime: String,
 ) : Parcelable
 
-
 @Entity(
     tableName = TABLE_WORK_EXTRAS_DEFINITIONS,
     foreignKeys = [ForeignKey(
@@ -78,4 +77,16 @@ data class ExtraDefinitionFull(
         entityColumn = "workExtraTypeId"
     )
     var extraType: WorkExtraTypes
+) : Parcelable
+
+@Parcelize
+data class ExtraDefinitionAndType(
+    @Embedded
+    val definition: WorkExtrasDefinitions,
+    @Relation(
+        entity = WorkExtraTypes::class,
+        parentColumn = "weExtraTypeId",
+        entityColumn = "workExtraTypeId"
+    )
+    val extraType: WorkExtraTypes
 ) : Parcelable

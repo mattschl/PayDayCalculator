@@ -55,7 +55,11 @@ data class PayPeriods(
             parentColumns = [PAY_PERIOD_EMPLOYER_ID, PAY_PERIOD_CUTOFF_DATE],
             childColumns = [WORK_DATES_EMPLOYER_ID, WORK_DATES_CUTOFF_DATE]
         )
-    ], indices = [Index(value = [WORK_DATES_EMPLOYER_ID, WORK_DATES_DATE], unique = true)]
+    ], indices = [Index(
+        value =
+        [WORK_DATES_EMPLOYER_ID, WORK_DATES_DATE], unique = true
+    )
+    ]
 )
 @Parcelize
 data class WorkDates(
@@ -84,6 +88,7 @@ data class WorkDateAndExtras(
     )
     var extras: WorkDatesExtras?
 ) : Parcelable
+
 
 @Entity(
     tableName = TABLE_WORK_DATES_EXTRAS,
@@ -160,3 +165,4 @@ data class WorkPayPeriodTax(
     val wppIsDeleted: Boolean,
     val wppUpdateTime: String,
 ) : Parcelable
+
