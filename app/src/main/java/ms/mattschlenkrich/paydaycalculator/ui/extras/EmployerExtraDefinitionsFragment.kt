@@ -2,7 +2,6 @@ package ms.mattschlenkrich.paydaycalculator.ui.extras
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -67,7 +66,6 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                 if (mainActivity.mainViewModel.getEmployer() != null) {
                     val employerName =
                         mainActivity.mainViewModel.getEmployer()!!.employerName
-                    Log.d(TAG, "employerName is $employerName")
                     for (i in 0 until spEmployers.adapter.count) {
                         if (spEmployers.getItemAtPosition(i) == employerName) {
                             spEmployers.setSelection(i)
@@ -79,7 +77,6 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                 if (mainActivity.mainViewModel.getWorkExtraType() != null) {
                     val extraType =
                         mainActivity.mainViewModel.getWorkExtraType()!!.wetName
-                    Log.d(TAG, "taxType is $extraType")
                     for (i in 0 until spExtraType.adapter.count) {
                         if (spExtraType.getItemAtPosition(i) == extraType) {
                             spExtraType.setSelection(i)
@@ -100,14 +97,9 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     position: Int,
                     id: Long
                 ) {
-                    Log.d(
-                        TAG, "extraTypeList is ${extraTypeList.size} items " +
-                                "current employer is ${curEmployer!!.employerId}"
-                    )
                     for (extra in extraTypeList) {
                         if (extra.wetName == spExtraType.selectedItem.toString()) {
                             curExtraType = extra
-                            Log.d(TAG, "curExtraTypeID is ${curExtraType!!.workExtraTypeId}")
                             fillExtrasList()
                         } else if (spExtraType.selectedItem.toString() ==
                             getString(R.string.add_a_new_extra_type)
@@ -259,7 +251,6 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     }
 
     private fun updateUI(employers: List<Employers>, extraList: List<WorkExtraTypes>) {
-        Log.d(TAG, "entering updateUI routine")
         if (employers.isNotEmpty() && extraList.isNotEmpty()) {
             binding.apply {
                 if (spEmployers.getItemAtPosition(0).toString() ==
@@ -276,7 +267,6 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
 
 
     private fun updateRecycler(extras: List<Any>) {
-        Log.d(TAG, "doing updateRecycler. extraList has ${extras.size} ")
         binding.apply {
             if (extras.isEmpty()) {
                 rvExtras.visibility = View.GONE

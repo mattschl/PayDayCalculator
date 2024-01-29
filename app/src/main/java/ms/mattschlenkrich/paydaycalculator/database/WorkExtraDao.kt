@@ -72,7 +72,7 @@ interface WorkExtraDao {
         "SELECT * FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
                 "WHERE (weAttachTo = '$PER_HOUR'OR " +
                 "weAttachTo = '$PER_DAY') " +
-                "AND workExtraDefId = :employerId " +
+                "AND weEmployerId = :employerId " +
                 "AND weIsDeleted  = 0"
     )
     fun getExtraDefinitionsPerDay(employerId: Long):
@@ -88,6 +88,7 @@ interface WorkExtraDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWorkExtraType(workExtraType: WorkExtraTypes)
 
+    @Transaction
     @Query(
         "SELECT DISTINCT " +
                 "wetName, workExtraTypeId, wetEmployerId, wetIsDeleted, wetUpdateTime " +

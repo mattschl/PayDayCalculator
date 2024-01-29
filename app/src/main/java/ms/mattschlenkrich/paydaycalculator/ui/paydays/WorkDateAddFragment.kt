@@ -19,7 +19,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
@@ -40,7 +39,6 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private var payPeriod: PayPeriods? = null
     private val df = DateFunctions()
     private val cf = CommonFunctions()
-    private var extraAdapter: WorkDateExtraAdapter? = null
 
     //    private val cf = CommonFunctions()
     private val usedWorkDatesList = ArrayList<String>()
@@ -200,7 +198,6 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
 
     private fun fillExtras() {
         binding.apply {
-//            extraAdapter = null
 //            extraAdapter = WorkDateExtraAdapter(
 //                mainActivity, mView
 //            )
