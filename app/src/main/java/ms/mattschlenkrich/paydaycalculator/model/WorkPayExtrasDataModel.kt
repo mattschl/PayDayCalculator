@@ -27,6 +27,7 @@ data class WorkExtraTypes(
     val workExtraTypeId: Long,
     val wetName: String,
     val wetEmployerId: Long,
+    val wetIsDefault: Boolean,
     val wetIsDeleted: Boolean,
     val wetUpdateTime: String,
 ) : Parcelable

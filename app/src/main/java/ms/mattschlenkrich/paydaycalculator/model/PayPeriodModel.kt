@@ -16,7 +16,7 @@ import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_TAX_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_TAX_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES
-import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES_EXTRAS
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATE_EXTRAS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_PAY_PERIOD_EXTRAS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_PAY_PERIOD_TAX
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
@@ -76,37 +76,37 @@ data class WorkDateAndExtras(
     @Embedded
     val workDate: WorkDates,
     @Relation(
-        entity = WorkDatesExtras::class,
+        entity = WorkDateExtras::class,
         parentColumn = "workDateId",
         entityColumn = "wdeWorkDateId"
     )
-    var extras: WorkDatesExtras?
+    var extras: WorkDateExtras?
 ) : Parcelable
 
 
 @Entity(
-    tableName = TABLE_WORK_DATES_EXTRAS,
+    tableName = TABLE_WORK_DATE_EXTRAS,
     foreignKeys = [ForeignKey(
         entity = WorkDates::class,
         parentColumns = ["workDateId"],
         childColumns = ["wdeWorkDateId"]
-    ), ForeignKey(
-        entity = WorkExtrasDefinitions::class,
-        parentColumns = ["workExtraDefId"],
-        childColumns = ["wdeExtraDefinitionId"]
     )]
 )
 @Parcelize
-data class WorkDatesExtras(
+data class WorkDateExtras(
     @PrimaryKey
     val workDateExtraId: Long,
     @ColumnInfo(index = true)
     val wdeWorkDateId: Long,
     @ColumnInfo(index = true)
-    val wdeExtraDefinitionId: Long?,
+    val wdeExtraTypeId: Long?,
     @ColumnInfo(index = true)
     val wdeName: String,
+    val wdeAppliesTo: Int,
+    val wdeAttachTo: Int,
     val wdeValue: Double,
+    val wdeIsFixed: Boolean,
+    val wdeIsCredit: Boolean,
     val wdeIsDeleted: Boolean,
     val wdeUpdateTime: String,
 ) : Parcelable
@@ -163,7 +163,7 @@ data class WorkPayPeriodTax(
 ) : Parcelable
 
 @Parcelize
-data class WorkDatesAndExtrasFull(
+data class WorkDateAndExtrasFull(
     @Embedded
     val workDates: WorkDates,
     @Relation(

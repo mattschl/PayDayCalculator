@@ -8,22 +8,25 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.MainActivity
-import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
+import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerExtraItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragment
 import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragmentDirections
 
 class EmployerExtraDefinitionsShortAdapter(
     private val employer: Employers,
     private val mainActivity: MainActivity,
     private val mView: View,
+    private val parentFragment: EmployerUpdateFragment,
 ) : RecyclerView.Adapter<EmployerExtraDefinitionsShortAdapter.DefinitionViewHolder>() {
 
 
-//    private val cf = CommonFunctions()
-//    private val df = DateFunctions()
+    //    private val cf = CommonFunctions()
+    private val df = DateFunctions()
 
-    class DefinitionViewHolder(val itemBinding: ListSingleItemBinding) :
+    class DefinitionViewHolder(val itemBinding: ListEmployerExtraItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCallBack =
@@ -48,7 +51,7 @@ class EmployerExtraDefinitionsShortAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DefinitionViewHolder {
         return DefinitionViewHolder(
-            ListSingleItemBinding.inflate(
+            ListEmployerExtraItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -62,10 +65,31 @@ class EmployerExtraDefinitionsShortAdapter(
 
     override fun onBindViewHolder(holder: DefinitionViewHolder, position: Int) {
         val extra = differ.currentList[position]
-        holder.itemBinding.tvDisplay.text = extra.wetName
-        holder.itemView.setOnLongClickListener {
-            gotoExtraUpdate(extra)
-            false
+        holder.itemBinding.apply {
+            chkEmployerExtra.text = extra.wetName
+            chkEmployerExtra.isChecked = extra.wetIsDefault
+            chkEmployerExtra.setOnClickListener {
+                updateEmployerExtra(extra, chkEmployerExtra.isChecked)
+            }
+            btnEdit.setOnClickListener {
+                gotoExtraUpdate(extra)
+            }
+        }
+
+    }
+
+    private fun updateEmployerExtra(extra: WorkExtraTypes, checked: Boolean) {
+        mainActivity.let {
+            mainActivity.workExtraViewModel.updateWorkExtraType(
+                WorkExtraTypes(
+                    extra.workExtraTypeId,
+                    extra.wetName,
+                    extra.wetEmployerId,
+                    checked,
+                    false,
+                    df.getCurrentTimeAsString()
+                )
+            )
         }
     }
 

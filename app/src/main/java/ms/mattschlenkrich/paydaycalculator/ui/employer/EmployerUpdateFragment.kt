@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paydaycalculator.ui.employer
 
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,7 +16,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -153,26 +151,25 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     fun fillExtras(employerId: Long) {
         binding.apply {
             val extraTypeAdapter =
                 EmployerExtraDefinitionsShortAdapter(
-                    curEmployer!!, mainActivity, mView
+                    curEmployer!!, mainActivity, mView, this@EmployerUpdateFragment
                 )
             rvExtras.apply {
-                layoutManager = StaggeredGridLayoutManager(
-                    2,
-                    StaggeredGridLayoutManager.VERTICAL
-                )
-                setHasFixedSize(true)
+                layoutManager = LinearLayoutManager(mView.context)
+//                    StaggeredGridLayoutManager(
+//                    2,
+//                    StaggeredGridLayoutManager.VERTICAL
+//                )
+//                setHasFixedSize(true)
                 adapter = extraTypeAdapter
             }
             activity.let {
                 mainActivity.workExtraViewModel.getWorkExtraTypeList(
                     employerId
                 ).observe(viewLifecycleOwner) { list ->
-                    extraTypeAdapter.notifyDataSetChanged()
                     extraTypeAdapter.differ.submitList(list)
 
                 }

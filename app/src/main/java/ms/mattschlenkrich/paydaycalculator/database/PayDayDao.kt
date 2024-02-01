@@ -8,7 +8,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES
-import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES_EXTRAS
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATE_EXTRAS
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateAndExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
@@ -38,17 +38,17 @@ interface PayDayDao {
 
     @Transaction
     @Query(
-        "SELECT $TABLE_WORK_DATES.*, $TABLE_WORK_DATES_EXTRAS.* " +
+        "SELECT $TABLE_WORK_DATES.*, $TABLE_WORK_DATE_EXTRAS.* " +
                 "FROM $TABLE_WORK_DATES " +
-                "LEFT JOIN $TABLE_WORK_DATES_EXTRAS ON " +
+                "LEFT JOIN $TABLE_WORK_DATE_EXTRAS ON " +
                 "workDateId = wdeWorkDateId " +
                 "WHERE wdEmployerId = :employerId " +
                 "AND wdCutoffDate = :cutOffDate " +
                 "ORDER BY $TABLE_WORK_DATES.wdDate, " +
-                "$TABLE_WORK_DATES_EXTRAS.wdeName COLLATE NOCASE"
+                "$TABLE_WORK_DATE_EXTRAS.wdeName COLLATE NOCASE"
     )
     fun getWorkDatesAndExtras(employerId: Long, cutOffDate: String):
             LiveData<List<WorkDateAndExtras>>
 
-    
+
 }

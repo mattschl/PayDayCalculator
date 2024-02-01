@@ -38,7 +38,7 @@ class WorkExtraTypeAddFragment : Fragment(
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentWorkExtraTypeAddBinding.inflate(
             inflater, container, false
         )
@@ -100,6 +100,7 @@ class WorkExtraTypeAddFragment : Fragment(
                         cf.generateId(),
                         etExtraName.text.toString(),
                         curEmployer.employerId,
+                        false,
                         false,
                         df.getCurrentTimeAsString()
                     )

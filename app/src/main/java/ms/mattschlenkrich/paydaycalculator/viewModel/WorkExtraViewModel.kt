@@ -48,6 +48,11 @@ class WorkExtraViewModel(
             workExtraRepository.insertWorkExtraType(workExtraType)
         }
 
+    fun updateWorkExtraType(extraType: WorkExtraTypes) =
+        viewModelScope.launch {
+            workExtraRepository.updateWorkExtraType(extraType)
+        }
+
     fun getWorkExtraTypeList(employerId: Long) =
         workExtraRepository.getWorkExtraTypeList(employerId)
 }

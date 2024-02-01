@@ -88,10 +88,14 @@ interface WorkExtraDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWorkExtraType(workExtraType: WorkExtraTypes)
 
+    @Update
+    suspend fun updateWorkExtraType(extraType: WorkExtraTypes)
+
     @Transaction
     @Query(
         "SELECT DISTINCT " +
-                "wetName, workExtraTypeId, wetEmployerId, wetIsDeleted, wetUpdateTime " +
+                "wetName, workExtraTypeId, wetEmployerId, " +
+                "wetIsDefault, wetIsDeleted, wetUpdateTime " +
                 "FROM $TABLE_WORK_EXTRA_TYPES " +
                 "INNER JOIN $TABLE_WORK_EXTRAS_DEFINITIONS ON " +
                 "$TABLE_WORK_EXTRA_TYPES.workExtraTypeId = " +

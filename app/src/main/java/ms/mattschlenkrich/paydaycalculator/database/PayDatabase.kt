@@ -11,8 +11,8 @@ import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
-import ms.mattschlenkrich.paydaycalculator.model.WorkDatesExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
 import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
@@ -25,7 +25,7 @@ import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
         Employers::class,
         PayPeriods::class,
         WorkDates::class,
-        WorkDatesExtras::class,
+        WorkDateExtras::class,
         WorkPayPeriodExtras::class,
         WorkPayPeriodTax::class,
         WorkExtrasDefinitions::class,
