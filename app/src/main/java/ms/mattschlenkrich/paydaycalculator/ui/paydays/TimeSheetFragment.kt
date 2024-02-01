@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateAdapter
+import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetBinding
@@ -36,6 +37,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     private val cutOffs = ArrayList<String>()
     private var curCutOff = ""
     private val projections = PayDayProjections()
+    private val cf = CommonFunctions()
     private val df = DateFunctions()
     private lateinit var payCalculations: PayCalculations
     private var workDateAdapter: WorkDateAdapter? = null
@@ -80,6 +82,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     private fun getPayPeriod(): PayPeriods {
         binding.apply {
             return PayPeriods(
+                cf.generateId(),
                 spCutOff.selectedItem.toString(),
                 curEmployer!!.employerId,
                 false,
@@ -173,6 +176,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         )
         mainActivity.payDayViewModel.insertPayPeriod(
             PayPeriods(
+                cf.generateId(),
                 nextCutOff,
                 curEmployer!!.employerId,
                 false,

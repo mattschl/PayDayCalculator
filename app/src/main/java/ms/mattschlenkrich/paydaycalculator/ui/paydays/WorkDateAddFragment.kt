@@ -215,6 +215,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         binding.apply {
             return WorkDates(
                 cf.generateId(),
+                payPeriod!!.payPeriodId,
                 payPeriod!!.ppEmployerId,
                 payPeriod!!.ppCutoffDate,
                 curDate,
