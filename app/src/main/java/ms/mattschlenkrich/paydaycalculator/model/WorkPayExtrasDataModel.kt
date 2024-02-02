@@ -56,7 +56,6 @@ data class WorkExtrasDefinitions(
     val weValue: Double,
     val weIsFixed: Boolean,
     val weIsCredit: Boolean,
-    val weIsDefault: Boolean,
     val weEffectiveDate: String,
     val weIsDeleted: Boolean,
     val weUpdateTime: String,

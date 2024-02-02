@@ -154,22 +154,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/chkIsFixed" />
 
-            <CheckBox
-                android:id="@+id/chkIsDefault"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dimen_25dp"
-                android:layout_marginTop="@dimen/dimen_25dp"
-                android:layout_marginEnd="@dimen/dimen_25dp"
-                android:layout_marginBottom="@dimen/dimen_25dp"
-                android:minHeight="@dimen/minimum_touch_height"
-                android:text="@string/check_if_this_is_a_default_n_otherwise_it_will_not_automatically_apply"
-                android:textColor="@color/black"
-                android:textSize="@dimen/text_size_large"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chkIsCredit" />
-
             <TextView
                 android:id="@+id/lblEffectiveDate"
                 android:layout_width="wrap_content"
@@ -190,7 +174,7 @@
                 android:textSize="@dimen/text_size_large"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblEmployer"
-                app:layout_constraintTop_toBottomOf="@id/chkIsDefault"
+                app:layout_constraintTop_toBottomOf="@id/chkIsCredit"
                 tools:ignore="TextSizeCheck" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton

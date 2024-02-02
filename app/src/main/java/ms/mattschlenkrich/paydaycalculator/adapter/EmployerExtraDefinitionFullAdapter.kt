@@ -102,7 +102,7 @@ class EmployerExtraDefinitionFullAdapter(
             )
         }
         holder.itemBinding.tvValue.text = display
-        if (definition.definition.weIsDefault) {
+        if (definition.extraType.wetIsDefault) {
             holder.itemBinding.tvInfo.text = mView.resources.getString(R.string._default)
             holder.itemBinding.tvInfo.visibility = View.VISIBLE
         } else {

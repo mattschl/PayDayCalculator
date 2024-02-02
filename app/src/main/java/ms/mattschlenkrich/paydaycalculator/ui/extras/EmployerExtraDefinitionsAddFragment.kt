@@ -137,7 +137,6 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                 cf.getDoubleFromDollarOrPercent(etValue.text.toString()),
                 chkIsFixed.isChecked,
                 chkIsCredit.isChecked,
-                chkIsDefault.isChecked,
                 tvEffectiveDate.text.toString(),
                 false,
                 df.getCurrentTimeAsString()

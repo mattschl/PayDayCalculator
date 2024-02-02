@@ -202,7 +202,6 @@ class EmployerExtraDefinitionUpdateFragment :
                 )
                 chkIsFixed.isChecked = curExtraDefinitionFull.definition.weIsFixed
                 chkIsCredit.isChecked = curExtraDefinitionFull.definition.weIsCredit
-                chkIsDefault.isChecked = curExtraDefinitionFull.definition.weIsDefault
                 tvEffectiveDate.text = curExtraDefinitionFull.definition.weEffectiveDate
             }
         }
