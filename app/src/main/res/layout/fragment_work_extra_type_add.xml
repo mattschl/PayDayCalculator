@@ -28,6 +28,59 @@
             app:layout_constraintStart_toEndOf="@id/lblExtra"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/lblAppliesTo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/apply_this_to"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/spAppliesTo"
+            app:layout_constraintEnd_toStartOf="@id/spAppliesTo"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Spinner
+            android:id="@+id/spAppliesTo"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="@dimen/minimum_touch_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblAppliesTo"
+            app:layout_constraintTop_toBottomOf="@id/etExtraName" />
+
+        <TextView
+            android:id="@+id/lblAttachTo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/attach_this_to"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/spAttachTo"
+            app:layout_constraintEnd_toStartOf="@id/spAttachTo"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Spinner
+            android:id="@+id/spAttachTo"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="@dimen/minimum_touch_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblAttachTo"
+            app:layout_constraintTop_toBottomOf="@id/spAppliesTo" />
+
+        <CheckBox
+            android:id="@+id/chkIsCredit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_25dp"
+            android:layout_marginTop="@dimen/dimen_25dp"
+            android:layout_marginEnd="@dimen/dimen_25dp"
+            android:layout_marginBottom="@dimen/dimen_25dp"
+            android:minHeight="@dimen/minimum_touch_height"
+            android:text="@string/check_if_this_is_a_credit_n_otherwise_it_will_be_a_deduction"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spAttachTo" />
+
+
         <CheckBox
             android:id="@+id/chkIsDefault"
             android:layout_width="wrap_content"
@@ -42,7 +95,7 @@
             android:textSize="@dimen/text_size_large"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etExtraName" />
+            app:layout_constraintTop_toBottomOf="@id/chkIsCredit" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

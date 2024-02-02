@@ -8,7 +8,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -48,7 +47,6 @@ class EmployerExtraDefinitionUpdateFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillSpinners()
         fillMenu()
         fillValues()
         chooseDate()
@@ -191,8 +189,6 @@ class EmployerExtraDefinitionUpdateFragment :
 //                }
                 tvEmployer.text = curExtraDefinitionFull.employer.employerName
                 etName.setText(curExtraDefinitionFull.extraType.wetName)
-                spAppliesTo.setSelection(curExtraDefinitionFull.definition.weAppliesTo)
-                spAttachTo.setSelection(curExtraDefinitionFull.definition.weAttachTo)
                 etValue.setText(
                     if (curExtraDefinitionFull.definition.weIsFixed) {
                         cf.displayDollars(curExtraDefinitionFull.definition.weValue)
@@ -201,7 +197,6 @@ class EmployerExtraDefinitionUpdateFragment :
                     }
                 )
                 chkIsFixed.isChecked = curExtraDefinitionFull.definition.weIsFixed
-                chkIsCredit.isChecked = curExtraDefinitionFull.definition.weIsCredit
                 tvEffectiveDate.text = curExtraDefinitionFull.definition.weEffectiveDate
             }
         }
@@ -241,18 +236,6 @@ class EmployerExtraDefinitionUpdateFragment :
             EmployerExtraDefinitionUpdateFragmentDirections
                 .actionEmployerExtraDefinitionUpdateFragmentToEmployerExtraDefinitionsFragment()
         )
-    }
-
-    private fun fillSpinners() {
-        binding.apply {
-            val frequencyAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.extra_frequencies)
-            )
-            frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
-            spAppliesTo.adapter = frequencyAdapter
-            spAttachTo.adapter = frequencyAdapter
-        }
     }
 
     override fun onDestroy() {

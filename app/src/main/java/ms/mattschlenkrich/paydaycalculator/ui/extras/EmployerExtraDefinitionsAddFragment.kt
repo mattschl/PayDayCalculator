@@ -132,11 +132,8 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                 cf.generateId(),
                 curEmployer.employerId,
                 extraId,
-                spAppliesTo.selectedItemPosition,
-                spAttachTo.selectedItemPosition,
                 cf.getDoubleFromDollarOrPercent(etValue.text.toString()),
                 chkIsFixed.isChecked,
-                chkIsCredit.isChecked,
                 tvEffectiveDate.text.toString(),
                 false,
                 df.getCurrentTimeAsString()
@@ -259,13 +256,6 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                     extraTypeAdapter.add(getString(R.string.add_a_new_extra_type))
                 }
             spExtraTypes.adapter = extraTypeAdapter
-            val frequencyAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.extra_frequencies)
-            )
-            frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
-            spAppliesTo.adapter = frequencyAdapter
-            spAttachTo.adapter = frequencyAdapter
         }
     }
 

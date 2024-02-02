@@ -4,13 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.extras.EmployerExtraDefinitionsAddFragment">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/lblEmployer"
@@ -61,42 +57,6 @@
                 app:layout_constraintTop_toBottomOf="@id/tvEmployer" />
 
             <TextView
-                android:id="@+id/lblAppliesTo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/apply_this_to"
-                android:textSize="@dimen/label_text_size"
-                app:layout_constraintBaseline_toBaselineOf="@id/spAppliesTo"
-                app:layout_constraintEnd_toStartOf="@id/spAppliesTo"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <Spinner
-                android:id="@+id/spAppliesTo"
-                android:layout_width="@dimen/text_box_wide"
-                android:layout_height="@dimen/minimum_touch_height"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/lblAppliesTo"
-                app:layout_constraintTop_toBottomOf="@id/etName" />
-
-            <TextView
-                android:id="@+id/lblAttachTo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/attach_this_to"
-                android:textSize="@dimen/label_text_size"
-                app:layout_constraintBaseline_toBaselineOf="@id/spAttachTo"
-                app:layout_constraintEnd_toStartOf="@id/spAttachTo"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <Spinner
-                android:id="@+id/spAttachTo"
-                android:layout_width="@dimen/text_box_wide"
-                android:layout_height="@dimen/minimum_touch_height"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/lblAttachTo"
-                app:layout_constraintTop_toBottomOf="@id/spAppliesTo" />
-
-            <TextView
                 android:id="@+id/lblValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -120,14 +80,13 @@
                 android:textSize="@dimen/text_size_large"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblValue"
-                app:layout_constraintTop_toBottomOf="@id/spAttachTo" />
+                app:layout_constraintTop_toBottomOf="@id/etName" />
 
             <CheckBox
                 android:id="@+id/chkIsFixed"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/minimum_touch_height"
                 android:layout_marginStart="@dimen/dimen_25dp"
-                android:layout_marginTop="@dimen/dimen_25dp"
                 android:layout_marginEnd="@dimen/dimen_25dp"
                 android:layout_marginBottom="@dimen/dimen_25dp"
                 android:text="@string/check_if_this_is_a_fixed_amount"
@@ -138,22 +97,6 @@
                 app:layout_constraintTop_toBottomOf="@id/etValue"
                 tools:ignore="TextSizeCheck" />
 
-            <CheckBox
-                android:id="@+id/chkIsCredit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dimen_25dp"
-                android:layout_marginTop="@dimen/dimen_25dp"
-                android:layout_marginEnd="@dimen/dimen_25dp"
-                android:layout_marginBottom="@dimen/dimen_25dp"
-                android:minHeight="@dimen/minimum_touch_height"
-                android:text="@string/check_if_this_is_a_credit_n_otherwise_it_will_be_a_deduction"
-                android:textColor="@color/black"
-                android:textSize="@dimen/text_size_large"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chkIsFixed" />
-
             <TextView
                 android:id="@+id/lblEffectiveDate"
                 android:layout_width="wrap_content"
@@ -161,20 +104,21 @@
                 android:text="@string/effective_date"
                 android:textSize="@dimen/label_text_size"
                 app:layout_constraintBaseline_toBaselineOf="@id/tvEffectiveDate"
-                app:layout_constraintEnd_toStartOf="@id/tvEmployer"
+                app:layout_constraintEnd_toStartOf="@id/tvEffectiveDate"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
                 android:id="@+id/tvEffectiveDate"
                 android:layout_width="@dimen/text_box_wide"
                 android:layout_height="@dimen/minimum_touch_height"
+                android:layout_marginTop="@dimen/dimen_10dp"
                 android:text="@string/effective_date"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_size_large"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblEmployer"
-                app:layout_constraintTop_toBottomOf="@id/chkIsCredit"
+                app:layout_constraintTop_toBottomOf="@id/chkIsFixed"
                 tools:ignore="TextSizeCheck" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -189,6 +133,4 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </ScrollView>
 </layout>

@@ -155,7 +155,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         binding.apply {
             val extraTypeAdapter =
                 EmployerExtraDefinitionsShortAdapter(
-                    curEmployer!!, mainActivity, mView, this@EmployerUpdateFragment
+                    curEmployer!!, mainActivity, mView
                 )
             rvExtras.apply {
                 layoutManager = LinearLayoutManager(mView.context)

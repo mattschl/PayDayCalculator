@@ -7,6 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -53,8 +54,21 @@ class WorkExtraTypeAddFragment : Fragment(
             curEmployer = mainActivity.mainViewModel.getEmployer()!!
         }
         mainActivity.title = "Add Extra Type for ${curEmployer.employerName}"
+        fillSpinners()
         getExtraTypeList()
         fillMenu()
+    }
+
+    private fun fillSpinners() {
+        binding.apply {
+            val frequencyAdapter = ArrayAdapter(
+                mView.context, R.layout.spinner_item_bold,
+                resources.getStringArray(R.array.extra_frequencies)
+            )
+            frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
+            spAppliesTo.adapter = frequencyAdapter
+            spAttachTo.adapter = frequencyAdapter
+        }
     }
 
     private fun getExtraTypeList() {
@@ -100,7 +114,10 @@ class WorkExtraTypeAddFragment : Fragment(
                         cf.generateId(),
                         etExtraName.text.toString(),
                         curEmployer.employerId,
-                        false,
+                        spAppliesTo.selectedItemPosition,
+                        spAttachTo.selectedItemPosition,
+                        chkIsCredit.isChecked,
+                        chkIsDefault.isChecked,
                         false,
                         df.getCurrentTimeAsString()
                     )

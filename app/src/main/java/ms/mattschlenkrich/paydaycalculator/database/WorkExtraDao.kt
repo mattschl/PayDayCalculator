@@ -7,8 +7,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import ms.mattschlenkrich.paydaycalculator.common.PER_DAY
-import ms.mattschlenkrich.paydaycalculator.common.PER_HOUR
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRA_TYPES
@@ -70,9 +68,9 @@ interface WorkExtraDao {
 
     @Query(
         "SELECT * FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
-                "WHERE (weAttachTo = '$PER_HOUR'OR " +
-                "weAttachTo = '$PER_DAY') " +
-                "AND weEmployerId = :employerId " +
+//                "WHERE (weAttachTo = '$PER_HOUR'OR " +
+//                "weAttachTo = '$PER_DAY') " +
+                "WHERE weEmployerId = :employerId " +
                 "AND weIsDeleted  = 0"
     )
     fun getExtraDefinitionsPerDay(employerId: Long):
@@ -93,14 +91,8 @@ interface WorkExtraDao {
 
     @Transaction
     @Query(
-        "SELECT DISTINCT " +
-                "wetName, workExtraTypeId, wetEmployerId, " +
-                "wetIsDefault, wetIsDeleted, wetUpdateTime " +
-                "FROM $TABLE_WORK_EXTRA_TYPES " +
-                "INNER JOIN $TABLE_WORK_EXTRAS_DEFINITIONS ON " +
-                "$TABLE_WORK_EXTRA_TYPES.workExtraTypeId = " +
-                "$TABLE_WORK_EXTRAS_DEFINITIONS.weExtraTypeId " +
-                "WHERE $TABLE_WORK_EXTRAS_DEFINITIONS.weEmployerId = :employerId " +
+        "SELECT * FROM $TABLE_WORK_EXTRA_TYPES " +
+                "WHERE wetEmployerId = :employerId " +
                 "ORDER BY wetName COLLATE NOCASE"
     )
     fun getWorkExtraTypeList(employerId: Long): LiveData<List<WorkExtraTypes>>

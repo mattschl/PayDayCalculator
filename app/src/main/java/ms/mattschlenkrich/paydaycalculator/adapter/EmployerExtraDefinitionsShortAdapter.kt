@@ -12,14 +12,13 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerExtraItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
-import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragment
 import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragmentDirections
 
 class EmployerExtraDefinitionsShortAdapter(
     private val employer: Employers,
     private val mainActivity: MainActivity,
     private val mView: View,
-    private val parentFragment: EmployerUpdateFragment,
+//    private val parentFragment: EmployerUpdateFragment,
 ) : RecyclerView.Adapter<EmployerExtraDefinitionsShortAdapter.DefinitionViewHolder>() {
 
 
@@ -85,6 +84,9 @@ class EmployerExtraDefinitionsShortAdapter(
                     extra.workExtraTypeId,
                     extra.wetName,
                     extra.wetEmployerId,
+                    extra.wetAppliesTo,
+                    extra.wetAttachTo,
+                    extra.wetIsCredit,
                     checked,
                     false,
                     df.getCurrentTimeAsString()

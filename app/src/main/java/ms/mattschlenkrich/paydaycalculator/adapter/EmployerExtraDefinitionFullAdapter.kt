@@ -82,12 +82,12 @@ class EmployerExtraDefinitionFullAdapter(
             holder.itemBinding.tvEffectiveDate.setTextColor(Color.BLACK)
         }
         holder.itemBinding.tvEffectiveDate.text = display
-        display = if (definition.definition.weIsCredit) {
+        display = if (definition.extraType.wetIsCredit) {
             "Add "
         } else {
             "Deduct "
         }
-        if (definition.definition.weIsCredit) {
+        if (definition.extraType.wetIsCredit) {
             holder.itemBinding.tvValue.setTextColor(Color.BLACK)
         } else {
             holder.itemBinding.tvValue.setTextColor(Color.RED)
