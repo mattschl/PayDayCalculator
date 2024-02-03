@@ -168,9 +168,9 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                             extraTypeList.add(it)
                         }
                         extraAdapter.add(getString(R.string.add_a_new_extra_type))
+                        updateUI(employerList, extraTypeList)
                     }
                 spExtraType.adapter = extraAdapter
-                updateUI(employerList, extraTypeList)
             }
         }
     }
@@ -251,16 +251,10 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     }
 
     private fun updateUI(employers: List<Employers>, extraList: List<WorkExtraTypes>) {
-        if (employers.isNotEmpty() && extraList.isNotEmpty()) {
-            binding.apply {
-                if (spEmployers.getItemAtPosition(0).toString() ==
-                    getString(R.string.no_employers_add_an_employer_through_the_employer_tab) ||
-                    employers.isEmpty()
-                ) {
-                    fabNew.visibility = View.GONE
-                } else {
-                    fabNew.visibility = View.VISIBLE
-                }
+        binding.apply {
+            if (employers.isNotEmpty() && extraList.isNotEmpty()) {
+                fabNew.isEnabled = spEmployers.getItemAtPosition(0)
+                    .toString() != getString(R.string.no_employers_add_an_employer_through_the_employer_tab)
             }
         }
     }

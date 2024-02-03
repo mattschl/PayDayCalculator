@@ -98,7 +98,6 @@
             android:backgroundTint="@color/dark_green"
             android:contentDescription="@string/add_new"
             android:src="@drawable/ic_add"
-            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
