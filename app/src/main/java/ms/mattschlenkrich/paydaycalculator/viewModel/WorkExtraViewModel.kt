@@ -55,4 +55,7 @@ class WorkExtraViewModel(
 
     fun getWorkExtraTypeList(employerId: Long) =
         workExtraRepository.getWorkExtraTypeList(employerId)
+
+    fun getExtraTypesByDaily(employerId: Long) =
+        workExtraRepository.getExtraTypesByDaily(employerId)
 }

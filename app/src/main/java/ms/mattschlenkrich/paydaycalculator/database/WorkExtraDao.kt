@@ -7,9 +7,12 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import ms.mattschlenkrich.paydaycalculator.common.PER_DAY
+import ms.mattschlenkrich.paydaycalculator.common.PER_HOUR
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRA_TYPES
+import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionAndType
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
@@ -66,15 +69,20 @@ interface WorkExtraDao {
         extraTypeId: Long
     ): LiveData<List<ExtraDefinitionFull>>
 
+    @Transaction
     @Query(
-        "SELECT * FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
-//                "WHERE (weAttachTo = '$PER_HOUR'OR " +
-//                "weAttachTo = '$PER_DAY') " +
+        "SELECT $TABLE_WORK_EXTRAS_DEFINITIONS.*," +
+                "$TABLE_WORK_EXTRA_TYPES.* " +
+                "FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
+                "LEFT JOIN $TABLE_WORK_EXTRA_TYPES ON " +
+                "weExtraTypeId = workExtraTypeId " +
                 "WHERE weEmployerId = :employerId " +
+                "AND (wetAttachTo = '$PER_DAY' OR " +
+                "wetAttachTo = '$PER_HOUR') " +
                 "AND weIsDeleted  = 0"
     )
     fun getExtraDefinitionsPerDay(employerId: Long):
-            LiveData<List<WorkExtrasDefinitions>>
+            LiveData<List<ExtraDefinitionAndType>>
 
     @Query(
         "SELECT * FROM $TABLE_WORK_EXTRA_TYPES " +
@@ -96,4 +104,14 @@ interface WorkExtraDao {
                 "ORDER BY wetName COLLATE NOCASE"
     )
     fun getWorkExtraTypeList(employerId: Long): LiveData<List<WorkExtraTypes>>
+
+    @Query(
+        "SELECT * FROM $TABLE_WORK_EXTRA_TYPES " +
+                "WHERE wetEmployerId = :employerId " +
+                "AND (wetAttachTo = 0 OR " +
+                "wetAttachTo = 1) " +
+                "AND wetIsDeleted = 0"
+    )
+    fun getExtraTypesByDaily(employerId: Long):
+            LiveData<List<WorkExtraTypes>>
 }

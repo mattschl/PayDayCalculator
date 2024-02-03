@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menu.add(getString(R.string.review_tax_types))
-                menu.add(getString(R.string.review_extra_credits_deductions))
+//                menu.add(getString(R.string.review_extra_credits_deductions))
 //                menu.add(getString(R.string.review_work_extra_frequencies))
 //                menu.add(getString(R.string.update_future_pay_dates))
                 menu.add(resources.getString(R.string.app_name))

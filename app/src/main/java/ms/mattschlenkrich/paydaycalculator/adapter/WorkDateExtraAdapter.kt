@@ -1,14 +1,18 @@
 package ms.mattschlenkrich.paydaycalculator.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateExtraItemBinding
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
+import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 
 class WorkDateExtraAdapter(
+    val mainActivity: MainActivity,
+    val mView: View,
 ) : RecyclerView.Adapter<WorkDateExtraAdapter.ExtraViewHolder>() {
 
     class ExtraViewHolder(
@@ -16,21 +20,20 @@ class WorkDateExtraAdapter(
     ) : RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCallBack =
-        object : DiffUtil.ItemCallback<WorkExtrasDefinitions>() {
+        object : DiffUtil.ItemCallback<WorkExtraTypes>() {
             override fun areItemsTheSame(
-                oldItem: WorkExtrasDefinitions,
-                newItem: WorkExtrasDefinitions
+                oldItem: WorkExtraTypes,
+                newItem: WorkExtraTypes
             ): Boolean {
                 return oldItem == newItem
             }
 
             override fun areContentsTheSame(
-                oldItem: WorkExtrasDefinitions,
-                newItem: WorkExtrasDefinitions
+                oldItem: WorkExtraTypes,
+                newItem: WorkExtraTypes
             ): Boolean {
-                return oldItem.workExtraDefId == newItem.workExtraDefId &&
-                        oldItem.weExtraTypeId == newItem.weExtraTypeId &&
-                        oldItem.weEffectiveDate == newItem.weEffectiveDate
+                return oldItem.workExtraTypeId == newItem.workExtraTypeId &&
+                        oldItem.wetName == newItem.wetName
             }
         }
 
@@ -50,14 +53,15 @@ class WorkDateExtraAdapter(
 
     override fun onBindViewHolder(holder: ExtraViewHolder, position: Int) {
         val extra = differ.currentList[position]
-//        holder.itemBinding.chkExtra.text = extra.weDefNameId
+        holder.itemBinding.chkExtra.text = extra.wetName
+        holder.itemBinding.chkExtra.isChecked = extra.wetIsDefault
         holder.itemBinding.btnEdit.setOnClickListener {
             gotoExtraEdit(extra)
         }
 
     }
 
-    private fun gotoExtraEdit(extra: WorkExtrasDefinitions) {
+    private fun gotoExtraEdit(extra: WorkExtraTypes) {
         //need to create a new fragment to edit the extra
     }
 }

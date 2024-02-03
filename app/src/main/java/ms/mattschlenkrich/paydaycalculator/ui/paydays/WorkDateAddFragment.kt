@@ -13,18 +13,21 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
+import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 import java.time.LocalDate
 
 private const val TAG = "WorkDateAdd"
@@ -198,16 +201,31 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
 
     private fun fillExtras() {
         binding.apply {
-//            extraAdapter = WorkDateExtraAdapter(
-//                mainActivity, mView
-//            )
-//            rvExtras.apply {
-//                layoutManager = LinearLayoutManager(mView.context)
-//                adapter = extraAdapter
-//            }
-//            activity?.let {
-//                mainActivity.payDayViewModel.
-//            }
+            val extraAdapter = WorkDateExtraAdapter(
+                mainActivity, mView
+            )
+            rvExtras.apply {
+                layoutManager = LinearLayoutManager(mView.context)
+                adapter = extraAdapter
+            }
+            activity?.let {
+                mainActivity.workExtraViewModel.getExtraTypesByDaily(
+                    payPeriod!!.ppEmployerId
+                ).observe(viewLifecycleOwner) { extras ->
+                    extraAdapter.differ.submitList(extras)
+                    updateExtraUI(extras)
+                }
+            }
+        }
+    }
+
+    private fun updateExtraUI(extras: List<WorkExtraTypes>) {
+        binding.apply {
+            if (extras.isEmpty()) {
+                rvExtras.visibility = View.GONE
+            } else {
+                rvExtras.visibility = View.VISIBLE
+            }
         }
     }
 

@@ -267,6 +267,7 @@ class TaxRulesFragment :
             } else {
                 mainActivity.mainViewModel.setTaxLevel(0)
             }
+            mainActivity.mainViewModel.addCallingFragment(TAG)
         }
         mView.findNavController().navigate(
             TaxRulesFragmentDirections
