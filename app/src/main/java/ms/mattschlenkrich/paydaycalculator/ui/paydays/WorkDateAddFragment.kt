@@ -162,7 +162,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
 
     private fun checkSaveWorkDate() {
         if (usedWorkDatesList.isEmpty()) {
-            saveWorkDate()
+            saveWorkDate(true)
         } else {
             for (date in usedWorkDatesList) {
                 if (date == curDate) {
@@ -173,20 +173,24 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                                     "this work date?"
                         )
                         .setPositiveButton("Yes") { _, _ ->
-                            saveWorkDate()
+                            saveWorkDate(true)
                         }
                         .setNegativeButton("No", null)
                         .show()
                 } else {
-                    saveWorkDate()
+                    saveWorkDate(true)
                 }
             }
         }
     }
 
-    private fun saveWorkDate() {
-        mainActivity.payDayViewModel.insertWorkDate(getCurWorkDate())
-        gotoCallingFragment()
+    fun saveWorkDate(goBack: Boolean): WorkDates {
+        val workDate = getCurWorkDate()
+        mainActivity.payDayViewModel.insertWorkDate(workDate)
+        if (goBack) {
+            gotoCallingFragment()
+        }
+        return workDate
     }
 
     private fun fillDate() {
@@ -202,7 +206,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private fun fillExtras() {
         binding.apply {
             val extraAdapter = WorkDateExtraAdapter(
-                mainActivity, mView
+                mainActivity, mView, this@WorkDateAddFragment
             )
             rvExtras.apply {
                 layoutManager = LinearLayoutManager(mView.context)

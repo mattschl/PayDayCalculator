@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.adapter
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,12 +9,17 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateExtraItemBinding
+import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateAddFragment
 
 class WorkDateExtraAdapter(
     val mainActivity: MainActivity,
     val mView: View,
+    private val parentFragment: WorkDateAddFragment,
 ) : RecyclerView.Adapter<WorkDateExtraAdapter.ExtraViewHolder>() {
+
+    private var workDate: WorkDates? = null
 
     class ExtraViewHolder(
         val itemBinding: ListWorkDateExtraItemBinding
@@ -55,6 +61,19 @@ class WorkDateExtraAdapter(
         val extra = differ.currentList[position]
         holder.itemBinding.chkExtra.text = extra.wetName
         holder.itemBinding.chkExtra.isChecked = extra.wetIsDefault
+        holder.itemBinding.chkExtra.setOnClickListener {
+            if (workDate == null) {
+                AlertDialog.Builder(mView.context)
+                    .setTitle("Choose the next step")
+                    .setMessage("In order to add extras, this work date must be saved.")
+                    .setPositiveButton("Save") { _, _ ->
+                        workDate = parentFragment.saveWorkDate(false)
+                    }
+                    .setNegativeButton("Not yet", null)
+            } else {
+                
+            }
+        }
         holder.itemBinding.btnEdit.setOnClickListener {
             gotoExtraEdit(extra)
         }

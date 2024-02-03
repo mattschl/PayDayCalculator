@@ -90,6 +90,10 @@ data class WorkDateAndExtras(
         entity = WorkDates::class,
         parentColumns = ["workDateId"],
         childColumns = ["wdeWorkDateId"]
+    )],
+    indices = [Index(
+        value =
+        ["wdeWorkDateId", "wdeExtraTypeId"], unique = true
     )]
 )
 @Parcelize

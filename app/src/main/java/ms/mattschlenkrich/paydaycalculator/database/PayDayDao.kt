@@ -6,11 +6,13 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATE_EXTRAS
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateAndExtras
+import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 
 @Dao
@@ -50,5 +52,15 @@ interface PayDayDao {
     fun getWorkDatesAndExtras(employerId: Long, cutOffDate: String):
             LiveData<List<WorkDateAndExtras>>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertWorkDateExtra(workDateExtra: WorkDateAndExtras)
 
+    @Update
+    suspend fun updateWorkDateExtra(workDateExtra: WorkDateAndExtras)
+
+    @Query(
+        "SELECT * FROM $TABLE_WORK_DATE_EXTRAS " +
+                "WHERE wdeWorkDateId = :workDateId"
+    )
+    fun getWorkDateExtras(workDateId: Long): LiveData<List<WorkDateExtras>>
 }

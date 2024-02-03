@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.model.WorkDateAndExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.repository.PayDayRepository
 
@@ -30,4 +31,17 @@ class PayDayViewModel(
 
     fun getWorkDatesAndExtras(employerId: Long, cutOffDate: String) =
         payDayRepository.getWorkDatesAndExtras(employerId, cutOffDate)
+
+    fun insertWorkDateExtra(workDateExtra: WorkDateAndExtras) =
+        viewModelScope.launch {
+            payDayRepository.insertWorkDateExtra(workDateExtra)
+        }
+
+    fun updateWorkDateExtra(workDateExtra: WorkDateAndExtras) =
+        viewModelScope.launch {
+            payDayRepository.updateWorkDateExtra(workDateExtra)
+        }
+
+    fun getWorkDateExtras(workDateId: Long) =
+        payDayRepository.getWorkDateExtras(workDateId)
 }
