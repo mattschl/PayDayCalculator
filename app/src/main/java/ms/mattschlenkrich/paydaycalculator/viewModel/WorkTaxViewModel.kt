@@ -20,13 +20,9 @@ class WorkTaxViewModel(
             workTaxRepository.insertTaxType(workTaxType)
         }
 
-    fun updateWorkTaxType(
-        taxType: String, taxTypeId: Long, isDeleted: Boolean, updateTime: String
-    ) =
+    fun updateWorkTaxType(workTaxType: TaxTypes) =
         viewModelScope.launch {
-            workTaxRepository.updateWorkTaxType(
-                taxType, taxTypeId, isDeleted, updateTime
-            )
+            workTaxRepository.updateWorkTaxType(workTaxType)
         }
 
     fun getTaxTypes() =

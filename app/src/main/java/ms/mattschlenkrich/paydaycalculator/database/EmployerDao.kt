@@ -20,7 +20,6 @@ interface EmployerDao {
 
     @Query(
         "SELECT * FROM $TABLE_EMPLOYERS " +
-                "WHERE employerIsDeleted = 0 " +
                 "ORDER BY $EMPLOYER_NAME COLLATE NOCASE"
     )
     fun getEmployers(): LiveData<List<Employers>>

@@ -98,10 +98,12 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
 
     private fun deleteTaxType() {
         mainActivity.workTaxViewModel.updateWorkTaxType(
-            curTaxType.taxType,
-            curTaxType.taxTypeId,
-            true,
-            df.getCurrentTimeAsString()
+            TaxTypes(
+                curTaxType.taxTypeId,
+                curTaxType.taxType,
+                true,
+                df.getCurrentTimeAsString()
+            )
         )
         gotoCallingFragment()
     }
@@ -110,10 +112,12 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
         val message = checkTaxType()
         if (message == ANSWER_OK) {
             mainActivity.workTaxViewModel.updateWorkTaxType(
-                binding.etTaxType.text.toString(),
-                curTaxType.taxTypeId,
-                false,
-                df.getCurrentTimeAsString()
+                TaxTypes(
+                    curTaxType.taxTypeId,
+                    binding.etTaxType.text.toString(),
+                    false,
+                    df.getCurrentTimeAsString()
+                )
             )
             gotoCallingFragment()
         } else {

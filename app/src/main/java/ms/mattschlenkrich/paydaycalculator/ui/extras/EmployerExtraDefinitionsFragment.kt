@@ -223,7 +223,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     private fun gotoExtraAdd() {
         mainActivity.mainViewModel.setEmployer(curEmployer)
         mainActivity.mainViewModel.setWorkExtraType(curExtraType)
-        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mainActivity.mainViewModel.addCallingFragment(TAG)
         mView.findNavController().navigate(
             EmployerExtraDefinitionsFragmentDirections
                 .actionEmployerExtraDefinitionsFragmentToEmployerExtraDefinitionsAddFragment()

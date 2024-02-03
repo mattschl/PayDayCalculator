@@ -98,8 +98,8 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
             val message = checkTaxType()
             if (message == ANSWER_OK) {
                 val taxType = TaxTypes(
-                    etTaxType.text.toString(),
                     cf.generateId(),
+                    etTaxType.text.toString(),
                     false,
                     df.getCurrentTimeAsString()
                 )

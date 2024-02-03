@@ -17,13 +17,13 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
 
 @Entity(
     tableName = TABLE_TAX_TYPES,
-    indices = [Index(value = ["taxTypeId"], unique = true)]
+    indices = [Index(value = ["taxType"], unique = true)]
 )
 @Parcelize
 data class TaxTypes(
     @PrimaryKey
-    val taxType: String,
     val taxTypeId: Long,
+    val taxType: String,
     val ttIsDeleted: Boolean,
     val ttUpdateTime: String,
 ) : Parcelable
