@@ -5,8 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateUpdateExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
@@ -79,7 +81,21 @@ class WorkDateUpdateFragment : Fragment(
 
     private fun fillExtras() {
         binding.apply {
-            //create an adapter
+            val extraAdapter = WorkDateUpdateExtraAdapter(
+                mainActivity, mView, this@WorkDateUpdateFragment
+            )
+            rvExtras.apply {
+                layoutManager = LinearLayoutManager(mView.context)
+                adapter = extraAdapter
+            }
+            activity?.let {
+                mainActivity.payDayViewModel
+                    .getWorkDateAndExtraDefAndWorkDateExtras(
+                        curDate.workDateId
+                    ).observe(viewLifecycleOwner) { extras ->
+                        extraAdapter.differ.submitList(extras)
+                    }
+            }
         }
     }
 

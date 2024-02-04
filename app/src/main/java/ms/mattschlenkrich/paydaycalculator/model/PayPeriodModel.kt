@@ -196,5 +196,5 @@ data class WorkDateAndExtraDefAndWodDateExtras(
         parentColumn = "workDateId",
         entityColumn = "wdeWorkDateId"
     )
-    var workExtra: WorkDateExtras
+    var workExtra: WorkDateExtras?
 ) : Parcelable

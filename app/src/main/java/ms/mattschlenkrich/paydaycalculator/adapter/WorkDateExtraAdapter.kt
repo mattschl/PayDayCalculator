@@ -64,22 +64,26 @@ class WorkDateExtraAdapter(
         holder.itemBinding.chkExtra.text = extra.wetName
         holder.itemBinding.chkExtra.isChecked = extra.wetIsDefault
         holder.itemBinding.chkExtra.setOnClickListener {
-            if (workDate == null) {
-                AlertDialog.Builder(mView.context)
-                    .setTitle("Choose the next step")
-                    .setMessage("In order to add extras, this work date must be saved.")
-                    .setPositiveButton("Save") { _, _ ->
-                        workDate = parentFragment.saveWorkDate(false)
-                        gotoWorkDateUpdate(workDate!!)
-                    }
-                    .setNegativeButton("Not yet", null)
-                    .show()
-            }
+            chooseSaveOrNot()
         }
         holder.itemBinding.btnEdit.setOnClickListener {
-            gotoExtraEdit(extra)
+            chooseSaveOrNot()
         }
 
+    }
+
+    private fun chooseSaveOrNot() {
+        if (workDate == null) {
+            AlertDialog.Builder(mView.context)
+                .setTitle("Choose the next step")
+                .setMessage("In order to add extras, this work date must be saved.")
+                .setPositiveButton("Save") { _, _ ->
+                    workDate = parentFragment.saveWorkDate(false)
+                    gotoWorkDateUpdate(workDate!!)
+                }
+                .setNegativeButton("Not yet", null)
+                .show()
+        }
     }
 
     private fun gotoWorkDateUpdate(workDate: WorkDates) {
@@ -88,9 +92,5 @@ class WorkDateExtraAdapter(
             WorkDateAddFragmentDirections
                 .actionWorkDateAddFragmentToWorkDateUpdateFragment()
         )
-    }
-
-    private fun gotoExtraEdit(extra: WorkExtraTypes) {
-        //need to create a new fragment to edit the extra
     }
 }

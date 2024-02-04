@@ -86,5 +86,5 @@ interface PayDayDao {
                 "ORDER BY extraType.wetName"
     )
     fun getWorkDateAndExtraDefAndWorkDateExtras(workDateId: Long):
-            LiveData<WorkDateAndExtraDefAndWodDateExtras>
+            LiveData<List<WorkDateAndExtraDefAndWodDateExtras>>
 }
