@@ -11,7 +11,9 @@ import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATE_EXTRAS
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRA_TYPES
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.model.WorkDateAndExtraDefAndWodDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateAndExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
@@ -66,5 +68,23 @@ interface PayDayDao {
     )
     fun getWorkDateExtras(workDateId: Long): LiveData<List<WorkDateExtras>>
 
-
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @Transaction
+    @Query(
+        "SELECT dates.* , " +
+                "extraDef.*, " +
+                "extras.* " +
+                "FROM $TABLE_WORK_DATES AS dates " +
+                "LEFT JOIN ExtraDefinitionAndType as extraDef ON " +
+                "dates.wdEmployerId = extraDef.weEmployerId " +
+                "LEFT JOIN $TABLE_WORK_EXTRA_TYPES as extraType ON " +
+                "dates.wdEmployerId = extraType.wetEmployerId " +
+                "LEFT JOIN $TABLE_WORK_DATE_EXTRAS as extras ON " +
+                "dates.workDateId = extras.wdeWorkDateId " +
+                "WHERE dates.workDateId = :workDateId " +
+                "AND dates.wdIsDeleted = 0 " +
+                "ORDER BY extraType.wetName"
+    )
+    fun getWorkDateAndExtraDefAndWorkDateExtras(workDateId: Long):
+            LiveData<WorkDateAndExtraDefAndWodDateExtras>
 }

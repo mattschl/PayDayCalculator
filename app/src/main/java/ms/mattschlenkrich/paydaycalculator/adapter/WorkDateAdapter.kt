@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -11,10 +12,11 @@ import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateAndExtras
+import ms.mattschlenkrich.paydaycalculator.ui.paydays.TimeSheetFragmentDirections
 
 class WorkDateAdapter(
     private val mainActivity: MainActivity,
-    mView: View,
+    private val mView: View,
 ) : RecyclerView.Adapter<WorkDateAdapter.WorkDateViewHolder>() {
 
     private val df = DateFunctions()
@@ -79,5 +81,16 @@ class WorkDateAdapter(
             display += "${workDateAndExtras.workDate.wdStatHours} Stat or Vacation hrs"
         }
         holder.itemBinding.tvHours.text = display
+        holder.itemView.setOnClickListener {
+            gotoWorkDateUpdate(workDateAndExtras)
+        }
+    }
+
+    private fun gotoWorkDateUpdate(workDateAndExtras: WorkDateAndExtras) {
+        mainActivity.mainViewModel.setWorkDateObject(workDateAndExtras.workDate)
+        mView.findNavController().navigate(
+            TimeSheetFragmentDirections
+                .actionTimeSheetFragmentToWorkDateUpdateFragment()
+        )
     }
 }

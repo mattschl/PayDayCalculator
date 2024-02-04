@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paydaycalculator.model
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
+import androidx.room.DatabaseView
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -81,6 +82,13 @@ data class ExtraDefinitionFull(
     var extraType: WorkExtraTypes
 ) : Parcelable
 
+@DatabaseView(
+    "SELECT extraDef.*, " +
+            "extraType.* " +
+            "FROM $TABLE_WORK_EXTRAS_DEFINITIONS as extraDef " +
+            "LEFT JOIN $TABLE_WORK_EXTRA_TYPES as extraType ON " +
+            "extraDef.weExtraTypeId = extraType.workExtraTypeId"
+)
 @Parcelize
 data class ExtraDefinitionAndType(
     @Embedded

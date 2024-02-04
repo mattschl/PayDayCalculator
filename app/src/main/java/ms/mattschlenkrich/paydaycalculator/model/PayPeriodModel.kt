@@ -180,3 +180,21 @@ data class WorkDateAndExtrasFull(
     )
     val extraDef: ExtraDefinitionAndType,
 ) : Parcelable
+
+@Parcelize
+data class WorkDateAndExtraDefAndWodDateExtras(
+    @Embedded
+    val workDate: WorkDates,
+    @Relation(
+        entity = ExtraDefinitionAndType::class,
+        parentColumn = "wdEmployerId",
+        entityColumn = "weEmployerId"
+    )
+    var extraDef: ExtraDefinitionAndType?,
+    @Relation(
+        entity = WorkDateExtras::class,
+        parentColumn = "workDateId",
+        entityColumn = "wdeWorkDateId"
+    )
+    var workExtra: WorkDateExtras
+) : Parcelable
