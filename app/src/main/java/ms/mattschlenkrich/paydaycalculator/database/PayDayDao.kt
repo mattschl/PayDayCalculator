@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RoomWarnings
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
@@ -38,6 +39,7 @@ interface PayDayDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkDate(workDate: WorkDates)
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
     @Query(
         "SELECT $TABLE_WORK_DATES.*, $TABLE_WORK_DATE_EXTRAS.* " +
@@ -53,14 +55,16 @@ interface PayDayDao {
             LiveData<List<WorkDateAndExtras>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertWorkDateExtra(workDateExtra: WorkDateAndExtras)
+    suspend fun insertWorkDateExtra(workDateExtra: WorkDateExtras)
 
     @Update
-    suspend fun updateWorkDateExtra(workDateExtra: WorkDateAndExtras)
+    suspend fun updateWorkDateExtra(workDateExtra: WorkDateExtras)
 
     @Query(
         "SELECT * FROM $TABLE_WORK_DATE_EXTRAS " +
                 "WHERE wdeWorkDateId = :workDateId"
     )
     fun getWorkDateExtras(workDateId: Long): LiveData<List<WorkDateExtras>>
+
+
 }

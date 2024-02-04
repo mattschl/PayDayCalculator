@@ -26,6 +26,7 @@ data class WorkExtraTypes(
     @PrimaryKey
     val workExtraTypeId: Long,
     val wetName: String,
+    @ColumnInfo(index = true)
     val wetEmployerId: Long,
     val wetAppliesTo: Int,
     val wetAttachTo: Int,
@@ -53,6 +54,7 @@ data class WorkExtrasDefinitions(
     val workExtraDefId: Long,
     @ColumnInfo(index = true)
     val weEmployerId: Long,
+    @ColumnInfo(index = true)
     val weExtraTypeId: Long,
     val weValue: Double,
     val weIsFixed: Boolean,

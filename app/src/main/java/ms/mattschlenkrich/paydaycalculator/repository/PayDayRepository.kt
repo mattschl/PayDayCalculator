@@ -2,7 +2,7 @@ package ms.mattschlenkrich.paydaycalculator.repository
 
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.model.WorkDateAndExtras
+import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 
 class PayDayRepository(private val db: PayDatabase) {
@@ -22,10 +22,10 @@ class PayDayRepository(private val db: PayDatabase) {
     fun getWorkDatesAndExtras(employerId: Long, cutOffDate: String) =
         db.getPayDayDao().getWorkDatesAndExtras(employerId, cutOffDate)
 
-    suspend fun insertWorkDateExtra(workDateExtra: WorkDateAndExtras) =
+    suspend fun insertWorkDateExtra(workDateExtra: WorkDateExtras) =
         db.getPayDayDao().insertWorkDateExtra(workDateExtra)
 
-    suspend fun updateWorkDateExtra(workDateExtra: WorkDateAndExtras) =
+    suspend fun updateWorkDateExtra(workDateExtra: WorkDateExtras) =
         db.getPayDayDao().updateWorkDateExtra(workDateExtra)
 
     fun getWorkDateExtras(workDateId: Long) =

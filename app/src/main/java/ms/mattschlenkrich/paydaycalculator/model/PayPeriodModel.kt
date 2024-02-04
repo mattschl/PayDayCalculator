@@ -33,6 +33,7 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
 @Parcelize
 data class PayPeriods(
     val payPeriodId: Long,
+    @ColumnInfo(index = true)
     val ppCutoffDate: String,
     @ColumnInfo(index = true)
     val ppEmployerId: Long,
@@ -50,7 +51,7 @@ data class PayPeriods(
         )
     ], indices = [Index(
         value =
-        ["wdEmployerId", "wdDate"], unique = true
+        ["wdEmployerId", "wdDate", "wdCutoffDate"], unique = true
     )
     ]
 )
@@ -59,9 +60,11 @@ data class WorkDates(
     @PrimaryKey
     val workDateId: Long,
     val wdPayPeriodId: Long,
+    @ColumnInfo(index = true)
     val wdEmployerId: Long,
     @ColumnInfo(index = true)
     val wdCutoffDate: String,
+    @ColumnInfo(index = true)
     val wdDate: String,
     val wdRegHours: Double,
     val wdOtHours: Double,

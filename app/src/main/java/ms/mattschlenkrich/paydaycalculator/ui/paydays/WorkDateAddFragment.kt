@@ -27,7 +27,6 @@ import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 import java.time.LocalDate
 
 private const val TAG = "WorkDateAdd"
@@ -42,6 +41,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private var payPeriod: PayPeriods? = null
     private val df = DateFunctions()
     private val cf = CommonFunctions()
+    private var workDate: WorkDates? = null
 
     //    private val cf = CommonFunctions()
     private val usedWorkDatesList = ArrayList<String>()
@@ -173,12 +173,10 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                                     "this work date?"
                         )
                         .setPositiveButton("Yes") { _, _ ->
-                            saveWorkDate(true)
+                            workDate = saveWorkDate(true)
                         }
                         .setNegativeButton("No", null)
                         .show()
-                } else {
-                    saveWorkDate(true)
                 }
             }
         }
@@ -223,7 +221,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         }
     }
 
-    private fun updateExtraUI(extras: List<WorkExtraTypes>) {
+    private fun updateExtraUI(extras: List<Any>) {
         binding.apply {
             if (extras.isEmpty()) {
                 rvExtras.visibility = View.GONE

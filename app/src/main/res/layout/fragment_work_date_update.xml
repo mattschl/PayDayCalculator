@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.paydays.WorkDateAddFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/lblWorkDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/work_date"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvWorkDate"
+            app:layout_constraintEnd_toStartOf="@id/tvWorkDate"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tvWorkDate"
+            android:layout_width="@dimen/text_box_medium"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:paddingTop="@dimen/dimen_8dp"
+            android:text="@string/choose_date"
+            android:textAlignment="center"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblWorkDate"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="TextSizeCheck" />
+
+        <TextView
+            android:id="@+id/lblHours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/reg_hours"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/etHours"
+            app:layout_constraintEnd_toStartOf="@id/etHours"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/etHours"
+            android:layout_width="@dimen/text_box_small"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero_double"
+            android:textAlignment="center"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/lblOt"
+            app:layout_constraintStart_toEndOf="@id/lblHours"
+            app:layout_constraintTop_toBottomOf="@id/tvWorkDate"
+            tools:ignore="LabelFor,DuplicateSpeakableTextCheck" />
+
+        <TextView
+            android:id="@+id/lblOt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/overtime_hours"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/etHours"
+            app:layout_constraintEnd_toStartOf="@id/etOt"
+            app:layout_constraintStart_toEndOf="@id/etHours" />
+
+        <EditText
+            android:id="@+id/etOt"
+            android:layout_width="@dimen/text_box_small"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero_double"
+            android:textAlignment="center"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/etHours"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblOt"
+            tools:ignore="LabelFor" />
+
+        <TextView
+            android:id="@+id/lblDblOt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/double_overtime"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/etDblOt"
+            app:layout_constraintEnd_toStartOf="@id/etDblOt"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/etDblOt"
+            android:layout_width="@dimen/text_box_small"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero_double"
+            android:textAlignment="center"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/lblStat"
+            app:layout_constraintStart_toEndOf="@id/lblDblOt"
+            app:layout_constraintTop_toBottomOf="@id/etHours"
+            tools:ignore="LabelFor" />
+
+        <TextView
+            android:id="@+id/lblStat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/stat_hours"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/etDblOt"
+            app:layout_constraintEnd_toStartOf="@id/etStat"
+            app:layout_constraintStart_toEndOf="@id/etDblOt" />
+
+        <EditText
+            android:id="@+id/etStat"
+            android:layout_width="@dimen/text_box_small"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero_double"
+            android:textAlignment="center"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/etDblOt"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblStat"
+            tools:ignore="LabelFor" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/crdExtras"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dimen_8dp"
+            android:backgroundTint="@color/white"
+            android:elevation="10dp"
+            app:cardCornerRadius="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etStat">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/lblExtras"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_15dp"
+                    android:text="@string/extras_for_this_date"
+                    android:textSize="@dimen/text_size_large"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/fabAddExtra"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fabAddExtra"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/add_new_extra"
+                    android:foregroundTint="@color/black"
+                    android:src="@drawable/ic_add"
+                    app:layout_constraintEnd_toStartOf="@id/lblExtras"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="ImageContrastCheck" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvExtras"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_10dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/fabAddExtra" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

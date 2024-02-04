@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RoomWarnings
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.PER_DAY
@@ -48,6 +49,7 @@ interface WorkExtraDao {
     fun getWorkExtraDefinitions(employerId: Long, extraTypeId: Long):
             LiveData<List<WorkExtrasDefinitions>>
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
     @Query(
         "SELECT $TABLE_WORK_EXTRAS_DEFINITIONS.*, " +
@@ -69,6 +71,7 @@ interface WorkExtraDao {
         extraTypeId: Long
     ): LiveData<List<ExtraDefinitionFull>>
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
     @Query(
         "SELECT $TABLE_WORK_EXTRAS_DEFINITIONS.*," +
