@@ -253,6 +253,10 @@
         android:id="@+id/workDateUpdateFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragment"
         android:label="WorkDateUpdateFragment"
-        tools:layout="@layout/fragment_work_date_update" />
+        tools:layout="@layout/fragment_work_date_update">
+        <action
+            android:id="@+id/action_workDateUpdateFragment_to_timeSheetFragment"
+            app:destination="@id/timeSheetFragment" />
+    </fragment>
 
 </navigation>

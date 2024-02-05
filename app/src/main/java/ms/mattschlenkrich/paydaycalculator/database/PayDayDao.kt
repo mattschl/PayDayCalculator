@@ -42,6 +42,9 @@ interface PayDayDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkDate(workDate: WorkDates)
 
+    @Update
+    suspend fun updateWorkDate(workDate: WorkDates)
+
     @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
     @Query(
@@ -81,13 +84,14 @@ interface PayDayDao {
                 "SELECT weEmployerId FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
                 "WHERE weEffectiveDate = " +
                 "(SELECT MAX(weEffectiveDate) FROM $TABLE_WORK_EXTRAS_DEFINITIONS) " +
-                "AND weIsDeleted = 0)" +
+                "AND weIsDeleted = 0) " +
                 "LEFT JOIN $TABLE_WORK_EXTRA_TYPES as extraType ON " +
-                "dates.wdEmployerId = extraType.wetEmployerId " +
+                "dates.wdEmployerId = (" +
+                "SELECT wetEmployerId FROM $TABLE_WORK_EXTRA_TYPES " +
+                "WHERE wetIsDeleted = 0) " +
                 "LEFT JOIN $TABLE_WORK_DATE_EXTRAS as extras ON " +
                 "dates.workDateId = extras.wdeWorkDateId " +
                 "WHERE dates.workDateId = :workDateId " +
-                "AND dates.wdIsDeleted = 0 " +
                 "ORDER BY extraType.wetName"
     )
     fun getWorkDateAndExtraDefAndWorkDateExtras(workDateId: Long):

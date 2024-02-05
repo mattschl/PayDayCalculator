@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -12,6 +13,7 @@ import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateAndExtras
+import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.TimeSheetFragmentDirections
 
 class WorkDateAdapter(
@@ -82,8 +84,48 @@ class WorkDateAdapter(
         }
         holder.itemBinding.tvHours.text = display
         holder.itemView.setOnClickListener {
-            gotoWorkDateUpdate(workDateAndExtras)
+            AlertDialog.Builder(mView.context)
+                .setTitle("Choose an action")
+                .setItems(
+                    arrayOf(
+                        "Edit this date",
+                        "Delete this date"
+                    )
+                ) { _, pos ->
+                    when (pos) {
+                        0 -> {
+                            gotoWorkDateUpdate(workDateAndExtras)
+                        }
+
+                        1 -> {
+                            deleteWorkDate(workDateAndExtras.workDate)
+                        }
+
+                        else -> {
+                            //do nothing
+                        }
+                    }
+                }
+                .show()
         }
+    }
+
+    private fun deleteWorkDate(workDate: WorkDates) {
+        mainActivity.payDayViewModel.updateWorkDate(
+            WorkDates(
+                workDate.workDateId,
+                workDate.wdPayPeriodId,
+                workDate.wdEmployerId,
+                workDate.wdCutoffDate,
+                workDate.wdDate,
+                workDate.wdRegHours,
+                workDate.wdOtHours,
+                workDate.wdDblOtHours,
+                workDate.wdStatHours,
+                true,
+                df.getCurrentTimeAsString()
+            )
+        )
     }
 
     private fun gotoWorkDateUpdate(workDateAndExtras: WorkDateAndExtras) {

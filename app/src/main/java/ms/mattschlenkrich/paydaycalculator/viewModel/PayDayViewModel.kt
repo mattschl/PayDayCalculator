@@ -21,6 +21,11 @@ class PayDayViewModel(
             payDayRepository.insertPayPeriod(cutOff)
         }
 
+    fun updateWorkDate(workDate: WorkDates) =
+        viewModelScope.launch {
+            payDayRepository.updateWorkDate(workDate)
+        }
+
     fun getWorkDateList(employerId: Long, cutOff: String) =
         payDayRepository.getWorkDateList(employerId, cutOff)
 

@@ -5,10 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateUpdateExtraAdapter
+import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
@@ -23,7 +25,7 @@ class WorkDateUpdateFragment : Fragment(
     private lateinit var mainActivity: MainActivity
     private lateinit var curDate: WorkDates
     private val df = DateFunctions()
-//    private val cf = CommonFunctions()
+    private val cf = CommonFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,6 +43,31 @@ class WorkDateUpdateFragment : Fragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fillValues()
+        setActions()
+    }
+
+    private fun setActions() {
+        binding.apply {
+            fabDone.setOnClickListener {
+                updateWorkDate()
+            }
+        }
+    }
+
+    private fun updateWorkDate() {
+        binding.apply {
+            mainActivity.payDayViewModel.updateWorkDate(
+                getCurWorkDate()
+            )
+        }
+        gotoTimeSheet()
+    }
+
+    private fun gotoTimeSheet() {
+        mView.findNavController().navigate(
+            WorkDateUpdateFragmentDirections
+                .actionWorkDateUpdateFragmentToTimeSheetFragment()
+        )
     }
 
     private fun fillValues() {
