@@ -11,6 +11,7 @@ import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATE_EXTRAS
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRA_TYPES
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateAndExtraDefAndWodDateExtras
@@ -75,8 +76,12 @@ interface PayDayDao {
                 "extraDef.*, " +
                 "extras.* " +
                 "FROM $TABLE_WORK_DATES AS dates " +
-                "LEFT JOIN ExtraDefinitionAndType as extraDef ON " +
-                "dates.wdEmployerId = extraDef.weEmployerId " +
+                "LEFT JOIN $TABLE_WORK_EXTRAS_DEFINITIONS as extraDef ON " +
+                "dates.wdEmployerId = (" +
+                "SELECT weEmployerId FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
+                "WHERE weEffectiveDate = " +
+                "(SELECT MAX(weEffectiveDate) FROM $TABLE_WORK_EXTRAS_DEFINITIONS) " +
+                "AND weIsDeleted = 0)" +
                 "LEFT JOIN $TABLE_WORK_EXTRA_TYPES as extraType ON " +
                 "dates.wdEmployerId = extraType.wetEmployerId " +
                 "LEFT JOIN $TABLE_WORK_DATE_EXTRAS as extras ON " +

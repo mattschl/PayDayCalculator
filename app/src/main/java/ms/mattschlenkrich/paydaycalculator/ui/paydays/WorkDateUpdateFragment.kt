@@ -82,7 +82,8 @@ class WorkDateUpdateFragment : Fragment(
     private fun fillExtras() {
         binding.apply {
             val extraAdapter = WorkDateUpdateExtraAdapter(
-                mainActivity, mView, this@WorkDateUpdateFragment
+                mainActivity, mView,
+                this@WorkDateUpdateFragment, curDate
             )
             rvExtras.apply {
                 layoutManager = LinearLayoutManager(mView.context)

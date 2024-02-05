@@ -16,11 +16,16 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerExtraDefinitionsAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
@@ -55,12 +60,12 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillValues()
         fillMenu()
         fillSpinners()
         chooseDate()
         chooseFixedOrPercent()
         chooseExtraType()
+        fillValues()
     }
 
     private fun chooseExtraType() {
@@ -229,15 +234,26 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     }
 
     private fun fillValues() {
-        curEmployer = mainActivity.mainViewModel.getEmployer()!!
-        binding.apply {
-            tvEmployer.text = curEmployer.employerName
-            tvEffectiveDate.text = df.getCurrentDateAsString()
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            binding.apply {
+                tvEmployer.text = curEmployer.employerName
+                tvEffectiveDate.text = df.getCurrentDateAsString()
+                if (mainActivity.mainViewModel.getWorkExtraType() != null) {
+                    val extraType = mainActivity.mainViewModel.getWorkExtraType()!!
+                    for (i in 0 until spExtraTypes.adapter.count) {
+                        if (spExtraTypes.getItemAtPosition(i) == extraType.wetName) {
+                            spExtraTypes.setSelection(i)
+                            break
+                        }
+                    }
+                }
+            }
         }
-
     }
 
     private fun fillSpinners() {
+        curEmployer = mainActivity.mainViewModel.getEmployer()!!
         binding.apply {
             val extraTypeAdapter = ArrayAdapter<String>(
                 mView.context,
