@@ -13,7 +13,10 @@ import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateUpdateExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateUpdateBinding
+import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
+
+private const val TAG = "WorkDateUpdate"
 
 class WorkDateUpdateFragment : Fragment(
     R.layout.fragment_work_date_update
@@ -24,6 +27,7 @@ class WorkDateUpdateFragment : Fragment(
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var curDate: WorkDates
+    private val workDateExtras = ArrayList<WorkDateExtras>()
     private val df = DateFunctions()
     private val cf = CommonFunctions()
 
@@ -106,23 +110,33 @@ class WorkDateUpdateFragment : Fragment(
         }
     }
 
-    private fun fillExtras() {
+    fun fillExtras() {
+        activity?.let {
+            mainActivity.payDayViewModel.getWorkDateExtras(curDate.workDateId)
+                .observe(viewLifecycleOwner) { extras ->
+                    workDateExtras.clear()
+                    extras.listIterator().forEach {
+                        workDateExtras.add(it)
+                    }
+                }
+        }
         binding.apply {
             val extraAdapter = WorkDateUpdateExtraAdapter(
                 mainActivity, mView,
-                this@WorkDateUpdateFragment, curDate
+                this@WorkDateUpdateFragment,
+                curDate,
+                workDateExtras
             )
             rvExtras.apply {
                 layoutManager = LinearLayoutManager(mView.context)
                 adapter = extraAdapter
             }
             activity?.let {
-                mainActivity.payDayViewModel
-                    .getWorkDateAndExtraDefAndWorkDateExtras(
-                        curDate.workDateId
-                    ).observe(viewLifecycleOwner) { extras ->
-                        extraAdapter.differ.submitList(extras)
-                    }
+                mainActivity.workExtraViewModel.getExtraDefinitionsPerDay(
+                    mainActivity.mainViewModel.getWorkDateObject()!!.wdEmployerId
+                ).observe(viewLifecycleOwner) { extras ->
+                    extraAdapter.differ.submitList(extras)
+                }
             }
         }
     }

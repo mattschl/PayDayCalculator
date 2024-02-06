@@ -43,7 +43,6 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private val cf = CommonFunctions()
     private var workDate: WorkDates? = null
 
-    //    private val cf = CommonFunctions()
     private val usedWorkDatesList = ArrayList<String>()
 
     override fun onCreateView(

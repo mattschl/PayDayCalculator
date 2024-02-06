@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateBinding
-import ms.mattschlenkrich.paydaycalculator.model.WorkDateAndExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.TimeSheetFragmentDirections
 
@@ -27,20 +26,14 @@ class WorkDateAdapter(
         RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCallBack =
-        object : DiffUtil.ItemCallback<WorkDateAndExtras>() {
-            override fun areItemsTheSame(
-                oldItem: WorkDateAndExtras,
-                newItem: WorkDateAndExtras
-            ): Boolean {
+        object : DiffUtil.ItemCallback<WorkDates>() {
+            override fun areItemsTheSame(oldItem: WorkDates, newItem: WorkDates): Boolean {
                 return oldItem == newItem
             }
 
-            override fun areContentsTheSame(
-                oldItem: WorkDateAndExtras,
-                newItem: WorkDateAndExtras
-            ): Boolean {
-                return oldItem.workDate.wdEmployerId == newItem.workDate.wdEmployerId &&
-                        oldItem.workDate.wdDate == newItem.workDate.wdDate
+            override fun areContentsTheSame(oldItem: WorkDates, newItem: WorkDates): Boolean {
+                return oldItem.workDateId == newItem.workDateId &&
+                        oldItem.wdDate == newItem.wdDate
             }
         }
     val differ = AsyncListDiffer(this, differCallBack)
@@ -57,9 +50,9 @@ class WorkDateAdapter(
     }
 
     override fun onBindViewHolder(holder: WorkDateViewHolder, position: Int) {
-        val workDateAndExtras = differ.currentList[position]
-        var display = df.getDisplayDate(workDateAndExtras.workDate.wdDate)
-        if (workDateAndExtras.workDate.wdIsDeleted) {
+        val workDate = differ.currentList[position]
+        var display = df.getDisplayDate(workDate.wdDate)
+        if (workDate.wdIsDeleted) {
             display += " *Deleted*"
             holder.itemBinding.tvWorkDate.setTextColor(Color.RED)
         } else {
@@ -67,20 +60,20 @@ class WorkDateAdapter(
         }
         holder.itemBinding.tvWorkDate.text = display
         display = ""
-        if (workDateAndExtras.workDate.wdRegHours > 0) {
-            display = "${workDateAndExtras.workDate.wdRegHours} Hrs"
+        if (workDate.wdRegHours > 0) {
+            display = "${workDate.wdRegHours} Hrs"
         }
-        if (workDateAndExtras.workDate.wdOtHours > 0) {
+        if (workDate.wdOtHours > 0) {
             if (display.isNotBlank()) display += " | "
-            display += "${workDateAndExtras.workDate.wdOtHours} Ot hrs"
+            display += "${workDate.wdOtHours} Ot hrs"
         }
-        if (workDateAndExtras.workDate.wdDblOtHours > 0) {
+        if (workDate.wdDblOtHours > 0) {
             if (display.isNotBlank()) display += " | "
-            display += "${workDateAndExtras.workDate.wdDblOtHours} Dbl Ot hr"
+            display += "${workDate.wdDblOtHours} Dbl Ot hr"
         }
-        if (workDateAndExtras.workDate.wdStatHours > 0) {
+        if (workDate.wdStatHours > 0) {
             if (display.isNotBlank()) display += " | "
-            display += "${workDateAndExtras.workDate.wdStatHours} Stat or Vacation hrs"
+            display += "${workDate.wdStatHours} Stat or Vacation hrs"
         }
         holder.itemBinding.tvHours.text = display
         holder.itemView.setOnClickListener {
@@ -94,11 +87,11 @@ class WorkDateAdapter(
                 ) { _, pos ->
                     when (pos) {
                         0 -> {
-                            gotoWorkDateUpdate(workDateAndExtras)
+                            gotoWorkDateUpdate(workDate)
                         }
 
                         1 -> {
-                            deleteWorkDate(workDateAndExtras.workDate)
+                            deleteWorkDate(workDate)
                         }
 
                         else -> {
@@ -128,8 +121,8 @@ class WorkDateAdapter(
         )
     }
 
-    private fun gotoWorkDateUpdate(workDateAndExtras: WorkDateAndExtras) {
-        mainActivity.mainViewModel.setWorkDateObject(workDateAndExtras.workDate)
+    private fun gotoWorkDateUpdate(workDate: WorkDates) {
+        mainActivity.mainViewModel.setWorkDateObject(workDate)
         mView.findNavController().navigate(
             TimeSheetFragmentDirections
                 .actionTimeSheetFragmentToWorkDateUpdateFragment()

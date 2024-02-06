@@ -36,4 +36,10 @@ class PayDayRepository(private val db: PayDatabase) {
 
     fun getWorkDateAndExtraDefAndWorkDateExtras(workDateId: Long) =
         db.getPayDayDao().getWorkDateAndExtraDefAndWorkDateExtras(workDateId)
+
+    suspend fun deleteWorkDateExtra(
+        extraName: String, workDateId: Long, updateTime: String
+    ) = db.getPayDayDao().deleteWorkDateExtra(
+        extraName, workDateId, updateTime
+    )
 }

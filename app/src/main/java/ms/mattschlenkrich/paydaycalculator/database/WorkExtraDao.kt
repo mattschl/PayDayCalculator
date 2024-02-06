@@ -8,8 +8,6 @@ import androidx.room.Query
 import androidx.room.RoomWarnings
 import androidx.room.Transaction
 import androidx.room.Update
-import ms.mattschlenkrich.paydaycalculator.common.PER_DAY
-import ms.mattschlenkrich.paydaycalculator.common.PER_HOUR
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRA_TYPES
@@ -78,11 +76,14 @@ interface WorkExtraDao {
                 "$TABLE_WORK_EXTRA_TYPES.* " +
                 "FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
                 "LEFT JOIN $TABLE_WORK_EXTRA_TYPES ON " +
-                "weExtraTypeId = workExtraTypeId " +
+                "(weExtraTypeId = ( " +
+                "SELECT workExtraTypeId FROM $TABLE_WORK_EXTRA_TYPES " +
                 "WHERE weEmployerId = :employerId " +
-                "AND (wetAttachTo = '$PER_DAY' OR " +
-                "wetAttachTo = '$PER_HOUR') " +
-                "AND weIsDeleted  = 0"
+                "AND (wetAttachTo = 0 OR " +
+                "wetAttachTo = 1) " +
+                "AND weIsDeleted  = 0)) " +
+                "WHERE $TABLE_WORK_EXTRAS_DEFINITIONS.weEffectiveDate = " +
+                "(SELECT MAX(weEffectiveDate) FROM $TABLE_WORK_EXTRAS_DEFINITIONS)"
     )
     fun getExtraDefinitionsPerDay(employerId: Long):
             LiveData<List<ExtraDefinitionAndType>>

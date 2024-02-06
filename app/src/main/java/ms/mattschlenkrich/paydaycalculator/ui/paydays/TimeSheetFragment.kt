@@ -27,6 +27,8 @@ import ms.mattschlenkrich.paydaycalculator.payFunctions.PayCalculations
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayDayProjections
 import java.time.LocalDate
 
+private const val TAG = "TimeSheetFragment"
+
 class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
 
     private var _binding: FragmentTimeSheetBinding? = null
@@ -113,7 +115,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
-//                        fillCutOffDates()
+//                        fillCutOffDates()*///-
                     }
                 }
         }
@@ -148,7 +150,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                 adapter = workDateAdapter
             }
             activity?.let {
-                mainActivity.payDayViewModel.getWorkDatesAndExtras(
+                mainActivity.payDayViewModel.getWorkDateList(
                     curEmployer!!.employerId,
                     curCutOff
                 ).observe(viewLifecycleOwner) { workDates ->
@@ -220,6 +222,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     }
 
     private fun gotoEmployerAdd() {
+        mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
             TimeSheetFragmentDirections
                 .actionTimeSheetFragmentToEmployerAddFragment()

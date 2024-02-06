@@ -10,7 +10,7 @@ import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateExtraItemBinding
-import ms.mattschlenkrich.paydaycalculator.model.WorkDateAndExtraDefAndWodDateExtras
+import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionAndType
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragment
@@ -20,6 +20,7 @@ class WorkDateUpdateExtraAdapter(
     val mView: View,
     private val parentFragment: WorkDateUpdateFragment,
     private val workDate: WorkDates,
+    private val workDateExtras: ArrayList<WorkDateExtras>
 ) : RecyclerView.Adapter<WorkDateUpdateExtraAdapter.ViewHolder>() {
 
     private val df = DateFunctions()
@@ -31,21 +32,20 @@ class WorkDateUpdateExtraAdapter(
 
     private val differCallBack =
         object : DiffUtil
-        .ItemCallback<WorkDateAndExtraDefAndWodDateExtras>() {
+        .ItemCallback<ExtraDefinitionAndType>() {
             override fun areItemsTheSame(
-                oldItem: WorkDateAndExtraDefAndWodDateExtras,
-                newItem: WorkDateAndExtraDefAndWodDateExtras
+                oldItem: ExtraDefinitionAndType,
+                newItem: ExtraDefinitionAndType
             ): Boolean {
                 return oldItem == newItem
             }
 
             override fun areContentsTheSame(
-                oldItem: WorkDateAndExtraDefAndWodDateExtras,
-                newItem: WorkDateAndExtraDefAndWodDateExtras
+                oldItem: ExtraDefinitionAndType,
+                newItem: ExtraDefinitionAndType
             ): Boolean {
-                return oldItem.workDate.workDateId == newItem.workDate.workDateId &&
-                        oldItem.workExtra == newItem.workExtra &&
-                        oldItem.extraDef == newItem.extraDef
+                return oldItem.extraType == newItem.extraType &&
+                        oldItem.definition == newItem.definition
             }
         }
 
@@ -67,71 +67,53 @@ class WorkDateUpdateExtraAdapter(
         val extra = differ.currentList[position]
         holder.itemBinding.apply {
             chkExtra.setOnClickListener {
-                if (extra.workExtra == null) {
-                    if (chkExtra.isChecked) {
-                        addNewExtra(extra)
-                    }
+                if (chkExtra.isChecked) {
+                    addNewExtra(extra)
                 } else {
-                    updateExtra(extra, chkExtra.isChecked)
+                    deleteExtra(extra.extraType.wetName, workDate.workDateId)
                 }
             }
-            var display = ""
-            if (extra.workExtra == null) {
-                display = extra.extraDef!!.extraType.wetName
-                chkExtra.isChecked = extra.extraDef!!.extraType.wetIsDefault
-            } else {
-                display = extra.workExtra!!.wdeName
-                chkExtra.isChecked = !extra.workExtra!!.wdeIsDeleted
-            }
+            val display =
+                "${extra.extraType.wetName} ${cf.displayDollars(extra.definition.weValue)}"
             chkExtra.text = display
+            var found = false
+            for (workExtra in workDateExtras) {
+                if (workExtra.wdeName == extra.extraType.wetName) {
+                    found = true
+                }
+            }
+            chkExtra.isChecked = found
         }
     }
 
-    private fun updateExtra(
-        extra: WorkDateAndExtraDefAndWodDateExtras, checked: Boolean
-    ) {
-        if (extra.workExtra != null) {
-            parentFragment.let {
-                mainActivity.payDayViewModel.updateWorkDateExtra(
-                    WorkDateExtras(
-                        extra.workExtra!!.workDateExtraId,
-                        extra.workExtra!!.wdeWorkDateId,
-                        extra.workExtra!!.wdeExtraTypeId,
-                        extra.workExtra!!.wdeName,
-                        extra.workExtra!!.wdeAppliesTo,
-                        extra.workExtra!!.wdeAttachTo,
-                        extra.workExtra!!.wdeValue,
-                        extra.workExtra!!.wdeIsFixed,
-                        extra.workExtra!!.wdeIsCredit,
-                        !checked,
-                        df.getCurrentTimeAsString()
-                    )
-                )
-            }
+    private fun deleteExtra(extraName: String, workDateId: Long) {
+        parentFragment.let {
+            mainActivity.payDayViewModel.deleteWorkDateExtra(
+                extraName, workDateId, df.getCurrentTimeAsString()
+            )
         }
     }
 
     private fun addNewExtra(
-        extra: WorkDateAndExtraDefAndWodDateExtras
+        extra: ExtraDefinitionAndType
     ) {
-        if (extra.extraDef != null) {
-            parentFragment.let {
-                mainActivity.payDayViewModel.insertWorkDateExtra(
-                    WorkDateExtras(
-                        cf.generateId(),
-                        workDate.workDateId,
-                        extra.extraDef!!.extraType.workExtraTypeId,
-                        extra.extraDef!!.extraType.wetName,
-                        extra.extraDef!!.extraType.wetAppliesTo,
-                        extra.extraDef!!.extraType.wetAttachTo,
-                        extra.extraDef!!.definition.weValue,
-                        extra.extraDef!!.definition.weIsFixed,
-                        extra.extraDef!!.extraType.wetIsCredit,
-                        false,
-                        df.getCurrentTimeAsString()
-                    )
+        parentFragment.let {
+            mainActivity.payDayViewModel.insertWorkDateExtra(
+                WorkDateExtras(
+                    cf.generateId(),
+                    workDate.workDateId,
+                    extra.extraType.workExtraTypeId,
+                    extra.extraType.wetName,
+                    extra.extraType.wetAppliesTo,
+                    extra.extraType.wetAttachTo,
+                    extra.definition.weValue,
+                    extra.definition.weIsFixed,
+                    extra.extraType.wetIsCredit,
+                    false,
+                    df.getCurrentTimeAsString()
                 )
-            }
+            )
         }
+        parentFragment.fillExtras()
     }
 }

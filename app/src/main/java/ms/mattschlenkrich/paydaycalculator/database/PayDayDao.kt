@@ -75,7 +75,7 @@ interface PayDayDao {
     @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
     @Query(
-        "SELECT dates.* , " +
+        "SELECT DISTINCT dates.* , " +
                 "extraDef.*, " +
                 "extras.* " +
                 "FROM $TABLE_WORK_DATES AS dates " +
@@ -83,12 +83,14 @@ interface PayDayDao {
                 "dates.wdEmployerId = (" +
                 "SELECT weEmployerId FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
                 "WHERE weEffectiveDate = " +
-                "(SELECT MAX(weEffectiveDate) FROM $TABLE_WORK_EXTRAS_DEFINITIONS) " +
+                "(SELECT MAX(weEffectiveDate) FROM $TABLE_WORK_EXTRAS_DEFINITIONS ) " +
                 "AND weIsDeleted = 0) " +
                 "LEFT JOIN $TABLE_WORK_EXTRA_TYPES as extraType ON " +
                 "dates.wdEmployerId = (" +
                 "SELECT wetEmployerId FROM $TABLE_WORK_EXTRA_TYPES " +
-                "WHERE wetIsDeleted = 0) " +
+                "WHERE wetIsDeleted = 0 " +
+                "AND (wetAttachTo = 0 " +
+                "OR wetAttachTo = 1)) " +
                 "LEFT JOIN $TABLE_WORK_DATE_EXTRAS as extras ON " +
                 "dates.workDateId = extras.wdeWorkDateId " +
                 "WHERE dates.workDateId = :workDateId " +
@@ -96,4 +98,16 @@ interface PayDayDao {
     )
     fun getWorkDateAndExtraDefAndWorkDateExtras(workDateId: Long):
             LiveData<List<WorkDateAndExtraDefAndWodDateExtras>>
+
+    @Query(
+        "Update $TABLE_WORK_DATE_EXTRAS " +
+                "SET wdeIsDeleted = 1, " +
+                "wdeUpdateTime = :updateTime " +
+                "WHERE wdeWorkDateId = :workDateId " +
+                "AND wdeName = :extraName"
+    )
+    suspend fun deleteWorkDateExtra(
+        extraName: String, workDateId: Long, updateTime: String
+    )
+
 }

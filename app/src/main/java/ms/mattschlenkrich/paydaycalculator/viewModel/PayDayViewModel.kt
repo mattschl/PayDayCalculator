@@ -52,4 +52,10 @@ class PayDayViewModel(
 
     fun getWorkDateAndExtraDefAndWorkDateExtras(workDateId: Long) =
         payDayRepository.getWorkDateAndExtraDefAndWorkDateExtras(workDateId)
+
+    fun deleteWorkDateExtra(
+        extraName: String, workDateId: Long, updateTime: String
+    ) = viewModelScope.launch {
+        payDayRepository.deleteWorkDateExtra(extraName, workDateId, updateTime)
+    }
 }
