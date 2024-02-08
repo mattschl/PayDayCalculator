@@ -59,7 +59,7 @@ data class WorkExtrasDefinitions(
     val weExtraTypeId: Long,
     val weValue: Double,
     val weIsFixed: Boolean,
-    val weEffectiveDate: String,
+    val weEffectiveDate: String?,
     val weIsDeleted: Boolean,
     val weUpdateTime: String,
 ) : Parcelable

@@ -169,32 +169,32 @@ data class WorkPayPeriodTax(
     val wppUpdateTime: String,
 ) : Parcelable
 
-@Parcelize
-data class WorkDateAndExtrasFull(
-    @Embedded
-    val workDates: WorkDates,
-    @Relation(
-        entity = ExtraDefinitionAndType::class,
-        parentColumn = "wdEmployerId",
-        entityColumn = "weEmployerId"
-    )
-    val extraDef: ExtraDefinitionAndType,
-) : Parcelable
-
-@Parcelize
-data class WorkDateAndExtraDefAndWodDateExtras(
-    @Embedded
-    val workDate: WorkDates,
-    @Relation(
-        entity = ExtraDefinitionAndType::class,
-        parentColumn = "wdEmployerId",
-        entityColumn = "weEmployerId"
-    )
-    var extraDef: ExtraDefinitionAndType?,
-    @Relation(
-        entity = WorkDateExtras::class,
-        parentColumn = "workDateId",
-        entityColumn = "wdeWorkDateId"
-    )
-    var workExtra: WorkDateExtras?
-) : Parcelable
+//@Parcelize
+//data class WorkDateAndExtrasFull(
+//    @Embedded
+//    val workDates: WorkDates,
+//    @Relation(
+//        entity = ExtraDefinitionAndType::class,
+//        parentColumn = "wdEmployerId",
+//        entityColumn = "weEmployerId"
+//    )
+//    val extraDef: ExtraDefinitionAndType,
+//) : Parcelable
+//
+//@Parcelize
+//data class WorkDateAndExtraDefAndWodDateExtras(
+//    @Embedded
+//    val workDate: WorkDates,
+//    @Relation(
+//        entity = ExtraDefinitionAndType::class,
+//        parentColumn = "wdEmployerId",
+//        entityColumn = "weEmployerId"
+//    )
+//    var extraDef: ExtraDefinitionAndType?,
+//    @Relation(
+//        entity = WorkDateExtras::class,
+//        parentColumn = "workDateId",
+//        entityColumn = "wdeWorkDateId"
+//    )
+//    var workExtra: WorkDateExtras?
+//) : Parcelable

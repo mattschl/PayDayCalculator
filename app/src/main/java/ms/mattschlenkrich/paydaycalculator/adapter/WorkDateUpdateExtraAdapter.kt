@@ -45,7 +45,8 @@ class WorkDateUpdateExtraAdapter(
                 newItem: ExtraDefinitionAndType
             ): Boolean {
                 return oldItem.extraType == newItem.extraType &&
-                        oldItem.definition == newItem.definition
+                        oldItem.definition == newItem.definition &&
+                        oldItem.extraType.workExtraTypeId == newItem.definition.weExtraTypeId
             }
         }
 
@@ -69,19 +70,22 @@ class WorkDateUpdateExtraAdapter(
             chkExtra.setOnClickListener {
                 if (chkExtra.isChecked) {
                     addNewExtra(extra)
+                    parentFragment.fillExtras()
                 } else {
                     deleteExtra(extra.extraType.wetName, workDate.workDateId)
+                    parentFragment.fillExtras()
                 }
             }
-            val display =
+            var display =
                 "${extra.extraType.wetName} ${cf.displayDollars(extra.definition.weValue)}"
-            chkExtra.text = display
             var found = false
             for (workExtra in workDateExtras) {
                 if (workExtra.wdeName == extra.extraType.wetName) {
                     found = true
+                    display = "${workExtra.wdeName} ${cf.displayDollars(workExtra.wdeValue)}"
                 }
             }
+            chkExtra.text = display
             chkExtra.isChecked = found
         }
     }

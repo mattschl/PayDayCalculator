@@ -72,18 +72,19 @@ interface WorkExtraDao {
     @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
     @Query(
-        "SELECT $TABLE_WORK_EXTRAS_DEFINITIONS.*," +
-                "$TABLE_WORK_EXTRA_TYPES.* " +
-                "FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
-                "LEFT JOIN $TABLE_WORK_EXTRA_TYPES ON " +
-                "(weExtraTypeId = ( " +
-                "SELECT workExtraTypeId FROM $TABLE_WORK_EXTRA_TYPES " +
-                "WHERE weEmployerId = :employerId " +
-                "AND (wetAttachTo = 0 OR " +
-                "wetAttachTo = 1) " +
-                "AND weIsDeleted  = 0)) " +
-                "WHERE $TABLE_WORK_EXTRAS_DEFINITIONS.weEffectiveDate = " +
-                "(SELECT MAX(weEffectiveDate) FROM $TABLE_WORK_EXTRAS_DEFINITIONS)"
+        "SELECT DISTINCT extraType.*, definition.* " +
+                "FROM $TABLE_WORK_EXTRA_TYPES as extraType " +
+                "INNER JOIN $TABLE_WORK_EXTRAS_DEFINITIONS as definition ON " +
+                "workExtraTypeId = " +
+                "(SELECT weExtraTypeId FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
+                "WHERE weEffectiveDate = (" +
+                "SELECT MAX(weEffectiveDate) FROM $TABLE_WORK_EXTRAS_DEFINITIONS) " +
+                "AND weExtraTypeId = workExtraTypeId " +
+                "AND weIsDeleted = 0) " +
+                "WHERE wetIsDeleted = 0 " +
+                "AND (wetAttachTo = 0 " +
+                "OR wetAttachTo = 1) " +
+                "AND wetEmployerId = :employerId"
     )
     fun getExtraDefinitionsPerDay(employerId: Long):
             LiveData<List<ExtraDefinitionAndType>>

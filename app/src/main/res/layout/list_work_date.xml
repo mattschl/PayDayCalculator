@@ -38,13 +38,11 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tvExtras"
-                android:layout_width="wrap_content"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvExtras"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/extra_items"
-                android:textColor="@color/black"
-                android:textSize="@dimen/text_size_medium" />
+                android:textColor="@color/black" />
         </LinearLayout>
     </LinearLayout>
 </layout>

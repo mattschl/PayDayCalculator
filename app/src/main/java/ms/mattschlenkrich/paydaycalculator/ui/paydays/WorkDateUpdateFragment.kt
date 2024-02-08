@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.paydaycalculator.ui.paydays
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -55,6 +56,16 @@ class WorkDateUpdateFragment : Fragment(
             fabDone.setOnClickListener {
                 updateWorkDate()
             }
+            fabAddExtra.setOnClickListener {
+                addExtra()
+            }
+        }
+    }
+
+    private fun addExtra() {
+        binding.apply {
+            mainActivity.mainViewModel.setWorkDateObject(getCurWorkDate())
+
         }
     }
 
@@ -136,6 +147,7 @@ class WorkDateUpdateFragment : Fragment(
                     mainActivity.mainViewModel.getWorkDateObject()!!.wdEmployerId
                 ).observe(viewLifecycleOwner) { extras ->
                     extraAdapter.differ.submitList(extras)
+                    Log.d(TAG, "extraAdapter size is ${extras.size}")
                 }
             }
         }

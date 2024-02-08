@@ -248,6 +248,9 @@
         <action
             android:id="@+id/action_employerExtraDefinitionsFragment_to_employerExtraDefinitionsAddFragment"
             app:destination="@id/employerExtraDefinitionsAddFragment" />
+        <action
+            android:id="@+id/action_employerExtraDefinitionsFragment_to_workDateUpdateFragment"
+            app:destination="@id/workDateUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/workDateUpdateFragment"
@@ -257,6 +260,9 @@
         <action
             android:id="@+id/action_workDateUpdateFragment_to_timeSheetFragment"
             app:destination="@id/timeSheetFragment" />
+        <action
+            android:id="@+id/action_workDateUpdateFragment_to_employerExtraDefinitionsFragment"
+            app:destination="@id/employerExtraDefinitionsFragment" />
     </fragment>
 
 </navigation>

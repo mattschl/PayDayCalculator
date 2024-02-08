@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
+import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.repository.PayDayRepository
 
 class PayDayViewModel(
@@ -34,8 +35,12 @@ class PayDayViewModel(
             payDayRepository.insertWorkDate(workDate)
         }
 
-    fun getWorkDatesAndExtras(employerId: Long, cutOffDate: String) =
-        payDayRepository.getWorkDatesAndExtras(employerId, cutOffDate)
+    fun deleteWorkDateExtra(extraType: WorkExtraTypes) =
+        viewModelScope.launch {
+            payDayRepository.deleteWorkDateExtra(extraType)
+        }
+//    fun getWorkDatesAndExtras(employerId: Long, cutOffDate: String) =
+//        payDayRepository.getWorkDatesAndExtras(employerId, cutOffDate)
 
     fun insertWorkDateExtra(workDateExtra: WorkDateExtras) =
         viewModelScope.launch {
@@ -50,8 +55,8 @@ class PayDayViewModel(
     fun getWorkDateExtras(workDateId: Long) =
         payDayRepository.getWorkDateExtras(workDateId)
 
-    fun getWorkDateAndExtraDefAndWorkDateExtras(workDateId: Long) =
-        payDayRepository.getWorkDateAndExtraDefAndWorkDateExtras(workDateId)
+//    fun getWorkDateAndExtraDefAndWorkDateExtras(workDateId: Long) =
+//        payDayRepository.getWorkDateAndExtraDefAndWorkDateExtras(workDateId)
 
     fun deleteWorkDateExtra(
         extraName: String, workDateId: Long, updateTime: String
