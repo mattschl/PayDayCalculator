@@ -45,8 +45,10 @@ class WorkDateUpdateExtraAdapter(
                 newItem: ExtraDefinitionAndType
             ): Boolean {
                 return oldItem.extraType == newItem.extraType &&
+                        oldItem.extraType.workExtraTypeId == newItem.extraType.workExtraTypeId &&
                         oldItem.definition == newItem.definition &&
-                        oldItem.extraType.workExtraTypeId == newItem.definition.weExtraTypeId
+                        oldItem.definition.workExtraDefId == newItem.definition.workExtraDefId &&
+                        oldItem.extraType.workExtraTypeId == newItem.extraType.workExtraTypeId
             }
         }
 
