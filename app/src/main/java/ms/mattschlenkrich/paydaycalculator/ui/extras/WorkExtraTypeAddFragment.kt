@@ -109,20 +109,19 @@ class WorkExtraTypeAddFragment : Fragment(
         binding.apply {
             val message = checkExtraType()
             if (message == ANSWER_OK) {
-                mainActivity.workExtraViewModel.insertWorkExtraType(
-                    WorkExtraTypes(
-                        cf.generateId(),
-                        etExtraName.text.toString(),
-                        curEmployer.employerId,
-                        spAppliesTo.selectedItemPosition,
-                        spAttachTo.selectedItemPosition,
-                        chkIsCredit.isChecked,
-                        chkIsDefault.isChecked,
-                        false,
-                        df.getCurrentTimeAsString()
-                    )
+                val curWorkExtraType = WorkExtraTypes(
+                    cf.generateId(),
+                    etExtraName.text.toString(),
+                    curEmployer.employerId,
+                    spAppliesTo.selectedItemPosition,
+                    spAttachTo.selectedItemPosition,
+                    chkIsCredit.isChecked,
+                    chkIsDefault.isChecked,
+                    false,
+                    df.getCurrentTimeAsString()
                 )
-                gotoCallingFragment()
+                mainActivity.workExtraViewModel.insertWorkExtraType(curWorkExtraType)
+                gotoNextStep(curWorkExtraType)
             } else {
                 Toast.makeText(
                     mView.context,
@@ -133,12 +132,21 @@ class WorkExtraTypeAddFragment : Fragment(
         }
     }
 
-    private fun gotoCallingFragment() {
+    private fun gotoNextStep(extraType: WorkExtraTypes) {
+        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainActivity.mainViewModel.setWorkExtraType(extraType)
         mView.findNavController().navigate(
             WorkExtraTypeAddFragmentDirections
-                .actionWorkExtraTypeAddFragmentToEmployerUpdateFragment()
+                .actionWorkExtraTypeAddFragmentToEmployerExtraDefinitionsFragment()
         )
     }
+
+//    private fun gotoCallingFragment() {
+//        mView.findNavController().navigate(
+//            WorkExtraTypeAddFragmentDirections
+//                .actionWorkExtraTypeAddFragmentToEmployerUpdateFragment()
+//        )
+//    }
 
     private fun checkExtraType(): String {
         binding.apply {

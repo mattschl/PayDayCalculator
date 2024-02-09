@@ -227,6 +227,9 @@
         <action
             android:id="@+id/action_workExtraTypeAddFragment_to_employerUpdateFragment"
             app:destination="@id/employerUpdateFragment" />
+        <action
+            android:id="@+id/action_workExtraTypeAddFragment_to_employerExtraDefinitionsFragment"
+            app:destination="@id/employerExtraDefinitionsFragment" />
     </fragment>
     <fragment
         android:id="@+id/employerExtraDefinitionsFragment"

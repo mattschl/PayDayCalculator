@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_VERSION
+import ms.mattschlenkrich.paydaycalculator.model.EmployerPayRates
 import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionAndType
@@ -35,6 +36,7 @@ import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
         TaxTypes::class,
         TaxEffectiveDates::class,
         EmployerTaxTypes::class,
+        EmployerPayRates::class,
     ],
     views = [ExtraDefinitionAndType::class],
     version = PAY_DB_VERSION,

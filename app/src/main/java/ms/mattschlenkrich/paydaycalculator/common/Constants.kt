@@ -61,6 +61,8 @@ const val WORK_EXTRA_DEFINITIONS_FREQUENCY = "weFrequency"
 const val TABLE_WORK_EXTRA_FREQUENCIES = "workExtraFrequencies"
 const val WORK_EXTRA_FREQUENCY = "workExtraFrequency"
 
+const val TABLE_EMPLOYER_PAY_RATES = "employerPayRates"
+
 const val TABLE_WORK_DATE_EXTRAS = "workDateExtras"
 const val WORK_DATES_EXTRAS_EMPLOYER_ID = "wdeEmployerId"
 const val WORK_DATES_EXTRAS_DATE = "wdeDate"

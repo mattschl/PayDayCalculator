@@ -12,6 +12,7 @@ import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_NAME
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_TAX_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYER_PAY_RATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYER_TAX_TYPES
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
 
@@ -61,4 +62,28 @@ data class EmployerTaxTypes(
     val etrIsDeleted: Boolean,
     val etrUpdateTime: String
 ) : Parcelable
+
+@Entity(
+    tableName = TABLE_EMPLOYER_PAY_RATES,
+    foreignKeys = [ForeignKey(
+        entity = Employers::class,
+        parentColumns = ["employerId"],
+        childColumns = ["eprEmployerId"]
+    )],
+    indices = [Index(
+        value = ["eprEmployerId", "eprEffectiveDate"],
+        unique = true
+    )]
+)
+data class EmployerPayRates(
+    @PrimaryKey
+    val employerPayRateId: Long,
+    @ColumnInfo(index = true)
+    val eprEmployerId: Long,
+    @ColumnInfo(index = true)
+    val eprEffectiveDate: String,
+    val eprPayRate: Double,
+    val eprIsDeleted: Boolean,
+    val eprUpdateTime: String,
+)
 
