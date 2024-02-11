@@ -122,7 +122,7 @@ class EmployerPayRateAddFragment :
                     false,
                     df.getCurrentTimeAsString()
                 )
-                //create the dao's
+                TODO("Create the DAO for inserting, updating and deleting")
             } else {
                 Toast.makeText(
                     mView.context,

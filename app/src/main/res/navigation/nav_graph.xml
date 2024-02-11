@@ -45,6 +45,9 @@
         <action
             android:id="@+id/action_employerAddFragment_to_employerExtraDefinitionsFragment"
             app:destination="@id/employerExtraDefinitionsFragment" />
+        <action
+            android:id="@+id/action_employerAddFragment_to_employerPayRatesFragment"
+            app:destination="@id/employerPayRatesFragment" />
     </fragment>
     <fragment
         android:id="@+id/employerUpdateFragment"
@@ -278,6 +281,26 @@
         <action
             android:id="@+id/action_employerPayRatesFragment_to_employerUpdateFragment"
             app:destination="@id/employerUpdateFragment" />
+        <action
+            android:id="@+id/action_employerPayRatesFragment_to_employerAddFragment"
+            app:destination="@id/employerAddFragment" />
+        <action
+            android:id="@+id/action_employerPayRatesFragment_to_employerPayRateAddFragment"
+            app:destination="@id/employerPayRateAddFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/workExtraTypeUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.WorkExtraTypeUpdateFragment"
+        android:label="fragment_work_extra_type_update"
+        tools:layout="@layout/fragment_work_extra_type_update" />
+    <fragment
+        android:id="@+id/employerPayRateAddFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerPayRateAddFragment"
+        android:label="fragment_employer_wage_update"
+        tools:layout="@layout/fragment_employer_wage_update">
+        <action
+            android:id="@+id/action_employerPayRateAddFragment_to_employerPayRatesFragment"
+            app:destination="@id/employerPayRatesFragment" />
     </fragment>
 
 </navigation>

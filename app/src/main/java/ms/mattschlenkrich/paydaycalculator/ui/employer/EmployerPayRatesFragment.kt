@@ -4,12 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_RATES
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerPayRatesBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
+
+private const val TAG = FRAG_PAY_RATES
 
 class EmployerPayRatesFragment :
     Fragment(R.layout.fragment_employer_pay_rates) {
@@ -37,6 +43,61 @@ class EmployerPayRatesFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fillEmployers()
+        setActions()
+        selectEmployer()
+    }
+
+    private fun selectEmployer() {
+        binding.apply {
+            spEmployers.onItemSelectedListener =
+                object : OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        if (spEmployers.selectedItem.toString() == getString(R.string.add_new_employer)) {
+                            gotoAddEmployer()
+                        } else {
+                            curEmployer = employerList[spEmployers.selectedItemPosition]
+                            fillWages()
+                        }
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                        //not needed
+                    }
+                }
+        }
+    }
+
+    private fun fillWages() {
+        TODO("Not yet implemented")
+    }
+
+    private fun gotoAddEmployer() {
+        mainActivity.mainViewModel.addCallingFragment(TAG)
+        mView.findNavController().navigate(
+            EmployerPayRatesFragmentDirections
+                .actionEmployerPayRatesFragmentToEmployerAddFragment()
+        )
+    }
+
+    private fun setActions() {
+        binding.apply {
+            fabNew.setOnClickListener {
+                gotoWageAdd()
+            }
+        }
+    }
+
+    private fun gotoWageAdd() {
+        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mView.findNavController().navigate(
+            EmployerPayRatesFragmentDirections
+                .actionEmployerPayRatesFragmentToEmployerPayRateAddFragment()
+        )
     }
 
     private fun fillEmployers() {
