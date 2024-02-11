@@ -19,6 +19,7 @@
             android:id="@+id/btnEdit"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/minimum_touch_height"
+            android:layout_marginEnd="@dimen/dimen_10dp"
             android:backgroundTint="@color/deep_red"
             android:text="@string/edit"
             app:layout_constraintEnd_toEndOf="parent"
