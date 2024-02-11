@@ -134,4 +134,7 @@
     <string name="no_wages_have_been_set_for_this_employer">No Wages have been set for this employer</string>
     <string name="wage">wage</string>
     <string name="per_frequency">Per Frequency</string>
+    <string name="pay_rate">Pay Rate</string>
+    <string name="enter_pay_rate">Enter Pay Rate</string>
+    <string name="rate_applies_to">Rate applies to:</string>
 </resources>

@@ -66,7 +66,7 @@ class EmployerWageAdapter(
             tvEffectiveDate.text = wage.eprEffectiveDate
             tvWage.text = cf.displayDollars(wage.eprPayRate)
             tvPerFrequency.text = mView.resources.getStringArray(
-                R.array.extra_frequencies
+                R.array.pay_per_frequencies
             )[wage.eprPerPeriod]
         }
     }

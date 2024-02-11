@@ -17,7 +17,7 @@
         <item>Week Day</item>
         <item>Any Day</item>
     </string-array>
-    <string-array name="extra_frequencies">
+    <string-array name="pay_per_frequencies">
         <item>Hourly</item>
         <item>Daily</item>
         <item>Weekly</item>

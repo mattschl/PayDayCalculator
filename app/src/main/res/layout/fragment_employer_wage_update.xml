@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.employer.EmployerPayRateAddFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/lblEffectiveDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/effective_date"
+            android:textColor="@color/black"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvEffectiveDate"
+            app:layout_constraintEnd_toStartOf="@id/tvEffectiveDate"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tvEffectiveDate"
+            android:layout_width="@dimen/text_box_medium"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:text="@string/effective_date"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblEffectiveDate"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="TextSizeCheck" />
+
+        <TextView
+            android:id="@+id/lblWage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pay_rate"
+            android:textColor="@color/black"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/etWage"
+            app:layout_constraintEnd_toStartOf="@id/etWage"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/etWage"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:hint="@string/enter_pay_rate"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblWage"
+            app:layout_constraintTop_toBottomOf="@id/tvEffectiveDate" />
+
+        <TextView
+            android:id="@+id/lblPerFrequency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rate_applies_to"
+            android:textColor="@color/black"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/spPerFrequency"
+            app:layout_constraintEnd_toStartOf="@id/spPerFrequency"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Spinner
+            android:id="@+id/spPerFrequency"
+            android:layout_width="@dimen/text_box_medium"
+            android:layout_height="@dimen/minimum_touch_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblPerFrequency"
+            app:layout_constraintTop_toBottomOf="@id/etWage" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

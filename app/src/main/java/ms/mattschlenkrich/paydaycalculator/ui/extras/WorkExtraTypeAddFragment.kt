@@ -63,7 +63,7 @@ class WorkExtraTypeAddFragment : Fragment(
         binding.apply {
             val frequencyAdapter = ArrayAdapter(
                 mView.context, R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.extra_frequencies)
+                resources.getStringArray(R.array.pay_per_frequencies)
             )
             frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spAppliesTo.adapter = frequencyAdapter
