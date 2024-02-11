@@ -56,6 +56,7 @@ class EmployerPayRatesFragment :
                 }
                 employerAdapter.add(getString(R.string.add_new_employer))
                 curEmployer = employerList[0]
+
             }
             spEmployers.adapter = employerAdapter
         }

@@ -125,11 +125,13 @@
     <string name="extra_name_description">Extra Name/Description</string>
     <string name="enter_extra_name">Enter Extra Name</string>
     <string name="view_extra_types">View Extra Types</string>
-    <string name="add_a_new_extra_type">* Add a NEW Extra Type *</string>
+    <string name="add_a_new_extra_type">* Add a new Extra Type *</string>
     <string name="extra_type">Extra Type</string>
     <string name="other_info">Other info</string>
     <string name="_default">Default</string>
     <string name="current_wage">Current Wage</string>
     <string name="view_or_edit_wages">View or Edit Wages</string>
     <string name="no_wages_have_been_set_for_this_employer">No Wages have been set for this employer</string>
+    <string name="wage">wage</string>
+    <string name="per_frequency">Per Frequency</string>
 </resources>
