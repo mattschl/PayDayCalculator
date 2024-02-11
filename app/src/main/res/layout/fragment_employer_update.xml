@@ -183,6 +183,27 @@
                     app:layout_constraintTop_toBottomOf="@id/etMidMonthDate"
                     tools:ignore="TextFields" />
 
+                <TextView
+                    android:id="@+id/lblWage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/current_wage"
+                    android:textSize="@dimen/label_text_size"
+                    app:layout_constraintBaseline_toBaselineOf="@id/btnWage"
+                    app:layout_constraintEnd_toStartOf="@id/btnWage"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <Button
+                    android:id="@+id/btnWage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/dark_green"
+                    android:minHeight="@dimen/minimum_touch_height"
+                    android:text="@string/view_or_edit_wages"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/lblWage"
+                    app:layout_constraintTop_toBottomOf="@id/etMainMonthDate" />
+
                 <androidx.cardview.widget.CardView
                     android:id="@+id/crdTaxes"
                     android:layout_width="match_parent"
@@ -193,7 +214,7 @@
                     app:cardCornerRadius="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/etMainMonthDate">
+                    app:layout_constraintTop_toBottomOf="@id/btnWage">
 
                     <LinearLayout
                         android:id="@+id/llTaxes"

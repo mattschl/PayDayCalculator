@@ -82,6 +82,7 @@ data class EmployerPayRates(
     val eprEmployerId: Long,
     @ColumnInfo(index = true)
     val eprEffectiveDate: String,
+    val eprPerPeriod: Int,
     val eprPayRate: Double,
     val eprIsDeleted: Boolean,
     val eprUpdateTime: String,

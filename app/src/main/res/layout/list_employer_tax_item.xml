@@ -11,6 +11,7 @@
             android:id="@+id/chkEmployerTax"
             android:layout_width="@dimen/text_box_extra_wide"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dimen_10dp"
             android:text="@string/tax_type"
             android:textSize="@dimen/text_size_medium"
             app:layout_constraintEnd_toStartOf="@id/btnEdit"

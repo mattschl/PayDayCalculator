@@ -75,6 +75,9 @@
         <action
             android:id="@+id/action_employerUpdateFragment_to_employerExtraDefinitionsFragment"
             app:destination="@id/employerExtraDefinitionsFragment" />
+        <action
+            android:id="@+id/action_employerUpdateFragment_to_employerPayRatesFragment"
+            app:destination="@id/employerPayRatesFragment" />
     </fragment>
     <fragment
         android:id="@+id/taxTypeFragment"
@@ -266,6 +269,15 @@
         <action
             android:id="@+id/action_workDateUpdateFragment_to_employerExtraDefinitionsFragment"
             app:destination="@id/employerExtraDefinitionsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/employerPayRatesFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerPayRatesFragment"
+        android:label="fragment_employer_pay_rates"
+        tools:layout="@layout/fragment_employer_pay_rates">
+        <action
+            android:id="@+id/action_employerPayRatesFragment_to_employerUpdateFragment"
+            app:destination="@id/employerUpdateFragment" />
     </fragment>
 
 </navigation>

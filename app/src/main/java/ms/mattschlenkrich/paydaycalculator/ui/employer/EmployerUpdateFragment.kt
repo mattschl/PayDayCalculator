@@ -88,11 +88,25 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
             fabAddExtra.setOnClickListener {
                 gotoExtraAdd(curEmployer)
             }
+            btnWage.setOnClickListener {
+                gotoWages(curEmployer)
+            }
+        }
+    }
+
+    private fun gotoWages(curEmployer: Employers?) {
+        if (curEmployer != null) {
+            mainActivity.mainViewModel.setEmployer(curEmployer)
+            mView.findNavController().navigate(
+                EmployerUpdateFragmentDirections
+                    .actionEmployerUpdateFragmentToEmployerPayRatesFragment()
+            )
         }
     }
 
     private fun gotoExtraAdd(curEmployer: Employers?) {
         if (curEmployer != null) {
+            mainActivity.mainViewModel.setEmployer(curEmployer)
             mView.findNavController().navigate(
                 EmployerUpdateFragmentDirections
                     .actionEmployerUpdateFragmentToEmployerExtraDefinitionsAddFragment()

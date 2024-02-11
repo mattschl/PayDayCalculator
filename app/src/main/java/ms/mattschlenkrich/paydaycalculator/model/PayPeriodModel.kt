@@ -28,6 +28,8 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
         entity = Employers::class,
         parentColumns = ["employerId"],
         childColumns = ["ppEmployerId"]
+    )], indices = [Index(
+        value = ["ppCutoffDate", "ppEmployerId"], unique = true
     )]
 )
 @Parcelize
@@ -59,6 +61,7 @@ data class PayPeriods(
 data class WorkDates(
     @PrimaryKey
     val workDateId: Long,
+    @ColumnInfo(index = true)
     val wdPayPeriodId: Long,
     @ColumnInfo(index = true)
     val wdEmployerId: Long,
