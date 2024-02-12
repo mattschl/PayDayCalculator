@@ -9,9 +9,16 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.adapter.EmployerWageAdapter
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_RATES
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerPayRatesBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 
@@ -30,7 +37,7 @@ class EmployerPayRatesFragment :
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentEmployerPayRatesBinding.inflate(
             inflater, container, false
         )
@@ -73,11 +80,43 @@ class EmployerPayRatesFragment :
     }
 
     private fun fillWages() {
-        TODO("Not yet implemented")
+        if (curEmployer != null) {
+            binding.apply {
+                val payRateAdapter = EmployerWageAdapter(
+                    mainActivity, mView, curEmployer!!, TAG
+                )
+                rvWage.apply {
+                    layoutManager = LinearLayoutManager(
+                        mView.context
+                    )
+                    adapter = payRateAdapter
+                }
+                activity.let {
+                    mainActivity.employerViewModel.getEmployerPayRates(curEmployer!!.employerId)
+                        .observe(viewLifecycleOwner) { payRates ->
+                            payRateAdapter.differ.submitList(payRates)
+                            updateUI(payRates)
+                        }
+                }
+            }
+        }
+    }
+
+    private fun updateUI(payRates: List<Any>) {
+        binding.apply {
+            if (payRates.isNotEmpty()) {
+                rvWage.visibility = View.VISIBLE
+                crdNoInfo.visibility = View.GONE
+            } else {
+                rvWage.visibility = View.GONE
+                crdNoInfo.visibility = View.VISIBLE
+            }
+        }
     }
 
     private fun gotoAddEmployer() {
         mainActivity.mainViewModel.addCallingFragment(TAG)
+        mainActivity.mainViewModel.setPayRate(null)
         mView.findNavController().navigate(
             EmployerPayRatesFragmentDirections
                 .actionEmployerPayRatesFragmentToEmployerAddFragment()
@@ -94,6 +133,7 @@ class EmployerPayRatesFragment :
 
     private fun gotoWageAdd() {
         mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainActivity.mainViewModel.setPayRate(null)
         mView.findNavController().navigate(
             EmployerPayRatesFragmentDirections
                 .actionEmployerPayRatesFragmentToEmployerPayRateAddFragment()
@@ -116,10 +156,24 @@ class EmployerPayRatesFragment :
                     employerAdapter.add(it.employerName)
                 }
                 employerAdapter.add(getString(R.string.add_new_employer))
-                curEmployer = employerList[0]
+                if (employerList.isNotEmpty()) {
+                    curEmployer = employerList[0]
+                }
 
             }
             spEmployers.adapter = employerAdapter
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(WAIT_250)
+                if (mainActivity.mainViewModel.getEmployer() != null) {
+                    curEmployer = mainActivity.mainViewModel.getEmployer()
+                    for (i in 0 until spEmployers.adapter.count) {
+                        if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
+                            spEmployers.setSelection(i)
+                            break
+                        }
+                    }
+                }
+            }
         }
     }
 

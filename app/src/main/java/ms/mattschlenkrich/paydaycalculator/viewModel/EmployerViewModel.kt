@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.paydaycalculator.model.EmployerPayRates
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.repository.EmployerRepository
 
@@ -30,4 +31,17 @@ class EmployerViewModel(
 
     fun findEmployer(employerName: String) =
         employerRepository.findEmployer(employerName)
+
+    fun insertPayRate(payRate: EmployerPayRates) =
+        viewModelScope.launch {
+            employerRepository.insertPayRate(payRate)
+        }
+
+    fun updatePayRate(payRate: EmployerPayRates) =
+        viewModelScope.launch {
+            employerRepository.updatePayRate(payRate)
+        }
+
+    fun getEmployerPayRates(employerId: Long) =
+        employerRepository.getEmployerPayRates(employerId)
 }

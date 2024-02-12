@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paydaycalculator.repository
 
 
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
+import ms.mattschlenkrich.paydaycalculator.model.EmployerPayRates
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 
 
@@ -21,4 +22,13 @@ class EmployerRepository(private val db: PayDatabase) {
 
     fun findEmployer(employerName: String) =
         db.getEmployerDao().findEmployer(employerName)
+
+    suspend fun insertPayRate(payRate: EmployerPayRates) =
+        db.getEmployerDao().insertPayRate(payRate)
+
+    suspend fun updatePayRate(payRate: EmployerPayRates) =
+        db.getEmployerDao().updatePayRate(payRate)
+
+    fun getEmployerPayRates(employerId: Long) =
+        db.getEmployerDao().getEmployerPayRates(employerId)
 }

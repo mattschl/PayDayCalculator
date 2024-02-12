@@ -137,4 +137,5 @@
     <string name="pay_rate">Pay Rate</string>
     <string name="enter_pay_rate">Enter Pay Rate</string>
     <string name="rate_applies_to">Rate applies to:</string>
+    <string name="choose_when_this_wage_goes_into_effect">Choose when this wage goes into effect</string>
 </resources>

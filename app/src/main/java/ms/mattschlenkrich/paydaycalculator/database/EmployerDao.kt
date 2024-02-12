@@ -8,6 +8,8 @@ import androidx.room.Query
 import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_NAME
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
+import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYER_PAY_RATES
+import ms.mattschlenkrich.paydaycalculator.model.EmployerPayRates
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 
 @Dao
@@ -37,4 +39,16 @@ interface EmployerDao {
     )
     fun findEmployer(employerName: String): LiveData<Employers>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPayRate(payRate: EmployerPayRates)
+
+    @Update
+    suspend fun updatePayRate(payRate: EmployerPayRates)
+
+    @Query(
+        "SELECT * FROM $TABLE_EMPLOYER_PAY_RATES " +
+                "WHERE eprEmployerId = :employerId " +
+                "ORDER BY eprEffectiveDate DESC"
+    )
+    fun getEmployerPayRates(employerId: Long): LiveData<List<EmployerPayRates>>
 }

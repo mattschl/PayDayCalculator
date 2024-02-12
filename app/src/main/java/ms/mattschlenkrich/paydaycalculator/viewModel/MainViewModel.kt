@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paydaycalculator.viewModel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import ms.mattschlenkrich.paydaycalculator.model.EmployerPayRates
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
@@ -29,6 +30,15 @@ class MainViewModel(
     private var workDateObject: WorkDates? = null
     private var cutOffDate: String? = null
     private var payPeriod: PayPeriods? = null
+    private var payRate: EmployerPayRates? = null
+
+    fun setPayRate(newRate: EmployerPayRates?) {
+        payRate = newRate
+    }
+
+    fun getPayRate(): EmployerPayRates? {
+        return payRate
+    }
 
     fun getWorkExtraType(): WorkExtraTypes? {
         return extraType

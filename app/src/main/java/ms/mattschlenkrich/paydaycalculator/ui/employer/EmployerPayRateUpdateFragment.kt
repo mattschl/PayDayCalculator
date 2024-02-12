@@ -20,46 +20,116 @@ import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_RATES
-import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerPayRateAddBinding
+import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerWageUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.EmployerPayRates
-import java.time.LocalDate
 
-class EmployerPayRateAddFragment :
-    Fragment(R.layout.fragment_employer_pay_rate_add) {
+class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_update) {
 
-    private var _binding: FragmentEmployerPayRateAddBinding? = null
+    private var _binding: FragmentEmployerWageUpdateBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
     private val cf = CommonFunctions()
+    private lateinit var curPayRate: EmployerPayRates
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentEmployerPayRateAddBinding.inflate(
+    ): View? {
+        _binding = FragmentEmployerWageUpdateBinding.inflate(
             inflater, container, false
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
         val display =
-            "Add a pay rate"
+            "Edit pay rate for ${mainActivity.mainViewModel.getEmployer()!!.employerName}"
         mainActivity.title = display
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillMenu()
         fillSpinner()
+        fillMenu()
+        setActions()
         setDateAction()
         fillValues()
     }
 
+    private fun setActions() {
+        binding.apply {
+            fabDone.setOnClickListener {
+                savePayRate()
+            }
+        }
+    }
+
+    private fun savePayRate() {
+        binding.apply {
+            val message = checkPayRate()
+            if (message == ANSWER_OK) {
+                mainActivity.employerViewModel.updatePayRate(
+                    EmployerPayRates(
+                        curPayRate.employerPayRateId,
+                        curPayRate.eprEmployerId,
+                        tvEffectiveDate.text.toString(),
+                        spPerFrequency.selectedItemPosition,
+                        cf.getDoubleFromDollars(etWage.text.toString()),
+                        false,
+                        df.getCurrentTimeAsString()
+                    )
+                )
+                gotoCallingFragment()
+            } else {
+                Toast.makeText(
+                    mView.context,
+                    message,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    private fun gotoCallingFragment() {
+        if (mainActivity.mainViewModel.getCallingFragment()!!.contains(FRAG_PAY_RATES)) {
+            gotoPayRateFragment()
+        }
+    }
+
+    private fun gotoPayRateFragment() {
+        mView.findNavController().navigate(
+            EmployerPayRateUpdateFragmentDirections
+                .actionEmployerWageUpdateFragmentToEmployerPayRatesFragment()
+        )
+    }
+
+    private fun checkPayRate(): String {
+        binding.apply {
+            return if (etWage.text.isNullOrBlank()) {
+                "    ERROR!!\n" +
+                        "There has to be a wage to save"
+            } else {
+                ANSWER_OK
+            }
+        }
+    }
+
+    private fun fillSpinner() {
+        val frequencyAdapter = ArrayAdapter(
+            mView.context, R.layout.spinner_item_bold,
+            resources.getStringArray(R.array.pay_per_frequencies)
+        )
+        frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
+        binding.spPerFrequency.adapter = frequencyAdapter
+    }
+
     private fun fillValues() {
         binding.apply {
-            tvEffectiveDate.text = LocalDate.now().toString()
+            curPayRate = mainActivity.mainViewModel.getPayRate()!!
+            tvEffectiveDate.text = curPayRate.eprEffectiveDate
+            etWage.setText(cf.displayDollars(curPayRate.eprPayRate))
+            spPerFrequency.setSelection(curPayRate.eprPerPeriod)
         }
     }
 
@@ -91,25 +161,16 @@ class EmployerPayRateAddFragment :
         }
     }
 
-    private fun fillSpinner() {
-        val frequencyAdapter = ArrayAdapter(
-            mView.context, R.layout.spinner_item_bold,
-            resources.getStringArray(R.array.pay_per_frequencies)
-        )
-        frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
-        binding.spPerFrequency.adapter = frequencyAdapter
-    }
-
     private fun fillMenu() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.save_menu, menu)
+                menuInflater.inflate(R.menu.menu_delete, menu)
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        savePayRate()
+                    R.id.menu_delete -> {
+                        deletePayRate()
                         true
                     }
 
@@ -121,58 +182,24 @@ class EmployerPayRateAddFragment :
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun savePayRate() {
-        binding.apply {
-            val curEmployer = mainActivity.mainViewModel.getEmployer()!!
-            val message = checkPayRate()
-            if (message == ANSWER_OK) {
-                val curWage = EmployerPayRates(
-                    cf.generateId(),
-                    curEmployer.employerId,
-                    tvEffectiveDate.text.toString(),
-                    spPerFrequency.selectedItemPosition,
-                    cf.getDoubleFromDollars(etWage.text.toString()),
-                    false,
-                    df.getCurrentTimeAsString()
-                )
-                mainActivity.employerViewModel.insertPayRate(curWage)
-                gotoCallingFragment()
-            } else {
-                Toast.makeText(
-                    mView.context,
-                    message,
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-    }
-
-    private fun gotoCallingFragment() {
-        if (mainActivity.mainViewModel.getCallingFragment()!!.contains(FRAG_PAY_RATES)) {
-            gotoPayRateFragment()
-        }
-    }
-
-    private fun gotoPayRateFragment() {
-        mView.findNavController().navigate(
-            EmployerPayRateAddFragmentDirections
-                .actionEmployerPayRateAddFragmentToEmployerPayRatesFragment()
+    private fun deletePayRate() {
+        mainActivity.employerViewModel.updatePayRate(
+            EmployerPayRates(
+                curPayRate.employerPayRateId,
+                curPayRate.eprEmployerId,
+                curPayRate.eprEffectiveDate,
+                curPayRate.eprPerPeriod,
+                curPayRate.eprPayRate,
+                true,
+                df.getCurrentTimeAsString()
+            )
         )
-    }
-
-    private fun checkPayRate(): String {
-        binding.apply {
-            return if (etWage.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "There has to be a wage to save"
-            } else {
-                ANSWER_OK
-            }
-        }
+        gotoCallingFragment()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
     }
+
 }
