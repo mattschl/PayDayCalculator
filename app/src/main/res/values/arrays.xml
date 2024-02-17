@@ -23,5 +23,6 @@
         <item>Weekly</item>
         <item>Per Pay</item>
         <item>Monthly</item>
+        <item>Annually</item>
     </string-array>
 </resources>

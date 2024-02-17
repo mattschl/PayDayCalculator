@@ -5,12 +5,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/dimen_10dp">
+        android:layout_marginBottom="@dimen/dimen_10dp"
+        android:padding="@dimen/dimen_15dp">
 
         <CheckBox
             android:id="@+id/chkExtra"
             android:layout_width="@dimen/text_box_extra_wide"
             android:layout_height="@dimen/minimum_touch_height"
+            android:layout_marginStart="@dimen/dim_5dp"
             app:layout_constraintEnd_toStartOf="@id/btnEdit"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

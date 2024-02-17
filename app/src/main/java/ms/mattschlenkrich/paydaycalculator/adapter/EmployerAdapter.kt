@@ -16,6 +16,7 @@ import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerFragmentDirection
 class EmployerAdapter(
     private val mainActivity: MainActivity,
     private val mView: View,
+    private val parentTag: String,
 ) :
     RecyclerView.Adapter<EmployerAdapter.EmployerViewHolder>() {
 
@@ -59,9 +60,8 @@ class EmployerAdapter(
             holder.itemBinding.tvFrequency.setTextColor(Color.BLACK)
         }
         holder.itemBinding.tvFrequency.text = disp
-        holder.itemView.setOnLongClickListener {
+        holder.itemView.setOnClickListener {
             gotoUpdateEmployer(employer)
-            true
         }
     }
 

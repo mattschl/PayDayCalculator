@@ -97,14 +97,16 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     position: Int,
                     id: Long
                 ) {
-                    for (extra in extraTypeList) {
-                        if (extra.wetName == spExtraType.selectedItem.toString()) {
-                            curExtraType = extra
-                            fillExtrasList()
-                        } else if (spExtraType.selectedItem.toString() ==
-                            getString(R.string.add_a_new_extra_type)
-                        ) {
-                            gotoExtraTypeAdd()
+                    if (spExtraType.selectedItem.toString() ==
+                        getString(R.string.add_a_new_extra_type)
+                    ) {
+                        gotoExtraTypeAdd()
+                    } else {
+                        for (extra in extraTypeList) {
+                            if (extra.wetName == spExtraType.selectedItem.toString()) {
+                                curExtraType = extra
+                                fillExtrasList()
+                            }
                         }
                     }
                 }
@@ -255,6 +257,13 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
             if (employers.isNotEmpty() && extraList.isNotEmpty()) {
                 fabNew.isEnabled = spEmployers.getItemAtPosition(0)
                     .toString() != getString(R.string.no_employers_add_an_employer_through_the_employer_tab)
+            }
+            if (extraList.isEmpty()) {
+                rvExtras.visibility = View.GONE
+                crdNoInfo.visibility = View.VISIBLE
+            } else {
+                rvExtras.visibility = View.VISIBLE
+                crdNoInfo.visibility = View.GONE
             }
         }
     }

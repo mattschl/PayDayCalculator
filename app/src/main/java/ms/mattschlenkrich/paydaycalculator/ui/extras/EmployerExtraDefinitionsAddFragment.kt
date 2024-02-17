@@ -78,12 +78,36 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                         position: Int,
                         id: Long
                     ) {
-
                         if (spExtraTypes.adapter.count > 0 &&
                             spExtraTypes.selectedItem.toString() ==
                             getString(R.string.add_a_new_extra_type)
                         ) {
                             gotoExtraTypeAdd()
+                        } else {
+                            for (extra in extraList) {
+                                if (extra.wetName == spExtraTypes.selectedItem.toString()) {
+                                    var display = if (extra.wetIsCredit) {
+                                        "Credit"
+                                    } else {
+                                        "Debit"
+                                    }
+                                    display += " - Calculated " +
+                                            "${
+                                                resources.getStringArray(
+                                                    R.array.pay_per_frequencies
+                                                )[extra.wetAppliesTo]
+                                            }. " +
+                                            "Attaches to ${
+                                                resources.getStringArray(
+                                                    R.array.pay_per_frequencies
+                                                )[extra.wetAttachTo]
+                                            }. - "
+                                    display += if (extra.wetIsDefault) "Is automatic"
+                                    else "Added Manually"
+                                    tvDescription.text = display
+                                }
+
+                            }
                         }
                     }
 
