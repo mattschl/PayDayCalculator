@@ -12,4 +12,9 @@
         android:id="@+id/nav_tax_rules"
         android:icon="@drawable/ic_tax"
         android:title="@string/taxes" />
+    <item
+        android:id="@+id/nav_extras"
+        android:icon="@drawable/ic_extras"
+        android:title="@string/extra_type" />
+
 </menu>
