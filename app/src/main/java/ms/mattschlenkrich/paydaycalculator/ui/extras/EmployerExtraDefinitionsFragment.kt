@@ -105,6 +105,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                         for (extra in extraTypeList) {
                             if (extra.wetName == spExtraType.selectedItem.toString()) {
                                 curExtraType = extra
+                                fillExtraTypeInfo()
                                 fillExtrasList()
                             }
                         }
@@ -114,6 +115,38 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                     // useless
                 }
+            }
+        }
+    }
+
+    private fun fillExtraTypeInfo() {
+        if (curExtraType != null) {
+            binding.apply {
+                var display: String
+                display = "Calculated ${
+                    resources.getStringArray(
+                        R.array.pay_per_frequencies
+                    )[curExtraType!!.wetAppliesTo]
+                }"
+                tvAppliesTo.text = display
+                display = "Attaches to ${
+                    resources.getStringArray(
+                        R.array.pay_per_frequencies
+                    )[curExtraType!!.wetAttachTo]
+                }"
+                tvAttachTo.text = display
+                display = if (curExtraType!!.wetIsCredit) {
+                    getString(R.string.this_is_a_credit)
+                } else {
+                    getString(R.string.this_is_a_deduction)
+                }
+                tvCredit.text = display
+                display = if (curExtraType!!.wetIsDefault) {
+                    getString(R.string.is_default)
+                } else {
+                    getString(R.string.manually_added)
+                }
+                tvDefault.text = display
             }
         }
     }
@@ -217,8 +250,25 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     }
 
     private fun setActions() {
-        binding.fabNew.setOnClickListener {
-            gotoExtraAdd()
+        binding.apply {
+            fabNew.setOnClickListener {
+                gotoExtraAdd()
+            }
+            crdExtraInfo.setOnClickListener {
+                gotoExtraTypeUpdate()
+            }
+        }
+    }
+
+    private fun gotoExtraTypeUpdate() {
+        if (curExtraType != null) {
+            mainActivity.mainViewModel.setEmployer(curEmployer)
+            mainActivity.mainViewModel.setWorkExtraType(curExtraType)
+            mainActivity.mainViewModel.addCallingFragment(TAG)
+            mView.findNavController().navigate(
+                EmployerExtraDefinitionsFragmentDirections
+                    .actionEmployerExtraDefinitionsFragmentToWorkExtraTypeUpdateFragment()
+            )
         }
     }
 

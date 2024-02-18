@@ -260,6 +260,9 @@
         <action
             android:id="@+id/action_employerExtraDefinitionsFragment_to_workDateUpdateFragment"
             app:destination="@id/workDateUpdateFragment" />
+        <action
+            android:id="@+id/action_employerExtraDefinitionsFragment_to_workExtraTypeUpdateFragment"
+            app:destination="@id/workExtraTypeUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/workDateUpdateFragment"
@@ -295,7 +298,11 @@
         android:id="@+id/workExtraTypeUpdateFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.WorkExtraTypeUpdateFragment"
         android:label="fragment_work_extra_type_update"
-        tools:layout="@layout/fragment_work_extra_type_update" />
+        tools:layout="@layout/fragment_work_extra_type_update">
+        <action
+            android:id="@+id/action_workExtraTypeUpdateFragment_to_employerExtraDefinitionsFragment"
+            app:destination="@id/employerExtraDefinitionsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/employerPayRateAddFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerPayRateAddFragment"

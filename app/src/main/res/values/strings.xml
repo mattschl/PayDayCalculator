@@ -138,4 +138,9 @@
     <string name="enter_pay_rate">Enter Pay Rate</string>
     <string name="rate_applies_to">Rate applies to:</string>
     <string name="choose_when_this_wage_goes_into_effect">Choose when this wage goes into effect</string>
+    <string name="is_a_credit">Is a Credit</string>
+    <string name="this_is_a_credit">This is a credit</string>
+    <string name="this_is_a_deduction">This is a deduction</string>
+    <string name="manually_added">Manually added</string>
+    <string name="no_values_have_been_entered_add_them_now">No values have been entered. \n Add them now.</string>
 </resources>
