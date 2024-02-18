@@ -134,8 +134,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     tvAttachTo.visibility = View.VISIBLE
                     tvDefault.visibility = View.VISIBLE
                     tvCredit.visibility = View.VISIBLE
-                    var display: String
-                    display = "Calculated ${
+                    var display = "Calculated ${
                         resources.getStringArray(
                             R.array.pay_per_frequencies
                         )[curExtraType!!.wetAppliesTo]

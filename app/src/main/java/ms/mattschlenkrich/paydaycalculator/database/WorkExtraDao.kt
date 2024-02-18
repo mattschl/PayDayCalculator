@@ -74,22 +74,24 @@ interface WorkExtraDao {
     @Query(
         "SELECT extraType.*, definition.* " +
                 "FROM $TABLE_WORK_EXTRA_TYPES as extraType " +
-                "LEFT JOIN $TABLE_WORK_EXTRAS_DEFINITIONS as definition ON " +
+                "INNER JOIN $TABLE_WORK_EXTRAS_DEFINITIONS as definition ON " +
                 "workExtraTypeId = " +
                 "(SELECT weExtraTypeId FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
-                "WHERE weExtraTypeId = workExtraTypeId " +
-                "AND weIsDeleted = 0) " +
+                "WHERE weExtraTypeId = " +
+                "(SELECT workExtraTypeId FROM $TABLE_WORK_EXTRA_TYPES " +
                 "WHERE wetIsDeleted = 0 " +
-                "AND (wetAttachTo = 0 " +
-                "OR wetAttachTo = 1) " +
-                "AND wetEmployerId = :employerId " +
-                "LIMIT (SELECT COUNT() FROM $TABLE_WORK_EXTRA_TYPES " +
-                "WHERE wetEmployerId = :employerId " +
-                "AND wetIsDeleted = 0 " +
-                "AND (wetAttachTo = 0 " +
-                "OR wetAttachTo = 1)) "
+                "AND wetAttachTo = 1 " +
+                "AND wetEmployerId = :employerId) " +
+                "AND weIsDeleted = 0 " +
+                "AND weEffectiveDate < :cutOffDate " +
+                "ORDER BY weEffectiveDate DESC " +
+                "LIMIT 1) " +
+                "WHERE extraType.wetAttachTo = 1 " +
+                "AND extraType.wetIsDeleted = 0 " +
+                "AND extraType.wetEmployerId = :employerId " +
+                "ORDER BY extraType.wetName COLLATE NOCASE"
     )
-    fun getExtraDefinitionsPerDay(employerId: Long):
+    fun getExtraDefinitionsPerDay(employerId: Long, cutOffDate: String):
             LiveData<List<ExtraDefinitionAndType>>
 
     @Query(
@@ -116,8 +118,7 @@ interface WorkExtraDao {
     @Query(
         "SELECT * FROM $TABLE_WORK_EXTRA_TYPES " +
                 "WHERE wetEmployerId = :employerId " +
-                "AND (wetAttachTo = 0 OR " +
-                "wetAttachTo = 1) " +
+                "AND wetAttachTo = 1 " +
                 "AND wetIsDeleted = 0"
     )
     fun getExtraTypesByDaily(employerId: Long):

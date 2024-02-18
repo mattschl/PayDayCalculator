@@ -2,7 +2,6 @@ package ms.mattschlenkrich.paydaycalculator.ui.paydays
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -173,12 +172,13 @@ class WorkDateUpdateFragment : Fragment(
                 layoutManager = LinearLayoutManager(mView.context)
                 adapter = extraAdapter
             }
+            val curWorkDateObject = mainActivity.mainViewModel.getWorkDateObject()!!
             activity?.let {
                 mainActivity.workExtraViewModel.getExtraDefinitionsPerDay(
-                    mainActivity.mainViewModel.getWorkDateObject()!!.wdEmployerId
+                    curWorkDateObject.wdEmployerId,
+                    curWorkDateObject.wdCutoffDate
                 ).observe(viewLifecycleOwner) { extras ->
                     extraAdapter.differ.submitList(extras)
-                    Log.d(TAG, "extraAdapter size is ${extras.size}")
                 }
             }
         }
