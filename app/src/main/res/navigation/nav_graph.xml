@@ -321,5 +321,13 @@
             android:id="@+id/action_employerWageUpdateFragment_to_employerPayRatesFragment"
             app:destination="@id/employerPayRatesFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/workExtraTypesFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.WorkExtraTypesFragment"
+        android:label="WorkExtraTypesFragment"
+        tools:layout="@layout/fragment_work_extra_types" />
+    <action
+        android:id="@+id/action_global_workExtraTypesFragment"
+        app:destination="@id/workExtraTypesFragment" />
 
 </navigation>

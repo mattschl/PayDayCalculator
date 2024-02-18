@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.paydaycalculator.ui.extras
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -122,31 +123,43 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     private fun fillExtraTypeInfo() {
         if (curExtraType != null) {
             binding.apply {
-                var display: String
-                display = "Calculated ${
-                    resources.getStringArray(
-                        R.array.pay_per_frequencies
-                    )[curExtraType!!.wetAppliesTo]
-                }"
-                tvAppliesTo.text = display
-                display = "Attaches to ${
-                    resources.getStringArray(
-                        R.array.pay_per_frequencies
-                    )[curExtraType!!.wetAttachTo]
-                }"
-                tvAttachTo.text = display
-                display = if (curExtraType!!.wetIsCredit) {
-                    getString(R.string.this_is_a_credit)
+                if (curExtraType!!.wetIsDeleted) {
+                    tvAppliesTo.text = getString(R.string.deleted)
+                    tvAppliesTo.setTextColor(Color.RED)
+                    tvAttachTo.visibility = View.GONE
+                    tvDefault.visibility = View.GONE
+                    tvCredit.visibility = View.GONE
                 } else {
-                    getString(R.string.this_is_a_deduction)
+                    tvAppliesTo.setTextColor(Color.BLACK)
+                    tvAttachTo.visibility = View.VISIBLE
+                    tvDefault.visibility = View.VISIBLE
+                    tvCredit.visibility = View.VISIBLE
+                    var display: String
+                    display = "Calculated ${
+                        resources.getStringArray(
+                            R.array.pay_per_frequencies
+                        )[curExtraType!!.wetAppliesTo]
+                    }"
+                    tvAppliesTo.text = display
+                    display = "Attaches to ${
+                        resources.getStringArray(
+                            R.array.pay_per_frequencies
+                        )[curExtraType!!.wetAttachTo]
+                    }"
+                    tvAttachTo.text = display
+                    display = if (curExtraType!!.wetIsCredit) {
+                        getString(R.string.this_is_a_credit)
+                    } else {
+                        getString(R.string.this_is_a_deduction)
+                    }
+                    tvCredit.text = display
+                    display = if (curExtraType!!.wetIsDefault) {
+                        getString(R.string.is_default)
+                    } else {
+                        getString(R.string.manually_added)
+                    }
+                    tvDefault.text = display
                 }
-                tvCredit.text = display
-                display = if (curExtraType!!.wetIsDefault) {
-                    getString(R.string.is_default)
-                } else {
-                    getString(R.string.manually_added)
-                }
-                tvDefault.text = display
             }
         }
     }
