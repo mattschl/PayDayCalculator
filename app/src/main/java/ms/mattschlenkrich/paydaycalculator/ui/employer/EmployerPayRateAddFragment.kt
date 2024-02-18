@@ -148,6 +148,7 @@ class EmployerPayRateAddFragment :
     }
 
     private fun gotoCallingFragment() {
+
         if (mainActivity.mainViewModel.getCallingFragment()!!.contains(FRAG_PAY_RATES)) {
             gotoPayRateFragment()
         }

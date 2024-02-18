@@ -175,8 +175,7 @@ class WorkDateUpdateFragment : Fragment(
             val curWorkDateObject = mainActivity.mainViewModel.getWorkDateObject()!!
             activity?.let {
                 mainActivity.workExtraViewModel.getExtraDefinitionsPerDay(
-                    curWorkDateObject.wdEmployerId,
-                    curWorkDateObject.wdCutoffDate
+                    curWorkDateObject.wdEmployerId
                 ).observe(viewLifecycleOwner) { extras ->
                     extraAdapter.differ.submitList(extras)
                 }

@@ -20,7 +20,8 @@ interface PayDayDao {
     @Query(
         "SELECT * FROM $TABLE_PAY_PERIODS " +
                 "WHERE ppEmployerId = :employerId " +
-                "ORDER BY ppCutoffDate DESC"
+                "ORDER BY ppCutoffDate DESC " +
+                "LIMIT 4"
     )
     fun getCutOffDates(employerId: Long): LiveData<List<PayPeriods>>
 

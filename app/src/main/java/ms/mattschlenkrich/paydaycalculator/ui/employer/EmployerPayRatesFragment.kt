@@ -134,6 +134,7 @@ class EmployerPayRatesFragment :
     private fun gotoWageAdd() {
         mainActivity.mainViewModel.setEmployer(curEmployer)
         mainActivity.mainViewModel.setPayRate(null)
+        mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
             EmployerPayRatesFragmentDirections
                 .actionEmployerPayRatesFragmentToEmployerPayRateAddFragment()

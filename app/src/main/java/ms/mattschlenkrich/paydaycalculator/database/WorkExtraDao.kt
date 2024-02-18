@@ -11,8 +11,8 @@ import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRA_TYPES
-import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionAndType
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
+import ms.mattschlenkrich.paydaycalculator.model.ExtraTypeAndDefByDay
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
 
@@ -72,27 +72,11 @@ interface WorkExtraDao {
     @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
     @Query(
-        "SELECT extraType.*, definition.* " +
-                "FROM $TABLE_WORK_EXTRA_TYPES as extraType " +
-                "INNER JOIN $TABLE_WORK_EXTRAS_DEFINITIONS as definition ON " +
-                "workExtraTypeId = " +
-                "(SELECT weExtraTypeId FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
-                "WHERE weExtraTypeId = " +
-                "(SELECT workExtraTypeId FROM $TABLE_WORK_EXTRA_TYPES " +
-                "WHERE wetIsDeleted = 0 " +
-                "AND wetAttachTo = 1 " +
-                "AND wetEmployerId = :employerId) " +
-                "AND weIsDeleted = 0 " +
-                "AND weEffectiveDate < :cutOffDate " +
-                "ORDER BY weEffectiveDate DESC " +
-                "LIMIT 1) " +
-                "WHERE extraType.wetAttachTo = 1 " +
-                "AND extraType.wetIsDeleted = 0 " +
-                "AND extraType.wetEmployerId = :employerId " +
-                "ORDER BY extraType.wetName COLLATE NOCASE"
+        "SELECT * FROM ExtraTypeAndDefByDay " +
+                "WHERE wetEmployerId = :employerId "
     )
-    fun getExtraDefinitionsPerDay(employerId: Long, cutOffDate: String):
-            LiveData<List<ExtraDefinitionAndType>>
+    fun getExtraDefinitionsPerDay(employerId: Long):
+            LiveData<List<ExtraTypeAndDefByDay>>
 
     @Query(
         "SELECT * FROM $TABLE_WORK_EXTRA_TYPES " +

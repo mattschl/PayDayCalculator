@@ -29,7 +29,7 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
         parentColumns = ["employerId"],
         childColumns = ["ppEmployerId"]
     )], indices = [Index(
-        value = ["ppCutoffDate", "ppEmployerId"], unique = true
+        value = ["ppEmployerId", "ppCutoffDate"], unique = true
     )]
 )
 @Parcelize
@@ -171,33 +171,3 @@ data class WorkPayPeriodTax(
     val wppIsDeleted: Boolean,
     val wppUpdateTime: String,
 ) : Parcelable
-
-//@Parcelize
-//data class WorkDateAndExtrasFull(
-//    @Embedded
-//    val workDates: WorkDates,
-//    @Relation(
-//        entity = ExtraDefinitionAndType::class,
-//        parentColumn = "wdEmployerId",
-//        entityColumn = "weEmployerId"
-//    )
-//    val extraDef: ExtraDefinitionAndType,
-//) : Parcelable
-//
-//@Parcelize
-//data class WorkDateAndExtraDefAndWodDateExtras(
-//    @Embedded
-//    val workDate: WorkDates,
-//    @Relation(
-//        entity = ExtraDefinitionAndType::class,
-//        parentColumn = "wdEmployerId",
-//        entityColumn = "weEmployerId"
-//    )
-//    var extraDef: ExtraDefinitionAndType?,
-//    @Relation(
-//        entity = WorkDateExtras::class,
-//        parentColumn = "workDateId",
-//        entityColumn = "wdeWorkDateId"
-//    )
-//    var workExtra: WorkDateExtras?
-//) : Parcelable

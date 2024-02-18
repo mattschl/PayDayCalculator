@@ -246,7 +246,9 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                         cutOffAdapter.add(it.ppCutoffDate)
                         cutOffs.add(it.ppCutoffDate)
                     }
-                    if (dates.isEmpty()) {
+                    if (dates.isEmpty() ||
+                        dates[0].ppCutoffDate < df.getCurrentDateAsString()
+                    ) {
                         generateCutOff()
                     } else {
                         cutOffAdapter.add(getString(R.string.generate_a_new_cut_off))

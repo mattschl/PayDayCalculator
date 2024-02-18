@@ -10,6 +10,7 @@ import ms.mattschlenkrich.paydaycalculator.model.EmployerPayRates
 import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionAndType
+import ms.mattschlenkrich.paydaycalculator.model.ExtraTypeAndDefByDay
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
@@ -38,7 +39,8 @@ import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
         EmployerTaxTypes::class,
         EmployerPayRates::class,
     ],
-    views = [ExtraDefinitionAndType::class],
+    views = [ExtraDefinitionAndType::class,
+        ExtraTypeAndDefByDay::class],
     version = PAY_DB_VERSION,
 )
 abstract class PayDatabase : RoomDatabase() {
