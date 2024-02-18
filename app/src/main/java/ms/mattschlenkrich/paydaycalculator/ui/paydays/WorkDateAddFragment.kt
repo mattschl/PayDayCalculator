@@ -37,11 +37,11 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private lateinit var curDate: String
+    private lateinit var curDateString: String
     private var payPeriod: PayPeriods? = null
     private val df = DateFunctions()
     private val cf = CommonFunctions()
-    private var workDate: WorkDates? = null
+    private var curWorkDate: WorkDates? = null
 
     private val usedWorkDatesList = ArrayList<String>()
 
@@ -87,7 +87,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private fun selectDate() {
         binding.apply {
             tvWorkDate.setOnClickListener {
-                val curDateAll = curDate.split("-")
+                val curDateAll = curDateString.split("-")
                 val datePickerDialog = DatePickerDialog(
                     requireContext(),
                     { _, year, monthOfYear, dayOfMonth ->
@@ -98,8 +98,8 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                         }-${
                             dayOfMonth.toString().padStart(2, '0')
                         }"
-                        curDate = display
-                        tvWorkDate.text = df.getDisplayDate(curDate)
+                        curDateString = display
+                        tvWorkDate.text = df.getDisplayDate(curDateString)
 
                     },
                     curDateAll[0].toInt(),
@@ -160,11 +160,13 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     }
 
     private fun checkSaveWorkDate() {
+        var found = false
         if (usedWorkDatesList.isEmpty()) {
             saveWorkDate(true)
         } else {
             for (date in usedWorkDatesList) {
-                if (date == curDate) {
+                if (date == curDateString) {
+                    found = true
                     AlertDialog.Builder(mView.context)
                         .setTitle("This date is already used")
                         .setMessage(
@@ -172,12 +174,20 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                                     "this work date?"
                         )
                         .setPositiveButton("Yes") { _, _ ->
-                            workDate = saveWorkDate(true)
+                            curWorkDate = saveWorkDate(true)
                         }
                         .setNegativeButton("No", null)
                         .show()
                 }
             }
+        }
+        if (!found) {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Finish adding work date")
+                .setMessage("Please confirm extras for this date and complete the work date.")
+                .setPositiveButton("OK", null)
+                .show()
+            saveWorkDate(false)
         }
     }
 
@@ -186,18 +196,28 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         mainActivity.payDayViewModel.insertWorkDate(workDate)
         if (goBack) {
             gotoCallingFragment()
+        } else {
+            gotoWorkDateUpdate(workDate)
         }
         return workDate
     }
 
+    private fun gotoWorkDateUpdate(workDate: WorkDates) {
+        mainActivity.mainViewModel.setWorkDateObject(workDate)
+        mView.findNavController().navigate(
+            WorkDateAddFragmentDirections
+                .actionWorkDateAddFragmentToWorkDateUpdateFragment()
+        )
+    }
+
     private fun fillDate() {
-        curDate = LocalDate.now().toString()
+        curDateString = LocalDate.now().toString()
         for (date in usedWorkDatesList) {
-            if (curDate == date) {
-                curDate = LocalDate.parse(curDate).plusDays(1L).toString()
+            if (curDateString == date) {
+                curDateString = LocalDate.parse(curDateString).plusDays(1L).toString()
             }
         }
-        binding.tvWorkDate.text = df.getDisplayDate(curDate)
+        binding.tvWorkDate.text = df.getDisplayDate(curDateString)
     }
 
     private fun fillExtras() {
@@ -237,7 +257,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                 payPeriod!!.payPeriodId,
                 payPeriod!!.ppEmployerId,
                 payPeriod!!.ppCutoffDate,
-                curDate,
+                curDateString,
                 if (etHours.text.isNullOrBlank()) 0.0 else etHours.text.toString().trim()
                     .toDouble(),
                 if (etOt.text.isNullOrBlank()) 0.0 else etOt.text.toString().trim()

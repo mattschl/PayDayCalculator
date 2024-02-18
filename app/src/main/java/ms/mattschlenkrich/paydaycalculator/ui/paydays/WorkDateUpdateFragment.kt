@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.ui.paydays
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateUpdateExtraAdapter
-import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
@@ -28,9 +28,10 @@ class WorkDateUpdateFragment : Fragment(
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var curDate: WorkDates
+    private lateinit var curDateString: String
     private val workDateExtras = ArrayList<WorkDateExtras>()
     private val df = DateFunctions()
-    private val cf = CommonFunctions()
+//    private val cf = CommonFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +50,35 @@ class WorkDateUpdateFragment : Fragment(
         super.onViewCreated(view, savedInstanceState)
         fillValues()
         setActions()
+        setDateAction()
+    }
+
+    private fun setDateAction() {
+        binding.apply {
+            tvWorkDate.setOnClickListener {
+                val curDateAll = curDateString.split("-")
+                val datePickerDialog = DatePickerDialog(
+                    requireContext(),
+                    { _, year, monthOfYear, dayOfMonth ->
+                        val month = monthOfYear + 1
+                        val display = "$year-${
+                            month.toString()
+                                .padStart(2, '0')
+                        }-${
+                            dayOfMonth.toString().padStart(2, '0')
+                        }"
+                        curDateString = display
+                        tvWorkDate.text = df.getDisplayDate(display)
+
+                    },
+                    curDateAll[0].toInt(),
+                    curDateAll[1].toInt() - 1,
+                    curDateAll[2].toInt()
+                )
+                datePickerDialog.setTitle(getString(R.string.choose_a_work_date))
+                datePickerDialog.show()
+            }
+        }
     }
 
     private fun setActions() {
@@ -88,6 +118,7 @@ class WorkDateUpdateFragment : Fragment(
     private fun fillValues() {
         if (mainActivity.mainViewModel.getWorkDateObject() != null) {
             curDate = mainActivity.mainViewModel.getWorkDateObject()!!
+            curDateString = curDate.wdDate
             binding.apply {
                 tvWorkDate.text = df.getDisplayDate(curDate.wdDate)
                 etHours.setText(curDate.wdRegHours.toString())
@@ -106,7 +137,7 @@ class WorkDateUpdateFragment : Fragment(
                 curDate.wdPayPeriodId,
                 curDate.wdEmployerId,
                 curDate.wdCutoffDate,
-                curDate.wdDate,
+                curDateString,
                 if (etHours.text.isNullOrBlank()) 0.0 else etHours.text.toString().trim()
                     .toDouble(),
                 if (etOt.text.isNullOrBlank()) 0.0 else etOt.text.toString().trim()
