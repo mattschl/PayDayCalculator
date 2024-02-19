@@ -5,6 +5,7 @@ import android.view.View
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.model.Employers
+import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionAndType
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 
@@ -17,12 +18,14 @@ class PayCalculations(
     private val mView: View,
 ) {
     private val workDates = ArrayList<WorkDates>()
-    private val workExtras = ArrayList<WorkDateExtras>()
+    private val workExtrasPerDate = ArrayList<WorkDateExtras>()
+    private val workExtrasByPay = ArrayList<ExtraDefinitionAndType>()
     private var rate = 0.0
 
     init {
         findWorkDates()
-        findExtras()
+        findExtrasPerDay()
+        findExtrasPerPay()
         findRate()
     }
 
@@ -47,7 +50,7 @@ class PayCalculations(
     }
 
     fun getOtPay(): Double {
-        return getOtHours() * rate
+        return getOtHours() * rate * 1.5
     }
 
     fun getDblOtHours(): Double {
@@ -59,7 +62,11 @@ class PayCalculations(
     }
 
     fun getDblOtPay(): Double {
-        return getDblOtHours() * rate
+        return getDblOtHours() * rate * 2
+    }
+
+    fun getAllHourlyPay(): Double {
+        return getRegPay() + getOtPay() + getDblOtPay()
     }
 
     fun getStatHours(): Double {
@@ -76,7 +83,7 @@ class PayCalculations(
 
     fun getDailyExtraFixedTotal(): Double {
         var extraTotal = 0.0
-        for (extra in workExtras) {
+        for (extra in workExtrasPerDate) {
             if (extra.wdeIsFixed) {
                 extraTotal += extra.wdeValue
             }
@@ -84,8 +91,40 @@ class PayCalculations(
         return extraTotal
     }
 
+
+    fun getDailyExtraPercentTotal(): Double {
+        var extraTotal = 0.0
+        for (extra in workExtrasPerDate) {
+            if (!extra.wdeIsFixed) {
+                for (date in workDates) {
+                    if (extra.wdeWorkDateId == date.workDateId) {
+                        extraTotal += extra.wdeValue * (
+                                date.wdRegHours + date.wdOtHours + date.wdDblOtHours)
+                    }
+                }
+            }
+        }
+        return extraTotal
+    }
+
+    fun getPayExtraCreditTotals(): Double {
+        var extraTotal = 0.0
+        for (extra in workExtrasByPay) {
+            if (extra.extraType.wetIsCredit) {
+                extraTotal += if (extra.definition.weIsFixed) {
+                    extra.definition.weValue
+                } else {
+                    extra.definition.weValue * getAllHourlyPay() / 100
+                }
+            }
+        }
+        return extraTotal
+    }
+
     fun getGrossPay(): Double {
-        return getRegPay() + getOtPay() + getDblOtPay() + getStatPay() + getDailyExtraFixedTotal()
+        return getRegPay() + getOtPay() + getDblOtPay() + getStatPay() +
+                getDailyExtraFixedTotal() + getDailyExtraPercentTotal() +
+                getPayExtraCreditTotals()
     }
 
     private fun findRate() {
@@ -114,21 +153,34 @@ class PayCalculations(
                 workDates.clear()
                 list.listIterator().forEach {
                     workDates.add(it)
-                    Log.d(TAG, "ADDED DATE ${it.wdDate}")
                 }
             }
         }
     }
 
-    private fun findExtras() {
+    private fun findExtrasPerDay() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.payDayViewModel.getWorkDateExtrasPerPay(
                 employer.employerId, cutOff
             ).observe(lifecycleOwner) { list ->
-                workExtras.clear()
+                workExtrasPerDate.clear()
                 list.listIterator().forEach {
-                    workExtras.add(it)
+                    workExtrasPerDate.add(it)
                     Log.d(TAG, "EXTRA ADDED ${it.wdeName}")
+                }
+            }
+        }
+    }
+
+    private fun findExtrasPerPay() {
+        mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
+            mainActivity.workExtraViewModel.getExtraTypesAndDefByPay(
+                employer.employerId, cutOff
+            ).observe(lifecycleOwner) { list ->
+                workExtrasByPay.clear()
+                list.listIterator().forEach {
+                    workExtrasByPay.add(it)
+                    Log.d(TAG, "EXTRA ADDED ${it.extraType.wetName}")
                 }
             }
         }

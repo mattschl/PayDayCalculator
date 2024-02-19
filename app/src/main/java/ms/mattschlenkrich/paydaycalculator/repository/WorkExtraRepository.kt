@@ -43,4 +43,7 @@ class WorkExtraRepository(private val db: PayDatabase) {
 
     fun getExtraTypesByDaily(employerId: Long) =
         db.getWorkExtraDao().getExtraTypesByDaily(employerId)
+
+    fun getExtraTypesAndDefByPay(employerId: Long, cutoffDate: String) =
+        db.getWorkExtraDao().getExtraTypesAndDefByPay(employerId, cutoffDate)
 }

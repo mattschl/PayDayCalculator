@@ -103,21 +103,28 @@ interface WorkExtraDao {
     @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
     @Query(
-        "SELECT DISTINCT extraType.*, extraDef.* " +
-                "FROM $TABLE_WORK_EXTRA_TYPES as extraType " +
-                "LEFT JOIN (" +
-                "SELECT * FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
-                "WHERE weEmployerId = :employerId " +
-                "AND weIsDeleted = 0 " +
-                "AND weEffectiveDate <= :cutoffDate " +
-                ") as extraDef " +
-                "WHERE wetEmployerId = :employerId " +
-                "AND wetAttachTo = 1 " +
-                "AND wetIsDeleted = 0 " +
-                "LIMIT (SELECT COUNT( *) FROM $TABLE_WORK_EXTRA_TYPES" +
-                " WHERE wetEmployerId = :employerId " +
-                "AND wetAttachTo = 1 " +
-                "AND wetIsDeleted = 0 " +
+        "SELECT DISTINCT extraType.*, " +
+                "extraDef.* " +
+                "FROM workExtraTypes AS extraType " +
+                "INNER JOIN " +
+                " (" +
+                "SELECT * " +
+                "FROM workExtrasDefinitions " +
+                "WHERE weEmployerId = :employerId AND " +
+                "weIsDeleted = 0 AND " +
+                "weEffectiveDate <= :cutoffDate " +
+                " ) " +
+                "AS extraDef ON workExtraTypeId = weExtraTypeId " +
+                "WHERE wetEmployerId = :employerId AND " +
+                "wetAttachTo = 1 AND " +
+                "wetIsDeleted = 0 " +
+                "ORDER BY wetName " +
+                "LIMIT ( " +
+                "SELECT COUNT( * ) " +
+                "FROM workExtraTypes " +
+                "WHERE wetEmployerId = :employerId AND " +
+                "wetAttachTo = 1 AND " +
+                "wetIsDeleted = 0 " +
                 ")"
     )
     fun getExtraTypesAndDefByDaily(employerId: Long, cutoffDate: String):
@@ -132,4 +139,33 @@ interface WorkExtraDao {
     )
     fun getExtraTypesByDaily(employerId: Long): LiveData<List<WorkExtraTypes>>
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @Transaction
+    @Query(
+        "SELECT DISTINCT extraType.*, " +
+                "extraDef.* " +
+                "FROM workExtraTypes AS extraType " +
+                "INNER JOIN " +
+                " (" +
+                "SELECT * " +
+                "FROM workExtrasDefinitions " +
+                "WHERE weEmployerId = :employerId AND " +
+                "weIsDeleted = 0 AND " +
+                "weEffectiveDate <= :cutoffDate " +
+                " ) " +
+                "AS extraDef ON workExtraTypeId = weExtraTypeId " +
+                "WHERE wetEmployerId = :employerId AND " +
+                "wetAttachTo = 3 AND " +
+                "wetIsDeleted = 0 " +
+                "ORDER BY wetName " +
+                "LIMIT ( " +
+                "SELECT COUNT( * ) " +
+                "FROM workExtraTypes " +
+                "WHERE wetEmployerId = :employerId AND " +
+                "wetAttachTo = 3 AND " +
+                "wetIsDeleted = 0 " +
+                ")"
+    )
+    fun getExtraTypesAndDefByPay(employerId: Long, cutoffDate: String):
+            LiveData<List<ExtraDefinitionAndType>>
 }

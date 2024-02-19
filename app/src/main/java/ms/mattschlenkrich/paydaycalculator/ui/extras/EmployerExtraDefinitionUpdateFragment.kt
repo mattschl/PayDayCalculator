@@ -20,6 +20,7 @@ import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerExtraDefinitionUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
+import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
 
 class EmployerExtraDefinitionUpdateFragment :
     Fragment(R.layout.fragment_employer_extra_definition_update) {
@@ -65,10 +66,10 @@ class EmployerExtraDefinitionUpdateFragment :
     private fun updateDefinition() {
         val message = checkExtra()
         if (message == ANSWER_OK) {
-//            mainActivity.workExtraViewModel.updateWorkExtraDefinition(
-//                getCurrentDefinition()
-//            )
-//            gotoCallingFragment()
+            mainActivity.workExtraViewModel.updateWorkExtraDefinition(
+                getCurrentDefinition()
+            )
+            gotoCallingFragment()
         } else {
             Toast.makeText(
                 mView.context,
@@ -78,24 +79,21 @@ class EmployerExtraDefinitionUpdateFragment :
         }
     }
 
-//    private fun getCurrentDefinition(): WorkExtrasDefinitions {
-//        binding.apply {
-//            return WorkExtrasDefinitions(
-//                curExtraDefinitionFull.definition.workExtraDefId,
-//                curExtraDefinitionFull.definition.weEmployerId,
-//                etName.text.toString(),
-//                spAppliesTo.selectedItemPosition,
-//                spAttachTo.selectedItemPosition,
-//                cf.getDoubleFromDollarOrPercent(etValue.text.toString()),
-//                chkIsFixed.isChecked,
-//                chkIsCredit.isChecked,
-//                chkIsDefault.isChecked,
-//                tvEffectiveDate.text.toString(),
-//                false,
-//                df.getCurrentTimeAsString()
-//            )
-//        }
-//    }
+    private fun getCurrentDefinition(): WorkExtrasDefinitions {
+        binding.apply {
+            val curDef = curExtraDefinitionFull.definition
+            return WorkExtrasDefinitions(
+                curDef.workExtraDefId,
+                curDef.weEmployerId,
+                curDef.weExtraTypeId,
+                cf.getDoubleFromDollarOrPercent(etValue.text.toString()),
+                chkIsFixed.isChecked,
+                tvEffectiveDate.text.toString(),
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
 
     private fun checkExtra(): String {
         binding.apply {

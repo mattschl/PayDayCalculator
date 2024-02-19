@@ -121,3 +121,15 @@ data class ExtraTypeAndDefByDay(
     )
     val extraDef: WorkExtrasDefinitions
 ) : Parcelable
+
+@Parcelize
+data class ExtraTypeAndDef(
+    @Embedded
+    val extraType: WorkExtraTypes,
+    @Relation(
+        entity = WorkExtrasDefinitions::class,
+        parentColumn = "workExtraTypeId",
+        entityColumn = "weExtraTypeId"
+    )
+    val extraDef: WorkExtrasDefinitions
+) : Parcelable
