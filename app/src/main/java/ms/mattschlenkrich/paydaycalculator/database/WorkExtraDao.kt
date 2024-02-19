@@ -103,19 +103,22 @@ interface WorkExtraDao {
     @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
     @Query(
-        "SELECT extraType.*, extraDef.* " +
+        "SELECT DISTINCT extraType.*, extraDef.* " +
                 "FROM $TABLE_WORK_EXTRA_TYPES as extraType " +
                 "LEFT JOIN (" +
                 "SELECT * FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
                 "WHERE weEmployerId = :employerId " +
                 "AND weIsDeleted = 0 " +
                 "AND weEffectiveDate <= :cutoffDate " +
-                "ORDER BY weEffectiveDate DESC " +
-                "LIMIT 1" +
                 ") as extraDef " +
                 "WHERE wetEmployerId = :employerId " +
                 "AND wetAttachTo = 1 " +
-                "AND wetIsDeleted = 0"
+                "AND wetIsDeleted = 0 " +
+                "LIMIT (SELECT COUNT( *) FROM $TABLE_WORK_EXTRA_TYPES" +
+                " WHERE wetEmployerId = :employerId " +
+                "AND wetAttachTo = 1 " +
+                "AND wetIsDeleted = 0 " +
+                ")"
     )
     fun getExtraTypesAndDefByDaily(employerId: Long, cutoffDate: String):
             LiveData<List<ExtraDefinitionAndType>>

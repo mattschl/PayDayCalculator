@@ -5,7 +5,6 @@ import android.view.View
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.model.Employers
-import ms.mattschlenkrich.paydaycalculator.model.ExtraTotal
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 
@@ -20,12 +19,12 @@ class PayCalculations(
     private val workDates = ArrayList<WorkDates>()
     private val workExtras = ArrayList<WorkDateExtras>()
     private var rate = 0.0
-    private var regHours = 0.0
-    private var otHours = 0.0
-    private var dblOtHours = 0.0
-    private var statHours = 0.0
-    private val extraTotals = ArrayList<ExtraTotal>()
 
+    init {
+        findWorkDates()
+        findExtras()
+        findRate()
+    }
 
     fun getRegHours(): Double {
         var hours = 0.0
@@ -39,7 +38,57 @@ class PayCalculations(
         return getRegHours() * rate
     }
 
-    fun getRate() {
+    fun getOtHours(): Double {
+        var hours = 0.0
+        for (day in workDates) {
+            hours += day.wdOtHours
+        }
+        return hours
+    }
+
+    fun getOtPay(): Double {
+        return getOtHours() * rate
+    }
+
+    fun getDblOtHours(): Double {
+        var hours = 0.0
+        for (day in workDates) {
+            hours += day.wdDblOtHours
+        }
+        return hours
+    }
+
+    fun getDblOtPay(): Double {
+        return getDblOtHours() * rate
+    }
+
+    fun getStatHours(): Double {
+        var hours = 0.0
+        for (day in workDates) {
+            hours += day.wdStatHours
+        }
+        return hours
+    }
+
+    fun getStatPay(): Double {
+        return getStatHours() * rate
+    }
+
+    fun getDailyExtraFixedTotal(): Double {
+        var extraTotal = 0.0
+        for (extra in workExtras) {
+            if (extra.wdeIsFixed) {
+                extraTotal += extra.wdeValue
+            }
+        }
+        return extraTotal
+    }
+
+    fun getGrossPay(): Double {
+        return getRegPay() + getOtPay() + getDblOtPay() + getStatPay() + getDailyExtraFixedTotal()
+    }
+
+    private fun findRate() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.employerViewModel.getEmployerPayRates(
                 employer.employerId
@@ -57,7 +106,7 @@ class PayCalculations(
         }
     }
 
-    fun getWorkDates() {
+    private fun findWorkDates() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.payDayViewModel.getWorkDateList(
                 employer.employerId, cutOff
@@ -71,7 +120,7 @@ class PayCalculations(
         }
     }
 
-    fun getExtras() {
+    private fun findExtras() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.payDayViewModel.getWorkDateExtrasPerPay(
                 employer.employerId, cutOff

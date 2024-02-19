@@ -41,7 +41,6 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     private val projections = PayDayProjections()
     private val cf = CommonFunctions()
     private val df = DateFunctions()
-    private lateinit var payCalculations: PayCalculations
     private var workDateAdapter: WorkDateAdapter? = null
 
     override fun onCreateView(
@@ -107,7 +106,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                             getString(R.string.generate_a_new_cut_off)
                         ) {
                             curCutOff = spCutOff.selectedItem.toString()
-                            fillPayDayDetails()
+                            fillPayDayDate()
                             fillWorkDates()
                             fillValues()
                         } else {
@@ -126,32 +125,36 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         val payCalculations = PayCalculations(
             mainActivity, curEmployer!!, curCutOff, mView
         )
-        payCalculations.apply {
-            getWorkDates()
-            getRate()
-            getExtras()
-        }
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
-            payCalculations.apply {
-                val payRate = getRate()
-            }
             binding.apply {
-
+                var display = "Gross ${cf.displayDollars(payCalculations.getGrossPay())}"
+                tvGrossPay.text = display
+                display = ""
+                if (payCalculations.getRegHours() != 0.0) {
+                    display = "Hours: ${payCalculations.getRegHours()}"
+                }
+                if (payCalculations.getOtPay() != 0.0) {
+                    if (display.isNotBlank()) display += " | "
+                    display += "Ot: ${payCalculations.getOtHours()}"
+                }
+                if (payCalculations.getDblOtHours() != 0.0) {
+                    if (display.isNotBlank()) display += " | "
+                    display += "Dbl Ot: ${payCalculations.getDblOtHours()}"
+                }
+                if (payCalculations.getStatHours() != 0.0) {
+                    if (display.isNotBlank()) display += " | "
+                    display += "Stat Hours: ${payCalculations.getStatHours()}"
+                }
+                tvHours.text = display
             }
         }
     }
 
-    private fun fillPayDayDetails() {
+    private fun fillPayDayDate() {
         if (curCutOff != "" && curEmployer != null) {
-            payCalculations = PayCalculations(
-                mainActivity,
-                curEmployer!!,
-                curCutOff,
-                mView
-            )
             binding.apply {
-                var display = df.getDisplayDate(
+                val display = df.getDisplayDate(
                     LocalDate.parse(curCutOff)
                         .plusDays(curEmployer!!.cutoffDaysBefore.toLong()).toString()
                 ) + " - Pay Summary"
@@ -282,21 +285,21 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         }
     }
 
-    private fun gotoCurrentCutoff() {
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_500)
-            binding.apply {
-                val dateNow = LocalDate.parse(df.getCurrentDateAsString())
-                for (i in 0 until spCutOff.adapter.count - 1) {
-                    val chkDate = LocalDate.parse(spCutOff.getItemAtPosition(i).toString())
-                    if (chkDate <= dateNow) {
-                        spCutOff.setSelection(i)
-                        break
-                    }
-                }
-            }
-        }
-    }
+//    private fun gotoCurrentCutoff() {
+//        CoroutineScope(Dispatchers.Main).launch {
+//            delay(WAIT_500)
+//            binding.apply {
+//                val dateNow = LocalDate.parse(df.getCurrentDateAsString())
+//                for (i in 0 until spCutOff.adapter.count - 1) {
+//                    val chkDate = LocalDate.parse(spCutOff.getItemAtPosition(i).toString())
+//                    if (chkDate <= dateNow) {
+//                        spCutOff.setSelection(i)
+//                        break
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     private fun fillEmployers() {
         val employerAdapter = ArrayAdapter<String>(
