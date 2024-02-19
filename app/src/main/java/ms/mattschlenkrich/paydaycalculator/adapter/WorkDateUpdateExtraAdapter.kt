@@ -10,7 +10,7 @@ import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateExtraItemBinding
-import ms.mattschlenkrich.paydaycalculator.model.ExtraTypeAndDefByDay
+import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionAndType
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragment
@@ -32,23 +32,24 @@ class WorkDateUpdateExtraAdapter(
 
     private val differCallBack =
         object : DiffUtil
-        .ItemCallback<ExtraTypeAndDefByDay>() {
+        .ItemCallback<ExtraDefinitionAndType>() {
             override fun areItemsTheSame(
-                oldItem: ExtraTypeAndDefByDay,
-                newItem: ExtraTypeAndDefByDay
+                oldItem: ExtraDefinitionAndType,
+                newItem: ExtraDefinitionAndType
             ): Boolean {
                 return oldItem == newItem &&
-                        oldItem.extraDef == newItem.extraDef &&
-                        oldItem.extraType == newItem.extraType
+                        oldItem.extraType == newItem.extraType &&
+                        oldItem.definition == newItem.definition
             }
 
             override fun areContentsTheSame(
-                oldItem: ExtraTypeAndDefByDay,
-                newItem: ExtraTypeAndDefByDay
+                oldItem: ExtraDefinitionAndType,
+                newItem: ExtraDefinitionAndType
             ): Boolean {
-                return oldItem.extraDef.workExtraDefId == newItem.extraDef.workExtraDefId &&
-                        oldItem.extraType.workExtraTypeId == newItem.extraType.workExtraTypeId &&
-                        oldItem.extraType.wetName == newItem.extraType.wetName
+                return oldItem.extraType.workExtraTypeId == newItem.extraType.workExtraTypeId &&
+                        oldItem.definition.workExtraDefId == newItem.definition.workExtraDefId &&
+                        oldItem.extraType.wetName == newItem.extraType.wetName &&
+                        oldItem.definition.weEffectiveDate == newItem.definition.weEffectiveDate
             }
         }
 
@@ -79,7 +80,7 @@ class WorkDateUpdateExtraAdapter(
                 }
             }
             var display =
-                "${extra.extraType.wetName} ${cf.displayDollars(extra.extraDef.weValue)}"
+                "${extra.extraType.wetName} ${cf.displayDollars(extra.definition.weValue)}"
             var found = false
             for (workExtra in workDateExtras) {
                 if (workExtra.wdeName == extra.extraType.wetName) {
@@ -101,7 +102,7 @@ class WorkDateUpdateExtraAdapter(
     }
 
     private fun addNewExtra(
-        extra: ExtraTypeAndDefByDay
+        extra: ExtraDefinitionAndType
     ) {
         parentFragment.let {
             mainActivity.payDayViewModel.insertWorkDateExtra(
@@ -112,8 +113,8 @@ class WorkDateUpdateExtraAdapter(
                     extra.extraType.wetName,
                     extra.extraType.wetAppliesTo,
                     extra.extraType.wetAttachTo,
-                    extra.extraDef.weValue,
-                    extra.extraDef.weIsFixed,
+                    extra.definition.weValue,
+                    extra.definition.weIsFixed,
                     extra.extraType.wetIsCredit,
                     false,
                     df.getCurrentTimeAsString()

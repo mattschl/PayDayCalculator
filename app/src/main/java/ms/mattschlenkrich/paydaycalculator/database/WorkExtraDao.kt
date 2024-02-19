@@ -11,6 +11,7 @@ import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRA_TYPES
+import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionAndType
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
 import ms.mattschlenkrich.paydaycalculator.model.ExtraTypeAndDefByDay
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
@@ -99,12 +100,33 @@ interface WorkExtraDao {
     )
     fun getWorkExtraTypeList(employerId: Long): LiveData<List<WorkExtraTypes>>
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @Transaction
     @Query(
-        "SELECT * FROM $TABLE_WORK_EXTRA_TYPES " +
+        "SELECT extraType.*, extraDef.* " +
+                "FROM $TABLE_WORK_EXTRA_TYPES as extraType " +
+                "LEFT JOIN (" +
+                "SELECT * FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
+                "WHERE weEmployerId = :employerId " +
+                "AND weIsDeleted = 0 " +
+                "AND weEffectiveDate <= :cutoffDate " +
+                "ORDER BY weEffectiveDate DESC " +
+                "LIMIT 1" +
+                ") as extraDef " +
                 "WHERE wetEmployerId = :employerId " +
                 "AND wetAttachTo = 1 " +
                 "AND wetIsDeleted = 0"
     )
-    fun getExtraTypesByDaily(employerId: Long):
-            LiveData<List<WorkExtraTypes>>
+    fun getExtraTypesAndDefByDaily(employerId: Long, cutoffDate: String):
+            LiveData<List<ExtraDefinitionAndType>>
+
+    @Query(
+        "SELECT * FROM $TABLE_WORK_EXTRA_TYPES " +
+                "WHERE wetEmployerId = :employerId " +
+                "AND wetAttachTo = 1 " +
+                "AND wetIsDeleted = 0 " +
+                "ORDER BY wetName COLLATE NOCASE"
+    )
+    fun getExtraTypesByDaily(employerId: Long): LiveData<List<WorkExtraTypes>>
+
 }
