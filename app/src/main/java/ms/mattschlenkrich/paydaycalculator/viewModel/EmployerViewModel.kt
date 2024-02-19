@@ -23,6 +23,9 @@ class EmployerViewModel(
             employerRepository.updateEmployer(employers)
         }
 
+    fun getEmployer(employerId: Long) =
+        employerRepository.getEmployer(employerId)
+
     fun getEmployers() =
         employerRepository.getEmployers()
 

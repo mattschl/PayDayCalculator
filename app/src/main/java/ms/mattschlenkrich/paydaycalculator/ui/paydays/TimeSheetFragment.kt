@@ -109,6 +109,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                             curCutOff = spCutOff.selectedItem.toString()
                             fillPayDayDetails()
                             fillWorkDates()
+                            fillValues()
                         } else {
                             generateCutOff()
                         }
@@ -118,6 +119,26 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
 //                        fillCutOffDates()*///-
                     }
                 }
+        }
+    }
+
+    private fun fillValues() {
+        val payCalculations = PayCalculations(
+            mainActivity, curEmployer!!, curCutOff, mView
+        )
+        payCalculations.apply {
+            getWorkDates()
+            getRate()
+            getExtras()
+        }
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_500)
+            payCalculations.apply {
+                val payRate = getRate()
+            }
+            binding.apply {
+
+            }
         }
     }
 

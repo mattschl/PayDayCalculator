@@ -22,6 +22,12 @@ interface EmployerDao {
 
     @Query(
         "SELECT * FROM $TABLE_EMPLOYERS " +
+                "WHERE employerId = :employerId"
+    )
+    fun getEmployer(employerId: Long): LiveData<Employers>
+
+    @Query(
+        "SELECT * FROM $TABLE_EMPLOYERS " +
                 "ORDER BY $EMPLOYER_NAME COLLATE NOCASE"
     )
     fun getEmployers(): LiveData<List<Employers>>
@@ -48,7 +54,7 @@ interface EmployerDao {
     @Query(
         "SELECT * FROM $TABLE_EMPLOYER_PAY_RATES " +
                 "WHERE eprEmployerId = :employerId " +
-                "ORDER BY eprEffectiveDate DESC"
+                "ORDER BY eprEffectiveDate"
     )
     fun getEmployerPayRates(employerId: Long): LiveData<List<EmployerPayRates>>
 }

@@ -6,6 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES
@@ -111,4 +112,21 @@ interface PayDayDao {
         extraName: String, workDateId: Long, updateTime: String
     )
 
+    @Transaction
+    @Query(
+        "SELECT workDateExtras.* " +
+                "FROM workDateExtras " +
+                "INNER JOIN " +
+                "workDates ON wdeWorkDateId = ( " +
+                "SELECT workDateId " +
+                "FROM workDates " +
+                "WHERE wdCutoffDate = :cutOff AND " +
+                "wdEmployerID = :employerId AND " +
+                "wdIsDeleted = 0 " +
+                ") " +
+                "WHERE wdeIsDeleted = 0 " +
+                "ORDER BY workDates.wdDate "
+    )
+    fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String)
+            : LiveData<List<WorkDateExtras>>
 }

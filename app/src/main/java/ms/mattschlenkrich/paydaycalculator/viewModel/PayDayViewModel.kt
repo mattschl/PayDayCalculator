@@ -63,4 +63,7 @@ class PayDayViewModel(
     ) = viewModelScope.launch {
         payDayRepository.deleteWorkDateExtra(extraName, workDateId, updateTime)
     }
+
+    fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String) =
+        payDayRepository.getWorkDateExtrasPerPay(employerId, cutOff)
 }

@@ -171,3 +171,8 @@ data class WorkPayPeriodTax(
     val wppIsDeleted: Boolean,
     val wppUpdateTime: String,
 ) : Parcelable
+
+data class ExtraTotal(
+    var extraName: String,
+    var extraTotal: Double,
+)
