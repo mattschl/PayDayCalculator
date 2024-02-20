@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paydaycalculator.payFunctions
 
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import ms.mattschlenkrich.paydaycalculator.MainActivity
@@ -81,11 +80,24 @@ class PayCalculations(
         return getStatHours() * rate
     }
 
+    fun getAllHours(): Double {
+        return getRegHours() + getOtHours() + getDblOtHours()
+    }
+
     fun getDailyExtraFixedTotal(): Double {
         var extraTotal = 0.0
         for (extra in workExtrasPerDate) {
             if (extra.wdeIsFixed) {
-                extraTotal += extra.wdeValue
+                if (extra.wdeAppliesTo == 0) {
+                    for (date in workDates) {
+                        if (extra.wdeWorkDateId == date.workDateId) {
+                            extraTotal += extra.wdeValue *
+                                    (date.wdRegHours + date.wdOtHours + date.wdDblOtHours)
+                        }
+                    }
+                } else if (extra.wdeAppliesTo == 1) {
+                    extraTotal += extra.wdeValue
+                }
             }
         }
         return extraTotal
@@ -133,10 +145,6 @@ class PayCalculations(
                 employer.employerId
             ).observe(lifecycleOwner) { rates ->
                 rates.listIterator().forEach {
-                    Log.d(
-                        TAG, "RATE is ${it.eprPayRate} " +
-                                "EFFECTIVE DATE is ${it.eprEffectiveDate}"
-                    )
                     if (it.eprEffectiveDate <= cutOff) {
                         rate = it.eprPayRate
                     }
@@ -166,7 +174,6 @@ class PayCalculations(
                 workExtrasPerDate.clear()
                 list.listIterator().forEach {
                     workExtrasPerDate.add(it)
-                    Log.d(TAG, "EXTRA ADDED ${it.wdeName}")
                 }
             }
         }
@@ -180,7 +187,6 @@ class PayCalculations(
                 workExtrasByPay.clear()
                 list.listIterator().forEach {
                     workExtrasByPay.add(it)
-                    Log.d(TAG, "EXTRA ADDED ${it.extraType.wetName}")
                 }
             }
         }

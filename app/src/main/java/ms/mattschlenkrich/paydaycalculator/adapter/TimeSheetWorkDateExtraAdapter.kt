@@ -54,7 +54,8 @@ class TimeSheetWorkDateExtraAdapter() :
     override fun onBindViewHolder(holder: DateExtrasHolder, position: Int) {
         val extra = differ.currentList[position]
         holder.itemBinding.apply {
-            val display = extra.wdeName + " - " +
+            var display = if (position > 0) "| " else ""
+            display += extra.wdeName + " - " +
                     cf.displayDollars(extra.wdeValue)
             tvExtra.text = display
             if (extra.wdeIsCredit) {

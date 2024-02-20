@@ -114,9 +114,9 @@ interface PayDayDao {
 
     @Transaction
     @Query(
-        "SELECT workDateExtras.* " +
+        "SELECT DISTINCT workDateExtras.* " +
                 "FROM workDateExtras " +
-                "INNER JOIN " +
+                "LEFT JOIN " +
                 "workDates ON wdeWorkDateId = ( " +
                 "SELECT workDateId " +
                 "FROM workDates " +

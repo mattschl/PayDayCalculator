@@ -3,7 +3,6 @@ package ms.mattschlenkrich.paydaycalculator.ui.employer
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -238,7 +237,6 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun getCurrentEmployer(): Employers {
-        Log.d(TAG, "start date is $startDate")
         binding.apply {
             return Employers(
                 cf.generateId(),

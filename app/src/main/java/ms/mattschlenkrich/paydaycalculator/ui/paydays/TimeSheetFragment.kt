@@ -19,7 +19,7 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
-import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
@@ -126,7 +126,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
             mainActivity, curEmployer!!, curCutOff, mView
         )
         CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_500)
+            delay(WAIT_250)
             binding.apply {
                 var display = "Gross ${cf.displayDollars(payCalculations.getGrossPay())}"
                 tvGrossPay.text = display

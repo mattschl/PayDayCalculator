@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.adapter
 
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -94,7 +93,7 @@ class WorkDateAdapter(
                     workDate.workDateId
                 ).observe(mView.findViewTreeLifecycleOwner()!!) { list ->
                     extrasAdapter.differ.submitList(list)
-                    Log.d(TAG, "list for ${workDate.wdDate} has ${list.size} items")
+//                    Log.d(TAG, "list for ${workDate.wdDate} has ${list.size} items")
                     if (list.isEmpty()) {
                         rvExtras.visibility = View.GONE
                     } else {
