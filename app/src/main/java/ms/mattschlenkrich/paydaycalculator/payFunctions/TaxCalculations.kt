@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.model.Employers
+import ms.mattschlenkrich.paydaycalculator.model.TaxAndAmount
 import ms.mattschlenkrich.paydaycalculator.model.TaxComplete
 
 class TaxCalculations(
@@ -22,6 +23,46 @@ class TaxCalculations(
 
     init {
         findTaxRates()
+    }
+
+    fun getAllTaxDeductions(gross: Double): Double {
+        var totalTax = 0.0
+        for (taxAndAmount in getTaxes(gross)) {
+            totalTax += taxAndAmount.amount
+        }
+        return totalTax
+    }
+
+    fun getTaxes(gross: Double): ArrayList<TaxAndAmount> {
+        val taxesAndAmounts = ArrayList<TaxAndAmount>()
+        for (type in taxTypes) {
+            var taxTotal = 0.0
+            var runningRemainder = gross
+            for (taxDef in workTaxAndDef) {
+                if (taxDef.taxType.taxType == type && runningRemainder > 0) {
+                    var taxable = 0.0
+                    runningRemainder -=
+                        if (taxDef.taxRule.wtHasExemption) taxDef.taxRule.wtExemptionAmount
+                        else 0.0
+                    if (taxDef.taxRule.wtHasBracket &&
+                        runningRemainder >= taxDef.taxRule.wtBracketAmount
+                    ) {
+                        taxable = taxDef.taxRule.wtBracketAmount
+                        runningRemainder -= taxDef.taxRule.wtBracketAmount
+                    } else {
+                        taxable = runningRemainder
+                        runningRemainder = 0.0
+                    }
+                    taxTotal += taxable * taxDef.taxRule.wtPercent
+                }
+            }
+            taxesAndAmounts.add(
+                TaxAndAmount(
+                    type, taxTotal
+                )
+            )
+        }
+        return taxesAndAmounts
     }
 
     private fun findTaxRates() {

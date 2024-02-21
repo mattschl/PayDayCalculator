@@ -133,3 +133,8 @@ data class ExtraTypeAndDef(
     )
     val extraDef: WorkExtrasDefinitions
 ) : Parcelable
+
+data class EmployerDeductions(
+    var deduction: String,
+    var amount: Double,
+)

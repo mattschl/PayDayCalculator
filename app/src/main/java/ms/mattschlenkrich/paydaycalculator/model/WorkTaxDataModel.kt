@@ -88,3 +88,8 @@ data class TaxComplete(
     )
     val taxRule: WorkTaxRules,
 ) : Parcelable
+
+data class TaxAndAmount(
+    var taxType: String,
+    var amount: Double,
+)
