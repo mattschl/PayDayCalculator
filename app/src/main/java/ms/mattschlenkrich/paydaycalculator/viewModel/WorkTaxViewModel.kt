@@ -65,4 +65,13 @@ class WorkTaxViewModel(
 
     fun getEmployerTaxTypes(employerId: Long) =
         workTaxRepository.getEmployerTaxTypes(employerId)
+
+    fun getTaxTypeAndDef(effectiveDate: String) =
+        workTaxRepository.getTaxTypeAndDef(effectiveDate)
+
+    fun getCurrentEffectiveDate(cutoffDate: String) =
+        workTaxRepository.getCurrentEffectiveDate(cutoffDate)
+
+    fun getTaxTypesByEmployer(employerId: Long) =
+        workTaxRepository.getTaxTypesByEmployer(employerId)
 }

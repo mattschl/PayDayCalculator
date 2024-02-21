@@ -16,6 +16,7 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_LEVEL
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
 import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.TaxComplete
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
@@ -90,4 +91,34 @@ interface WorkTaxDao {
                 "ORDER BY etrTaxType"
     )
     fun getEmployerTaxTypes(employerId: Long): LiveData<List<EmployerTaxTypes>>
+
+    @Query(
+        "SELECT DISTINCT * FROM taxTypes " +
+                "LEFT JOIN ( " +
+                "SELECT * FROM workTaxRules " +
+                "WHERE wtEffectiveDate = :effectiveDate " +
+                "AND wtIsDeleted = 0 " +
+                "ORDER BY wtEffectiveDate DESC " +
+                ") as taxDef " +
+                "ON taxType = wtType" +
+                " WHERE ttIsDeleted = 0 " +
+                "ORDER BY taxType"
+    )
+    fun getTaxTypeAndDef(effectiveDate: String): LiveData<List<TaxComplete>>
+
+    @Query(
+        "SELECT tdEffectiveDate FROM taxEffectiveDates " +
+                "WHERE tdEffectiveDate <= :cutoffDate " +
+                "ORDER BY tdEffectiveDate DESC " +
+                "LIMIT 1"
+    )
+    fun getCurrentEffectiveDate(cutoffDate: String): LiveData<String>
+
+    @Query(
+        "SELECT etrTaxType FROM employerTaxTypes " +
+                "WHERE etrEmployerId = :employerId " +
+                "AND etrIsDeleted = 0 " +
+                "AND etrInclude = 1"
+    )
+    fun getTaxTypesByEmployer(employerId: Long): LiveData<List<String>>
 }

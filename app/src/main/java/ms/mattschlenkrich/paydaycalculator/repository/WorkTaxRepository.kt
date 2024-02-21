@@ -46,4 +46,13 @@ class WorkTaxRepository(private val db: PayDatabase) {
 
     fun getEmployerTaxTypes(employerId: Long) =
         db.getWorkTaxDao().getEmployerTaxTypes(employerId)
+
+    fun getTaxTypeAndDef(effectiveDate: String) =
+        db.getWorkTaxDao().getTaxTypeAndDef(effectiveDate)
+
+    fun getCurrentEffectiveDate(cutoffDate: String) =
+        db.getWorkTaxDao().getCurrentEffectiveDate(cutoffDate)
+
+    fun getTaxTypesByEmployer(employerId: Long) =
+        db.getWorkTaxDao().getTaxTypesByEmployer(employerId)
 }
