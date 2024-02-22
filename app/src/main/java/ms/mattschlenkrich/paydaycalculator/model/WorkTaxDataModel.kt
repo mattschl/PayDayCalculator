@@ -83,7 +83,7 @@ data class TaxComplete(
     val taxType: TaxTypes,
     @Relation(
         entity = WorkTaxRules::class,
-        parentColumn = "taxTypeId",
+        parentColumn = "taxType",
         entityColumn = "wtType"
     )
     val taxRule: WorkTaxRules,

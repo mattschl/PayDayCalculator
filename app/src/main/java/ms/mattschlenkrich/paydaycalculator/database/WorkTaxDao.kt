@@ -93,16 +93,15 @@ interface WorkTaxDao {
     fun getEmployerTaxTypes(employerId: Long): LiveData<List<EmployerTaxTypes>>
 
     @Query(
-        "SELECT DISTINCT * FROM taxTypes " +
-                "LEFT JOIN ( " +
+        "SELECT taxTypes.*, taxDef.* FROM taxTypes " +
+                "JOIN ( " +
                 "SELECT * FROM workTaxRules " +
-                "WHERE wtEffectiveDate = :effectiveDate " +
-                "AND wtIsDeleted = 0 " +
-                "ORDER BY wtEffectiveDate DESC " +
+                "WHERE wtEffectiveDate == :effectiveDate " +
+                "AND wtIsDeleted == 0 " +
                 ") as taxDef " +
-                "ON taxType = wtType" +
-                " WHERE ttIsDeleted = 0 " +
-                "ORDER BY taxType"
+                "ON taxType = wtType " +
+                "WHERE ttIsDeleted == 0 " +
+                "ORDER BY wtType, wtLevel"
     )
     fun getTaxTypeAndDef(effectiveDate: String): LiveData<List<TaxComplete>>
 
@@ -112,7 +111,7 @@ interface WorkTaxDao {
                 "ORDER BY tdEffectiveDate DESC " +
                 "LIMIT 1"
     )
-    fun getCurrentEffectiveDate(cutoffDate: String): LiveData<String>
+    fun getCurrentEffectiveDate(cutoffDate: String): LiveData<List<String>>
 
     @Query(
         "SELECT etrTaxType FROM employerTaxTypes " +

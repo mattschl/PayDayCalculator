@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.payFunctions
 
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import ms.mattschlenkrich.paydaycalculator.MainActivity
@@ -119,6 +120,18 @@ class PayCalculations(
         return extraTotal
     }
 
+    fun getPerPayExtraPercentTotal(): Double {
+        var extraTotal = 0.0
+        for (extra in workExtrasByPay) {
+            if (!extra.definition.weIsFixed && extra.extraType.wetAppliesTo == 3) {
+                extraTotal += (getRegPay() + getOtPay() + getDblOtPay()) *
+                        extra.definition.weValue
+            }
+        }
+        Log.d(TAG, "extraTotal is $extraTotal")
+        return extraTotal
+    }
+
     fun getPayExtraCreditTotals(): Double {
         var extraTotal = 0.0
         for (extra in workExtrasByPay) {
@@ -136,7 +149,7 @@ class PayCalculations(
     fun getGrossPay(): Double {
         return getRegPay() + getOtPay() + getDblOtPay() + getStatPay() +
                 getDailyExtraFixedTotal() + getDailyExtraPercentTotal() +
-                getPayExtraCreditTotals()
+                getPayExtraCreditTotals() + getPerPayExtraPercentTotal()
     }
 
     private fun findRate() {

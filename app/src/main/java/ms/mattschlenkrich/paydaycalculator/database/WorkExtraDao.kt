@@ -168,4 +168,6 @@ interface WorkExtraDao {
     )
     fun getExtraTypesAndDefByPay(employerId: Long, cutoffDate: String):
             LiveData<List<ExtraDefinitionAndType>>
+
+
 }

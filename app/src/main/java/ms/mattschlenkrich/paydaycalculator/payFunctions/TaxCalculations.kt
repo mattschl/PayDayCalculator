@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.payFunctions
 
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import kotlinx.coroutines.CoroutineScope
@@ -11,6 +12,8 @@ import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.TaxAndAmount
 import ms.mattschlenkrich.paydaycalculator.model.TaxComplete
+
+private const val TAG = "TaxCalculations"
 
 class TaxCalculations(
     private val mainActivity: MainActivity,
@@ -35,30 +38,37 @@ class TaxCalculations(
 
     fun getTaxes(gross: Double): ArrayList<TaxAndAmount> {
         val taxesAndAmounts = ArrayList<TaxAndAmount>()
-        for (type in taxTypes) {
+        for (i in 0 until taxTypes.size) {
+//            Log.d(TAG, "looping through types - $type")
             var taxTotal = 0.0
             var runningRemainder = gross
-            for (taxDef in workTaxAndDef) {
-                if (taxDef.taxType.taxType == type && runningRemainder > 0) {
-                    var taxable = 0.0
+            for (t in 0 until workTaxAndDef.size) {
+//                Log.d(
+//                    TAG, "looping through taxDef - ${workTaxAndDef[t].taxType.taxType} " +
+//                            "and - ${workTaxAndDef[t].taxRule.wtPercent} ==" +
+//                            "${workTaxAndDef.size} entries"
+//                )
+                if (workTaxAndDef[t].taxType.taxType == taxTypes[i] && runningRemainder > 0) {
+                    var taxable: Double
                     runningRemainder -=
-                        if (taxDef.taxRule.wtHasExemption) taxDef.taxRule.wtExemptionAmount
+                        if (workTaxAndDef[t].taxRule.wtHasExemption)
+                            workTaxAndDef[t].taxRule.wtExemptionAmount
                         else 0.0
-                    if (taxDef.taxRule.wtHasBracket &&
-                        runningRemainder >= taxDef.taxRule.wtBracketAmount
+                    if (workTaxAndDef[t].taxRule.wtHasBracket &&
+                        runningRemainder >= workTaxAndDef[t].taxRule.wtBracketAmount
                     ) {
-                        taxable = taxDef.taxRule.wtBracketAmount
-                        runningRemainder -= taxDef.taxRule.wtBracketAmount
+                        taxable = workTaxAndDef[t].taxRule.wtBracketAmount
+                        runningRemainder -= workTaxAndDef[t].taxRule.wtBracketAmount
                     } else {
                         taxable = runningRemainder
                         runningRemainder = 0.0
                     }
-                    taxTotal += taxable * taxDef.taxRule.wtPercent
+                    taxTotal += taxable * workTaxAndDef[t].taxRule.wtPercent
                 }
             }
             taxesAndAmounts.add(
                 TaxAndAmount(
-                    type, taxTotal
+                    taxTypes[i], taxTotal
                 )
             )
         }
@@ -71,7 +81,7 @@ class TaxCalculations(
             mainActivity.workTaxViewModel.getCurrentEffectiveDate(
                 cutOff
             ).observe(lifecycleOwner) { date ->
-                effectiveDate = date
+                effectiveDate = date[0].toString()
             }
         }
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
@@ -91,8 +101,15 @@ class TaxCalculations(
                     effectiveDate
                 ).observe(lifecycleOwner) { list ->
                     workTaxAndDef.clear()
+                    var counter = 0
                     list.listIterator().forEach {
                         workTaxAndDef.add(it)
+                        counter += 1
+                        Log.d(
+                            TAG, "iterating tax def for ${it.taxType.taxType} value is " +
+                                    "${it.taxRule.wtPercent} | counter $counter " +
+                                    "LEVEL is ${it.taxRule.wtLevel}"
+                        )
                     }
                 }
             }

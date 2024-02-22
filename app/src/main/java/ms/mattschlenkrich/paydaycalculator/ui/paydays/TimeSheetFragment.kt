@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.ui.paydays
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,12 +20,13 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
-import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayCalculations
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayDayProjections
+import ms.mattschlenkrich.paydaycalculator.payFunctions.TaxCalculations
 import java.time.LocalDate
 
 private const val TAG = "TimeSheetFragment"
@@ -125,10 +127,20 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         val payCalculations = PayCalculations(
             mainActivity, curEmployer!!, curCutOff, mView
         )
+        val taxCalculations = TaxCalculations(
+            mainActivity, curEmployer!!, curCutOff, mView
+        )
         CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_250)
+            delay(WAIT_1000)
             binding.apply {
-                var display = "Gross ${cf.displayDollars(payCalculations.getGrossPay())}"
+                val grossPay = payCalculations.getGrossPay()
+                val taxAll = taxCalculations.getAllTaxDeductions(grossPay)
+                var display = "(${cf.displayDollars(taxAll)})"
+                tvDeductions.text = display
+                tvDeductions.setTextColor(Color.RED)
+                display = "NET: ${cf.displayDollars(grossPay - taxAll)}"
+                tvNetPay.text = display
+                display = "Gross ${cf.displayDollars(grossPay)}"
                 tvGrossPay.text = display
                 display = ""
                 if (payCalculations.getRegHours() != 0.0) {
