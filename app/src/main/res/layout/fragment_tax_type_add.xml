@@ -13,6 +13,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/tax_type"
+            android:textColor="@color/black"
             app:layout_constraintBaseline_toBaselineOf="@id/etTaxType"
             app:layout_constraintEnd_toStartOf="@id/etTaxType"
             app:layout_constraintStart_toStartOf="parent" />
@@ -28,5 +29,24 @@
             app:layout_constraintStart_toEndOf="@id/lblTaxType"
             app:layout_constraintStart_toStartOf="@id/lblTaxType"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/lblBasedOn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/base_on"
+            android:textColor="@color/black"
+            app:layout_constraintBaseline_toBaselineOf="@id/spBasedOn"
+            app:layout_constraintEnd_toStartOf="@id/spBasedOn"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Spinner
+            android:id="@+id/spBasedOn"
+            android:layout_width="@dimen/text_box_extra_wide"
+            android:layout_height="@dimen/minimum_touch_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblBasedOn"
+            app:layout_constraintTop_toBottomOf="@id/etTaxType" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

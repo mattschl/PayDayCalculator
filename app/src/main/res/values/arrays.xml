@@ -25,4 +25,9 @@
         <item>Monthly</item>
         <item>Annually</item>
     </string-array>
+    <string-array name="tax_based_on">
+        <item>Time Worked Only</item>
+        <item>Time Worked and Stat</item>
+        <item>All taxable</item>
+    </string-array>
 </resources>

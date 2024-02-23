@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -56,8 +57,20 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        fillSpinner()
         getTaxTypeList()
         fillMenu()
+    }
+
+    private fun fillSpinner() {
+        binding.apply {
+            val basedOnAdapter = ArrayAdapter(
+                mView.context, R.layout.spinner_item_bold,
+                resources.getStringArray(R.array.tax_based_on)
+            )
+            basedOnAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
+            spBasedOn.adapter = basedOnAdapter
+        }
     }
 
     private fun getTaxTypeList() {
@@ -100,6 +113,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
                 val taxType = TaxTypes(
                     cf.generateId(),
                     etTaxType.text.toString(),
+                    spBasedOn.selectedItemPosition,
                     false,
                     df.getCurrentTimeAsString()
                 )

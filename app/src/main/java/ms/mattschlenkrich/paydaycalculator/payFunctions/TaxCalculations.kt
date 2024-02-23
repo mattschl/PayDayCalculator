@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paydaycalculator.payFunctions
 
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import kotlinx.coroutines.CoroutineScope
@@ -67,16 +66,21 @@ class TaxCalculations(
             var taxTotal = 0.0
             var runningRemainder = gross
             for (def in taxDefs) {
-                Log.d(
-                    TAG, "looping through taxDef - ${def.wtType} " +
-                            "and - ${def.wtPercent} "
-                )
+//                Log.d(
+//                    TAG, "looping through taxDef - ${def.wtType} " +
+//                            "and - ${def.wtPercent} "
+//                )
                 if (def.wtType == taxType && runningRemainder > 0) {
                     var taxable: Double
                     runningRemainder -=
-                        if (def.wtHasExemption)
+                        if (def.wtHasExemption) {
                             getTaxFactor(def.wtExemptionAmount)
-                        else 0.0
+                        } else {
+                            0.0
+                        }
+                    if (runningRemainder < 0.0) {
+                        runningRemainder = 0.0
+                    }
                     if (def.wtHasBracket &&
                         runningRemainder >= getTaxFactor(def.wtBracketAmount)
                     ) {
@@ -87,7 +91,6 @@ class TaxCalculations(
                         runningRemainder = 0.0
                     }
                     taxTotal += taxable * def.wtPercent
-
                 }
             }
             taxesAndAmounts.add(

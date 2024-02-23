@@ -7,6 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -44,10 +45,22 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        fillSpinner()
         getTaxTypeList()
         fillMenu()
         addActions()
         fillValues()
+    }
+
+    private fun fillSpinner() {
+        binding.apply {
+            val basedOnAdapter = ArrayAdapter(
+                mView.context, R.layout.spinner_item_bold,
+                resources.getStringArray(R.array.tax_based_on)
+            )
+            basedOnAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
+            spBasedOn.adapter = basedOnAdapter
+        }
     }
 
     private fun fillValues() {
@@ -55,6 +68,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
             curTaxType = mainActivity.mainViewModel.getTaxType()!!
             binding.apply {
                 etTaxType.setText(curTaxType.taxType)
+                spBasedOn.setSelection(curTaxType.ttBasedOn)
             }
         }
     }
@@ -101,6 +115,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
             TaxTypes(
                 curTaxType.taxTypeId,
                 curTaxType.taxType,
+                curTaxType.ttBasedOn,
                 true,
                 df.getCurrentTimeAsString()
             )
@@ -111,15 +126,17 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     private fun updateWorkTaxType() {
         val message = checkTaxType()
         if (message == ANSWER_OK) {
-            mainActivity.workTaxViewModel.updateWorkTaxType(
-                TaxTypes(
-                    curTaxType.taxTypeId,
-                    binding.etTaxType.text.toString(),
-                    false,
-                    df.getCurrentTimeAsString()
+            binding.apply {
+                mainActivity.workTaxViewModel.updateWorkTaxType(
+                    TaxTypes(
+                        curTaxType.taxTypeId, etTaxType.text.toString(),
+                        spBasedOn.selectedItemPosition,
+                        false,
+                        df.getCurrentTimeAsString()
+                    )
                 )
-            )
-            gotoCallingFragment()
+                gotoCallingFragment()
+            }
         } else {
             Toast.makeText(
                 mView.context,

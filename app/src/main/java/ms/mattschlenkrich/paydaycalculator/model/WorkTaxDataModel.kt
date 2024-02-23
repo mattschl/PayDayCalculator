@@ -26,6 +26,7 @@ data class TaxTypes(
     @PrimaryKey
     val taxTypeId: Long,
     val taxType: String,
+    val ttBasedOn: Int,
     val ttIsDeleted: Boolean,
     val ttUpdateTime: String,
 ) : Parcelable
