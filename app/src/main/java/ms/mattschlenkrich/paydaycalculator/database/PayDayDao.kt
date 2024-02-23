@@ -12,6 +12,7 @@ import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATE_EXTRAS
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtraAndTypeFull
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
@@ -114,7 +115,7 @@ interface PayDayDao {
 
     @Transaction
     @Query(
-        "SELECT DISTINCT workDateExtras.* " +
+        "SELECT DISTINCT workDateExtras.*, types.* " +
                 "FROM workDateExtras " +
                 "LEFT JOIN " +
                 "workDates ON wdeWorkDateId = ( " +
@@ -124,9 +125,11 @@ interface PayDayDao {
                 "wdEmployerID = :employerId AND " +
                 "wdIsDeleted = 0 " +
                 ") " +
+                "LEFT JOIN taxTypes as types ON " +
+                "taxTypeId = wdeExtraTypeId " +
                 "WHERE wdeIsDeleted = 0 " +
                 "ORDER BY workDates.wdDate "
     )
     fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String)
-            : LiveData<List<WorkDateExtras>>
+            : LiveData<List<WorkDateExtraAndTypeFull>>
 }

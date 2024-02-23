@@ -5,7 +5,7 @@ import androidx.lifecycle.findViewTreeLifecycleOwner
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionAndType
-import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
+import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtraAndTypeFull
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 
 private const val TAG = "PayCalculations"
@@ -17,7 +17,7 @@ class PayCalculations(
     private val mView: View,
 ) {
     private val workDates = ArrayList<WorkDates>()
-    private val workExtrasPerDate = ArrayList<WorkDateExtras>()
+    private val workExtrasPerDate = ArrayList<WorkDateExtraAndTypeFull>()
     private val workExtrasByPay = ArrayList<ExtraDefinitionAndType>()
     private var rate = 0.0
 
@@ -87,16 +87,18 @@ class PayCalculations(
     fun getDailyExtraFixedTotal(): Double {
         var extraTotal = 0.0
         for (extra in workExtrasPerDate) {
-            if (extra.wdeIsFixed) {
-                if (extra.wdeAppliesTo == 0) {
+            if (extra.extra.wdeIsFixed) {
+                if (extra.extra.wdeAppliesTo == 0) {
                     for (date in workDates) {
-                        if (extra.wdeWorkDateId == date.workDateId) {
-                            extraTotal += extra.wdeValue *
+                        if (extra.extra.wdeWorkDateId == date.workDateId &&
+                            !extra.extra.wdeIsDeleted
+                        ) {
+                            extraTotal += extra.extra.wdeValue *
                                     (date.wdRegHours + date.wdOtHours + date.wdDblOtHours)
                         }
                     }
-                } else if (extra.wdeAppliesTo == 1) {
-                    extraTotal += extra.wdeValue
+                } else if (extra.extra.wdeAppliesTo == 1) {
+                    extraTotal += extra.extra.wdeValue
                 }
             }
         }
@@ -107,10 +109,12 @@ class PayCalculations(
     fun getDailyExtraPercentTotal(): Double {
         var extraTotal = 0.0
         for (extra in workExtrasPerDate) {
-            if (!extra.wdeIsFixed) {
+            if (!extra.extra.wdeIsFixed) {
                 for (date in workDates) {
-                    if (extra.wdeWorkDateId == date.workDateId) {
-                        extraTotal += extra.wdeValue * (
+                    if (extra.extra.wdeWorkDateId == date.workDateId &&
+                        !extra.extra.wdeIsDeleted
+                    ) {
+                        extraTotal += extra.extra.wdeValue * (
                                 date.wdRegHours + date.wdOtHours + date.wdDblOtHours)
                     }
                 }
@@ -122,7 +126,11 @@ class PayCalculations(
     fun getPerPayExtraPercentTotal(): Double {
         var extraTotal = 0.0
         for (extra in workExtrasByPay) {
-            if (!extra.definition.weIsFixed && extra.extraType.wetAppliesTo == 3) {
+            if (!extra.definition.weIsFixed &&
+                extra.extraType.wetAppliesTo == 3 &&
+                !extra.extraType.wetIsDeleted &&
+                !extra.definition.weIsDeleted
+            ) {
                 extraTotal += (getRegPay() + getOtPay() + getDblOtPay()) *
                         extra.definition.weValue
             }
@@ -146,9 +154,13 @@ class PayCalculations(
     }
 
     fun getGrossPay(): Double {
-        return getRegPay() + getOtPay() + getDblOtPay() + getStatPay() +
+        return getPayTimeWorked() + getStatPay() +
                 getDailyExtraFixedTotal() + getDailyExtraPercentTotal() +
                 getPayExtraCreditTotals() + getPerPayExtraPercentTotal()
+    }
+
+    fun getPayTimeWorked(): Double {
+        return getRegPay() + getOtPay() + getDblOtPay()
     }
 
     private fun findRate() {

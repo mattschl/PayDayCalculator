@@ -176,3 +176,33 @@ data class ExtraTotal(
     var extraName: String,
     var extraTotal: Double,
 )
+
+@Parcelize
+data class WorkDateExtraAndType(
+    @Embedded
+    val extra: WorkDateExtras,
+    @Relation(
+        entity = WorkExtraTypes::class,
+        parentColumn = "workExtraTypeId",
+        entityColumn = "wdeExtraTypeId"
+    )
+    var type: WorkExtraTypes?
+) : Parcelable
+
+@Parcelize
+data class WorkDateExtraAndTypeFull(
+    @Embedded
+    val extra: WorkDateExtras,
+    @Relation(
+        entity = WorkExtraTypes::class,
+        parentColumn = "workExtraTypeId",
+        entityColumn = "wdeExtraTypeId"
+    )
+    var type: WorkExtraTypes?,
+    @Relation(
+        entity = WorkExtrasDefinitions::class,
+        parentColumn = "workExtraTypeId",
+        entityColumn = "weExtraTypeId"
+    )
+    var def: WorkExtrasDefinitions?
+) : Parcelable
