@@ -74,4 +74,7 @@ class WorkTaxViewModel(
 
     fun getTaxTypesByEmployer(employerId: Long) =
         workTaxRepository.getTaxTypesByEmployer(employerId)
+
+    fun getTaxDefByDate(effectiveDate: String) =
+        workTaxRepository.getTaxDefByDate(effectiveDate)
 }

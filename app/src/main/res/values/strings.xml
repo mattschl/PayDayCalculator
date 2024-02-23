@@ -144,4 +144,8 @@
     <string name="manually_added">Manually added</string>
     <string name="no_values_have_been_entered_add_them_now">No values have been entered. \n Add them now.</string>
     <string name="deleted">* DELETED *</string>
+    <string name="amount">Amount</string>
+    <string name="rate">Rate</string>
+    <string name="total">Total</string>
+    <string name="qty">QTY</string>
 </resources>

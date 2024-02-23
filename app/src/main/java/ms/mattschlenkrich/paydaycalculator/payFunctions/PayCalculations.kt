@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paydaycalculator.payFunctions
 
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import ms.mattschlenkrich.paydaycalculator.MainActivity
@@ -128,7 +127,7 @@ class PayCalculations(
                         extra.definition.weValue
             }
         }
-        Log.d(TAG, "extraTotal is $extraTotal")
+//        Log.d(TAG, "extraTotal is $extraTotal")
         return extraTotal
     }
 

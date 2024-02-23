@@ -54,7 +54,6 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = resources.getString(R.string.time_sheet)
         return mView
     }
 

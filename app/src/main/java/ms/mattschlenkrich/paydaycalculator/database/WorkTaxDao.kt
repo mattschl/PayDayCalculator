@@ -99,11 +99,19 @@ interface WorkTaxDao {
                 "WHERE wtEffectiveDate == :effectiveDate " +
                 "AND wtIsDeleted == 0 " +
                 ") as taxDef " +
-                "ON taxType = wtType " +
-                "WHERE ttIsDeleted == 0 " +
-                "ORDER BY wtType, wtLevel"
+                "ON taxTypes.taxType = taxDef.wtType " +
+                "WHERE taxTypes.ttIsDeleted == 0 " +
+                "ORDER BY taxDef.wtType, taxDef.wtLevel"
     )
     fun getTaxTypeAndDef(effectiveDate: String): LiveData<List<TaxComplete>>
+
+    @Query(
+        "SELECT * FROM workTaxRules " +
+                "WHERE wtEffectiveDate = :effectiveDate " +
+                "AND wtIsDeleted == 0 " +
+                "ORDER BY wtType, wtLevel"
+    )
+    fun getTaxDefByDate(effectiveDate: String): LiveData<List<WorkTaxRules>>
 
     @Query(
         "SELECT tdEffectiveDate FROM taxEffectiveDates " +

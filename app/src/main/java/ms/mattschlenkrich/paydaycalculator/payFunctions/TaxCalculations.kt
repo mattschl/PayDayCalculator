@@ -11,7 +11,7 @@ import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.TaxAndAmount
-import ms.mattschlenkrich.paydaycalculator.model.TaxComplete
+import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
 
 private const val TAG = "TaxCalculations"
 
@@ -21,11 +21,35 @@ class TaxCalculations(
     private val cutOff: String,
     private val mView: View,
 ) {
-    private val workTaxAndDef = ArrayList<TaxComplete>()
+    private val taxDefs = ArrayList<WorkTaxRules>()
     private val taxTypes = ArrayList<String>()
 
     init {
         findTaxRates()
+    }
+
+    private fun getTaxFactor(amount: Double): Double {
+        when (employer.payFrequency) {
+            "Bi-Weekly" -> {
+                return amount / 26
+            }
+
+            "Weekly" -> {
+                return amount / 52
+            }
+
+            "Semi-Monthly" -> {
+                return amount / 24
+            }
+
+            "Monthly" -> {
+                return amount / 12
+            }
+
+            else -> {
+                return 0.0
+            }
+        }
     }
 
     fun getAllTaxDeductions(gross: Double): Double {
@@ -38,37 +62,37 @@ class TaxCalculations(
 
     fun getTaxes(gross: Double): ArrayList<TaxAndAmount> {
         val taxesAndAmounts = ArrayList<TaxAndAmount>()
-        for (i in 0 until taxTypes.size) {
+        for (taxType in taxTypes) {
 //            Log.d(TAG, "looping through types - $type")
             var taxTotal = 0.0
             var runningRemainder = gross
-            for (t in 0 until workTaxAndDef.size) {
-//                Log.d(
-//                    TAG, "looping through taxDef - ${workTaxAndDef[t].taxType.taxType} " +
-//                            "and - ${workTaxAndDef[t].taxRule.wtPercent} ==" +
-//                            "${workTaxAndDef.size} entries"
-//                )
-                if (workTaxAndDef[t].taxType.taxType == taxTypes[i] && runningRemainder > 0) {
+            for (def in taxDefs) {
+                Log.d(
+                    TAG, "looping through taxDef - ${def.wtType} " +
+                            "and - ${def.wtPercent} "
+                )
+                if (def.wtType == taxType && runningRemainder > 0) {
                     var taxable: Double
                     runningRemainder -=
-                        if (workTaxAndDef[t].taxRule.wtHasExemption)
-                            workTaxAndDef[t].taxRule.wtExemptionAmount
+                        if (def.wtHasExemption)
+                            getTaxFactor(def.wtExemptionAmount)
                         else 0.0
-                    if (workTaxAndDef[t].taxRule.wtHasBracket &&
-                        runningRemainder >= workTaxAndDef[t].taxRule.wtBracketAmount
+                    if (def.wtHasBracket &&
+                        runningRemainder >= getTaxFactor(def.wtBracketAmount)
                     ) {
-                        taxable = workTaxAndDef[t].taxRule.wtBracketAmount
-                        runningRemainder -= workTaxAndDef[t].taxRule.wtBracketAmount
+                        taxable = getTaxFactor(def.wtBracketAmount)
+                        runningRemainder -= getTaxFactor(def.wtBracketAmount)
                     } else {
                         taxable = runningRemainder
                         runningRemainder = 0.0
                     }
-                    taxTotal += taxable * workTaxAndDef[t].taxRule.wtPercent
+                    taxTotal += taxable * def.wtPercent
+
                 }
             }
             taxesAndAmounts.add(
                 TaxAndAmount(
-                    taxTypes[i], taxTotal
+                    taxType, taxTotal
                 )
             )
         }
@@ -97,19 +121,19 @@ class TaxCalculations(
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
             mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
-                mainActivity.workTaxViewModel.getTaxTypeAndDef(
+                mainActivity.workTaxViewModel.getTaxDefByDate(
                     effectiveDate
                 ).observe(lifecycleOwner) { list ->
-                    workTaxAndDef.clear()
-                    var counter = 0
+                    taxDefs.clear()
+//                    var counter = 0
                     list.listIterator().forEach {
-                        workTaxAndDef.add(it)
-                        counter += 1
-                        Log.d(
-                            TAG, "iterating tax def for ${it.taxType.taxType} value is " +
-                                    "${it.taxRule.wtPercent} | counter $counter " +
-                                    "LEVEL is ${it.taxRule.wtLevel}"
-                        )
+                        taxDefs.add(it)
+//                        counter += 1
+//                        Log.d(
+//                            TAG, "iterating tax def for ${it.wtType} value is " +
+//                                    "${it.wtPercent} | counter $counter " +
+//                                    "LEVEL is ${it.wtLevel}"
+//                        )
                     }
                 }
             }
