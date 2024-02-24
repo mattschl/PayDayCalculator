@@ -85,10 +85,12 @@ class PayCalculations(
                 if (workExtrasPerDate.size == 1) {
                     extraList.add(ExtraAndTotal(workExtrasPerDate[i].extra.wdeName, total))
                     total = 0.0
-                } else if (i > 0 &&
-                    (workExtrasPerDate[i].extra.wdeName != workExtrasPerDate[i - 1].extra.wdeName
-                            || i == workExtrasPerDate.size - 1)
+                } else if (i < workExtrasPerDate.size - 1 &&
+                    (workExtrasPerDate[i].extra.wdeName != workExtrasPerDate[i + 1].extra.wdeName)
                 ) {
+                    extraList.add(ExtraAndTotal(workExtrasPerDate[i].extra.wdeName, total))
+                    total = 0.0
+                } else if (i == workExtrasPerDate.size - 1) {
                     extraList.add(ExtraAndTotal(workExtrasPerDate[i].extra.wdeName, total))
                     total = 0.0
                 }
@@ -96,76 +98,6 @@ class PayCalculations(
             return extraList
         }
 
-        fun getExtraFixedTotalByDaily(): Double {
-            var extraTotal = 0.0
-            for (extra in workExtrasPerDate) {
-                if (extra.extra.wdeIsFixed) {
-                    if (extra.extra.wdeAppliesTo == 0) {
-                        for (date in workDates) {
-                            if (extra.extra.wdeWorkDateId == date.workDateId &&
-                                !extra.extra.wdeIsDeleted
-                            ) {
-                                extraTotal += extra.extra.wdeValue *
-                                        (date.wdRegHours + date.wdOtHours + date.wdDblOtHours)
-                            }
-                        }
-                    } else if (extra.extra.wdeAppliesTo == 1) {
-                        extraTotal += extra.extra.wdeValue
-                    }
-                }
-            }
-            return extraTotal
-        }
-
-
-        fun getExtraPercentTotalByDaily(): Double {
-            var extraTotal = 0.0
-            for (extra in workExtrasPerDate) {
-                if (!extra.extra.wdeIsFixed) {
-                    for (date in workDates) {
-                        if (extra.extra.wdeWorkDateId == date.workDateId &&
-                            !extra.extra.wdeIsDeleted
-                        ) {
-                            extraTotal += extra.extra.wdeValue * (
-                                    date.wdRegHours + date.wdOtHours + date.wdDblOtHours)
-                        }
-                    }
-                }
-            }
-            return extraTotal
-        }
-
-        fun getExtraPercentTotalByPay(): Double {
-            var extraTotal = 0.0
-            for (extra in workExtrasByPay) {
-                if (!extra.definition.weIsFixed &&
-                    extra.extraType.wetAppliesTo == 3 &&
-                    !extra.extraType.wetIsDeleted &&
-                    !extra.definition.weIsDeleted
-                ) {
-                    extraTotal += (pay.getPayReg() +
-                            pay.getPayOt() +
-                            pay.getPayDblOt()) *
-                            extra.definition.weValue
-                }
-            }
-//        Log.d(TAG, "extraTotal is $extraTotal")
-            return extraTotal
-        }
-
-        fun getExtraCreditTotalsByPay(): Double {
-            var extraTotal = 0.0
-            for (extra in workExtrasByPay) {
-                if (extra.extraType.wetIsCredit) {
-                    extraTotal += if (extra.definition.weIsFixed) {
-                        extra.definition.weValue
-                    } else {
-                        extra.definition.weValue * pay.getPayHourly() / 100
-                    }
-                }
-            }
-            return extraTotal
-        }
     }
 
     inner class Hours {
@@ -228,11 +160,7 @@ class PayCalculations(
         }
 
         fun getPayGross(): Double {
-            return getPayHourly() +
-                    extras.getExtraFixedTotalByDaily() +
-                    extras.getExtraPercentTotalByDaily() +
-                    extras.getExtraCreditTotalsByPay() +
-                    extras.getExtraPercentTotalByPay()
+            return getPayHourly() //TODO: add the other values
         }
 
         fun getPayTimeWorked(): Double {
