@@ -341,5 +341,8 @@
             android:id="@+id/action_payDetailsFragment_to_timeSheetFragment"
             app:destination="@id/timeSheetFragment" />
     </fragment>
+    <action
+        android:id="@+id/action_global_payDetailsFragment"
+        app:destination="@id/payDetailsFragment" />
 
 </navigation>

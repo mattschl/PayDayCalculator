@@ -70,18 +70,18 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private fun setActions() {
         binding.apply {
             fabAddExtra.setOnClickListener {
-                addExtra()
+                gotoAddExtra()
             }
         }
     }
 
-    private fun addExtra() {
-        mainActivity.mainViewModel.setWorkDateObject(getCurWorkDate())
-        mainActivity.mainViewModel.setCallingFragment(TAG)
-        mView.findNavController().navigate(
-            WorkDateAddFragmentDirections
-                .actionGlobalEmployerExtraDefinitionsFragment()
-        )
+    private fun gotoAddExtra() {
+//        mainActivity.mainViewModel.setWorkDateObject(getCurWorkDate())
+//        mainActivity.mainViewModel.setCallingFragment(TAG)
+//        mView.findNavController().navigate(
+//            WorkDateAddFragmentDirections
+//                .actionGlobalEmployerExtraDefinitionsFragment()
+//        )
     }
 
     private fun selectDate() {
@@ -153,16 +153,16 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     }
 
     private fun gotoCallingFragment() {
-        mView.findNavController().navigate(
-            WorkDateAddFragmentDirections
-                .actionWorkDateAddFragmentToTimeSheetFragment()
-        )
+//        mView.findNavController().navigate(
+//            WorkDateAddFragmentDirections
+//                .actionGlobalTimeSheetFragment()
+//        )
     }
 
     private fun checkSaveWorkDate() {
         var found = false
         if (usedWorkDatesList.isEmpty()) {
-            saveWorkDate(true)
+            chooseToGoAhead()
         } else {
             for (date in usedWorkDatesList) {
                 if (date == curDateString) {
@@ -180,15 +180,19 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                         .show()
                 }
             }
+            if (!found) {
+                chooseToGoAhead()
+            }
         }
-        if (!found) {
-            AlertDialog.Builder(requireContext())
-                .setTitle("Finish adding work date")
-                .setMessage("Please confirm extras for this date and complete the work date.")
-                .setPositiveButton("OK", null)
-                .show()
-            saveWorkDate(false)
-        }
+    }
+
+    private fun chooseToGoAhead() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Finish adding work date")
+            .setMessage("Please confirm extras for this date and complete the work date.")
+            .setPositiveButton("OK", null)
+            .show()
+        saveWorkDate(false)
     }
 
     fun saveWorkDate(goBack: Boolean): WorkDates {

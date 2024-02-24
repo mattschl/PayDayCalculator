@@ -5,6 +5,10 @@
         android:icon="@drawable/ic_time_sheet"
         android:title="@string/time_sheet" />
     <item
+        android:id="@+id/nav_pay_details"
+        android:icon="@drawable/ic_check_foreground"
+        android:title="@string/pay_details" />
+    <item
         android:id="@+id/nav_employer_view"
         android:icon="@drawable/ic_employer_foreground"
         android:title="@string/employers" />

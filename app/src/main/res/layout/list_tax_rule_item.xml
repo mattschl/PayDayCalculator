@@ -26,7 +26,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/tax_level"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/dimen_20sp"
+                    android:textSize="@dimen/dimen_20dp"
                     android:textStyle="bold" />
 
                 <TextView

@@ -94,6 +94,11 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
 
+                R.id.nav_pay_details -> {
+                    gotoPayDetails()
+                    true
+                }
+
                 R.id.nav_employer_view -> {
                     gotoEmployer()
                     true
@@ -114,6 +119,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun gotoPayDetails() {
+        findNavController(R.id.nav_host_fragment_container).navigate(
+            NavGraphDirections.actionGlobalPayDetailsFragment()
+        )
     }
 
     private fun gotoTimeSheet() {

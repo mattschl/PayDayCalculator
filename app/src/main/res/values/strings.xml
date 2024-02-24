@@ -152,4 +152,5 @@
     <string name="pay_details">Pay Details</string>
     <string name="no_cutoff_dates">No CutOff Dates</string>
     <string name="subtotal">Subtotal</string>
+    <string name="credits">Credits</string>
 </resources>
