@@ -149,4 +149,7 @@
     <string name="total">Total</string>
     <string name="qty">QTY</string>
     <string name="base_on">Base on:</string>
+    <string name="pay_details">Pay Details</string>
+    <string name="no_cutoff_dates">No CutOff Dates</string>
+    <string name="subtotal">Subtotal</string>
 </resources>

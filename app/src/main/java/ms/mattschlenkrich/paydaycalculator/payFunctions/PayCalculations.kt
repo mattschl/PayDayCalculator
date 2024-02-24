@@ -19,7 +19,7 @@ class PayCalculations(
     private val workDates = ArrayList<WorkDates>()
     private val workExtrasPerDate = ArrayList<WorkDateExtraAndTypeFull>()
     private val workExtrasByPay = ArrayList<ExtraDefinitionAndType>()
-    private var rate = 0.0
+    var rate = 0.0
     val hours = Hours()
     val pay = Pay()
     val extras = Extras()
@@ -113,7 +113,7 @@ class PayCalculations(
         fun getHoursReg(): Double {
             var hours = 0.0
             for (day in workDates) {
-                hours += day.wdRegHours
+                if (!day.wdIsDeleted) hours += day.wdRegHours
             }
             return hours
         }
@@ -121,7 +121,7 @@ class PayCalculations(
         fun getHoursOt(): Double {
             var hours = 0.0
             for (day in workDates) {
-                hours += day.wdOtHours
+                if (!day.wdIsDeleted) hours += day.wdOtHours
             }
             return hours
         }
@@ -129,7 +129,7 @@ class PayCalculations(
         fun getHoursDblOt(): Double {
             var hours = 0.0
             for (day in workDates) {
-                hours += day.wdDblOtHours
+                if (!day.wdIsDeleted) hours += day.wdDblOtHours
             }
             return hours
         }
@@ -137,7 +137,7 @@ class PayCalculations(
         fun getHoursStat(): Double {
             var hours = 0.0
             for (day in workDates) {
-                hours += day.wdStatHours
+                if (!day.wdIsDeleted) hours += day.wdStatHours
             }
             return hours
         }
