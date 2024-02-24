@@ -70,7 +70,19 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
             fabAddDate.setOnClickListener {
                 addWorkDate()
             }
+            crdPayDetails.setOnClickListener {
+                gotoPayDetails()
+            }
         }
+    }
+
+    private fun gotoPayDetails() {
+        mainActivity.mainViewModel.setCutOffDate(curCutOff)
+        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mView.findNavController().navigate(
+            TimeSheetFragmentDirections
+                .actionTimeSheetFragmentToPayDetailsFragment()
+        )
     }
 
     private fun addWorkDate() {
@@ -132,7 +144,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_1000)
             binding.apply {
-                val grossPay = payCalculations.getGrossPay()
+                val grossPay = payCalculations.pay.getPayGross()
                 val taxAll = taxCalculations.getAllTaxDeductions(grossPay)
                 var display = "(${cf.displayDollars(taxAll)})"
                 tvDeductions.text = display
@@ -142,20 +154,20 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                 display = "Gross ${cf.displayDollars(grossPay)}"
                 tvGrossPay.text = display
                 display = ""
-                if (payCalculations.getRegHours() != 0.0) {
-                    display = "Hours: ${payCalculations.getRegHours()}"
+                if (payCalculations.hours.getHoursReg() != 0.0) {
+                    display = "Hours: ${payCalculations.hours.getHoursReg()}"
                 }
-                if (payCalculations.getOtPay() != 0.0) {
+                if (payCalculations.pay.getPayOt() != 0.0) {
                     if (display.isNotBlank()) display += " | "
-                    display += "Ot: ${payCalculations.getOtHours()}"
+                    display += "Ot: ${payCalculations.hours.getHoursOt()}"
                 }
-                if (payCalculations.getDblOtHours() != 0.0) {
+                if (payCalculations.hours.getHoursDblOt() != 0.0) {
                     if (display.isNotBlank()) display += " | "
-                    display += "Dbl Ot: ${payCalculations.getDblOtHours()}"
+                    display += "Dbl Ot: ${payCalculations.hours.getHoursDblOt()}"
                 }
-                if (payCalculations.getStatHours() != 0.0) {
+                if (payCalculations.hours.getHoursStat() != 0.0) {
                     if (display.isNotBlank()) display += " | "
-                    display += "Stat Hours: ${payCalculations.getStatHours()}"
+                    display += "Stat Hours: ${payCalculations.hours.getHoursStat()}"
                 }
                 tvHours.text = display
             }

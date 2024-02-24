@@ -7,6 +7,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import androidx.room.RoomWarnings
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_TAX_EFFECTIVE_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_TAX_TYPES
@@ -78,6 +79,7 @@ data class WorkTaxRules(
     val wtUpdateTime: String,
 ) : Parcelable
 
+@SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
 @Parcelize
 data class TaxComplete(
     @Embedded
@@ -89,6 +91,7 @@ data class TaxComplete(
     )
     val taxRule: WorkTaxRules,
 ) : Parcelable
+
 
 data class TaxAndAmount(
     var taxType: String,

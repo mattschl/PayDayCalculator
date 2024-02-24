@@ -6,6 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RoomWarnings
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
@@ -113,9 +114,10 @@ interface PayDayDao {
         extraName: String, workDateId: Long, updateTime: String
     )
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
     @Query(
-        "SELECT DISTINCT workDateExtras.*, types.* " +
+        "SELECT DISTINCT workDateExtras.*, types.*, defs.* " +
                 "FROM workDateExtras " +
                 "LEFT JOIN " +
                 "workDates ON wdeWorkDateId = ( " +
@@ -127,7 +129,9 @@ interface PayDayDao {
                 ") " +
                 "LEFT JOIN taxTypes as types ON " +
                 "taxTypeId = wdeExtraTypeId " +
-                "WHERE wdeIsDeleted = 0 " +
+                "LEFT JOIN workTaxRules as defs ON " +
+                "wdeExtraTypeId = wtType " +
+                " WHERE wdeIsDeleted = 0 " +
                 "ORDER BY workDates.wdDate "
     )
     fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String)

@@ -8,6 +8,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import androidx.room.RoomWarnings
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_CUTOFF_DATE
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_EMPLOYER_ID
@@ -54,6 +55,8 @@ data class PayPeriods(
     ], indices = [Index(
         value =
         ["wdEmployerId", "wdDate", "wdCutoffDate"], unique = true
+    ), Index(
+        value = ["wdEmployerId", "wdCutoffDate"]
     )
     ]
 )
@@ -177,6 +180,7 @@ data class ExtraTotal(
     var extraTotal: Double,
 )
 
+@SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
 @Parcelize
 data class WorkDateExtraAndType(
     @Embedded
@@ -189,19 +193,20 @@ data class WorkDateExtraAndType(
     var type: WorkExtraTypes?
 ) : Parcelable
 
+@SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
 @Parcelize
 data class WorkDateExtraAndTypeFull(
     @Embedded
     val extra: WorkDateExtras,
     @Relation(
         entity = WorkExtraTypes::class,
-        parentColumn = "workExtraTypeId",
-        entityColumn = "wdeExtraTypeId"
+        parentColumn = "wdeExtraTypeId",
+        entityColumn = "workExtraTypeId"
     )
     var type: WorkExtraTypes?,
     @Relation(
         entity = WorkExtrasDefinitions::class,
-        parentColumn = "workExtraTypeId",
+        parentColumn = "wdeExtraTypeId",
         entityColumn = "weExtraTypeId"
     )
     var def: WorkExtrasDefinitions?
