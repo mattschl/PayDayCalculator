@@ -129,12 +129,24 @@ data class WorkDateExtras(
     primaryKeys = [
         "ppeEmployerId",
         "ppeCutoffDate",
-        "ppeExtraId"],
+        "ppeName"],
     foreignKeys = [ForeignKey(
         entity = PayPeriods::class,
-        parentColumns = [PAY_PERIOD_EMPLOYER_ID, PAY_PERIOD_CUTOFF_DATE],
+        parentColumns = [PAY_PERIOD_EMPLOYER_ID,
+            PAY_PERIOD_CUTOFF_DATE],
         childColumns = ["ppeEmployerId",
             "ppeCutoffDate"]
+    ),
+        ForeignKey(
+            entity = WorkExtraTypes::class,
+            parentColumns = ["workExtraTypeId"],
+            childColumns = ["ppeExtraTypeId"]
+
+        )],
+    indices = [Index(
+        value =
+        ["ppeEmployerId", "ppeCutoffDate", "ppeExtraTypeId"],
+        unique = true
     )]
 )
 @Parcelize
@@ -142,9 +154,14 @@ data class WorkPayPeriodExtras(
     val workPayPeriodExtraId: Long,
     val ppeEmployerId: Long,
     val ppeCutoffDate: String,
-    val ppeExtraId: Long,
+    @ColumnInfo(index = true)
+    val ppeExtraTypeId: Long?,
     val ppeName: String,
+    val wdeAppliesTo: Int,
+    val wdeAttachTo: Int,
     val ppeValue: Double,
+    val weIsFixed: Boolean,
+    val wdeIsCredit: Boolean,
     val ppeIsDeleted: Boolean,
     val ppeUpdateTime: String,
 ) : Parcelable

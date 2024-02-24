@@ -19,7 +19,7 @@ class PayCalculations(
     private val mView: View,
 ) {
     private val workDates = ArrayList<WorkDates>()
-    private val workExtrasPerDate = ArrayList<WorkDateExtraAndTypeFull>()
+    private val workDateExtrasFull = ArrayList<WorkDateExtraAndTypeFull>()
     private val workExtrasByPay = ArrayList<ExtraDefinitionAndType>()
     private val extraTypes = ArrayList<WorkExtraTypes>()
     var rate = 0.0
@@ -40,58 +40,62 @@ class PayCalculations(
         fun getCreditExtraAndTotalsByDate(): ArrayList<ExtraAndTotal> {
             val extraList = ArrayList<ExtraAndTotal>()
             var total = 0.0
-            for (i in 0 until workExtrasPerDate.size) {
-                if (workExtrasPerDate[i].extra.wdeIsCredit) {
-                    if (workExtrasPerDate[i].extra.wdeAppliesTo == 0 &&
-                        workExtrasPerDate[i].extra.wdeIsFixed
+            for (i in 0 until workDateExtrasFull.size) {
+                if (workDateExtrasFull[i].extra.wdeIsCredit) {
+                    if (workDateExtrasFull[i].extra.wdeAppliesTo == 0 &&
+                        workDateExtrasFull[i].extra.wdeAttachTo == 1 &&
+                        workDateExtrasFull[i].extra.wdeIsFixed
                     ) {
                         for (date in workDates) {
-                            if (date.workDateId == workExtrasPerDate[i].extra.wdeWorkDateId) {
-                                total += workExtrasPerDate[i].extra.wdeValue * (
+                            if (date.workDateId == workDateExtrasFull[i].extra.wdeWorkDateId) {
+                                total += workDateExtrasFull[i].extra.wdeValue * (
                                         date.wdRegHours + date.wdOtHours + date.wdDblOtHours
                                         )
                             }
                         }
-                    } else if (workExtrasPerDate[i].extra.wdeAppliesTo == 0 &&
-                        !workExtrasPerDate[i].extra.wdeIsFixed
+                    } else if (workDateExtrasFull[i].extra.wdeAppliesTo == 0 &&
+                        workDateExtrasFull[i].extra.wdeAttachTo == 1 &&
+                        !workDateExtrasFull[i].extra.wdeIsFixed
                     ) {
                         for (date in workDates) {
-                            if (date.workDateId == workExtrasPerDate[i].extra.wdeWorkDateId) {
-                                total += workExtrasPerDate[i].extra.wdeValue * rate * (
+                            if (date.workDateId == workDateExtrasFull[i].extra.wdeWorkDateId) {
+                                total += workDateExtrasFull[i].extra.wdeValue * rate * (
                                         date.wdRegHours + date.wdOtHours + date.wdDblOtHours
                                         )
                             }
                         }
-                    } else if (workExtrasPerDate[i].extra.wdeAppliesTo == 1 &&
-                        workExtrasPerDate[i].extra.wdeIsFixed
+                    } else if (workDateExtrasFull[i].extra.wdeAppliesTo == 1 &&
+                        workDateExtrasFull[i].extra.wdeAttachTo == 1 &&
+                        workDateExtrasFull[i].extra.wdeIsFixed
                     ) {
                         for (date in workDates) {
-                            if (date.workDateId == workExtrasPerDate[i].extra.wdeWorkDateId) {
-                                total += workExtrasPerDate[i].extra.wdeValue
+                            if (date.workDateId == workDateExtrasFull[i].extra.wdeWorkDateId) {
+                                total += workDateExtrasFull[i].extra.wdeValue
                             }
                         }
-                    } else if (workExtrasPerDate[i].extra.wdeAppliesTo == 1 &&
-                        !workExtrasPerDate[i].extra.wdeIsFixed
+                    } else if (workDateExtrasFull[i].extra.wdeAppliesTo == 1 &&
+                        workDateExtrasFull[i].extra.wdeAttachTo == 1 &&
+                        !workDateExtrasFull[i].extra.wdeIsFixed
                     ) {
                         for (date in workDates) {
-                            if (date.workDateId == workExtrasPerDate[i].extra.wdeWorkDateId) {
-                                total += workExtrasPerDate[i].extra.wdeValue * rate * (
+                            if (date.workDateId == workDateExtrasFull[i].extra.wdeWorkDateId) {
+                                total += workDateExtrasFull[i].extra.wdeValue * rate * (
                                         date.wdRegHours + date.wdOtHours + date.wdDblOtHours
                                         )
                             }
                         }
                     }
                 }
-                if (workExtrasPerDate.size == 1) {
-                    extraList.add(ExtraAndTotal(workExtrasPerDate[i].extra.wdeName, total))
+                if (workDateExtrasFull.size == 1) {
+                    extraList.add(ExtraAndTotal(workDateExtrasFull[i].extra.wdeName, total))
                     total = 0.0
-                } else if (i < workExtrasPerDate.size - 1 &&
-                    (workExtrasPerDate[i].extra.wdeName != workExtrasPerDate[i + 1].extra.wdeName)
+                } else if (i < workDateExtrasFull.size - 1 &&
+                    (workDateExtrasFull[i].extra.wdeName != workDateExtrasFull[i + 1].extra.wdeName)
                 ) {
-                    extraList.add(ExtraAndTotal(workExtrasPerDate[i].extra.wdeName, total))
+                    extraList.add(ExtraAndTotal(workDateExtrasFull[i].extra.wdeName, total))
                     total = 0.0
-                } else if (i == workExtrasPerDate.size - 1) {
-                    extraList.add(ExtraAndTotal(workExtrasPerDate[i].extra.wdeName, total))
+                } else if (i == workDateExtrasFull.size - 1) {
+                    extraList.add(ExtraAndTotal(workDateExtrasFull[i].extra.wdeName, total))
                     total = 0.0
                 }
             }
@@ -160,11 +164,20 @@ class PayCalculations(
         }
 
         fun getPayGross(): Double {
-            return getPayHourly() //TODO: add the other values
+            return getPayHourly() + getCreditTotalByDate()
+            //TODO: add the other values
         }
 
         fun getPayTimeWorked(): Double {
             return getPayReg() + getPayOt() + getPayDblOt()
+        }
+
+        fun getCreditTotalByDate(): Double {
+            var total = 0.0
+            for (extra in extras.getCreditExtraAndTotalsByDate()) {
+                total += extra.amount
+            }
+            return total
         }
     }
 
@@ -200,9 +213,9 @@ class PayCalculations(
             mainActivity.payDayViewModel.getWorkDateExtrasPerPay(
                 employer.employerId, cutOff
             ).observe(lifecycleOwner) { list ->
-                workExtrasPerDate.clear()
+                workDateExtrasFull.clear()
                 list.listIterator().forEach {
-                    workExtrasPerDate.add(it)
+                    workDateExtrasFull.add(it)
                 }
             }
         }

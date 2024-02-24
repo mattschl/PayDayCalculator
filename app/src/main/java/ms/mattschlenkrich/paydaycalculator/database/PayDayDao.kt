@@ -132,7 +132,7 @@ interface PayDayDao {
                 "LEFT JOIN workTaxRules as defs ON " +
                 "wdeExtraTypeId = wtType " +
                 " WHERE wdeIsDeleted = 0 " +
-                "ORDER BY workDates.wdDate "
+                "ORDER BY wdeName "
     )
     fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String)
             : LiveData<List<WorkDateExtraAndTypeFull>>
