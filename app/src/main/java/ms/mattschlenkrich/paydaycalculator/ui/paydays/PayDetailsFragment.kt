@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.paydaycalculator.ui.paydays
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,12 +9,14 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.adapter.PayDetailCreditAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
@@ -21,7 +24,6 @@ import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayDetailsBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayCalculations
-import ms.mattschlenkrich.paydaycalculator.payFunctions.TaxCalculations
 import java.time.LocalDate
 
 private const val TAG = "PayDetails"
@@ -57,6 +59,15 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         selectEmployer()
         selectCutOffDate()
         fillValues()
+        setActions()
+    }
+
+    private fun setActions() {
+        binding.apply {
+            fabAddExtra.setOnClickListener {
+                //gotoExtraAddByPay
+            }
+        }
     }
 
     private fun selectCutOffDate() {
@@ -85,9 +96,6 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         val payCalculations = PayCalculations(
             mainActivity, curEmployer!!, curCutOff, mView
         )
-        val taxCalculations = TaxCalculations(
-            mainActivity, curEmployer!!, curCutOff, mView
-        )
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
             binding.apply {
@@ -104,6 +112,12 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                 tvStatRate.text = cf.displayDollars(payCalculations.rate)
                 tvStatPay.text = cf.displayDollars(payCalculations.pay.getPayStat())
                 tvHourlyTotal.text = cf.displayDollars(payCalculations.pay.getPayHourly())
+                val creditList =
+                    payCalculations.extras.getCreditExtraAndTotalsByDate()
+                Log.d(TAG, "creditList size is ${creditList.size}")
+                val creditLstAdapter = PayDetailCreditAdapter(creditList)
+                rvCredits.layoutManager = LinearLayoutManager(mView.context)
+                rvCredits.adapter = creditLstAdapter
             }
         }
     }
