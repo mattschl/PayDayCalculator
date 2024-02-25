@@ -45,7 +45,6 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private var payPeriod: PayPeriods? = null
     private val df = DateFunctions()
     private val cf = CommonFunctions()
-    private var curWorkDate: WorkDates? = null
 
     private val usedWorkDatesList = ArrayList<String>()
 
@@ -273,6 +272,14 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                     updateExtraUI(extras)
                 }
             }
+        }
+    }
+
+    fun addToExtraList(include: Boolean, extraType: WorkExtraTypes) {
+        if (include) {
+            workExtrasDefaultList.add(extraType)
+        } else {
+            workExtrasDefaultList.remove(extraType)
         }
     }
 

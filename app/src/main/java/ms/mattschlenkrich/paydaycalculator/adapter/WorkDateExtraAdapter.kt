@@ -56,13 +56,16 @@ class WorkDateExtraAdapter(
 
     override fun onBindViewHolder(holder: ExtraViewHolder, position: Int) {
         val extra = differ.currentList[position]
-        holder.itemBinding.chkExtra.text = extra.wetName
-        holder.itemBinding.chkExtra.isChecked = extra.wetIsDefault
-        holder.itemBinding.chkExtra.setOnClickListener {
-            chooseSaveOrNot()
-        }
-        holder.itemBinding.btnEdit.setOnClickListener {
-            chooseSaveOrNot()
+        holder.itemBinding.apply {
+            chkExtra.text = extra.wetName
+            chkExtra.isChecked = extra.wetIsDefault
+            chkExtra.setOnClickListener {
+                chooseSaveOrNot()
+                parentFragment.addToExtraList(chkExtra.isChecked, extra)
+            }
+            holder.itemBinding.btnEdit.setOnClickListener {
+                chooseSaveOrNot()
+            }
         }
     }
 

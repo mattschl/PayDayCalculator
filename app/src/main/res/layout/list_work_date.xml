@@ -5,8 +5,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dimen_4dp"
-        android:minHeight="@dimen/minimum_touch_height">
+        android:layout_marginTop="@dimen/dimen_4dp">
 
         <LinearLayout
             android:id="@+id/llDate"
@@ -37,6 +36,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/llExtras"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
@@ -45,7 +45,8 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvExtras"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:scrollbarAlwaysDrawVerticalTrack="true" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

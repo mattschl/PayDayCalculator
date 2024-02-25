@@ -95,9 +95,9 @@ class WorkDateAdapter(
                     extrasAdapter.differ.submitList(list)
 //                    Log.d(TAG, "list for ${workDate.wdDate} has ${list.size} items")
                     if (list.isEmpty()) {
-                        rvExtras.visibility = View.GONE
+                        llExtras.visibility = View.GONE
                     } else {
-                        rvExtras.visibility = View.VISIBLE
+                        llExtras.visibility = View.VISIBLE
                     }
                 }
             }
