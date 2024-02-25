@@ -103,29 +103,18 @@ interface WorkExtraDao {
     @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
     @Query(
-        "SELECT DISTINCT extraType.*, " +
-                "extraDef.* " +
-                "FROM workExtraTypes AS extraType " +
-                "INNER JOIN " +
-                " (" +
-                "SELECT * " +
-                "FROM workExtrasDefinitions " +
-                "WHERE weEmployerId = :employerId AND " +
-                "weIsDeleted = 0 AND " +
-                "weEffectiveDate <= :cutoffDate " +
-                " ) " +
-                "AS extraDef ON workExtraTypeId = weExtraTypeId " +
-                "WHERE wetEmployerId = :employerId AND " +
-                "wetAttachTo = 1 AND " +
-                "wetIsDeleted = 0 " +
-                "ORDER BY wetName " +
-                "LIMIT ( " +
-                "SELECT COUNT( * ) " +
-                "FROM workExtraTypes " +
-                "WHERE wetEmployerId = :employerId AND " +
-                "wetAttachTo = 1 AND " +
-                "wetIsDeleted = 0 " +
-                ")"
+        "SELECT * FROM workExtraTypes " +
+                "JOIN ( " +
+                "SELECT  * FROM workExtrasDefinitions " +
+                "WHERE weEffectiveDate <= :cutoffDate " +
+                "AND weIsDeleted = 0 " +
+                "GROUP BY weExtraTypeId " +
+                "ORDER BY weEffectiveDate DESC " +
+                ") ON workExtraTypeId = weExtraTypeId " +
+                "WHERE wetEmployerId = :employerId " +
+                "AND wetAttachTo = 1 " +
+                "AND wetIsDeleted = 0 " +
+                "ORDER BY wetName"
     )
     fun getExtraTypesAndDefByDaily(employerId: Long, cutoffDate: String):
             LiveData<List<ExtraDefinitionAndType>>
@@ -169,5 +158,21 @@ interface WorkExtraDao {
     fun getExtraTypesAndDefByPay(employerId: Long, cutoffDate: String):
             LiveData<List<ExtraDefinitionAndType>>
 
-
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @Transaction
+    @Query(
+        "SELECT * FROM workExtraTypes " +
+                "JOIN ( " +
+                "SELECT * FROM workExtrasDefinitions " +
+                "WHERE weExtraTypeId = :typeId " +
+                "AND weEffectiveDate <= :cutoffDate " +
+                "ORDER BY weEffectiveDate DESC " +
+                "LIMIT 1 " +
+                ") on " +
+                "workExtraTypeId = weExtraTypeId " +
+                "WHERE workExtraTypeId = :typeId " +
+                "AND wetIsDeleted = 0"
+    )
+    fun getExtraTypeAndDefByTypeId(typeId: Long, cutoffDate: String):
+            LiveData<ExtraDefinitionAndType>
 }

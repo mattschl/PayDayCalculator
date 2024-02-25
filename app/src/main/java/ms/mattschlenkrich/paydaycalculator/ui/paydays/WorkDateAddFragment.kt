@@ -24,9 +24,12 @@ import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
+import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 import java.time.LocalDate
 
 private const val TAG = "WorkDateAdd"
@@ -38,6 +41,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var curDateString: String
+    private val workExtrasDefaultList = ArrayList<WorkExtraTypes>()
     private var payPeriod: PayPeriods? = null
     private val df = DateFunctions()
     private val cf = CommonFunctions()
@@ -174,7 +178,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                                     "this work date?"
                         )
                         .setPositiveButton("Yes") { _, _ ->
-                            curWorkDate = saveWorkDate(true)
+                            saveWorkDate(true)
                         }
                         .setNegativeButton("No", null)
                         .show()
@@ -195,15 +199,38 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         saveWorkDate(false)
     }
 
-    fun saveWorkDate(goBack: Boolean): WorkDates {
+    fun saveWorkDate(goBack: Boolean) {
         val workDate = getCurWorkDate()
         mainActivity.payDayViewModel.insertWorkDate(workDate)
-        if (goBack) {
-            gotoCallingFragment()
-        } else {
-            gotoWorkDateUpdate(workDate)
+        for (extraType in workExtrasDefaultList) {
+            mainActivity.workExtraViewModel.getExtraTypeAndDefByTypeId(
+                extraType.workExtraTypeId, workDate.wdCutoffDate
+            ).observe(viewLifecycleOwner) { extra ->
+                mainActivity.payDayViewModel.insertWorkDateExtra(
+                    WorkDateExtras(
+                        cf.generateId(),
+                        workDate.workDateId,
+                        extra.extraType.workExtraTypeId,
+                        extra.extraType.wetName,
+                        extra.extraType.wetAppliesTo,
+                        extra.extraType.wetAttachTo,
+                        extra.definition.weValue,
+                        extra.definition.weIsFixed,
+                        extra.extraType.wetIsCredit,
+                        false,
+                        df.getCurrentTimeAsString()
+                    )
+                )
+            }
         }
-        return workDate
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_500)
+            if (goBack) {
+                gotoCallingFragment()
+            } else {
+                gotoWorkDateUpdate(workDate)
+            }
+        }
     }
 
     private fun gotoWorkDateUpdate(workDate: WorkDates) {
@@ -238,6 +265,11 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                     payPeriod!!.ppEmployerId
                 ).observe(viewLifecycleOwner) { extras ->
                     extraAdapter.differ.submitList(extras)
+                    extras.listIterator().forEach { extra ->
+                        if (extra.wetIsDefault) {
+                            workExtrasDefaultList.add(extra)
+                        }
+                    }
                     updateExtraUI(extras)
                 }
             }

@@ -64,4 +64,7 @@ class WorkExtraViewModel(
 
     fun getExtraTypesAndDefByPay(employerId: Long, cutoffDate: String) =
         workExtraRepository.getExtraTypesAndDefByPay(employerId, cutoffDate)
+
+    fun getExtraTypeAndDefByTypeId(typeId: Long, cutoffDate: String) =
+        workExtraRepository.getExtraTypeAndDefByTypeId(typeId, cutoffDate)
 }
