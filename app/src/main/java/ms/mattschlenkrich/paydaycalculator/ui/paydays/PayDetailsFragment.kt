@@ -23,7 +23,9 @@ import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayDetailsBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
+import ms.mattschlenkrich.paydaycalculator.model.ExtraAndTotal
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayCalculations
+import ms.mattschlenkrich.paydaycalculator.payFunctions.TaxCalculations
 import java.time.LocalDate
 
 private const val TAG = "PayDetails"
@@ -43,7 +45,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentPayDetailsBinding.inflate(
             inflater, container, false
         )
@@ -94,6 +96,9 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
 
     private fun fillPayDetails() {
         val payCalculations = PayCalculations(
+            mainActivity, curEmployer!!, curCutOff, mView
+        )
+        val taxCalculations = TaxCalculations(
             mainActivity, curEmployer!!, curCutOff, mView
         )
         CoroutineScope(Dispatchers.Main).launch {
@@ -148,10 +153,25 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                 )
                 val debitList =
                     payCalculations.deductions.getDebitExtraAndTotalByPay()
-
+                for (tax in taxCalculations.getTaxeList(
+                    payCalculations.pay.getPayGross(),
+                    payCalculations.pay.getPayTimeWorked(),
+                    payCalculations.pay.getPayHourly()
+                )) {
+                    debitList.add(
+                        ExtraAndTotal(
+                            tax.taxType, tax.amount
+                        )
+                    )
+                }
                 val deductionListAdapter = PayDetailExtraAdapter(debitList)
                 rvDebits.layoutManager = LinearLayoutManager(mView.context)
                 rvDebits.adapter = deductionListAdapter
+                var debitTotal = 0.0
+                for (debit in debitList) {
+                    debitTotal += debit.amount
+                }
+                tvDebitTotal.text = cf.displayDollars(debitTotal)
             }
         }
     }

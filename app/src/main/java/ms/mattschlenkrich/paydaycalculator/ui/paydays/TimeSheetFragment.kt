@@ -144,21 +144,28 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_1000)
             binding.apply {
-                val grossPay = payCalculations.pay.getPayGross()
-                val taxAll = taxCalculations.getAllTaxDeductions(grossPay)
                 var display = cf.displayDollars(
                     -payCalculations.pay.getDebitTotalsByPay()
+                            - taxCalculations.getAllTaxDeductions(
+                        payCalculations.pay.getPayGross(),
+                        payCalculations.pay.getPayTimeWorked(),
+                        payCalculations.pay.getPayHourly()
+                    )
                 )
                 tvDeductions.text = display
                 tvDeductions.setTextColor(Color.RED)
                 display = "NET: ${
                     cf.displayDollars(
-                        grossPay -
+                        payCalculations.pay.getPayGross() -
                                 payCalculations.pay.getDebitTotalsByPay()
                     )
                 }"
                 tvNetPay.text = display
-                display = "Gross ${cf.displayDollars(grossPay)}"
+                display = "Gross ${
+                    cf.displayDollars(
+                        payCalculations.pay.getPayGross()
+                    )
+                }"
                 tvGrossPay.text = display
                 display = ""
                 if (payCalculations.hours.getHoursReg() != 0.0) {

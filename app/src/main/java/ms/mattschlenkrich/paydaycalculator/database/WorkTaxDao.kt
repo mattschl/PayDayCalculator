@@ -126,10 +126,15 @@ interface WorkTaxDao {
     fun getCurrentEffectiveDate(cutoffDate: String): LiveData<List<String>>
 
     @Query(
-        "SELECT etrTaxType FROM employerTaxTypes " +
+        " SELECT taxTypes.* FROM taxTypes " +
+                "INNER JOIN " +
+                "(SELECT * FROM employerTaxTypes " +
                 "WHERE etrEmployerId = :employerId " +
-                "AND etrIsDeleted = 0 " +
-                "AND etrInclude = 1"
+                "AND etrIsDeleted = 0  " +
+                "AND etrInclude = 1) " +
+                "ON etrTaxType = taxType " +
+                "WHERE ttIsDeleted = 0 " +
+                "ORDER BY taxType"
     )
-    fun getTaxTypesByEmployer(employerId: Long): LiveData<List<String>>
+    fun getTaxTypesByEmployer(employerId: Long): LiveData<List<TaxTypes>>
 }
