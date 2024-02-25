@@ -136,6 +136,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/llRegPay"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:minHeight="@dimen/dimen_25dp"
@@ -176,6 +177,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/llOtPay"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:minHeight="@dimen/dimen_25dp"
@@ -215,6 +217,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/llDblOtPay"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:minHeight="@dimen/dimen_25dp"
@@ -255,6 +258,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/llStatPay"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:minHeight="@dimen/dimen_25dp"
@@ -301,26 +305,13 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:layout_width="@dimen/text_box_narrow"
+                            android:layout_width="@dimen/text_box_extra_wide"
                             android:layout_height="wrap_content"
-                            android:text="@string/subtotal"
+                            android:text="@string/total_hourly"
                             android:textColor="@color/black"
-                            android:textSize="@dimen/label_text_size"
+                            android:textSize="@dimen/text_size_large"
+                            android:textStyle="bold"
                             tools:ignore="TextContrastCheck,TextSizeCheck" />
-
-                        <TextView
-                            android:layout_width="@dimen/text_box_small"
-                            android:layout_height="wrap_content"
-                            android:text="@string/qty"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/label_text_size" />
-
-                        <TextView
-                            android:layout_width="@dimen/text_box_small"
-                            android:layout_height="wrap_content"
-                            android:text="@string/rate"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/label_text_size" />
 
                         <TextView
                             android:id="@+id/tvHourlyTotal"
@@ -328,7 +319,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/zero_dollars"
                             android:textColor="@color/black"
-                            android:textSize="@dimen/text_size_medium"
+                            android:textSize="@dimen/text_size_large"
                             android:textStyle="bold" />
 
                     </LinearLayout>
@@ -393,11 +384,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvCreditsByPay"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -414,6 +400,68 @@
 
                         <TextView
                             android:id="@+id/tvCreditTotal"
+                            android:layout_width="@dimen/text_box_medium"
+                            android:layout_height="wrap_content"
+                            android:text="@string/zero_dollars"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size_large"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                            android:id="@+id/fabAddDeduction"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:contentDescription="@string/add_new_extra"
+                            android:foregroundTint="@color/black"
+                            android:src="@drawable/ic_add"
+                            app:layout_constraintEnd_toStartOf="@id/lblDeductions"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:ignore="ImageContrastCheck" />
+
+                        <TextView
+                            android:id="@+id/lblDeductions"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dimen_10dp"
+                            android:text="@string/deductions"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size_large"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/fabAddDeduction"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvDebits"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="@dimen/dimen_25dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="@dimen/text_box_extra_wide"
+                            android:layout_height="wrap_content"
+                            android:text="@string/total_deductions"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size_large"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvDebitTotal"
                             android:layout_width="@dimen/text_box_medium"
                             android:layout_height="wrap_content"
                             android:text="@string/zero_dollars"

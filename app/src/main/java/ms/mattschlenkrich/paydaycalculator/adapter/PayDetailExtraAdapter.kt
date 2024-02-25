@@ -7,9 +7,9 @@ import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListPayDetailExtraItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.ExtraAndTotal
 
-class PayDetailCreditAdapter(
+class PayDetailExtraAdapter(
     private val creditList: ArrayList<ExtraAndTotal>
-) : RecyclerView.Adapter<PayDetailCreditAdapter.CreditViewHolder>() {
+) : RecyclerView.Adapter<PayDetailExtraAdapter.CreditViewHolder>() {
 
     private val cf = CommonFunctions()
 

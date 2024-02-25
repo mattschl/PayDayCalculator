@@ -27,6 +27,7 @@ class PayCalculations(
     val hours = Hours()
     val pay = Pay()
     val extras = Extras()
+    val deductions = Deductions()
 
     init {
         findWorkDates()
@@ -34,6 +35,49 @@ class PayCalculations(
         findExtrasPerPay()
         findRate()
         findExtraTypes()
+    }
+
+    inner class Deductions {
+        fun getDebitExtraAndTotalByPay(): ArrayList<ExtraAndTotal> {
+            val debitLiat = ArrayList<ExtraAndTotal>()
+            for (i in 0 until workExtrasByPay.size) {
+                if (!workExtrasByPay[i].extraType.wetIsCredit &&
+                    workExtrasByPay[i].extraType.wetIsDefault &&
+                    workExtrasByPay[i].extraType.wetAppliesTo == 3
+                ) {
+                    if (workExtrasByPay[i].definition.weIsFixed
+                    ) {
+                        debitLiat.add(
+                            ExtraAndTotal(
+                                workExtrasByPay[i].extraType.wetName,
+                                workExtrasByPay[i].definition.weValue
+                            )
+                        )
+                    } else {
+                        debitLiat.add(
+                            ExtraAndTotal(
+                                workExtrasByPay[i].extraType.wetName,
+                                workExtrasByPay[i].definition.weValue *
+                                        pay.getPayTimeWorked() / 100
+                            )
+                        )
+                    }
+                } else if (!workExtrasByPay[i].extraType.wetIsCredit &&
+                    workExtrasByPay[i].extraType.wetIsDefault &&
+                    workExtrasByPay[i].extraType.wetAppliesTo == 0 &&
+                    !workExtrasByPay[i].definition.weIsFixed
+                ) {
+                    debitLiat.add(
+                        ExtraAndTotal(
+                            workExtrasByPay[i].extraType.wetName,
+                            workExtrasByPay[i].definition.weValue *
+                                    pay.getPayTimeWorked() / 100
+                        )
+                    )
+                }
+            }
+            return debitLiat
+        }
     }
 
     inner class Extras {
@@ -205,12 +249,16 @@ class PayCalculations(
         }
 
         fun getPayGross(): Double {
-            return getPayHourly() + getCreditTotalByDate() + getCreditTotalsByPay()
-            //TODO: add the other values
+            return getPayHourly() + getCreditTotalByDate() +
+                    getCreditTotalsByPay()
         }
 
         fun getPayTimeWorked(): Double {
             return getPayReg() + getPayOt() + getPayDblOt()
+        }
+
+        fun getCreditTotalAll(): Double {
+            return getCreditTotalByDate() + getCreditTotalsByPay()
         }
 
         fun getCreditTotalByDate(): Double {
@@ -224,6 +272,15 @@ class PayCalculations(
         fun getCreditTotalsByPay(): Double {
             var total = 0.0
             for (extra in extras.getCreditExtrasAndTotalsByPay()) {
+                Log.d(TAG, "extra is ${extra.extraName} and amount is ${extra.amount}")
+                total += extra.amount
+            }
+            return total
+        }
+
+        fun getDebitTotalsByPay(): Double {
+            var total = 0.0
+            for (extra in deductions.getDebitExtraAndTotalByPay()) {
                 Log.d(TAG, "extra is ${extra.extraName} and amount is ${extra.amount}")
                 total += extra.amount
             }

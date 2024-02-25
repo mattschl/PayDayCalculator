@@ -16,7 +16,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.PayDetailCreditAdapter
+import ms.mattschlenkrich.paydaycalculator.adapter.PayDetailExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
@@ -99,18 +99,38 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
             binding.apply {
-                tvRegHours.text = payCalculations.hours.getHoursReg().toString()
-                tvRegRate.text = cf.displayDollars(payCalculations.rate)
-                tvRegPay.text = cf.displayDollars(payCalculations.pay.getPayReg())
-                tvOtHours.text = payCalculations.hours.getHoursOt().toString()
-                tvOtRate.text = cf.displayDollars(payCalculations.rate * 1.5)
-                tvOTPay.text = cf.displayDollars(payCalculations.pay.getPayOt())
-                tvDblOtHours.text = payCalculations.hours.getHoursDblOt().toString()
-                tvDblOtRate.text = cf.displayDollars(payCalculations.rate * 2)
-                tvDblOtPay.text = cf.displayDollars(payCalculations.pay.getPayDblOt())
-                tvStatHours.text = payCalculations.hours.getHoursStat().toString()
-                tvStatRate.text = cf.displayDollars(payCalculations.rate)
-                tvStatPay.text = cf.displayDollars(payCalculations.pay.getPayStat())
+                if (payCalculations.pay.getPayReg() > 0.0) {
+                    llRegPay.visibility = View.VISIBLE
+                    tvRegHours.text = payCalculations.hours.getHoursReg().toString()
+                    tvRegRate.text = cf.displayDollars(payCalculations.rate)
+                    tvRegPay.text = cf.displayDollars(payCalculations.pay.getPayReg())
+                } else {
+                    llRegPay.visibility = View.GONE
+                }
+                if (payCalculations.pay.getPayOt() > 0.0) {
+                    llOtPay.visibility = View.VISIBLE
+                    tvOtHours.text = payCalculations.hours.getHoursOt().toString()
+                    tvOtRate.text = cf.displayDollars(payCalculations.rate * 1.5)
+                    tvOTPay.text = cf.displayDollars(payCalculations.pay.getPayOt())
+                } else {
+                    llOtPay.visibility = View.GONE
+                }
+                if (payCalculations.pay.getPayDblOt() > 0.0) {
+                    llDblOtPay.visibility = View.VISIBLE
+                    tvDblOtHours.text = payCalculations.hours.getHoursDblOt().toString()
+                    tvDblOtRate.text = cf.displayDollars(payCalculations.rate * 2)
+                    tvDblOtPay.text = cf.displayDollars(payCalculations.pay.getPayDblOt())
+                } else {
+                    llDblOtPay.visibility = View.GONE
+                }
+                if (payCalculations.pay.getPayStat() > 0.0) {
+                    llStatPay.visibility = View.VISIBLE
+                    tvStatHours.text = payCalculations.hours.getHoursStat().toString()
+                    tvStatRate.text = cf.displayDollars(payCalculations.rate)
+                    tvStatPay.text = cf.displayDollars(payCalculations.pay.getPayStat())
+                } else {
+                    llStatPay.visibility = View.GONE
+                }
                 tvHourlyTotal.text = cf.displayDollars(payCalculations.pay.getPayHourly())
                 val creditList =
                     payCalculations.extras.getCreditExtraAndTotalsByDate()
@@ -120,14 +140,18 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                     creditList.add(credit)
                 }
                 Log.d(TAG, "creditList size is ${creditList.size}")
-                val creditLstAdapter = PayDetailCreditAdapter(creditList)
+                val creditLstAdapter = PayDetailExtraAdapter(creditList)
                 rvCredits.layoutManager = LinearLayoutManager(mView.context)
                 rvCredits.adapter = creditLstAdapter
-                var creditTotal = 0.0
-                for (credit in creditList) {
-                    creditTotal += credit.amount
-                }
-                tvCreditTotal.text = cf.displayDollars(creditTotal)
+                tvCreditTotal.text = cf.displayDollars(
+                    payCalculations.pay.getCreditTotalAll()
+                )
+                val debitList =
+                    payCalculations.deductions.getDebitExtraAndTotalByPay()
+
+                val deductionListAdapter = PayDetailExtraAdapter(debitList)
+                rvDebits.layoutManager = LinearLayoutManager(mView.context)
+                rvDebits.adapter = deductionListAdapter
             }
         }
     }

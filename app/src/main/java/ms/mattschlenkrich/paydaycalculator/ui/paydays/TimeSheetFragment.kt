@@ -146,10 +146,17 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
             binding.apply {
                 val grossPay = payCalculations.pay.getPayGross()
                 val taxAll = taxCalculations.getAllTaxDeductions(grossPay)
-                var display = "(${cf.displayDollars(taxAll)})"
+                var display = cf.displayDollars(
+                    -payCalculations.pay.getDebitTotalsByPay()
+                )
                 tvDeductions.text = display
                 tvDeductions.setTextColor(Color.RED)
-                display = "NET: ${cf.displayDollars(grossPay - taxAll)}"
+                display = "NET: ${
+                    cf.displayDollars(
+                        grossPay -
+                                payCalculations.pay.getDebitTotalsByPay()
+                    )
+                }"
                 tvNetPay.text = display
                 display = "Gross ${cf.displayDollars(grossPay)}"
                 tvGrossPay.text = display
