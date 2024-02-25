@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.payFunctions
 
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import ms.mattschlenkrich.paydaycalculator.MainActivity
@@ -102,6 +103,46 @@ class PayCalculations(
             return extraList
         }
 
+        fun getCreditExtrasAndTotalsByPay(): ArrayList<ExtraAndTotal> {
+            val extraList = ArrayList<ExtraAndTotal>()
+            for (i in 0 until workExtrasByPay.size) {
+                if (workExtrasByPay[i].extraType.wetIsCredit &&
+                    workExtrasByPay[i].extraType.wetIsDefault &&
+                    workExtrasByPay[i].extraType.wetAppliesTo == 3
+                ) {
+                    if (workExtrasByPay[i].definition.weIsFixed
+                    ) {
+                        extraList.add(
+                            ExtraAndTotal(
+                                workExtrasByPay[i].extraType.wetName,
+                                workExtrasByPay[i].definition.weValue
+                            )
+                        )
+                    } else {
+                        extraList.add(
+                            ExtraAndTotal(
+                                workExtrasByPay[i].extraType.wetName,
+                                workExtrasByPay[i].definition.weValue *
+                                        pay.getPayTimeWorked() / 100
+                            )
+                        )
+                    }
+                } else if (workExtrasByPay[i].extraType.wetIsCredit &&
+                    workExtrasByPay[i].extraType.wetIsDefault &&
+                    workExtrasByPay[i].extraType.wetAppliesTo == 0 &&
+                    !workExtrasByPay[i].definition.weIsFixed
+                ) {
+                    extraList.add(
+                        ExtraAndTotal(
+                            workExtrasByPay[i].extraType.wetName,
+                            workExtrasByPay[i].definition.weValue *
+                                    pay.getPayTimeWorked() / 100
+                        )
+                    )
+                }
+            }
+            return extraList
+        }
     }
 
     inner class Hours {
@@ -164,7 +205,7 @@ class PayCalculations(
         }
 
         fun getPayGross(): Double {
-            return getPayHourly() + getCreditTotalByDate()
+            return getPayHourly() + getCreditTotalByDate() + getCreditTotalsByPay()
             //TODO: add the other values
         }
 
@@ -175,6 +216,15 @@ class PayCalculations(
         fun getCreditTotalByDate(): Double {
             var total = 0.0
             for (extra in extras.getCreditExtraAndTotalsByDate()) {
+                total += extra.amount
+            }
+            return total
+        }
+
+        fun getCreditTotalsByPay(): Double {
+            var total = 0.0
+            for (extra in extras.getCreditExtrasAndTotalsByPay()) {
+                Log.d(TAG, "extra is ${extra.extraName} and amount is ${extra.amount}")
                 total += extra.amount
             }
             return total
@@ -223,8 +273,8 @@ class PayCalculations(
 
     private fun findExtrasPerPay() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
-            mainActivity.workExtraViewModel.getExtraTypesAndDefByPay(
-                employer.employerId, cutOff
+            mainActivity.workExtraViewModel.getExtraTypesAndDef(
+                employer.employerId, cutOff, 3
             ).observe(lifecycleOwner) { list ->
                 workExtrasByPay.clear()
                 list.listIterator().forEach {

@@ -131,31 +131,39 @@ interface WorkExtraDao {
     @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
     @Query(
-        "SELECT DISTINCT extraType.*, " +
-                "extraDef.* " +
-                "FROM workExtraTypes AS extraType " +
-                "INNER JOIN " +
-                " (" +
-                "SELECT * " +
-                "FROM workExtrasDefinitions " +
-                "WHERE weEmployerId = :employerId AND " +
-                "weIsDeleted = 0 AND " +
-                "weEffectiveDate <= :cutoffDate " +
-                " ) " +
-                "AS extraDef ON workExtraTypeId = weExtraTypeId " +
-                "WHERE wetEmployerId = :employerId AND " +
-                "wetAttachTo = 3 AND " +
-                "wetIsDeleted = 0 " +
-                "ORDER BY wetName " +
-                "LIMIT ( " +
-                "SELECT COUNT( * ) " +
-                "FROM workExtraTypes " +
-                "WHERE wetEmployerId = :employerId AND " +
-                "wetAttachTo = 3 AND " +
-                "wetIsDeleted = 0 " +
-                ")"
+        "SELECT * FROM workExtraTypes " +
+                "JOIN ( " +
+                "SELECT * FROM workExtrasDefinitions " +
+                "WHERE weEmployerId = :employerId " +
+                "AND weIsDeleted = 0 " +
+                "AND weEffectiveDate <= :cutoffDate " +
+                "GROUP BY weExtraTypeId " +
+                "ORDER BY weEffectiveDate " +
+                ") ON workExtraTypeId = weExtraTypeId " +
+                "WHERE wetEmployerId = :employerId " +
+                "AND wetAttachTo = 3 " +
+                "AND wetIsDeleted = 0"
     )
     fun getExtraTypesAndDefByPay(employerId: Long, cutoffDate: String):
+            LiveData<List<ExtraDefinitionAndType>>
+
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @Transaction
+    @Query(
+        "SELECT * FROM workExtraTypes " +
+                "JOIN ( " +
+                "SELECT * FROM workExtrasDefinitions " +
+                "WHERE weEmployerId = :employerId " +
+                "AND weIsDeleted = 0 " +
+                "AND weEffectiveDate <= :cutoffDate " +
+                "GROUP BY weExtraTypeId " +
+                "ORDER BY weEffectiveDate " +
+                ") ON workExtraTypeId = weExtraTypeId " +
+                "WHERE wetEmployerId = :employerId " +
+                "AND wetAttachTo = :attachTo " +
+                "AND wetIsDeleted = 0"
+    )
+    fun getExtraTypesAndDef(employerId: Long, cutoffDate: String, attachTo: Int):
             LiveData<List<ExtraDefinitionAndType>>
 
     @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)

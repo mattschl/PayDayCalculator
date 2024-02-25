@@ -114,10 +114,20 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                 tvHourlyTotal.text = cf.displayDollars(payCalculations.pay.getPayHourly())
                 val creditList =
                     payCalculations.extras.getCreditExtraAndTotalsByDate()
+                val creditByPay =
+                    payCalculations.extras.getCreditExtrasAndTotalsByPay()
+                for (credit in creditByPay) {
+                    creditList.add(credit)
+                }
                 Log.d(TAG, "creditList size is ${creditList.size}")
                 val creditLstAdapter = PayDetailCreditAdapter(creditList)
                 rvCredits.layoutManager = LinearLayoutManager(mView.context)
                 rvCredits.adapter = creditLstAdapter
+                var creditTotal = 0.0
+                for (credit in creditList) {
+                    creditTotal += credit.amount
+                }
+                tvCreditTotal.text = cf.displayDollars(creditTotal)
             }
         }
     }

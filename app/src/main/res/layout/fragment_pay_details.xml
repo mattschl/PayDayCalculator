@@ -393,6 +393,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvCreditsByPay"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
