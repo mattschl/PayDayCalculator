@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.ui.paydays
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -100,6 +101,26 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
             binding.apply {
+                var display = "Gross ${
+                    cf.displayDollars(
+                        payCalculations.pay.getPayGross()
+                    )
+                }"
+                tvGrossPay.text = display
+                display = cf.displayDollars(
+                    -payCalculations.pay.getDebitTotalsByPay()
+                            - payCalculations.tax.getAllTaxDeductions()
+                )
+                tvDeductions.text = display
+                tvDeductions.setTextColor(Color.RED)
+                display = "NET: ${
+                    cf.displayDollars(
+                        payCalculations.pay.getPayGross()
+                                - payCalculations.pay.getDebitTotalsByPay()
+                                - payCalculations.tax.getAllTaxDeductions()
+                    )
+                }"
+                tvNetPay.text = display
                 if (payCalculations.pay.getPayReg() > 0.0) {
                     llRegPay.visibility = View.VISIBLE
                     tvRegHours.text = payCalculations.hours.getHoursReg().toString()

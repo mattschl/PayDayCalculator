@@ -18,7 +18,7 @@ import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
 
-private const val TAG = "PayCalculations"
+//private const val TAG = "PayCalculations"
 
 class PayCalculations(
     private val mainActivity: MainActivity,
@@ -210,9 +210,9 @@ class PayCalculations(
     }
 
     inner class Hours {
-        fun getHoursAll(): Double {
-            return getHoursReg() + getHoursOt() + getHoursDblOt()
-        }
+//        fun getHoursAll(): Double {
+//            return getHoursReg() + getHoursOt() + getHoursDblOt()
+//        }
 
         fun getHoursReg(): Double {
             var hours = 0.0
@@ -268,14 +268,20 @@ class PayCalculations(
             return hours.getHoursStat() * rate
         }
 
+//        fun getPayNet(): Double {
+//            return if (getPayGross() - getDebitTotalsByPay() - tax.getAllTaxDeductions() > 0.0) {
+//                getPayGross() - getDebitTotalsByPay() - tax.getAllTaxDeductions()
+//            } else {
+//                0.0
+//            }
+//        }
+
         fun getPayGross(): Double {
-//            Log.d(
-//                TAG, "--------------getPayGross == " +
-//                        "${
-//                            getPayHourly() + getCreditTotalByDate() + getCreditTotalsByPay()
-//                        }-----------"
-//            )
-            return getPayHourly() + getCreditTotalByDate() + getCreditTotalsByPay()
+            return if (getPayHourly() > 0.0) {
+                getPayHourly() + getCreditTotalByDate() + getCreditTotalsByPay()
+            } else {
+                0.0
+            }
         }
 
         fun getPayTimeWorked(): Double {
@@ -291,7 +297,11 @@ class PayCalculations(
             for (extra in extras.getCreditExtraAndTotalsByDate()) {
                 total += extra.amount
             }
-            return total
+            return if (getPayHourly() > 0.0) {
+                total
+            } else {
+                0.0
+            }
         }
 
         fun getCreditTotalsByPay(): Double {
@@ -309,7 +319,11 @@ class PayCalculations(
 //                Log.d(TAG, "extra is ${extra.extraName} and amount is ${extra.amount}")
                 total += extra.amount
             }
-            return total
+            return if (getPayHourly() > 0.0) {
+                total
+            } else {
+                0.0
+            }
         }
     }
 
@@ -454,7 +468,11 @@ class PayCalculations(
             for (taxAndAmount in getTaxList()) {
                 totalTax += taxAndAmount.amount
             }
-            return totalTax
+            return if (pay.getPayHourly() > 0.0) {
+                totalTax
+            } else {
+                0.0
+            }
         }
 
         fun getTaxList():

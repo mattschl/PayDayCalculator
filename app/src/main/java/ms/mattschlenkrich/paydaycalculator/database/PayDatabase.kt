@@ -68,7 +68,7 @@ abstract class PayDatabase : RoomDatabase() {
                 PayDatabase::class.java,
                 PAY_DB_NAME
             )
-//                .createFromAsset("pay.db")
+                .createFromAsset("pay.db")
                 .build()
         }
     }
