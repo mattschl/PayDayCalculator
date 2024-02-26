@@ -143,8 +143,13 @@ const val WAIT_250 = 250L
 const val WAIT_500 = 500L
 const val WAIT_1000 = 1000L
 
-const val FRAG_EMPLOYER_UPDATE = "EmployerUpdateFragment"
-const val FRAG_TAX_RULES = "TaxRulesFragment"
-const val FRAG_EXTRA_DEFINITIONS = "EmployerExtraDefFragment"
-const val FRAG_PAY_RATES = "EmployerPayRates"
 const val FRAG_EMPLOYERS = "Employers"
+const val FRAG_EMPLOYER_UPDATE = "EmployerUpdate"
+const val FRAG_TAX_RULES = "TaxRules"
+const val FRAG_TAX_TYPE = "TaxTypes"
+const val FRAG_EXTRA_DEFINITIONS = "EmployerExtraDef"
+const val FRAG_PAY_RATES = "EmployerPayRates"
+const val FRAG_PAY_RATE_UPDATE = "PayRateUpdate"
+const val FRAG_EXTRA_TYPES = "ExtraTypes"
+const val FRAG_PAY_DETAILS = "PayDetails"
+const val FRAG_TIME_SHEET = "TimeSheet"

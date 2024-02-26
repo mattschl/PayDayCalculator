@@ -10,8 +10,8 @@ import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.ExtraTypeAdapter
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkExtraTypesBinding
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 
+//private const val TAG = FRAG_EXTRA_TYPES
 
 class WorkExtraTypesFragment : Fragment(
     R.layout.fragment_work_extra_types
@@ -64,18 +64,18 @@ class WorkExtraTypesFragment : Fragment(
         }
 
     }
-
-    private fun updateUI(typesList: List<WorkExtraTypes>) {
-        binding.apply {
-            if (typesList.isEmpty()) {
-                crdNoInfo.visibility = View.VISIBLE
-                rvTypes.visibility = View.GONE
-            } else {
-                crdNoInfo.visibility = View.GONE
-                rvTypes.visibility = View.VISIBLE
-            }
-        }
-    }
+//
+//    private fun updateUI(typesList: List<WorkExtraTypes>) {
+//        binding.apply {
+//            if (typesList.isEmpty()) {
+//                crdNoInfo.visibility = View.VISIBLE
+//                rvTypes.visibility = View.GONE
+//            } else {
+//                crdNoInfo.visibility = View.GONE
+//                rvTypes.visibility = View.VISIBLE
+//            }
+//        }
+//    }
 
     override fun onDestroy() {
         super.onDestroy()

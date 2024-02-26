@@ -18,6 +18,7 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.PayDetailExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_DETAILS
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayDetailsBinding
@@ -26,7 +27,7 @@ import ms.mattschlenkrich.paydaycalculator.model.ExtraAndTotal
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayCalculations
 import java.time.LocalDate
 
-private const val TAG = "PayDetails"
+private const val TAG = FRAG_PAY_DETAILS
 
 class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
 

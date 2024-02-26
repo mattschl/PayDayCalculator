@@ -27,7 +27,7 @@ import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerAddBindin
 import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 
-private const val TAG = "EmployerAddFragment"
+//private const val TAG = "EmployerAddFragment"
 
 class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
 

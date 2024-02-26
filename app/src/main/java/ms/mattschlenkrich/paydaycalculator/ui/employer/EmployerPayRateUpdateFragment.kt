@@ -23,6 +23,8 @@ import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_RATES
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerWageUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.EmployerPayRates
 
+//private const val TAG = FRAG_PAY_RATE_UPDATE
+
 class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_update) {
 
     private var _binding: FragmentEmployerWageUpdateBinding? = null
@@ -36,7 +38,7 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentEmployerWageUpdateBinding.inflate(
             inflater, container, false
         )

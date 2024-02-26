@@ -20,6 +20,8 @@ import ms.mattschlenkrich.paydaycalculator.adapter.TaxTypeAdapter
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeBinding
 import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
 
+//const val TAG = FRAG_TAX_RULES
+
 class TaxTypeFragment :
     Fragment(R.layout.fragment_tax_type),
     SearchView.OnQueryTextListener,
