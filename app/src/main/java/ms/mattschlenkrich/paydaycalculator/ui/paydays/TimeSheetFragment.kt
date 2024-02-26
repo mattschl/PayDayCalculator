@@ -26,7 +26,6 @@ import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayCalculations
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayDayProjections
-import ms.mattschlenkrich.paydaycalculator.payFunctions.TaxCalculations
 import java.time.LocalDate
 
 private const val TAG = "TimeSheetFragment"
@@ -138,26 +137,20 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         val payCalculations = PayCalculations(
             mainActivity, curEmployer!!, curCutOff, mView
         )
-        val taxCalculations = TaxCalculations(
-            mainActivity, curEmployer!!, curCutOff, mView
-        )
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_1000)
             binding.apply {
                 var display = cf.displayDollars(
                     -payCalculations.pay.getDebitTotalsByPay()
-                            - taxCalculations.getAllTaxDeductions(
-                        payCalculations.pay.getPayGross(),
-                        payCalculations.pay.getPayTimeWorked(),
-                        payCalculations.pay.getPayHourly()
-                    )
+                            - payCalculations.tax.getAllTaxDeductions()
                 )
                 tvDeductions.text = display
                 tvDeductions.setTextColor(Color.RED)
                 display = "NET: ${
                     cf.displayDollars(
-                        payCalculations.pay.getPayGross() -
-                                payCalculations.pay.getDebitTotalsByPay()
+                        payCalculations.pay.getPayGross()
+                                - payCalculations.pay.getDebitTotalsByPay()
+                                - payCalculations.tax.getAllTaxDeductions()
                     )
                 }"
                 tvNetPay.text = display

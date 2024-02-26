@@ -45,6 +45,12 @@ interface WorkTaxDao {
     )
     fun searchTaxTypes(query: String?): LiveData<List<TaxTypes>>
 
+    @Query(
+        "SELECT * FROM taxTypes " +
+                "WHERE taxType = :taxType"
+    )
+    fun findTaxType(taxType: String): LiveData<TaxTypes>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTaxRule(taxRule: WorkTaxRules)
 

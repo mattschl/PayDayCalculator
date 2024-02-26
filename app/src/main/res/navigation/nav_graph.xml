@@ -120,6 +120,9 @@
         <action
             android:id="@+id/action_taxTypeUpdateFragment_to_taxTypeFragment"
             app:destination="@id/taxTypeFragment" />
+        <action
+            android:id="@+id/action_taxTypeUpdateFragment_to_taxRulesFragment"
+            app:destination="@id/taxRulesFragment" />
     </fragment>
 
     <fragment
@@ -142,6 +145,9 @@
         <action
             android:id="@+id/action_taxRulesFragment_to_employerUpdateFragment2"
             app:destination="@id/employerUpdateFragment" />
+        <action
+            android:id="@+id/action_taxRulesFragment_to_taxTypeUpdateFragment"
+            app:destination="@id/taxTypeUpdateFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_taxRulesFragment"

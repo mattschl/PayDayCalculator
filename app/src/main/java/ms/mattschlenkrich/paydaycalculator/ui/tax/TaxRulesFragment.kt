@@ -153,6 +153,7 @@ class TaxRulesFragment :
                         ) {
                             gotoTaxTypeAdd()
                         } else {
+                            fillSummary()
                             fillTaxRuleList()
                         }
                     }
@@ -161,6 +162,21 @@ class TaxRulesFragment :
                         //not needed
                     }
                 }
+        }
+    }
+
+    private fun fillSummary() {
+        binding.apply {
+            mainActivity.workTaxViewModel.findTaxType(
+                spTaxType.selectedItem.toString()
+            ).observe(viewLifecycleOwner) { type ->
+                val display = "${getString(R.string.base_on)} " +
+                        resources.getStringArray(R.array.tax_based_on)[
+                            type.ttBasedOn
+                        ]
+                tvTaxSummary.text = display
+            }
+
         }
     }
 
@@ -247,9 +263,31 @@ class TaxRulesFragment :
     }
 
     private fun setActions() {
-        binding.fabNew.setOnClickListener {
-            gotoTaxRuleAdd()
+        binding.apply {
+            fabNew.setOnClickListener {
+                gotoTaxRuleAdd()
+            }
+            crdSummary.setOnClickListener {
+                gotoTaxTypeUpdate()
+            }
         }
+    }
+
+    private fun gotoTaxTypeUpdate() {
+        binding.apply {
+            mainActivity.workTaxViewModel.findTaxType(
+                spTaxType.selectedItem.toString()
+            ).observe(viewLifecycleOwner) { type ->
+                mainActivity.mainViewModel.setTaxType(
+                    type
+                )
+            }
+        }
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mView.findNavController().navigate(
+            TaxRulesFragmentDirections
+                .actionTaxRulesFragmentToTaxTypeUpdateFragment()
+        )
     }
 
     private fun gotoTaxRuleAdd() {

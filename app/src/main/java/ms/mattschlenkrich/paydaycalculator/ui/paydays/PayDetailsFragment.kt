@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.ui.paydays
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +24,6 @@ import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayDetailsBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.ExtraAndTotal
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayCalculations
-import ms.mattschlenkrich.paydaycalculator.payFunctions.TaxCalculations
 import java.time.LocalDate
 
 private const val TAG = "PayDetails"
@@ -98,9 +96,6 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         val payCalculations = PayCalculations(
             mainActivity, curEmployer!!, curCutOff, mView
         )
-        val taxCalculations = TaxCalculations(
-            mainActivity, curEmployer!!, curCutOff, mView
-        )
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
             binding.apply {
@@ -144,7 +139,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                 for (credit in creditByPay) {
                     creditList.add(credit)
                 }
-                Log.d(TAG, "creditList size is ${creditList.size}")
+//                Log.d(TAG, "creditList size is ${creditList.size}")
                 val creditLstAdapter = PayDetailExtraAdapter(creditList)
                 rvCredits.layoutManager = LinearLayoutManager(mView.context)
                 rvCredits.adapter = creditLstAdapter
@@ -153,11 +148,8 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                 )
                 val debitList =
                     payCalculations.deductions.getDebitExtraAndTotalByPay()
-                for (tax in taxCalculations.getTaxeList(
-                    payCalculations.pay.getPayGross(),
-                    payCalculations.pay.getPayTimeWorked(),
-                    payCalculations.pay.getPayHourly()
-                )) {
+                for (tax in payCalculations.tax.getTaxList()
+                ) {
                     debitList.add(
                         ExtraAndTotal(
                             tax.taxType, tax.amount

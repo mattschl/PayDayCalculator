@@ -157,4 +157,5 @@
     <string name="total_debits">Total Debits</string>
     <string name="total_deductions">Total Deductions</string>
     <string name="total_hourly">Total Hourly</string>
+    <string name="tax_summary">Tax Summary</string>
 </resources>
