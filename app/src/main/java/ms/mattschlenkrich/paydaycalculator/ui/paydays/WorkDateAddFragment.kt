@@ -32,7 +32,7 @@ import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 import java.time.LocalDate
 
-private const val TAG = "WorkDateAdd"
+//private const val TAG = "WorkDateAdd"
 
 class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
 
@@ -155,11 +155,11 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun gotoCallingFragment() {
-//        mView.findNavController().navigate(
-//            WorkDateAddFragmentDirections
-//                .actionGlobalTimeSheetFragment()
-//        )
+    private fun gotoTimeSheet() {
+        mView.findNavController().navigate(
+            WorkDateAddFragmentDirections
+                .actionGlobalTimeSheetFragment()
+        )
     }
 
     private fun checkSaveWorkDate() {
@@ -192,10 +192,15 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private fun chooseToGoAhead() {
         AlertDialog.Builder(requireContext())
             .setTitle("Finish adding work date")
-            .setMessage("Please confirm extras for this date and complete the work date.")
-            .setPositiveButton("OK", null)
+            .setMessage("Would you like to save this date or add extras?")
+            .setPositiveButton("Save Now") { _, _ ->
+                saveWorkDate(true)
+            }
+            .setNeutralButton("Save and add extras") { _, _ ->
+                saveWorkDate(false)
+            }
+            .setNegativeButton("Abort", null)
             .show()
-        saveWorkDate(false)
     }
 
     fun saveWorkDate(goBack: Boolean) {
@@ -225,7 +230,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
             if (goBack) {
-                gotoCallingFragment()
+                gotoTimeSheet()
             } else {
                 gotoWorkDateUpdate(workDate)
             }

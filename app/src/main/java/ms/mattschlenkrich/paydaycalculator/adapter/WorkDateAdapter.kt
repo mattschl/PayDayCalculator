@@ -14,13 +14,16 @@ import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateBinding
+import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.TimeSheetFragmentDirections
 
-private const val TAG = "AdapterWorkDate"
+//private const val TAG = "AdapterWorkDate"
 
 class WorkDateAdapter(
     private val mainActivity: MainActivity,
+    private val curCutoff: String,
+    private val curEmployer: Employers,
     private val mView: View,
 ) : RecyclerView.Adapter<WorkDateAdapter.WorkDateViewHolder>() {
 
@@ -149,6 +152,8 @@ class WorkDateAdapter(
 
     private fun gotoWorkDateUpdate(workDate: WorkDates) {
         mainActivity.mainViewModel.setWorkDateObject(workDate)
+        mainActivity.mainViewModel.setCutOffDate(curCutoff)
+        mainActivity.mainViewModel.setEmployer(curEmployer)
         mView.findNavController().navigate(
             TimeSheetFragmentDirections
                 .actionTimeSheetFragmentToWorkDateUpdateFragment()

@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paydaycalculator.ui.paydays
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_TIME_SHEET
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
@@ -63,6 +65,42 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         selectEmployer()
         selectCutOffDate()
         setActions()
+        fillFromHistory()
+    }
+
+    private fun fillFromHistory() {
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_500)
+            Log.d(
+                TAG, "the employer is " +
+                        "${mainActivity.mainViewModel.getEmployer()?.employerName}"
+            )
+            if (mainActivity.mainViewModel.getEmployer() != null) {
+                binding.apply {
+                    curEmployer = mainActivity.mainViewModel.getEmployer()!!
+                    for (i in 0 until spEmployers.adapter.count) {
+                        if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
+                            spEmployers.setSelection(i)
+                            break
+                        }
+                    }
+                    delay(WAIT_500)
+                    Log.d(
+                        TAG, "The cutoff is " +
+                                "${mainActivity.mainViewModel.getCutOffDate()} if found"
+                    )
+                    if (mainActivity.mainViewModel.getCutOffDate() != null) {
+                        curCutOff = mainActivity.mainViewModel.getCutOffDate()!!
+                        for (i in 0 until spCutOff.adapter.count) {
+                            if (spCutOff.getItemAtPosition(i).toString() == curCutOff) {
+                                spCutOff.setSelection(i)
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun setActions() {
@@ -79,6 +117,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     private fun gotoPayDetails() {
         mainActivity.mainViewModel.setCutOffDate(curCutOff)
         mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
             TimeSheetFragmentDirections
                 .actionTimeSheetFragmentToPayDetailsFragment()
@@ -87,6 +126,8 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
 
     private fun addWorkDate() {
         mainActivity.mainViewModel.setPayPeriod(getPayPeriod())
+        mainActivity.mainViewModel.setCutOffDate(curCutOff)
+        mainActivity.mainViewModel.setEmployer(curEmployer)
         mView.findNavController().navigate(
             TimeSheetFragmentDirections
                 .actionTimeSheetFragmentToWorkDateAddFragment()
@@ -198,7 +239,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         binding.apply {
             workDateAdapter = null
             workDateAdapter = WorkDateAdapter(
-                mainActivity, mView
+                mainActivity, curCutOff, curEmployer!!, mView
             )
             rvDates.apply {
                 layoutManager = LinearLayoutManager(mView.context)
@@ -278,6 +319,8 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
 
     private fun gotoEmployerAdd() {
         mainActivity.mainViewModel.setCallingFragment(TAG)
+        mainActivity.mainViewModel.setEmployer(null)
+        mainActivity.mainViewModel.setCutOffDate(null)
         mView.findNavController().navigate(
             TimeSheetFragmentDirections
                 .actionTimeSheetFragmentToEmployerAddFragment()
