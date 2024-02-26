@@ -158,4 +158,5 @@
     <string name="total_deductions">Total Deductions</string>
     <string name="total_hourly">Total Hourly</string>
     <string name="tax_summary">Tax Summary</string>
+    <string name="date_and_employer_info">Date and Employer Info</string>
 </resources>
