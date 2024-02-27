@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.paydaycalculator.repository
 
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
+import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
 
@@ -49,4 +50,13 @@ class WorkExtraRepository(private val db: PayDatabase) {
 
     fun getExtraTypesAndDef(employerId: Long, cutoffDate: String, attachTo: Int) =
         db.getWorkExtraDao().getExtraTypesAndDef(employerId, cutoffDate, attachTo)
+
+    suspend fun insertWorkDateExtra(extra: WorkDateExtras) =
+        db.getWorkExtraDao().insertWorkDateExtra(extra)
+
+    suspend fun updateWorkDateExtra(extra: WorkDateExtras) =
+        db.getWorkExtraDao().updateWorkDateExtra(extra)
+
+    fun getWorkDateExtras(workDateId: Long) =
+        db.getWorkExtraDao().getWorkDateExtras(workDateId)
 }

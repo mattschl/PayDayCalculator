@@ -14,6 +14,7 @@ import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRA_TYPES
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionAndType
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
 import ms.mattschlenkrich.paydaycalculator.model.ExtraTypeAndDefByDay
+import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
 
@@ -183,4 +184,16 @@ interface WorkExtraDao {
     )
     fun getExtraTypeAndDefByTypeId(typeId: Long, cutoffDate: String):
             LiveData<ExtraDefinitionAndType>
+
+    @Insert
+    suspend fun insertWorkDateExtra(extra: WorkDateExtras)
+
+    @Update
+    suspend fun updateWorkDateExtra(extra: WorkDateExtras)
+
+    @Query(
+        "SELECT * FROM workDateExtras " +
+                "WHERE wdeWorkDateId = :workDateId "
+    )
+    fun getWorkDateExtras(workDateId: Long): LiveData<List<WorkDateExtras>>
 }

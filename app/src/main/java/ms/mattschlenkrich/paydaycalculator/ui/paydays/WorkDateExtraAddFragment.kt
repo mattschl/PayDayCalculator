@@ -8,15 +8,18 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateExtraAddBinding
+import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 
@@ -48,9 +51,31 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fillSpinners()
-        fillValues()
         fillMenu()
-        getExtraTypeList()
+        fillValues()
+        chooseFixedOrPercent()
+    }
+
+    private fun chooseFixedOrPercent() {
+        binding.apply {
+            chkIsFixed.setOnClickListener {
+                etValue.setText(
+                    if (chkIsFixed.isChecked) {
+                        cf.displayDollars(
+                            cf.getDoubleFromDollarOrPercent(
+                                etValue.text.toString()
+                            )
+                        )
+                    } else {
+                        cf.displayPercentFromDouble(
+                            cf.getDoubleFromDollarOrPercent(
+                                etValue.text.toString()
+                            ) / 100
+                        )
+                    }
+                )
+            }
+        }
     }
 
     private fun fillValues() {
@@ -69,6 +94,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
             val display = "Date: ${df.getDisplayDate(curDateObject.wdDate)} " +
                     "Employer: $curEmployerString"
             binding.lblDateInfo.text = display
+            getExtraTypeList()
         }
     }
 
@@ -123,12 +149,47 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
     }
 
     private fun checkSaveWorkDateExtra() {
-        if (checkExtraType() == ANSWER_OK) {
-            mainActivity
+        val message = checkExtra()
+        if (message == ANSWER_OK) {
+            mainActivity.workExtraViewModel.insertWorkDateExtra(
+                getCurExtra()
+            )
+            gotoCallingFragment()
+        } else {
+            Toast.makeText(
+                mView.context,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
-    private fun checkExtraType(): String {
+    private fun gotoCallingFragment() {
+        mView.findNavController().navigate(
+            WorkDateExtraAddFragmentDirections
+                .actionWorkDateExtraAddFragmentToWorkDateUpdateFragment()
+        )
+    }
+
+    private fun getCurExtra(): WorkDateExtras {
+        binding.apply {
+            return WorkDateExtras(
+                cf.generateId(),
+                curDateObject.workDateId,
+                null,
+                etExtraName.text.toString(),
+                spAppliesTo.selectedItemPosition,
+                1,
+                cf.getDoubleFromDollarOrPercent(etValue.text.toString()),
+                chkIsCredit.isChecked,
+                chkIsFixed.isChecked,
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
+    private fun checkExtra(): String {
         binding.apply {
             var nameFound = false
             if (extraTypeList.isNotEmpty()) {
@@ -141,10 +202,14 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
             }
             val errorMessage = if (etExtraName.text.isNullOrBlank()) {
                 "    ERROR!!\n" +
-                        "THe Extra type must have a name"
+                        "The Extra must have a name"
             } else if (nameFound) {
                 "   ERROR!!\n" +
-                        "This Extra Type already exists"
+                        "This Extra Type name has already been used. \n" +
+                        "Choose a different name."
+            } else if (cf.getDoubleFromDollarOrPercent(etValue.text.toString()) == 0.0) {
+                "   ERROR!!\n" +
+                        "This Extra Type has to have a value"
             } else {
                 ANSWER_OK
             }
