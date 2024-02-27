@@ -16,7 +16,7 @@ import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateUpdateBin
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 
-private const val TAG = "WorkDateUpdate"
+//private const val TAG = "WorkDateUpdate"
 
 class WorkDateUpdateFragment : Fragment(
     R.layout.fragment_work_date_update
@@ -47,9 +47,9 @@ class WorkDateUpdateFragment : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillValues()
         setActions()
         setDateAction()
+        fillValues()
     }
 
     private fun setDateAction() {
@@ -92,10 +92,11 @@ class WorkDateUpdateFragment : Fragment(
     }
 
     private fun addExtra() {
-        binding.apply {
-            mainActivity.mainViewModel.setWorkDateObject(getCurWorkDate())
-
-        }
+        mainActivity.mainViewModel.setWorkDateObject(getCurWorkDate())
+        mView.findNavController().navigate(
+            WorkDateUpdateFragmentDirections
+                .actionWorkDateUpdateFragmentToWorkDateExtraAddFragment()
+        )
     }
 
     private fun updateWorkDate() {

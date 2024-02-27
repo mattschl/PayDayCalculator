@@ -79,12 +79,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     }
 
     private fun gotoAddExtra() {
-//        mainActivity.mainViewModel.setWorkDateObject(getCurWorkDate())
-//        mainActivity.mainViewModel.setCallingFragment(TAG)
-//        mView.findNavController().navigate(
-//            WorkDateAddFragmentDirections
-//                .actionGlobalEmployerExtraDefinitionsFragment()
-//        )
+        chooseToGoAhead()
     }
 
     private fun selectDate() {

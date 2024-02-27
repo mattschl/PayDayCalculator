@@ -284,6 +284,9 @@
         <action
             android:id="@+id/action_workDateUpdateFragment_to_employerExtraDefinitionsFragment"
             app:destination="@id/employerExtraDefinitionsFragment" />
+        <action
+            android:id="@+id/action_workDateUpdateFragment_to_workDateExtraAddFragment"
+            app:destination="@id/workDateExtraAddFragment" />
     </fragment>
     <fragment
         android:id="@+id/employerPayRatesFragment"
@@ -350,5 +353,14 @@
     <action
         android:id="@+id/action_global_payDetailsFragment"
         app:destination="@id/payDetailsFragment" />
+    <fragment
+        android:id="@+id/workDateExtraAddFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateExtraAddFragment"
+        android:label="fragment_work_date_extra_add"
+        tools:layout="@layout/fragment_work_date_extra_add">
+        <action
+            android:id="@+id/action_workDateExtraAddFragment_to_workDateUpdateFragment"
+            app:destination="@id/workDateUpdateFragment" />
+    </fragment>
 
 </navigation>
