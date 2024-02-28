@@ -39,7 +39,7 @@ class MainViewModel(
         return workDateExtra
     }
 
-    fun setWorkDateExtra(newExtra: WorkDateExtras) {
+    fun setWorkDateExtra(newExtra: WorkDateExtras?) {
         workDateExtra = newExtra
     }
 

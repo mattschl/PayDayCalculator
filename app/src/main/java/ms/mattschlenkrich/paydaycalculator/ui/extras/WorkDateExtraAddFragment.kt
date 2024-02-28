@@ -203,7 +203,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
                         "Choose a different name."
             } else if (cf.getDoubleFromDollarOrPercent(etValue.text.toString()) == 0.0) {
                 "   ERROR!!\n" +
-                        "This Extra Type must have a value"
+                        "This Extra must have a value"
             } else {
                 ANSWER_OK
             }
