@@ -92,7 +92,7 @@ class WorkDateAdapter(
                 adapter = extrasAdapter
             }
             mainActivity.let {
-                mainActivity.payDayViewModel.getWorkDateExtras(
+                mainActivity.payDayViewModel.getWorkDateExtrasActive(
                     workDate.workDateId
                 ).observe(mView.findViewTreeLifecycleOwner()!!) { list ->
                     extrasAdapter.differ.submitList(list)

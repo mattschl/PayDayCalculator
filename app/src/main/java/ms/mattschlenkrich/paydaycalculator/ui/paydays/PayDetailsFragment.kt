@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.ui.paydays
 
+import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -287,11 +288,21 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                     cutOffAdapter.notifyDataSetChanged()
                     dates.listIterator().forEach {
                         cutOffAdapter.add(it.ppCutoffDate)
-                        cutOffs.add(it.ppCutoffDate)
                     }
                     if (dates.isEmpty()
                     ) {
-                        cutOffAdapter.add(getString(R.string.no_cutoff_dates))
+                        AlertDialog.Builder(mView.context)
+                            .setTitle("No pay days to view")
+                            .setMessage(
+                                "Since there are no pay periods set, you will be sent " +
+                                        "to the time sheet to create a new one."
+                            )
+                            .setPositiveButton("Ok") { _, _ ->
+                                mView.findNavController().navigate(
+                                    PayDetailsFragmentDirections
+                                        .actionPayDetailsFragmentToTimeSheetFragment()
+                                )
+                            }
                     }
                 }
                 spCutOff.adapter = cutOffAdapter

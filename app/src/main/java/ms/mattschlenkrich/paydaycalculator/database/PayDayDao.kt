@@ -75,6 +75,14 @@ interface PayDayDao {
     )
     fun getWorkDateExtras(workDateId: Long): LiveData<List<WorkDateExtras>>
 
+    @Query(
+        "SELECT * FROM $TABLE_WORK_DATE_EXTRAS " +
+                "WHERE wdeWorkDateId = :workDateId " +
+                "AND wdeIsDeleted = 0"
+    )
+
+    fun getWorkDateExtrasActive(workDateId: Long): LiveData<List<WorkDateExtras>>
+
 //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
 //    @Transaction
 //    @Query(

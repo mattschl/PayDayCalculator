@@ -55,6 +55,9 @@ class PayDayViewModel(
     fun getWorkDateExtras(workDateId: Long) =
         payDayRepository.getWorkDateExtras(workDateId)
 
+    fun getWorkDateExtrasActive(workDateId: Long) =
+        payDayRepository.getWorkDateExtrasActive(workDateId)
+
 //    fun getWorkDateAndExtraDefAndWorkDateExtras(workDateId: Long) =
 //        payDayRepository.getWorkDateAndExtraDefAndWorkDateExtras(workDateId)
 

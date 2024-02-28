@@ -154,6 +154,7 @@ class WorkDateUpdateFragment : Fragment(
     }
 
     fun fillExtras() {
+        val curWorkDateObject = mainActivity.mainViewModel.getWorkDateObject()!!
         activity?.let {
             mainActivity.payDayViewModel.getWorkDateExtras(curDate.workDateId)
                 .observe(viewLifecycleOwner) { extras ->
@@ -162,55 +163,56 @@ class WorkDateUpdateFragment : Fragment(
                     extras.listIterator().forEach {
                         workDateExtras.add(it)
                         customWorkDateExtras.add(it)
-                    }
-                }
-        }
-        binding.apply {
+                        binding.apply {
+                            activity?.let {
+                                mainActivity.workExtraViewModel.getExtraTypesAndDefByDaily(
+                                    curWorkDateObject.wdEmployerId,
+                                    curWorkDateObject.wdCutoffDate
+                                ).observe(viewLifecycleOwner) { extras ->
+                                    extras.listIterator().forEach {
+                                        val tempExtra = WorkDateExtras(
+                                            0,
+                                            curWorkDateObject.workDateId,
+                                            null,
+                                            it.extraType.wetName,
+                                            it.extraType.wetAppliesTo,
+                                            it.extraType.wetAttachTo,
+                                            it.definition.weValue,
+                                            it.definition.weIsFixed,
+                                            it.extraType.wetIsCredit,
+                                            true,
+                                            df.getCurrentTimeAsString()
+                                        )
+                                        var found = false
+                                        for (oldExtra in workDateExtras) {
+                                            if (oldExtra.wdeName == it.extraType.wetName) {
+                                                found = true
+                                                break
+                                            }
+                                        }
+                                        if (!found) {
+                                            workDateExtras.add(tempExtra)
+                                        }
 
-            val curWorkDateObject = mainActivity.mainViewModel.getWorkDateObject()!!
-            activity?.let {
-                mainActivity.workExtraViewModel.getExtraTypesAndDefByDaily(
-                    curWorkDateObject.wdEmployerId,
-                    curWorkDateObject.wdCutoffDate
-                ).observe(viewLifecycleOwner) { extras ->
-                    extras.listIterator().forEach {
-                        val tempExtra = WorkDateExtras(
-                            0,
-                            curWorkDateObject.workDateId,
-                            null,
-                            it.extraType.wetName,
-                            it.extraType.wetAppliesTo,
-                            it.extraType.wetAttachTo,
-                            it.definition.weValue,
-                            it.definition.weIsFixed,
-                            it.extraType.wetIsCredit,
-                            true,
-                            df.getCurrentTimeAsString()
-                        )
-                        var found = false
-                        for (oldExtra in workDateExtras) {
-                            if (oldExtra.wdeName == it.extraType.wetName) {
-                                found = true
-                                break
+                                    }
+                                    workDateExtras.sortBy { extra ->
+                                        extra.wdeName
+                                    }
+                                    val extraAdapter = WorkDateExtraUpdateCustomAdapter(
+                                        mainActivity, mView,
+                                        this@WorkDateUpdateFragment,
+                                        workDateExtras
+                                    )
+                                    rvExtras.apply {
+                                        layoutManager = LinearLayoutManager(mView.context)
+                                        adapter = extraAdapter
+                                    }
+                                }
+
                             }
                         }
-                        if (!found) {
-                            workDateExtras.add(tempExtra)
-                        }
-
-                    }
-                    val extraAdapter = WorkDateExtraUpdateCustomAdapter(
-                        mainActivity, mView,
-                        this@WorkDateUpdateFragment,
-                        workDateExtras
-                    )
-                    rvExtras.apply {
-                        layoutManager = LinearLayoutManager(mView.context)
-                        adapter = extraAdapter
                     }
                 }
-
-            }
         }
     }
 
