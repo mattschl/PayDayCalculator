@@ -310,7 +310,6 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                 }
                 spCutOff.adapter = cutOffAdapter
             }
-
         }
     }
 
@@ -328,9 +327,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                 employerAdapter.add(it.employerName)
                 curEmployer = employers[0]
             }
-//            updateUI(employers)
             employerAdapter.add(getString(R.string.add_new_employer))
-//            fillCutOffDates()
         }
         binding.spEmployers.adapter = employerAdapter
     }

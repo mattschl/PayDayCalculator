@@ -126,34 +126,30 @@ data class WorkDateExtras(
 
 @Entity(
     tableName = TABLE_WORK_PAY_PERIOD_EXTRAS,
-    primaryKeys = [
-        "ppeEmployerId",
-        "ppeCutoffDate",
-        "ppeName"],
-    foreignKeys = [ForeignKey(
-        entity = PayPeriods::class,
-        parentColumns = [PAY_PERIOD_EMPLOYER_ID,
-            PAY_PERIOD_CUTOFF_DATE],
-        childColumns = ["ppeEmployerId",
-            "ppeCutoffDate"]
-    ),
+    foreignKeys = [
         ForeignKey(
             entity = WorkExtraTypes::class,
             parentColumns = ["workExtraTypeId"],
             childColumns = ["ppeExtraTypeId"]
-
+        ),
+        ForeignKey(
+            entity = PayPeriods::class,
+            parentColumns = ["payPeriodId"],
+            childColumns = ["ppePayPeriodId"]
         )],
-    indices = [Index(
-        value =
-        ["ppeCutoffDate", "ppeName"],
-        unique = true
-    )]
+    indices = [
+        Index(
+            value =
+            ["ppeCutoffDate", "ppeName"],
+            unique = true
+        )]
 )
 @Parcelize
 data class WorkPayPeriodExtras(
+    @PrimaryKey
     val workPayPeriodExtraId: Long,
-    val ppeEmployerId: Long,
-    val ppeCutoffDate: String,
+    @ColumnInfo(index = true)
+    val ppePayPeriodId: Long,
     @ColumnInfo(index = true)
     val ppeExtraTypeId: Long?,
     val ppeName: String,

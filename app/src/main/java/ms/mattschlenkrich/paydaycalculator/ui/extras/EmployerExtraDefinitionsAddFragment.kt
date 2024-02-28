@@ -66,10 +66,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         chooseFixedOrPercent()
         chooseExtraType()
         fillValues()
-        CoroutineScope(Dispatchers.Main).launch {
-//            delay(WAIT_250)
-            changeDate()
-        }
+        changeDate()
     }
 
     private fun chooseExtraType() {
