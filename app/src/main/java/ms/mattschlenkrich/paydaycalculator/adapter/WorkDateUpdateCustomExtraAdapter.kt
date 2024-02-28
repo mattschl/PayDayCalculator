@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
@@ -11,6 +12,7 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateExtraItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragment
+import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragmentDirections
 
 private const val TAG = "WorkDateUpdateCustomExtra"
 
@@ -67,7 +69,20 @@ class WorkDateUpdateCustomExtraAdapter(
                     deleteExtra(extra)
                 }
             }
+            btnEdit.setOnClickListener {
+                gotoUpdateWorkDateExtra(extra)
+            }
         }
+    }
+
+    private fun gotoUpdateWorkDateExtra(extra: WorkDateExtras) {
+        mainActivity.mainViewModel.setWorkDateExtra(extra)
+        mainActivity.mainViewModel.setWorkDateExtraList(workDateExtras)
+        mView.findNavController().navigate(
+            WorkDateUpdateFragmentDirections
+                .actionWorkDateUpdateFragmentToWorkDateExtraUpdateFragment()
+
+        )
     }
 
     private fun deleteExtra(extra: WorkDateExtras) {

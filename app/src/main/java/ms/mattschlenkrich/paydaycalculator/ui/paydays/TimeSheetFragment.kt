@@ -301,6 +301,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                                 spEmployers.selectedItem.toString()
                             ).observe(viewLifecycleOwner) { employer ->
                                 curEmployer = employer
+                                mainActivity.mainViewModel.setEmployerString(curEmployer!!.employerName)
                             }
                             mainActivity.title = getString(R.string.time_sheet) +
                                     " for ${spEmployers.selectedItem}"

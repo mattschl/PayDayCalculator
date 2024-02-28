@@ -28,11 +28,20 @@ class MainViewModel(
     private var extraDefinitionFull: ExtraDefinitionFull? = null
     private var extraType: WorkExtraTypes? = null
     private var workDateExtraList = ArrayList<WorkDateExtras>()
+    private var workDateExtra: WorkDateExtras? = null
     private var workDate: String? = null
     private var workDateObject: WorkDates? = null
     private var cutOffDate: String? = null
     private var payPeriod: PayPeriods? = null
     private var payRate: EmployerPayRates? = null
+
+    fun getWorkDateExtra(): WorkDateExtras? {
+        return workDateExtra
+    }
+
+    fun setWorkDateExtra(newExtra: WorkDateExtras) {
+        workDateExtra = newExtra
+    }
 
     fun setWorkDateExtraList(extraList: ArrayList<WorkDateExtras>) {
         workDateExtraList = extraList

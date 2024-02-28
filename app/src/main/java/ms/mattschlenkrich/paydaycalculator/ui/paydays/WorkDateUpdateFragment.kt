@@ -126,6 +126,9 @@ class WorkDateUpdateFragment : Fragment(
         if (mainActivity.mainViewModel.getWorkDateObject() != null) {
             curDate = mainActivity.mainViewModel.getWorkDateObject()!!
             curDateString = curDate.wdDate
+            mainActivity.mainViewModel.setWorkDateString(
+                curDateString
+            )
             binding.apply {
                 tvWorkDate.text = df.getDisplayDate(curDate.wdDate)
                 etHours.setText(curDate.wdRegHours.toString())
