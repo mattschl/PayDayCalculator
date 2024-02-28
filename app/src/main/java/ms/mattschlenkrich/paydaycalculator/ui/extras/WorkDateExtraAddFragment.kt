@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.ui.paydays
+package ms.mattschlenkrich.paydaycalculator.ui.extras
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,7 +21,6 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateExtraAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 
 class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add) {
 
@@ -30,7 +29,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var curDateObject: WorkDates
-    private val extraTypeList = ArrayList<WorkExtraTypes>()
+    private var extraList = ArrayList<WorkDateExtras>()
     private val df = DateFunctions()
     private val cf = CommonFunctions()
 
@@ -94,7 +93,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
             val display = "Date: ${df.getDisplayDate(curDateObject.wdDate)} " +
                     "Employer: $curEmployerString"
             binding.lblDateInfo.text = display
-            getExtraTypeList()
+            getDateExtraList()
         }
     }
 
@@ -115,16 +114,10 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         }
     }
 
-    private fun getExtraTypeList() {
-        mainActivity.workExtraViewModel.getExtraDefTypes(curDateObject.wdEmployerId)
-            .observe(
-                viewLifecycleOwner
-            ) { names ->
-                extraTypeList.clear()
-                names.listIterator().forEach {
-                    extraTypeList.add(it)
-                }
-            }
+    private fun getDateExtraList() {
+        if (mainActivity.mainViewModel.getWorkDateExtraList().isNotEmpty()) {
+            extraList = mainActivity.mainViewModel.getWorkDateExtraList()
+        }
     }
 
     private fun fillMenu() {
@@ -165,6 +158,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
     }
 
     private fun gotoCallingFragment() {
+        mainActivity.mainViewModel.eraseWorkDateExtraList()
         mView.findNavController().navigate(
             WorkDateExtraAddFragmentDirections
                 .actionWorkDateExtraAddFragmentToWorkDateUpdateFragment()
@@ -192,9 +186,9 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
     private fun checkExtra(): String {
         binding.apply {
             var nameFound = false
-            if (extraTypeList.isNotEmpty()) {
-                for (extra in extraTypeList) {
-                    if (extra.wetName == etExtraName.text.toString().trim()) {
+            if (extraList.isNotEmpty()) {
+                for (extra in extraList) {
+                    if (extra.wdeName == etExtraName.text.toString().trim()) {
                         nameFound = true
                         break
                     }
@@ -205,11 +199,11 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
                         "The Extra must have a name"
             } else if (nameFound) {
                 "   ERROR!!\n" +
-                        "This Extra Type name has already been used. \n" +
+                        "This Extra name has already been used. \n" +
                         "Choose a different name."
             } else if (cf.getDoubleFromDollarOrPercent(etValue.text.toString()) == 0.0) {
                 "   ERROR!!\n" +
-                        "This Extra Type has to have a value"
+                        "This Extra Type must have a value"
             } else {
                 ANSWER_OK
             }

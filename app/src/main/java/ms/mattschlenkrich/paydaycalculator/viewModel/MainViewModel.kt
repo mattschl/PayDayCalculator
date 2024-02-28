@@ -8,6 +8,7 @@ import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
@@ -26,11 +27,24 @@ class MainViewModel(
     private var callingFragment: String? = null
     private var extraDefinitionFull: ExtraDefinitionFull? = null
     private var extraType: WorkExtraTypes? = null
+    private var workDateExtraList = ArrayList<WorkDateExtras>()
     private var workDate: String? = null
     private var workDateObject: WorkDates? = null
     private var cutOffDate: String? = null
     private var payPeriod: PayPeriods? = null
     private var payRate: EmployerPayRates? = null
+
+    fun setWorkDateExtraList(extraList: ArrayList<WorkDateExtras>) {
+        workDateExtraList = extraList
+    }
+
+    fun getWorkDateExtraList(): ArrayList<WorkDateExtras> {
+        return workDateExtraList
+    }
+
+    fun eraseWorkDateExtraList() {
+        workDateExtraList.clear()
+    }
 
     fun setPayRate(newRate: EmployerPayRates?) {
         payRate = newRate

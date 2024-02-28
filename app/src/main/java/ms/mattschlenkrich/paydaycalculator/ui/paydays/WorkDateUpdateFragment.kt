@@ -14,7 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateExtraUpdateCustomAdapter
+import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateUpdateCustomExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateUpdateBinding
@@ -53,9 +53,9 @@ class WorkDateUpdateFragment : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setActions()
         setDateAction()
         fillValues()
+        setActions()
     }
 
     private fun setDateAction() {
@@ -99,6 +99,7 @@ class WorkDateUpdateFragment : Fragment(
 
     private fun addExtra() {
         mainActivity.mainViewModel.setWorkDateObject(getCurWorkDate())
+        mainActivity.mainViewModel.setWorkDateExtraList(workDateExtras)
         mView.findNavController().navigate(
             WorkDateUpdateFragmentDirections
                 .actionWorkDateUpdateFragmentToWorkDateExtraAddFragment()
@@ -209,7 +210,7 @@ class WorkDateUpdateFragment : Fragment(
                         workDateExtras.sortBy { extra ->
                             extra.wdeName
                         }
-                        val extraAdapter = WorkDateExtraUpdateCustomAdapter(
+                        val extraAdapter = WorkDateUpdateCustomExtraAdapter(
                             mainActivity, mView,
                             this@WorkDateUpdateFragment,
                             workDateExtras

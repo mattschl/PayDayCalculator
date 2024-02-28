@@ -12,14 +12,14 @@ import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateExtraItemBind
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragment
 
-private const val TAG = "WorkDateXtrUpdateCust"
+private const val TAG = "WorkDateUpdateCustomExtra"
 
-class WorkDateExtraUpdateCustomAdapter(
+class WorkDateUpdateCustomExtraAdapter(
     val mainActivity: MainActivity,
     val mView: View,
     private val parentFragment: WorkDateUpdateFragment,
     private val workDateExtras: ArrayList<WorkDateExtras>,
-) : RecyclerView.Adapter<WorkDateExtraUpdateCustomAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<WorkDateUpdateCustomExtraAdapter.ViewHolder>() {
 
     private val df = DateFunctions()
     private val cf = CommonFunctions()
@@ -57,7 +57,9 @@ class WorkDateExtraUpdateCustomAdapter(
             }
             chkExtra.text = display
             chkExtra.isChecked = !extra.wdeIsDeleted
-
+            if (extra.wdeIsDeleted) {
+                btnEdit.visibility = View.INVISIBLE
+            }
             chkExtra.setOnClickListener {
                 if (chkExtra.isChecked) {
                     activateExtra(extra)

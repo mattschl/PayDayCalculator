@@ -355,7 +355,7 @@
         app:destination="@id/payDetailsFragment" />
     <fragment
         android:id="@+id/workDateExtraAddFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateExtraAddFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.WorkDateExtraAddFragment"
         android:label="fragment_work_date_extra_add"
         tools:layout="@layout/fragment_work_date_extra_add">
         <action

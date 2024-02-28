@@ -70,6 +70,9 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
             fabAddExtra.setOnClickListener {
                 //gotoExtraAddByPay
             }
+            fabAddDeduction.setOnClickListener {
+                //gotoExtraAddByPay
+            }
         }
     }
 
