@@ -66,6 +66,10 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         chooseFixedOrPercent()
         chooseExtraType()
         fillValues()
+        CoroutineScope(Dispatchers.Main).launch {
+//            delay(WAIT_250)
+            changeDate()
+        }
     }
 
     private fun chooseExtraType() {
@@ -232,37 +236,43 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     private fun chooseDate() {
         binding.apply {
             tvEffectiveDate.setOnClickListener {
-                val curDateAll = tvEffectiveDate.text.toString()
-                    .split("-")
-                val datePickerDialog = DatePickerDialog(
-                    mView.context,
-                    { _, year, monthOfYear, dayOfMonth ->
-                        val month = monthOfYear + 1
-                        val display = "$year-${
-                            month.toString()
-                                .padStart(2, '0')
-                        }-${
-                            dayOfMonth.toString().padStart(2, '0')
-                        }"
-                        tvEffectiveDate.text = display
-                    },
-                    curDateAll[0].toInt(),
-                    curDateAll[1].toInt() - 1,
-                    curDateAll[2].toInt()
-                )
-                datePickerDialog.setTitle("Choose when this will take effect")
-                datePickerDialog.show()
+                changeDate()
             }
         }
 
     }
 
+    private fun changeDate() {
+        binding.apply {
+            val curDateAll = tvEffectiveDate.text.toString()
+                .split("-")
+            val datePickerDialog = DatePickerDialog(
+                mView.context,
+                { _, year, monthOfYear, dayOfMonth ->
+                    val month = monthOfYear + 1
+                    val display = "$year-${
+                        month.toString()
+                            .padStart(2, '0')
+                    }-${
+                        dayOfMonth.toString().padStart(2, '0')
+                    }"
+                    tvEffectiveDate.text = display
+                },
+                curDateAll[0].toInt(),
+                curDateAll[1].toInt() - 1,
+                curDateAll[2].toInt()
+            )
+            datePickerDialog.setTitle("Choose when this will take effect")
+            datePickerDialog.show()
+        }
+    }
+
     private fun fillValues() {
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_250)
-            binding.apply {
+        binding.apply {
+            tvEffectiveDate.text = df.getCurrentDateAsString()
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(WAIT_250)
                 tvEmployer.text = curEmployer.employerName
-                tvEffectiveDate.text = df.getCurrentDateAsString()
                 if (mainActivity.mainViewModel.getWorkExtraType() != null) {
                     val extraType = mainActivity.mainViewModel.getWorkExtraType()!!
                     for (i in 0 until spExtraTypes.adapter.count) {

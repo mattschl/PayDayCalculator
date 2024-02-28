@@ -8,15 +8,20 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateExtraUpdateCustomAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 
-private const val TAG = "WorkDateUpdate"
+//private const val TAG = "WorkDateUpdate"
 
 class WorkDateUpdateFragment : Fragment(
     R.layout.fragment_work_date_update
@@ -163,56 +168,60 @@ class WorkDateUpdateFragment : Fragment(
                     extras.listIterator().forEach {
                         workDateExtras.add(it)
                         customWorkDateExtras.add(it)
-                        binding.apply {
-                            activity?.let {
-                                mainActivity.workExtraViewModel.getExtraTypesAndDefByDaily(
-                                    curWorkDateObject.wdEmployerId,
-                                    curWorkDateObject.wdCutoffDate
-                                ).observe(viewLifecycleOwner) { extras ->
-                                    extras.listIterator().forEach {
-                                        val tempExtra = WorkDateExtras(
-                                            0,
-                                            curWorkDateObject.workDateId,
-                                            null,
-                                            it.extraType.wetName,
-                                            it.extraType.wetAppliesTo,
-                                            it.extraType.wetAttachTo,
-                                            it.definition.weValue,
-                                            it.definition.weIsFixed,
-                                            it.extraType.wetIsCredit,
-                                            true,
-                                            df.getCurrentTimeAsString()
-                                        )
-                                        var found = false
-                                        for (oldExtra in workDateExtras) {
-                                            if (oldExtra.wdeName == it.extraType.wetName) {
-                                                found = true
-                                                break
-                                            }
-                                        }
-                                        if (!found) {
-                                            workDateExtras.add(tempExtra)
-                                        }
 
-                                    }
-                                    workDateExtras.sortBy { extra ->
-                                        extra.wdeName
-                                    }
-                                    val extraAdapter = WorkDateExtraUpdateCustomAdapter(
-                                        mainActivity, mView,
-                                        this@WorkDateUpdateFragment,
-                                        workDateExtras
-                                    )
-                                    rvExtras.apply {
-                                        layoutManager = LinearLayoutManager(mView.context)
-                                        adapter = extraAdapter
-                                    }
-                                }
-
-                            }
-                        }
                     }
                 }
+        }
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            binding.apply {
+                activity?.let {
+                    mainActivity.workExtraViewModel.getExtraTypesAndDefByDaily(
+                        curWorkDateObject.wdEmployerId,
+                        curWorkDateObject.wdCutoffDate
+                    ).observe(viewLifecycleOwner) { extras ->
+                        extras.listIterator().forEach {
+                            val tempExtra = WorkDateExtras(
+                                0,
+                                curWorkDateObject.workDateId,
+                                null,
+                                it.extraType.wetName,
+                                it.extraType.wetAppliesTo,
+                                it.extraType.wetAttachTo,
+                                it.definition.weValue,
+                                it.definition.weIsFixed,
+                                it.extraType.wetIsCredit,
+                                true,
+                                df.getCurrentTimeAsString()
+                            )
+                            var found = false
+                            for (oldExtra in workDateExtras) {
+                                if (oldExtra.wdeName == it.extraType.wetName) {
+                                    found = true
+                                    break
+                                }
+                            }
+                            if (!found) {
+                                workDateExtras.add(tempExtra)
+                            }
+
+                        }
+                        workDateExtras.sortBy { extra ->
+                            extra.wdeName
+                        }
+                        val extraAdapter = WorkDateExtraUpdateCustomAdapter(
+                            mainActivity, mView,
+                            this@WorkDateUpdateFragment,
+                            workDateExtras
+                        )
+                        rvExtras.apply {
+                            layoutManager = LinearLayoutManager(mView.context)
+                            adapter = extraAdapter
+                        }
+                    }
+
+                }
+            }
         }
     }
 

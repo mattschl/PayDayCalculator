@@ -91,7 +91,7 @@
                 android:textSize="@dimen/text_size_large"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblValue"
-                app:layout_constraintTop_toBottomOf="@id/tvDescription"
+                app:layout_constraintTop_toBottomOf="@id/tvEffectiveDate"
                 tools:ignore="LabelFor" />
 
             <CheckBox
@@ -129,8 +129,8 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_size_large"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/lblEmployer"
-                app:layout_constraintTop_toBottomOf="@id/chkIsFixed"
+                app:layout_constraintStart_toEndOf="@id/lblEffectiveDate"
+                app:layout_constraintTop_toBottomOf="@id/tvDescription"
                 tools:ignore="TextSizeCheck" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
