@@ -20,7 +20,7 @@ class WorkDateUpdateExtraAdapter(
     val mView: View,
     private val parentFragment: WorkDateUpdateFragment,
     private val workDate: WorkDates,
-    private val workDateExtras: ArrayList<WorkDateExtras>
+    private val workDateExtras: ArrayList<WorkDateExtras>,
 ) : RecyclerView.Adapter<WorkDateUpdateExtraAdapter.ViewHolder>() {
 
     private val df = DateFunctions()
@@ -72,10 +72,10 @@ class WorkDateUpdateExtraAdapter(
         holder.itemBinding.apply {
             chkExtra.setOnClickListener {
                 if (chkExtra.isChecked) {
-                    addNewExtra(extra)
+                    activateExtra(extra)
                     parentFragment.fillExtras()
                 } else {
-                    deleteExtra(extra.extraType.wetName, workDate.workDateId)
+                    deleteWorkDateExtra(extra.extraType.wetName, workDate.workDateId)
                     parentFragment.fillExtras()
                 }
             }
@@ -93,7 +93,7 @@ class WorkDateUpdateExtraAdapter(
         }
     }
 
-    private fun deleteExtra(extraName: String, workDateId: Long) {
+    private fun deleteWorkDateExtra(extraName: String, workDateId: Long) {
         parentFragment.let {
             mainActivity.payDayViewModel.deleteWorkDateExtra(
                 extraName, workDateId, df.getCurrentTimeAsString()
@@ -101,7 +101,7 @@ class WorkDateUpdateExtraAdapter(
         }
     }
 
-    private fun addNewExtra(
+    private fun activateExtra(
         extra: ExtraDefinitionAndType
     ) {
         parentFragment.let {

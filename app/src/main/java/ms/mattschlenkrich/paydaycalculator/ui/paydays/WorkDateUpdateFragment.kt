@@ -10,13 +10,13 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateUpdateExtraAdapter
+import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateExtraUpdateCustomAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 
-//private const val TAG = "WorkDateUpdate"
+private const val TAG = "WorkDateUpdate"
 
 class WorkDateUpdateFragment : Fragment(
     R.layout.fragment_work_date_update
@@ -29,6 +29,7 @@ class WorkDateUpdateFragment : Fragment(
     private lateinit var curDate: WorkDates
     private lateinit var curDateString: String
     private val workDateExtras = ArrayList<WorkDateExtras>()
+    private val customWorkDateExtras = ArrayList<WorkDateExtras>()
     private val df = DateFunctions()
 //    private val cf = CommonFunctions()
 
@@ -157,30 +158,58 @@ class WorkDateUpdateFragment : Fragment(
             mainActivity.payDayViewModel.getWorkDateExtras(curDate.workDateId)
                 .observe(viewLifecycleOwner) { extras ->
                     workDateExtras.clear()
+                    customWorkDateExtras.clear()
                     extras.listIterator().forEach {
                         workDateExtras.add(it)
+                        customWorkDateExtras.add(it)
                     }
                 }
         }
         binding.apply {
-            val extraAdapter = WorkDateUpdateExtraAdapter(
-                mainActivity, mView,
-                this@WorkDateUpdateFragment,
-                curDate,
-                workDateExtras
-            )
-            rvExtras.apply {
-                layoutManager = LinearLayoutManager(mView.context)
-                adapter = extraAdapter
-            }
+
             val curWorkDateObject = mainActivity.mainViewModel.getWorkDateObject()!!
             activity?.let {
                 mainActivity.workExtraViewModel.getExtraTypesAndDefByDaily(
                     curWorkDateObject.wdEmployerId,
                     curWorkDateObject.wdCutoffDate
                 ).observe(viewLifecycleOwner) { extras ->
-                    extraAdapter.differ.submitList(extras)
+                    extras.listIterator().forEach {
+                        val tempExtra = WorkDateExtras(
+                            0,
+                            curWorkDateObject.workDateId,
+                            null,
+                            it.extraType.wetName,
+                            it.extraType.wetAppliesTo,
+                            it.extraType.wetAttachTo,
+                            it.definition.weValue,
+                            it.definition.weIsFixed,
+                            it.extraType.wetIsCredit,
+                            true,
+                            df.getCurrentTimeAsString()
+                        )
+                        var found = false
+                        for (oldExtra in workDateExtras) {
+                            if (oldExtra.wdeName == it.extraType.wetName) {
+                                found = true
+                                break
+                            }
+                        }
+                        if (!found) {
+                            workDateExtras.add(tempExtra)
+                        }
+
+                    }
+                    val extraAdapter = WorkDateExtraUpdateCustomAdapter(
+                        mainActivity, mView,
+                        this@WorkDateUpdateFragment,
+                        workDateExtras
+                    )
+                    rvExtras.apply {
+                        layoutManager = LinearLayoutManager(mView.context)
+                        adapter = extraAdapter
+                    }
                 }
+
             }
         }
     }

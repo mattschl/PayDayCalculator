@@ -71,8 +71,7 @@ interface PayDayDao {
 
     @Query(
         "SELECT * FROM $TABLE_WORK_DATE_EXTRAS " +
-                "WHERE wdeWorkDateId = :workDateId " +
-                "AND wdeIsDeleted = 0"
+                "WHERE wdeWorkDateId = :workDateId "
     )
     fun getWorkDateExtras(workDateId: Long): LiveData<List<WorkDateExtras>>
 

@@ -151,7 +151,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
     private fun checkSaveWorkDateExtra() {
         val message = checkExtra()
         if (message == ANSWER_OK) {
-            mainActivity.workExtraViewModel.insertWorkDateExtra(
+            mainActivity.payDayViewModel.insertWorkDateExtra(
                 getCurExtra()
             )
             gotoCallingFragment()

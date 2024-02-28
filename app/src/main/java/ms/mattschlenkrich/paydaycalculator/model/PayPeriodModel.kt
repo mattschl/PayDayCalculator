@@ -102,7 +102,7 @@ data class WorkDateAndExtras(
     )],
     indices = [Index(
         value =
-        ["wdeWorkDateId", "wdeExtraTypeId"], unique = true
+        ["wdeWorkDateId", "wdeName"], unique = true
     )]
 )
 @Parcelize
@@ -145,7 +145,7 @@ data class WorkDateExtras(
         )],
     indices = [Index(
         value =
-        ["ppeEmployerId", "ppeCutoffDate", "ppeExtraTypeId"],
+        ["ppeCutoffDate", "ppeName"],
         unique = true
     )]
 )
@@ -157,11 +157,11 @@ data class WorkPayPeriodExtras(
     @ColumnInfo(index = true)
     val ppeExtraTypeId: Long?,
     val ppeName: String,
-    val wdeAppliesTo: Int,
-    val wdeAttachTo: Int,
+    val ppeAppliesTo: Int,
+    val ppeAttachTo: Int,
     val ppeValue: Double,
-    val weIsFixed: Boolean,
-    val wdeIsCredit: Boolean,
+    val ppeIsFixed: Boolean,
+    val ppeIsCredit: Boolean,
     val ppeIsDeleted: Boolean,
     val ppeUpdateTime: String,
 ) : Parcelable

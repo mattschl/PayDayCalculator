@@ -162,7 +162,8 @@ interface WorkExtraDao {
                 ") ON workExtraTypeId = weExtraTypeId " +
                 "WHERE wetEmployerId = :employerId " +
                 "AND wetAttachTo = :attachTo " +
-                "AND wetIsDeleted = 0"
+                "AND wetIsDeleted = 0 " +
+                "ORDER BY wetName"
     )
     fun getExtraTypesAndDef(employerId: Long, cutoffDate: String, attachTo: Int):
             LiveData<List<ExtraDefinitionAndType>>
