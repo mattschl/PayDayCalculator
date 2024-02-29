@@ -68,12 +68,26 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
     private fun setActions() {
         binding.apply {
             fabAddExtra.setOnClickListener {
-                //gotoExtraAddByPay
+                gotoExtraAdd(true)
             }
             fabAddDeduction.setOnClickListener {
-                //gotoExtraAddByPay
+                gotoExtraAdd(false)
             }
         }
+    }
+
+    private fun gotoExtraAdd(isCredit: Boolean) {
+        mainActivity.payDayViewModel.getPayPeriod(
+            curCutOff, curEmployer!!.employerId
+        ).observe(viewLifecycleOwner) { payPeriod ->
+            mainActivity.mainViewModel.setPayPeriod(payPeriod)
+        }
+        mainActivity.mainViewModel.setEmployer(curEmployer!!)
+        mainActivity.mainViewModel.setIsCredit(isCredit)
+        mView.findNavController().navigate(
+            PayDetailsFragmentDirections
+                .actionPayDetailsFragmentToPayPeriodExtraAddFragment()
+        )
     }
 
     private fun selectCutOffDate() {

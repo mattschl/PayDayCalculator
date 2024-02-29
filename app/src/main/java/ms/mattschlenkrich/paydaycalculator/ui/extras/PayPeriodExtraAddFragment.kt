@@ -18,6 +18,7 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayPeriodExtraAddBinding
+import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
 
@@ -29,6 +30,7 @@ class PayPeriodExtraAddFragment :
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var curPayPeriod: PayPeriods
+    private lateinit var curEmployer: Employers
     private var extraList = ArrayList<WorkPayPeriodExtras>()
     private val df = DateFunctions()
     private val cf = CommonFunctions()
@@ -51,6 +53,22 @@ class PayPeriodExtraAddFragment :
         fillSpinners()
         chooseFixedOrPercent()
         fillMenu()
+        fillValues()
+    }
+
+    private fun fillValues() {
+        if (mainActivity.mainViewModel.getEmployer() != null) {
+            curEmployer = mainActivity.mainViewModel.getEmployer()!!
+        }
+        if (mainActivity.mainViewModel.getPayPeriod() != null) {
+            curPayPeriod = mainActivity.mainViewModel.getPayPeriod()!!
+        }
+        val display = "Cutoff Date: ${curPayPeriod.ppCutoffDate} for : " +
+                curEmployer.employerName
+        binding.apply {
+            lblPayInfo.text = display
+            chkIsCredit.isChecked = mainActivity.mainViewModel.getIsCredit()
+        }
     }
 
     private fun fillMenu() {

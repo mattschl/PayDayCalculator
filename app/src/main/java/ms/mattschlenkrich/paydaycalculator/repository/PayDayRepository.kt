@@ -14,6 +14,9 @@ class PayDayRepository(private val db: PayDatabase) {
     suspend fun insertPayPeriod(cutOff: PayPeriods) =
         db.getPayDayDao().insertPayPeriod(cutOff)
 
+    fun getPayPeriod(cutOff: String, employerId: Long) =
+        db.getPayDayDao().getPayPeriod(cutOff, employerId)
+
     fun getWorkDateList(employerId: Long, cutOff: String) =
         db.getPayDayDao().getWorkDateList(employerId, cutOff)
 

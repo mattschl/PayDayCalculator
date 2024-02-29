@@ -29,9 +29,13 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
         entity = Employers::class,
         parentColumns = ["employerId"],
         childColumns = ["ppEmployerId"]
-    )], indices = [Index(
+    )],
+    indices = [Index(
         value = ["ppEmployerId", "ppCutoffDate"], unique = true
-    )]
+    ),
+        Index(
+            value = ["payPeriodId"], unique = true
+        )]
 )
 @Parcelize
 data class PayPeriods(
@@ -140,7 +144,7 @@ data class WorkDateExtras(
     indices = [
         Index(
             value =
-            ["ppeCutoffDate", "ppeName"],
+            ["ppePayPeriodId", "ppeName"],
             unique = true
         )]
 )

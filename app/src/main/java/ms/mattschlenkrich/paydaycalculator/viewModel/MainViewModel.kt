@@ -34,6 +34,15 @@ class MainViewModel(
     private var cutOffDate: String? = null
     private var payPeriod: PayPeriods? = null
     private var payRate: EmployerPayRates? = null
+    private var isCredit = false
+
+    fun getIsCredit(): Boolean {
+        return isCredit
+    }
+
+    fun setIsCredit(b: Boolean) {
+        isCredit = b
+    }
 
     fun getWorkDateExtra(): WorkDateExtras? {
         return workDateExtra

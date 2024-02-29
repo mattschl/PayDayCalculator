@@ -352,6 +352,9 @@
         <action
             android:id="@+id/action_payDetailsFragment_to_timeSheetFragment"
             app:destination="@id/timeSheetFragment" />
+        <action
+            android:id="@+id/action_payDetailsFragment_to_payPeriodExtraAddFragment"
+            app:destination="@id/payPeriodExtraAddFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_payDetailsFragment"
@@ -373,6 +376,15 @@
         <action
             android:id="@+id/action_workDateExtraUpdateFragment_to_workDateUpdateFragment"
             app:destination="@id/workDateUpdateFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/payPeriodExtraAddFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.PayPeriodExtraAddFragment"
+        android:label="PayPeriodExtraAddFragment"
+        tools:layout="@layout/fragment_pay_period_extra_add">
+        <action
+            android:id="@+id/action_payPeriodExtraAddFragment_to_payDetailsFragment"
+            app:destination="@id/payDetailsFragment" />
     </fragment>
 
 </navigation>

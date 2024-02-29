@@ -32,6 +32,14 @@ interface PayDayDao {
     suspend fun insertPayPeriod(payPeriod: PayPeriods)
 
     @Query(
+        "SELECT * FROM payPeriods " +
+                "WHERE ppCutoffDate = :cutOff " +
+                "AND ppEmployerId = :employerId " +
+                "AND ppIsDeleted = 0"
+    )
+    fun getPayPeriod(cutOff: String, employerId: Long): LiveData<PayPeriods>
+
+    @Query(
         "SELECT * FROM $TABLE_WORK_DATES " +
                 "WHERE wdEmployerId = :employerId " +
                 "AND wdCutoffDate = :cutOff " +
