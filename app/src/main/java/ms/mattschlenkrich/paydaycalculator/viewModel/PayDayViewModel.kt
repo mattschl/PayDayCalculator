@@ -8,6 +8,7 @@ import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.repository.PayDayRepository
 
 class PayDayViewModel(
@@ -72,4 +73,9 @@ class PayDayViewModel(
 
     fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String) =
         payDayRepository.getWorkDateExtrasPerPay(employerId, cutOff)
+
+    fun insertPayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras) =
+        viewModelScope.launch {
+            payDayRepository.insertPayPeriodExtra(payPeriodExtra)
+        }
 }

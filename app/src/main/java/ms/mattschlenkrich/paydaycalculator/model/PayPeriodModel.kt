@@ -228,3 +228,23 @@ data class WorkDateExtraAndTypeFull(
     )
     var def: WorkExtrasDefinitions?
 ) : Parcelable
+
+@SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+@Parcelize
+data class PayPeriodExtraAndTypeFull(
+    @Embedded
+    var payPeriodExtra: WorkPayPeriodExtras,
+    @Relation(
+        entity = WorkExtraTypes::class,
+        parentColumn = "ppeExtraTypeId",
+        entityColumn = "workExtraTypeId",
+    )
+    var extraType: WorkExtraTypes?,
+    @Relation(
+        entity = WorkExtrasDefinitions::class,
+        parentColumn = "ppeExtraTypeId",
+        entityColumn = "weExtraTypeId",
+    )
+    var extraDef: WorkExtrasDefinitions?,
+
+    ) : Parcelable

@@ -196,13 +196,6 @@ class PayCalculations(
 
                         )
                     )
-//                    Log.d(
-//                        TAG, "adding ---------- ${workExtrasByPay[i].extraType.wetName} " +
-//                                "values are pay ${pay.getPayTimeWorked()} and percent is " +
-//                                "${workExtrasByPay[i].definition.weValue} total is " +
-//                                workExtrasByPay[i].definition.weValue *
-//                                pay.getPayTimeWorked() / 100
-//                    )
                 }
             }
             return extraList
@@ -327,6 +320,108 @@ class PayCalculations(
         }
     }
 
+    inner class TAX {
+
+        private fun getTaxFactor(amount: Double): Double {
+            when (employer.payFrequency) {
+                "Bi-Weekly" -> {
+                    return amount / 26
+                }
+
+                "Weekly" -> {
+                    return amount / 52
+                }
+
+                "Semi-Monthly" -> {
+                    return amount / 24
+                }
+
+                "Monthly" -> {
+                    return amount / 12
+                }
+
+                else -> {
+                    return 0.0
+                }
+            }
+        }
+
+        fun getAllTaxDeductions(): Double {
+            var totalTax = 0.0
+            for (taxAndAmount in getTaxList()) {
+                totalTax += taxAndAmount.amount
+            }
+            return if (pay.getPayHourly() > 0.0) {
+                totalTax
+            } else {
+                0.0
+            }
+        }
+
+        fun getTaxList():
+                ArrayList<TaxAndAmount> {
+            val taxesAndAmounts = ArrayList<TaxAndAmount>()
+            for (taxType in taxTypes) {
+//            Log.d(TAG, "looping through types - $type")
+                var taxTotal = 0.0
+
+                var runningRemainder =
+                    when (taxType.ttBasedOn) {
+                        0 -> {
+                            pay.getPayTimeWorked()
+                        }
+
+                        1 -> {
+                            pay.getPayHourly()
+                        }
+
+                        2 -> {
+                            pay.getPayGross()
+                        }
+
+                        else -> {
+                            0.0
+                        }
+                    }
+                for (def in taxRules) {
+//                Log.d(
+//                    TAG, "looping through taxDef - ${def.wtType} " +
+//                            "and - ${def.wtPercent} "
+//                )
+                    if (def.wtType == taxType.taxType && runningRemainder > 0) {
+                        var taxable: Double
+                        runningRemainder -=
+                            if (def.wtHasExemption) {
+                                getTaxFactor(def.wtExemptionAmount)
+                            } else {
+                                0.0
+                            }
+                        if (runningRemainder < 0.0) {
+                            runningRemainder = 0.0
+                        }
+                        if (def.wtHasBracket &&
+                            runningRemainder >= getTaxFactor(def.wtBracketAmount)
+                        ) {
+                            taxable = getTaxFactor(def.wtBracketAmount)
+                            runningRemainder -= getTaxFactor(def.wtBracketAmount)
+                        } else {
+                            taxable = runningRemainder
+                            runningRemainder = 0.0
+                        }
+                        taxTotal += taxable * def.wtPercent
+                    }
+                }
+                taxesAndAmounts.add(
+                    TaxAndAmount(
+                        taxType.taxType, taxTotal
+                    )
+                )
+
+            }
+            return taxesAndAmounts
+        }
+    }
+
     private fun findRate() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.employerViewModel.getEmployerPayRates(
@@ -433,109 +528,6 @@ class PayCalculations(
                     }
                 }
             }
-        }
-    }
-
-    inner class TAX {
-
-
-        private fun getTaxFactor(amount: Double): Double {
-            when (employer.payFrequency) {
-                "Bi-Weekly" -> {
-                    return amount / 26
-                }
-
-                "Weekly" -> {
-                    return amount / 52
-                }
-
-                "Semi-Monthly" -> {
-                    return amount / 24
-                }
-
-                "Monthly" -> {
-                    return amount / 12
-                }
-
-                else -> {
-                    return 0.0
-                }
-            }
-        }
-
-        fun getAllTaxDeductions(): Double {
-            var totalTax = 0.0
-            for (taxAndAmount in getTaxList()) {
-                totalTax += taxAndAmount.amount
-            }
-            return if (pay.getPayHourly() > 0.0) {
-                totalTax
-            } else {
-                0.0
-            }
-        }
-
-        fun getTaxList():
-                ArrayList<TaxAndAmount> {
-            val taxesAndAmounts = ArrayList<TaxAndAmount>()
-            for (taxType in taxTypes) {
-//            Log.d(TAG, "looping through types - $type")
-                var taxTotal = 0.0
-
-                var runningRemainder =
-                    when (taxType.ttBasedOn) {
-                        0 -> {
-                            pay.getPayTimeWorked()
-                        }
-
-                        1 -> {
-                            pay.getPayHourly()
-                        }
-
-                        2 -> {
-                            pay.getPayGross()
-                        }
-
-                        else -> {
-                            0.0
-                        }
-                    }
-                for (def in taxRules) {
-//                Log.d(
-//                    TAG, "looping through taxDef - ${def.wtType} " +
-//                            "and - ${def.wtPercent} "
-//                )
-                    if (def.wtType == taxType.taxType && runningRemainder > 0) {
-                        var taxable: Double
-                        runningRemainder -=
-                            if (def.wtHasExemption) {
-                                getTaxFactor(def.wtExemptionAmount)
-                            } else {
-                                0.0
-                            }
-                        if (runningRemainder < 0.0) {
-                            runningRemainder = 0.0
-                        }
-                        if (def.wtHasBracket &&
-                            runningRemainder >= getTaxFactor(def.wtBracketAmount)
-                        ) {
-                            taxable = getTaxFactor(def.wtBracketAmount)
-                            runningRemainder -= getTaxFactor(def.wtBracketAmount)
-                        } else {
-                            taxable = runningRemainder
-                            runningRemainder = 0.0
-                        }
-                        taxTotal += taxable * def.wtPercent
-                    }
-                }
-                taxesAndAmounts.add(
-                    TaxAndAmount(
-                        taxType.taxType, taxTotal
-                    )
-                )
-
-            }
-            return taxesAndAmounts
         }
     }
 }

@@ -17,6 +17,7 @@ import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtraAndTypeFull
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
 
 @Dao
 interface PayDayDao {
@@ -56,21 +57,6 @@ interface PayDayDao {
     @Delete
     suspend fun deleteWorkDateExtra(extraTypes: WorkExtraTypes)
 
-//    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-//    @Transaction
-//    @Query(
-//        "SELECT $TABLE_WORK_DATES.*, $TABLE_WORK_DATE_EXTRAS.* " +
-//                "FROM $TABLE_WORK_DATES " +
-//                "LEFT JOIN $TABLE_WORK_DATE_EXTRAS ON " +
-//                "workDateId = wdeWorkDateId " +
-//                "WHERE wdEmployerId = :employerId " +
-//                "AND wdCutoffDate = :cutOffDate " +
-//                "ORDER BY $TABLE_WORK_DATES.wdDate, " +
-//                "$TABLE_WORK_DATE_EXTRAS.wdeName COLLATE NOCASE"
-//    )
-//    fun getWorkDatesAndExtras(employerId: Long, cutOffDate: String):
-//            LiveData<List<WorkDateAndExtras>>
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkDateExtra(workDateExtra: WorkDateExtras)
 
@@ -90,33 +76,6 @@ interface PayDayDao {
     )
 
     fun getWorkDateExtrasActive(workDateId: Long): LiveData<List<WorkDateExtras>>
-
-//    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-//    @Transaction
-//    @Query(
-//        "SELECT DISTINCT dates.* , " +
-//                "extraDef.*, " +
-//                "extras.* " +
-//                "FROM $TABLE_WORK_DATES AS dates " +
-//                "LEFT JOIN $TABLE_WORK_EXTRAS_DEFINITIONS as extraDef ON " +
-//                "dates.wdEmployerId = (" +
-//                "SELECT weEmployerId FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
-//                "WHERE weEffectiveDate = " +
-//                "(SELECT MAX(weEffectiveDate) FROM $TABLE_WORK_EXTRAS_DEFINITIONS ) " +
-//                "AND weIsDeleted = 0) " +
-//                "LEFT JOIN $TABLE_WORK_EXTRA_TYPES as extraType ON " +
-//                "dates.wdEmployerId = (" +
-//                "SELECT wetEmployerId FROM $TABLE_WORK_EXTRA_TYPES " +
-//                "WHERE wetIsDeleted = 0 " +
-//                "AND (wetAttachTo = 0 " +
-//                "OR wetAttachTo = 1)) " +
-//                "LEFT JOIN $TABLE_WORK_DATE_EXTRAS as extras ON " +
-//                "dates.workDateId = extras.wdeWorkDateId " +
-//                "WHERE dates.workDateId = :workDateId " +
-//                "ORDER BY extraType.wetName"
-//    )
-//    fun getWorkDateAndExtraDefAndWorkDateExtras(workDateId: Long):
-//            LiveData<List<WorkDateAndExtraDefAndWodDateExtras>>
 
     @Query(
         "Update $TABLE_WORK_DATE_EXTRAS " +
@@ -142,8 +101,8 @@ interface PayDayDao {
                 "wdEmployerID = :employerId AND " +
                 "wdIsDeleted = 0 " +
                 ") " +
-                "LEFT JOIN taxTypes as types ON " +
-                "taxTypeId = wdeExtraTypeId " +
+                "LEFT JOIN workExtraTypes as types ON " +
+                "workExtraTypeId = wdeExtraTypeId " +
                 "LEFT JOIN workTaxRules as defs ON " +
                 "wdeExtraTypeId = wtType " +
                 " WHERE wdeIsDeleted = 0 " +
@@ -151,4 +110,7 @@ interface PayDayDao {
     )
     fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String)
             : LiveData<List<WorkDateExtraAndTypeFull>>
+
+    @Insert
+    suspend fun insertPayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras)
 }

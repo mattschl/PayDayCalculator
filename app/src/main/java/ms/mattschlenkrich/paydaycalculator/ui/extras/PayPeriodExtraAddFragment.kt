@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayPeriodExtraAddBinding
@@ -38,7 +39,7 @@ class PayPeriodExtraAddFragment :
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentPayPeriodExtraAddBinding.inflate(
             inflater, container, false
         )
@@ -94,12 +95,68 @@ class PayPeriodExtraAddFragment :
     }
 
     private fun saveExtra() {
-        Toast.makeText(
-            mView.context,
-            "This function is not available",
-            Toast.LENGTH_LONG
-        ).show()
-        //TODO("Not yet implemented")
+        val message = checkExtra()
+        if (message == ANSWER_OK) {
+            binding.apply {
+                mainActivity.payDayViewModel.insertPayPeriodExtra(
+                    curPayPeriodExtra()
+                )
+            }
+        } else {
+            Toast.makeText(
+                mView.context,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun curPayPeriodExtra(): WorkPayPeriodExtras {
+        binding.apply {
+            return WorkPayPeriodExtras(
+                cf.generateId(),
+                curPayPeriod.payPeriodId,
+                null,
+                etExtraName.text.toString().trim(),
+                spAppliesTo.selectedItemPosition,
+                3,
+                cf.getDoubleFromDollarOrPercent(
+                    etValue.text.toString()
+                ),
+                chkIsFixed.isChecked,
+                chkIsCredit.isChecked,
+                false,
+                df.getCurrentTimeAsString(),
+            )
+        }
+    }
+
+    private fun checkExtra(): String {
+        binding.apply {
+            var nameFound = false
+            if (extraList.isNotEmpty()) {
+                for (extra in extraList) {
+                    if (extra.ppeName == etExtraName.text.toString().trim()) {
+                        nameFound = true
+                        break
+                    }
+                }
+            }
+            val errorMessage = if (etExtraName.text.isNullOrBlank()) {
+                "    ERROR!!\n" +
+                        "The Extra must have a name"
+            } else if (nameFound) {
+                "   ERROR!!\n" +
+                        "This Extra name has already been used. \n" +
+                        "Choose a different name."
+            } else if (cf.getDoubleFromDollarOrPercent(etValue.text.toString()) == 0.0) {
+                "   ERROR!!\n" +
+                        "This Extra must have a value"
+            } else {
+                ANSWER_OK
+            }
+            return errorMessage
+        }
     }
 
     private fun chooseFixedOrPercent() {
