@@ -5,10 +5,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListPayDetailExtraItemBinding
-import ms.mattschlenkrich.paydaycalculator.model.ExtraAndTotal
+import ms.mattschlenkrich.paydaycalculator.model.PayPeriodExtraAndTypeFull
 
 class PayDetailExtraAdapter(
-    private val creditList: ArrayList<ExtraAndTotal>
+    private val creditList: ArrayList<PayPeriodExtraAndTypeFull>
 ) : RecyclerView.Adapter<PayDetailExtraAdapter.CreditViewHolder>() {
 
     private val cf = CommonFunctions()
@@ -31,8 +31,8 @@ class PayDetailExtraAdapter(
     override fun onBindViewHolder(holder: CreditViewHolder, position: Int) {
         val credit = creditList[position]
         holder.itemBinding.apply {
-            tvExtraDescription.text = credit.extraName
-            tvExtraTotal.text = cf.displayDollars(credit.amount)
+//            tvExtraDescription.text = credit.extraName
+//            tvExtraTotal.text = cf.displayDollars(credit.amount)
         }
     }
 }

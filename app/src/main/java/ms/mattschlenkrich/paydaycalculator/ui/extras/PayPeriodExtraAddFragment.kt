@@ -13,6 +13,7 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
@@ -102,6 +103,7 @@ class PayPeriodExtraAddFragment :
                     curPayPeriodExtra()
                 )
             }
+            gotoPayDetails()
         } else {
             Toast.makeText(
                 mView.context,
@@ -109,6 +111,13 @@ class PayPeriodExtraAddFragment :
                 Toast.LENGTH_LONG
             ).show()
         }
+    }
+
+    private fun gotoPayDetails() {
+        mView.findNavController().navigate(
+            PayPeriodExtraAddFragmentDirections
+                .actionPayPeriodExtraAddFragmentToPayDetailsFragment()
+        )
     }
 
     private fun curPayPeriodExtra(): WorkPayPeriodExtras {

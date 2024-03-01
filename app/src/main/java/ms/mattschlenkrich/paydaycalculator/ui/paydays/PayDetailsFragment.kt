@@ -10,14 +10,12 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.PayDetailExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_DETAILS
@@ -172,40 +170,55 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                     llStatPay.visibility = View.GONE
                 }
                 tvHourlyTotal.text = cf.displayDollars(payCalculations.pay.getPayHourly())
-                val creditList =
-                    payCalculations.extras.getCreditExtraAndTotalsByDate()
-                val creditByPay =
-                    payCalculations.extras.getCreditExtrasAndTotalsByPay()
-                for (credit in creditByPay) {
-                    creditList.add(credit)
-                }
-//                Log.d(TAG, "creditList size is ${creditList.size}")
-                val creditLstAdapter = PayDetailExtraAdapter(creditList)
-                rvCredits.layoutManager = LinearLayoutManager(mView.context)
-                rvCredits.adapter = creditLstAdapter
-                tvCreditTotal.text = cf.displayDollars(
-                    payCalculations.pay.getCreditTotalAll()
-                )
-                val debitList =
-                    payCalculations.deductions.getDebitExtraAndTotalByPay()
-                for (tax in payCalculations.tax.getTaxList()
-                ) {
-                    debitList.add(
-                        ExtraAndTotal(
-                            tax.taxType, tax.amount
-                        )
-                    )
-                }
-                val deductionListAdapter = PayDetailExtraAdapter(debitList)
-                rvDebits.layoutManager = LinearLayoutManager(mView.context)
-                rvDebits.adapter = deductionListAdapter
-                var debitTotal = 0.0
-                for (debit in debitList) {
-                    debitTotal += debit.amount
-                }
-                tvDebitTotal.text = cf.displayDollars(debitTotal)
+                fillExtras(payCalculations)
             }
         }
+    }
+
+    private fun fillExtras(payCalculations: PayCalculations) {
+        fillCredits(payCalculations)
+        fillDeductions(payCalculations)
+    }
+
+    private fun fillCredits(payCalculations: PayCalculations) {
+        val creditList =
+            payCalculations.extras.getCreditExtraAndTotalsByDate()
+        val creditByPay =
+            payCalculations.extras.getCreditExtrasAndTotalsByPay()
+        for (credit in creditByPay) {
+            creditList.add(credit)
+        }
+//        binding.apply {
+//            val creditLstAdapter = PayDetailExtraAdapter(creditList)
+//            rvCredits.layoutManager = LinearLayoutManager(mView.context)
+//            rvCredits.adapter = creditLstAdapter
+//            tvCreditTotal.text = cf.displayDollars(
+//                payCalculations.pay.getCreditTotalAll()
+//            )
+//        }
+    }
+
+    private fun fillDeductions(payCalculations: PayCalculations) {
+        val debitList =
+            payCalculations.deductions.getDebitExtraAndTotalByPay()
+        for (tax in payCalculations.tax.getTaxList()
+        ) {
+            debitList.add(
+                ExtraAndTotal(
+                    tax.taxType, tax.amount
+                )
+            )
+        }
+//        val deductionListAdapter = PayDetailExtraAdapter(debitList)
+//        binding.apply {
+//            rvDebits.layoutManager = LinearLayoutManager(mView.context)
+//            rvDebits.adapter = deductionListAdapter
+//            var debitTotal = 0.0
+//            for (debit in debitList) {
+//                debitTotal += debit.amount
+//            }
+//            tvDebitTotal.text = cf.displayDollars(debitTotal)
+//        }
     }
 
     private fun fillValues() {
