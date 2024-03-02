@@ -233,7 +233,7 @@ data class WorkDateExtraAndTypeFull(
 @Parcelize
 data class PayPeriodExtraAndTypeFull(
     @Embedded
-    var payPeriodExtra: WorkPayPeriodExtras,
+    var payPeriodExtra: WorkPayPeriodExtras?,
     @Relation(
         entity = WorkExtraTypes::class,
         parentColumn = "ppeExtraTypeId",

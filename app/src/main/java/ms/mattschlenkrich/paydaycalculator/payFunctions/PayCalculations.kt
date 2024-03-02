@@ -203,9 +203,9 @@ class PayCalculations(
     }
 
     inner class Hours {
-//        fun getHoursAll(): Double {
-//            return getHoursReg() + getHoursOt() + getHoursDblOt()
-//        }
+        fun getHoursWorked(): Double {
+            return getHoursReg() + getHoursOt() + getHoursDblOt()
+        }
 
         fun getHoursReg(): Double {
             var hours = 0.0
@@ -237,6 +237,14 @@ class PayCalculations(
                 if (!day.wdIsDeleted) hours += day.wdStatHours
             }
             return hours
+        }
+
+        fun getDaysWorked(): Int {
+            var days = 0
+            for (day in workDates) {
+                days++
+            }
+            return days
         }
     }
 

@@ -3,6 +3,7 @@ package ms.mattschlenkrich.paydaycalculator.ui.paydays
 import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.adapter.PayDetailExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.adapter.PayDetailTaxAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
@@ -26,10 +28,8 @@ import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayDetailsBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.ExtraAndTotal
-import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionAndType
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriodExtraAndTypeFull
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayCalculations
 import java.time.LocalDate
 
@@ -117,7 +117,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         }
     }
 
-    private fun fillPayDetails() {
+    fun fillPayDetails() {
         val payCalculations = PayCalculations(
             mainActivity, curEmployer!!, curCutOff, mView
         )
@@ -215,23 +215,54 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
     private fun fillDeductions(payCalculations: PayCalculations) {
         val debitList = ArrayList<PayPeriodExtraAndTypeFull>()
         var debitTotal = 0.0
-        val extraRegList = ArrayList<ExtraDefinitionAndType>()
         mainActivity.workExtraViewModel.getExtraTypesAndDef(
             curEmployer!!.employerId, curCutOff, 3
         ).observe(viewLifecycleOwner) { extras ->
             extras.listIterator().forEach {
                 if (!it.extraType.wetIsCredit) {
-                    extraRegList.add(it)
+                    Log.d(TAG, "ExtraType  added is ${it.extraType.wetName}")
+                    debitList.add(
+                        PayPeriodExtraAndTypeFull(
+                            null,
+                            it.extraType,
+                            it.definition
+                        )
+                    )
+                    debitTotal += it.definition.weValue
                 }
             }
         }
-        val payPeriodExtraList = ArrayList<WorkPayPeriodExtras>()
         mainActivity.payDayViewModel.getPayPeriodExtras(
             curPayPeriod!!.payPeriodId
         ).observe(viewLifecycleOwner) { credit ->
             credit.listIterator().forEach {
                 if (!it.ppeIsCredit) {
-                    payPeriodExtraList.add(it)
+                    Log.d(TAG, "PayPeriodExtra  added is ${it.ppeName}")
+                    debitList.add(
+                        PayPeriodExtraAndTypeFull(
+                            it,
+                            null,
+                            null
+                        )
+                    )
+                    when (it.ppeAppliesTo) {
+                        0 -> {
+                            debitTotal += if (it.ppeIsFixed) {
+                                payCalculations.hours.getHoursWorked() * it.ppeValue
+                            } else {
+                                payCalculations.hours.getHoursWorked() * it.ppeValue / 100
+                            }
+                        }
+
+                        1 -> {
+                            debitTotal += payCalculations.hours.getDaysWorked() * it.ppeValue
+                        }
+
+                        3 -> {
+                            debitTotal += it.ppeValue
+                        }
+                    }
+
                 }
             }
         }
@@ -244,15 +275,23 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                 )
             )
         }
-        val deductionListAdapter = PayDetailTaxAdapter(taxList)
-        binding.apply {
-            rvDebits.layoutManager = LinearLayoutManager(mView.context)
-            rvDebits.adapter = deductionListAdapter
-
-            for (debit in taxList) {
-                debitTotal += debit.amount
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            val deductionListAdapter = PayDetailExtraAdapter(
+                debitList, mView, this@PayDetailsFragment
+            )
+            val taxListAdapter = PayDetailTaxAdapter(taxList)
+            for (tax in taxList) {
+                debitTotal += tax.amount
             }
-            tvDebitTotal.text = cf.displayDollars(debitTotal)
+            binding.apply {
+                rvDebits.layoutManager = LinearLayoutManager(mView.context)
+                rvDebits.adapter = deductionListAdapter
+                rvTax.layoutManager = LinearLayoutManager(mView.context)
+                rvTax.adapter = taxListAdapter
+                delay(WAIT_250)
+                tvDebitTotal.text = cf.displayDollars(debitTotal)
+            }
         }
     }
 

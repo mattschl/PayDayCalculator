@@ -11,13 +11,14 @@
             android:id="@+id/tvTaxName"
             android:layout_width="@dimen/text_box_extra_wide"
             android:layout_height="wrap_content"
-            android:text="@string/extra_type"
+            android:layout_marginStart="@dimen/dimen_50dp"
+            android:text="@string/taxes"
             android:textColor="@color/black"
             android:textSize="@dimen/label_text_size" />
 
         <TextView
             android:id="@+id/tvTaxTotal"
-            android:layout_width="@dimen/text_box_medium"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/zero_dollars"
             android:textColor="@color/black"
