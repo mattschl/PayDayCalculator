@@ -189,54 +189,60 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         }
     }
 
-    private fun fillExtras(payCalculations: PayCalculations) {
-        fillCredits(payCalculations)
-        fillDeductions(payCalculations)
-    }
-
-    private fun fillCredits(payCalculations: PayCalculations) {
-        val creditList =
-            payCalculations.extras.getCreditExtraAndTotalsByDate()
-        val creditByPay =
-            payCalculations.extras.getCreditExtrasAndTotalsByPay()
-        for (credit in creditByPay) {
-            creditList.add(credit)
-        }
-//        binding.apply {
-//            val creditLstAdapter = PayDetailExtraAdapter(creditList)
-//            rvCredits.layoutManager = LinearLayoutManager(mView.context)
-//            rvCredits.adapter = creditLstAdapter
-//            tvCreditTotal.text = cf.displayDollars(
-//                payCalculations.pay.getCreditTotalAll()
-//            )
-//        }
-    }
-
-    private fun fillDeductions(payCalculations: PayCalculations) {
+    private fun findExtras(): ArrayList<PayPeriodExtraAndTypeFull> {
         val debitList = ArrayList<PayPeriodExtraAndTypeFull>()
-        var debitTotal = 0.0
+        //TODO: go through te list of workDateExtras -
+        // combine into one PayPeriodExtra that cannot be edited
+//        mainActivity.payDayViewModel.getWorkDateList(
+//            curEmployer!!.employerId, curCutOff
+//        ).observe(viewLifecycleOwner) { dates ->
+//            val wdExtraList = ArrayList<WorkDateExtras>()
+//            dates.listIterator().forEach {
+//                mainActivity.payDayViewModel.getWorkDateExtrasActive(
+//                    it.workDateId
+//                ).observe(viewLifecycleOwner) { wdExtras ->
+//                    wdExtras.listIterator().forEach {
+//                        wdExtraList.add(it)
+//                    }
+//                }
+//            }
+//            wdExtraList.sortBy { extra ->
+//                extra.wdeName
+//            }
+//            var workDateExtraTotal = 0.0
+//            for (i in 0 until  wdExtraList.size) {
+//                if (i == 0) {
+//                    if (wdExtraList[1].wdeIsFixed) {
+//                        workDateExtraTotal += wdExtraList[i].wdeValue
+//                    } else {
+//                        if (wdExtraList[i].wdeAppliesTo == 1) {
+//                            workDateExtraTotal += wdExtraList[i].wdeValue
+//                        }
+//                    }
+//                }
+//            }
+//        }
+
         mainActivity.workExtraViewModel.getExtraTypesAndDef(
             curEmployer!!.employerId, curCutOff, 3
         ).observe(viewLifecycleOwner) { extras ->
             extras.listIterator().forEach {
-                if (!it.extraType.wetIsCredit) {
-                    Log.d(TAG, "ExtraType  added is ${it.extraType.wetName}")
-                    debitList.add(
-                        PayPeriodExtraAndTypeFull(
-                            null,
-                            it.extraType,
-                            it.definition
-                        )
+                Log.d(TAG, "ExtraType  added is ${it.extraType.wetName}")
+                debitList.add(
+                    PayPeriodExtraAndTypeFull(
+                        null,
+                        it.extraType,
+                        it.definition
                     )
-                    debitTotal += it.definition.weValue
-                }
+                )
             }
         }
-        mainActivity.payDayViewModel.getPayPeriodExtras(
-            curPayPeriod!!.payPeriodId
-        ).observe(viewLifecycleOwner) { credit ->
-            credit.listIterator().forEach {
-                if (!it.ppeIsCredit) {
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            mainActivity.payDayViewModel.getPayPeriodExtras(
+                curPayPeriod!!.payPeriodId
+            ).observe(viewLifecycleOwner) { credit ->
+                credit.listIterator().forEach {
                     Log.d(TAG, "PayPeriodExtra  added is ${it.ppeName}")
                     debitList.add(
                         PayPeriodExtraAndTypeFull(
@@ -245,24 +251,127 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                             null
                         )
                     )
-                    when (it.ppeAppliesTo) {
+                }
+            }
+        }
+        return debitList
+    }
+
+    private fun fillExtras(payCalculations: PayCalculations) {
+        val extrasList = findExtras()
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_500)
+            fillCredits(payCalculations, extrasList)
+            fillDeductions(payCalculations, extrasList)
+        }
+    }
+
+    private fun fillCredits(
+        payCalculations: PayCalculations,
+        extraList: ArrayList<PayPeriodExtraAndTypeFull>,
+    ) {
+        val creditList = ArrayList<PayPeriodExtraAndTypeFull>()
+        var creditTotal = 0.0
+        for (extra in extraList) {
+            if (extra.payPeriodExtra != null) {
+                if (extra.payPeriodExtra!!.ppeIsCredit) {
+                    creditTotal += extra.payPeriodExtra!!.ppeValue
+                    creditList.add(extra)
+                }
+            } else {
+                if (extra.extraType!!.wetIsCredit) {
+                    creditList.add(extra)
+                    when (extra.extraType!!.wetAppliesTo) {
                         0 -> {
-                            debitTotal += if (it.ppeIsFixed) {
-                                payCalculations.hours.getHoursWorked() * it.ppeValue
+                            creditTotal += if (extra.extraDef!!.weIsFixed) {
+                                payCalculations.hours.getHoursWorked() *
+                                        extra.extraDef!!.weValue
                             } else {
-                                payCalculations.hours.getHoursWorked() * it.ppeValue / 100
+                                payCalculations.hours.getHoursWorked() *
+                                        extra.extraDef!!.weValue / 100
                             }
                         }
 
                         1 -> {
-                            debitTotal += payCalculations.hours.getDaysWorked() * it.ppeValue
+                            creditTotal += if (extra.extraDef!!.weIsFixed) {
+                                payCalculations.hours.getDaysWorked() *
+                                        extra.extraDef!!.weValue
+                            } else {
+                                payCalculations.pay.getPayTimeWorked() *
+                                        extra.extraDef!!.weValue / 100
+                            }
                         }
 
                         3 -> {
-                            debitTotal += it.ppeValue
+                            creditTotal += if (extra.extraDef!!.weIsFixed) {
+                                extra.extraDef!!.weValue
+                            } else {
+                                payCalculations.pay.getPayHourly() *
+                                        extra.extraDef!!.weValue / 100
+                            }
                         }
                     }
+                }
+            }
+        }
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            val creditListAdapter = PayDetailExtraAdapter(
+                creditList, mView, this@PayDetailsFragment
+            )
+            binding.apply {
+                rvCredits.layoutManager = LinearLayoutManager(mView.context)
+                rvCredits.adapter = creditListAdapter
+                tvCreditTotal.text = cf.displayDollars(creditTotal)
+            }
+        }
+    }
 
+    private fun fillDeductions(
+        payCalculations: PayCalculations,
+        extraList: ArrayList<PayPeriodExtraAndTypeFull>,
+    ) {
+        val debitList = ArrayList<PayPeriodExtraAndTypeFull>()
+        var debitTotal = 0.0
+        for (extra in extraList) {
+            if (extra.payPeriodExtra != null) {
+                if (!extra.payPeriodExtra!!.ppeIsCredit) {
+                    debitTotal += extra.payPeriodExtra!!.ppeValue
+                    debitList.add(extra)
+                }
+            } else {
+                if (!extra.extraType!!.wetIsCredit) {
+                    debitList.add(extra)
+                    when (extra.extraType!!.wetAppliesTo) {
+                        0 -> {
+                            debitTotal += if (extra.extraDef!!.weIsFixed) {
+                                payCalculations.hours.getHoursWorked() *
+                                        extra.extraDef!!.weValue
+                            } else {
+                                payCalculations.hours.getHoursWorked() *
+                                        extra.extraDef!!.weValue / 100
+                            }
+                        }
+
+                        1 -> {
+                            debitTotal += if (extra.extraDef!!.weIsFixed) {
+                                payCalculations.hours.getDaysWorked() *
+                                        extra.extraDef!!.weValue
+                            } else {
+                                payCalculations.pay.getPayTimeWorked() *
+                                        extra.extraDef!!.weValue / 100
+                            }
+                        }
+
+                        3 -> {
+                            debitTotal += if (extra.extraDef!!.weIsFixed) {
+                                extra.extraDef!!.weValue
+                            } else {
+                                payCalculations.pay.getPayHourly() *
+                                        extra.extraDef!!.weValue / 100
+                            }
+                        }
+                    }
                 }
             }
         }
