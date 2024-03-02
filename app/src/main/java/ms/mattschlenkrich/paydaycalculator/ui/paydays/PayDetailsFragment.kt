@@ -10,12 +10,14 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.adapter.PayDetailTaxAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_DETAILS
@@ -24,6 +26,10 @@ import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayDetailsBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.ExtraAndTotal
+import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionAndType
+import ms.mattschlenkrich.paydaycalculator.model.PayPeriodExtraAndTypeFull
+import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayCalculations
 import java.time.LocalDate
 
@@ -36,6 +42,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private var curEmployer: Employers? = null
+    private var curPayPeriod: PayPeriods? = null
     private val cutOffs = ArrayList<String>()
     private var curCutOff = ""
     private val cf = CommonFunctions()
@@ -114,6 +121,13 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         val payCalculations = PayCalculations(
             mainActivity, curEmployer!!, curCutOff, mView
         )
+        mainActivity.payDayViewModel.getPayPeriod(
+            curCutOff, curEmployer!!.employerId
+        ).observe(
+            viewLifecycleOwner
+        ) { payPeriod ->
+            curPayPeriod = payPeriod
+        }
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
             binding.apply {
@@ -199,26 +213,47 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
     }
 
     private fun fillDeductions(payCalculations: PayCalculations) {
-        val debitList =
-            payCalculations.deductions.getDebitExtraAndTotalByPay()
+        val debitList = ArrayList<PayPeriodExtraAndTypeFull>()
+        var debitTotal = 0.0
+        val extraRegList = ArrayList<ExtraDefinitionAndType>()
+        mainActivity.workExtraViewModel.getExtraTypesAndDef(
+            curEmployer!!.employerId, curCutOff, 3
+        ).observe(viewLifecycleOwner) { extras ->
+            extras.listIterator().forEach {
+                if (!it.extraType.wetIsCredit) {
+                    extraRegList.add(it)
+                }
+            }
+        }
+        val payPeriodExtraList = ArrayList<WorkPayPeriodExtras>()
+        mainActivity.payDayViewModel.getPayPeriodExtras(
+            curPayPeriod!!.payPeriodId
+        ).observe(viewLifecycleOwner) { credit ->
+            credit.listIterator().forEach {
+                if (!it.ppeIsCredit) {
+                    payPeriodExtraList.add(it)
+                }
+            }
+        }
+        val taxList = ArrayList<ExtraAndTotal>()
         for (tax in payCalculations.tax.getTaxList()
         ) {
-            debitList.add(
+            taxList.add(
                 ExtraAndTotal(
                     tax.taxType, tax.amount
                 )
             )
         }
-//        val deductionListAdapter = PayDetailExtraAdapter(debitList)
-//        binding.apply {
-//            rvDebits.layoutManager = LinearLayoutManager(mView.context)
-//            rvDebits.adapter = deductionListAdapter
-//            var debitTotal = 0.0
-//            for (debit in debitList) {
-//                debitTotal += debit.amount
-//            }
-//            tvDebitTotal.text = cf.displayDollars(debitTotal)
-//        }
+        val deductionListAdapter = PayDetailTaxAdapter(taxList)
+        binding.apply {
+            rvDebits.layoutManager = LinearLayoutManager(mView.context)
+            rvDebits.adapter = deductionListAdapter
+
+            for (debit in taxList) {
+                debitTotal += debit.amount
+            }
+            tvDebitTotal.text = cf.displayDollars(debitTotal)
+        }
     }
 
     private fun fillValues() {

@@ -78,4 +78,12 @@ class PayDayViewModel(
         viewModelScope.launch {
             payDayRepository.insertPayPeriodExtra(payPeriodExtra)
         }
+
+    fun updatePayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras) =
+        viewModelScope.launch {
+            payDayRepository.updatePayPeriodExtra(payPeriodExtra)
+        }
+
+    fun getPayPeriodExtras(payPeriodId: Long) =
+        payDayRepository.getPayPeriodExtras(payPeriodId)
 }

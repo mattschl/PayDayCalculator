@@ -101,6 +101,7 @@ data class ExtraDefinitionAndType(
     val extraType: WorkExtraTypes
 ) : Parcelable
 
+
 @DatabaseView(
     "SELECT extraType.*, extraDef.* " +
             "FROM $TABLE_WORK_EXTRA_TYPES as extraType " +

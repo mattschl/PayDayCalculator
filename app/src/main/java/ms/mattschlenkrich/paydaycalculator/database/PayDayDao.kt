@@ -113,4 +113,16 @@ interface PayDayDao {
 
     @Insert
     suspend fun insertPayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras)
+
+    @Update
+    suspend fun updatePayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras)
+
+    @Query(
+        "SELECT * FROM workPayPeriodExtras " +
+                "WHERE ppePayPeriodId = :payPeriodId " +
+                "AND ppeAttachTo = 3 " +
+                "AND ppeIsDeleted = 0 " +
+                "ORDER BY ppeName"
+    )
+    fun getPayPeriodExtras(payPeriodId: Long): LiveData<List<WorkPayPeriodExtras>>
 }

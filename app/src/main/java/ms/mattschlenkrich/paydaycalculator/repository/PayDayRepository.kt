@@ -59,4 +59,10 @@ class PayDayRepository(private val db: PayDatabase) {
 
     suspend fun insertPayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras) =
         db.getPayDayDao().insertPayPeriodExtra(payPeriodExtra)
+
+    suspend fun updatePayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras) =
+        db.getPayDayDao().updatePayPeriodExtra(payPeriodExtra)
+
+    fun getPayPeriodExtras(payPeriodId: Long) =
+        db.getPayDayDao().getPayPeriodExtras(payPeriodId)
 }
