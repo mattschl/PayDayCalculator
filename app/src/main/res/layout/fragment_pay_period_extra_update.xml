@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.extras.WorkDateExtraAddFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/lblPayInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pay_details"
+            android:textAlignment="center"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/lblExtra"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/extra_name_description"
+            app:layout_constraintBaseline_toBaselineOf="@id/etExtraName"
+            app:layout_constraintEnd_toStartOf="@id/etExtraName"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/etExtraName"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:hint="@string/enter_extra_name"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblExtra"
+            app:layout_constraintTop_toBottomOf="@id/lblPayInfo" />
+
+        <TextView
+            android:id="@+id/lblAppliesTo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/base_on"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/spAppliesTo"
+            app:layout_constraintEnd_toStartOf="@id/spAppliesTo"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Spinner
+            android:id="@+id/spAppliesTo"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="@dimen/minimum_touch_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblAppliesTo"
+            app:layout_constraintTop_toBottomOf="@id/etExtraName" />
+
+
+        <TextView
+            android:id="@+id/lblValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rate_or_value"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/etValue"
+            app:layout_constraintEnd_toStartOf="@id/etValue"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/etValue"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:minHeight="@dimen/minimum_touch_height"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero_percent"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblValue"
+            app:layout_constraintTop_toBottomOf="@id/spAppliesTo"
+            tools:ignore="LabelFor" />
+
+        <CheckBox
+            android:id="@+id/chkIsFixed"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:layout_marginStart="@dimen/dimen_25dp"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:layout_marginEnd="@dimen/dimen_25dp"
+            android:layout_marginBottom="@dimen/dimen_25dp"
+            android:text="@string/check_if_this_is_a_fixed_amount"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etValue"
+            tools:ignore="TextSizeCheck" />
+
+        <CheckBox
+            android:id="@+id/chkIsCredit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_25dp"
+            android:layout_marginTop="@dimen/dimen_25dp"
+            android:layout_marginEnd="@dimen/dimen_25dp"
+            android:layout_marginBottom="@dimen/dimen_25dp"
+            android:minHeight="@dimen/minimum_touch_height"
+            android:text="@string/check_if_this_is_a_credit_n_otherwise_it_will_be_a_deduction"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chkIsFixed" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dimen_25dp"
+            android:layout_marginBottom="@dimen/dimen_25dp"
+            android:backgroundTint="@color/dark_green"
+            android:contentDescription="@string/add_new"
+            android:src="@drawable/ic_done"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
