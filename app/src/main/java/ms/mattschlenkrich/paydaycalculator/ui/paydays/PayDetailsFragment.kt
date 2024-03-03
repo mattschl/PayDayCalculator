@@ -22,6 +22,7 @@ import ms.mattschlenkrich.paydaycalculator.adapter.PayDetailTaxAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_DETAILS
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayDetailsBinding
@@ -290,11 +291,12 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                             )
                         )
                     } else if (it.extraType.wetAppliesTo == 1) {
-                        val sum = if (it.definition.weIsFixed) {
-                            payCalculations.hours.getDaysWorked() * it.definition.weValue
-                        } else {
-                            payCalculations.pay.getPayTimeWorked() * it.definition.weValue / 100
-                        }
+                        val sum =
+                            if (it.definition.weIsFixed) {
+                                payCalculations.hours.getDaysWorked() * it.definition.weValue
+                            } else {
+                                payCalculations.pay.getPayTimeWorked() * it.definition.weValue / 100
+                            }
                         extraList.add(
                             WorkPayPeriodExtras(
                                 cf.generateId(),
@@ -354,7 +356,45 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                 curPayPeriod!!.payPeriodId
             ).observe(viewLifecycleOwner) { credit ->
                 credit.listIterator().forEach {
-                    extraList.add(it)
+                    var sum = 0.0
+                    if (!it.ppeIsDeleted) {
+                        when (it.ppeAppliesTo) {
+                            0 -> {
+                                sum = if (it.ppeIsFixed) {
+                                    payCalculations.hours.getHoursWorked() * it.ppeValue
+                                } else {
+                                    payCalculations.pay.getPayTimeWorked() * it.ppeValue / 100
+                                }
+                            }
+
+                            1 -> {
+                                sum = if (it.ppeIsFixed) {
+                                    payCalculations.hours.getDaysWorked() * it.ppeValue
+                                } else {
+                                    payCalculations.pay.getPayTimeWorked() * it.ppeValue / 100
+                                }
+                            }
+
+                            3 -> {
+                                sum = it.ppeValue
+                            }
+                        }
+                    }
+                    extraList.add(
+                        WorkPayPeriodExtras(
+                            it.workPayPeriodExtraId,
+                            it.ppePayPeriodId,
+                            it.ppeExtraTypeId,
+                            it.ppeName,
+                            it.ppeAppliesTo,
+                            it.ppeAttachTo,
+                            sum,
+                            it.ppeIsFixed,
+                            it.ppeIsCredit,
+                            it.ppeIsDeleted,
+                            it.ppeUpdateTime
+                        )
+                    )
                 }
             }
         }
@@ -365,7 +405,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         CoroutineScope(Dispatchers.Main).launch {
             val extrasList =
                 findExtras(payCalculations)
-            delay(2000)
+            delay(WAIT_1000)
             fillCredits(payCalculations, extrasList)
             fillDeductions(payCalculations, extrasList)
         }
@@ -386,7 +426,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
             val creditListAdapter = PayDetailExtraAdapter(
-                creditList, mView, payCalculations, this@PayDetailsFragment
+                mainActivity, creditList, mView, this@PayDetailsFragment
             )
             binding.apply {
                 rvCredits.layoutManager = LinearLayoutManager(mView.context)
@@ -420,7 +460,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
             val deductionListAdapter = PayDetailExtraAdapter(
-                debitList, mView, payCalculations, this@PayDetailsFragment
+                mainActivity, debitList, mView, this@PayDetailsFragment
             )
             val taxListAdapter = PayDetailTaxAdapter(taxList)
             for (tax in taxList) {
