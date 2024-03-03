@@ -27,7 +27,6 @@ import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayDetailsBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.ExtraAndTotal
-import ms.mattschlenkrich.paydaycalculator.model.PayPeriodExtraAndTypeFull
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtrasAndDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
@@ -190,8 +189,8 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         }
     }
 
-    private fun findExtras(payCalculations: PayCalculations): ArrayList<PayPeriodExtraAndTypeFull> {
-        val extraFullList = ArrayList<PayPeriodExtraAndTypeFull>()
+    private fun findExtras(payCalculations: PayCalculations): ArrayList<WorkPayPeriodExtras> {
+        val extraList = ArrayList<WorkPayPeriodExtras>()
         val workDateExtrasAndDates = ArrayList<WorkDateExtrasAndDates>()
         mainActivity.payDayViewModel.getWorkDateExtrasAndDates(
             curCutOff
@@ -226,7 +225,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                         if (workDateExtrasAndDates[i].workDateExtra.wdeName
                             != workDateExtrasAndDates[i + 1].workDateExtra.wdeName
                         ) {
-                            val extra =
+                            extraList.add(
                                 WorkPayPeriodExtras(
                                     cf.generateId(),
                                     curPayPeriod!!.payPeriodId,
@@ -240,17 +239,11 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                                     false,
                                     df.getCurrentTimeAsString()
                                 )
-                            extraFullList.add(
-                                PayPeriodExtraAndTypeFull(
-                                    extra,
-                                    null,
-                                    null
-                                )
                             )
                             subTotal = 0.0
                         }
                     } else {
-                        val extra =
+                        extraList.add(
                             WorkPayPeriodExtras(
                                 cf.generateId(),
                                 curPayPeriod!!.payPeriodId,
@@ -264,12 +257,6 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                                 false,
                                 df.getCurrentTimeAsString()
                             )
-                        extraFullList.add(
-                            PayPeriodExtraAndTypeFull(
-                                extra,
-                                null,
-                                null
-                            )
                         )
                         subTotal = 0.0
                     }
@@ -282,14 +269,12 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
             ).observe(viewLifecycleOwner) { extras ->
                 extras.listIterator().forEach {
                     if (it.extraType.wetAppliesTo == 0) {
-                        var sum = 0.0
-                        sum = if (it.definition.weIsFixed) {
+                        val sum = if (it.definition.weIsFixed) {
                             payCalculations.hours.getHoursWorked() * it.definition.weValue
                         } else {
                             payCalculations.pay.getPayTimeWorked() * it.definition.weValue / 100
-
                         }
-                        val payPeriodExtra =
+                        extraList.add(
                             WorkPayPeriodExtras(
                                 cf.generateId(),
                                 curPayPeriod!!.payPeriodId,
@@ -303,21 +288,14 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                                 false,
                                 df.getCurrentTimeAsString()
                             )
-                        extraFullList.add(
-                            PayPeriodExtraAndTypeFull(
-                                payPeriodExtra,
-                                it.extraType,
-                                it.definition
-                            )
                         )
                     } else if (it.extraType.wetAppliesTo == 1) {
-                        var sum = 0.0
-                        sum = if (it.definition.weIsFixed) {
+                        val sum = if (it.definition.weIsFixed) {
                             payCalculations.hours.getDaysWorked() * it.definition.weValue
                         } else {
                             payCalculations.pay.getPayTimeWorked() * it.definition.weValue / 100
                         }
-                        val payPeriodExtra =
+                        extraList.add(
                             WorkPayPeriodExtras(
                                 cf.generateId(),
                                 curPayPeriod!!.payPeriodId,
@@ -331,16 +309,10 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                                 false,
                                 df.getCurrentTimeAsString()
                             )
-                        extraFullList.add(
-                            PayPeriodExtraAndTypeFull(
-                                payPeriodExtra,
-                                it.extraType,
-                                it.definition
-                            )
                         )
                     } else if (it.extraType.wetAppliesTo == 3) {
                         if (it.definition.weIsFixed) {
-                            val payPeriodExtra =
+                            extraList.add(
                                 WorkPayPeriodExtras(
                                     cf.generateId(),
                                     curPayPeriod!!.payPeriodId,
@@ -354,17 +326,11 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                                     false,
                                     df.getCurrentTimeAsString()
                                 )
-                            extraFullList.add(
-                                PayPeriodExtraAndTypeFull(
-                                    payPeriodExtra,
-                                    it.extraType,
-                                    it.definition
-                                )
                             )
                         } else {
                             val sum =
                                 payCalculations.pay.getPayHourly() * it.definition.weValue / 100
-                            val payPeriodExtra =
+                            extraList.add(
                                 WorkPayPeriodExtras(
                                     cf.generateId(),
                                     curPayPeriod!!.payPeriodId,
@@ -378,12 +344,6 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                                     false,
                                     df.getCurrentTimeAsString()
                                 )
-                            extraFullList.add(
-                                PayPeriodExtraAndTypeFull(
-                                    payPeriodExtra,
-                                    it.extraType,
-                                    it.definition
-                                )
                             )
                         }
                     }
@@ -394,17 +354,11 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                 curPayPeriod!!.payPeriodId
             ).observe(viewLifecycleOwner) { credit ->
                 credit.listIterator().forEach {
-                    extraFullList.add(
-                        PayPeriodExtraAndTypeFull(
-                            it,
-                            null,
-                            null
-                        )
-                    )
+                    extraList.add(it)
                 }
             }
         }
-        return extraFullList
+        return extraList
     }
 
     private fun fillExtras(payCalculations: PayCalculations) {
@@ -419,16 +373,14 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
 
     private fun fillCredits(
         payCalculations: PayCalculations,
-        extraList: ArrayList<PayPeriodExtraAndTypeFull>,
+        extraList: ArrayList<WorkPayPeriodExtras>,
     ) {
-        val creditList = ArrayList<PayPeriodExtraAndTypeFull>()
+        val creditList = ArrayList<WorkPayPeriodExtras>()
         var creditTotal = 0.0
         for (extra in extraList) {
-            if (extra.payPeriodExtra != null) {
-                if (extra.payPeriodExtra!!.ppeIsCredit) {
-                    creditList.add(extra)
-                    creditTotal += extra.payPeriodExtra!!.ppeValue
-                }
+            if (extra.ppeIsCredit) {
+                creditList.add(extra)
+                creditTotal += extra.ppeValue
             }
         }
         CoroutineScope(Dispatchers.Main).launch {
@@ -446,50 +398,14 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
 
     private fun fillDeductions(
         payCalculations: PayCalculations,
-        extraList: ArrayList<PayPeriodExtraAndTypeFull>,
+        extraList: ArrayList<WorkPayPeriodExtras>,
     ) {
-        val debitList = ArrayList<PayPeriodExtraAndTypeFull>()
+        val debitList = ArrayList<WorkPayPeriodExtras>()
         var debitTotal = 0.0
         for (extra in extraList) {
-            if (extra.payPeriodExtra != null) {
-                if (!extra.payPeriodExtra!!.ppeIsCredit) {
-                    debitTotal += extra.payPeriodExtra!!.ppeValue
-                    debitList.add(extra)
-                }
-            } else {
-                if (!extra.extraType!!.wetIsCredit) {
-                    debitList.add(extra)
-                    when (extra.extraType!!.wetAppliesTo) {
-                        0 -> {
-                            debitTotal += if (extra.extraDef!!.weIsFixed) {
-                                payCalculations.hours.getHoursWorked() *
-                                        extra.extraDef!!.weValue
-                            } else {
-                                payCalculations.hours.getHoursWorked() *
-                                        extra.extraDef!!.weValue / 100
-                            }
-                        }
-
-                        1 -> {
-                            debitTotal += if (extra.extraDef!!.weIsFixed) {
-                                payCalculations.hours.getDaysWorked() *
-                                        extra.extraDef!!.weValue
-                            } else {
-                                payCalculations.pay.getPayTimeWorked() *
-                                        extra.extraDef!!.weValue / 100
-                            }
-                        }
-
-                        3 -> {
-                            debitTotal += if (extra.extraDef!!.weIsFixed) {
-                                extra.extraDef!!.weValue
-                            } else {
-                                payCalculations.pay.getPayHourly() *
-                                        extra.extraDef!!.weValue / 100
-                            }
-                        }
-                    }
-                }
+            if (!extra.ppeIsCredit) {
+                debitTotal += extra.ppeValue
+                debitList.add(extra)
             }
         }
         val taxList = ArrayList<ExtraAndTotal>()

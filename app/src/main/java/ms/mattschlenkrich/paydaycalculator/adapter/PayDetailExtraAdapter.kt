@@ -7,12 +7,12 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListPayDetailExtraItemBinding
-import ms.mattschlenkrich.paydaycalculator.model.PayPeriodExtraAndTypeFull
+import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayCalculations
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.PayDetailsFragment
 
 class PayDetailExtraAdapter(
-    private val creditList: ArrayList<PayPeriodExtraAndTypeFull>,
+    private val creditList: ArrayList<WorkPayPeriodExtras>,
     private val mView: View,
     private val payCalculations: PayCalculations,
     private val parentFragment: PayDetailsFragment
@@ -36,39 +36,30 @@ class PayDetailExtraAdapter(
     }
 
     override fun onBindViewHolder(holder: CreditViewHolder, position: Int) {
-        val extraFull = creditList[position]
+        val extra = creditList[position]
         holder.itemBinding.apply {
-            if (extraFull.payPeriodExtra != null) {
-                tvExtraDescription.text = extraFull.payPeriodExtra!!.ppeName
-                if (!extraFull.payPeriodExtra!!.ppeIsDeleted) {
-                    chActive.isChecked = true
-                    btnEdit.visibility = View.VISIBLE
-                    tvExtraTotal.text = cf.displayDollars(
-                        extraFull.payPeriodExtra!!.ppeValue
-                    )
-                } else {
-                    chActive.isChecked = false
-                    btnEdit.visibility = View.INVISIBLE
-                    tvExtraTotal.visibility = View.INVISIBLE
-                }
-            } else if (extraFull.extraType != null) {
-                tvExtraDescription.text = extraFull.extraType!!.wetName
+            tvExtraDescription.text = extra.ppeName
+            if (!extra.ppeIsDeleted) {
                 chActive.isChecked = true
                 btnEdit.visibility = View.VISIBLE
                 tvExtraTotal.text = cf.displayDollars(
-                    extraFull.extraDef!!.weValue
+                    extra.ppeValue
                 )
+            } else {
+                chActive.isChecked = false
+                btnEdit.visibility = View.INVISIBLE
+                tvExtraTotal.visibility = View.INVISIBLE
             }
             btnEdit.setOnClickListener {
-                gotoUpdateExtra(extraFull)
+                gotoUpdateExtra(extra)
             }
             chActive.setOnClickListener {
-                insertOrUpdateExtra(extraFull, chActive.isChecked)
+                insertOrUpdateExtra(extra, chActive.isChecked)
             }
         }
     }
 
-    private fun gotoUpdateExtra(extraFull: PayPeriodExtraAndTypeFull) {
+    private fun gotoUpdateExtra(extraFull: WorkPayPeriodExtras) {
         //todo: create the fragment and view
         Toast.makeText(
             mView.context,
@@ -78,23 +69,13 @@ class PayDetailExtraAdapter(
     }
 
     private fun insertOrUpdateExtra(
-        extraFull: PayPeriodExtraAndTypeFull, delete: Boolean
+        extra: WorkPayPeriodExtras, delete: Boolean
     ) {
-        if (extraFull.payPeriodExtra != null) {
-            //deletePayExtra()
-            Toast.makeText(
-                mView.context,
-                "This function is not available",
-                Toast.LENGTH_LONG
-            ).show()
-        } else {
-            //insertPayDayExtra()
-            Toast.makeText(
-                mView.context,
-                "This function is not available",
-                Toast.LENGTH_LONG
-            ).show()
-        }
+        Toast.makeText(
+            mView.context,
+            "This function is not available",
+            Toast.LENGTH_LONG
+        ).show()
         parentFragment.fillPayDetails()
     }
 }
