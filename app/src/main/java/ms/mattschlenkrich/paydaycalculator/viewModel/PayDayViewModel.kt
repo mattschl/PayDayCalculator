@@ -86,4 +86,7 @@ class PayDayViewModel(
 
     fun getPayPeriodExtras(payPeriodId: Long) =
         payDayRepository.getPayPeriodExtras(payPeriodId)
+
+    fun getWorkDateExtrasAndDates(cutOffDate: String) =
+        payDayRepository.getWorkDateExtrasAndDates(cutOffDate)
 }

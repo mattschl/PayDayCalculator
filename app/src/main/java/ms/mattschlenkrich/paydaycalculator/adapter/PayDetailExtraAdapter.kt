@@ -8,11 +8,13 @@ import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListPayDetailExtraItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriodExtraAndTypeFull
+import ms.mattschlenkrich.paydaycalculator.payFunctions.PayCalculations
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.PayDetailsFragment
 
 class PayDetailExtraAdapter(
     private val creditList: ArrayList<PayPeriodExtraAndTypeFull>,
     private val mView: View,
+    private val payCalculations: PayCalculations,
     private val parentFragment: PayDetailsFragment
 ) : RecyclerView.Adapter<PayDetailExtraAdapter.CreditViewHolder>() {
 

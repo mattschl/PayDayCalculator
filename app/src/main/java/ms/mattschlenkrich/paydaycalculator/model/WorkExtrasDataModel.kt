@@ -139,3 +139,15 @@ data class ExtraAndTotal(
     var extraName: String,
     var amount: Double,
 )
+
+@Parcelize
+data class WorkDateExtrasAndDates(
+    @Embedded
+    var workDateExtra: WorkDateExtras,
+    @Relation(
+        entity = WorkDates::class,
+        parentColumn = "wdeWorkDateId",
+        entityColumn = "workDateId"
+    )
+    var workDate: WorkDates
+) : Parcelable

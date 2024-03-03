@@ -15,6 +15,7 @@ import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATE_EXTRAS
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtraAndTypeFull
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
+import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtrasAndDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
@@ -125,4 +126,17 @@ interface PayDayDao {
                 "ORDER BY ppeName"
     )
     fun getPayPeriodExtras(payPeriodId: Long): LiveData<List<WorkPayPeriodExtras>>
+
+    @Query(
+        "SELECT * FROM workDates " +
+                "JOIN (" +
+                "SELECT * FROM workDateExtras " +
+                "WHERE wdeIsDeleted = 0 " +
+                ") ON workDateId = wdeWorkDateId " +
+                "WHERE wdIsDeleted =0 " +
+                "AND wdCutoffDate = :cutOffDate " +
+                "ORDER BY wdeName , wdDate "
+    )
+    fun getWorkDateExtrasAndDates(cutOffDate: String):
+            LiveData<List<WorkDateExtrasAndDates>>
 }

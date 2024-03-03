@@ -65,4 +65,7 @@ class PayDayRepository(private val db: PayDatabase) {
 
     fun getPayPeriodExtras(payPeriodId: Long) =
         db.getPayDayDao().getPayPeriodExtras(payPeriodId)
+
+    fun getWorkDateExtrasAndDates(cutOffDate: String) =
+        db.getPayDayDao().getWorkDateExtrasAndDates(cutOffDate)
 }
