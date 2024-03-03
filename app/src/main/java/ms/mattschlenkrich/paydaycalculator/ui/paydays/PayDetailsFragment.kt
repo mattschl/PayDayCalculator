@@ -3,7 +3,6 @@ package ms.mattschlenkrich.paydaycalculator.ui.paydays
 import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +22,6 @@ import ms.mattschlenkrich.paydaycalculator.adapter.PayDetailTaxAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_DETAILS
-import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayDetailsBinding
@@ -132,7 +130,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
             curPayPeriod = payPeriod
         }
         CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_1000)
+            delay(WAIT_500)
             binding.apply {
                 var display = "Gross ${
                     cf.displayDollars(
@@ -203,7 +201,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
             }
         }
         CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_500)
+            delay(WAIT_250)
             var subTotal = 0.0
             for (i in 0 until workDateExtrasAndDates.size) {
                 workDateExtrasAndDates[i].apply {
@@ -277,7 +275,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                     }
                 }
             }
-            delay(WAIT_500)
+            delay(WAIT_250)
 
             mainActivity.workExtraViewModel.getExtraTypesAndDef(
                 curEmployer!!.employerId, curCutOff, 3
@@ -342,9 +340,23 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                         )
                     } else if (it.extraType.wetAppliesTo == 3) {
                         if (it.definition.weIsFixed) {
+                            val payPeriodExtra =
+                                WorkPayPeriodExtras(
+                                    cf.generateId(),
+                                    curPayPeriod!!.payPeriodId,
+                                    it.extraType.workExtraTypeId,
+                                    it.extraType.wetName,
+                                    it.extraType.wetAppliesTo,
+                                    it.extraType.wetAttachTo,
+                                    it.definition.weValue,
+                                    it.definition.weIsFixed,
+                                    it.extraType.wetIsCredit,
+                                    false,
+                                    df.getCurrentTimeAsString()
+                                )
                             extraFullList.add(
                                 PayPeriodExtraAndTypeFull(
-                                    null,
+                                    payPeriodExtra,
                                     it.extraType,
                                     it.definition
                                 )
@@ -377,12 +389,11 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                     }
                 }
             }
-            delay(WAIT_500)
+            delay(WAIT_250)
             mainActivity.payDayViewModel.getPayPeriodExtras(
                 curPayPeriod!!.payPeriodId
             ).observe(viewLifecycleOwner) { credit ->
                 credit.listIterator().forEach {
-                    Log.d(TAG, "PayPeriodExtra  added is ${it.ppeName}")
                     extraFullList.add(
                         PayPeriodExtraAndTypeFull(
                             it,
@@ -416,76 +427,12 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
             if (extra.payPeriodExtra != null) {
                 if (extra.payPeriodExtra!!.ppeIsCredit) {
                     creditList.add(extra)
-                    when (extra.payPeriodExtra!!.ppeAppliesTo) {
-                        0 -> {
-                            creditTotal += if (extra.payPeriodExtra!!.ppeIsFixed) {
-                                payCalculations.hours.getHoursWorked() *
-                                        extra.payPeriodExtra!!.ppeValue
-                            } else {
-                                payCalculations.hours.getHoursWorked() *
-                                        extra.payPeriodExtra!!.ppeValue / 100
-                            }
-                        }
-
-                        1 -> {
-                            creditTotal += if (extra.payPeriodExtra!!.ppeIsFixed) {
-                                payCalculations.hours.getDaysWorked() *
-                                        extra.payPeriodExtra!!.ppeValue
-                            } else {
-                                payCalculations.pay.getPayTimeWorked() *
-                                        extra.payPeriodExtra!!.ppeValue / 100
-                            }
-                        }
-
-                        3 -> {
-                            creditTotal += if (extra.payPeriodExtra!!.ppeIsFixed) {
-                                extra.payPeriodExtra!!.ppeValue
-                            } else {
-                                payCalculations.pay.getPayHourly() *
-                                        extra.payPeriodExtra!!.ppeValue / 100
-                            }
-                        }
-                    }
-
-                }
-            } else {
-                if (extra.extraType!!.wetIsCredit) {
-                    creditList.add(extra)
-                    when (extra.extraType!!.wetAppliesTo) {
-                        0 -> {
-                            creditTotal += if (extra.extraDef!!.weIsFixed) {
-                                payCalculations.hours.getHoursWorked() *
-                                        extra.extraDef!!.weValue
-                            } else {
-                                payCalculations.hours.getHoursWorked() *
-                                        extra.extraDef!!.weValue / 100
-                            }
-                        }
-
-                        1 -> {
-                            creditTotal += if (extra.extraDef!!.weIsFixed) {
-                                payCalculations.hours.getDaysWorked() *
-                                        extra.extraDef!!.weValue
-                            } else {
-                                payCalculations.pay.getPayTimeWorked() *
-                                        extra.extraDef!!.weValue / 100
-                            }
-                        }
-
-                        3 -> {
-                            creditTotal += if (extra.extraDef!!.weIsFixed) {
-                                extra.extraDef!!.weValue
-                            } else {
-                                payCalculations.pay.getPayHourly() *
-                                        extra.extraDef!!.weValue / 100
-                            }
-                        }
-                    }
+                    creditTotal += extra.payPeriodExtra!!.ppeValue
                 }
             }
         }
         CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_500)
+            delay(WAIT_250)
             val creditListAdapter = PayDetailExtraAdapter(
                 creditList, mView, payCalculations, this@PayDetailsFragment
             )
