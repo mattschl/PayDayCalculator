@@ -11,6 +11,7 @@ import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
 
 class MainViewModel(
@@ -35,6 +36,28 @@ class MainViewModel(
     private var payPeriod: PayPeriods? = null
     private var payRate: EmployerPayRates? = null
     private var isCredit = false
+    private var payPeriodExtra: WorkPayPeriodExtras? = null
+    private var payPeriodExtraList = ArrayList<WorkPayPeriodExtras>()
+
+    fun setPayPeriodExtraList(newList: ArrayList<WorkPayPeriodExtras>) {
+        payPeriodExtraList = newList
+    }
+
+    fun getPayPeriodExtraList(): ArrayList<WorkPayPeriodExtras> {
+        return payPeriodExtraList
+    }
+
+    fun clearPayPeriodExtraList() {
+        payPeriodExtraList.clear()
+    }
+
+    fun setPayPeriodExtra(newExtra: WorkPayPeriodExtras?) {
+        payPeriodExtra = newExtra
+    }
+
+    fun getPayPeriodExtra(): WorkPayPeriodExtras? {
+        return payPeriodExtra
+    }
 
     fun getIsCredit(): Boolean {
         return isCredit

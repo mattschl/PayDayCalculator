@@ -1,18 +1,20 @@
 package ms.mattschlenkrich.paydaycalculator.adapter
 
-import android.util.Log
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_DETAILS
 import ms.mattschlenkrich.paydaycalculator.databinding.ListPayDetailExtraItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.PayDetailsFragment
+import ms.mattschlenkrich.paydaycalculator.ui.paydays.PayDetailsFragmentDirections
 
 private const val TAG = "PayDetailExtraAdapter"
 
@@ -74,60 +76,56 @@ class PayDetailExtraAdapter(
     }
 
     private fun gotoUpdateExtra(extra: WorkPayPeriodExtras) {
-        //todo: create the fragment and view
-        Toast.makeText(
-            mView.context,
-            "This function is not available",
-            Toast.LENGTH_LONG
-        ).show()
+        AlertDialog.Builder(mView.context)
+            .setTitle("Continue to update?")
+            .setMessage(
+                "If this is edited, any custom calculations will be overwritten. " +
+                        "Would you like to edit it anyways?"
+            )
+            .setPositiveButton("Yes") { _, _ ->
+                val newExtra = insertOrUpdateExtra(extra, false)
+                mainActivity.mainViewModel.addCallingFragment(FRAG_PAY_DETAILS)
+                mainActivity.mainViewModel.setPayPeriodExtra(newExtra)
+                mView.findNavController().navigate(
+                    PayDetailsFragmentDirections
+                        .actionPayDetailsFragmentToPayPeriodExtraUpdateFragment()
+                )
+            }
+            .setNegativeButton("Cancel", null)
+
     }
 
     private fun insertOrUpdateExtra(
         extra: WorkPayPeriodExtras, delete: Boolean
-    ) {
+    ): WorkPayPeriodExtras {
         var notFound = false
         mainActivity.payDayViewModel.findPayPeriodExtra(
             extra.workPayPeriodExtraId
         ).observe(mView.findViewTreeLifecycleOwner()!!) { found ->
             if (found == null) notFound = true
         }
-        Log.d(
-            TAG, "The extra notFound = $notFound and" +
-                    "delete is $delete"
+        val newExtra = WorkPayPeriodExtras(
+            extra.workPayPeriodExtraId,
+            extra.ppePayPeriodId,
+            extra.ppeExtraTypeId,
+            extra.ppeName,
+            3,
+            3,
+            extra.ppeValue,
+            extra.ppeIsFixed,
+            extra.ppeIsCredit,
+            delete,
+            df.getCurrentTimeAsString()
         )
         if (notFound) {
             mainActivity.payDayViewModel.insertPayPeriodExtra(
-                WorkPayPeriodExtras(
-                    extra.workPayPeriodExtraId,
-                    extra.ppePayPeriodId,
-                    extra.ppeExtraTypeId,
-                    extra.ppeName,
-                    extra.ppeAppliesTo,
-                    extra.ppeAttachTo,
-                    extra.ppeValue,
-                    extra.ppeIsFixed,
-                    extra.ppeIsCredit,
-                    delete,
-                    df.getCurrentTimeAsString()
-                )
+                newExtra
             )
         } else {
-            Log.d(TAG, "Will update")
             mainActivity.payDayViewModel.updatePayPeriodExtra(
-                WorkPayPeriodExtras(
-                    extra.workPayPeriodExtraId,
-                    extra.ppePayPeriodId,
-                    extra.ppeExtraTypeId,
-                    extra.ppeName,
-                    extra.ppeAppliesTo,
-                    extra.ppeAttachTo,
-                    extra.ppeValue,
-                    extra.ppeIsFixed,
-                    extra.ppeIsCredit,
-                    delete,
-                    df.getCurrentTimeAsString()
-                )
+                newExtra
             )
         }
+        return newExtra
     }
 }

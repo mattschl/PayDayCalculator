@@ -12,8 +12,10 @@ import android.widget.Toast
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayPeriodExtraUpdateBinding
@@ -23,12 +25,14 @@ import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
 
 
 class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra_update) {
+
     private var _binding: FragmentPayPeriodExtraUpdateBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var curPayPeriod: PayPeriods
     private lateinit var curEmployer: Employers
+    private lateinit var oldPayPeriodExtra: WorkPayPeriodExtras
     private var extraList = ArrayList<WorkPayPeriodExtras>()
     private val df = DateFunctions()
     private val cf = CommonFunctions()
@@ -55,13 +59,32 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
     }
 
     private fun fillValues() {
-
-        Toast.makeText(
-            mView.context,
-            "This function is not available",
-            Toast.LENGTH_LONG
-        ).show()
-//        TODO("Not yet implemented")
+        extraList = mainActivity.mainViewModel.getPayPeriodExtraList()
+        if (mainActivity.mainViewModel.getEmployer() != null) {
+            curEmployer = mainActivity.mainViewModel.getEmployer()!!
+        }
+        if (mainActivity.mainViewModel.getPayPeriod() != null) {
+            curPayPeriod = mainActivity.mainViewModel.getPayPeriod()!!
+        }
+        if (mainActivity.mainViewModel.getPayPeriodExtra() != null) {
+            oldPayPeriodExtra = mainActivity.mainViewModel.getPayPeriodExtra()!!
+            binding.apply {
+                mainActivity.title = "Update extra: ${oldPayPeriodExtra.ppeName}"
+                var display = "Pay Cutoff: ${curPayPeriod.ppCutoffDate} " +
+                        "Employer: ${curEmployer.employerName}"
+                lblPayInfo.text = display
+                etExtraName.setText(oldPayPeriodExtra.ppeName)
+                spAppliesTo.setSelection(oldPayPeriodExtra.ppeAppliesTo)
+                display = if (oldPayPeriodExtra.ppeIsFixed) {
+                    cf.displayDollars(oldPayPeriodExtra.ppeValue)
+                } else {
+                    cf.displayPercentFromDouble(oldPayPeriodExtra.ppeValue)
+                }
+                etValue.setText(display)
+                chkIsFixed.isChecked = oldPayPeriodExtra.ppeIsFixed
+                chkIsCredit.isChecked = oldPayPeriodExtra.ppeIsCredit
+            }
+        }
     }
 
     private fun setActions() {
@@ -73,13 +96,78 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
     }
 
     private fun updatePayPeriodExtra() {
+        val message = checkExtra()
+        if (message == ANSWER_OK) {
+            mainActivity.payDayViewModel.updatePayPeriodExtra(
+                getCurPayPeriodExtra()
+            )
+            gotoPayDetailFragments()
+        } else {
+            Toast.makeText(
+                mView.context,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
 
-        Toast.makeText(
-            mView.context,
-            "This function is not available",
-            Toast.LENGTH_LONG
-        ).show()
-//        TODO("Not yet implemented")
+    private fun gotoPayDetailFragments() {
+        mainActivity.mainViewModel.clearPayPeriodExtraList()
+        mainActivity.mainViewModel.setPayPeriodExtra(null)
+        mView.findNavController().navigate(
+            PayPeriodExtraUpdateFragmentDirections
+                .actionPayPeriodExtraUpdateFragmentToPayDetailsFragment()
+        )
+    }
+
+    private fun getCurPayPeriodExtra(): WorkPayPeriodExtras {
+        binding.apply {
+            return WorkPayPeriodExtras(
+                oldPayPeriodExtra.workPayPeriodExtraId,
+                oldPayPeriodExtra.ppePayPeriodId,
+                oldPayPeriodExtra.ppeExtraTypeId,
+                etExtraName.text.toString().trim(),
+                spAppliesTo.selectedItemPosition,
+                3,
+                cf.getDoubleFromDollarOrPercent(
+                    etValue.text.toString()
+                ),
+                chkIsFixed.isChecked,
+                chkIsCredit.isChecked,
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
+    private fun checkExtra(): String {
+        binding.apply {
+            var nameFound = false
+            if (extraList.isNotEmpty()) {
+                for (extra in extraList) {
+                    if (extra.ppeName == etExtraName.text.toString().trim() &&
+                        etExtraName.text.toString().trim() != oldPayPeriodExtra.ppeName
+                    ) {
+                        nameFound = true
+                        break
+                    }
+                }
+            }
+            val errorMessage = if (etExtraName.text.isNullOrBlank()) {
+                "    ERROR!!\n" +
+                        "The Extra must have a name"
+            } else if (nameFound) {
+                "   ERROR!!\n" +
+                        "This Extra name has already been used. \n" +
+                        "Choose a different name."
+            } else if (cf.getDoubleFromDollarOrPercent(etValue.text.toString()) == 0.0) {
+                "   ERROR!!\n" +
+                        "This Extra must have a value"
+            } else {
+                ANSWER_OK
+            }
+            return errorMessage
+        }
     }
 
     private fun fillMenu() {

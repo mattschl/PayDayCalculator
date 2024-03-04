@@ -83,17 +83,29 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
     }
 
     private fun gotoExtraAdd(isCredit: Boolean) {
-        mainActivity.payDayViewModel.getPayPeriod(
-            curCutOff, curEmployer!!.employerId
-        ).observe(viewLifecycleOwner) { payPeriod ->
-            mainActivity.mainViewModel.setPayPeriod(payPeriod)
-        }
-        mainActivity.mainViewModel.setEmployer(curEmployer!!)
-        mainActivity.mainViewModel.setIsCredit(isCredit)
-        mView.findNavController().navigate(
-            PayDetailsFragmentDirections
-                .actionPayDetailsFragmentToPayPeriodExtraAddFragment()
-        )
+        AlertDialog.Builder(mView.context)
+            .setTitle("Continue adding?")
+            .setMessage(
+                "It is best to add a custom extra after all the " +
+                        "work hours have been entered. " +
+                        "If it is based on the number of hours, days or a percentage, " +
+                        "the results could be improperly calculated. "
+            )
+            .setPositiveButton("Continue") { _, _ ->
+                mainActivity.payDayViewModel.getPayPeriod(
+                    curCutOff, curEmployer!!.employerId
+                ).observe(viewLifecycleOwner) { payPeriod ->
+                    mainActivity.mainViewModel.setPayPeriod(payPeriod)
+                }
+                mainActivity.mainViewModel.setEmployer(curEmployer!!)
+                mainActivity.mainViewModel.setIsCredit(isCredit)
+                mView.findNavController().navigate(
+                    PayDetailsFragmentDirections
+                        .actionPayDetailsFragmentToPayPeriodExtraAddFragment()
+                )
+            }
+            .setNegativeButton("Cancel", null)
+
     }
 
     private fun selectCutOffDate() {
@@ -128,6 +140,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
             viewLifecycleOwner
         ) { payPeriod ->
             curPayPeriod = payPeriod
+            mainActivity.mainViewModel.setPayPeriod(payPeriod)
         }
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
@@ -286,7 +299,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                                 sum,
                                 it.definition.weIsFixed,
                                 it.extraType.wetIsCredit,
-                                false,
+                                !it.extraType.wetIsDefault,
                                 df.getCurrentTimeAsString()
                             )
                         )
@@ -308,7 +321,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                                 sum,
                                 it.definition.weIsFixed,
                                 it.extraType.wetIsCredit,
-                                false,
+                                !it.extraType.wetIsDefault,
                                 df.getCurrentTimeAsString()
                             )
                         )
@@ -325,7 +338,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                                     it.definition.weValue,
                                     it.definition.weIsFixed,
                                     it.extraType.wetIsCredit,
-                                    false,
+                                    !it.extraType.wetIsDefault,
                                     df.getCurrentTimeAsString()
                                 )
                             )
@@ -343,7 +356,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                                     sum,
                                     it.definition.weIsFixed,
                                     it.extraType.wetIsCredit,
-                                    false,
+                                    !it.extraType.wetIsDefault,
                                     df.getCurrentTimeAsString()
                                 )
                             )
@@ -357,27 +370,25 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
             ).observe(viewLifecycleOwner) { credit ->
                 credit.listIterator().forEach {
                     var sum = 0.0
-                    if (!it.ppeIsDeleted) {
-                        when (it.ppeAppliesTo) {
-                            0 -> {
-                                sum = if (it.ppeIsFixed) {
-                                    payCalculations.hours.getHoursWorked() * it.ppeValue
-                                } else {
-                                    payCalculations.pay.getPayTimeWorked() * it.ppeValue / 100
-                                }
+                    when (it.ppeAppliesTo) {
+                        0 -> {
+                            sum = if (it.ppeIsFixed) {
+                                payCalculations.hours.getHoursWorked() * it.ppeValue
+                            } else {
+                                payCalculations.pay.getPayTimeWorked() * it.ppeValue / 100
                             }
+                        }
 
-                            1 -> {
-                                sum = if (it.ppeIsFixed) {
-                                    payCalculations.hours.getDaysWorked() * it.ppeValue
-                                } else {
-                                    payCalculations.pay.getPayTimeWorked() * it.ppeValue / 100
-                                }
+                        1 -> {
+                            sum = if (it.ppeIsFixed) {
+                                payCalculations.hours.getDaysWorked() * it.ppeValue
+                            } else {
+                                payCalculations.pay.getPayTimeWorked() * it.ppeValue / 100
                             }
+                        }
 
-                            3 -> {
-                                sum = it.ppeValue
-                            }
+                        3 -> {
+                            sum = it.ppeValue
                         }
                     }
                     extraList.add(
@@ -406,13 +417,13 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
             val extrasList =
                 findExtras(payCalculations)
             delay(WAIT_1000)
-            fillCredits(payCalculations, extrasList)
+            fillCredits(extrasList)
             fillDeductions(payCalculations, extrasList)
+            mainActivity.mainViewModel.setPayPeriodExtraList(extrasList)
         }
     }
 
     private fun fillCredits(
-        payCalculations: PayCalculations,
         extraList: ArrayList<WorkPayPeriodExtras>,
     ) {
         val creditList = ArrayList<WorkPayPeriodExtras>()
@@ -542,6 +553,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                                 spEmployers.selectedItem.toString()
                             ).observe(viewLifecycleOwner) { employer ->
                                 curEmployer = employer
+                                mainActivity.mainViewModel.setEmployer(employer)
                             }
                             mainActivity.title = getString(R.string.time_sheet) +
                                     " for ${spEmployers.selectedItem}"
