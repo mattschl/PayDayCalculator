@@ -11,11 +11,13 @@ import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.ExtraAndTotal
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionAndType
+import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.TaxAndAmount
 import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtraAndTypeFull
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
 
 //private const val TAG = "PayCalculations"
@@ -30,9 +32,10 @@ class PayCalculations(
     private val workDateExtrasFull = ArrayList<WorkDateExtraAndTypeFull>()
     private val workExtrasByPay = ArrayList<ExtraDefinitionAndType>()
     private val extraTypes = ArrayList<WorkExtraTypes>()
-
     private val taxRules = ArrayList<WorkTaxRules>()
     private val taxTypes = ArrayList<TaxTypes>()
+    private val payPeriodExtras = ArrayList<WorkPayPeriodExtras>()
+    private var curPayPeriod: PayPeriods? = null
     var rate = 0.0
     val hours = Hours()
     val pay = Pay()
@@ -41,32 +44,57 @@ class PayCalculations(
     val deductions = Deductions()
 
     init {
-        findWorkDates()
-        findExtrasPerDay()
-        findExtrasPerPay()
-        findRate()
-        findExtraTypes()
-        findTaxRates()
+        CoroutineScope(Dispatchers.Main).launch {
+            findPayPeriod()
+            findRate()
+            delay(100)
+            findWorkDates()
+            findExtrasCustomPerPay()
+            findExtrasPerDay()
+            findExtrasPerPay()
+            findExtraTypes()
+            findTaxRates()
+        }
     }
 
     inner class Deductions {
         fun getDebitExtraAndTotalByPay(): ArrayList<ExtraAndTotal> {
-            val debitLiat = ArrayList<ExtraAndTotal>()
+            val debitList = ArrayList<ExtraAndTotal>()
             for (i in 0 until workExtrasByPay.size) {
-                if (!workExtrasByPay[i].extraType.wetIsCredit &&
-                    workExtrasByPay[i].extraType.wetIsDefault &&
-                    workExtrasByPay[i].extraType.wetAppliesTo == 3
-                ) {
-                    if (workExtrasByPay[i].definition.weIsFixed
+                var notFound = true
+                for (extra in payPeriodExtras) {
+                    if (workExtrasByPay[i].extraType.wetName == extra.ppeName) {
+                        notFound = false
+                    }
+                }
+                if (notFound) {
+                    if (!workExtrasByPay[i].extraType.wetIsCredit &&
+                        workExtrasByPay[i].extraType.wetIsDefault &&
+                        workExtrasByPay[i].extraType.wetAppliesTo == 3
                     ) {
-                        debitLiat.add(
-                            ExtraAndTotal(
-                                workExtrasByPay[i].extraType.wetName,
-                                workExtrasByPay[i].definition.weValue
+                        if (workExtrasByPay[i].definition.weIsFixed
+                        ) {
+                            debitList.add(
+                                ExtraAndTotal(
+                                    workExtrasByPay[i].extraType.wetName,
+                                    workExtrasByPay[i].definition.weValue
+                                )
                             )
-                        )
-                    } else {
-                        debitLiat.add(
+                        } else {
+                            debitList.add(
+                                ExtraAndTotal(
+                                    workExtrasByPay[i].extraType.wetName,
+                                    workExtrasByPay[i].definition.weValue *
+                                            pay.getPayTimeWorked() / 100
+                                )
+                            )
+                        }
+                    } else if (!workExtrasByPay[i].extraType.wetIsCredit &&
+                        workExtrasByPay[i].extraType.wetIsDefault &&
+                        workExtrasByPay[i].extraType.wetAppliesTo == 0 &&
+                        !workExtrasByPay[i].definition.weIsFixed
+                    ) {
+                        debitList.add(
                             ExtraAndTotal(
                                 workExtrasByPay[i].extraType.wetName,
                                 workExtrasByPay[i].definition.weValue *
@@ -74,22 +102,52 @@ class PayCalculations(
                             )
                         )
                     }
-                } else if (!workExtrasByPay[i].extraType.wetIsCredit &&
-                    workExtrasByPay[i].extraType.wetIsDefault &&
-                    workExtrasByPay[i].extraType.wetAppliesTo == 0 &&
-                    !workExtrasByPay[i].definition.weIsFixed
-                ) {
-                    debitLiat.add(
-                        ExtraAndTotal(
-                            workExtrasByPay[i].extraType.wetName,
-                            workExtrasByPay[i].definition.weValue *
-                                    pay.getPayTimeWorked() / 100
-                        )
-                    )
                 }
             }
-            return debitLiat
+            for (extra in payPeriodExtras) {
+                if (!extra.ppeIsCredit &&
+                    !extra.ppeIsDeleted
+                ) {
+                    when (extra.ppeAppliesTo) {
+                        0 -> {
+                            val debitTotal = if (extra.ppeIsFixed) {
+                                hours.getHoursWorked() * extra.ppeValue
+                            } else {
+                                pay.getPayTimeWorked() +
+                                        extra.ppeValue / 100
+                            }
+                            debitList.add(
+                                ExtraAndTotal(extra.ppeName, debitTotal)
+                            )
+                        }
+
+                        1 -> {
+                            val debitTotal = if (extra.ppeIsFixed) {
+                                hours.getDaysWorked() * extra.ppeValue
+                            } else {
+                                pay.getPayTimeWorked() * extra.ppeValue / 100
+                            }
+                            debitList.add(
+                                ExtraAndTotal(extra.ppeName, debitTotal)
+                            )
+                        }
+
+                        3 -> {
+                            val debitTotal = if (extra.ppeIsFixed) {
+                                extra.ppeValue
+                            } else {
+                                pay.getPayHourly() * extra.ppeValue / 100
+                            }
+                            debitList.add(
+                                ExtraAndTotal(extra.ppeName, debitTotal)
+                            )
+                        }
+                    }
+                }
+            }
+            return debitList
         }
+
     }
 
     inner class Extras {
@@ -162,44 +220,94 @@ class PayCalculations(
         fun getCreditExtrasAndTotalsByPay(): ArrayList<ExtraAndTotal> {
             val extraList = ArrayList<ExtraAndTotal>()
             for (i in 0 until workExtrasByPay.size) {
-                if (workExtrasByPay[i].extraType.wetIsCredit &&
-                    workExtrasByPay[i].extraType.wetIsDefault &&
-                    workExtrasByPay[i].extraType.wetAppliesTo == 3
-                ) {
-                    if (workExtrasByPay[i].definition.weIsFixed
+                var notFound = true
+                for (extra in payPeriodExtras) {
+                    if (workExtrasByPay[i].extraType.wetName == extra.ppeName) {
+                        notFound = false
+                    }
+                }
+                if (notFound) {
+                    if (workExtrasByPay[i].extraType.wetIsCredit &&
+                        workExtrasByPay[i].extraType.wetIsDefault &&
+                        workExtrasByPay[i].extraType.wetAppliesTo == 3
                     ) {
-                        extraList.add(
-                            ExtraAndTotal(
-                                workExtrasByPay[i].extraType.wetName,
-                                workExtrasByPay[i].definition.weValue
+                        if (workExtrasByPay[i].definition.weIsFixed
+                        ) {
+                            extraList.add(
+                                ExtraAndTotal(
+                                    workExtrasByPay[i].extraType.wetName,
+                                    workExtrasByPay[i].definition.weValue
+                                )
                             )
-                        )
-                    } else {
+                        } else {
+                            extraList.add(
+                                ExtraAndTotal(
+                                    workExtrasByPay[i].extraType.wetName,
+                                    workExtrasByPay[i].definition.weValue *
+                                            pay.getPayTimeWorked() / 100
+                                )
+                            )
+                        }
+                    } else if (workExtrasByPay[i].extraType.wetIsCredit &&
+                        workExtrasByPay[i].extraType.wetIsDefault &&
+                        workExtrasByPay[i].extraType.wetAppliesTo == 0 &&
+                        !workExtrasByPay[i].definition.weIsFixed
+                    ) {
                         extraList.add(
                             ExtraAndTotal(
                                 workExtrasByPay[i].extraType.wetName,
                                 workExtrasByPay[i].definition.weValue *
                                         pay.getPayTimeWorked() / 100
+
                             )
                         )
                     }
-                } else if (workExtrasByPay[i].extraType.wetIsCredit &&
-                    workExtrasByPay[i].extraType.wetIsDefault &&
-                    workExtrasByPay[i].extraType.wetAppliesTo == 0 &&
-                    !workExtrasByPay[i].definition.weIsFixed
+                }
+            }
+            for (extra in payPeriodExtras) {
+                if (extra.ppeIsCredit &&
+                    !extra.ppeIsDeleted
                 ) {
-                    extraList.add(
-                        ExtraAndTotal(
-                            workExtrasByPay[i].extraType.wetName,
-                            workExtrasByPay[i].definition.weValue *
-                                    pay.getPayTimeWorked() / 100
+                    when (extra.ppeAppliesTo) {
+                        0 -> {
+                            val creditTotal = if (extra.ppeIsFixed) {
+                                hours.getHoursWorked() * extra.ppeValue
+                            } else {
+                                pay.getPayTimeWorked() +
+                                        extra.ppeValue / 100
+                            }
+                            extraList.add(
+                                ExtraAndTotal(extra.ppeName, creditTotal)
+                            )
+                        }
 
-                        )
-                    )
+                        1 -> {
+                            val creditTotal = if (extra.ppeIsFixed) {
+                                hours.getDaysWorked() * extra.ppeValue
+                            } else {
+                                pay.getPayTimeWorked() * extra.ppeValue / 100
+                            }
+                            extraList.add(
+                                ExtraAndTotal(extra.ppeName, creditTotal)
+                            )
+                        }
+
+                        3 -> {
+                            val creditTotal = if (extra.ppeIsFixed) {
+                                extra.ppeValue
+                            } else {
+                                pay.getPayHourly() * extra.ppeValue / 100
+                            }
+                            extraList.add(
+                                ExtraAndTotal(extra.ppeName, creditTotal)
+                            )
+                        }
+                    }
                 }
             }
             return extraList
         }
+
     }
 
     inner class Hours {
@@ -478,6 +586,28 @@ class PayCalculations(
                 workExtrasByPay.clear()
                 list.listIterator().forEach {
                     workExtrasByPay.add(it)
+                }
+            }
+        }
+    }
+
+    private fun findPayPeriod() {
+        mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
+            mainActivity.payDayViewModel.getPayPeriod(
+                cutOff, employer.employerId
+            ).observe(lifecycleOwner) { payPeriod ->
+                curPayPeriod = payPeriod
+            }
+        }
+    }
+
+    private fun findExtrasCustomPerPay() {
+        mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
+            mainActivity.payDayViewModel.getPayPeriodExtras(
+                curPayPeriod!!.payPeriodId
+            ).observe(lifecycleOwner) { list ->
+                list.listIterator().forEach {
+                    payPeriodExtras.add(it)
                 }
             }
         }

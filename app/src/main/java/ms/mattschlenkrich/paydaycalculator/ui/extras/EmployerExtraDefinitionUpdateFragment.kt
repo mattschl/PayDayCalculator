@@ -191,7 +191,7 @@ class EmployerExtraDefinitionUpdateFragment :
                     if (curExtraDefinitionFull.definition.weIsFixed) {
                         cf.displayDollars(curExtraDefinitionFull.definition.weValue)
                     } else {
-                        cf.displayPercentFromDouble(curExtraDefinitionFull.definition.weValue)
+                        cf.displayPercentFromDouble(curExtraDefinitionFull.definition.weValue / 100)
                     }
                 )
                 chkIsFixed.isChecked = curExtraDefinitionFull.definition.weIsFixed

@@ -156,13 +156,17 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                         position: Int,
                         id: Long
                     ) {
-                        if (spCutOff.selectedItem.toString() !=
-                            getString(R.string.generate_a_new_cut_off)
-                        ) {
-                            curCutOff = spCutOff.selectedItem.toString()
-                            fillPayDayDate()
-                            fillWorkDates()
-                            fillValues()
+                        if (spCutOff.adapter.count > 0) {
+                            if (spCutOff.selectedItem.toString() !=
+                                getString(R.string.generate_a_new_cut_off)
+                            ) {
+                                curCutOff = spCutOff.selectedItem.toString()
+                                fillPayDayDate()
+                                fillWorkDates()
+                                fillValues()
+                            } else {
+                                generateCutOff()
+                            }
                         } else {
                             generateCutOff()
                         }
