@@ -13,6 +13,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/employer"
+            android:textColor="@color/black"
             android:textSize="@dimen/label_text_size"
             app:layout_constraintBaseline_toBaselineOf="@id/spEmployers"
             app:layout_constraintEnd_toStartOf="@id/spEmployers"
@@ -34,6 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/extra_type"
+            android:textColor="@color/black"
             android:textSize="@dimen/label_text_size"
             android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@id/spExtraType"
@@ -117,18 +119,28 @@
 
         </androidx.cardview.widget.CardView>
 
+        <TextView
+            android:id="@+id/lblRates"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dim_5dp"
+            android:text="@string/rates"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/crdExtraInfo" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvExtras"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dim_5dp"
-            android:layout_marginTop="@dimen/dim_5dp"
-            android:layout_marginEnd="@dimen/dim_5dp"
-            android:layout_marginBottom="@dimen/dim_5dp"
+            android:layout_margin="@dimen/dim_5dp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/crdExtraInfo" />
+            app:layout_constraintTop_toBottomOf="@id/lblRates" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/crdNoInfo"
@@ -139,10 +151,9 @@
             android:backgroundTint="@color/white"
             android:elevation="10dp"
             app:cardCornerRadius="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/crdExtraInfo">
+            app:layout_constraintTop_toBottomOf="@id/lblRates">
 
             <TextView
                 android:id="@+id/tvNoExtras"

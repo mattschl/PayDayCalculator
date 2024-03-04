@@ -25,6 +25,7 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_EXTRA_DEFINITIONS
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerExtraDefinitionsAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
@@ -191,7 +192,23 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     }
 
     private fun gotoCallingFragment() {
-        gotoEmployerUpdate()
+        if (mainActivity.mainViewModel.getCallingFragment() != null) {
+            if (mainActivity.mainViewModel.getCallingFragment()!!.contains(
+                    FRAG_EXTRA_DEFINITIONS
+                )
+            ) {
+                gotoExtraDefinitions()
+            }
+        } else {
+            gotoEmployerUpdate()
+        }
+    }
+
+    private fun gotoExtraDefinitions() {
+        mView.findNavController().navigate(
+            EmployerExtraDefinitionsAddFragmentDirections
+                .actionEmployerExtraDefinitionsAddFragmentToEmployerExtraDefinitionsFragment()
+        )
     }
 
     private fun gotoEmployerUpdate() {

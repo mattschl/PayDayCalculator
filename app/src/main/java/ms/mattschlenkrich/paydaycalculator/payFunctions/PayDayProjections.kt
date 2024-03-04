@@ -23,7 +23,7 @@ class PayDayProjections {
         val mostRecentDate = if (mostRecent.isNotEmpty()) {
             LocalDate.parse(mostRecent)
         } else (
-                LocalDate.now().minusDays(1)
+                LocalDate.now()
                 )
         val dates: ArrayList<LocalDate> = when (employer.payFrequency) {
             INTERVAL_WEEKLY -> {

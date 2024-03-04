@@ -159,4 +159,6 @@
     <string name="total_hourly">Total Hourly</string>
     <string name="tax_summary">Tax Summary</string>
     <string name="date_and_employer_info">Date and Employer Info</string>
+    <string name="pay_extras">Pay Extras</string>
+    <string name="rates">Rates</string>
 </resources>

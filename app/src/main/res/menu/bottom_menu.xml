@@ -19,6 +19,6 @@
     <item
         android:id="@+id/nav_extras"
         android:icon="@drawable/ic_extras"
-        android:title="@string/extra_type" />
+        android:title="@string/pay_extras" />
 
 </menu>

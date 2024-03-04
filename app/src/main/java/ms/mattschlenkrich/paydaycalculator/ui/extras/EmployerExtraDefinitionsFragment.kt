@@ -61,6 +61,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     }
 
     private fun fillValues() {
+        mainActivity.mainViewModel.removeCallingFragment(TAG)
         CoroutineScope(Dispatchers.Main).launch {
             binding.apply {
                 delay(WAIT_250)

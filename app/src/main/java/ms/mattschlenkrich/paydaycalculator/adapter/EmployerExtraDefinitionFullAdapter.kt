@@ -108,7 +108,7 @@ class EmployerExtraDefinitionFullAdapter(
         } else {
             holder.itemBinding.tvInfo.visibility = View.GONE
         }
-        holder.itemView.setOnLongClickListener {
+        holder.itemView.setOnClickListener {
             AlertDialog.Builder(mView.context)
                 .setTitle(
                     mView.resources.getString(R.string.choose_an_action) +
@@ -135,7 +135,6 @@ class EmployerExtraDefinitionFullAdapter(
                         }
                     }
                 }.show()
-            false
         }
     }
 

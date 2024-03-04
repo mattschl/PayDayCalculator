@@ -75,9 +75,8 @@ class TaxRuleAdapter(
         } else {
             holder.itemBinding.tvLimit.visibility = View.GONE
         }
-        holder.itemView.setOnLongClickListener {
+        holder.itemView.setOnClickListener {
             chooseOptions(taxRule)
-            false
         }
     }
 

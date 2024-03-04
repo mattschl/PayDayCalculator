@@ -77,6 +77,19 @@
 
         </androidx.cardview.widget.CardView>
 
+        <TextView
+            android:id="@+id/lblRates"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dim_5dp"
+            android:text="@string/rates"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/crdSummary" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvTaxRules"
             android:layout_width="match_parent"
@@ -88,7 +101,7 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/crdSummary" />
+            app:layout_constraintTop_toBottomOf="@id/lblRates" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/crdNoInfo"
