@@ -126,6 +126,12 @@ interface PayDayDao {
 
     @Query(
         "SELECT * FROM workPayPeriodExtras " +
+                "WHERE workPayPeriodExtraId = :extraName"
+    )
+    fun findPayPeriodExtra(extraName: String): LiveData<WorkPayPeriodExtras>
+
+    @Query(
+        "SELECT * FROM workPayPeriodExtras " +
                 "WHERE ppePayPeriodId = :payPeriodId " +
                 "AND ppeAttachTo = 3 " +
                 "ORDER BY ppeName"

@@ -157,8 +157,8 @@ interface WorkExtraDao {
                 "WHERE weEmployerId = :employerId " +
                 "AND weIsDeleted = 0 " +
                 "AND weEffectiveDate <= :cutoffDate " +
+                "GROUP BY weExtraTypeId " +
                 "ORDER BY weEffectiveDate DESC " +
-                "LIMIT 1" +
                 ") ON workExtraTypeId = weExtraTypeId " +
                 "WHERE wetEmployerId = :employerId " +
                 "AND wetAttachTo = :attachTo " +

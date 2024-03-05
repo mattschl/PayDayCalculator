@@ -4,7 +4,6 @@ import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
 
 class PayDayRepository(private val db: PayDatabase) {
@@ -42,8 +41,8 @@ class PayDayRepository(private val db: PayDatabase) {
     fun getWorkDateExtrasActive(workDateId: Long) =
         db.getPayDayDao().getWorkDateExtrasActive(workDateId)
 
-    suspend fun deleteWorkDateExtra(extraType: WorkExtraTypes) =
-        db.getPayDayDao().deleteWorkDateExtra(extraType)
+//    suspend fun deleteWorkDateExtra(extraType: WorkExtraTypes) =
+//        db.getPayDayDao().deleteWorkDateExtra(extraType)
 
 //    fun getWorkDateAndExtraDefAndWorkDateExtras(workDateId: Long) =
 //        db.getPayDayDao().getWorkDateAndExtraDefAndWorkDateExtras(workDateId)
@@ -66,8 +65,11 @@ class PayDayRepository(private val db: PayDatabase) {
     fun getPayPeriodExtras(payPeriodId: Long) =
         db.getPayDayDao().getPayPeriodExtras(payPeriodId)
 
-    fun findPayPeriodExtra(workPayPeriodExtraId: Long) =
-        db.getPayDayDao().findPayPeriodExtra(workPayPeriodExtraId)
+//    fun findPayPeriodExtra(workPayPeriodExtraId: Long) =
+//        db.getPayDayDao().findPayPeriodExtra(workPayPeriodExtraId)
+
+    fun findPayPeriodExtra(extraName: String) =
+        db.getPayDayDao().findPayPeriodExtra(extraName)
 
     fun getWorkDateExtrasAndDates(cutOffDate: String) =
         db.getPayDayDao().getWorkDateExtrasAndDates(cutOffDate)

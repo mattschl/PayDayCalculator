@@ -7,16 +7,22 @@ import android.view.ViewGroup
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_DETAILS
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.ListPayDetailExtraItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.PayDetailsFragment
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.PayDetailsFragmentDirections
 
-private const val TAG = "PayDetailExtraAdapter"
+//private const val TAG = "PayDetailExtraAdapter"
 
 class PayDetailExtraAdapter(
     private val mainActivity: MainActivity,
@@ -66,16 +72,20 @@ class PayDetailExtraAdapter(
                 chActive.visibility = View.VISIBLE
             }
             btnEdit.setOnClickListener {
-                gotoUpdateExtra(extra)
+                gotoUpdateExtra(extra, !chActive.isChecked)
             }
             chActive.setOnClickListener {
                 insertOrUpdateExtra(extra, !chActive.isChecked)
-                parentFragment.fillPayDetails()
+                CoroutineScope(Dispatchers.Main).launch {
+                    delay(WAIT_500)
+                    parentFragment.fillPayDetails()
+                }
             }
         }
     }
 
-    private fun gotoUpdateExtra(extra: WorkPayPeriodExtras) {
+
+    private fun gotoUpdateExtra(extra: WorkPayPeriodExtras, delete: Boolean) {
         AlertDialog.Builder(mView.context)
             .setTitle("Continue to update?")
             .setMessage(
@@ -83,33 +93,38 @@ class PayDetailExtraAdapter(
                         "Would you like to edit it anyways?"
             )
             .setPositiveButton("Yes") { _, _ ->
-                val newExtra = insertOrUpdateExtra(extra, false)
-                mainActivity.mainViewModel.addCallingFragment(FRAG_PAY_DETAILS)
-                mainActivity.mainViewModel.setPayPeriodExtra(newExtra)
-                mView.findNavController().navigate(
-                    PayDetailsFragmentDirections
-                        .actionPayDetailsFragmentToPayPeriodExtraUpdateFragment()
-                )
+                val newExtra = insertOrUpdateExtra(extra, delete)
+                updateExtra(newExtra)
             }
             .setNegativeButton("Cancel", null)
+            .show()
 
+    }
+
+    private fun updateExtra(newExtra: WorkPayPeriodExtras) {
+        mainActivity.mainViewModel.setPayPeriodExtra(newExtra)
+        mainActivity.mainViewModel.addCallingFragment(FRAG_PAY_DETAILS)
+        mView.findNavController().navigate(
+            PayDetailsFragmentDirections
+                .actionPayDetailsFragmentToPayPeriodExtraUpdateFragment()
+        )
     }
 
     private fun insertOrUpdateExtra(
         extra: WorkPayPeriodExtras, delete: Boolean
     ): WorkPayPeriodExtras {
-        var notFound = false
+        var notFound = true
         mainActivity.payDayViewModel.findPayPeriodExtra(
-            extra.workPayPeriodExtraId
+            extra.ppeName
         ).observe(mView.findViewTreeLifecycleOwner()!!) { found ->
-            if (found == null) notFound = true
+            if (found == null) notFound = false
         }
         val newExtra = WorkPayPeriodExtras(
             extra.workPayPeriodExtraId,
             extra.ppePayPeriodId,
             extra.ppeExtraTypeId,
             extra.ppeName,
-            3,
+            extra.ppeAppliesTo,
             3,
             extra.ppeValue,
             extra.ppeIsFixed,
@@ -117,14 +132,17 @@ class PayDetailExtraAdapter(
             delete,
             df.getCurrentTimeAsString()
         )
-        if (notFound) {
-            mainActivity.payDayViewModel.insertPayPeriodExtra(
-                newExtra
-            )
-        } else {
-            mainActivity.payDayViewModel.updatePayPeriodExtra(
-                newExtra
-            )
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            if (notFound) {
+                mainActivity.payDayViewModel.insertPayPeriodExtra(
+                    newExtra
+                )
+            } else {
+                mainActivity.payDayViewModel.updatePayPeriodExtra(
+                    newExtra
+                )
+            }
         }
         return newExtra
     }
