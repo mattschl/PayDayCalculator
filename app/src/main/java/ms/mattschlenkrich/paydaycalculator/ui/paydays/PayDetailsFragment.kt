@@ -2,7 +2,6 @@ package ms.mattschlenkrich.paydaycalculator.ui.paydays
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -84,7 +83,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
     }
 
     private fun gotoExtraAdd(isCredit: Boolean) {
-        Log.d(TAG, "IN THE FUNCTION the button actions")
+//        Log.d(TAG, "IN THE FUNCTION the button actions")
         AlertDialog.Builder(mView.context)
             .setTitle("Continue adding?")
             .setMessage(
@@ -214,7 +213,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                 curPayPeriod!!.payPeriodId
             ).observe(viewLifecycleOwner) { credit ->
                 credit.listIterator().forEach {
-                    Log.d(TAG, "Getting payPeriodExtra name is ${it.ppeName}")
+//                    Log.d(TAG, "Getting payPeriodExtra name is ${it.ppeName}")
                     var sum = 0.0
                     when (it.ppeAppliesTo) {
                         0 -> {
@@ -429,9 +428,9 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         CoroutineScope(Dispatchers.Main).launch {
             val extrasList =
                 findExtras(payCalculations)
-            Log.d(TAG, "Before delay size is ${extrasList.size}")
+//            Log.d(TAG, "Before delay size is ${extrasList.size}")
             delay(WAIT_1000)
-            Log.d(TAG, "AFTER delay size is ${extrasList.size}")
+//            Log.d(TAG, "AFTER delay size is ${extrasList.size}")
             fillCredits(extrasList)
             fillDeductions(payCalculations, extrasList)
             mainActivity.mainViewModel.setPayPeriodExtraList(extrasList)

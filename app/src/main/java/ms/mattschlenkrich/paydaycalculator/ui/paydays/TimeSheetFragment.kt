@@ -2,7 +2,6 @@ package ms.mattschlenkrich.paydaycalculator.ui.paydays
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -71,10 +70,10 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     private fun fillFromHistory() {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
-            Log.d(
-                TAG, "the employer is " +
-                        "${mainActivity.mainViewModel.getEmployer()?.employerName}"
-            )
+//            Log.d(
+//                TAG, "the employer is " +
+//                        "${mainActivity.mainViewModel.getEmployer()?.employerName}"
+//            )
             if (mainActivity.mainViewModel.getEmployer() != null) {
                 binding.apply {
                     curEmployer = mainActivity.mainViewModel.getEmployer()!!
@@ -85,10 +84,10 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                         }
                     }
                     delay(WAIT_500)
-                    Log.d(
-                        TAG, "The cutoff is " +
-                                "${mainActivity.mainViewModel.getCutOffDate()} if found"
-                    )
+//                    Log.d(
+//                        TAG, "The cutoff is " +
+//                                "${mainActivity.mainViewModel.getCutOffDate()} if found"
+//                    )
                     if (mainActivity.mainViewModel.getCutOffDate() != null) {
                         curCutOff = mainActivity.mainViewModel.getCutOffDate()!!
                         for (i in 0 until spCutOff.adapter.count) {
