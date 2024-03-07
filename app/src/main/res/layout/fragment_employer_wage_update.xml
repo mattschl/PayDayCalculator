@@ -50,6 +50,7 @@
             android:hint="@string/enter_pay_rate"
             android:importantForAutofill="no"
             android:inputType="numberDecimal"
+            android:selectAllOnFocus="true"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_large"
             android:textStyle="bold"

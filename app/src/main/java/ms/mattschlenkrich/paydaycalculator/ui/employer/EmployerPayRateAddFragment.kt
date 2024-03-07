@@ -60,34 +60,41 @@ class EmployerPayRateAddFragment :
     private fun fillValues() {
         binding.apply {
             tvEffectiveDate.text = LocalDate.now().toString()
+            chooseDate()
         }
     }
 
     private fun setDateAction() {
         binding.apply {
             tvEffectiveDate.setOnClickListener {
-                val curDateAll = tvEffectiveDate.text.toString().split("-")
-                val datePickerDialog = DatePickerDialog(
-                    requireContext(),
-                    { _, year, monthOfYear, dayOfMonth ->
-                        val month = monthOfYear + 1
-                        val display = "$year-${
-                            month.toString()
-                                .padStart(2, '0')
-                        }-${
-                            dayOfMonth.toString().padStart(2, '0')
-                        }"
-                        tvEffectiveDate.text = display
-                    },
-                    curDateAll[0].toInt(),
-                    curDateAll[1].toInt() - 1,
-                    curDateAll[2].toInt()
-                )
-                datePickerDialog.setTitle(
-                    getString(R.string.choose_when_this_wage_goes_into_effect)
-                )
-                datePickerDialog.show()
+                chooseDate()
             }
+        }
+    }
+
+    private fun chooseDate() {
+        binding.apply {
+            val curDateAll = tvEffectiveDate.text.toString().split("-")
+            val datePickerDialog = DatePickerDialog(
+                requireContext(),
+                { _, year, monthOfYear, dayOfMonth ->
+                    val month = monthOfYear + 1
+                    val display = "$year-${
+                        month.toString()
+                            .padStart(2, '0')
+                    }-${
+                        dayOfMonth.toString().padStart(2, '0')
+                    }"
+                    tvEffectiveDate.text = display
+                },
+                curDateAll[0].toInt(),
+                curDateAll[1].toInt() - 1,
+                curDateAll[2].toInt()
+            )
+            datePickerDialog.setTitle(
+                getString(R.string.choose_when_this_wage_goes_into_effect)
+            )
+            datePickerDialog.show()
         }
     }
 
