@@ -16,6 +16,7 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
+import ms.mattschlenkrich.paydaycalculator.ui.paydays.TimeSheetFragment
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.TimeSheetFragmentDirections
 
 //private const val TAG = "AdapterWorkDate"
@@ -25,6 +26,7 @@ class WorkDateAdapter(
     private val curCutoff: String,
     private val curEmployer: Employers,
     private val mView: View,
+    private val parentFragment: TimeSheetFragment
 ) : RecyclerView.Adapter<WorkDateAdapter.WorkDateViewHolder>() {
 
     private val df = DateFunctions()
@@ -148,6 +150,7 @@ class WorkDateAdapter(
                 df.getCurrentTimeAsString()
             )
         )
+        parentFragment.fillValues()
     }
 
     private fun gotoWorkDateUpdate(workDate: WorkDates) {
