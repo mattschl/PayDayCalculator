@@ -48,6 +48,9 @@
         <action
             android:id="@+id/action_employerAddFragment_to_employerPayRatesFragment"
             app:destination="@id/employerPayRatesFragment" />
+        <action
+            android:id="@+id/action_employerAddFragment_to_payDetailsFragment"
+            app:destination="@id/payDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/employerUpdateFragment"
@@ -358,6 +361,9 @@
         <action
             android:id="@+id/action_payDetailsFragment_to_payPeriodExtraUpdateFragment"
             app:destination="@id/payPeriodExtraUpdateFragment" />
+        <action
+            android:id="@+id/action_payDetailsFragment_to_employerAddFragment"
+            app:destination="@id/employerAddFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_payDetailsFragment"

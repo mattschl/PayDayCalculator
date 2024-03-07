@@ -553,8 +553,8 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
     private fun gotoEmployerAdd() {
         mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
-            TimeSheetFragmentDirections
-                .actionTimeSheetFragmentToEmployerAddFragment()
+            PayDetailsFragmentDirections
+                .actionPayDetailsFragmentToEmployerAddFragment()
         )
     }
 
