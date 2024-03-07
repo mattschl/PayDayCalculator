@@ -8,6 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
+import ms.mattschlenkrich.paydaycalculator.model.EmployerPayRates
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.ExtraAndTotal
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionAndType
@@ -27,6 +28,7 @@ class PayCalculations(
     private val employer: Employers,
     private val cutOff: String,
     private val mView: View,
+    private val curPayPeriod: PayPeriods,
 ) {
     private val workDates = ArrayList<WorkDates>()
     private val workDateExtrasFull = ArrayList<WorkDateExtraAndTypeFull>()
@@ -35,7 +37,6 @@ class PayCalculations(
     private val taxRules = ArrayList<WorkTaxRules>()
     private val taxTypes = ArrayList<TaxTypes>()
     private val payPeriodExtras = ArrayList<WorkPayPeriodExtras>()
-    private var curPayPeriod: PayPeriods? = null
     var rate = 0.0
     val hours = Hours()
     val pay = Pay()
@@ -45,9 +46,9 @@ class PayCalculations(
 
     init {
         CoroutineScope(Dispatchers.Main).launch {
-            findPayPeriod()
+
             findRate()
-            delay(100)
+            delay(WAIT_250)
             findWorkDates()
             findExtrasCustomPerPay()
             findExtrasPerDay()
@@ -397,9 +398,9 @@ class PayCalculations(
             return getPayReg() + getPayOt() + getPayDblOt()
         }
 
-        fun getCreditTotalAll(): Double {
-            return getCreditTotalByDate() + getCreditTotalsByPay()
-        }
+//        fun getCreditTotalAll(): Double {
+//            return getCreditTotalByDate() + getCreditTotalsByPay()
+//        }
 
         fun getCreditTotalByDate(): Double {
             var total = 0.0
@@ -545,11 +546,29 @@ class PayCalculations(
             ).observe(lifecycleOwner) { rates ->
                 rates.listIterator().forEach {
                     if (it.eprEffectiveDate <= cutOff) {
-                        rate = it.eprPayRate
+                        rate = fixRateByInterval(it)
                     }
                 }
             }
         }
+    }
+
+    private fun fixRateByInterval(rate: EmployerPayRates): Double {
+        var fixedRate = 0.0
+        when (rate.eprPerPeriod) {
+            0 -> {
+                fixedRate = rate.eprPayRate
+            }
+
+            1 -> {
+                fixedRate = rate.eprPayRate / 8
+            }
+
+            2 -> {
+                fixedRate = rate.eprPayRate / 40
+            }
+        }
+        return fixedRate
     }
 
     private fun findWorkDates() {
@@ -591,20 +610,20 @@ class PayCalculations(
         }
     }
 
-    private fun findPayPeriod() {
-        mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
-            mainActivity.payDayViewModel.getPayPeriod(
-                cutOff, employer.employerId
-            ).observe(lifecycleOwner) { payPeriod ->
-                curPayPeriod = payPeriod
-            }
-        }
-    }
+//    private fun findPayPeriod() {
+//        mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
+//            mainActivity.payDayViewModel.getPayPeriod(
+//                cutOff, employer.employerId
+//            ).observe(lifecycleOwner) { payPeriod ->
+//                curPayPeriod = payPeriod
+//            }
+//        }
+//    }
 
     private fun findExtrasCustomPerPay() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.payDayViewModel.getPayPeriodExtras(
-                curPayPeriod!!.payPeriodId
+                curPayPeriod.payPeriodId
             ).observe(lifecycleOwner) { list ->
                 list.listIterator().forEach {
                     payPeriodExtras.add(it)

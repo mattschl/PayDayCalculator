@@ -139,6 +139,7 @@ const val PER_PAY = "per pay"
 const val PER_WEEK = "per week"
 const val PER_MONTH = "per month"
 
+const val WAIT_100 = 100L
 const val WAIT_250 = 250L
 const val WAIT_500 = 500L
 const val WAIT_1000 = 1000L

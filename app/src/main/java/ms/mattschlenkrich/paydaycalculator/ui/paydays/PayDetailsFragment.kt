@@ -22,6 +22,7 @@ import ms.mattschlenkrich.paydaycalculator.adapter.PayDetailTaxAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_DETAILS
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
@@ -119,9 +120,11 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                         position: Int,
                         id: Long
                     ) {
-                        curCutOff = spCutOff.selectedItem.toString()
-                        fillPayDayDate()
-                        fillPayDetails()
+                        if (curCutOff != spCutOff.selectedItem.toString()) {
+                            curCutOff = spCutOff.selectedItem.toString()
+                            fillPayDayDate()
+                            fillPayDetails()
+                        }
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -132,9 +135,6 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
     }
 
     fun fillPayDetails() {
-        val payCalculations = PayCalculations(
-            mainActivity, curEmployer!!, curCutOff, mView
-        )
         mainActivity.payDayViewModel.getPayPeriod(
             curCutOff, curEmployer!!.employerId
         ).observe(
@@ -144,6 +144,10 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
             mainActivity.mainViewModel.setPayPeriod(payPeriod)
         }
         CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            val payCalculations = PayCalculations(
+                mainActivity, curEmployer!!, curCutOff, mView, curPayPeriod!!
+            )
             delay(WAIT_500)
             fillExtras(payCalculations)
             delay(WAIT_500)
@@ -567,36 +571,39 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                         if (spEmployers.selectedItem.toString() !=
                             getString(R.string.add_new_employer)
                         ) {
-                            mainActivity.employerViewModel.findEmployer(
-                                spEmployers.selectedItem.toString()
-                            ).observe(viewLifecycleOwner) { employer ->
-                                curEmployer = employer
-                                mainActivity.mainViewModel.setEmployer(employer)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                curEmployer = mainActivity.employerViewModel.findEmployer(
+                                    spEmployers.selectedItem.toString()
+                                )
                             }
-                            mainActivity.title = getString(R.string.time_sheet) +
-                                    " for ${spEmployers.selectedItem}"
-                            fillCutOffDates()
+                            CoroutineScope(Dispatchers.Main).launch {
+                                delay(WAIT_100)
+                                mainActivity.mainViewModel.setEmployer(curEmployer)
+                                mainActivity.title = getString(R.string.pay_details) +
+                                        " for ${spEmployers.selectedItem}"
+                                fillCutOffDates(curEmployer)
+                            }
                         } else {
                             gotoEmployerAdd()
                         }
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
-                        fillEmployers()
+//                        fillEmployers()
                     }
                 }
         }
     }
 
 
-    private fun fillCutOffDates() {
-        if (curEmployer != null) {
+    private fun fillCutOffDates(employer: Employers?) {
+        if (employer != null) {
             binding.apply {
                 val cutOffAdapter = ArrayAdapter<Any>(
                     mView.context,
                     R.layout.spinner_item_bold
                 )
-                mainActivity.payDayViewModel.getCutOffDates(curEmployer!!.employerId).observe(
+                mainActivity.payDayViewModel.getCutOffDates(employer.employerId).observe(
                     viewLifecycleOwner
                 ) { dates ->
                     cutOffAdapter.clear()

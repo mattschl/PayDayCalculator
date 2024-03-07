@@ -43,7 +43,7 @@ interface EmployerDao {
         "SELECT * FROM $TABLE_EMPLOYERS " +
                 "WHERE employerName = :employerName"
     )
-    fun findEmployer(employerName: String): LiveData<Employers>
+    fun findEmployer(employerName: String): Employers
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPayRate(payRate: EmployerPayRates)

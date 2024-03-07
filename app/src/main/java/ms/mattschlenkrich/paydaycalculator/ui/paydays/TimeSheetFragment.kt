@@ -21,7 +21,9 @@ import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_TIME_SHEET
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
@@ -40,6 +42,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     private lateinit var mainActivity: MainActivity
     private var curEmployer: Employers? = null
     private val cutOffs = ArrayList<String>()
+    private var curPayPeriod: PayPeriods? = null
     private var curCutOff = ""
     private val projections = PayDayProjections()
     private val cf = CommonFunctions()
@@ -179,10 +182,20 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     }
 
     private fun fillValues() {
-        val payCalculations = PayCalculations(
-            mainActivity, curEmployer!!, curCutOff, mView
-        )
+        mainActivity.payDayViewModel.getPayPeriod(
+            binding.spCutOff.selectedItem.toString(),
+            curEmployer!!.employerId
+        ).observe(
+            viewLifecycleOwner
+        ) { payPeriod ->
+            curPayPeriod = payPeriod
+            mainActivity.mainViewModel.setPayPeriod(payPeriod)
+        }
         CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            val payCalculations = PayCalculations(
+                mainActivity, curEmployer!!, curCutOff, mView, curPayPeriod!!
+            )
             delay(WAIT_1000)
             binding.apply {
                 var display = cf.displayDollars(
@@ -300,22 +313,25 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                         if (spEmployers.selectedItem.toString() !=
                             getString(R.string.add_new_employer)
                         ) {
-                            mainActivity.employerViewModel.findEmployer(
-                                spEmployers.selectedItem.toString()
-                            ).observe(viewLifecycleOwner) { employer ->
-                                curEmployer = employer
-                                mainActivity.mainViewModel.setEmployerString(curEmployer!!.employerName)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                curEmployer = mainActivity.employerViewModel.findEmployer(
+                                    spEmployers.selectedItem.toString()
+                                )
                             }
-                            mainActivity.title = getString(R.string.time_sheet) +
-                                    " for ${spEmployers.selectedItem}"
-                            fillCutOffDates()
+                            CoroutineScope(Dispatchers.Main).launch {
+                                delay(WAIT_100)
+                                mainActivity.mainViewModel.setEmployer(curEmployer)
+                                mainActivity.title = getString(R.string.pay_details) +
+                                        " for ${spEmployers.selectedItem}"
+                                fillCutOffDates()
+                            }
                         } else {
                             gotoEmployerAdd()
                         }
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
-                        fillEmployers()
+//                        fillEmployers()
                     }
                 }
         }
