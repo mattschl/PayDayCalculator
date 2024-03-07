@@ -80,7 +80,7 @@ dependencies {
     // Annotation processor
     ksp("androidx.room:room-compiler:$room_version")
 
-    val material3_version = "1.2.0"
+    val material3_version = "1.2.1"
 
     implementation("androidx.compose.material3:material3:$material3_version")
 
