@@ -49,6 +49,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     private val cf = CommonFunctions()
     private val df = DateFunctions()
     private var workDateAdapter: WorkDateAdapter? = null
+    private var valuesFilled = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -78,8 +79,8 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                 TAG, "the employer is " +
                         "${mainActivity.mainViewModel.getEmployer()?.employerName}"
             )
-            if (mainActivity.mainViewModel.getEmployer() != null) {
-                binding.apply {
+            binding.apply {
+                if (mainActivity.mainViewModel.getEmployer() != null) {
                     curEmployer = mainActivity.mainViewModel.getEmployer()!!
                     for (i in 0 until spEmployers.adapter.count) {
                         if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
@@ -103,6 +104,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                     }
                 }
             }
+            valuesFilled = true
         }
     }
 
@@ -164,6 +166,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                                 getString(R.string.generate_a_new_cut_off)
                             ) {
                                 curCutOff = spCutOff.selectedItem.toString()
+                                if (valuesFilled) mainActivity.mainViewModel.setCutOffDate(curCutOff)
                                 fillPayDayDate()
                                 fillWorkDates()
                                 fillValues()
@@ -321,6 +324,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                             }
                             CoroutineScope(Dispatchers.Main).launch {
                                 delay(WAIT_100)
+                                if (valuesFilled) mainActivity.mainViewModel.setEmployer(curEmployer)
                                 mainActivity.title = getString(R.string.pay_details) +
                                         " for ${spEmployers.selectedItem}"
                                 fillCutOffDates()

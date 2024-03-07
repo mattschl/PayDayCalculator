@@ -49,6 +49,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
     private var curCutOff = ""
     private val cf = CommonFunctions()
     private val df = DateFunctions()
+    private var valuesFilled = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -122,6 +123,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                     ) {
                         if (curCutOff != spCutOff.selectedItem.toString()) {
                             curCutOff = spCutOff.selectedItem.toString()
+                            if (valuesFilled) mainActivity.mainViewModel.setCutOffDate(curCutOff)
                             fillPayDayDate()
                             fillPayDetails()
                         }
@@ -533,6 +535,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                         }
                     }
                 }
+                valuesFilled = true
             }
         }
     }
@@ -579,6 +582,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                             }
                             CoroutineScope(Dispatchers.Main).launch {
                                 delay(WAIT_100)
+                                if (valuesFilled) mainActivity.mainViewModel.setEmployer(curEmployer)
                                 mainActivity.title = getString(R.string.pay_details) +
                                         " for ${spEmployers.selectedItem}"
                                 fillCutOffDates(curEmployer)
