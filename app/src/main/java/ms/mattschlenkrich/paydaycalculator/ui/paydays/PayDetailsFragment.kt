@@ -512,17 +512,18 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
 
     private fun fillValues() {
         binding.apply {
-            if (mainActivity.mainViewModel.getEmployer() != null) {
-                curEmployer = mainActivity.mainViewModel.getEmployer()!!
-                for (i in 0 until spEmployers.adapter.count) {
-                    if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
-                        spEmployers.setSelection(i)
-                        break
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(WAIT_500)
+                if (mainActivity.mainViewModel.getEmployer() != null) {
+                    curEmployer = mainActivity.mainViewModel.getEmployer()!!
+                    for (i in 0 until spEmployers.adapter.count) {
+                        if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
+                            spEmployers.setSelection(i)
+                            break
+                        }
                     }
                 }
-            }
-            CoroutineScope(Dispatchers.Main).launch {
-                delay(WAIT_250)
+                delay(WAIT_500)
                 if (mainActivity.mainViewModel.getCutOffDate() != null) {
                     curCutOff = mainActivity.mainViewModel.getCutOffDate()!!
                     for (i in 0 until spCutOff.adapter.count) {
@@ -578,7 +579,6 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                             }
                             CoroutineScope(Dispatchers.Main).launch {
                                 delay(WAIT_100)
-                                mainActivity.mainViewModel.setEmployer(curEmployer)
                                 mainActivity.title = getString(R.string.pay_details) +
                                         " for ${spEmployers.selectedItem}"
                                 fillCutOffDates(curEmployer)
