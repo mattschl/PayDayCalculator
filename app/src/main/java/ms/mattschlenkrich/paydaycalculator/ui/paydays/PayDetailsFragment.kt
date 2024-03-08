@@ -656,6 +656,12 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         binding.spEmployers.adapter = employerAdapter
     }
 
+    override fun onStop() {
+        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainActivity.mainViewModel.setCutOffDate(curCutOff)
+        super.onStop()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
