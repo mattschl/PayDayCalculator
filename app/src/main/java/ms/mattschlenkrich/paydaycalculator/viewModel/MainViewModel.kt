@@ -6,7 +6,6 @@ import ms.mattschlenkrich.paydaycalculator.model.EmployerPayRates
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.WorkDates
@@ -22,7 +21,8 @@ class MainViewModel(
     private var taxType: TaxTypes? = null
     private var taxTypeString: String? = null
     private var taxRule: WorkTaxRules? = null
-    private var effectiveDate: TaxEffectiveDates? = null
+
+    //    private var effectiveDate: TaxEffectiveDates? = null
     private var effectiveDateString: String? = null
     private var taxLevel: Int? = null
     private var callingFragment: String? = null
@@ -191,10 +191,6 @@ class MainViewModel(
         taxLevel = newLevel
     }
 
-    fun setEffectiveDate(newDate: TaxEffectiveDates?) {
-        effectiveDate = newDate
-    }
-
     fun setEmployer(newEmployer: Employers?) {
         employer = newEmployer
     }
@@ -213,10 +209,6 @@ class MainViewModel(
 
     fun getTaxLevel(): Int? {
         return taxLevel
-    }
-
-    fun getEffectiveDate(): TaxEffectiveDates? {
-        return effectiveDate
     }
 
     fun getEmployer(): Employers? {

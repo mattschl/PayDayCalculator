@@ -42,9 +42,7 @@ class WorkExtraTypesFragment : Fragment(
     }
 
     private fun fillExtraTypeList() {
-        extraTypeAdapter = ExtraTypeAdapter(
-            mainActivity, mView
-        )
+        extraTypeAdapter = ExtraTypeAdapter()
         binding.rvTypes.apply {
             layoutManager = StaggeredGridLayoutManager(
                 2,

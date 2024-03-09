@@ -197,7 +197,6 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
             "This function is not available",
             Toast.LENGTH_LONG
         ).show()
-//        TODO("Not yet implemented")
     }
 
     private fun chooseFixedOrPercent() {

@@ -383,22 +383,6 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         }
     }
 
-//    private fun gotoCurrentCutoff() {
-//        CoroutineScope(Dispatchers.Main).launch {
-//            delay(WAIT_500)
-//            binding.apply {
-//                val dateNow = LocalDate.parse(df.getCurrentDateAsString())
-//                for (i in 0 until spCutOff.adapter.count - 1) {
-//                    val chkDate = LocalDate.parse(spCutOff.getItemAtPosition(i).toString())
-//                    if (chkDate <= dateNow) {
-//                        spCutOff.setSelection(i)
-//                        break
-//                    }
-//                }
-//            }
-//        }
-//    }
-
     private fun fillEmployers() {
         val employerAdapter = ArrayAdapter<String>(
             mView.context,

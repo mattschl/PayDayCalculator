@@ -15,17 +15,17 @@ class WorkExtraRepository(private val db: PayDatabase) {
     suspend fun deleteWorkExtraDefinition(id: Long, updateTime: String) =
         db.getWorkExtraDao().deleteWorkExtraDefinition(id, updateTime)
 
-    fun getWorkExtraDefinitions(employerId: Long) =
-        db.getWorkExtraDao().getWorkExtraDefinitions(employerId)
-
-    fun getWorkExtraDefinitions(employerId: Long, extraTypeId: Long) =
-        db.getWorkExtraDao().getWorkExtraDefinitions(employerId, extraTypeId)
+//    fun getWorkExtraDefinitions(employerId: Long) =
+//        db.getWorkExtraDao().getWorkExtraDefinitions(employerId)
+//
+//    fun getWorkExtraDefinitions(employerId: Long, extraTypeId: Long) =
+//        db.getWorkExtraDao().getWorkExtraDefinitions(employerId, extraTypeId)
 
     fun getActiveExtraDefinitionsFull(employerId: Long, extraTypeId: Long) =
         db.getWorkExtraDao().getActiveExtraDefinitionsFull(employerId, extraTypeId)
 
-    fun getExtraDefinitionsPerDay(employerId: Long) =
-        db.getWorkExtraDao().getExtraDefinitionsPerDay(employerId)
+//    fun getExtraDefinitionsPerDay(employerId: Long) =
+//        db.getWorkExtraDao().getExtraDefinitionsPerDay(employerId)
 
     fun getExtraDefTypes(employerId: Long) =
         db.getWorkExtraDao().getExtraDefTypes(employerId)
@@ -57,6 +57,6 @@ class WorkExtraRepository(private val db: PayDatabase) {
     suspend fun updateWorkDateExtra(extra: WorkDateExtras) =
         db.getWorkExtraDao().updateWorkDateExtra(extra)
 
-    fun getWorkDateExtras(workDateId: Long) =
-        db.getWorkExtraDao().getWorkDateExtras(workDateId)
+//    fun getWorkDateExtras(workDateId: Long) =
+//        db.getWorkExtraDao().getWorkDateExtras(workDateId)
 }

@@ -192,11 +192,6 @@ data class WorkPayPeriodTax(
     val wppUpdateTime: String,
 ) : Parcelable
 
-data class ExtraTotal(
-    var extraName: String,
-    var extraTotal: Double,
-)
-
 @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
 @Parcelize
 data class WorkDateExtraAndType(

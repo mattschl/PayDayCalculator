@@ -10,7 +10,7 @@ import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateExtraTimeSheetBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 
-class TimeSheetWorkDateExtraAdapter() :
+class TimeSheetWorkDateExtraAdapter :
     RecyclerView.Adapter<TimeSheetWorkDateExtraAdapter.DateExtrasHolder>() {
 
     private val cf = CommonFunctions()

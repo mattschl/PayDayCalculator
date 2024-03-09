@@ -17,11 +17,10 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.EmployerAdapter
-import ms.mattschlenkrich.paydaycalculator.common.FRAG_EMPLOYERS
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 
-private const val TAG = FRAG_EMPLOYERS
+//private const val TAG = FRAG_EMPLOYERS
 
 class EmployerFragment :
     Fragment(R.layout.fragment_employer),
@@ -66,7 +65,7 @@ class EmployerFragment :
     private fun fillEmployers() {
         employerAdapter = null
         employerAdapter = EmployerAdapter(
-            mainActivity, mView, TAG
+            mainActivity, mView
         )
         binding.rvEmployers.apply {
             layoutManager = StaggeredGridLayoutManager(

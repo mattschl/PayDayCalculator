@@ -29,17 +29,17 @@ class WorkExtraViewModel(
             workExtraRepository.deleteWorkExtraDefinition(id, updateTime)
         }
 
-    fun getWorkExtraDefinitions(employerId: Long) =
-        workExtraRepository.getWorkExtraDefinitions(employerId)
-
-    fun getWorkExtraDefinitions(employerId: Long, extraTypeId: Long) =
-        workExtraRepository.getWorkExtraDefinitions(employerId, extraTypeId)
+//    fun getWorkExtraDefinitions(employerId: Long) =
+//        workExtraRepository.getWorkExtraDefinitions(employerId)
+//
+//    fun getWorkExtraDefinitions(employerId: Long, extraTypeId: Long) =
+//        workExtraRepository.getWorkExtraDefinitions(employerId, extraTypeId)
 
     fun getActiveExtraDefinitionsFull(employerId: Long, extraTypeId: Long) =
         workExtraRepository.getActiveExtraDefinitionsFull(employerId, extraTypeId)
 
-    fun getExtraDefinitionsPerDay(employerId: Long) =
-        workExtraRepository.getExtraDefinitionsPerDay(employerId)
+//    fun getExtraDefinitionsPerDay(employerId: Long) =
+//        workExtraRepository.getExtraDefinitionsPerDay(employerId)
 
     fun getExtraDefTypes(employerId: Long) =
         workExtraRepository.getExtraDefTypes(employerId)
@@ -78,7 +78,7 @@ class WorkExtraViewModel(
         viewModelScope.launch {
             workExtraRepository.updateWorkDateExtra(extra)
         }
-
-    fun getWorkDateExtras(workDateId: Long) =
-        workExtraRepository.getWorkDateExtras(workDateId)
+//
+//    fun getWorkDateExtras(workDateId: Long) =
+//        workExtraRepository.getWorkDateExtras(workDateId)
 }

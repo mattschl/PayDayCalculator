@@ -85,7 +85,7 @@ class DateFunctions {
         return end.monthValue + end.year - start.monthValue - start.year + 1
     }
 
-    fun getFirstOfMonth(date: String): String {
+    private fun getFirstOfMonth(date: String): String {
         return date.dropLast(2) + "01"
     }
 

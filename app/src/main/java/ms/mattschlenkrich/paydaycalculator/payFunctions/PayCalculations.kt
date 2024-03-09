@@ -402,7 +402,7 @@ class PayCalculations(
 //            return getCreditTotalByDate() + getCreditTotalsByPay()
 //        }
 
-        fun getCreditTotalByDate(): Double {
+        private fun getCreditTotalByDate(): Double {
             var total = 0.0
             for (extra in extras.getCreditExtraAndTotalsByDate()) {
                 total += extra.amount
@@ -414,7 +414,7 @@ class PayCalculations(
             }
         }
 
-        fun getCreditTotalsByPay(): Double {
+        private fun getCreditTotalsByPay(): Double {
             var total = 0.0
             for (extra in extras.getCreditExtrasAndTotalsByPay()) {
 //                Log.d(TAG, "extra is ${extra.extraName} and amount is ${extra.amount}")
