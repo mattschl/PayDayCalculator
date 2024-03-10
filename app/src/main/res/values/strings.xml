@@ -161,4 +161,6 @@
     <string name="date_and_employer_info">Date and Employer Info</string>
     <string name="pay_extras">Pay Extras</string>
     <string name="rates">Rates</string>
+    <string name="add_new_credit">Add new Credit</string>
+    <string name="add_new_deductions">Add new Deductions</string>
 </resources>

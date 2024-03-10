@@ -491,19 +491,18 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                     tax.taxType, tax.amount
                 )
             )
+            debitTotal += tax.amount
         }
         CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_250)
-            val deductionListAdapter = PayDetailExtraAdapter(
-                mainActivity, debitList, mView, this@PayDetailsFragment
-            )
-            val taxListAdapter = PayDetailTaxAdapter(taxList)
-            for (tax in taxList) {
-                debitTotal += tax.amount
-            }
             binding.apply {
+                delay(WAIT_250)
+                val deductionListAdapter = PayDetailExtraAdapter(
+                    mainActivity, debitList, mView, this@PayDetailsFragment
+                )
                 rvDebits.layoutManager = LinearLayoutManager(mView.context)
                 rvDebits.adapter = deductionListAdapter
+                delay(WAIT_250)
+                val taxListAdapter = PayDetailTaxAdapter(taxList)
                 rvTax.layoutManager = LinearLayoutManager(mView.context)
                 rvTax.adapter = taxListAdapter
                 delay(WAIT_250)

@@ -175,413 +175,419 @@
 
         </androidx.cardview.widget.CardView>
 
-        <ScrollView
+        <androidx.cardview.widget.CardView
+            android:id="@+id/crdBreakdown"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/crdSummary">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/crdHourly"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/dimen_8dp"
-                    android:backgroundTint="@color/white"
-                    android:elevation="10dp"
-                    app:cardCornerRadius="10dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:layout_height="wrap_content">
 
-                    <LinearLayout
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/crdHourly"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:layout_margin="@dimen/dimen_8dp"
+                        android:backgroundTint="@color/white"
+                        android:elevation="10dp"
+                        app:cardCornerRadius="10dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:minHeight="@dimen/dimen_25dp"
-                            android:orientation="horizontal">
+                            android:orientation="vertical">
 
-                            <TextView
-                                android:layout_width="@dimen/text_box_narrow"
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="@string/description"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size"
-                                tools:ignore="TextSizeCheck" />
+                                android:minHeight="@dimen/dimen_25dp"
+                                android:orientation="horizontal">
 
-                            <TextView
-                                android:layout_width="@dimen/text_box_small"
+                                <TextView
+                                    android:layout_width="@dimen/text_box_narrow"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/description"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size"
+                                    tools:ignore="TextSizeCheck" />
+
+                                <TextView
+                                    android:layout_width="@dimen/text_box_small"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/qty"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size" />
+
+                                <TextView
+                                    android:layout_width="@dimen/text_box_small"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/rate"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size" />
+
+                                <TextView
+                                    android:layout_width="@dimen/text_box_medium"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/total"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/llRegPay"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="@string/qty"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size" />
+                                android:minHeight="@dimen/dimen_25dp"
+                                android:orientation="horizontal">
 
-                            <TextView
-                                android:layout_width="@dimen/text_box_small"
+                                <TextView
+                                    android:layout_width="@dimen/text_box_narrow"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/reg_hours"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size"
+                                    tools:ignore="TextSizeCheck" />
+
+                                <TextView
+                                    android:id="@+id/tvRegHours"
+                                    android:layout_width="@dimen/text_box_small"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/zero_double"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size" />
+
+                                <TextView
+                                    android:id="@+id/tvRegRate"
+                                    android:layout_width="@dimen/text_box_small"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/zero_double"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size" />
+
+                                <TextView
+                                    android:id="@+id/tvRegPay"
+                                    android:layout_width="@dimen/text_box_medium"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/zero_dollars"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/llOtPay"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="@string/rate"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size" />
+                                android:minHeight="@dimen/dimen_25dp"
+                                android:orientation="horizontal">
 
-                            <TextView
-                                android:layout_width="@dimen/text_box_medium"
+                                <TextView
+                                    android:layout_width="@dimen/text_box_narrow"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/overtime"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size" />
+
+                                <TextView
+                                    android:id="@+id/tvOtHours"
+                                    android:layout_width="@dimen/text_box_small"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/zero_double"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size" />
+
+                                <TextView
+                                    android:id="@+id/tvOtRate"
+                                    android:layout_width="@dimen/text_box_small"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/zero_double"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size" />
+
+                                <TextView
+                                    android:id="@+id/tvOTPay"
+                                    android:layout_width="@dimen/text_box_medium"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/zero_dollars"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/llDblOtPay"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="@string/total"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size" />
+                                android:minHeight="@dimen/dimen_25dp"
+                                android:orientation="horizontal">
 
+                                <TextView
+                                    android:layout_width="@dimen/text_box_narrow"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/double_overtime"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size"
+                                    tools:ignore="TextSizeCheck" />
+
+                                <TextView
+                                    android:id="@+id/tvDblOtHours"
+                                    android:layout_width="@dimen/text_box_small"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/zero_double"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size" />
+
+                                <TextView
+                                    android:id="@+id/tvDblOtRate"
+                                    android:layout_width="@dimen/text_box_small"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/zero_double"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size" />
+
+                                <TextView
+                                    android:id="@+id/tvDblOtPay"
+                                    android:layout_width="@dimen/text_box_medium"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/zero_dollars"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/llStatPay"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:minHeight="@dimen/dimen_25dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="@dimen/text_box_narrow"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/stat_hours"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size"
+                                    tools:ignore="TextSizeCheck" />
+
+                                <TextView
+                                    android:id="@+id/tvStatHours"
+                                    android:layout_width="@dimen/text_box_small"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/zero_double"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size" />
+
+                                <TextView
+                                    android:id="@+id/tvStatRate"
+                                    android:layout_width="@dimen/text_box_small"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/zero_double"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size" />
+
+                                <TextView
+                                    android:id="@+id/tvStatPay"
+                                    android:layout_width="@dimen/text_box_medium"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/zero_dollars"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/label_text_size" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:minHeight="@dimen/dimen_25dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="@dimen/text_box_extra_wide"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/total_hourly"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_size_large"
+                                    android:textStyle="bold"
+                                    tools:ignore="TextContrastCheck,TextSizeCheck" />
+
+                                <TextView
+                                    android:id="@+id/tvHourlyTotal"
+                                    android:layout_width="@dimen/text_box_medium"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/zero_dollars"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_size_large"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dim_5dp"
+                                android:backgroundTint="@color/black" />
                         </LinearLayout>
+                    </androidx.cardview.widget.CardView>
 
-                        <LinearLayout
-                            android:id="@+id/llRegPay"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:minHeight="@dimen/dimen_25dp"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="@dimen/text_box_narrow"
-                                android:layout_height="wrap_content"
-                                android:text="@string/reg_hours"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size"
-                                tools:ignore="TextSizeCheck" />
-
-                            <TextView
-                                android:id="@+id/tvRegHours"
-                                android:layout_width="@dimen/text_box_small"
-                                android:layout_height="wrap_content"
-                                android:text="@string/zero_double"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size" />
-
-                            <TextView
-                                android:id="@+id/tvRegRate"
-                                android:layout_width="@dimen/text_box_small"
-                                android:layout_height="wrap_content"
-                                android:text="@string/zero_double"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size" />
-
-                            <TextView
-                                android:id="@+id/tvRegPay"
-                                android:layout_width="@dimen/text_box_medium"
-                                android:layout_height="wrap_content"
-                                android:text="@string/zero_dollars"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/llOtPay"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:minHeight="@dimen/dimen_25dp"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="@dimen/text_box_narrow"
-                                android:layout_height="wrap_content"
-                                android:text="@string/overtime"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size" />
-
-                            <TextView
-                                android:id="@+id/tvOtHours"
-                                android:layout_width="@dimen/text_box_small"
-                                android:layout_height="wrap_content"
-                                android:text="@string/zero_double"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size" />
-
-                            <TextView
-                                android:id="@+id/tvOtRate"
-                                android:layout_width="@dimen/text_box_small"
-                                android:layout_height="wrap_content"
-                                android:text="@string/zero_double"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size" />
-
-                            <TextView
-                                android:id="@+id/tvOTPay"
-                                android:layout_width="@dimen/text_box_medium"
-                                android:layout_height="wrap_content"
-                                android:text="@string/zero_dollars"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/llDblOtPay"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:minHeight="@dimen/dimen_25dp"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="@dimen/text_box_narrow"
-                                android:layout_height="wrap_content"
-                                android:text="@string/double_overtime"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size"
-                                tools:ignore="TextSizeCheck" />
-
-                            <TextView
-                                android:id="@+id/tvDblOtHours"
-                                android:layout_width="@dimen/text_box_small"
-                                android:layout_height="wrap_content"
-                                android:text="@string/zero_double"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size" />
-
-                            <TextView
-                                android:id="@+id/tvDblOtRate"
-                                android:layout_width="@dimen/text_box_small"
-                                android:layout_height="wrap_content"
-                                android:text="@string/zero_double"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size" />
-
-                            <TextView
-                                android:id="@+id/tvDblOtPay"
-                                android:layout_width="@dimen/text_box_medium"
-                                android:layout_height="wrap_content"
-                                android:text="@string/zero_dollars"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/llStatPay"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:minHeight="@dimen/dimen_25dp"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="@dimen/text_box_narrow"
-                                android:layout_height="wrap_content"
-                                android:text="@string/stat_hours"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size"
-                                tools:ignore="TextSizeCheck" />
-
-                            <TextView
-                                android:id="@+id/tvStatHours"
-                                android:layout_width="@dimen/text_box_small"
-                                android:layout_height="wrap_content"
-                                android:text="@string/zero_double"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size" />
-
-                            <TextView
-                                android:id="@+id/tvStatRate"
-                                android:layout_width="@dimen/text_box_small"
-                                android:layout_height="wrap_content"
-                                android:text="@string/zero_double"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size" />
-
-                            <TextView
-                                android:id="@+id/tvStatPay"
-                                android:layout_width="@dimen/text_box_medium"
-                                android:layout_height="wrap_content"
-                                android:text="@string/zero_dollars"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/label_text_size" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:minHeight="@dimen/dimen_25dp"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="@dimen/text_box_extra_wide"
-                                android:layout_height="wrap_content"
-                                android:text="@string/total_hourly"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/text_size_large"
-                                android:textStyle="bold"
-                                tools:ignore="TextContrastCheck,TextSizeCheck" />
-
-                            <TextView
-                                android:id="@+id/tvHourlyTotal"
-                                android:layout_width="@dimen/text_box_medium"
-                                android:layout_height="wrap_content"
-                                android:text="@string/zero_dollars"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/text_size_large"
-                                android:textStyle="bold" />
-
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="@dimen/dim_5dp"
-                            android:backgroundTint="@color/black" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/crdCredits"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/dimen_8dp"
-                    android:backgroundTint="@color/white"
-                    android:elevation="10dp"
-                    app:cardCornerRadius="10dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/crdHourly">
-
-                    <LinearLayout
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/crdExtras"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                                android:id="@+id/fabAddExtra"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:contentDescription="@string/add_new_extra"
-                                android:foregroundTint="@color/black"
-                                android:src="@drawable/ic_add"
-                                app:layout_constraintEnd_toStartOf="@id/lblCredits"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                tools:ignore="ImageContrastCheck,DuplicateSpeakableTextCheck" />
-
-                            <TextView
-                                android:id="@+id/lblCredits"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/dimen_10dp"
-                                android:text="@string/credits"
-                                android:textAlignment="center"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/text_size_large"
-                                android:textStyle="bold"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toEndOf="@id/fabAddExtra"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rvCredits"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                        android:layout_margin="@dimen/dimen_8dp"
+                        android:backgroundTint="@color/white"
+                        android:elevation="10dp"
+                        app:cardCornerRadius="10dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/crdHourly">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:minHeight="@dimen/dimen_25dp"
-                            android:orientation="horizontal">
+                            android:orientation="vertical">
 
-                            <TextView
-                                android:layout_width="@dimen/text_box_extra_wide"
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                                    android:id="@+id/fabAddExtra"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:contentDescription="@string/add_new_credit"
+                                    android:foregroundTint="@color/black"
+                                    android:src="@drawable/ic_add"
+                                    app:layout_constraintEnd_toStartOf="@id/lblCredits"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    tools:ignore="ImageContrastCheck,DuplicateSpeakableTextCheck" />
+
+                                <TextView
+                                    android:id="@+id/lblCredits"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="@dimen/dimen_10dp"
+                                    android:text="@string/credits"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_size_large"
+                                    android:textStyle="bold"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toEndOf="@id/fabAddExtra"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvCredits"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="@string/total_credits"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/text_size_large"
-                                android:textStyle="bold" />
+                                android:minHeight="@dimen/dimen_25dp"
+                                android:orientation="horizontal">
 
-                            <TextView
-                                android:id="@+id/tvCreditTotal"
-                                android:layout_width="@dimen/text_box_medium"
+                                <TextView
+                                    android:layout_width="@dimen/text_box_extra_wide"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/total_credits"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_size_large"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvCreditTotal"
+                                    android:layout_width="@dimen/text_box_medium"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/zero_dollars"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_size_large"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                                    android:id="@+id/fabAddDeduction"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:contentDescription="@string/add_new_deductions"
+                                    android:foregroundTint="@color/black"
+                                    android:src="@drawable/ic_add"
+                                    app:layout_constraintEnd_toStartOf="@id/lblDeductions"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    tools:ignore="ImageContrastCheck" />
+
+                                <TextView
+                                    android:id="@+id/lblDeductions"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="@dimen/dimen_10dp"
+                                    android:text="@string/deductions"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_size_large"
+                                    android:textStyle="bold"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toEndOf="@id/fabAddDeduction"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvDebits"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvTax"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="@string/zero_dollars"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/text_size_large"
-                                android:textStyle="bold" />
+                                android:minHeight="@dimen/dimen_25dp"
+                                android:orientation="horizontal">
 
+                                <TextView
+                                    android:layout_width="@dimen/text_box_extra_wide"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/total_deductions"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_size_large"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvDebitTotal"
+                                    android:layout_width="@dimen/text_box_medium"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/zero_dollars"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_size_large"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
                         </LinearLayout>
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                                android:id="@+id/fabAddDeduction"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:contentDescription="@string/add_new_extra"
-                                android:foregroundTint="@color/black"
-                                android:src="@drawable/ic_add"
-                                app:layout_constraintEnd_toStartOf="@id/lblDeductions"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                tools:ignore="ImageContrastCheck" />
-
-                            <TextView
-                                android:id="@+id/lblDeductions"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/dimen_10dp"
-                                android:text="@string/deductions"
-                                android:textAlignment="center"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/text_size_large"
-                                android:textStyle="bold"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toEndOf="@id/fabAddDeduction"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rvDebits"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rvTax"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:minHeight="@dimen/dimen_25dp"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="@dimen/text_box_extra_wide"
-                                android:layout_height="wrap_content"
-                                android:text="@string/total_deductions"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/text_size_large"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvDebitTotal"
-                                android:layout_width="@dimen/text_box_medium"
-                                android:layout_height="wrap_content"
-                                android:text="@string/zero_dollars"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/text_size_large"
-                                android:textStyle="bold" />
-
-                        </LinearLayout>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </ScrollView>
+                    </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </ScrollView>
+        </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
