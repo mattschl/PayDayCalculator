@@ -25,13 +25,17 @@ interface PayDayDao {
     @Query(
         "SELECT * FROM $TABLE_PAY_PERIODS " +
                 "WHERE ppEmployerId = :employerId " +
+                "AND ppIsDeleted = 0 " +
                 "ORDER BY ppCutoffDate DESC " +
-                "LIMIT 4"
+                "LIMIT 8"
     )
     fun getCutOffDates(employerId: Long): LiveData<List<PayPeriods>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPayPeriod(payPeriod: PayPeriods)
+
+    @Update
+    suspend fun updatePayPeriod(payPeriod: PayPeriods)
 
     @Query(
         "SELECT * FROM payPeriods " +
@@ -45,6 +49,7 @@ interface PayDayDao {
         "SELECT * FROM $TABLE_WORK_DATES " +
                 "WHERE wdEmployerId = :employerId " +
                 "AND wdCutoffDate = :cutOff " +
+                "AND wdIsDeleted = 0 " +
                 "ORDER BY wdDate"
     )
     fun getWorkDateList(employerId: Long, cutOff: String): LiveData<List<WorkDates>>

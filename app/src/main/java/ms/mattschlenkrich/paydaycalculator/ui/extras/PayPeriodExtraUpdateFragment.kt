@@ -45,7 +45,7 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "Add an extra to this pay period"
+        mainActivity.title = "Update extra for this pay period"
         return mView
     }
 

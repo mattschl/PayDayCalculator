@@ -72,6 +72,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         fillFromHistory()
     }
 
+
     private fun fillFromHistory() {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)

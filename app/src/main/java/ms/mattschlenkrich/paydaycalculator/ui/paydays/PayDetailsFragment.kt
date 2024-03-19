@@ -3,12 +3,17 @@ package ms.mattschlenkrich.paydaycalculator.ui.paydays
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
@@ -70,8 +75,59 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         setActions()
         selectEmployer()
         selectCutOffDate()
+        fillMenu()
         fillValues()
     }
+
+    private fun fillMenu() {
+        mainActivity.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_delete, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.menu_delete -> {
+                        chooseDeletePayDay()
+                        true
+                    }
+
+                    else -> {
+                        false
+                    }
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
+    }
+
+    private fun chooseDeletePayDay() {
+        android.app.AlertDialog.Builder(mView.context)
+            .setTitle("Confirm Delete Pay Period")
+            .setMessage(
+                "**Warning!! \n" +
+                        "This action cannot be undone! " +
+                        "All the work dates will have to b re-entered."
+            )
+            .setPositiveButton("DELETE") { _, _ ->
+                deletePayDay()
+            }
+            .setNegativeButton("CANCEL", null)
+            .create().show()
+    }
+
+    private fun deletePayDay() {
+        mainActivity.payDayViewModel.updatePayPeriod(
+            PayPeriods(
+                curPayPeriod!!.payPeriodId,
+                curPayPeriod!!.ppCutoffDate,
+                curPayPeriod!!.ppEmployerId,
+                true,
+                df.getCurrentTimeAsString()
+            )
+        )
+        fillCutOffDates(curEmployer)
+    }
+
 
     private fun setActions() {
         binding.apply {
