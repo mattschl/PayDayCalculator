@@ -15,7 +15,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.TaxRuleAdapter
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
@@ -25,6 +24,7 @@ import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxRulesBinding
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
+import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 const val TAG = FRAG_TAX_RULES
 

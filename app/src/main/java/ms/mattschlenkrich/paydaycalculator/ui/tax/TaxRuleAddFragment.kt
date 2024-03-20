@@ -13,7 +13,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
@@ -21,6 +20,7 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxRuleAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
+import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
 

@@ -20,7 +20,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.EmployerExtraDefinitionsShortAdapter
 import ms.mattschlenkrich.paydaycalculator.adapter.EmployerTaxTypeAdapter
@@ -32,6 +31,7 @@ import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_SEMI_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
+import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModel
 
 private const val TAG = FRAG_EMPLOYER_UPDATE

@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator
+package ms.mattschlenkrich.paydaycalculator.ui
 
 import android.os.Bundle
 import android.view.Menu
@@ -10,6 +10,8 @@ import androidx.core.view.MenuProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import ms.mattschlenkrich.paydaycalculator.NavGraphDirections
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
 import ms.mattschlenkrich.paydaycalculator.databinding.ActivityMainBinding
 import ms.mattschlenkrich.paydaycalculator.repository.EmployerRepository

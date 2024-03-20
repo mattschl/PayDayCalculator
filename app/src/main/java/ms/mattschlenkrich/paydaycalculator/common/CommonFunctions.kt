@@ -54,10 +54,9 @@ class CommonFunctions {
 
     fun getDoubleFromDollarOrPercent(numString: String): Double {
         return if (numString.contains("%")) {
-            numString.replace("%", "").toDouble()
+            getDoubleFromPercent(numString)
         } else if (numString.contains("$")) {
-            numString.replace("$", "").replace(",", "")
-                .toDouble()
+            getDoubleFromDollars(numString)
         } else {
             numString.toDouble()
         }

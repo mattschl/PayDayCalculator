@@ -13,7 +13,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import ms.mattschlenkrich.paydaycalculator.MainActivity
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
@@ -22,6 +21,7 @@ import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayPeriodExtraUpd
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
+import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 
 class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra_update) {
