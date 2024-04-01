@@ -201,6 +201,18 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     fun saveWorkDate(goBack: Boolean) {
         val workDate = getCurWorkDate()
         mainActivity.payDayViewModel.insertWorkDate(workDate)
+        saveExtras(workDate)
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_500)
+            if (goBack) {
+                gotoTimeSheet()
+            } else {
+                gotoWorkDateUpdate(workDate)
+            }
+        }
+    }
+
+    private fun saveExtras(workDate: WorkDates) {
         for (extraType in workExtrasDefaultList) {
             mainActivity.workExtraViewModel.getExtraTypeAndDefByTypeId(
                 extraType.workExtraTypeId, workDate.wdCutoffDate
@@ -220,14 +232,6 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                         df.getCurrentTimeAsString()
                     )
                 )
-            }
-        }
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_500)
-            if (goBack) {
-                gotoTimeSheet()
-            } else {
-                gotoWorkDateUpdate(workDate)
             }
         }
     }
