@@ -302,7 +302,11 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                 df.getCurrentTimeAsString()
             )
         )
+//        CoroutineScope(Dispatchers.Main).launch {
+//            delay(WAIT_250)
         fillCutOffDates()
+//        }
+
     }
 
     private fun selectEmployer() {
@@ -369,6 +373,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                         cutOffAdapter.add(it.ppCutoffDate)
                         cutOffs.add(it.ppCutoffDate)
                     }
+//                    Log.d(TAG, "cutOffAdapter has ${dates.size}")
                     if (dates.isEmpty() ||
                         dates[0].ppCutoffDate < df.getCurrentDateAsString()
                     ) {
