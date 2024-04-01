@@ -86,30 +86,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                         ) {
                             gotoExtraTypeAdd()
                         } else {
-                            for (extra in extraList) {
-                                if (extra.wetName == spExtraTypes.selectedItem.toString()) {
-                                    var display = if (extra.wetIsCredit) {
-                                        "Credit"
-                                    } else {
-                                        "Debit"
-                                    }
-                                    display += " - Calculated " +
-                                            "${
-                                                resources.getStringArray(
-                                                    R.array.pay_per_frequencies
-                                                )[extra.wetAppliesTo]
-                                            }. " +
-                                            "Attaches to ${
-                                                resources.getStringArray(
-                                                    R.array.pay_per_frequencies
-                                                )[extra.wetAttachTo]
-                                            }. - "
-                                    display += if (extra.wetIsDefault) "Is automatic"
-                                    else "Added Manually"
-                                    tvDescription.text = display
-                                }
-
-                            }
+                            fillFromExtraList()
                         }
                     }
 
@@ -117,6 +94,34 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                         //not needed
                     }
                 }
+        }
+    }
+
+    private fun fillFromExtraList() {
+        binding.apply {
+            for (extra in extraList) {
+                if (extra.wetName == spExtraTypes.selectedItem.toString()) {
+                    var display = if (extra.wetIsCredit) {
+                        "Credit"
+                    } else {
+                        "Debit"
+                    }
+                    display += " - Calculated " +
+                            "${
+                                resources.getStringArray(
+                                    R.array.pay_per_frequencies
+                                )[extra.wetAppliesTo]
+                            }. " +
+                            "Attaches to ${
+                                resources.getStringArray(
+                                    R.array.pay_per_frequencies
+                                )[extra.wetAttachTo]
+                            }. - "
+                    display += if (extra.wetIsDefault) "Is automatic"
+                    else "Added Manually"
+                    tvDescription.text = display
+                }
+            }
         }
     }
 
