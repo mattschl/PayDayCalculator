@@ -6,7 +6,7 @@ import java.util.Random
 import kotlin.math.roundToInt
 
 @Suppress("unused")
-class MoneyFunctions {
+class NumberFunctions {
     private val currencyFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
     private val dollarFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
     private val numberDisplay: NumberFormat = NumberFormat.getNumberInstance(Locale.CANADA)

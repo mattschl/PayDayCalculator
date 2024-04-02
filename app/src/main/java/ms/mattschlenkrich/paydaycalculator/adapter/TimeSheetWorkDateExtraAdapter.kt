@@ -6,14 +6,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ms.mattschlenkrich.paydaycalculator.common.MoneyFunctions
+import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateExtraTimeSheetBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 
 class TimeSheetWorkDateExtraAdapter :
     RecyclerView.Adapter<TimeSheetWorkDateExtraAdapter.DateExtrasHolder>() {
 
-    private val cf = MoneyFunctions()
+    private val cf = NumberFunctions()
 
     class DateExtrasHolder(
         val itemBinding: ListWorkDateExtraTimeSheetBinding

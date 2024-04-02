@@ -25,7 +25,7 @@ import ms.mattschlenkrich.paydaycalculator.adapter.PayDetailExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.adapter.PayDetailTaxAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_DETAILS
-import ms.mattschlenkrich.paydaycalculator.common.MoneyFunctions
+import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
@@ -53,7 +53,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
     private var curPayPeriod: PayPeriods? = null
     private val cutOffs = ArrayList<String>()
     private var curCutOff = ""
-    private val cf = MoneyFunctions()
+    private val cf = NumberFunctions()
     private val df = DateFunctions()
     private var valuesFilled = false
 

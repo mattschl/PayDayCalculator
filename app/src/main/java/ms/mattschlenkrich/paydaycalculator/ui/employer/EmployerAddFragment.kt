@@ -21,7 +21,7 @@ import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_SEMI_MONTHLY
-import ms.mattschlenkrich.paydaycalculator.common.MoneyFunctions
+import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.Employers
@@ -36,7 +36,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
-    private val cf = MoneyFunctions()
+    private val cf = NumberFunctions()
     private val employerList = ArrayList<Employers>()
     private var startDate = ""
 

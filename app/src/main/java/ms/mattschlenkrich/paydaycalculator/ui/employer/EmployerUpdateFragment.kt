@@ -45,7 +45,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     private lateinit var employerViewModel: EmployerViewModel
     private val df = DateFunctions()
 
-    // private val cf = MoneyFunctions()
+    // private val cf = NumberFunctions()
     private val employerList = ArrayList<Employers>()
     private var curEmployer: Employers? = null
     private var startDate = ""

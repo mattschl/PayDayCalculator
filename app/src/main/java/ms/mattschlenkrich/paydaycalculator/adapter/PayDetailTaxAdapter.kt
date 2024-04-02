@@ -3,7 +3,7 @@ package ms.mattschlenkrich.paydaycalculator.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import ms.mattschlenkrich.paydaycalculator.common.MoneyFunctions
+import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListPayDetailTaxItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.ExtraAndTotal
 
@@ -11,7 +11,7 @@ class PayDetailTaxAdapter(
     private val creditList: ArrayList<ExtraAndTotal>
 ) : RecyclerView.Adapter<PayDetailTaxAdapter.CreditViewHolder>() {
 
-    private val cf = MoneyFunctions()
+    private val cf = NumberFunctions()
 
     class CreditViewHolder(val itemBinding: ListPayDetailTaxItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)

@@ -16,7 +16,7 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
-import ms.mattschlenkrich.paydaycalculator.common.MoneyFunctions
+import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerExtraDefinitionUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
 import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
@@ -31,7 +31,7 @@ class EmployerExtraDefinitionUpdateFragment :
     private lateinit var mainActivity: MainActivity
     private lateinit var curExtraDefinitionFull: ExtraDefinitionFull
     private val df = DateFunctions()
-    private val cf = MoneyFunctions()
+    private val cf = NumberFunctions()
     private val definitionList = ArrayList<String>()
 
     override fun onCreateView(

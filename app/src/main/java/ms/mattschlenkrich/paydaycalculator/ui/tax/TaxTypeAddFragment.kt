@@ -24,7 +24,7 @@ import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_EMPLOYER_UPDATE
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_TAX_RULES
-import ms.mattschlenkrich.paydaycalculator.common.MoneyFunctions
+import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
@@ -39,7 +39,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     private lateinit var mainActivity: MainActivity
 
     private val df = DateFunctions()
-    private val cf = MoneyFunctions()
+    private val cf = NumberFunctions()
     private val taxTypeList = ArrayList<TaxTypes>()
 
     override fun onCreateView(

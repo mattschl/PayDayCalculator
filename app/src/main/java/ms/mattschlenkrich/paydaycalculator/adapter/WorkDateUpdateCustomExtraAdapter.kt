@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
-import ms.mattschlenkrich.paydaycalculator.common.MoneyFunctions
+import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateExtraItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
@@ -24,7 +24,7 @@ class WorkDateUpdateCustomExtraAdapter(
 ) : RecyclerView.Adapter<WorkDateUpdateCustomExtraAdapter.ViewHolder>() {
 
     private val df = DateFunctions()
-    private val cf = MoneyFunctions()
+    private val cf = NumberFunctions()
 
     class ViewHolder(
         val itemBinding: ListWorkDateExtraItemBinding
