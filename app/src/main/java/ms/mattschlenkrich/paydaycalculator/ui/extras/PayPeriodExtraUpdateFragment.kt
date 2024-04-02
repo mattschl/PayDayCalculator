@@ -15,8 +15,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
-import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.MoneyFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayPeriodExtraUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.Employers
 import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
@@ -35,7 +35,7 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
     private lateinit var oldPayPeriodExtra: WorkPayPeriodExtras
     private var extraList = ArrayList<WorkPayPeriodExtras>()
     private val df = DateFunctions()
-    private val cf = CommonFunctions()
+    private val cf = MoneyFunctions()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

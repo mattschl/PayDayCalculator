@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
+import ms.mattschlenkrich.paydaycalculator.common.MoneyFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWagesItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.EmployerPayRates
 import ms.mattschlenkrich.paydaycalculator.model.Employers
@@ -25,7 +25,7 @@ class EmployerWageAdapter(
     private val parentTag: String,
 ) : RecyclerView.Adapter<EmployerWageAdapter.WageViewHolder>() {
 
-    private val cf = CommonFunctions()
+    private val cf = MoneyFunctions()
     private inline var TextView.strike: Boolean
         set(visible) {
             paintFlags = if (visible) paintFlags or Paint.STRIKE_THRU_TEXT_FLAG

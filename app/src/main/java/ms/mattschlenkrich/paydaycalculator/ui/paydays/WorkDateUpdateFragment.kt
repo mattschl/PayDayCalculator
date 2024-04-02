@@ -36,7 +36,7 @@ class WorkDateUpdateFragment : Fragment(
     private val workDateExtras = ArrayList<WorkDateExtras>()
     private val customWorkDateExtras = ArrayList<WorkDateExtras>()
     private val df = DateFunctions()
-//    private val cf = CommonFunctions()
+//    private val cf = MoneyFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

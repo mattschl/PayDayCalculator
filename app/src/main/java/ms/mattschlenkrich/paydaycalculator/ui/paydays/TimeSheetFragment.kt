@@ -18,9 +18,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateAdapter
-import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_TIME_SHEET
+import ms.mattschlenkrich.paydaycalculator.common.MoneyFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
@@ -46,7 +46,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     private var curPayPeriod: PayPeriods? = null
     private var curCutOff = ""
     private val projections = PayDayProjections()
-    private val cf = CommonFunctions()
+    private val cf = MoneyFunctions()
     private val df = DateFunctions()
     private var workDateAdapter: WorkDateAdapter? = null
     private var valuesFilled = false

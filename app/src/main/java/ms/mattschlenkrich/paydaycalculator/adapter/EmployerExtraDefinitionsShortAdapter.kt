@@ -22,7 +22,7 @@ class EmployerExtraDefinitionsShortAdapter(
 ) : RecyclerView.Adapter<EmployerExtraDefinitionsShortAdapter.DefinitionViewHolder>() {
 
 
-    //    private val cf = CommonFunctions()
+    //    private val cf = MoneyFunctions()
     private val df = DateFunctions()
 
     class DefinitionViewHolder(val itemBinding: ListEmployerExtraItemBinding) :

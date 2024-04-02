@@ -17,9 +17,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.TaxRuleAdapter
-import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_TAX_RULES
+import ms.mattschlenkrich.paydaycalculator.common.MoneyFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxRulesBinding
 import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
@@ -36,7 +36,7 @@ class TaxRulesFragment :
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
-    private val cf = CommonFunctions()
+    private val cf = MoneyFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

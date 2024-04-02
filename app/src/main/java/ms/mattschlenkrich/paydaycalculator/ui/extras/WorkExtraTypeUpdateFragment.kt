@@ -31,7 +31,7 @@ class WorkExtraTypeUpdateFragment : Fragment(
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
 
-    //    private val cf = CommonFunctions()
+    //    private val cf = MoneyFunctions()
     private val extraTypeList = ArrayList<WorkExtraTypes>()
     private lateinit var curEmployer: Employers
     private lateinit var curExtraType: WorkExtraTypes

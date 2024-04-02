@@ -28,7 +28,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
 
-    //    private val cf = CommonFunctions()
+    //    private val cf = MoneyFunctions()
     private val taxTypeList = ArrayList<TaxTypes>()
     private lateinit var curTaxType: TaxTypes
 

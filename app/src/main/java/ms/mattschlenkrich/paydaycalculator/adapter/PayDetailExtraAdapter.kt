@@ -11,9 +11,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_DETAILS
+import ms.mattschlenkrich.paydaycalculator.common.MoneyFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.ListPayDetailExtraItemBinding
@@ -31,7 +31,7 @@ class PayDetailExtraAdapter(
     private val parentFragment: PayDetailsFragment
 ) : RecyclerView.Adapter<PayDetailExtraAdapter.CreditViewHolder>() {
 
-    private val cf = CommonFunctions()
+    private val cf = MoneyFunctions()
     private val df = DateFunctions()
 
     class CreditViewHolder(val itemBinding: ListPayDetailExtraItemBinding) :
