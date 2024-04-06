@@ -1,49 +1,16 @@
-package ms.mattschlenkrich.paydaycalculator.model
+package ms.mattschlenkrich.paydaycalculator.model.tax
 
 import android.os.Parcelable
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
-import androidx.room.PrimaryKey
-import androidx.room.Relation
-import androidx.room.RoomWarnings
 import kotlinx.parcelize.Parcelize
-import ms.mattschlenkrich.paydaycalculator.common.TABLE_TAX_EFFECTIVE_DATES
-import ms.mattschlenkrich.paydaycalculator.common.TABLE_TAX_TYPES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.TAX_EFFECTIVE_DATE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_EFFECTIVE_DATE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_LEVEL
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
-
-@Entity(
-    tableName = TABLE_TAX_TYPES,
-    indices = [Index(value = ["taxType"], unique = true)]
-)
-@Parcelize
-data class TaxTypes(
-    @PrimaryKey
-    val taxTypeId: Long,
-    val taxType: String,
-    val ttBasedOn: Int,
-    val ttIsDeleted: Boolean,
-    val ttUpdateTime: String,
-) : Parcelable
-
-@Entity(
-    tableName = TABLE_TAX_EFFECTIVE_DATES,
-    indices = [Index(value = ["tdEffectiveDateId"], unique = true)]
-)
-@Parcelize
-data class TaxEffectiveDates(
-    @PrimaryKey
-    val tdEffectiveDate: String,
-    val tdEffectiveDateId: Long,
-    val tdIsDeleted: Boolean,
-    val tdUpdateTime: String,
-) : Parcelable
 
 
 @Entity(
@@ -78,22 +45,3 @@ data class WorkTaxRules(
     val wtIsDeleted: Boolean,
     val wtUpdateTime: String,
 ) : Parcelable
-
-@SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-@Parcelize
-data class TaxComplete(
-    @Embedded
-    val taxType: TaxTypes,
-    @Relation(
-        entity = WorkTaxRules::class,
-        parentColumn = "taxType",
-        entityColumn = "wtType"
-    )
-    val taxRule: WorkTaxRules,
-) : Parcelable
-
-
-data class TaxAndAmount(
-    var taxType: String,
-    var amount: Double,
-)

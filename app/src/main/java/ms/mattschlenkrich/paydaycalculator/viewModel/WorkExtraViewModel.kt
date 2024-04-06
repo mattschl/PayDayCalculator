@@ -4,9 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
+import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtrasDefinitions
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.repository.WorkExtraRepository
 
 class WorkExtraViewModel(

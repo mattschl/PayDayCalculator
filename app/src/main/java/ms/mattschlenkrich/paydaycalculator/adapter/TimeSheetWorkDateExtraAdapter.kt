@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateExtraTimeSheetBinding
-import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDateExtras
 
 class TimeSheetWorkDateExtraAdapter :
     RecyclerView.Adapter<TimeSheetWorkDateExtraAdapter.DateExtrasHolder>() {

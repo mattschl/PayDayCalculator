@@ -12,13 +12,13 @@ import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATE_EXTRAS
-import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtraAndTypeFull
-import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
-import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtrasAndDates
-import ms.mattschlenkrich.paydaycalculator.model.WorkDates
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
-import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
+import ms.mattschlenkrich.paydaycalculator.model.extras.WorkDateExtrasAndDates
+import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDateExtraAndTypeFull
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDateExtras
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodExtras
 
 @Dao
 interface PayDayDao {

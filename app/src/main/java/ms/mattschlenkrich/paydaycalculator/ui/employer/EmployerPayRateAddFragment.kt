@@ -20,7 +20,7 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_RATES
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerPayRateAddBinding
-import ms.mattschlenkrich.paydaycalculator.model.EmployerPayRates
+import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerPayRates
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import java.time.LocalDate
 

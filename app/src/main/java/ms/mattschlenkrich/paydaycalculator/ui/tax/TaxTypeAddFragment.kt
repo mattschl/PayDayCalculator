@@ -27,8 +27,8 @@ import ms.mattschlenkrich.paydaycalculator.common.FRAG_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeAddBinding
-import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
-import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerTaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
@@ -124,7 +124,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
                     delay(WAIT_500)
                     attachToEmployers(taxType)
                     delay(WAIT_500)
-                    gotoNextStep(taxType)
+                    chooseNextStep(taxType)
                 }
             } else {
                 Toast.makeText(
@@ -137,7 +137,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         }
     }
 
-    private fun gotoNextStep(taxType: TaxTypes) {
+    private fun chooseNextStep(taxType: TaxTypes) {
         AlertDialog.Builder(mView.context)
             .setTitle("Choose next steps for ${taxType.taxType}")
             .setMessage(

@@ -1,10 +1,10 @@
 package ms.mattschlenkrich.paydaycalculator.repository
 
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
-import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
-import ms.mattschlenkrich.paydaycalculator.model.WorkDates
-import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDateExtras
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodExtras
 
 class PayDayRepository(private val db: PayDatabase) {
 

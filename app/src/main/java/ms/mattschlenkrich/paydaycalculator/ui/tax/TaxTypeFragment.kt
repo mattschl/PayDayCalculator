@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.TaxTypeAdapter
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeBinding
-import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 //const val TAG = FRAG_TAX_RULES

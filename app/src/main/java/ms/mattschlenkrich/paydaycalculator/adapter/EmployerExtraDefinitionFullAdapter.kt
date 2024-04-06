@@ -13,8 +13,8 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerExtraDefinitonBinding
-import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionFull
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
+import ms.mattschlenkrich.paydaycalculator.model.extras.ExtraDefinitionFull
+import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtrasDefinitions
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragment
 import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragmentDirections

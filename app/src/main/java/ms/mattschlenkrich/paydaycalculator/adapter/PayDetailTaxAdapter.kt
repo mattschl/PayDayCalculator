@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListPayDetailTaxItemBinding
-import ms.mattschlenkrich.paydaycalculator.model.ExtraAndTotal
+import ms.mattschlenkrich.paydaycalculator.model.extras.ExtraAndTotal
 
 class PayDetailTaxAdapter(
     private val creditList: ArrayList<ExtraAndTotal>

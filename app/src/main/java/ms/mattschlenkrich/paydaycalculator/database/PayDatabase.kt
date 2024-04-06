@@ -6,21 +6,21 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_VERSION
-import ms.mattschlenkrich.paydaycalculator.model.EmployerPayRates
-import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
-import ms.mattschlenkrich.paydaycalculator.model.Employers
-import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionAndType
-import ms.mattschlenkrich.paydaycalculator.model.ExtraTypeAndDefByDay
-import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
-import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
-import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtras
-import ms.mattschlenkrich.paydaycalculator.model.WorkDates
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtrasDefinitions
-import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
-import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodTax
-import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
+import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerPayRates
+import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerTaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
+import ms.mattschlenkrich.paydaycalculator.model.extras.ExtraDefinitionAndType
+import ms.mattschlenkrich.paydaycalculator.model.extras.ExtraTypeAndDefByDay
+import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtrasDefinitions
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDateExtras
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodExtras
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodTax
+import ms.mattschlenkrich.paydaycalculator.model.tax.TaxEffectiveDates
+import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.tax.WorkTaxRules
 
 
 @Database(

@@ -9,8 +9,8 @@ import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_NAME
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYER_PAY_RATES
-import ms.mattschlenkrich.paydaycalculator.model.EmployerPayRates
-import ms.mattschlenkrich.paydaycalculator.model.Employers
+import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerPayRates
+import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 
 @Dao
 interface EmployerDao {

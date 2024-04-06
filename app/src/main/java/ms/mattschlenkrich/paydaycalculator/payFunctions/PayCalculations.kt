@@ -7,18 +7,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
-import ms.mattschlenkrich.paydaycalculator.model.EmployerPayRates
-import ms.mattschlenkrich.paydaycalculator.model.Employers
-import ms.mattschlenkrich.paydaycalculator.model.ExtraAndTotal
-import ms.mattschlenkrich.paydaycalculator.model.ExtraDefinitionAndType
-import ms.mattschlenkrich.paydaycalculator.model.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.model.TaxAndAmount
-import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
-import ms.mattschlenkrich.paydaycalculator.model.WorkDateExtraAndTypeFull
-import ms.mattschlenkrich.paydaycalculator.model.WorkDates
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
-import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
-import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
+import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerPayRates
+import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
+import ms.mattschlenkrich.paydaycalculator.model.extras.ExtraAndTotal
+import ms.mattschlenkrich.paydaycalculator.model.extras.ExtraDefinitionAndType
+import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDateExtraAndTypeFull
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodExtras
+import ms.mattschlenkrich.paydaycalculator.model.tax.TaxAndAmount
+import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.tax.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 //private const val TAG = "PayCalculations"

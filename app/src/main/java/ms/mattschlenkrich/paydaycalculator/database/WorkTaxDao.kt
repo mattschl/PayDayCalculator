@@ -17,11 +17,11 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_EFFECTIVE_DATE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_LEVEL
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
-import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
-import ms.mattschlenkrich.paydaycalculator.model.TaxComplete
-import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
-import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
-import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
+import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerTaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.tax.TaxComplete
+import ms.mattschlenkrich.paydaycalculator.model.tax.TaxEffectiveDates
+import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.tax.WorkTaxRules
 
 @Dao
 interface WorkTaxDao {

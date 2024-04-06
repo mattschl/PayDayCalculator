@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
-import ms.mattschlenkrich.paydaycalculator.model.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtraTypes
 
 class ExtraTypeAdapter
     : RecyclerView.Adapter<ExtraTypeAdapter.ExtraTypeViewHolder>() {

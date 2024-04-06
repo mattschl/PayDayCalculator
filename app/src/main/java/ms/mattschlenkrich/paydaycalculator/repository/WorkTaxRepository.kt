@@ -1,10 +1,10 @@
 package ms.mattschlenkrich.paydaycalculator.repository
 
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
-import ms.mattschlenkrich.paydaycalculator.model.EmployerTaxTypes
-import ms.mattschlenkrich.paydaycalculator.model.TaxEffectiveDates
-import ms.mattschlenkrich.paydaycalculator.model.TaxTypes
-import ms.mattschlenkrich.paydaycalculator.model.WorkTaxRules
+import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerTaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.tax.TaxEffectiveDates
+import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
+import ms.mattschlenkrich.paydaycalculator.model.tax.WorkTaxRules
 
 class WorkTaxRepository(private val db: PayDatabase) {
     suspend fun insertTaxType(workTaxType: TaxTypes) =

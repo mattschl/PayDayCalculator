@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.model
+package ms.mattschlenkrich.paydaycalculator.model.payperiod
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
@@ -6,7 +6,6 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
-import androidx.room.PrimaryKey
 import androidx.room.Relation
 import androidx.room.RoomWarnings
 import kotlinx.parcelize.Parcelize
@@ -16,11 +15,12 @@ import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_TAX_CUTOFF_DATE
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_TAX_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIOD_TAX_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
-import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES
-import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATE_EXTRAS
-import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_PAY_PERIOD_EXTRAS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_PAY_PERIOD_TAX
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
+import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
+import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtrasDefinitions
+import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
 
 @Entity(
     tableName = TABLE_PAY_PERIODS,
@@ -48,123 +48,6 @@ data class PayPeriods(
     val ppUpdateTime: String,
 ) : Parcelable
 
-@Entity(
-    tableName = TABLE_WORK_DATES,
-    foreignKeys = [
-        ForeignKey(
-            entity = PayPeriods::class,
-            parentColumns = ["ppEmployerId", "ppCutoffDate"],
-            childColumns = ["wdEmployerId", "wdCutoffDate"]
-        )
-    ], indices = [Index(
-        value =
-        ["wdEmployerId", "wdDate", "wdCutoffDate"], unique = true
-    ), Index(
-        value = ["wdEmployerId", "wdCutoffDate"]
-    )
-    ]
-)
-@Parcelize
-data class WorkDates(
-    @PrimaryKey
-    val workDateId: Long,
-    @ColumnInfo(index = true)
-    val wdPayPeriodId: Long,
-    @ColumnInfo(index = true)
-    val wdEmployerId: Long,
-    @ColumnInfo(index = true)
-    val wdCutoffDate: String,
-    @ColumnInfo(index = true)
-    val wdDate: String,
-    val wdRegHours: Double,
-    val wdOtHours: Double,
-    val wdDblOtHours: Double,
-    val wdStatHours: Double,
-    val wdIsDeleted: Boolean,
-    val wdUpdateTime: String,
-) : Parcelable
-
-@Parcelize
-data class WorkDateAndExtras(
-    @Embedded
-    val workDate: WorkDates,
-    @Relation(
-        entity = WorkDateExtras::class,
-        parentColumn = "workDateId",
-        entityColumn = "wdeWorkDateId"
-    )
-    var extras: WorkDateExtras?
-) : Parcelable
-
-
-@Entity(
-    tableName = TABLE_WORK_DATE_EXTRAS,
-    foreignKeys = [ForeignKey(
-        entity = WorkDates::class,
-        parentColumns = ["workDateId"],
-        childColumns = ["wdeWorkDateId"]
-    )],
-    indices = [Index(
-        value =
-        ["wdeWorkDateId", "wdeName"], unique = true
-    )]
-)
-@Parcelize
-data class WorkDateExtras(
-    @PrimaryKey
-    val workDateExtraId: Long,
-    @ColumnInfo(index = true)
-    val wdeWorkDateId: Long,
-    @ColumnInfo(index = true)
-    val wdeExtraTypeId: Long?,
-    @ColumnInfo(index = true)
-    val wdeName: String,
-    val wdeAppliesTo: Int,
-    val wdeAttachTo: Int,
-    val wdeValue: Double,
-    val wdeIsFixed: Boolean,
-    val wdeIsCredit: Boolean,
-    val wdeIsDeleted: Boolean,
-    val wdeUpdateTime: String,
-) : Parcelable
-
-@Entity(
-    tableName = TABLE_WORK_PAY_PERIOD_EXTRAS,
-    foreignKeys = [
-        ForeignKey(
-            entity = WorkExtraTypes::class,
-            parentColumns = ["workExtraTypeId"],
-            childColumns = ["ppeExtraTypeId"]
-        ),
-        ForeignKey(
-            entity = PayPeriods::class,
-            parentColumns = ["payPeriodId"],
-            childColumns = ["ppePayPeriodId"]
-        )],
-    indices = [
-        Index(
-            value =
-            ["ppePayPeriodId", "ppeName"],
-            unique = true
-        )]
-)
-@Parcelize
-data class WorkPayPeriodExtras(
-    @PrimaryKey
-    val workPayPeriodExtraId: Long,
-    @ColumnInfo(index = true)
-    val ppePayPeriodId: Long,
-    @ColumnInfo(index = true)
-    val ppeExtraTypeId: Long?,
-    val ppeName: String,
-    val ppeAppliesTo: Int,
-    val ppeAttachTo: Int,
-    val ppeValue: Double,
-    val ppeIsFixed: Boolean,
-    val ppeIsCredit: Boolean,
-    val ppeIsDeleted: Boolean,
-    val ppeUpdateTime: String,
-) : Parcelable
 
 @Entity(
     tableName = TABLE_WORK_PAY_PERIOD_TAX,

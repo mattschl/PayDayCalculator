@@ -17,7 +17,7 @@ import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.ListPayDetailExtraItemBinding
-import ms.mattschlenkrich.paydaycalculator.model.WorkPayPeriodExtras
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.PayDetailsFragment
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.PayDetailsFragmentDirections

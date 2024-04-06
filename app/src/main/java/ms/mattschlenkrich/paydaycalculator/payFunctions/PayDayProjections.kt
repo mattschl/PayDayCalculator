@@ -9,7 +9,7 @@ import ms.mattschlenkrich.paydaycalculator.common.DAY_TUESDAY
 import ms.mattschlenkrich.paydaycalculator.common.DAY_WEDNESDAY
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_BI_WEEKLY
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_WEEKLY
-import ms.mattschlenkrich.paydaycalculator.model.Employers
+import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import java.time.DayOfWeek
 import java.time.LocalDate
 
