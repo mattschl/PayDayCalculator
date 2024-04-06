@@ -21,6 +21,7 @@ import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_RATES
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerPayRateAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerPayRates
+import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import java.time.LocalDate
 
@@ -129,33 +130,38 @@ class EmployerPayRateAddFragment :
     }
 
     private fun savePayRate() {
+        val curEmployer = mainActivity.mainViewModel.getEmployer()!!
+        val message = checkPayRate()
+        if (message == ANSWER_OK) {
+            val curWage = getCurPayRates(curEmployer)
+            mainActivity.employerViewModel.insertPayRate(curWage)
+            gotoCallingFragment()
+        } else {
+            Toast.makeText(
+                mView.context,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun getCurPayRates(
+        curEmployer: Employers
+    ): EmployerPayRates {
         binding.apply {
-            val curEmployer = mainActivity.mainViewModel.getEmployer()!!
-            val message = checkPayRate()
-            if (message == ANSWER_OK) {
-                val curWage = EmployerPayRates(
-                    cf.generateId(),
-                    curEmployer.employerId,
-                    tvEffectiveDate.text.toString(),
-                    spPerFrequency.selectedItemPosition,
-                    cf.getDoubleFromDollars(etWage.text.toString()),
-                    false,
-                    df.getCurrentTimeAsString()
-                )
-                mainActivity.employerViewModel.insertPayRate(curWage)
-                gotoCallingFragment()
-            } else {
-                Toast.makeText(
-                    mView.context,
-                    message,
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+            return EmployerPayRates(
+                cf.generateId(),
+                curEmployer.employerId,
+                tvEffectiveDate.text.toString(),
+                spPerFrequency.selectedItemPosition,
+                cf.getDoubleFromDollars(etWage.text.toString()),
+                false,
+                df.getCurrentTimeAsString()
+            )
         }
     }
 
     private fun gotoCallingFragment() {
-
         if (mainActivity.mainViewModel.getCallingFragment()!!.contains(FRAG_PAY_RATES)) {
             gotoPayRateFragment()
         }

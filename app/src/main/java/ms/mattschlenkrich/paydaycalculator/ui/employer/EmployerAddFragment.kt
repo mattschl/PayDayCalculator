@@ -36,7 +36,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
-    private val cf = NumberFunctions()
+    private val nf = NumberFunctions()
     private val employerList = ArrayList<Employers>()
     private var startDate = ""
 
@@ -54,7 +54,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getEmployerList()
-        fillSpinners()
+        fillSpinnersAndStartDate()
         fillMenu()
         setDateAction()
         setSpinnerActions()
@@ -239,7 +239,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     private fun getCurrentEmployer(): Employers {
         binding.apply {
             return Employers(
-                cf.generateId(),
+                nf.generateId(),
                 etName.text.toString(),
                 spFrequency.selectedItem.toString(),
                 startDate,
@@ -284,7 +284,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
 
     }
 
-    private fun fillSpinners() {
+    private fun fillSpinnersAndStartDate() {
         binding.apply {
             val frequencyAdapter = ArrayAdapter(
                 mView.context, R.layout.spinner_item_bold,
