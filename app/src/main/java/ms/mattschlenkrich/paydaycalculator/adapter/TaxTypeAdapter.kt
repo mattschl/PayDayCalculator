@@ -47,21 +47,27 @@ class TaxTypeAdapter(
 
     override fun onBindViewHolder(holder: TaxTypeViewHolder, position: Int) {
         val taxType = differ.currentList[position]
-        var display = taxType.taxType
-        if (taxType.ttIsDeleted) {
-            display += " *DELETED*"
-            holder.itemBinding.tvDisplay.setTextColor(Color.RED)
-        } else {
-            holder.itemBinding.tvDisplay.setTextColor(Color.BLACK)
+        holder.itemBinding.apply {
+            var display = taxType.taxType
+            if (taxType.ttIsDeleted) {
+                display += " *DELETED*"
+                tvDisplay.setTextColor(Color.RED)
+            } else {
+                tvDisplay.setTextColor(Color.BLACK)
+            }
+            tvDisplay.text = display
+            holder.itemView.setOnLongClickListener {
+                gotoTaxTypeUpdate(taxType)
+                true
+            }
         }
-        holder.itemBinding.tvDisplay.text = display
-        holder.itemView.setOnLongClickListener {
-            mainActivity.mainViewModel.setTaxType(taxType)
-            mView.findNavController().navigate(
-                TaxTypeFragmentDirections
-                    .actionTaxTypeFragmentToTaxTypeUpdateFragment()
-            )
-            true
-        }
+    }
+
+    private fun gotoTaxTypeUpdate(taxType: TaxTypes?) {
+        mainActivity.mainViewModel.setTaxType(taxType)
+        mView.findNavController().navigate(
+            TaxTypeFragmentDirections
+                .actionTaxTypeFragmentToTaxTypeUpdateFragment()
+        )
     }
 }

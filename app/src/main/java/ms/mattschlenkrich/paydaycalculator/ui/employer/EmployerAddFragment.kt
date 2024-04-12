@@ -168,7 +168,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
 
     private fun saveEmployer() {
         binding.apply {
-            val message = checkEmployer()
+            val message = checkEmployerToSave()
             if (message == ANSWER_OK) {
                 val curEmployer = getCurrentEmployer()
                 mainActivity.employerViewModel.insertEmployer(
@@ -253,7 +253,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         }
     }
 
-    private fun checkEmployer(): String {
+    private fun checkEmployerToSave(): String {
         binding.apply {
             var nameFound = false
             if (employerList.isNotEmpty()) {

@@ -49,17 +49,19 @@ class ExtraTypeAdapter
 
     override fun onBindViewHolder(holder: ExtraTypeViewHolder, position: Int) {
         val extraType = differ.currentList[position]
-        var display = extraType.wetName
-        if (extraType.wetIsDeleted) {
-            display += " *DELETED*"
-            holder.itemBinding.tvDisplay.setTextColor(Color.RED)
-        } else {
-            holder.itemBinding.tvDisplay.setTextColor(Color.BLACK)
-        }
-        holder.itemBinding.tvDisplay.text = display
-        holder.itemView.setOnLongClickListener {
-            //set up to go to item
-            false
+        holder.itemBinding.apply {
+            var display = extraType.wetName
+            if (extraType.wetIsDeleted) {
+                display += " *DELETED*"
+                tvDisplay.setTextColor(Color.RED)
+            } else {
+                tvDisplay.setTextColor(Color.BLACK)
+            }
+            tvDisplay.text = display
+            holder.itemView.setOnLongClickListener {
+                //set up to go to item
+                false
+            }
         }
     }
 }

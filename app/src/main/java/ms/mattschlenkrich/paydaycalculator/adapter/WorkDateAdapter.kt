@@ -107,31 +107,35 @@ class WorkDateAdapter(
                 }
             }
             holder.itemView.setOnClickListener {
-                AlertDialog.Builder(mView.context)
-                    .setTitle("Choose an action")
-                    .setItems(
-                        arrayOf(
-                            "Edit this date",
-                            "Delete this date"
-                        )
-                    ) { _, pos ->
-                        when (pos) {
-                            0 -> {
-                                gotoWorkDateUpdate(workDate)
-                            }
-
-                            1 -> {
-                                deleteWorkDate(workDate)
-                            }
-
-                            else -> {
-                                //do nothing
-                            }
-                        }
-                    }
-                    .show()
+                chooseOptionsForDate(workDate)
             }
         }
+    }
+
+    private fun chooseOptionsForDate(workDate: WorkDates) {
+        AlertDialog.Builder(mView.context)
+            .setTitle("Choose an action")
+            .setItems(
+                arrayOf(
+                    "Edit this date",
+                    "Delete this date"
+                )
+            ) { _, pos ->
+                when (pos) {
+                    0 -> {
+                        gotoWorkDateUpdate(workDate)
+                    }
+
+                    1 -> {
+                        deleteWorkDate(workDate)
+                    }
+
+                    else -> {
+                        //do nothing
+                    }
+                }
+            }
+            .show()
     }
 
     private fun deleteWorkDate(workDate: WorkDates) {

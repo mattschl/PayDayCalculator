@@ -71,71 +71,78 @@ class EmployerExtraDefinitionFullAdapter(
 
     override fun onBindViewHolder(holder: DefinitionViewHolder, position: Int) {
         val definition = differ.currentList[position]
-        var display = definition.definition.weEffectiveDate
-        if (definition.definition.weIsDeleted) {
-            holder.itemBinding.tvEffectiveDate.setTextColor(Color.RED)
-            display = "* $display * Deleted"
-        } else if (position == 0) {
-            display += " - CURRENT"
-            holder.itemBinding.tvEffectiveDate.setTextColor(Color.BLACK)
-        } else {
-            holder.itemBinding.tvEffectiveDate.setTextColor(Color.BLACK)
-        }
-        holder.itemBinding.tvEffectiveDate.text = display
-        display = if (definition.extraType.wetIsCredit) {
-            "Add "
-        } else {
-            "Deduct "
-        }
-        if (definition.extraType.wetIsCredit) {
-            holder.itemBinding.tvValue.setTextColor(Color.BLACK)
-        } else {
-            holder.itemBinding.tvValue.setTextColor(Color.RED)
-        }
-        display += if (definition.definition.weIsFixed) {
-            cf.displayDollars(
-                definition.definition.weValue
-            )
-        } else {
-            cf.displayPercentFromDouble(
-                definition.definition.weValue / 100
-            )
-        }
-        holder.itemBinding.tvValue.text = display
-        if (definition.extraType.wetIsDefault) {
-            holder.itemBinding.tvInfo.text = mView.resources.getString(R.string._default)
-            holder.itemBinding.tvInfo.visibility = View.VISIBLE
-        } else {
-            holder.itemBinding.tvInfo.visibility = View.GONE
-        }
-        holder.itemView.setOnClickListener {
-            AlertDialog.Builder(mView.context)
-                .setTitle(
-                    mView.resources.getString(R.string.choose_an_action) +
-                            " for " + definition.extraType.wetName
+        holder.itemBinding.apply {
+            var display = definition.definition.weEffectiveDate
+
+            if (definition.definition.weIsDeleted) {
+                tvEffectiveDate.setTextColor(Color.RED)
+                display = "* $display * Deleted"
+            } else if (position == 0) {
+                display += " - CURRENT"
+                tvEffectiveDate.setTextColor(Color.BLACK)
+            } else {
+                tvEffectiveDate.setTextColor(Color.BLACK)
+            }
+            tvEffectiveDate.text = display
+            display = if (definition.extraType.wetIsCredit) {
+                "Add "
+            } else {
+                "Deduct "
+            }
+            if (definition.extraType.wetIsCredit) {
+                tvValue.setTextColor(Color.BLACK)
+            } else {
+                tvValue.setTextColor(Color.RED)
+            }
+            display += if (definition.definition.weIsFixed) {
+                cf.displayDollars(
+                    definition.definition.weValue
                 )
-                .setItems(
-                    arrayOf(
-                        mView.resources.getString(R.string.edit_this_item),
-                        mView.resources.getString(R.string.delete_this_item),
-                        mView.resources.getString(R.string.cancel)
-                    )
-                ) { _, pos ->
-                    when (pos) {
-                        0 -> {
-                            gotoExtraUpdate(definition)
-                        }
-
-                        1 -> {
-                            deleteExtra(definition.definition)
-                        }
-
-                        else -> {
-                            //do nothing
-                        }
-                    }
-                }.show()
+            } else {
+                cf.displayPercentFromDouble(
+                    definition.definition.weValue / 100
+                )
+            }
+            tvValue.text = display
+            if (definition.extraType.wetIsDefault) {
+                tvInfo.text = mView.resources.getString(R.string._default)
+                tvInfo.visibility = View.VISIBLE
+            } else {
+                tvInfo.visibility = View.GONE
+            }
+            holder.itemView.setOnClickListener {
+                chooseOptionForDefinition(definition)
+            }
         }
+    }
+
+    private fun chooseOptionForDefinition(definition: ExtraDefinitionFull) {
+        AlertDialog.Builder(mView.context)
+            .setTitle(
+                mView.resources.getString(R.string.choose_an_action) +
+                        " for " + definition.extraType.wetName
+            )
+            .setItems(
+                arrayOf(
+                    mView.resources.getString(R.string.edit_this_item),
+                    mView.resources.getString(R.string.delete_this_item),
+                    mView.resources.getString(R.string.cancel)
+                )
+            ) { _, pos ->
+                when (pos) {
+                    0 -> {
+                        gotoExtraUpdate(definition)
+                    }
+
+                    1 -> {
+                        deleteExtra(definition.definition)
+                    }
+
+                    else -> {
+                        //do nothing
+                    }
+                }
+            }.show()
     }
 
     private fun gotoExtraUpdate(definition: ExtraDefinitionFull) {

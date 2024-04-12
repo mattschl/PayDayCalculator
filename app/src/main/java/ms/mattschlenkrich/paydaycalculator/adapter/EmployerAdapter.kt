@@ -50,17 +50,19 @@ class EmployerAdapter(
 
     override fun onBindViewHolder(holder: EmployerViewHolder, position: Int) {
         val employer = differ.currentList[position]
-        holder.itemBinding.employerName.text = employer.employerName
-        var disp = employer.payFrequency
-        if (employer.employerIsDeleted) {
-            disp = "*Deleted*"
-            holder.itemBinding.tvFrequency.setTextColor(Color.RED)
-        } else {
-            holder.itemBinding.tvFrequency.setTextColor(Color.BLACK)
-        }
-        holder.itemBinding.tvFrequency.text = disp
-        holder.itemView.setOnClickListener {
-            gotoUpdateEmployer(employer)
+        holder.itemBinding.apply {
+            employerName.text = employer.employerName
+            var disp = employer.payFrequency
+            if (employer.employerIsDeleted) {
+                disp = "*Deleted*"
+                tvFrequency.setTextColor(Color.RED)
+            } else {
+                tvFrequency.setTextColor(Color.BLACK)
+            }
+            tvFrequency.text = disp
+            holder.itemView.setOnClickListener {
+                gotoUpdateEmployer(employer)
+            }
         }
     }
 

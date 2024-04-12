@@ -51,10 +51,10 @@ class EmployerPayRatesFragment :
         super.onViewCreated(view, savedInstanceState)
         fillEmployers()
         setActions()
-        selectEmployer()
+        onSelectEmployer()
     }
 
-    private fun selectEmployer() {
+    private fun onSelectEmployer() {
         binding.apply {
             spEmployers.onItemSelectedListener =
                 object : OnItemSelectedListener {
@@ -68,7 +68,7 @@ class EmployerPayRatesFragment :
                             gotoAddEmployer()
                         } else {
                             curEmployer = employerList[spEmployers.selectedItemPosition]
-                            fillWages()
+                            fillPayRates()
                         }
                     }
 
@@ -79,7 +79,7 @@ class EmployerPayRatesFragment :
         }
     }
 
-    private fun fillWages() {
+    private fun fillPayRates() {
         if (curEmployer != null) {
             binding.apply {
                 val payRateAdapter = EmployerWageAdapter(

@@ -143,6 +143,8 @@ interface PayDayDao {
     )
     fun getPayPeriodExtras(payPeriodId: Long): LiveData<List<WorkPayPeriodExtras>>
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @Transaction
     @Query(
         "SELECT * FROM workDates " +
                 "JOIN (" +

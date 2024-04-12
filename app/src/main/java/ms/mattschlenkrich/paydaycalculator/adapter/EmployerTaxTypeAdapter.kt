@@ -57,21 +57,23 @@ class EmployerTaxTypeAdapter(
 
     override fun onBindViewHolder(holder: EmployerTaxViewHolder, position: Int) {
         val employerTaxType = differ.currentList[position]
-        holder.itemBinding.chkEmployerTax.text = employerTaxType.etrTaxType
-        holder.itemBinding.chkEmployerTax.isChecked = employerTaxType.etrInclude
-        holder.itemBinding.chkEmployerTax.setOnClickListener {
-            mainActivity.workTaxViewModel.updateEmployerTaxIncluded(
-                employerTaxType.etrEmployerId, employerTaxType.etrTaxType,
-                holder.itemBinding.chkEmployerTax.isChecked
-            )
-            parentFragment.fillTaxes(employerTaxType.etrEmployerId)
-        }
-        holder.itemBinding.btnEdit.setOnClickListener {
-            mainActivity.mainViewModel.setTaxTypeString(employerTaxType.etrTaxType)
-            mView.findNavController().navigate(
-                EmployerUpdateFragmentDirections
-                    .actionEmployerUpdateFragmentToTaxRulesFragment()
-            )
+        holder.itemBinding.apply {
+            chkEmployerTax.text = employerTaxType.etrTaxType
+            chkEmployerTax.isChecked = employerTaxType.etrInclude
+            chkEmployerTax.setOnClickListener {
+                mainActivity.workTaxViewModel.updateEmployerTaxIncluded(
+                    employerTaxType.etrEmployerId, employerTaxType.etrTaxType,
+                    chkEmployerTax.isChecked
+                )
+                parentFragment.fillTaxes(employerTaxType.etrEmployerId)
+            }
+            btnEdit.setOnClickListener {
+                mainActivity.mainViewModel.setTaxTypeString(employerTaxType.etrTaxType)
+                mView.findNavController().navigate(
+                    EmployerUpdateFragmentDirections
+                        .actionEmployerUpdateFragmentToTaxRulesFragment()
+                )
+            }
         }
     }
 }

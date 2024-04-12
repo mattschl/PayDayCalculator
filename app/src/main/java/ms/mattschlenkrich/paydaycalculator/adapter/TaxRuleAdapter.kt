@@ -57,26 +57,28 @@ class TaxRuleAdapter(
 
     override fun onBindViewHolder(holder: TaxRuleViewHolder, position: Int) {
         val taxRule = differ.currentList[position]
-        var disp = "Level " + taxRule.wtLevel
-        holder.itemBinding.tvTaxLevel.text = disp
-        disp = cf.displayPercentFromDouble(taxRule.wtPercent)
-        holder.itemBinding.tvPercent.text = disp
-        if (taxRule.wtHasExemption) {
-            holder.itemBinding.tvExemption.visibility = View.VISIBLE
-            disp = "Exemption: " + cf.displayDollars(taxRule.wtExemptionAmount)
-            holder.itemBinding.tvExemption.text = disp
-        } else {
-            holder.itemBinding.tvExemption.visibility = View.GONE
-        }
-        if (taxRule.wtHasBracket) {
-            holder.itemBinding.tvLimit.visibility = View.VISIBLE
-            disp = "Upper Limit: " + cf.displayDollars(taxRule.wtBracketAmount)
-            holder.itemBinding.tvLimit.text = disp
-        } else {
-            holder.itemBinding.tvLimit.visibility = View.GONE
-        }
-        holder.itemView.setOnClickListener {
-            chooseOptions(taxRule)
+        holder.itemBinding.apply {
+            var disp = "Level " + taxRule.wtLevel
+            tvTaxLevel.text = disp
+            disp = cf.displayPercentFromDouble(taxRule.wtPercent)
+            tvPercent.text = disp
+            if (taxRule.wtHasExemption) {
+                tvExemption.visibility = View.VISIBLE
+                disp = "Exemption: " + cf.displayDollars(taxRule.wtExemptionAmount)
+                tvExemption.text = disp
+            } else {
+                tvExemption.visibility = View.GONE
+            }
+            if (taxRule.wtHasBracket) {
+                tvLimit.visibility = View.VISIBLE
+                disp = "Upper Limit: " + cf.displayDollars(taxRule.wtBracketAmount)
+                tvLimit.text = disp
+            } else {
+                tvLimit.visibility = View.GONE
+            }
+            holder.itemView.setOnClickListener {
+                chooseOptions(taxRule)
+            }
         }
     }
 
