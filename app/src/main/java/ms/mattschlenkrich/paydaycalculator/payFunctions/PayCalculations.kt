@@ -46,7 +46,6 @@ class PayCalculations(
 
     init {
         CoroutineScope(Dispatchers.Main).launch {
-
             findRate()
             delay(WAIT_250)
             findWorkDates()
@@ -54,12 +53,13 @@ class PayCalculations(
             findExtrasPerDay()
             findExtrasPerPay()
             findExtraTypes()
-            findTaxRates()
+            findTaxTypesAndRates()
         }
     }
 
     inner class Deductions {
-        fun getDebitExtraAndTotalByPay(): ArrayList<ExtraAndTotal> {
+
+        private fun getCustomDebitExtraAndTotalByPay(): ArrayList<ExtraAndTotal> {
             val debitList = ArrayList<ExtraAndTotal>()
             for (i in 0 until workExtrasByPay.size) {
                 var notFound = true
@@ -105,6 +105,11 @@ class PayCalculations(
                     }
                 }
             }
+            return debitList
+        }
+
+        private fun getRegularDebitExtraAndTotalByPay(): ArrayList<ExtraAndTotal> {
+            val debitList = ArrayList<ExtraAndTotal>()
             for (extra in payPeriodExtras) {
                 if (!extra.ppeIsCredit &&
                     !extra.ppeIsDeleted
@@ -146,6 +151,12 @@ class PayCalculations(
                     }
                 }
             }
+            return debitList
+        }
+
+        fun getDebitExtraAndTotalByPay(): ArrayList<ExtraAndTotal> {
+            val debitList = getCustomDebitExtraAndTotalByPay()
+            debitList.addAll(getRegularDebitExtraAndTotalByPay())
             return debitList
         }
 
@@ -218,7 +229,7 @@ class PayCalculations(
             return extraList
         }
 
-        fun getCreditExtrasAndTotalsByPay(): ArrayList<ExtraAndTotal> {
+        private fun getCustomCreditExtrasAndTotalsByPay(): ArrayList<ExtraAndTotal> {
             val extraList = ArrayList<ExtraAndTotal>()
             for (i in 0 until workExtrasByPay.size) {
                 var notFound = true
@@ -265,6 +276,11 @@ class PayCalculations(
                     }
                 }
             }
+            return extraList
+        }
+
+        private fun getRegularCreditExtrasAndTotalsByPay(): ArrayList<ExtraAndTotal> {
+            val extraList = ArrayList<ExtraAndTotal>()
             for (extra in payPeriodExtras) {
                 if (extra.ppeIsCredit &&
                     !extra.ppeIsDeleted
@@ -306,6 +322,12 @@ class PayCalculations(
                     }
                 }
             }
+            return extraList
+        }
+
+        fun getCreditExtrasAndTotalsByPay(): ArrayList<ExtraAndTotal> {
+            val extraList = getCustomCreditExtrasAndTotalsByPay()
+            extraList.addAll(getRegularCreditExtrasAndTotalsByPay())
             return extraList
         }
 
@@ -478,62 +500,59 @@ class PayCalculations(
         fun getTaxList():
                 ArrayList<TaxAndAmount> {
             val taxesAndAmounts = ArrayList<TaxAndAmount>()
-            for (taxType in taxTypes) {
-//            Log.d(TAG, "looping through types - $type")
-                var taxTotal = 0.0
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(WAIT_250)
+                for (taxType in taxTypes) {
+                    var taxTotal = 0.0
 
-                var runningRemainder =
-                    when (taxType.ttBasedOn) {
-                        0 -> {
-                            pay.getPayTimeWorked()
-                        }
+                    var runningRemainder =
+                        when (taxType.ttBasedOn) {
+                            0 -> {
+                                pay.getPayTimeWorked()
+                            }
 
-                        1 -> {
-                            pay.getPayHourly()
-                        }
+                            1 -> {
+                                pay.getPayHourly()
+                            }
 
-                        2 -> {
-                            pay.getPayGross()
-                        }
+                            2 -> {
+                                pay.getPayGross()
+                            }
 
-                        else -> {
-                            0.0
-                        }
-                    }
-                for (def in taxRules) {
-//                Log.d(
-//                    TAG, "looping through taxDef - ${def.wtType} " +
-//                            "and - ${def.wtPercent} "
-//                )
-                    if (def.wtType == taxType.taxType && runningRemainder > 0) {
-                        var taxable: Double
-                        runningRemainder -=
-                            if (def.wtHasExemption) {
-                                getTaxFactor(def.wtExemptionAmount)
-                            } else {
+                            else -> {
                                 0.0
                             }
-                        if (runningRemainder < 0.0) {
-                            runningRemainder = 0.0
                         }
-                        if (def.wtHasBracket &&
-                            runningRemainder >= getTaxFactor(def.wtBracketAmount)
-                        ) {
-                            taxable = getTaxFactor(def.wtBracketAmount)
-                            runningRemainder -= getTaxFactor(def.wtBracketAmount)
-                        } else {
-                            taxable = runningRemainder
-                            runningRemainder = 0.0
+                    for (def in taxRules) {
+                        if (def.wtType == taxType.taxType && runningRemainder > 0) {
+                            var taxable: Double
+                            runningRemainder -=
+                                if (def.wtHasExemption) {
+                                    getTaxFactor(def.wtExemptionAmount)
+                                } else {
+                                    0.0
+                                }
+                            if (runningRemainder < 0.0) {
+                                runningRemainder = 0.0
+                            }
+                            if (def.wtHasBracket &&
+                                runningRemainder >= getTaxFactor(def.wtBracketAmount)
+                            ) {
+                                taxable = getTaxFactor(def.wtBracketAmount)
+                                runningRemainder -= getTaxFactor(def.wtBracketAmount)
+                            } else {
+                                taxable = runningRemainder
+                                runningRemainder = 0.0
+                            }
+                            taxTotal += taxable * def.wtPercent
                         }
-                        taxTotal += taxable * def.wtPercent
                     }
-                }
-                taxesAndAmounts.add(
-                    TaxAndAmount(
-                        taxType.taxType, taxTotal
+                    taxesAndAmounts.add(
+                        TaxAndAmount(
+                            taxType.taxType, taxTotal
+                        )
                     )
-                )
-
+                }
             }
             return taxesAndAmounts
         }
@@ -610,16 +629,6 @@ class PayCalculations(
         }
     }
 
-//    private fun findPayPeriod() {
-//        mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
-//            mainActivity.payDayViewModel.getPayPeriod(
-//                cutOff, employer.employerId
-//            ).observe(lifecycleOwner) { payPeriod ->
-//                curPayPeriod = payPeriod
-//            }
-//        }
-//    }
-
     private fun findExtrasCustomPerPay() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.payDayViewModel.getPayPeriodExtras(
@@ -647,7 +656,7 @@ class PayCalculations(
         }
     }
 
-    private fun findTaxRates() {
+    private fun getCurrentEffectiveDate(): String {
         var effectiveDate = ""
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.workTaxViewModel.getCurrentEffectiveDate(
@@ -656,6 +665,10 @@ class PayCalculations(
                 effectiveDate = date[0]
             }
         }
+        return effectiveDate
+    }
+
+    private fun findTaxTypes() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.workTaxViewModel.getTaxTypesByEmployer(
                 employer.employerId
@@ -666,6 +679,11 @@ class PayCalculations(
                 }
             }
         }
+    }
+
+    private fun findTaxTypesAndRates() {
+        val effectiveDate = getCurrentEffectiveDate()
+        findTaxTypes()
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
             mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
@@ -673,15 +691,8 @@ class PayCalculations(
                     effectiveDate
                 ).observe(lifecycleOwner) { list ->
                     taxRules.clear()
-//                    var counter = 0
                     list.listIterator().forEach {
                         taxRules.add(it)
-//                        counter += 1
-//                        Log.d(
-//                            TAG, "iterating tax def for ${it.wtType} value is " +
-//                                    "${it.wtPercent} | counter $counter " +
-//                                    "LEVEL is ${it.wtLevel}"
-//                        )
                     }
                 }
             }

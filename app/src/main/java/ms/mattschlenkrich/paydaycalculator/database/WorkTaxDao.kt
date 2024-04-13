@@ -5,7 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.RoomWarnings
+import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYER_TAX_TYPES
@@ -100,7 +100,8 @@ interface WorkTaxDao {
     )
     fun getEmployerTaxTypes(employerId: Long): LiveData<List<EmployerTaxTypes>>
 
-    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT taxTypes.*, taxDef.* FROM taxTypes " +

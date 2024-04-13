@@ -60,34 +60,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun fillMenus() {
-        addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                //                menu.add(getString(R.string.review_tax_types))
-                //                menu.add(getString(R.string.review_extra_credits_deductions))
-                //                menu.add(getString(R.string.review_work_extra_frequencies))
-                //                menu.add(getString(R.string.update_future_pay_dates))
-                menu.add(resources.getString(R.string.app_name))
-            }
+        FillTopMenuAndActions()
+        fillBottomNavAndActions()
+    }
 
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.title) {
-                    getString(R.string.review_tax_types) -> {
-                        gotoTaxTypes()
-                        true
-                    }
-
-                    getString(R.string.review_extra_credits_deductions) -> {
-                        gotoExtras()
-                        true
-                    }
-
-                    else -> {
-                        false
-                    }
-                }
-
-            }
-        })
+    private fun fillBottomNavAndActions() {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
         bottomNav.setOnItemSelectedListener {
             when (it.itemId) {
@@ -121,6 +98,37 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun FillTopMenuAndActions() {
+        addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                //                menu.add(getString(R.string.review_tax_types))
+                //                menu.add(getString(R.string.review_extra_credits_deductions))
+                //                menu.add(getString(R.string.review_work_extra_frequencies))
+                //                menu.add(getString(R.string.update_future_pay_dates))
+                menu.add(resources.getString(R.string.app_name))
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.title) {
+                    getString(R.string.review_tax_types) -> {
+                        gotoTaxTypes()
+                        true
+                    }
+
+                    getString(R.string.review_extra_credits_deductions) -> {
+                        gotoExtras()
+                        true
+                    }
+
+                    else -> {
+                        false
+                    }
+                }
+
+            }
+        })
     }
 
     private fun gotoPayDetails() {

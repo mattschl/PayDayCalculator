@@ -6,7 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.RoomWarnings
+import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
@@ -94,7 +94,8 @@ interface PayDayDao {
         extraName: String, workDateId: Long, updateTime: String
     )
 
-    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT DISTINCT workDateExtras.*, types.*, defs.* " +
@@ -143,7 +144,8 @@ interface PayDayDao {
     )
     fun getPayPeriodExtras(payPeriodId: Long): LiveData<List<WorkPayPeriodExtras>>
 
-    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM workDates " +

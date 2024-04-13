@@ -5,7 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.RoomWarnings
+import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
@@ -49,7 +49,8 @@ interface WorkExtraDao {
     fun getWorkExtraDefinitions(employerId: Long, extraTypeId: Long):
             LiveData<List<WorkExtrasDefinitions>>
 
-    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_WORK_EXTRAS_DEFINITIONS.*, " +
@@ -71,7 +72,8 @@ interface WorkExtraDao {
         extraTypeId: Long
     ): LiveData<List<ExtraDefinitionFull>>
 
-    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM ExtraTypeAndDefByDay " +
@@ -93,6 +95,7 @@ interface WorkExtraDao {
     @Update
     suspend fun updateWorkExtraType(extraType: WorkExtraTypes)
 
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM $TABLE_WORK_EXTRA_TYPES " +
@@ -101,7 +104,8 @@ interface WorkExtraDao {
     )
     fun getWorkExtraTypeList(employerId: Long): LiveData<List<WorkExtraTypes>>
 
-    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM workExtraTypes " +
@@ -129,7 +133,8 @@ interface WorkExtraDao {
     )
     fun getExtraTypesByDaily(employerId: Long): LiveData<List<WorkExtraTypes>>
 
-    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM workExtraTypes " +
@@ -148,7 +153,8 @@ interface WorkExtraDao {
     fun getExtraTypesAndDefByPay(employerId: Long, cutoffDate: String):
             LiveData<List<ExtraDefinitionAndType>>
 
-    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM workExtraTypes " +
@@ -168,7 +174,8 @@ interface WorkExtraDao {
     fun getExtraTypesAndDef(employerId: Long, cutoffDate: String, attachTo: Int):
             LiveData<List<ExtraDefinitionAndType>>
 
-    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM workExtraTypes " +
