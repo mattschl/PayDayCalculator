@@ -13,6 +13,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
@@ -21,7 +22,6 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_TIME_SHEET
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
-import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetBinding
@@ -45,10 +45,10 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     private var curPayPeriod: PayPeriods? = null
     private var curCutOff = ""
     private val projections = PayDayProjections()
-    private val cf = NumberFunctions()
-    private val df = DateFunctions()
     private var workDateAdapter: WorkDateAdapter? = null
     private var valuesFilled = false
+    private val cf = NumberFunctions()
+    private val df = DateFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,9 +65,9 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fillEmployers()
+        setActions()
         selectEmployer()
         selectCutOffDate()
-        setActions()
         fillFromHistory()
     }
 
@@ -192,45 +192,51 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
             val payCalculations = PayCalculations(
                 mainActivity, curEmployer!!, curCutOff, mView, curPayPeriod!!
             )
-            delay(WAIT_1000)
+//            delay(WAIT_1000)
+            val grossPay = async { payCalculations.pay.getPayGross() }
+//            val grossPay = deferGrossPay.await()
+            val deductions = async { payCalculations.pay.getDebitTotalsByPay() }
+//            val deductions = deferDeductions.await()
+            val taxDeduction = async { payCalculations.tax.getAllTaxDeductions() }
+//            val taxDeduction = deferTaxDeduction.await()
+            val regHours = async { payCalculations.hours.getHoursReg() }
+//            val regHours = deferRegHours.await()
+            val otHours = async { payCalculations.hours.getHoursOt() }
+//            val otHours = deferOtHours.await()
+            val dblOtHours = async { payCalculations.hours.getHoursDblOt() }
+//            val dblOtHours = deferDblOtHours.await()
+            val statHours = async { payCalculations.hours.getHoursStat() }
+//            val statHours = deferStatHours.await()
             binding.apply {
-                var display = cf.displayDollars(
-                    -payCalculations.pay.getDebitTotalsByPay()
-                            - payCalculations.tax.getAllTaxDeductions()
-                )
-                tvDeductions.text = display
-                tvDeductions.setTextColor(Color.RED)
-                display = "NET: ${
-                    cf.displayDollars(
-                        payCalculations.pay.getPayGross()
-                                - payCalculations.pay.getDebitTotalsByPay()
-                                - payCalculations.tax.getAllTaxDeductions()
-                    )
-                }"
-                tvNetPay.text = display
-                display = "Gross ${
-                    cf.displayDollars(
-                        payCalculations.pay.getPayGross()
-                    )
-                }"
-                tvGrossPay.text = display
-                display = ""
-                if (payCalculations.hours.getHoursReg() != 0.0) {
-                    display = "Hours: ${payCalculations.hours.getHoursReg()}"
+                var display = ""
+                if (regHours.await() != 0.0) {
+                    display = "Hours: ${regHours.await()}"
                 }
-                if (payCalculations.pay.getPayOt() != 0.0) {
+                if (otHours.await() != 0.0) {
                     if (display.isNotBlank()) display += " | "
-                    display += "Ot: ${payCalculations.hours.getHoursOt()}"
+                    display += "Ot: ${otHours.await()}"
                 }
-                if (payCalculations.hours.getHoursDblOt() != 0.0) {
+                if (dblOtHours.await() != 0.0) {
                     if (display.isNotBlank()) display += " | "
-                    display += "Dbl Ot: ${payCalculations.hours.getHoursDblOt()}"
+                    display += "Dbl Ot: ${dblOtHours.await()}"
                 }
-                if (payCalculations.hours.getHoursStat() != 0.0) {
+                if (statHours.await() != 0.0) {
                     if (display.isNotBlank()) display += " | "
-                    display += "Stat Hours: ${payCalculations.hours.getHoursStat()}"
+                    display += "Stat Hours: ${statHours.await()}"
                 }
                 tvHours.text = display
+                display = "Gross ${cf.displayDollars(grossPay.await())}"
+                tvGrossPay.text = display
+                display = cf.displayDollars(-deductions.await() - taxDeduction.await())
+                tvDeductions.text = display
+                tvDeductions.setTextColor(Color.RED)
+                display =
+                    "NET: ${
+                        cf.displayDollars(
+                            grossPay.await() - deductions.await() - taxDeduction.await()
+                        )
+                    }"
+                tvNetPay.text = display
             }
         }
     }

@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paydaycalculator.ui.paydays
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -18,6 +19,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
@@ -26,8 +28,6 @@ import ms.mattschlenkrich.paydaycalculator.adapter.PayDetailTaxAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_DETAILS
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
-import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayDetailsBinding
@@ -74,10 +74,10 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         super.onViewCreated(view, savedInstanceState)
         fillEmployers()
         setActions()
+        fillMenu()
         selectEmployer()
         selectCutOffDate()
-        fillMenu()
-        fillValues()
+        fillFromHistory()
     }
 
     private fun fillMenu() {
@@ -207,71 +207,89 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
             val payCalculations = PayCalculations(
                 mainActivity, curEmployer!!, curCutOff, mView, curPayPeriod!!
             )
-            delay(WAIT_500)
+//            delay(WAIT_500)
             fillExtras(payCalculations)
-            delay(WAIT_500)
+//            delay(WAIT_500)
             binding.apply {
-                var display = "Gross ${
-                    cf.displayDollars(
-                        payCalculations.pay.getPayGross()
-                    )
-                }"
-                tvGrossPay.text = display
-                display = cf.displayDollars(
-                    -payCalculations.pay.getDebitTotalsByPay()
-                            - payCalculations.tax.getAllTaxDeductions()
-                )
-                tvDeductions.text = display
-                tvDeductions.setTextColor(Color.RED)
-                display = "NET: ${
-                    cf.displayDollars(
-                        payCalculations.pay.getPayGross()
-                                - payCalculations.pay.getDebitTotalsByPay()
-                                - payCalculations.tax.getAllTaxDeductions()
-                    )
-                }"
-                tvNetPay.text = display
+                val regHours = async { payCalculations.hours.getHoursReg() }
+                val payRate = async { payCalculations.rate }
+                val regPay = async { payCalculations.pay.getPayReg() }
+                val otHours = async { payCalculations.hours.getHoursOt() }
+                val otPay = async { payCalculations.pay.getPayOt() }
+                val dblOtHours = async { payCalculations.hours.getHoursDblOt() }
+                val dblOtPay = async { payCalculations.pay.getPayDblOt() }
+                val statHours = async { payCalculations.hours.getHoursStat() }
+                val statPay = async { payCalculations.pay.getPayStat() }
+                val totalHourlyPay = async { payCalculations.pay.getPayHourly() }
+                val grossPay = async { payCalculations.pay.getPayGross() }
+                val debits = async { payCalculations.pay.getDebitTotalsByPay() }
+                val taxDeductions = async { payCalculations.tax.getAllTaxDeductions() }
+
                 if (payCalculations.pay.getPayReg() > 0.0) {
                     llRegPay.visibility = View.VISIBLE
-                    tvRegHours.text = payCalculations.hours.getHoursReg().toString()
-                    tvRegRate.text = cf.displayDollars(payCalculations.rate)
-                    tvRegPay.text = cf.displayDollars(payCalculations.pay.getPayReg())
+                    tvRegHours.text = regHours.await().toString()
+                    tvRegRate.text = cf.displayDollars(payRate.await())
+                    tvRegPay.text = cf.displayDollars(regPay.await())
                 } else {
                     llRegPay.visibility = View.GONE
                 }
                 if (payCalculations.pay.getPayOt() > 0.0) {
                     llOtPay.visibility = View.VISIBLE
-                    tvOtHours.text = payCalculations.hours.getHoursOt().toString()
-                    tvOtRate.text = cf.displayDollars(payCalculations.rate * 1.5)
-                    tvOTPay.text = cf.displayDollars(payCalculations.pay.getPayOt())
+                    tvOtHours.text = otHours.await().toString()
+                    tvOtRate.text = cf.displayDollars(payRate.await() * 1.5)
+                    tvOTPay.text = cf.displayDollars(otPay.await())
                 } else {
                     llOtPay.visibility = View.GONE
                 }
                 if (payCalculations.pay.getPayDblOt() > 0.0) {
                     llDblOtPay.visibility = View.VISIBLE
-                    tvDblOtHours.text = payCalculations.hours.getHoursDblOt().toString()
-                    tvDblOtRate.text = cf.displayDollars(payCalculations.rate * 2)
-                    tvDblOtPay.text = cf.displayDollars(payCalculations.pay.getPayDblOt())
+                    tvDblOtHours.text = dblOtHours.await().toString()
+                    tvDblOtRate.text = cf.displayDollars(payRate.await() * 2)
+                    tvDblOtPay.text = cf.displayDollars(dblOtPay.await())
                 } else {
                     llDblOtPay.visibility = View.GONE
                 }
                 if (payCalculations.pay.getPayStat() > 0.0) {
                     llStatPay.visibility = View.VISIBLE
-                    tvStatHours.text = payCalculations.hours.getHoursStat().toString()
-                    tvStatRate.text = cf.displayDollars(payCalculations.rate)
-                    tvStatPay.text = cf.displayDollars(payCalculations.pay.getPayStat())
+                    tvStatHours.text = statHours.await().toString()
+                    tvStatRate.text = cf.displayDollars(payRate.await())
+                    tvStatPay.text = cf.displayDollars(statPay.await())
                 } else {
                     llStatPay.visibility = View.GONE
                 }
-                tvHourlyTotal.text = cf.displayDollars(payCalculations.pay.getPayHourly())
+                tvHourlyTotal.text = cf.displayDollars(totalHourlyPay.await())
+//                delay(WAIT_1000)
+                var display = "Gross ${
+                    cf.displayDollars(
+                        grossPay.await()
+                    )
+                }"
+                val taxes = taxDeductions.await()
+                tvGrossPay.text = display
+                display = cf.displayDollars(
+                    -taxDeductions.await()
+                            - debits.await()
+                )
+                tvDeductions.text = display
+                tvDeductions.setTextColor(Color.RED)
+                Log.d(TAG, "Trying to get value of tax deduction $taxes")
+                display = "NET: ${
+                    cf.displayDollars(
+                        grossPay.await()
+                                - taxDeductions.await()
+                                - debits.await()
+                    )
+                }"
+                tvNetPay.text = display
             }
         }
     }
 
-    private fun findExtras(payCalculations: PayCalculations): ArrayList<WorkPayPeriodExtras> {
+    private fun findExtras(payCalculations: PayCalculations):
+            ArrayList<WorkPayPeriodExtras> {
         val extraList = mutableListOf<WorkPayPeriodExtras>()
         CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_250)
+//            delay(WAIT_250)
             mainActivity.payDayViewModel.getPayPeriodExtras(
                 curPayPeriod!!.payPeriodId
             ).observe(viewLifecycleOwner) { credit ->
@@ -287,9 +305,9 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                     workDateExtrasAndDates.add(it)
                 }
             }
-            delay(WAIT_250)
+//            delay(WAIT_250)
             processExtrasByDay(workDateExtrasAndDates, extraList)
-            delay(WAIT_250)
+//            delay(WAIT_250)
             mainActivity.workExtraViewModel.getExtraTypesAndDef(
                 curEmployer!!.employerId, curCutOff, 3
             ).observe(viewLifecycleOwner) { extras ->
@@ -477,14 +495,15 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
 
     private fun fillExtras(payCalculations: PayCalculations) {
         CoroutineScope(Dispatchers.Main).launch {
-            val extrasList =
+            val extrasList = async {
                 findExtras(payCalculations)
+            }
 //            Log.d(TAG, "Before delay size is ${extrasList.size}")
-            delay(WAIT_1000)
+//            delay(WAIT_1000)
 //            Log.d(TAG, "AFTER delay size is ${extrasList.size}")
-            fillCredits(extrasList)
-            fillDeductions(payCalculations, extrasList)
-            mainActivity.mainViewModel.setPayPeriodExtraList(extrasList)
+            fillCredits(extrasList.await())
+            fillDeductions(payCalculations, extrasList.await())
+            mainActivity.mainViewModel.setPayPeriodExtraList(extrasList.await())
         }
     }
 
@@ -528,38 +547,40 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                 }
             }
         }
-        val taxList = ArrayList<ExtraAndTotal>()
-        for (tax in payCalculations.tax.getTaxList()
-        ) {
-            taxList.add(
-                ExtraAndTotal(
-                    tax.taxType, tax.amount
-                )
-            )
-            debitTotal += tax.amount
-        }
+
         CoroutineScope(Dispatchers.Main).launch {
+            val deferTaxList =
+                async { payCalculations.tax.getTaxList() }
+            val taxList = ArrayList<ExtraAndTotal>()
+            for (tax in deferTaxList.await()
+            ) {
+                taxList.add(
+                    ExtraAndTotal(
+                        tax.taxType, tax.amount
+                    )
+                )
+                debitTotal += tax.amount
+            }
             binding.apply {
-                delay(WAIT_250)
+//                delay(WAIT_250)
                 val deductionListAdapter = PayDetailExtraAdapter(
                     mainActivity, debitList, mView, this@PayDetailsFragment
                 )
                 rvDebits.layoutManager = LinearLayoutManager(mView.context)
                 rvDebits.adapter = deductionListAdapter
-                delay(WAIT_250)
+//                delay(WAIT_250)
                 val taxListAdapter = PayDetailTaxAdapter(taxList)
                 rvTax.layoutManager = LinearLayoutManager(mView.context)
                 rvTax.adapter = taxListAdapter
-                delay(WAIT_250)
+//                delay(WAIT_250)
                 tvDebitTotal.text = cf.displayDollars(debitTotal)
             }
         }
     }
 
-    private fun fillValues() {
+    private fun fillFromHistory() {
         binding.apply {
             CoroutineScope(Dispatchers.Main).launch {
-                delay(WAIT_500)
                 if (mainActivity.mainViewModel.getEmployer() != null) {
                     curEmployer = mainActivity.mainViewModel.getEmployer()!!
                     for (i in 0 until spEmployers.adapter.count) {
@@ -625,7 +646,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                                 )
                             }
                             CoroutineScope(Dispatchers.Main).launch {
-                                delay(WAIT_100)
+//                                delay(WAIT_100)
                                 if (valuesFilled) mainActivity.mainViewModel.setEmployer(curEmployer)
                                 mainActivity.title = getString(R.string.pay_details) +
                                         " for ${spEmployers.selectedItem}"
@@ -700,7 +721,8 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         binding.spEmployers.adapter = employerAdapter
     }
 
-    override fun onStop() {
+    override fun onPause() {
+        super.onPause()
         mainActivity.mainViewModel.setEmployer(curEmployer)
         mainActivity.mainViewModel.setCutOffDate(curCutOff)
         super.onStop()

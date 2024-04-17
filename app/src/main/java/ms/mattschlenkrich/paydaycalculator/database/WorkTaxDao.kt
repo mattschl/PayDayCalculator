@@ -130,7 +130,7 @@ interface WorkTaxDao {
                 "ORDER BY tdEffectiveDate DESC " +
                 "LIMIT 1"
     )
-    fun getCurrentEffectiveDate(cutoffDate: String): LiveData<List<String>>
+    fun getCurrentEffectiveDate(cutoffDate: String): LiveData<String>
 
     @Query(
         " SELECT taxTypes.* FROM taxTypes " +
