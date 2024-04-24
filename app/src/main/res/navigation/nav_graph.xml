@@ -410,15 +410,15 @@
         android:label="PayDetailsFragment2"
         tools:layout="@layout/fragment_pay_details" />
     <fragment
-        android:id="@+id/timmeSheetFragment2"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.TimmeSheetFragment2"
-        android:label="TimmeSheetFragment2"
+        android:id="@+id/timeSheetFragment2"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.TimeSheetFragment2"
+        android:label="TimeSheetFragment2"
         tools:layout="@layout/fragment_time_sheet" />
     <action
         android:id="@+id/action_global_payDetailsFragment2"
         app:destination="@id/payDetailsFragment2" />
     <action
-        android:id="@+id/action_global_timmeSheetFragment2"
-        app:destination="@id/timmeSheetFragment2" />
+        android:id="@+id/action_global_timeSheetFragment2"
+        app:destination="@id/timeSheetFragment2" />
 
 </navigation>

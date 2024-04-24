@@ -145,7 +145,7 @@ class MainActivity : AppCompatActivity() {
 //            NavGraphDirections.actionGlobalTimeSheetFragment()
 //        )
         findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalTimmeSheetFragment2()
+            NavGraphDirections.actionGlobalTimeSheetFragment2()
         )
     }
 

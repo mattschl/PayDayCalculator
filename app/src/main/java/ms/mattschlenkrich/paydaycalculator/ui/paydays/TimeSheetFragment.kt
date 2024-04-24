@@ -34,7 +34,7 @@ import java.time.LocalDate
 
 private const val TAG = FRAG_TIME_SHEET
 
-class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
+class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFragment {
 
     private var _binding: FragmentTimeSheetBinding? = null
     private val binding get() = _binding!!
@@ -177,7 +177,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         }
     }
 
-    fun fillValues() {
+    override fun fillValues() {
         mainActivity.payDayViewModel.getPayPeriod(
             binding.spCutOff.selectedItem.toString(),
             curEmployer!!.employerId

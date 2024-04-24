@@ -13,7 +13,6 @@ class PayCalculations2(
     private val curPayPeriod: PayPeriods,
 ) {
 
-
     inner class Extras {
         fun getCredits() {}
         fun getCreditTotal() {}
