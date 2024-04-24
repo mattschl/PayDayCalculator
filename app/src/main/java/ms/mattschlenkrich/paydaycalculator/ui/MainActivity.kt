@@ -132,14 +132,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun gotoPayDetails() {
+//        findNavController(R.id.nav_host_fragment_container).navigate(
+//            NavGraphDirections.actionGlobalPayDetailsFragment()
+//        )
         findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalPayDetailsFragment()
+            NavGraphDirections.actionGlobalPayDetailsFragment2()
         )
     }
 
     private fun gotoTimeSheet() {
+//        findNavController(R.id.nav_host_fragment_container).navigate(
+//            NavGraphDirections.actionGlobalTimeSheetFragment()
+//        )
         findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalTimeSheetFragment()
+            NavGraphDirections.actionGlobalTimmeSheetFragment2()
         )
     }
 

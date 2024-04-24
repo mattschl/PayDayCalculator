@@ -404,5 +404,21 @@
             android:id="@+id/action_payPeriodExtraUpdateFragment_to_payDetailsFragment"
             app:destination="@id/payDetailsFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/payDetailsFragment2"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.PayDetailsFragment2"
+        android:label="PayDetailsFragment2"
+        tools:layout="@layout/fragment_pay_details" />
+    <fragment
+        android:id="@+id/timmeSheetFragment2"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.TimmeSheetFragment2"
+        android:label="TimmeSheetFragment2"
+        tools:layout="@layout/fragment_time_sheet" />
+    <action
+        android:id="@+id/action_global_payDetailsFragment2"
+        app:destination="@id/payDetailsFragment2" />
+    <action
+        android:id="@+id/action_global_timmeSheetFragment2"
+        app:destination="@id/timmeSheetFragment2" />
 
 </navigation>

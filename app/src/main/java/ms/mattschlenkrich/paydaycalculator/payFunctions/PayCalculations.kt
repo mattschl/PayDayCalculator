@@ -26,17 +26,17 @@ private const val TAG = "PayCalculations"
 class PayCalculations(
     private val mainActivity: MainActivity,
     private val employer: Employers,
-    private val cutOff: String,
+//    private val cutOff: String,
     private val mView: View,
     private val curPayPeriod: PayPeriods,
 ) {
-    private lateinit var workDates: ArrayList<WorkDates>
-    private lateinit var workDateExtrasFull: ArrayList<WorkDateExtraAndTypeFull>
-    private lateinit var workExtrasByPay: ArrayList<ExtraDefinitionAndType>
-    private lateinit var extraTypes: ArrayList<WorkExtraTypes>
-    private lateinit var taxRules: ArrayList<WorkTaxRules>
-    private lateinit var taxTypes: ArrayList<TaxTypes>
-    private lateinit var payPeriodExtras: ArrayList<WorkPayPeriodExtras>
+    private var workDates: ArrayList<WorkDates>
+    private var workDateExtrasFull: ArrayList<WorkDateExtraAndTypeFull>
+    private var workExtrasByPay: ArrayList<ExtraDefinitionAndType>
+    private var extraTypes: ArrayList<WorkExtraTypes>
+    private var taxRules: ArrayList<WorkTaxRules>
+    private var taxTypes: ArrayList<TaxTypes>
+    private var payPeriodExtras: ArrayList<WorkPayPeriodExtras>
     var rate = 0.0
     val hours = Hours()
     val pay = Pay()
@@ -516,7 +516,7 @@ class PayCalculations(
             }
         }
 
-        fun getTaxList():
+        suspend fun getTaxList():
                 ArrayList<TaxAndAmount> {
             val taxesAndAmounts = ArrayList<TaxAndAmount>()
 //                delay(WAIT_250)
@@ -540,9 +540,9 @@ class PayCalculations(
                             0.0
                         }
                     }
-//                Log.d(TAG, "Taxes based on $runningRemainder as total")
+                Log.d(TAG, "Taxes based on $runningRemainder as total")
                 for (def in taxRules) {
-                    if (def.wtType == taxType.taxType && runningRemainder > 0) {
+                    if (def.wtType == taxType.taxType) {
                         var taxable: Double
                         runningRemainder -=
                             if (def.wtHasExemption) {
@@ -563,6 +563,7 @@ class PayCalculations(
                             runningRemainder = 0.0
                         }
                         taxTotal += taxable * def.wtPercent
+                        Log.d(TAG, " in loop $taxTotal += $taxable * ${def.wtPercent}")
                     }
                 }
                 Log.d(TAG, "adding tax ${taxType.taxType} and $taxTotal")
@@ -583,7 +584,7 @@ class PayCalculations(
                 employer.employerId
             ).observe(lifecycleOwner) { rates ->
                 rates.listIterator().forEach {
-                    if (it.eprEffectiveDate <= cutOff) {
+                    if (it.eprEffectiveDate <= curPayPeriod.ppCutoffDate) {
                         rate = fixRateByInterval(it)
                     }
                 }
@@ -613,7 +614,7 @@ class PayCalculations(
         val innerWorkDates = ArrayList<WorkDates>()
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.payDayViewModel.getWorkDateList(
-                employer.employerId, cutOff
+                employer.employerId, curPayPeriod.ppCutoffDate
             ).observe(lifecycleOwner) { list ->
                 list.listIterator().forEach {
                     innerWorkDates.add(it)
@@ -627,7 +628,7 @@ class PayCalculations(
         val innerExtras = ArrayList<WorkDateExtraAndTypeFull>()
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.payDayViewModel.getWorkDateExtrasPerPay(
-                employer.employerId, cutOff
+                employer.employerId, curPayPeriod.ppCutoffDate
             ).observe(lifecycleOwner) { list ->
                 list.listIterator().forEach {
                     innerExtras.add(it)
@@ -641,7 +642,7 @@ class PayCalculations(
         val innerExtras = ArrayList<ExtraDefinitionAndType>()
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.workExtraViewModel.getExtraTypesAndDef(
-                employer.employerId, cutOff, 3
+                employer.employerId, curPayPeriod.ppCutoffDate, 3
             ).observe(lifecycleOwner) { list ->
                 list.listIterator().forEach {
                     innerExtras.add(it)
@@ -698,10 +699,10 @@ class PayCalculations(
 
     private fun getTaxTypesAndRates(): ArrayList<WorkTaxRules> {
         val innerTaxRules = ArrayList<WorkTaxRules>()
-        var effectiveDate = ""
+        var effectiveDate: String
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.workTaxViewModel.getCurrentEffectiveDate(
-                cutOff
+                curPayPeriod.ppCutoffDate
             ).observe(lifecycleOwner) { date ->
                 effectiveDate = date.toString()
                 mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner2 ->
@@ -709,7 +710,10 @@ class PayCalculations(
                         effectiveDate
                     ).observe(lifecycleOwner2) { list ->
                         list.listIterator().forEach {
-
+                            Log.d(
+                                TAG, "adding the tax rules def is " +
+                                        "${it.wtType} rate is ${it.wtHasBracket} "
+                            )
                             innerTaxRules.add(it)
                         }
                     }

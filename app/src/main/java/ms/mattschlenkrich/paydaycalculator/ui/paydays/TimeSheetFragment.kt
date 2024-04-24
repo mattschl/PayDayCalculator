@@ -190,7 +190,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
             val payCalculations = PayCalculations(
-                mainActivity, curEmployer!!, curCutOff, mView, curPayPeriod!!
+                mainActivity, curEmployer!!, mView, curPayPeriod!!
             )
 //            delay(WAIT_1000)
             val grossPay = async { payCalculations.pay.getPayGross() }
@@ -299,11 +299,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                 df.getCurrentTimeAsString()
             )
         )
-//        CoroutineScope(Dispatchers.Main).launch {
-//            delay(WAIT_250)
         fillCutOffDates()
-//        }
-
     }
 
     private fun selectEmployer() {
@@ -382,7 +378,6 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                 spCutOff.adapter = cutOffAdapter
 //                gotoCurrentCutoff()
             }
-
         }
     }
 
