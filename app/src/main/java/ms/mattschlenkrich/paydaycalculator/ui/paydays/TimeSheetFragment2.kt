@@ -18,9 +18,12 @@ import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.model.payperiod.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.payFunctions.PayCalculations2
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayDayProjections
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import java.time.LocalDate
@@ -303,6 +306,60 @@ class TimeSheetFragment2 : Fragment(R.layout.fragment_time_sheet), ITimeSheetFra
     }
 
     override fun fillValues() {
-        //TODO("Not yet implemented")
+        mainActivity.payDayViewModel.getPayPeriod(
+            binding.spCutOff.selectedItem.toString(),
+            curEmployer!!.employerId
+        ).observe(
+            viewLifecycleOwner
+        ) { payPeriod ->
+            curPayPeriod = payPeriod
+            mainActivity.mainViewModel.setPayPeriod(payPeriod)
+        }
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            val payCalculations = PayCalculations2(
+                mainActivity, curEmployer!!, mView, curPayPeriod!!
+            )
+            delay(WAIT_1000)
+
+            binding.apply {
+                var display = ""
+                if (payCalculations.hours.getHoursReg() != 0.0) {
+                    display = "Hours: ${payCalculations.hours.getHoursReg()}"
+                }
+                if (payCalculations.hours.getHoursOt() != 0.0) {
+                    if (display.isNotBlank()) display += " | "
+                    display += "Ot: ${payCalculations.hours.getHoursOt()}"
+                }
+                if (payCalculations.hours.getHoursDblOt() != 0.0) {
+                    if (display.isNotBlank()) display += " | "
+                    display += "Dbl Ot: ${payCalculations.hours.getHoursDblOt()}"
+                }
+                if (payCalculations.hours.getHoursStat() != 0.0) {
+                    if (display.isNotBlank()) display += " | "
+                    display += "Stat Hours: ${payCalculations.hours.getHoursStat()}"
+                }
+                if (display.isNotBlank()) {
+                    tvHours.text = display
+                    tvHours.visibility = View.VISIBLE
+                } else {
+                    tvHours.visibility = View.GONE
+                }
+
+//                display = "Gross ${nf.displayDollars(grossPay.await())}"
+//                tvGrossPay.text = display
+//                display = nf.displayDollars(-deductions.await() - taxDeduction.await())
+//                tvDeductions.text = display
+//                tvDeductions.setTextColor(Color.RED)
+//                display =
+//                    "NET: ${
+//                        nf.displayDollars(
+//                            grossPay.await() - deductions.await() - taxDeduction.await()
+//                        )
+//                    }"
+//                tvNetPay.text = display
+            }
+        }
     }
+
 }
