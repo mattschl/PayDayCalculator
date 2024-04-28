@@ -149,7 +149,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         AlertDialog.Builder(mView.context)
             .setTitle("Continue adding?")
             .setMessage(
-                "It is best to add custom extras only after all the " +
+                "It is best to add a custom extra after all the " +
                         "work hours have been entered. " +
                         "If it is based on the number of hours, days or a percentage, " +
                         "the results could be improperly calculated. "
