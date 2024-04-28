@@ -53,7 +53,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
     private var curPayPeriod: PayPeriods? = null
     private val cutOffs = ArrayList<String>()
     private var curCutOff = ""
-    private val cf = NumberFunctions()
+    private val nf = NumberFunctions()
     private val df = DateFunctions()
     private var valuesFilled = false
 
@@ -208,7 +208,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
             val payCalculations = PayCalculations(
-                mainActivity, curEmployer!!, mView, curPayPeriod!!
+                mainActivity, curEmployer!!, curPayPeriod!!.ppCutoffDate, mView
             )
             delay(WAIT_500)
             val extrasComplete = async { fillExtras(payCalculations) }
@@ -216,7 +216,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
             if (extrasComplete.await()) {
                 binding.apply {
                     val regHours = async { payCalculations.hours.getHoursReg() }
-                    val payRate = async { payCalculations.rate }
+                    val payRate = async { payCalculations.payRate }
                     val regPay = async { payCalculations.pay.getPayReg() }
                     val otHours = async { payCalculations.hours.getHoursOt() }
                     val otPay = async { payCalculations.pay.getPayOt() }
@@ -232,45 +232,45 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                     if (payCalculations.pay.getPayReg() > 0.0) {
                         llRegPay.visibility = View.VISIBLE
                         tvRegHours.text = regHours.await().toString()
-                        tvRegRate.text = cf.displayDollars(payRate.await())
-                        tvRegPay.text = cf.displayDollars(regPay.await())
+                        tvRegRate.text = nf.displayDollars(payRate.await())
+                        tvRegPay.text = nf.displayDollars(regPay.await())
                     } else {
                         llRegPay.visibility = View.GONE
                     }
                     if (payCalculations.pay.getPayOt() > 0.0) {
                         llOtPay.visibility = View.VISIBLE
                         tvOtHours.text = otHours.await().toString()
-                        tvOtRate.text = cf.displayDollars(payRate.await() * 1.5)
-                        tvOTPay.text = cf.displayDollars(otPay.await())
+                        tvOtRate.text = nf.displayDollars(payRate.await() * 1.5)
+                        tvOTPay.text = nf.displayDollars(otPay.await())
                     } else {
                         llOtPay.visibility = View.GONE
                     }
                     if (payCalculations.pay.getPayDblOt() > 0.0) {
                         llDblOtPay.visibility = View.VISIBLE
                         tvDblOtHours.text = dblOtHours.await().toString()
-                        tvDblOtRate.text = cf.displayDollars(payRate.await() * 2)
-                        tvDblOtPay.text = cf.displayDollars(dblOtPay.await())
+                        tvDblOtRate.text = nf.displayDollars(payRate.await() * 2)
+                        tvDblOtPay.text = nf.displayDollars(dblOtPay.await())
                     } else {
                         llDblOtPay.visibility = View.GONE
                     }
                     if (payCalculations.pay.getPayStat() > 0.0) {
                         llStatPay.visibility = View.VISIBLE
                         tvStatHours.text = statHours.await().toString()
-                        tvStatRate.text = cf.displayDollars(payRate.await())
-                        tvStatPay.text = cf.displayDollars(statPay.await())
+                        tvStatRate.text = nf.displayDollars(payRate.await())
+                        tvStatPay.text = nf.displayDollars(statPay.await())
                     } else {
                         llStatPay.visibility = View.GONE
                     }
-                    tvHourlyTotal.text = cf.displayDollars(totalHourlyPay.await())
+                    tvHourlyTotal.text = nf.displayDollars(totalHourlyPay.await())
 //                delay(WAIT_1000)
                     var display = "Gross ${
-                        cf.displayDollars(
+                        nf.displayDollars(
                             grossPay.await()
                         )
                     }"
                     val taxes = taxDeductions.await()
                     tvGrossPay.text = display
-                    display = cf.displayDollars(
+                    display = nf.displayDollars(
                         -taxDeductions.await()
                                 - debits.await()
                     )
@@ -278,7 +278,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                     tvDeductions.setTextColor(Color.RED)
                     Log.d(TAG, "Trying to get value of tax deduction $taxes")
                     display = "NET: ${
-                        cf.displayDollars(
+                        nf.displayDollars(
                             grossPay.await()
                                     - taxDeductions.await()
                                     - debits.await()
@@ -371,7 +371,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
     private fun WorkDateExtrasAndDates.createExtraByManuallyAdded(
         subTotal: Double
     ) = WorkPayPeriodExtras(
-        cf.generateId(),
+        nf.generateId(),
         curPayPeriod!!.payPeriodId,
         null,
         workDateExtra.wdeName,
@@ -441,7 +441,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         it: ExtraDefinitionAndType,
         sum: Double
     ) = WorkPayPeriodExtras(
-        cf.generateId(),
+        nf.generateId(),
         curPayPeriod!!.payPeriodId,
         it.extraType.workExtraTypeId,
         it.extraType.wetName,
@@ -534,7 +534,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
             binding.apply {
                 rvCredits.layoutManager = LinearLayoutManager(mView.context)
                 rvCredits.adapter = creditListAdapter
-                tvCreditTotal.text = cf.displayDollars(creditTotal)
+                tvCreditTotal.text = nf.displayDollars(creditTotal)
             }
         }
     }
@@ -579,7 +579,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                 rvTax.layoutManager = LinearLayoutManager(mView.context)
                 rvTax.adapter = taxListAdapter
 //                delay(WAIT_250)
-                tvDebitTotal.text = cf.displayDollars(debitTotal)
+                tvDebitTotal.text = nf.displayDollars(debitTotal)
             }
         }
     }
@@ -646,11 +646,16 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                         if (spEmployers.selectedItem.toString() !=
                             getString(R.string.add_new_employer)
                         ) {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                curEmployer = mainActivity.employerViewModel.findEmployer(
-                                    spEmployers.selectedItem.toString()
-                                )
+                            mainActivity.employerViewModel.findEmployer(
+                                spEmployers.selectedItem.toString()
+                            ).observe(viewLifecycleOwner) { employer ->
+                                curEmployer = employer
                             }
+//                            CoroutineScope(Dispatchers.IO).launch {
+//                                curEmployer = mainActivity.employerViewModel.findEmployer(
+//                                    spEmployers.selectedItem.toString()
+//                                )
+//                            }
                             CoroutineScope(Dispatchers.Main).launch {
 //                                delay(WAIT_100)
                                 if (valuesFilled) mainActivity.mainViewModel.setEmployer(curEmployer)

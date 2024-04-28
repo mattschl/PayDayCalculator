@@ -18,9 +18,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateAdapter
-import ms.mattschlenkrich.paydaycalculator.common.CommonFunctions
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_TIME_SHEET
+import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetBinding
@@ -33,7 +33,7 @@ import java.time.LocalDate
 
 private const val TAG = FRAG_TIME_SHEET
 
-class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
+class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFragment {
 
     private var _binding: FragmentTimeSheetBinding? = null
     private val binding get() = _binding!!
@@ -43,7 +43,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     private val cutOffs = ArrayList<String>()
     private var curCutOff = ""
     private val projections = PayDayProjections()
-    private val cf = CommonFunctions()
+    private val nf = NumberFunctions()
     private val df = DateFunctions()
     private var workDateAdapter: WorkDateAdapter? = null
 
@@ -137,7 +137,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
     private fun getPayPeriod(): PayPeriods {
         binding.apply {
             return PayPeriods(
-                cf.generateId(),
+                nf.generateId(),
                 spCutOff.selectedItem.toString(),
                 curEmployer!!.employerId,
                 false,
@@ -175,21 +175,21 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         }
     }
 
-    private fun fillValues() {
+    override fun fillValues() {
         val payCalculations = PayCalculations(
             mainActivity, curEmployer!!, curCutOff, mView
         )
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_1000)
             binding.apply {
-                var display = cf.displayDollars(
+                var display = nf.displayDollars(
                     -payCalculations.pay.getDebitTotalsByPay()
                             - payCalculations.tax.getAllTaxDeductions()
                 )
                 tvDeductions.text = display
                 tvDeductions.setTextColor(Color.RED)
                 display = "NET: ${
-                    cf.displayDollars(
+                    nf.displayDollars(
                         payCalculations.pay.getPayGross()
                                 - payCalculations.pay.getDebitTotalsByPay()
                                 - payCalculations.tax.getAllTaxDeductions()
@@ -197,7 +197,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
                 }"
                 tvNetPay.text = display
                 display = "Gross ${
-                    cf.displayDollars(
+                    nf.displayDollars(
                         payCalculations.pay.getPayGross()
                     )
                 }"
@@ -239,7 +239,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         binding.apply {
             workDateAdapter = null
             workDateAdapter = WorkDateAdapter(
-                mainActivity, curCutOff, curEmployer!!, mView
+                mainActivity, curCutOff, curEmployer!!, mView, this@TimeSheetFragment
             )
             rvDates.apply {
                 layoutManager = LinearLayoutManager(mView.context)
@@ -274,7 +274,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet) {
         )
         mainActivity.payDayViewModel.insertPayPeriod(
             PayPeriods(
-                cf.generateId(),
+                nf.generateId(),
                 nextCutOff,
                 curEmployer!!.employerId,
                 false,

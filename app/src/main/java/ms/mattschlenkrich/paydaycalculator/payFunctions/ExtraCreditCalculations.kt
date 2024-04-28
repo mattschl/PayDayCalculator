@@ -14,10 +14,16 @@ class ExtraCreditCalculations(
 ) {
     private var creditExtraAndTotalsByDate: ArrayList<ExtraAndTotal>
     private var creditExtrasAndTotalsByPay: ArrayList<ExtraAndTotal>
+    private var creditTotal: Double = 0.0
 
     init {
         creditExtraAndTotalsByDate = findCreditExtraAndTotalsByDate()
         creditExtrasAndTotalsByPay = findCreditExtrasAndTotalsByPay()
+        creditTotal = getCreditTotalByDate() + getCreditTotalsByPay()
+    }
+
+    fun getCreditTotal(): Double {
+        return creditTotal
     }
 
     fun getCreditExtraAndTotalsByDate(): ArrayList<ExtraAndTotal> {
@@ -133,5 +139,22 @@ class ExtraCreditCalculations(
             }
         }
         return extraList
+    }
+
+    private fun getCreditTotalByDate(): Double {
+        var total = 0.0
+        for (extra in getCreditExtraAndTotalsByDate()) {
+            total += extra.amount
+        }
+        return total
+
+    }
+
+    private fun getCreditTotalsByPay(): Double {
+        var total = 0.0
+        for (extra in getCreditExtrasAndTotalsByPay()) {
+            total += extra.amount
+        }
+        return total
     }
 }

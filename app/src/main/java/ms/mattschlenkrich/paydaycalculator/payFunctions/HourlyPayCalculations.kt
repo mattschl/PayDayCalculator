@@ -1,40 +1,31 @@
 package ms.mattschlenkrich.paydaycalculator.payFunctions
 
 class HourlyPayCalculations(
-    private val hourlyCalculations: HourlyCalculations
+    private val hourlyCalculations: HourlyCalculations,
+    private val payRate: Double
 ) {
-//    fun getPayReg(): Double {
-//        return hours.getHoursReg() * rate
-//    }
-//
-//    fun getPayOt(): Double {
-//        return hours.getHoursOt() * rate * 1.5
-//    }
-//
-//    fun getPayDblOt(): Double {
-//        return hours.getHoursDblOt() * rate * 2
-//    }
-//
-//    fun getPayHourly(): Double {
-//        return getPayTimeWorked() + getPayStat()
-//    }
-//
-//    fun getPayStat(): Double {
-//        return hours.getHoursStat() * rate
-//    }
-//
-////        fun getPayNet(): Double {
-////            return if (getPayGross() - getDebitTotalsByPay() - tax.getAllTaxDeductions() > 0.0) {
-////                getPayGross() - getDebitTotalsByPay() - tax.getAllTaxDeductions()
-////            } else {
-////                0.0
-////            }
-////        }
-//
-//    fun getPayGross(): Double {
-//        return if (getPayHourly() > 0.0) {
-//            getPayHourly() + getCreditTotalByDate() + getCreditTotalsByPay()
-//        } else {
-//            0.0
-//        }
+
+    fun getPayReg(): Double {
+        return hourlyCalculations.getHoursReg() * payRate
+    }
+
+    fun getPayOt(): Double {
+        return hourlyCalculations.getHoursOt() * payRate * 1.5
+    }
+
+    fun getPayDblOt(): Double {
+        return hourlyCalculations.getHoursDblOt() * payRate * 2
+    }
+
+    fun getPayHourly(): Double {
+        return getPayTimeWorked() + getPayStat()
+    }
+
+    fun getPayTimeWorked(): Double {
+        return getPayReg() + getPayOt() + getPayDblOt()
+    }
+
+    fun getPayStat(): Double {
+        return hourlyCalculations.getHoursStat() * payRate
+    }
 }
