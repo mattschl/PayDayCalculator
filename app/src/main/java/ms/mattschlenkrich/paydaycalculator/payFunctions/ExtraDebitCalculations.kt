@@ -8,14 +8,37 @@ class ExtraDebitCalculations(
     private val hourlyPayCalculations: HourlyPayCalculations
 ) {
 
-    private var debitList: List<ExtraAndTotal>
+    private lateinit var debitList: List<ExtraAndTotal>
+    private var debitTotal = 0.0
 
     init {
+        calculateDebitExtraAndTotalByPay()
+        calculateDebitTotalByPay()
+    }
+
+    private fun calculateDebitTotalByPay() {
+        debitTotal = findDebitTotalsByPay()
+    }
+
+    private fun calculateDebitExtraAndTotalByPay() {
         debitList = findDebitExtraAndTotalByPay()
     }
 
     fun getDebitList(): List<ExtraAndTotal> {
         return debitList
+    }
+
+    fun getDebitTotalsByPay(): Double {
+        return debitTotal
+    }
+
+    fun findDebitTotalsByPay(): Double {
+        var total = 0.0
+        for (extra in debitList) {
+//                Log.d(TAG, "extra is ${extra.extraName} and amount is ${extra.amount}")
+            total += extra.amount
+        }
+        return total
     }
 
     private fun findDebitExtraAndTotalByPay(): ArrayList<ExtraAndTotal> {

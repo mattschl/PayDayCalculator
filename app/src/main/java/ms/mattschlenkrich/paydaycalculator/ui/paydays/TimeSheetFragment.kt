@@ -65,10 +65,10 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
         selectEmployer()
         selectCutOffDate()
         setActions()
-        fillFromHistory()
+        gotoEmployerAndPayDayFromHistory()
     }
 
-    private fun fillFromHistory() {
+    private fun gotoEmployerAndPayDayFromHistory() {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
             Log.d(
@@ -162,7 +162,6 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
                             curCutOff = spCutOff.selectedItem.toString()
                             fillPayDayDate()
                             fillWorkDates()
-                            fillValues()
                         } else {
                             generateCutOff()
                         }
@@ -176,14 +175,18 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
     }
 
     override fun fillValues() {
+        Log.d(TAG, "In fillValues curCutoff is $curCutOff")
         val payCalculations = PayCalculations(
-            mainActivity, curEmployer!!, curCutOff, mView
+            mainActivity,
+            curEmployer!!,
+            curCutOff,
+            mView
         )
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_1000)
             binding.apply {
                 var display = nf.displayDollars(
-                    -payCalculations.pay.getDebitTotalsByPay()
+                    -payCalculations.deductions.getDebitTotalsByPay()
                             - payCalculations.tax.getAllTaxDeductions()
                 )
                 tvDeductions.text = display
@@ -191,7 +194,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
                 display = "NET: ${
                     nf.displayDollars(
                         payCalculations.pay.getPayGross()
-                                - payCalculations.pay.getDebitTotalsByPay()
+                                - payCalculations.deductions.getDebitTotalsByPay()
                                 - payCalculations.tax.getAllTaxDeductions()
                     )
                 }"
@@ -263,6 +266,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
                 rvDates.visibility = View.GONE
             } else {
                 rvDates.visibility = View.VISIBLE
+                fillValues()
             }
         }
     }

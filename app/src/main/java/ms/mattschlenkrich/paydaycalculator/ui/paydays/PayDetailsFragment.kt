@@ -226,7 +226,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                     val statPay = async { payCalculations.pay.getPayStat() }
                     val totalHourlyPay = async { payCalculations.pay.getPayHourly() }
                     val grossPay = async { payCalculations.pay.getPayGross() }
-                    val debits = async { payCalculations.pay.getDebitTotalsByPay() }
+                    val debits = async { payCalculations.deductions.getDebitTotalsByPay() }
                     val taxDeductions = async { payCalculations.tax.getAllTaxDeductions() }
 
                     if (payCalculations.pay.getPayReg() > 0.0) {
