@@ -43,7 +43,7 @@ import java.time.LocalDate
 
 private const val TAG = FRAG_PAY_DETAILS
 
-class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
+class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsFragment {
 
     private var _binding: FragmentPayDetailsBinding? = null
     private val binding get() = _binding!!
@@ -196,7 +196,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         }
     }
 
-    fun fillPayDetails() {
+    override fun fillPayDetails() {
         mainActivity.payDayViewModel.getPayPeriod(
             curCutOff, curEmployer!!.employerId
         ).observe(
@@ -215,21 +215,21 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
 //            delay(WAIT_500)
             if (extrasComplete.await()) {
                 binding.apply {
-                    val regHours = async { payCalculations.hours.getHoursReg() }
+                    val regHours = async { payCalculations.getHoursReg() }
                     val payRate = async { payCalculations.payRate }
-                    val regPay = async { payCalculations.pay.getPayReg() }
-                    val otHours = async { payCalculations.hours.getHoursOt() }
-                    val otPay = async { payCalculations.pay.getPayOt() }
-                    val dblOtHours = async { payCalculations.hours.getHoursDblOt() }
-                    val dblOtPay = async { payCalculations.pay.getPayDblOt() }
-                    val statHours = async { payCalculations.hours.getHoursStat() }
-                    val statPay = async { payCalculations.pay.getPayStat() }
-                    val totalHourlyPay = async { payCalculations.pay.getPayHourly() }
-                    val grossPay = async { payCalculations.pay.getPayGross() }
-                    val debits = async { payCalculations.deductions.getDebitTotalsByPay() }
-                    val taxDeductions = async { payCalculations.tax.getAllTaxDeductions() }
+                    val regPay = async { payCalculations.getPayReg() }
+                    val otHours = async { payCalculations.getHoursOt() }
+                    val otPay = async { payCalculations.getPayOt() }
+                    val dblOtHours = async { payCalculations.getHoursDblOt() }
+                    val dblOtPay = async { payCalculations.getPayDblOt() }
+                    val statHours = async { payCalculations.getHoursStat() }
+                    val statPay = async { payCalculations.getPayStat() }
+                    val totalHourlyPay = async { payCalculations.getPayHourly() }
+                    val grossPay = async { payCalculations.getPayGross() }
+                    val debits = async { payCalculations.getDebitTotalsByPay() }
+                    val taxDeductions = async { payCalculations.getAllTaxDeductions() }
 
-                    if (payCalculations.pay.getPayReg() > 0.0) {
+                    if (payCalculations.getPayReg() > 0.0) {
                         llRegPay.visibility = View.VISIBLE
                         tvRegHours.text = regHours.await().toString()
                         tvRegRate.text = nf.displayDollars(payRate.await())
@@ -237,7 +237,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                     } else {
                         llRegPay.visibility = View.GONE
                     }
-                    if (payCalculations.pay.getPayOt() > 0.0) {
+                    if (payCalculations.getPayOt() > 0.0) {
                         llOtPay.visibility = View.VISIBLE
                         tvOtHours.text = otHours.await().toString()
                         tvOtRate.text = nf.displayDollars(payRate.await() * 1.5)
@@ -245,7 +245,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                     } else {
                         llOtPay.visibility = View.GONE
                     }
-                    if (payCalculations.pay.getPayDblOt() > 0.0) {
+                    if (payCalculations.getPayDblOt() > 0.0) {
                         llDblOtPay.visibility = View.VISIBLE
                         tvDblOtHours.text = dblOtHours.await().toString()
                         tvDblOtRate.text = nf.displayDollars(payRate.await() * 2)
@@ -253,7 +253,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                     } else {
                         llDblOtPay.visibility = View.GONE
                     }
-                    if (payCalculations.pay.getPayStat() > 0.0) {
+                    if (payCalculations.getPayStat() > 0.0) {
                         llStatPay.visibility = View.VISIBLE
                         tvStatHours.text = statHours.await().toString()
                         tvStatRate.text = nf.displayDollars(payRate.await())
@@ -399,9 +399,9 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
             when (it.extraType.wetAppliesTo) {
                 0 -> {
                     val sum = if (it.definition.weIsFixed) {
-                        payCalculations.hours.getHoursWorked() * it.definition.weValue
+                        payCalculations.getHoursWorked() * it.definition.weValue
                     } else {
-                        payCalculations.pay.getPayTimeWorked() * it.definition.weValue / 100
+                        payCalculations.getPayTimeWorked() * it.definition.weValue / 100
                     }
                     extraList.add(
                         createWorkPayPeriodExtra(it, sum)
@@ -411,9 +411,9 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                 1 -> {
                     val sum =
                         if (it.definition.weIsFixed) {
-                            payCalculations.hours.getDaysWorked() * it.definition.weValue
+                            payCalculations.getDaysWorked() * it.definition.weValue
                         } else {
-                            payCalculations.pay.getPayTimeWorked() * it.definition.weValue / 100
+                            payCalculations.getPayTimeWorked() * it.definition.weValue / 100
                         }
                     extraList.add(
                         createWorkPayPeriodExtra(it, sum)
@@ -427,7 +427,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                         )
                     } else {
                         val sum =
-                            payCalculations.pay.getPayHourly() * it.definition.weValue / 100
+                            payCalculations.getPayHourly() * it.definition.weValue / 100
                         extraList.add(
                             createWorkPayPeriodExtra(it, sum)
                         )
@@ -463,17 +463,17 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         when (it.ppeAppliesTo) {
             0 -> {
                 sum = if (it.ppeIsFixed) {
-                    payCalculations.hours.getHoursWorked() * it.ppeValue
+                    payCalculations.getHoursWorked() * it.ppeValue
                 } else {
-                    payCalculations.pay.getPayTimeWorked() * it.ppeValue / 100
+                    payCalculations.getPayTimeWorked() * it.ppeValue / 100
                 }
             }
 
             1 -> {
                 sum = if (it.ppeIsFixed) {
-                    payCalculations.hours.getDaysWorked() * it.ppeValue
+                    payCalculations.getDaysWorked() * it.ppeValue
                 } else {
-                    payCalculations.pay.getPayTimeWorked() * it.ppeValue / 100
+                    payCalculations.getPayTimeWorked() * it.ppeValue / 100
                 }
             }
 
@@ -556,7 +556,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
 
         CoroutineScope(Dispatchers.Main).launch {
             val deferTaxList =
-                async { payCalculations.tax.getTaxList() }
+                async { payCalculations.getTaxList() }
             val taxList = ArrayList<ExtraAndTotal>()
             for (tax in deferTaxList.await()
             ) {

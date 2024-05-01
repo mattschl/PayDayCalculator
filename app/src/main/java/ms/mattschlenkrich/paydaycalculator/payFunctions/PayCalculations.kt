@@ -21,7 +21,7 @@ class PayCalculations(
     private val employer: Employers,
     private val cutOff: String,
     private val mView: View,
-) {
+) : IPayCalculations {
     private val workDates = ArrayList<WorkDates>()
     private lateinit var extraTypes: ArrayList<WorkExtraTypes>
 
@@ -33,12 +33,7 @@ class PayCalculations(
     private lateinit var extraDebitCalculations: ExtraDebitCalculations
     private lateinit var hourlyPayCalculations: HourlyPayCalculations
     private lateinit var taxCalculations: TaxCalculations
-    var payRate = 0.0
-    val hours = Hours()
-    val pay = Pay()
-    val credits = Credits()
-    val tax = Tax()
-    val deductions = Deductions()
+    private var payRate = 0.0
 
     init {
         CoroutineScope(Dispatchers.Main).launch {
@@ -99,53 +94,42 @@ class PayCalculations(
         hourlyCalculations = HourlyCalculations(workDates)
     }
 
-    inner class Deductions {
-        fun getDebitExtraAndTotalByPay() = extraDebitCalculations.getDebitList()
-        fun getDebitTotalsByPay(): Double = extraDebitCalculations.getDebitTotalsByPay()
+    override fun getDebitExtraAndTotalByPay() = extraDebitCalculations.getDebitList()
+    override fun getDebitTotalsByPay(): Double = extraDebitCalculations.getDebitTotalsByPay()
+    override fun getCreditExtraAndTotalsByDate() =
+        extraCreditCalculations.getCreditExtraAndTotalsByDate()
+
+    override fun getCreditExtrasAndTotalsByPay() =
+        extraCreditCalculations.getCreditExtrasAndTotalsByPay()
+
+    override fun getCreditTotalAll() = extraCreditCalculations.getCreditTotal()
+    override fun getHoursWorked() = hourlyCalculations.getHoursWorked()
+    override fun getHoursAll() = hourlyCalculations.getHoursAll()
+    override fun getHoursReg() = hourlyCalculations.getHoursReg()
+    override fun getHoursOt() = hourlyCalculations.getHoursOt()
+    override fun getHoursDblOt() = hourlyCalculations.getHoursDblOt()
+    override fun getHoursStat() = hourlyCalculations.getHoursStat()
+    override fun getDaysWorked() = hourlyCalculations.getDaysWorked()
+    override fun getPayRate(): Double {
+        return payRate
     }
 
-    inner class Credits {
-        fun getCreditExtraAndTotalsByDate() =
-            extraCreditCalculations.getCreditExtraAndTotalsByDate()
-
-        fun getCreditExtrasAndTotalsByPay() =
-            extraCreditCalculations.getCreditExtrasAndTotalsByPay()
-
-        fun getCreditTotalAll() = extraCreditCalculations.getCreditTotal()
-    }
-
-    inner class Hours {
-        fun getHoursWorked() = hourlyCalculations.getHoursWorked()
-        fun getHoursAll() = hourlyCalculations.getHoursAll()
-        fun getHoursReg() = hourlyCalculations.getHoursReg()
-        fun getHoursOt() = hourlyCalculations.getHoursOt()
-        fun getHoursDblOt() = hourlyCalculations.getHoursDblOt()
-        fun getHoursStat() = hourlyCalculations.getHoursStat()
-        fun getDaysWorked() = hourlyCalculations.getDaysWorked()
-    }
-
-    inner class Pay {
-        fun getPayReg() = hourlyPayCalculations.getPayReg()
-        fun getPayOt() = hourlyPayCalculations.getPayOt()
-        fun getPayDblOt() = hourlyPayCalculations.getPayDblOt()
-        fun getPayHourly() = hourlyPayCalculations.getPayHourly()
-        fun getPayStat() = hourlyPayCalculations.getPayStat()
-        fun getPayGross(): Double {
-            return if (getPayHourly() > 0.0) {
-                getPayHourly() + credits.getCreditTotalAll()
-            } else {
-                0.0
-            }
+    override fun getPayReg() = hourlyPayCalculations.getPayReg()
+    override fun getPayOt() = hourlyPayCalculations.getPayOt()
+    override fun getPayDblOt() = hourlyPayCalculations.getPayDblOt()
+    override fun getPayHourly() = hourlyPayCalculations.getPayHourly()
+    override fun getPayStat() = hourlyPayCalculations.getPayStat()
+    override fun getPayGross(): Double {
+        return if (getPayHourly() > 0.0) {
+            getPayHourly() + getCreditTotalAll()
+        } else {
+            0.0
         }
-
-        fun getPayTimeWorked() = hourlyPayCalculations.getPayTimeWorked()
-
     }
 
-    inner class Tax {
-        fun getAllTaxDeductions() = taxCalculations.getAllTaxDeductions()
-        fun getTaxList() = taxCalculations.getTaxList()
-    }
+    override fun getPayTimeWorked() = hourlyPayCalculations.getPayTimeWorked()
+    override fun getAllTaxDeductions() = taxCalculations.getAllTaxDeductions()
+    override fun getTaxList() = taxCalculations.getTaxList()
 
     private fun findRate() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->

@@ -186,40 +186,40 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
             delay(WAIT_1000)
             binding.apply {
                 var display = nf.displayDollars(
-                    -payCalculations.deductions.getDebitTotalsByPay()
-                            - payCalculations.tax.getAllTaxDeductions()
+                    -payCalculations.getDebitTotalsByPay()
+                            - payCalculations.getAllTaxDeductions()
                 )
                 tvDeductions.text = display
                 tvDeductions.setTextColor(Color.RED)
                 display = "NET: ${
                     nf.displayDollars(
-                        payCalculations.pay.getPayGross()
-                                - payCalculations.deductions.getDebitTotalsByPay()
-                                - payCalculations.tax.getAllTaxDeductions()
+                        payCalculations.getPayGross()
+                                - payCalculations.getDebitTotalsByPay()
+                                - payCalculations.getAllTaxDeductions()
                     )
                 }"
                 tvNetPay.text = display
                 display = "Gross ${
                     nf.displayDollars(
-                        payCalculations.pay.getPayGross()
+                        payCalculations.getPayGross()
                     )
                 }"
                 tvGrossPay.text = display
                 display = ""
-                if (payCalculations.hours.getHoursReg() != 0.0) {
-                    display = "Hours: ${payCalculations.hours.getHoursReg()}"
+                if (payCalculations.getHoursReg() != 0.0) {
+                    display = "Hours: ${payCalculations.getHoursReg()}"
                 }
-                if (payCalculations.pay.getPayOt() != 0.0) {
+                if (payCalculations.getPayOt() != 0.0) {
                     if (display.isNotBlank()) display += " | "
-                    display += "Ot: ${payCalculations.hours.getHoursOt()}"
+                    display += "Ot: ${payCalculations.getHoursOt()}"
                 }
-                if (payCalculations.hours.getHoursDblOt() != 0.0) {
+                if (payCalculations.getHoursDblOt() != 0.0) {
                     if (display.isNotBlank()) display += " | "
-                    display += "Dbl Ot: ${payCalculations.hours.getHoursDblOt()}"
+                    display += "Dbl Ot: ${payCalculations.getHoursDblOt()}"
                 }
-                if (payCalculations.hours.getHoursStat() != 0.0) {
+                if (payCalculations.getHoursStat() != 0.0) {
                     if (display.isNotBlank()) display += " | "
-                    display += "Stat Hours: ${payCalculations.hours.getHoursStat()}"
+                    display += "Stat Hours: ${payCalculations.getHoursStat()}"
                 }
                 tvHours.text = display
             }
