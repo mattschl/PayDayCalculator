@@ -216,7 +216,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
             if (extrasComplete.await()) {
                 binding.apply {
                     val regHours = async { payCalculations.getHoursReg() }
-                    val payRate = async { payCalculations.payRate }
+                    val payRate = async { payCalculations.getPayRate() }
                     val regPay = async { payCalculations.getPayReg() }
                     val otHours = async { payCalculations.getHoursOt() }
                     val otPay = async { payCalculations.getPayOt() }
