@@ -13,7 +13,7 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
-import ms.mattschlenkrich.paydaycalculator.payFunctions.PayDayProjections
+import ms.mattschlenkrich.paydaycalculator.payFunctions.PayDateProjections
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 class NewTimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFragment {
@@ -25,7 +25,7 @@ class NewTimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetF
     private var curEmployer: Employers? = null
     private val cutOffs = ArrayList<String>()
     private var curCutOff = ""
-    private val projections = PayDayProjections()
+    private val projections = PayDateProjections()
     private val nf = NumberFunctions()
     private val df = DateFunctions()
     private var workDateAdapter: WorkDateAdapter? = null

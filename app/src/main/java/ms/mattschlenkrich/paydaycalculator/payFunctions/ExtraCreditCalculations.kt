@@ -8,7 +8,7 @@ import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
 class ExtraCreditCalculations(
     private val hourlyCalculations: HourlyCalculations,
     private val payRate: Double,
-    private val workDates: ArrayList<WorkDates>,
+    private val workDates: List<WorkDates>,
     private val workDateExtrasFull: ArrayList<WorkDateExtraAndTypeFull>,
     private val workExtrasByPay: ArrayList<ExtraDefinitionAndType>,
 ) {

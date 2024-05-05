@@ -4,6 +4,7 @@ import android.view.View
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
@@ -22,7 +23,7 @@ class PayCalculations(
     private val cutOff: String,
     private val mView: View,
 ) : IPayCalculations {
-    private val workDates = ArrayList<WorkDates>()
+    private lateinit var workDatesList: List<WorkDates>
     private lateinit var extraTypes: ArrayList<WorkExtraTypes>
 
     private val taxRules = ArrayList<WorkTaxRules>()
@@ -37,10 +38,12 @@ class PayCalculations(
 
     init {
         CoroutineScope(Dispatchers.Main).launch {
-            findWorkDates()
+            val workDates = async { getWorkDatesList() }
+            workDatesList = getWorkDatesList()
             findRate()
             findTaxRates()
-            performHourlyCalculations()
+            getHourlyCalculations()
+
             performHourlyPayCalculations()
             performExtraCalculations()
             performCreditCalculations()
@@ -77,7 +80,7 @@ class PayCalculations(
         extraCreditCalculations = ExtraCreditCalculations(
             hourlyCalculations,
             payRate,
-            workDates,
+            workDatesList,
             extraCalculations.getWorkDateExtrasFull(),
             extraCalculations.getWorkExtrasByPay()
         )
@@ -90,8 +93,8 @@ class PayCalculations(
         extraTypes = extraCalculations.getExtraTypes()
     }
 
-    private fun performHourlyCalculations() {
-        hourlyCalculations = HourlyCalculations(workDates)
+    private fun getHourlyCalculations() {
+        hourlyCalculations = HourlyCalculations(workDatesList)
     }
 
     override fun getDebitExtraAndTotalByPay() = extraDebitCalculations.getDebitList()
@@ -145,7 +148,8 @@ class PayCalculations(
         }
     }
 
-    private fun findWorkDates() {
+    private fun getWorkDatesList(): List<WorkDates> {
+        val workDates = ArrayList<WorkDates>()
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.payDayViewModel.getWorkDateList(
                 employer.employerId, cutOff
@@ -156,6 +160,7 @@ class PayCalculations(
                 }
             }
         }
+        return workDates.toList()
     }
 
 
@@ -184,7 +189,6 @@ class PayCalculations(
                 mainActivity.workTaxViewModel.getTaxDefByDate(
                     effectiveDate
                 ).observe(lifecycleOwner) { list ->
-                    taxRules.clear()
                     list.listIterator().forEach {
                         taxRules.add(it)
                     }

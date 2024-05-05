@@ -6,8 +6,8 @@ import ms.mattschlenkrich.paydaycalculator.model.tax.TaxAndAmount
 interface IPayCalculations {
     fun getDebitExtraAndTotalByPay(): List<ExtraAndTotal>
     fun getDebitTotalsByPay(): Double
-    fun getCreditExtraAndTotalsByDate(): ArrayList<ExtraAndTotal>
-    fun getCreditExtrasAndTotalsByPay(): ArrayList<ExtraAndTotal>
+    fun getCreditExtraAndTotalsByDate(): List<ExtraAndTotal>
+    fun getCreditExtrasAndTotalsByPay(): List<ExtraAndTotal>
     fun getCreditTotalAll(): Double
     fun getHoursWorked(): Double
     fun getHoursAll(): Double

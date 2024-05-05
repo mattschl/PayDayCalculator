@@ -13,7 +13,7 @@ import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-class PayDayProjections {
+class PayDateProjections {
 
     fun generateNextCutOff(
         employer: Employers,

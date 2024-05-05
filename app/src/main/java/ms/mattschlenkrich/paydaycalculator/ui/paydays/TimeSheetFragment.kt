@@ -26,8 +26,8 @@ import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.model.payperiod.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.payFunctions.PayCalculations
-import ms.mattschlenkrich.paydaycalculator.payFunctions.PayDayProjections
+import ms.mattschlenkrich.paydaycalculator.payFunctions.NewPayCalculationsRepository
+import ms.mattschlenkrich.paydaycalculator.payFunctions.PayDateProjections
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import java.time.LocalDate
 
@@ -42,7 +42,6 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
     private var curEmployer: Employers? = null
     private val cutOffs = ArrayList<String>()
     private var curCutOff = ""
-    private val projections = PayDayProjections()
     private val nf = NumberFunctions()
     private val df = DateFunctions()
     private var workDateAdapter: WorkDateAdapter? = null
@@ -176,7 +175,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
 
     override fun fillValues() {
         Log.d(TAG, "In fillValues curCutoff is $curCutOff")
-        val payCalculations = PayCalculations(
+        val payCalculations = NewPayCalculationsRepository(
             mainActivity,
             curEmployer!!,
             curCutOff,
@@ -272,6 +271,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
     }
 
     private fun generateCutOff() {
+        val projections = PayDateProjections()
         val nextCutOff = projections.generateNextCutOff(
             curEmployer!!,
             if (cutOffs.isEmpty()) "" else cutOffs[0]
