@@ -4,13 +4,19 @@ import android.view.View
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
+import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerPayRates
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
+import ms.mattschlenkrich.paydaycalculator.model.extras.ExtraAndTotal
+import ms.mattschlenkrich.paydaycalculator.model.extras.ExtraDefinitionAndType
 import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDateExtraAndTypeFull
 import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodExtras
+import ms.mattschlenkrich.paydaycalculator.model.tax.TaxAndAmount
 import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.tax.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
@@ -20,119 +26,517 @@ import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 class PayCalculations(
     private val mainActivity: MainActivity,
     private val employer: Employers,
-    private val cutOff: String,
     private val mView: View,
-) : IPayCalculations {
-    private lateinit var workDatesList: List<WorkDates>
-    private lateinit var extraTypes: ArrayList<WorkExtraTypes>
-
+    private val curPayPeriod: PayPeriods,
+) {
+    private val workDates = ArrayList<WorkDates>()
+    private val workDateExtrasFull = ArrayList<WorkDateExtraAndTypeFull>()
+    private val workExtrasByPay = ArrayList<ExtraDefinitionAndType>()
+    private val extraTypes = ArrayList<WorkExtraTypes>()
     private val taxRules = ArrayList<WorkTaxRules>()
     private val taxTypes = ArrayList<TaxTypes>()
-    private lateinit var hourlyCalculations: HourlyCalculations
-    private lateinit var extraCalculations: ExtraCalculations
-    private lateinit var extraCreditCalculations: ExtraCreditCalculations
-    private lateinit var extraDebitCalculations: ExtraDebitCalculations
-    private lateinit var hourlyPayCalculations: HourlyPayCalculations
-    private lateinit var taxCalculations: TaxCalculations
-    private var payRate = 0.0
+    private val payPeriodExtras = ArrayList<WorkPayPeriodExtras>()
+    var rate = 0.0
+    val hours = Hours()
+    val pay = Pay()
+    val extras = Extras()
+    val tax = TAX()
+    val deductions = Deductions()
 
     init {
         CoroutineScope(Dispatchers.Main).launch {
-            val workDates = async { getWorkDatesList() }
-            workDatesList = getWorkDatesList()
+
             findRate()
+            delay(WAIT_250)
+            findWorkDates()
+            findExtrasCustomPerPay()
+            findExtrasPerDay()
+            findExtrasPerPay()
+            findExtraTypes()
             findTaxRates()
-            getHourlyCalculations()
-
-            performHourlyPayCalculations()
-            performExtraCalculations()
-            performCreditCalculations()
-            performDebitCalculations()
-            performTaxCalculations()
         }
     }
 
-    private fun performTaxCalculations() {
-        taxCalculations = TaxCalculations(
-            employer,
-            taxRules,
-            taxTypes,
-            hourlyPayCalculations,
-            extraCreditCalculations
-        )
+    inner class Deductions {
+        fun getDebitExtraAndTotalByPay(): ArrayList<ExtraAndTotal> {
+            val debitList = ArrayList<ExtraAndTotal>()
+            for (i in 0 until workExtrasByPay.size) {
+                var notFound = true
+                for (extra in payPeriodExtras) {
+                    if (workExtrasByPay[i].extraType.wetName == extra.ppeName) {
+                        notFound = false
+                    }
+                }
+                if (notFound) {
+                    if (!workExtrasByPay[i].extraType.wetIsCredit &&
+                        workExtrasByPay[i].extraType.wetIsDefault &&
+                        workExtrasByPay[i].extraType.wetAppliesTo == 3
+                    ) {
+                        if (workExtrasByPay[i].definition.weIsFixed
+                        ) {
+                            debitList.add(
+                                ExtraAndTotal(
+                                    workExtrasByPay[i].extraType.wetName,
+                                    workExtrasByPay[i].definition.weValue
+                                )
+                            )
+                        } else {
+                            debitList.add(
+                                ExtraAndTotal(
+                                    workExtrasByPay[i].extraType.wetName,
+                                    workExtrasByPay[i].definition.weValue *
+                                            pay.getPayTimeWorked() / 100
+                                )
+                            )
+                        }
+                    } else if (!workExtrasByPay[i].extraType.wetIsCredit &&
+                        workExtrasByPay[i].extraType.wetIsDefault &&
+                        workExtrasByPay[i].extraType.wetAppliesTo == 0 &&
+                        !workExtrasByPay[i].definition.weIsFixed
+                    ) {
+                        debitList.add(
+                            ExtraAndTotal(
+                                workExtrasByPay[i].extraType.wetName,
+                                workExtrasByPay[i].definition.weValue *
+                                        pay.getPayTimeWorked() / 100
+                            )
+                        )
+                    }
+                }
+            }
+            for (extra in payPeriodExtras) {
+                if (!extra.ppeIsCredit &&
+                    !extra.ppeIsDeleted
+                ) {
+                    when (extra.ppeAppliesTo) {
+                        0 -> {
+                            val debitTotal = if (extra.ppeIsFixed) {
+                                hours.getHoursWorked() * extra.ppeValue
+                            } else {
+                                pay.getPayTimeWorked() +
+                                        extra.ppeValue / 100
+                            }
+                            debitList.add(
+                                ExtraAndTotal(extra.ppeName, debitTotal)
+                            )
+                        }
+
+                        1 -> {
+                            val debitTotal = if (extra.ppeIsFixed) {
+                                hours.getDaysWorked() * extra.ppeValue
+                            } else {
+                                pay.getPayTimeWorked() * extra.ppeValue / 100
+                            }
+                            debitList.add(
+                                ExtraAndTotal(extra.ppeName, debitTotal)
+                            )
+                        }
+
+                        3 -> {
+                            val debitTotal = if (extra.ppeIsFixed) {
+                                extra.ppeValue
+                            } else {
+                                pay.getPayHourly() * extra.ppeValue / 100
+                            }
+                            debitList.add(
+                                ExtraAndTotal(extra.ppeName, debitTotal)
+                            )
+                        }
+                    }
+                }
+            }
+            return debitList
+        }
+
     }
 
-    private fun performHourlyPayCalculations() {
-        hourlyPayCalculations = HourlyPayCalculations(
-            hourlyCalculations,
-            payRate
-        )
+    inner class Extras {
+
+        fun getCreditExtraAndTotalsByDate(): ArrayList<ExtraAndTotal> {
+            val extraList = ArrayList<ExtraAndTotal>()
+            var total = 0.0
+            for (i in 0 until workDateExtrasFull.size) {
+                if (workDateExtrasFull[i].extra.wdeIsCredit) {
+                    if (workDateExtrasFull[i].extra.wdeAppliesTo == 0 &&
+                        workDateExtrasFull[i].extra.wdeAttachTo == 1 &&
+                        workDateExtrasFull[i].extra.wdeIsFixed
+                    ) {
+                        for (date in workDates) {
+                            if (date.workDateId == workDateExtrasFull[i].extra.wdeWorkDateId) {
+                                total += workDateExtrasFull[i].extra.wdeValue * (
+                                        date.wdRegHours + date.wdOtHours + date.wdDblOtHours
+                                        )
+                            }
+                        }
+                    } else if (workDateExtrasFull[i].extra.wdeAppliesTo == 0 &&
+                        workDateExtrasFull[i].extra.wdeAttachTo == 1 &&
+                        !workDateExtrasFull[i].extra.wdeIsFixed
+                    ) {
+                        for (date in workDates) {
+                            if (date.workDateId == workDateExtrasFull[i].extra.wdeWorkDateId) {
+                                total += workDateExtrasFull[i].extra.wdeValue * rate * (
+                                        date.wdRegHours + date.wdOtHours + date.wdDblOtHours
+                                        )
+                            }
+                        }
+                    } else if (workDateExtrasFull[i].extra.wdeAppliesTo == 1 &&
+                        workDateExtrasFull[i].extra.wdeAttachTo == 1 &&
+                        workDateExtrasFull[i].extra.wdeIsFixed
+                    ) {
+                        for (date in workDates) {
+                            if (date.workDateId == workDateExtrasFull[i].extra.wdeWorkDateId) {
+                                total += workDateExtrasFull[i].extra.wdeValue
+                            }
+                        }
+                    } else if (workDateExtrasFull[i].extra.wdeAppliesTo == 1 &&
+                        workDateExtrasFull[i].extra.wdeAttachTo == 1 &&
+                        !workDateExtrasFull[i].extra.wdeIsFixed
+                    ) {
+                        for (date in workDates) {
+                            if (date.workDateId == workDateExtrasFull[i].extra.wdeWorkDateId) {
+                                total += workDateExtrasFull[i].extra.wdeValue * rate * (
+                                        date.wdRegHours + date.wdOtHours + date.wdDblOtHours
+                                        )
+                            }
+                        }
+                    }
+                }
+                if (workDateExtrasFull.size == 1) {
+                    extraList.add(ExtraAndTotal(workDateExtrasFull[i].extra.wdeName, total))
+                    total = 0.0
+                } else if (i < workDateExtrasFull.size - 1 &&
+                    (workDateExtrasFull[i].extra.wdeName != workDateExtrasFull[i + 1].extra.wdeName)
+                ) {
+                    extraList.add(ExtraAndTotal(workDateExtrasFull[i].extra.wdeName, total))
+                    total = 0.0
+                } else if (i == workDateExtrasFull.size - 1) {
+                    extraList.add(ExtraAndTotal(workDateExtrasFull[i].extra.wdeName, total))
+                    total = 0.0
+                }
+            }
+            return extraList
+        }
+
+        fun getCreditExtrasAndTotalsByPay(): ArrayList<ExtraAndTotal> {
+            val extraList = ArrayList<ExtraAndTotal>()
+            for (i in 0 until workExtrasByPay.size) {
+                var notFound = true
+                for (extra in payPeriodExtras) {
+                    if (workExtrasByPay[i].extraType.wetName == extra.ppeName) {
+                        notFound = false
+                    }
+                }
+                if (notFound) {
+                    if (workExtrasByPay[i].extraType.wetIsCredit &&
+                        workExtrasByPay[i].extraType.wetIsDefault &&
+                        workExtrasByPay[i].extraType.wetAppliesTo == 3
+                    ) {
+                        if (workExtrasByPay[i].definition.weIsFixed
+                        ) {
+                            extraList.add(
+                                ExtraAndTotal(
+                                    workExtrasByPay[i].extraType.wetName,
+                                    workExtrasByPay[i].definition.weValue
+                                )
+                            )
+                        } else {
+                            extraList.add(
+                                ExtraAndTotal(
+                                    workExtrasByPay[i].extraType.wetName,
+                                    workExtrasByPay[i].definition.weValue *
+                                            pay.getPayTimeWorked() / 100
+                                )
+                            )
+                        }
+                    } else if (workExtrasByPay[i].extraType.wetIsCredit &&
+                        workExtrasByPay[i].extraType.wetIsDefault &&
+                        workExtrasByPay[i].extraType.wetAppliesTo == 0 &&
+                        !workExtrasByPay[i].definition.weIsFixed
+                    ) {
+                        extraList.add(
+                            ExtraAndTotal(
+                                workExtrasByPay[i].extraType.wetName,
+                                workExtrasByPay[i].definition.weValue *
+                                        pay.getPayTimeWorked() / 100
+
+                            )
+                        )
+                    }
+                }
+            }
+            for (extra in payPeriodExtras) {
+                if (extra.ppeIsCredit &&
+                    !extra.ppeIsDeleted
+                ) {
+                    when (extra.ppeAppliesTo) {
+                        0 -> {
+                            val creditTotal = if (extra.ppeIsFixed) {
+                                hours.getHoursWorked() * extra.ppeValue
+                            } else {
+                                pay.getPayTimeWorked() +
+                                        extra.ppeValue / 100
+                            }
+                            extraList.add(
+                                ExtraAndTotal(extra.ppeName, creditTotal)
+                            )
+                        }
+
+                        1 -> {
+                            val creditTotal = if (extra.ppeIsFixed) {
+                                hours.getDaysWorked() * extra.ppeValue
+                            } else {
+                                pay.getPayTimeWorked() * extra.ppeValue / 100
+                            }
+                            extraList.add(
+                                ExtraAndTotal(extra.ppeName, creditTotal)
+                            )
+                        }
+
+                        3 -> {
+                            val creditTotal = if (extra.ppeIsFixed) {
+                                extra.ppeValue
+                            } else {
+                                pay.getPayHourly() * extra.ppeValue / 100
+                            }
+                            extraList.add(
+                                ExtraAndTotal(extra.ppeName, creditTotal)
+                            )
+                        }
+                    }
+                }
+            }
+            return extraList
+        }
+
     }
 
-    private fun performDebitCalculations() {
-        extraDebitCalculations = ExtraDebitCalculations(
-            extraCalculations.getWorkExtrasByPay(),
-            hourlyPayCalculations
-        )
-    }
+    inner class Hours {
+        fun getHoursWorked(): Double {
+            return getHoursReg() + getHoursOt() + getHoursDblOt()
+        }
 
-    private fun performCreditCalculations() {
-        extraCreditCalculations = ExtraCreditCalculations(
-            hourlyCalculations,
-            payRate,
-            workDatesList,
-            extraCalculations.getWorkDateExtrasFull(),
-            extraCalculations.getWorkExtrasByPay()
-        )
-    }
+        fun getHoursReg(): Double {
+            var hours = 0.0
+            for (day in workDates) {
+                if (!day.wdIsDeleted) hours += day.wdRegHours
+            }
+            return hours
+        }
 
-    private fun performExtraCalculations() {
-        extraCalculations = ExtraCalculations(
-            mView, mainActivity, employer, cutOff
-        )
-        extraTypes = extraCalculations.getExtraTypes()
-    }
+        fun getHoursOt(): Double {
+            var hours = 0.0
+            for (day in workDates) {
+                if (!day.wdIsDeleted) hours += day.wdOtHours
+            }
+            return hours
+        }
 
-    private fun getHourlyCalculations() {
-        hourlyCalculations = HourlyCalculations(workDatesList)
-    }
+        fun getHoursDblOt(): Double {
+            var hours = 0.0
+            for (day in workDates) {
+                if (!day.wdIsDeleted) hours += day.wdDblOtHours
+            }
+            return hours
+        }
 
-    override fun getDebitExtraAndTotalByPay() = extraDebitCalculations.getDebitList()
-    override fun getDebitTotalsByPay(): Double = extraDebitCalculations.getDebitTotalsByPay()
-    override fun getCreditExtraAndTotalsByDate() =
-        extraCreditCalculations.getCreditExtraAndTotalsByDate()
+        fun getHoursStat(): Double {
+            var hours = 0.0
+            for (day in workDates) {
+                if (!day.wdIsDeleted) hours += day.wdStatHours
+            }
+            return hours
+        }
 
-    override fun getCreditExtrasAndTotalsByPay() =
-        extraCreditCalculations.getCreditExtrasAndTotalsByPay()
-
-    override fun getCreditTotalAll() = extraCreditCalculations.getCreditTotal()
-    override fun getHoursWorked() = hourlyCalculations.getHoursWorked()
-    override fun getHoursAll() = hourlyCalculations.getHoursAll()
-    override fun getHoursReg() = hourlyCalculations.getHoursReg()
-    override fun getHoursOt() = hourlyCalculations.getHoursOt()
-    override fun getHoursDblOt() = hourlyCalculations.getHoursDblOt()
-    override fun getHoursStat() = hourlyCalculations.getHoursStat()
-    override fun getDaysWorked() = hourlyCalculations.getDaysWorked()
-    override fun getPayRate(): Double {
-        return payRate
-    }
-
-    override fun getPayReg() = hourlyPayCalculations.getPayReg()
-    override fun getPayOt() = hourlyPayCalculations.getPayOt()
-    override fun getPayDblOt() = hourlyPayCalculations.getPayDblOt()
-    override fun getPayHourly() = hourlyPayCalculations.getPayHourly()
-    override fun getPayStat() = hourlyPayCalculations.getPayStat()
-    override fun getPayGross(): Double {
-        return if (getPayHourly() > 0.0) {
-            getPayHourly() + getCreditTotalAll()
-        } else {
-            0.0
+        fun getDaysWorked(): Int {
+            var days = 0
+            for (day in workDates) {
+                days++
+            }
+            return days
         }
     }
 
-    override fun getPayTimeWorked() = hourlyPayCalculations.getPayTimeWorked()
-    override fun getAllTaxDeductions() = taxCalculations.getAllTaxDeductions()
-    override fun getTaxList() = taxCalculations.getTaxList()
+    inner class Pay {
+        fun getPayReg(): Double {
+            return hours.getHoursReg() * rate
+        }
+
+        fun getPayOt(): Double {
+            return hours.getHoursOt() * rate * 1.5
+        }
+
+        fun getPayDblOt(): Double {
+            return hours.getHoursDblOt() * rate * 2
+        }
+
+        fun getPayHourly(): Double {
+            return getPayTimeWorked() + getPayStat()
+        }
+
+        fun getPayStat(): Double {
+            return hours.getHoursStat() * rate
+        }
+
+//        fun getPayNet(): Double {
+//            return if (getPayGross() - getDebitTotalsByPay() - tax.getAllTaxDeductions() > 0.0) {
+//                getPayGross() - getDebitTotalsByPay() - tax.getAllTaxDeductions()
+//            } else {
+//                0.0
+//            }
+//        }
+
+        fun getPayGross(): Double {
+            return if (getPayHourly() > 0.0) {
+                getPayHourly() + getCreditTotalByDate() + getCreditTotalsByPay()
+            } else {
+                0.0
+            }
+        }
+
+        fun getPayTimeWorked(): Double {
+            return getPayReg() + getPayOt() + getPayDblOt()
+        }
+
+//        fun getCreditTotalAll(): Double {
+//            return getCreditTotalByDate() + getCreditTotalsByPay()
+//        }
+
+        private fun getCreditTotalByDate(): Double {
+            var total = 0.0
+            for (extra in extras.getCreditExtraAndTotalsByDate()) {
+                total += extra.amount
+            }
+            return if (getPayHourly() > 0.0) {
+                total
+            } else {
+                0.0
+            }
+        }
+
+        private fun getCreditTotalsByPay(): Double {
+            var total = 0.0
+            for (extra in extras.getCreditExtrasAndTotalsByPay()) {
+//                Log.d(TAG, "extra is ${extra.extraName} and amount is ${extra.amount}")
+                total += extra.amount
+            }
+            return total
+        }
+
+        fun getDebitTotalsByPay(): Double {
+            var total = 0.0
+            for (extra in deductions.getDebitExtraAndTotalByPay()) {
+//                Log.d(TAG, "extra is ${extra.extraName} and amount is ${extra.amount}")
+                total += extra.amount
+            }
+            return if (getPayHourly() > 0.0) {
+                total
+            } else {
+                0.0
+            }
+        }
+    }
+
+    inner class TAX {
+
+        private fun getTaxFactor(amount: Double): Double {
+            when (employer.payFrequency) {
+                "Bi-Weekly" -> {
+                    return amount / 26
+                }
+
+                "Weekly" -> {
+                    return amount / 52
+                }
+
+                "Semi-Monthly" -> {
+                    return amount / 24
+                }
+
+                "Monthly" -> {
+                    return amount / 12
+                }
+
+                else -> {
+                    return 0.0
+                }
+            }
+        }
+
+        fun getAllTaxDeductions(): Double {
+            var totalTax = 0.0
+            for (taxAndAmount in getTaxList()) {
+                totalTax += taxAndAmount.amount
+            }
+            return if (pay.getPayHourly() > 0.0) {
+                totalTax
+            } else {
+                0.0
+            }
+        }
+
+        fun getTaxList():
+                ArrayList<TaxAndAmount> {
+            val taxesAndAmounts = ArrayList<TaxAndAmount>()
+            for (taxType in taxTypes) {
+//            Log.d(TAG, "looping through types - $type")
+                var taxTotal = 0.0
+
+                var runningRemainder =
+                    when (taxType.ttBasedOn) {
+                        0 -> {
+                            pay.getPayTimeWorked()
+                        }
+
+                        1 -> {
+                            pay.getPayHourly()
+                        }
+
+                        2 -> {
+                            pay.getPayGross()
+                        }
+
+                        else -> {
+                            0.0
+                        }
+                    }
+                for (def in taxRules) {
+//                Log.d(
+//                    TAG, "looping through taxDef - ${def.wtType} " +
+//                            "and - ${def.wtPercent} "
+//                )
+                    if (def.wtType == taxType.taxType && runningRemainder > 0) {
+                        var taxable: Double
+                        runningRemainder -=
+                            if (def.wtHasExemption) {
+                                getTaxFactor(def.wtExemptionAmount)
+                            } else {
+                                0.0
+                            }
+                        if (runningRemainder < 0.0) {
+                            runningRemainder = 0.0
+                        }
+                        if (def.wtHasBracket &&
+                            runningRemainder >= getTaxFactor(def.wtBracketAmount)
+                        ) {
+                            taxable = getTaxFactor(def.wtBracketAmount)
+                            runningRemainder -= getTaxFactor(def.wtBracketAmount)
+                        } else {
+                            taxable = runningRemainder
+                            runningRemainder = 0.0
+                        }
+                        taxTotal += taxable * def.wtPercent
+                    }
+                }
+                taxesAndAmounts.add(
+                    TaxAndAmount(
+                        taxType.taxType, taxTotal
+                    )
+                )
+
+            }
+            return taxesAndAmounts
+        }
+    }
 
     private fun findRate() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
@@ -140,19 +544,36 @@ class PayCalculations(
                 employer.employerId
             ).observe(lifecycleOwner) { rates ->
                 rates.listIterator().forEach {
-                    if (it.eprEffectiveDate <= cutOff) {
-                        payRate = it.eprPayRate
+                    if (it.eprEffectiveDate <= curPayPeriod.ppCutoffDate) {
+                        rate = fixRateByInterval(it)
                     }
                 }
             }
         }
     }
 
-    private fun getWorkDatesList(): List<WorkDates> {
-        val workDates = ArrayList<WorkDates>()
+    private fun fixRateByInterval(rate: EmployerPayRates): Double {
+        var fixedRate = 0.0
+        when (rate.eprPerPeriod) {
+            0 -> {
+                fixedRate = rate.eprPayRate
+            }
+
+            1 -> {
+                fixedRate = rate.eprPayRate / 8
+            }
+
+            2 -> {
+                fixedRate = rate.eprPayRate / 40
+            }
+        }
+        return fixedRate
+    }
+
+    private fun findWorkDates() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.payDayViewModel.getWorkDateList(
-                employer.employerId, cutOff
+                employer.employerId, curPayPeriod.ppCutoffDate
             ).observe(lifecycleOwner) { list ->
                 workDates.clear()
                 list.listIterator().forEach {
@@ -160,15 +581,76 @@ class PayCalculations(
                 }
             }
         }
-        return workDates.toList()
     }
 
+    private fun findExtrasPerDay() {
+        mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
+            mainActivity.payDayViewModel.getWorkDateExtrasPerPay(
+                employer.employerId, curPayPeriod.ppCutoffDate
+            ).observe(lifecycleOwner) { list ->
+                workDateExtrasFull.clear()
+                list.listIterator().forEach {
+                    workDateExtrasFull.add(it)
+                }
+            }
+        }
+    }
+
+    private fun findExtrasPerPay() {
+        mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
+            mainActivity.workExtraViewModel.getExtraTypesAndDef(
+                employer.employerId, curPayPeriod.ppCutoffDate, 3
+            ).observe(lifecycleOwner) { list ->
+                workExtrasByPay.clear()
+                list.listIterator().forEach {
+                    workExtrasByPay.add(it)
+                }
+            }
+        }
+    }
+
+//    private fun findPayPeriod() {
+//        mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
+//            mainActivity.payDayViewModel.getPayPeriod(
+//                cutOff, employer.employerId
+//            ).observe(lifecycleOwner) { payPeriod ->
+//                curPayPeriod = payPeriod
+//            }
+//        }
+//    }
+
+    private fun findExtrasCustomPerPay() {
+        mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
+            mainActivity.payDayViewModel.getPayPeriodExtras(
+                curPayPeriod.payPeriodId
+            ).observe(lifecycleOwner) { list ->
+                list.listIterator().forEach {
+                    payPeriodExtras.add(it)
+                }
+            }
+        }
+    }
+
+    private fun findExtraTypes() {
+        mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
+            mainActivity.workExtraViewModel.getWorkExtraTypeList(
+                employer.employerId
+            ).observe(
+                lifecycleOwner
+            ) { list ->
+                extraTypes.clear()
+                list.listIterator().forEach {
+                    extraTypes.add(it)
+                }
+            }
+        }
+    }
 
     private fun findTaxRates() {
         var effectiveDate = ""
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.workTaxViewModel.getCurrentEffectiveDate(
-                cutOff
+                curPayPeriod.ppCutoffDate
             ).observe(lifecycleOwner) { date ->
                 effectiveDate = date
             }
@@ -189,8 +671,16 @@ class PayCalculations(
                 mainActivity.workTaxViewModel.getTaxDefByDate(
                     effectiveDate
                 ).observe(lifecycleOwner) { list ->
+                    taxRules.clear()
+//                    var counter = 0
                     list.listIterator().forEach {
                         taxRules.add(it)
+//                        counter += 1
+//                        Log.d(
+//                            TAG, "iterating tax def for ${it.wtType} value is " +
+//                                    "${it.wtPercent} | counter $counter " +
+//                                    "LEVEL is ${it.wtLevel}"
+//                        )
                     }
                 }
             }

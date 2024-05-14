@@ -2,7 +2,6 @@ package ms.mattschlenkrich.paydaycalculator.ui.paydays
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -19,7 +18,6 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
@@ -28,6 +26,8 @@ import ms.mattschlenkrich.paydaycalculator.adapter.PayDetailTaxAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_DETAILS
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayDetailsBinding
@@ -43,7 +43,7 @@ import java.time.LocalDate
 
 private const val TAG = FRAG_PAY_DETAILS
 
-class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsFragment {
+class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
 
     private var _binding: FragmentPayDetailsBinding? = null
     private val binding get() = _binding!!
@@ -53,7 +53,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
     private var curPayPeriod: PayPeriods? = null
     private val cutOffs = ArrayList<String>()
     private var curCutOff = ""
-    private val nf = NumberFunctions()
+    private val cf = NumberFunctions()
     private val df = DateFunctions()
     private var valuesFilled = false
 
@@ -72,17 +72,15 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        CoroutineScope(Dispatchers.Main).launch{
-        setActions()
-        fillMenu()
         fillEmployers()
+        setActions()
         selectEmployer()
         selectCutOffDate()
-        fillFromHistory()
-//        }
+        fillMenu()
+        fillValues()
     }
 
-    private fun fillMenu(): Boolean {
+    private fun fillMenu() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_delete, menu)
@@ -101,7 +99,6 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
-        return true
     }
 
     private fun chooseDeletePayDay() {
@@ -149,7 +146,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
         AlertDialog.Builder(mView.context)
             .setTitle("Continue adding?")
             .setMessage(
-                "It is best to add a custom extra after all the " +
+                "It is best to add custom extras only after all the " +
                         "work hours have been entered. " +
                         "If it is based on the number of hours, days or a percentage, " +
                         "the results could be improperly calculated. "
@@ -196,7 +193,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
         }
     }
 
-    override fun fillPayDetails() {
+    fun fillPayDetails() {
         mainActivity.payDayViewModel.getPayPeriod(
             curCutOff, curEmployer!!.employerId
         ).observe(
@@ -208,90 +205,70 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
             val payCalculations = PayCalculations(
-                mainActivity, curEmployer!!, curPayPeriod!!.ppCutoffDate, mView
+                mainActivity, curEmployer!!, mView, curPayPeriod!!
             )
             delay(WAIT_500)
-            val extrasComplete = async { fillExtras(payCalculations) }
-//            delay(WAIT_500)
-            if (extrasComplete.await()) {
-                binding.apply {
-                    val regHours = async { payCalculations.getHoursReg() }
-                    val payRate = async { payCalculations.getPayRate() }
-                    val regPay = async { payCalculations.getPayReg() }
-                    val otHours = async { payCalculations.getHoursOt() }
-                    val otPay = async { payCalculations.getPayOt() }
-                    val dblOtHours = async { payCalculations.getHoursDblOt() }
-                    val dblOtPay = async { payCalculations.getPayDblOt() }
-                    val statHours = async { payCalculations.getHoursStat() }
-                    val statPay = async { payCalculations.getPayStat() }
-                    val totalHourlyPay = async { payCalculations.getPayHourly() }
-                    val grossPay = async { payCalculations.getPayGross() }
-                    val debits = async { payCalculations.getDebitTotalsByPay() }
-                    val taxDeductions = async { payCalculations.getAllTaxDeductions() }
-
-                    if (payCalculations.getPayReg() > 0.0) {
-                        llRegPay.visibility = View.VISIBLE
-                        tvRegHours.text = regHours.await().toString()
-                        tvRegRate.text = nf.displayDollars(payRate.await())
-                        tvRegPay.text = nf.displayDollars(regPay.await())
-                    } else {
-                        llRegPay.visibility = View.GONE
-                    }
-                    if (payCalculations.getPayOt() > 0.0) {
-                        llOtPay.visibility = View.VISIBLE
-                        tvOtHours.text = otHours.await().toString()
-                        tvOtRate.text = nf.displayDollars(payRate.await() * 1.5)
-                        tvOTPay.text = nf.displayDollars(otPay.await())
-                    } else {
-                        llOtPay.visibility = View.GONE
-                    }
-                    if (payCalculations.getPayDblOt() > 0.0) {
-                        llDblOtPay.visibility = View.VISIBLE
-                        tvDblOtHours.text = dblOtHours.await().toString()
-                        tvDblOtRate.text = nf.displayDollars(payRate.await() * 2)
-                        tvDblOtPay.text = nf.displayDollars(dblOtPay.await())
-                    } else {
-                        llDblOtPay.visibility = View.GONE
-                    }
-                    if (payCalculations.getPayStat() > 0.0) {
-                        llStatPay.visibility = View.VISIBLE
-                        tvStatHours.text = statHours.await().toString()
-                        tvStatRate.text = nf.displayDollars(payRate.await())
-                        tvStatPay.text = nf.displayDollars(statPay.await())
-                    } else {
-                        llStatPay.visibility = View.GONE
-                    }
-                    tvHourlyTotal.text = nf.displayDollars(totalHourlyPay.await())
-//                delay(WAIT_1000)
-                    var display = "Gross ${
-                        nf.displayDollars(
-                            grossPay.await()
-                        )
-                    }"
-                    val taxes = taxDeductions.await()
-                    tvGrossPay.text = display
-                    display = nf.displayDollars(
-                        -taxDeductions.await()
-                                - debits.await()
+            fillExtras(payCalculations)
+            delay(WAIT_1000)
+            binding.apply {
+                var display = "Gross ${
+                    cf.displayDollars(
+                        payCalculations.pay.getPayGross()
                     )
-                    tvDeductions.text = display
-                    tvDeductions.setTextColor(Color.RED)
-                    Log.d(TAG, "Trying to get value of tax deduction $taxes")
-                    display = "NET: ${
-                        nf.displayDollars(
-                            grossPay.await()
-                                    - taxDeductions.await()
-                                    - debits.await()
-                        )
-                    }"
-                    tvNetPay.text = display
+                }"
+                tvGrossPay.text = display
+                display = cf.displayDollars(
+                    -payCalculations.pay.getDebitTotalsByPay()
+                            - payCalculations.tax.getAllTaxDeductions()
+                )
+                tvDeductions.text = display
+                tvDeductions.setTextColor(Color.RED)
+                display = "NET: ${
+                    cf.displayDollars(
+                        payCalculations.pay.getPayGross()
+                                - payCalculations.pay.getDebitTotalsByPay()
+                                - payCalculations.tax.getAllTaxDeductions()
+                    )
+                }"
+                tvNetPay.text = display
+                if (payCalculations.pay.getPayReg() > 0.0) {
+                    llRegPay.visibility = View.VISIBLE
+                    tvRegHours.text = payCalculations.hours.getHoursReg().toString()
+                    tvRegRate.text = cf.displayDollars(payCalculations.rate)
+                    tvRegPay.text = cf.displayDollars(payCalculations.pay.getPayReg())
+                } else {
+                    llRegPay.visibility = View.GONE
                 }
+                if (payCalculations.pay.getPayOt() > 0.0) {
+                    llOtPay.visibility = View.VISIBLE
+                    tvOtHours.text = payCalculations.hours.getHoursOt().toString()
+                    tvOtRate.text = cf.displayDollars(payCalculations.rate * 1.5)
+                    tvOTPay.text = cf.displayDollars(payCalculations.pay.getPayOt())
+                } else {
+                    llOtPay.visibility = View.GONE
+                }
+                if (payCalculations.pay.getPayDblOt() > 0.0) {
+                    llDblOtPay.visibility = View.VISIBLE
+                    tvDblOtHours.text = payCalculations.hours.getHoursDblOt().toString()
+                    tvDblOtRate.text = cf.displayDollars(payCalculations.rate * 2)
+                    tvDblOtPay.text = cf.displayDollars(payCalculations.pay.getPayDblOt())
+                } else {
+                    llDblOtPay.visibility = View.GONE
+                }
+                if (payCalculations.pay.getPayStat() > 0.0) {
+                    llStatPay.visibility = View.VISIBLE
+                    tvStatHours.text = payCalculations.hours.getHoursStat().toString()
+                    tvStatRate.text = cf.displayDollars(payCalculations.rate)
+                    tvStatPay.text = cf.displayDollars(payCalculations.pay.getPayStat())
+                } else {
+                    llStatPay.visibility = View.GONE
+                }
+                tvHourlyTotal.text = cf.displayDollars(payCalculations.pay.getPayHourly())
             }
         }
     }
 
-    private suspend fun findExtras(payCalculations: PayCalculations):
-            ArrayList<WorkPayPeriodExtras> {
+    private fun findExtras(payCalculations: PayCalculations): ArrayList<WorkPayPeriodExtras> {
         val extraList = mutableListOf<WorkPayPeriodExtras>()
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
@@ -310,9 +287,9 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
                     workDateExtrasAndDates.add(it)
                 }
             }
-            delay(WAIT_500)
+            delay(WAIT_250)
             processExtrasByDay(workDateExtrasAndDates, extraList)
-            delay(WAIT_500)
+            delay(WAIT_250)
             mainActivity.workExtraViewModel.getExtraTypesAndDef(
                 curEmployer!!.employerId, curCutOff, 3
             ).observe(viewLifecycleOwner) { extras ->
@@ -371,7 +348,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
     private fun WorkDateExtrasAndDates.createExtraByManuallyAdded(
         subTotal: Double
     ) = WorkPayPeriodExtras(
-        nf.generateId(),
+        cf.generateId(),
         curPayPeriod!!.payPeriodId,
         null,
         workDateExtra.wdeName,
@@ -399,9 +376,9 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
             when (it.extraType.wetAppliesTo) {
                 0 -> {
                     val sum = if (it.definition.weIsFixed) {
-                        payCalculations.getHoursWorked() * it.definition.weValue
+                        payCalculations.hours.getHoursWorked() * it.definition.weValue
                     } else {
-                        payCalculations.getPayTimeWorked() * it.definition.weValue / 100
+                        payCalculations.pay.getPayTimeWorked() * it.definition.weValue / 100
                     }
                     extraList.add(
                         createWorkPayPeriodExtra(it, sum)
@@ -411,9 +388,9 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
                 1 -> {
                     val sum =
                         if (it.definition.weIsFixed) {
-                            payCalculations.getDaysWorked() * it.definition.weValue
+                            payCalculations.hours.getDaysWorked() * it.definition.weValue
                         } else {
-                            payCalculations.getPayTimeWorked() * it.definition.weValue / 100
+                            payCalculations.pay.getPayTimeWorked() * it.definition.weValue / 100
                         }
                     extraList.add(
                         createWorkPayPeriodExtra(it, sum)
@@ -427,7 +404,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
                         )
                     } else {
                         val sum =
-                            payCalculations.getPayHourly() * it.definition.weValue / 100
+                            payCalculations.pay.getPayHourly() * it.definition.weValue / 100
                         extraList.add(
                             createWorkPayPeriodExtra(it, sum)
                         )
@@ -441,7 +418,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
         it: ExtraDefinitionAndType,
         sum: Double
     ) = WorkPayPeriodExtras(
-        nf.generateId(),
+        cf.generateId(),
         curPayPeriod!!.payPeriodId,
         it.extraType.workExtraTypeId,
         it.extraType.wetName,
@@ -463,17 +440,17 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
         when (it.ppeAppliesTo) {
             0 -> {
                 sum = if (it.ppeIsFixed) {
-                    payCalculations.getHoursWorked() * it.ppeValue
+                    payCalculations.hours.getHoursWorked() * it.ppeValue
                 } else {
-                    payCalculations.getPayTimeWorked() * it.ppeValue / 100
+                    payCalculations.pay.getPayTimeWorked() * it.ppeValue / 100
                 }
             }
 
             1 -> {
                 sum = if (it.ppeIsFixed) {
-                    payCalculations.getDaysWorked() * it.ppeValue
+                    payCalculations.hours.getDaysWorked() * it.ppeValue
                 } else {
-                    payCalculations.getPayTimeWorked() * it.ppeValue / 100
+                    payCalculations.pay.getPayTimeWorked() * it.ppeValue / 100
                 }
             }
 
@@ -498,22 +475,20 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
         )
     }
 
-    private suspend fun fillExtras(payCalculations: PayCalculations): Boolean {
+    private fun fillExtras(payCalculations: PayCalculations) {
         CoroutineScope(Dispatchers.Main).launch {
-            val extrasList = async {
+            val extrasList =
                 findExtras(payCalculations)
-            }
 //            Log.d(TAG, "Before delay size is ${extrasList.size}")
-//            delay(WAIT_1000)
+            delay(WAIT_1000)
 //            Log.d(TAG, "AFTER delay size is ${extrasList.size}")
-            fillCredits(extrasList.await())
-            fillDeductions(payCalculations, extrasList.await())
-            mainActivity.mainViewModel.setPayPeriodExtraList(extrasList.await())
+            fillCredits(extrasList)
+            fillDeductions(payCalculations, extrasList)
+            mainActivity.mainViewModel.setPayPeriodExtraList(extrasList)
         }
-        return true
     }
 
-    private suspend fun fillCredits(
+    private fun fillCredits(
         extraList: ArrayList<WorkPayPeriodExtras>,
     ) {
         val creditList = ArrayList<WorkPayPeriodExtras>()
@@ -534,7 +509,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
             binding.apply {
                 rvCredits.layoutManager = LinearLayoutManager(mView.context)
                 rvCredits.adapter = creditListAdapter
-                tvCreditTotal.text = nf.displayDollars(creditTotal)
+                tvCreditTotal.text = cf.displayDollars(creditTotal)
             }
         }
     }
@@ -553,40 +528,38 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
                 }
             }
         }
-
-        CoroutineScope(Dispatchers.Main).launch {
-            val deferTaxList =
-                async { payCalculations.getTaxList() }
-            val taxList = ArrayList<ExtraAndTotal>()
-            for (tax in deferTaxList.await()
-            ) {
-                taxList.add(
-                    ExtraAndTotal(
-                        tax.taxType, tax.amount
-                    )
+        val taxList = ArrayList<ExtraAndTotal>()
+        for (tax in payCalculations.tax.getTaxList()
+        ) {
+            taxList.add(
+                ExtraAndTotal(
+                    tax.taxType, tax.amount
                 )
-                debitTotal += tax.amount
-            }
+            )
+            debitTotal += tax.amount
+        }
+        CoroutineScope(Dispatchers.Main).launch {
             binding.apply {
-//                delay(WAIT_250)
+                delay(WAIT_250)
                 val deductionListAdapter = PayDetailExtraAdapter(
                     mainActivity, debitList, mView, this@PayDetailsFragment
                 )
                 rvDebits.layoutManager = LinearLayoutManager(mView.context)
                 rvDebits.adapter = deductionListAdapter
-//                delay(WAIT_250)
+                delay(WAIT_250)
                 val taxListAdapter = PayDetailTaxAdapter(taxList)
                 rvTax.layoutManager = LinearLayoutManager(mView.context)
                 rvTax.adapter = taxListAdapter
-//                delay(WAIT_250)
-                tvDebitTotal.text = nf.displayDollars(debitTotal)
+                delay(WAIT_250)
+                tvDebitTotal.text = cf.displayDollars(debitTotal)
             }
         }
     }
 
-    private fun fillFromHistory() {
+    private fun fillValues() {
         binding.apply {
             CoroutineScope(Dispatchers.Main).launch {
+                delay(WAIT_500)
                 if (mainActivity.mainViewModel.getEmployer() != null) {
                     curEmployer = mainActivity.mainViewModel.getEmployer()!!
                     for (i in 0 until spEmployers.adapter.count) {
@@ -646,18 +619,13 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
                         if (spEmployers.selectedItem.toString() !=
                             getString(R.string.add_new_employer)
                         ) {
-                            mainActivity.employerViewModel.findEmployer(
-                                spEmployers.selectedItem.toString()
-                            ).observe(viewLifecycleOwner) { employer ->
-                                curEmployer = employer
+                            CoroutineScope(Dispatchers.IO).launch {
+                                curEmployer = mainActivity.employerViewModel.findEmployer(
+                                    spEmployers.selectedItem.toString()
+                                )
                             }
-//                            CoroutineScope(Dispatchers.IO).launch {
-//                                curEmployer = mainActivity.employerViewModel.findEmployer(
-//                                    spEmployers.selectedItem.toString()
-//                                )
-//                            }
                             CoroutineScope(Dispatchers.Main).launch {
-//                                delay(WAIT_100)
+                                delay(WAIT_100)
                                 if (valuesFilled) mainActivity.mainViewModel.setEmployer(curEmployer)
                                 mainActivity.title = getString(R.string.pay_details) +
                                         " for ${spEmployers.selectedItem}"
@@ -725,15 +693,14 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details), IPayDetailsF
             employerAdapter.notifyDataSetChanged()
             employers.listIterator().forEach {
                 employerAdapter.add(it.employerName)
-                curEmployer = employers[0]
             }
+            curEmployer = employers.first()
             employerAdapter.add(getString(R.string.add_new_employer))
         }
         binding.spEmployers.adapter = employerAdapter
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
         mainActivity.mainViewModel.setEmployer(curEmployer)
         mainActivity.mainViewModel.setCutOffDate(curCutOff)
         super.onStop()
