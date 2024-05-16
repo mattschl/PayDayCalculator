@@ -9,6 +9,7 @@ import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Update
+import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIODS_LIMIT
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATE_EXTRAS
@@ -27,7 +28,7 @@ interface PayDayDao {
                 "WHERE ppEmployerId = :employerId " +
                 "AND ppIsDeleted = 0 " +
                 "ORDER BY ppCutoffDate DESC " +
-                "LIMIT 8"
+                "LIMIT $PAY_PERIODS_LIMIT"
     )
     fun getCutOffDates(employerId: Long): LiveData<List<PayPeriods>>
 

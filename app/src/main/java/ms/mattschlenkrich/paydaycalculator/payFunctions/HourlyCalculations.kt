@@ -47,7 +47,7 @@ class HourlyCalculations(
         return getHoursWorked() + getHoursStat()
     }
 
-    fun findHoursReg(): Double {
+    private fun findHoursReg(): Double {
         var hours = 0.0
         for (day in workDates) {
             if (!day.wdIsDeleted) hours += day.wdRegHours
@@ -55,7 +55,7 @@ class HourlyCalculations(
         return hours
     }
 
-    fun findHoursOt(): Double {
+    private fun findHoursOt(): Double {
         var hours = 0.0
         for (day in workDates) {
             if (!day.wdIsDeleted) hours += day.wdOtHours
@@ -63,7 +63,7 @@ class HourlyCalculations(
         return hours
     }
 
-    fun findHoursDblOt(): Double {
+    private fun findHoursDblOt(): Double {
         var hours = 0.0
         for (day in workDates) {
             if (!day.wdIsDeleted) hours += day.wdDblOtHours
@@ -71,7 +71,7 @@ class HourlyCalculations(
         return hours
     }
 
-    fun findHoursStat(): Double {
+    private fun findHoursStat(): Double {
         var hours = 0.0
         for (day in workDates) {
             if (!day.wdIsDeleted) hours += day.wdStatHours
@@ -79,7 +79,7 @@ class HourlyCalculations(
         return hours
     }
 
-    fun findDaysWorked(): Int {
+    private fun findDaysWorked(): Int {
         var days = 0
         for (day in workDates) {
             days++

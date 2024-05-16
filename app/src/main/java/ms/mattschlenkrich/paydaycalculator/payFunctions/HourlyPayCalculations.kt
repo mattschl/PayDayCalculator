@@ -5,15 +5,15 @@ class HourlyPayCalculations(
     private val payRate: Double
 ) {
 
-    fun getPayReg(): Double {
+    private fun getPayReg(): Double {
         return hourlyCalculations.getHoursReg() * payRate
     }
 
-    fun getPayOt(): Double {
+    private fun getPayOt(): Double {
         return hourlyCalculations.getHoursOt() * payRate * 1.5
     }
 
-    fun getPayDblOt(): Double {
+    private fun getPayDblOt(): Double {
         return hourlyCalculations.getHoursDblOt() * payRate * 2
     }
 
@@ -25,7 +25,7 @@ class HourlyPayCalculations(
         return getPayReg() + getPayOt() + getPayDblOt()
     }
 
-    fun getPayStat(): Double {
+    private fun getPayStat(): Double {
         return hourlyCalculations.getHoursStat() * payRate
     }
 }
