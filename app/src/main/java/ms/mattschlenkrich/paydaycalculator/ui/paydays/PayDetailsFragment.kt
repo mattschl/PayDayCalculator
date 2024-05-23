@@ -43,7 +43,9 @@ import java.time.LocalDate
 
 private const val TAG = FRAG_PAY_DETAILS
 
-class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
+class PayDetailsFragment :
+    Fragment(R.layout.fragment_pay_details),
+    IPayDetailsFragment {
 
     private var _binding: FragmentPayDetailsBinding? = null
     private val binding get() = _binding!!
@@ -73,11 +75,11 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fillEmployers()
-        setActions()
+        setButtonActions()
         selectEmployer()
         selectCutOffDate()
         fillMenu()
-        fillValues()
+        fillFromHistory()
     }
 
     private fun fillMenu() {
@@ -130,7 +132,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
     }
 
 
-    private fun setActions() {
+    private fun setButtonActions() {
         binding.apply {
             fabAddExtra.setOnClickListener {
                 gotoExtraAdd(true)
@@ -193,7 +195,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         }
     }
 
-    fun fillPayDetails() {
+    override fun fillPayDetails() {
         mainActivity.payDayViewModel.getPayPeriod(
             curCutOff, curEmployer!!.employerId
         ).observe(
@@ -556,7 +558,7 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
         }
     }
 
-    private fun fillValues() {
+    private fun fillFromHistory() {
         binding.apply {
             CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_500)
@@ -654,7 +656,6 @@ class PayDetailsFragment : Fragment(R.layout.fragment_pay_details) {
                 mainActivity.payDayViewModel.getCutOffDates(employer.employerId).observe(
                     viewLifecycleOwner
                 ) { dates ->
-                    cutOffAdapter.clear()
                     cutOffs.clear()
                     cutOffAdapter.notifyDataSetChanged()
                     dates.listIterator().forEach {

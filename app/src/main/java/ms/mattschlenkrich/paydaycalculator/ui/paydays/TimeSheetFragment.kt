@@ -35,7 +35,9 @@ import java.time.LocalDate
 
 private const val TAG = FRAG_TIME_SHEET
 
-class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFragment {
+class TimeSheetFragment :
+    Fragment(R.layout.fragment_time_sheet),
+    ITimeSheetFragment {
 
     private var _binding: FragmentTimeSheetBinding? = null
     private val binding get() = _binding!!
