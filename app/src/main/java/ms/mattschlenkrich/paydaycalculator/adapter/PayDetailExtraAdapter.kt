@@ -78,7 +78,7 @@ class PayDetailExtraAdapter(
                 insertOrUpdateExtra(extra, !chActive.isChecked)
                 CoroutineScope(Dispatchers.Main).launch {
                     delay(WAIT_500)
-                    parentFragment.fillPayDetails()
+                    parentFragment.populatePayDetails()
                 }
             }
         }

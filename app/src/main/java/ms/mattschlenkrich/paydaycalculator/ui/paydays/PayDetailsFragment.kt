@@ -74,15 +74,15 @@ class PayDetailsFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillEmployers()
-        setButtonActions()
-        selectEmployer()
-        selectCutOffDate()
-        fillMenu()
-        fillFromHistory()
+        populateEmployers()
+        setClickActions()
+        onSelectEmployer()
+        onSelectCutOffDate()
+        populateMenu()
+        populateFromHistory()
     }
 
-    private fun fillMenu() {
+    private fun populateMenu() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_delete, menu)
@@ -128,11 +128,11 @@ class PayDetailsFragment :
                 df.getCurrentTimeAsString()
             )
         )
-        fillCutOffDates(curEmployer)
+        populateCutOffDates(curEmployer)
     }
 
 
-    private fun setButtonActions() {
+    private fun setClickActions() {
         binding.apply {
             fabAddExtra.setOnClickListener {
                 gotoExtraAdd(true)
@@ -170,7 +170,7 @@ class PayDetailsFragment :
             .show()
     }
 
-    private fun selectCutOffDate() {
+    private fun onSelectCutOffDate() {
         binding.apply {
             spCutOff.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
@@ -183,8 +183,8 @@ class PayDetailsFragment :
                         if (curCutOff != spCutOff.selectedItem.toString()) {
                             curCutOff = spCutOff.selectedItem.toString()
                             if (valuesFilled) mainActivity.mainViewModel.setCutOffDate(curCutOff)
-                            fillPayDayDate()
-                            fillPayDetails()
+                            populatePayDayDate()
+                            populatePayDetails()
                         }
                     }
 
@@ -195,7 +195,7 @@ class PayDetailsFragment :
         }
     }
 
-    override fun fillPayDetails() {
+    override fun populatePayDetails() {
         mainActivity.payDayViewModel.getPayPeriod(
             curCutOff, curEmployer!!.employerId
         ).observe(
@@ -210,7 +210,7 @@ class PayDetailsFragment :
                 mainActivity, curEmployer!!, mView, curPayPeriod!!
             )
             delay(WAIT_500)
-            fillExtras(payCalculations)
+            populateExtras(payCalculations)
             delay(WAIT_1000)
             binding.apply {
                 var display = "Gross ${
@@ -278,7 +278,7 @@ class PayDetailsFragment :
                 curPayPeriod!!.payPeriodId
             ).observe(viewLifecycleOwner) { credit ->
                 credit.listIterator().forEach {
-                    processExtraByManuallyAdded(it, payCalculations, extraList)
+                    processExtrasByManuallyAdded(it, payCalculations, extraList)
                 }
             }
             val workDateExtrasAndDates = ArrayList<WorkDateExtrasAndDates>()
@@ -433,7 +433,7 @@ class PayDetailsFragment :
         df.getCurrentTimeAsString()
     )
 
-    private fun processExtraByManuallyAdded(
+    private fun processExtrasByManuallyAdded(
         it: WorkPayPeriodExtras,
         payCalculations: PayCalculations,
         extraList: MutableList<WorkPayPeriodExtras>
@@ -477,20 +477,20 @@ class PayDetailsFragment :
         )
     }
 
-    private fun fillExtras(payCalculations: PayCalculations) {
+    private fun populateExtras(payCalculations: PayCalculations) {
         CoroutineScope(Dispatchers.Main).launch {
             val extrasList =
                 findExtras(payCalculations)
 //            Log.d(TAG, "Before delay size is ${extrasList.size}")
             delay(WAIT_1000)
 //            Log.d(TAG, "AFTER delay size is ${extrasList.size}")
-            fillCredits(extrasList)
-            fillDeductions(payCalculations, extrasList)
+            populateCredits(extrasList)
+            populateDeductions(payCalculations, extrasList)
             mainActivity.mainViewModel.setPayPeriodExtraList(extrasList)
         }
     }
 
-    private fun fillCredits(
+    private fun populateCredits(
         extraList: ArrayList<WorkPayPeriodExtras>,
     ) {
         val creditList = ArrayList<WorkPayPeriodExtras>()
@@ -516,7 +516,7 @@ class PayDetailsFragment :
         }
     }
 
-    private fun fillDeductions(
+    private fun populateDeductions(
         payCalculations: PayCalculations,
         extraList: ArrayList<WorkPayPeriodExtras>,
     ) {
@@ -558,7 +558,7 @@ class PayDetailsFragment :
         }
     }
 
-    private fun fillFromHistory() {
+    private fun populateFromHistory() {
         binding.apply {
             CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_500)
@@ -586,7 +586,7 @@ class PayDetailsFragment :
         }
     }
 
-    private fun fillPayDayDate() {
+    private fun populatePayDayDate() {
         if (curCutOff != "" && curEmployer != null) {
             binding.apply {
                 val display = "Pay Day is " +
@@ -608,7 +608,7 @@ class PayDetailsFragment :
         )
     }
 
-    private fun selectEmployer() {
+    private fun onSelectEmployer() {
         binding.apply {
             spEmployers.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
@@ -631,7 +631,7 @@ class PayDetailsFragment :
                                 if (valuesFilled) mainActivity.mainViewModel.setEmployer(curEmployer)
                                 mainActivity.title = getString(R.string.pay_details) +
                                         " for ${spEmployers.selectedItem}"
-                                fillCutOffDates(curEmployer)
+                                populateCutOffDates(curEmployer)
                             }
                         } else {
                             gotoEmployerAdd()
@@ -646,7 +646,7 @@ class PayDetailsFragment :
     }
 
 
-    private fun fillCutOffDates(employer: Employers?) {
+    private fun populateCutOffDates(employer: Employers?) {
         if (employer != null) {
             binding.apply {
                 val cutOffAdapter = ArrayAdapter<Any>(
@@ -682,7 +682,7 @@ class PayDetailsFragment :
         }
     }
 
-    private fun fillEmployers() {
+    private fun populateEmployers() {
         val employerAdapter = ArrayAdapter<String>(
             mView.context,
             R.layout.spinner_item_bold

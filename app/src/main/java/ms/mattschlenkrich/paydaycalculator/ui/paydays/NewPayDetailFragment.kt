@@ -2,7 +2,7 @@ package ms.mattschlenkrich.paydaycalculator.ui.paydays
 
 class NewPayDetailFragment : IPayDetailsFragment {
 
-    override fun fillPayDetails() {
+    override fun populatePayDetails() {
         TODO("Not yet implemented")
     }
 }
