@@ -1,5 +1,5 @@
 package ms.mattschlenkrich.paydaycalculator.ui.paydays
 
 interface ITimeSheetFragment {
-    fun fillPayDetails()
+    fun populatePayDetails()
 }

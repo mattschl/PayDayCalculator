@@ -24,11 +24,11 @@ class DateFunctions {
         return dateFormat.format(Calendar.getInstance().time)
     }
 
-    fun convertDateToString(date: LocalDate): String {
+    fun convertLocalDateToString(date: LocalDate): String {
         return dateFormat.format(date)
     }
 
-    fun convertStringToDate(dateString: String): LocalDate {
+    fun convertStringToLocalDate(dateString: String): LocalDate {
         return LocalDate.parse(dateString)
     }
 
@@ -59,7 +59,7 @@ class DateFunctions {
         return getDisplayDateWithYear(mDate.plusYears(count).toString())
     }
 
-    fun getNextMonthlyDate(startDate: String, interval: Int): String {
+    fun getNextMonthlyDateAsString(startDate: String, interval: Int): String {
         var mDate = LocalDate.parse(startDate)
         while (mDate.toString() < getCurrentDateAsString()) {
             mDate = mDate.plusMonths(interval.toLong())

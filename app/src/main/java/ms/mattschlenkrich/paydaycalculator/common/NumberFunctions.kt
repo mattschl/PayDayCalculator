@@ -35,7 +35,7 @@ class NumberFunctions {
         return currencyFormat.format(num)
     }
 
-    fun generateId(): Long {
+    fun generateRandomIdAsLong(): Long {
         var id =
             Random().nextInt(Int.MAX_VALUE).toLong()
         id = if (Random().nextBoolean()) -id
@@ -43,18 +43,18 @@ class NumberFunctions {
         return id
     }
 
-    fun getDoubleFromPercent(percent: String): Double {
+    fun getDoubleFromPercentString(percent: String): Double {
         return percent.trim().replace("%", "")
             .toDouble() / 100
     }
 
-    fun displayPercentFromDouble(num: Double): String {
+    fun getPercentStringFromDouble(num: Double): String {
         return ((num * 10000).roundToInt() / 100.0).toString() + "%"
     }
 
-    fun getDoubleFromDollarOrPercent(numString: String): Double {
+    fun getDoubleFromDollarOrPercentString(numString: String): Double {
         return if (numString.contains("%")) {
-            getDoubleFromPercent(numString)
+            getDoubleFromPercentString(numString)
         } else if (numString.contains("$")) {
             getDoubleFromDollars(numString)
         } else {

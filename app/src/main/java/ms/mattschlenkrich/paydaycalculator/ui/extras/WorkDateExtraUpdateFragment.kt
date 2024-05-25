@@ -100,7 +100,7 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
                 "   ERROR!!\n" +
                         "This Extra name has already been used. \n" +
                         "Choose a different name."
-            } else if (cf.getDoubleFromDollarOrPercent(etValue.text.toString()) == 0.0) {
+            } else if (cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0) {
                 "   ERROR!!\n" +
                         "This Extra must have a value"
             } else {
@@ -116,13 +116,13 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
                 etValue.setText(
                     if (chkIsFixed.isChecked) {
                         cf.displayDollars(
-                            cf.getDoubleFromDollarOrPercent(
+                            cf.getDoubleFromDollarOrPercentString(
                                 etValue.text.toString()
                             )
                         )
                     } else {
-                        cf.displayPercentFromDouble(
-                            cf.getDoubleFromDollarOrPercent(
+                        cf.getPercentStringFromDouble(
+                            cf.getDoubleFromDollarOrPercentString(
                                 etValue.text.toString()
                             ) / 100
                         )
@@ -156,7 +156,7 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
                 display = if (oldWorkDateExtra.wdeIsFixed) {
                     cf.displayDollars(oldWorkDateExtra.wdeValue)
                 } else {
-                    cf.displayPercentFromDouble(oldWorkDateExtra.wdeValue)
+                    cf.getPercentStringFromDouble(oldWorkDateExtra.wdeValue)
                 }
                 etValue.setText(display)
                 chkIsFixed.isChecked = oldWorkDateExtra.wdeIsFixed
@@ -219,12 +219,12 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
     private fun getCurWorkDateExtra(): WorkDateExtras {
         binding.apply {
             val value = if (
-                cf.getDoubleFromDollarOrPercent(etValue.text.toString()) >= 1.0 &&
+                cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) >= 1.0 &&
                 !chkIsFixed.isChecked
             ) {
-                cf.getDoubleFromDollarOrPercent(etValue.text.toString()) / 100
+                cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) / 100
             } else {
-                cf.getDoubleFromDollarOrPercent(etValue.text.toString())
+                cf.getDoubleFromDollarOrPercentString(etValue.text.toString())
             }
             return WorkDateExtras(
                 oldWorkDateExtra.workDateExtraId,

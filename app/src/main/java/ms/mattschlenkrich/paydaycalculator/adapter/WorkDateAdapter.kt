@@ -154,7 +154,7 @@ class WorkDateAdapter(
                 df.getCurrentTimeAsString()
             )
         )
-        parentFragment.fillPayDetails()
+        parentFragment.populatePayDetails()
     }
 
     private fun gotoWorkDateUpdate(workDate: WorkDates) {

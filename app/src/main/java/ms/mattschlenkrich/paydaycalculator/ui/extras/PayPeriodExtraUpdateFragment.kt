@@ -78,7 +78,7 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
                 display = if (oldPayPeriodExtra.ppeIsFixed) {
                     cf.displayDollars(oldPayPeriodExtra.ppeValue)
                 } else {
-                    cf.displayPercentFromDouble(oldPayPeriodExtra.ppeValue)
+                    cf.getPercentStringFromDouble(oldPayPeriodExtra.ppeValue)
                 }
                 etValue.setText(display)
                 chkIsFixed.isChecked = oldPayPeriodExtra.ppeIsFixed
@@ -129,7 +129,7 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
                 etExtraName.text.toString().trim(),
                 spAppliesTo.selectedItemPosition,
                 3,
-                cf.getDoubleFromDollarOrPercent(
+                cf.getDoubleFromDollarOrPercentString(
                     etValue.text.toString()
                 ),
                 chkIsFixed.isChecked,
@@ -160,7 +160,7 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
                 "   ERROR!!\n" +
                         "This Extra name has already been used. \n" +
                         "Choose a different name."
-            } else if (cf.getDoubleFromDollarOrPercent(etValue.text.toString()) == 0.0) {
+            } else if (cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0) {
                 "   ERROR!!\n" +
                         "This Extra must have a value"
             } else {
@@ -205,13 +205,13 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
                 etValue.setText(
                     if (chkIsFixed.isChecked) {
                         cf.displayDollars(
-                            cf.getDoubleFromDollarOrPercent(
+                            cf.getDoubleFromDollarOrPercentString(
                                 etValue.text.toString()
                             )
                         )
                     } else {
-                        cf.displayPercentFromDouble(
-                            cf.getDoubleFromDollarOrPercent(
+                        cf.getPercentStringFromDouble(
+                            cf.getDoubleFromDollarOrPercentString(
                                 etValue.text.toString()
                             ) / 100
                         )

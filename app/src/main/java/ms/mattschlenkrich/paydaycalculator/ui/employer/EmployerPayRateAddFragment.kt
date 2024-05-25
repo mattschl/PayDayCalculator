@@ -150,7 +150,7 @@ class EmployerPayRateAddFragment :
     ): EmployerPayRates {
         binding.apply {
             return EmployerPayRates(
-                cf.generateId(),
+                cf.generateRandomIdAsLong(),
                 curEmployer.employerId,
                 tvEffectiveDate.text.toString(),
                 spPerFrequency.selectedItemPosition,

@@ -86,7 +86,7 @@ class EmployerExtraDefinitionUpdateFragment :
                 curDef.workExtraDefId,
                 curDef.weEmployerId,
                 curDef.weExtraTypeId,
-                cf.getDoubleFromDollarOrPercent(etValue.text.toString()),
+                cf.getDoubleFromDollarOrPercentString(etValue.text.toString()),
                 chkIsFixed.isChecked,
                 tvEffectiveDate.text.toString(),
                 false,
@@ -127,13 +127,13 @@ class EmployerExtraDefinitionUpdateFragment :
                 etValue.setText(
                     if (chkIsFixed.isChecked) {
                         cf.displayDollars(
-                            cf.getDoubleFromDollarOrPercent(
+                            cf.getDoubleFromDollarOrPercentString(
                                 etValue.text.toString()
                             )
                         )
                     } else {
-                        cf.displayPercentFromDouble(
-                            cf.getDoubleFromDollarOrPercent(
+                        cf.getPercentStringFromDouble(
+                            cf.getDoubleFromDollarOrPercentString(
                                 etValue.text.toString()
                             ) / 100
                         )
@@ -191,7 +191,7 @@ class EmployerExtraDefinitionUpdateFragment :
                     if (curExtraDefinitionFull.definition.weIsFixed) {
                         cf.displayDollars(curExtraDefinitionFull.definition.weValue)
                     } else {
-                        cf.displayPercentFromDouble(curExtraDefinitionFull.definition.weValue)
+                        cf.getPercentStringFromDouble(curExtraDefinitionFull.definition.weValue)
                     }
                 )
                 chkIsFixed.isChecked = curExtraDefinitionFull.definition.weIsFixed

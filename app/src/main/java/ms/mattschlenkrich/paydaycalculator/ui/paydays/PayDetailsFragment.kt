@@ -91,7 +91,7 @@ class PayDetailsFragment :
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.menu_delete -> {
-                        chooseDeletePayDay()
+                        chooseDeletingPayDay()
                         true
                     }
 
@@ -103,7 +103,7 @@ class PayDetailsFragment :
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun chooseDeletePayDay() {
+    private fun chooseDeletingPayDay() {
         android.app.AlertDialog.Builder(mView.context)
             .setTitle("Confirm Delete Pay Period")
             .setMessage(
@@ -146,7 +146,7 @@ class PayDetailsFragment :
     private fun gotoExtraAdd(isCredit: Boolean) {
 //        Log.d(TAG, "IN THE FUNCTION the button actions")
         AlertDialog.Builder(mView.context)
-            .setTitle("Continue adding?")
+            .setTitle("Warning!")
             .setMessage(
                 "It is best to add custom extras only after all the " +
                         "work hours have been entered. " +
@@ -350,7 +350,7 @@ class PayDetailsFragment :
     private fun WorkDateExtrasAndDates.createExtraByManuallyAdded(
         subTotal: Double
     ) = WorkPayPeriodExtras(
-        cf.generateId(),
+        cf.generateRandomIdAsLong(),
         curPayPeriod!!.payPeriodId,
         null,
         workDateExtra.wdeName,
@@ -420,7 +420,7 @@ class PayDetailsFragment :
         it: ExtraDefinitionAndType,
         sum: Double
     ) = WorkPayPeriodExtras(
-        cf.generateId(),
+        cf.generateRandomIdAsLong(),
         curPayPeriod!!.payPeriodId,
         it.extraType.workExtraTypeId,
         it.extraType.wetName,

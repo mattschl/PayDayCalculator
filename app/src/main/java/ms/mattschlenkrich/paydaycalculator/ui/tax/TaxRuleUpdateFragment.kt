@@ -80,7 +80,7 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
                 tvTaxRuleType.text = curTaxRule!!.wtType
                 tvTaxRuleLevel.text = curTaxRule!!.wtLevel.toString()
                 tvEffectiveDate.text = curTaxRule!!.wtEffectiveDate
-                etPercentage.setText(cf.displayPercentFromDouble(curTaxRule!!.wtPercent))
+                etPercentage.setText(cf.getPercentStringFromDouble(curTaxRule!!.wtPercent))
                 chkExemption.isChecked = curTaxRule!!.wtHasExemption
                 if (chkExemption.isChecked) etExemption.visibility = View.VISIBLE
                 etExemption.setText(cf.displayDollars(curTaxRule!!.wtExemptionAmount))
@@ -107,7 +107,7 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
                         curTaxRule!!.wtType,
                         curTaxRule!!.wtLevel,
                         curTaxRule!!.wtEffectiveDate,
-                        cf.getDoubleFromPercent(etPercentage.text.toString()),
+                        cf.getDoubleFromPercentString(etPercentage.text.toString()),
                         chkExemption.isChecked,
                         cf.getDoubleFromDollars(etExemption.text.toString()),
                         chkUpperLimit.isChecked,

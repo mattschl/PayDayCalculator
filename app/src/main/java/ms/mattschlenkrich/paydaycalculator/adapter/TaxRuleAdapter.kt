@@ -60,7 +60,7 @@ class TaxRuleAdapter(
         holder.itemBinding.apply {
             var disp = "Level " + taxRule.wtLevel
             tvTaxLevel.text = disp
-            disp = cf.displayPercentFromDouble(taxRule.wtPercent)
+            disp = cf.getPercentStringFromDouble(taxRule.wtPercent)
             tvPercent.text = disp
             if (taxRule.wtHasExemption) {
                 tvExemption.visibility = View.VISIBLE

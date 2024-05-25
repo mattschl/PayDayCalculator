@@ -108,11 +108,11 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
             if (message == ANSWER_OK) {
                 mainActivity.workTaxViewModel.insertTaxRule(
                     WorkTaxRules(
-                        cf.generateId(),
+                        cf.generateRandomIdAsLong(),
                         tvTaxRuleType.text.toString(),
                         tvTaxRuleLevel.text.toString().toInt(),
                         wtEffectiveDate = tvEffectiveDate.text.toString(),
-                        cf.getDoubleFromPercent(etPercentage.text.toString()),
+                        cf.getDoubleFromPercentString(etPercentage.text.toString()),
                         chkExemption.isChecked,
                         if (chkExemption.isChecked)
                             cf.getDoubleFromDollars(etExemption.text.toString()) else 0.0,

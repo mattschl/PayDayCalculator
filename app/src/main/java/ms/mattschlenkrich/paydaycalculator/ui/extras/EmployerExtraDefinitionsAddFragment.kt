@@ -165,10 +165,10 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                 }
             }
             return WorkExtrasDefinitions(
-                cf.generateId(),
+                cf.generateRandomIdAsLong(),
                 curEmployer.employerId,
                 extraId,
-                cf.getDoubleFromDollarOrPercent(etValue.text.toString()),
+                cf.getDoubleFromDollarOrPercentString(etValue.text.toString()),
                 chkIsFixed.isChecked,
                 tvEffectiveDate.text.toString(),
                 false,
@@ -236,13 +236,13 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                 etValue.setText(
                     if (chkIsFixed.isChecked) {
                         cf.displayDollars(
-                            cf.getDoubleFromDollarOrPercent(
+                            cf.getDoubleFromDollarOrPercentString(
                                 etValue.text.toString()
                             )
                         )
                     } else {
-                        cf.displayPercentFromDouble(
-                            cf.getDoubleFromDollarOrPercent(
+                        cf.getPercentStringFromDouble(
+                            cf.getDoubleFromDollarOrPercentString(
                                 etValue.text.toString()
                             ) / 100
                         )

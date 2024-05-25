@@ -99,7 +99,7 @@ class EmployerExtraDefinitionFullAdapter(
                     definition.definition.weValue
                 )
             } else {
-                cf.displayPercentFromDouble(
+                cf.getPercentStringFromDouble(
                     definition.definition.weValue / 100
                 )
             }

@@ -110,7 +110,7 @@ class WorkExtraTypeAddFragment : Fragment(
             val message = checkExtraType()
             if (message == ANSWER_OK) {
                 val curWorkExtraType = WorkExtraTypes(
-                    cf.generateId(),
+                    cf.generateRandomIdAsLong(),
                     etExtraName.text.toString(),
                     curEmployer.employerId,
                     spAppliesTo.selectedItemPosition,

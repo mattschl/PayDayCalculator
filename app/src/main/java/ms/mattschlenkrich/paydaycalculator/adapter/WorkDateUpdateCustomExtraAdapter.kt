@@ -55,7 +55,7 @@ class WorkDateUpdateCustomExtraAdapter(
             display += if (extra.wdeIsFixed) {
                 cf.displayDollars(extra.wdeValue)
             } else {
-                cf.displayPercentFromDouble(extra.wdeValue)
+                cf.getPercentStringFromDouble(extra.wdeValue)
             }
             chkExtra.text = display
             chkExtra.isChecked = !extra.wdeIsDeleted
@@ -115,7 +115,7 @@ class WorkDateUpdateCustomExtraAdapter(
             Log.d(TAG, "ADDING the extra")
             mainActivity.payDayViewModel.insertWorkDateExtra(
                 WorkDateExtras(
-                    cf.generateId(),
+                    cf.generateRandomIdAsLong(),
                     extra.wdeWorkDateId,
                     extra.wdeExtraTypeId,
                     extra.wdeName,

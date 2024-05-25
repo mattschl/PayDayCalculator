@@ -219,7 +219,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
             ).observe(viewLifecycleOwner) { extra ->
                 mainActivity.payDayViewModel.insertWorkDateExtra(
                     WorkDateExtras(
-                        cf.generateId(),
+                        cf.generateRandomIdAsLong(),
                         workDate.workDateId,
                         extra.extraType.workExtraTypeId,
                         extra.extraType.wetName,
@@ -300,7 +300,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private fun getCurWorkDate(): WorkDates {
         binding.apply {
             return WorkDates(
-                cf.generateId(),
+                cf.generateRandomIdAsLong(),
                 payPeriod!!.payPeriodId,
                 payPeriod!!.ppEmployerId,
                 payPeriod!!.ppCutoffDate,

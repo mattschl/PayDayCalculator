@@ -123,7 +123,7 @@ class TaxRulesFragment :
                 mainActivity.workTaxViewModel.insertEffectiveDate(
                     TaxEffectiveDates(
                         display,
-                        cf.generateId(),
+                        cf.generateRandomIdAsLong(),
                         false,
                         df.getCurrentTimeAsString()
                     )

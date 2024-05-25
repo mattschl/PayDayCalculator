@@ -239,7 +239,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     private fun getCurrentEmployer(): Employers {
         binding.apply {
             return Employers(
-                nf.generateId(),
+                nf.generateRandomIdAsLong(),
                 etName.text.toString(),
                 spFrequency.selectedItem.toString(),
                 startDate,

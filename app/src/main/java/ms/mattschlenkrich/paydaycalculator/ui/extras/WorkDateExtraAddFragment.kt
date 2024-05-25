@@ -61,13 +61,13 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
                 etValue.setText(
                     if (chkIsFixed.isChecked) {
                         cf.displayDollars(
-                            cf.getDoubleFromDollarOrPercent(
+                            cf.getDoubleFromDollarOrPercentString(
                                 etValue.text.toString()
                             )
                         )
                     } else {
-                        cf.displayPercentFromDouble(
-                            cf.getDoubleFromDollarOrPercent(
+                        cf.getPercentStringFromDouble(
+                            cf.getDoubleFromDollarOrPercentString(
                                 etValue.text.toString()
                             ) / 100
                         )
@@ -168,13 +168,13 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
     private fun getCurExtra(): WorkDateExtras {
         binding.apply {
             return WorkDateExtras(
-                cf.generateId(),
+                cf.generateRandomIdAsLong(),
                 curDateObject.workDateId,
                 null,
                 etExtraName.text.toString(),
                 spAppliesTo.selectedItemPosition,
                 1,
-                cf.getDoubleFromDollarOrPercent(etValue.text.toString()),
+                cf.getDoubleFromDollarOrPercentString(etValue.text.toString()),
                 chkIsCredit.isChecked,
                 chkIsFixed.isChecked,
                 false,
@@ -201,7 +201,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
                 "   ERROR!!\n" +
                         "This Extra name has already been used. \n" +
                         "Choose a different name."
-            } else if (cf.getDoubleFromDollarOrPercent(etValue.text.toString()) == 0.0) {
+            } else if (cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0) {
                 "   ERROR!!\n" +
                         "This Extra must have a value"
             } else {

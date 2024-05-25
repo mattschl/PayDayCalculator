@@ -123,13 +123,13 @@ class PayPeriodExtraAddFragment :
     private fun curPayPeriodExtra(): WorkPayPeriodExtras {
         binding.apply {
             return WorkPayPeriodExtras(
-                cf.generateId(),
+                cf.generateRandomIdAsLong(),
                 curPayPeriod.payPeriodId,
                 null,
                 etExtraName.text.toString().trim(),
                 spAppliesTo.selectedItemPosition,
                 3,
-                cf.getDoubleFromDollarOrPercent(
+                cf.getDoubleFromDollarOrPercentString(
                     etValue.text.toString()
                 ),
                 chkIsFixed.isChecked,
@@ -158,7 +158,7 @@ class PayPeriodExtraAddFragment :
                 "   ERROR!!\n" +
                         "This Extra name has already been used. \n" +
                         "Choose a different name."
-            } else if (cf.getDoubleFromDollarOrPercent(etValue.text.toString()) == 0.0) {
+            } else if (cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0) {
                 "   ERROR!!\n" +
                         "This Extra must have a value"
             } else {
@@ -174,13 +174,13 @@ class PayPeriodExtraAddFragment :
                 etValue.setText(
                     if (chkIsFixed.isChecked) {
                         cf.displayDollars(
-                            cf.getDoubleFromDollarOrPercent(
+                            cf.getDoubleFromDollarOrPercentString(
                                 etValue.text.toString()
                             )
                         )
                     } else {
-                        cf.displayPercentFromDouble(
-                            cf.getDoubleFromDollarOrPercent(
+                        cf.getPercentStringFromDouble(
+                            cf.getDoubleFromDollarOrPercentString(
                                 etValue.text.toString()
                             ) / 100
                         )
