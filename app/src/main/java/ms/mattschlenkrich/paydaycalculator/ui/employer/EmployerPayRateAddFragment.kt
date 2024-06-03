@@ -52,20 +52,20 @@ class EmployerPayRateAddFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillMenu()
-        fillSpinner()
-        setDateAction()
-        fillValues()
+        setMenuActions()
+        populateSpinner()
+        changeDate()
+        populateValues()
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         binding.apply {
             tvEffectiveDate.text = LocalDate.now().toString()
             chooseDate()
         }
     }
 
-    private fun setDateAction() {
+    private fun changeDate() {
         binding.apply {
             tvEffectiveDate.setOnClickListener {
                 chooseDate()
@@ -99,7 +99,7 @@ class EmployerPayRateAddFragment :
         }
     }
 
-    private fun fillSpinner() {
+    private fun populateSpinner() {
         val frequencyAdapter = ArrayAdapter(
             mView.context, R.layout.spinner_item_bold,
             resources.getStringArray(R.array.pay_per_frequencies)
@@ -108,7 +108,7 @@ class EmployerPayRateAddFragment :
         binding.spPerFrequency.adapter = frequencyAdapter
     }
 
-    private fun fillMenu() {
+    private fun setMenuActions() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.save_menu, menu)
@@ -131,7 +131,7 @@ class EmployerPayRateAddFragment :
 
     private fun savePayRate() {
         val curEmployer = mainActivity.mainViewModel.getEmployer()!!
-        val message = checkPayRate()
+        val message = validatePayRate()
         if (message == ANSWER_OK) {
             val curWage = getCurPayRates(curEmployer)
             mainActivity.employerViewModel.insertPayRate(curWage)
@@ -174,7 +174,7 @@ class EmployerPayRateAddFragment :
         )
     }
 
-    private fun checkPayRate(): String {
+    private fun validatePayRate(): String {
         binding.apply {
             return if (etWage.text.isNullOrBlank()) {
                 "    ERROR!!\n" +

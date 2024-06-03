@@ -49,14 +49,14 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillSpinners()
-        setActions()
+        populateSpinners()
+        setClickActions()
         chooseFixedOrPercent()
-        fillMenu()
-        fillValues()
+        setMenuActions()
+        populateValues()
     }
 
-    private fun setActions() {
+    private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener {
                 updateWorkDateExtra()
@@ -68,9 +68,9 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
         val message = checkExtra()
         if (message == ANSWER_OK) {
             mainActivity.payDayViewModel.updateWorkDateExtra(
-                getCurWorkDateExtra()
+                getCurrentWorkDateExtra()
             )
-            gotoWorkDateUpdate()
+            gotoWorkDateUpdateFragment()
         } else {
             Toast.makeText(
                 mView.context,
@@ -132,7 +132,7 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
         }
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         extraList = mainActivity.mainViewModel.getWorkDateExtraList()
         if (mainActivity.mainViewModel.getWorkDateObject() != null &&
             mainActivity.mainViewModel.getWorkDateExtra() != null &&
@@ -165,7 +165,7 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
         }
     }
 
-    private fun fillMenu() {
+    private fun setMenuActions() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_delete, menu)
@@ -188,7 +188,7 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
 
     private fun deleteExtra() {
         binding.apply {
-            val extra = getCurWorkDateExtra()
+            val extra = getCurrentWorkDateExtra()
             mainActivity.payDayViewModel.updateWorkDateExtra(
                 WorkDateExtras(
                     extra.workDateExtraId,
@@ -205,10 +205,10 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
                 )
             )
         }
-        gotoWorkDateUpdate()
+        gotoWorkDateUpdateFragment()
     }
 
-    private fun gotoWorkDateUpdate() {
+    private fun gotoWorkDateUpdateFragment() {
         mainActivity.mainViewModel.setWorkDateExtra(null)
         mView.findNavController().navigate(
             WorkDateExtraUpdateFragmentDirections
@@ -216,7 +216,7 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
         )
     }
 
-    private fun getCurWorkDateExtra(): WorkDateExtras {
+    private fun getCurrentWorkDateExtra(): WorkDateExtras {
         binding.apply {
             val value = if (
                 cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) >= 1.0 &&
@@ -242,7 +242,7 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
         }
     }
 
-    private fun fillSpinners() {
+    private fun populateSpinners() {
         binding.apply {
             val frequencies = ArrayList<String>()
             for (i in 0..1) {

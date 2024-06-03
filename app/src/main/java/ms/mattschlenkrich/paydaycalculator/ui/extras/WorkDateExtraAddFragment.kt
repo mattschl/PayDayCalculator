@@ -49,9 +49,9 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillSpinners()
-        fillMenu()
-        fillValues()
+        populatetSpinners()
+        setMenuActions()
+        populateValues()
         chooseFixedOrPercent()
     }
 
@@ -77,7 +77,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         }
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         if (mainActivity.mainViewModel.getWorkDateObject() != null) {
             curDateObject =
                 mainActivity.mainViewModel.getWorkDateObject()!!
@@ -97,7 +97,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         }
     }
 
-    private fun fillSpinners() {
+    private fun populatetSpinners() {
         binding.apply {
             val frequencies = ArrayList<String>()
             for (i in 0..1) {
@@ -120,7 +120,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         }
     }
 
-    private fun fillMenu() {
+    private fun setMenuActions() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.save_menu, menu)
@@ -145,7 +145,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         val message = checkExtra()
         if (message == ANSWER_OK) {
             mainActivity.payDayViewModel.insertWorkDateExtra(
-                getCurExtra()
+                getCurrentExtra()
             )
             gotoCallingFragment()
         } else {
@@ -165,7 +165,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         )
     }
 
-    private fun getCurExtra(): WorkDateExtras {
+    private fun getCurrentExtra(): WorkDateExtras {
         binding.apply {
             return WorkDateExtras(
                 cf.generateRandomIdAsLong(),

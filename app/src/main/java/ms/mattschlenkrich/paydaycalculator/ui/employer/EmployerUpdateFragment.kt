@@ -64,37 +64,37 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         employerViewModel = mainActivity.employerViewModel
-        getEmployerList()
-        fillSpinners()
-        fillMenu()
-        setDateAction()
-        setActions()
+        getEmployerListForValidation()
+        populateSpinners()
+        setMenuActions()
+        changeDate()
+        setClickActions()
         setSpinnerActions()
-        fillValues()
+        populateValues()
     }
 
-    private fun setActions() {
+    private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener {
                 updateEmployer()
             }
             fabAddTax.setOnClickListener {
-                gotoTaxTypesAdd()
+                gotoTaxTypesAddFragment()
             }
             lblTaxes.setOnLongClickListener {
-                gotoTaxRules()
+                gotoTaxRulesFragment()
                 false
             }
             fabAddExtra.setOnClickListener {
-                gotoExtraAdd(curEmployer)
+                gotoExtraAddFragment(curEmployer)
             }
             btnWage.setOnClickListener {
-                gotoWages(curEmployer)
+                gotoPayRateFragment(curEmployer)
             }
         }
     }
 
-    private fun gotoWages(curEmployer: Employers?) {
+    private fun gotoPayRateFragment(curEmployer: Employers?) {
         if (curEmployer != null) {
             mainActivity.mainViewModel.setEmployer(curEmployer)
             mView.findNavController().navigate(
@@ -104,7 +104,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         }
     }
 
-    private fun gotoExtraAdd(curEmployer: Employers?) {
+    private fun gotoExtraAddFragment(curEmployer: Employers?) {
         if (curEmployer != null) {
             mainActivity.mainViewModel.setEmployer(curEmployer)
             mView.findNavController().navigate(
@@ -114,7 +114,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         }
     }
 
-    private fun gotoTaxRules() {
+    private fun gotoTaxRulesFragment() {
         mainActivity.mainViewModel.setEmployer(getCurrentEmployer())
         mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
@@ -123,7 +123,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         )
     }
 
-    private fun gotoTaxTypesAdd() {
+    private fun gotoTaxTypesAddFragment() {
         mainActivity.mainViewModel.setEmployer(getCurrentEmployer())
         mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
@@ -132,7 +132,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         )
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
             if (mainActivity.mainViewModel.getEmployer() != null) {
@@ -159,13 +159,13 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
                     etMidMonthDate.setText(curEmployer!!.midMonthlyDate.toString())
                     etMainMonthDate.setText(curEmployer!!.mainMonthlyDate.toString())
                 }
-                fillTaxes(curEmployer!!.employerId)
-                fillExtras(curEmployer!!.employerId)
+                populateTaxes(curEmployer!!.employerId)
+                populateExtras(curEmployer!!.employerId)
             }
         }
     }
 
-    fun fillExtras(employerId: Long) {
+    fun populateExtras(employerId: Long) {
         binding.apply {
             val extraTypeAdapter =
                 EmployerExtraDefinitionsShortAdapter(
@@ -192,7 +192,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     }
 
 
-    fun fillTaxes(employerId: Long) {
+    fun populateTaxes(employerId: Long) {
         binding.apply {
             val employerTaxTypeAdapter = EmployerTaxTypeAdapter(
                 mainActivity, mView, this@EmployerUpdateFragment
@@ -247,7 +247,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         }
     }
 
-    private fun setDateAction() {
+    private fun changeDate() {
         binding.tvStartDate.setOnClickListener {
             val curDateAll = startDate.split("-")
             val datePickerDialog = DatePickerDialog(
@@ -272,7 +272,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         }
     }
 
-    private fun fillMenu() {
+    private fun setMenuActions() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_delete, menu)
@@ -314,7 +314,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     }
 
     private fun updateEmployer() {
-        val message = checkEmployer()
+        val message = validateEmployer()
         if (message == ANSWER_OK) {
             employerViewModel.updateEmployer(
                 getCurrentEmployer()
@@ -353,7 +353,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         }
     }
 
-    private fun checkEmployer(): String {
+    private fun validateEmployer(): String {
         binding.apply {
             var nameFound = false
             if (employerList.isNotEmpty()) {
@@ -383,7 +383,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         }
     }
 
-    private fun fillSpinners() {
+    private fun populateSpinners() {
         binding.apply {
             val frequencyAdapter = ArrayAdapter(
                 mView.context, R.layout.spinner_item_bold,
@@ -401,7 +401,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         }
     }
 
-    private fun getEmployerList() {
+    private fun getEmployerListForValidation() {
         employerViewModel.getEmployers().observe(
             viewLifecycleOwner
         ) { employers ->

@@ -166,7 +166,7 @@ class EmployerExtraDefinitionFullAdapter(
         mainActivity.workExtraViewModel.deleteWorkExtraDefinition(
             definition.workExtraDefId, df.getCurrentTimeAsString()
         )
-        employerExtraDefinitionsFragment?.fillExtrasList()
-        employerUpdateFragment?.fillExtras(definition.weEmployerId)
+        employerExtraDefinitionsFragment?.populateExtrasList()
+        employerUpdateFragment?.populateExtras(definition.weEmployerId)
     }
 }

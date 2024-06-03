@@ -48,14 +48,14 @@ class EmployerExtraDefinitionUpdateFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillMenu()
-        fillValues()
-        chooseDate()
+        setMenuActions()
+        populateValues()
+        changeDate()
         chooseFixedOrPercent()
-        setActions()
+        setClickActions()
     }
 
-    private fun setActions() {
+    private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener {
                 updateDefinition()
@@ -143,7 +143,7 @@ class EmployerExtraDefinitionUpdateFragment :
         }
     }
 
-    private fun chooseDate() {
+    private fun changeDate() {
         binding.apply {
             tvEffectiveDate.setOnClickListener {
                 val curDateAll = tvEffectiveDate.text.toString()
@@ -170,7 +170,7 @@ class EmployerExtraDefinitionUpdateFragment :
         }
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         binding.apply {
             if (mainActivity.mainViewModel.getExtraDefinitionFull() != null) {
                 curExtraDefinitionFull =
@@ -200,7 +200,7 @@ class EmployerExtraDefinitionUpdateFragment :
         }
     }
 
-    private fun fillMenu() {
+    private fun setMenuActions() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_delete, menu)

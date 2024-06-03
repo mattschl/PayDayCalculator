@@ -53,12 +53,12 @@ class WorkDateUpdateFragment : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setDateAction()
-        fillValues()
-        setActions()
+        changeDate()
+        populateValues()
+        setClickActions()
     }
 
-    private fun setDateAction() {
+    private fun changeDate() {
         binding.apply {
             tvWorkDate.setOnClickListener {
                 val curDateAll = curDateString.split("-")
@@ -86,19 +86,19 @@ class WorkDateUpdateFragment : Fragment(
         }
     }
 
-    private fun setActions() {
+    private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener {
                 updateWorkDate()
             }
             fabAddExtra.setOnClickListener {
-                addExtra()
+                gotoWorkDateExtraAddFragment()
             }
         }
     }
 
-    private fun addExtra() {
-        mainActivity.mainViewModel.setWorkDateObject(getCurWorkDate())
+    private fun gotoWorkDateExtraAddFragment() {
+        mainActivity.mainViewModel.setWorkDateObject(getCurrentWorkDate())
         mainActivity.mainViewModel.setWorkDateExtraList(workDateExtras)
         mView.findNavController().navigate(
             WorkDateUpdateFragmentDirections
@@ -109,20 +109,20 @@ class WorkDateUpdateFragment : Fragment(
     private fun updateWorkDate() {
         binding.apply {
             mainActivity.payDayViewModel.updateWorkDate(
-                getCurWorkDate()
+                getCurrentWorkDate()
             )
         }
-        gotoTimeSheet()
+        gotoTimeSheetFragment()
     }
 
-    private fun gotoTimeSheet() {
+    private fun gotoTimeSheetFragment() {
         mView.findNavController().navigate(
             WorkDateUpdateFragmentDirections
                 .actionWorkDateUpdateFragmentToTimeSheetFragment()
         )
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         if (mainActivity.mainViewModel.getWorkDateObject() != null) {
             curDate = mainActivity.mainViewModel.getWorkDateObject()!!
             curDateString = curDate.wdDate
@@ -136,11 +136,11 @@ class WorkDateUpdateFragment : Fragment(
                 etDblOt.setText(curDate.wdDblOtHours.toString())
                 etStat.setText(curDate.wdStatHours.toString())
             }
-            fillExtras()
+            populateExtras()
         }
     }
 
-    private fun getCurWorkDate(): WorkDates {
+    private fun getCurrentWorkDate(): WorkDates {
         binding.apply {
             return WorkDates(
                 curDate.workDateId,
@@ -162,8 +162,9 @@ class WorkDateUpdateFragment : Fragment(
         }
     }
 
-    fun fillExtras() {
-        val curWorkDateObject = mainActivity.mainViewModel.getWorkDateObject()!!
+    fun populateExtras() {
+        val currentWorkDateObject =
+            mainActivity.mainViewModel.getWorkDateObject()!!
         activity?.let {
             mainActivity.payDayViewModel.getWorkDateExtras(curDate.workDateId)
                 .observe(viewLifecycleOwner) { extras ->
@@ -181,13 +182,13 @@ class WorkDateUpdateFragment : Fragment(
             binding.apply {
                 activity?.let {
                     mainActivity.workExtraViewModel.getExtraTypesAndDefByDaily(
-                        curWorkDateObject.wdEmployerId,
-                        curWorkDateObject.wdCutoffDate
+                        currentWorkDateObject.wdEmployerId,
+                        currentWorkDateObject.wdCutoffDate
                     ).observe(viewLifecycleOwner) { extras ->
                         extras.listIterator().forEach {
                             val tempExtra = WorkDateExtras(
                                 0,
-                                curWorkDateObject.workDateId,
+                                currentWorkDateObject.workDateId,
                                 null,
                                 it.extraType.wetName,
                                 it.extraType.wetAppliesTo,

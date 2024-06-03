@@ -65,7 +65,7 @@ class EmployerTaxTypeAdapter(
                     employerTaxType.etrEmployerId, employerTaxType.etrTaxType,
                     chkEmployerTax.isChecked
                 )
-                parentFragment.fillTaxes(employerTaxType.etrEmployerId)
+                parentFragment.populateTaxes(employerTaxType.etrEmployerId)
             }
             btnEdit.setOnClickListener {
                 mainActivity.mainViewModel.setTaxTypeString(employerTaxType.etrTaxType)

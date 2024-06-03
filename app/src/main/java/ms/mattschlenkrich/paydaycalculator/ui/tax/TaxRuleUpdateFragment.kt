@@ -46,10 +46,10 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillMenu()
-        addActions()
+        setMenuActions()
+        setClickActions()
         setCheckBoxActions()
-        fillValues()
+        populateValues()
     }
 
     private fun setCheckBoxActions() {
@@ -73,7 +73,7 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
         }
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         binding.apply {
             if (mainActivity.mainViewModel.getTaxRule() != null) {
                 curTaxRule = mainActivity.mainViewModel.getTaxRule()
@@ -91,7 +91,7 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
         }
     }
 
-    private fun addActions() {
+    private fun setClickActions() {
         binding.fabDone.setOnClickListener {
             updateTaxRule()
         }
@@ -156,7 +156,7 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
         }
     }
 
-    private fun fillMenu() {
+    private fun setMenuActions() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_delete, menu)

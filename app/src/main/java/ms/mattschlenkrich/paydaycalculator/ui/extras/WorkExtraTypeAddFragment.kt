@@ -54,12 +54,12 @@ class WorkExtraTypeAddFragment : Fragment(
             curEmployer = mainActivity.mainViewModel.getEmployer()!!
         }
         mainActivity.title = "Add Extra Type for ${curEmployer.employerName}"
-        fillSpinners()
+        populateSpinners()
         getExtraTypeList()
-        fillMenu()
+        setMenuActions()
     }
 
-    private fun fillSpinners() {
+    private fun populateSpinners() {
         binding.apply {
             val frequencyAdapter = ArrayAdapter(
                 mView.context, R.layout.spinner_item_bold,
@@ -83,7 +83,7 @@ class WorkExtraTypeAddFragment : Fragment(
             }
     }
 
-    private fun fillMenu() {
+    private fun setMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {

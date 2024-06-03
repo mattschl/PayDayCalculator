@@ -45,13 +45,13 @@ class EmployerFragment :
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        fillEmployers()
+        poppulateEmployers()
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-        setActions()
+        setClickActions()
     }
 
-    private fun setActions() {
+    private fun setClickActions() {
         binding.apply {
             fabNew.setOnClickListener {
                 mView.findNavController().navigate(
@@ -62,7 +62,7 @@ class EmployerFragment :
         }
     }
 
-    private fun fillEmployers() {
+    private fun poppulateEmployers() {
         employerAdapter = null
         employerAdapter = EmployerAdapter(
             mainActivity, mView

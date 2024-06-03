@@ -63,26 +63,107 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillValues()
-        fillMenu()
-        fillExtras()
-        selectDate()
-        setActions()
+        populateValues()
+        setMenuActions()
+        populateExtras()
+        setChangeDateAction()
+        setClickActions()
     }
 
-    private fun setActions() {
-        binding.apply {
-            fabAddExtra.setOnClickListener {
-                gotoAddExtra()
+    private fun populateValues() {
+        if (mainActivity.mainViewModel.getPayPeriod() != null) {
+            payPeriod = mainActivity.mainViewModel.getPayPeriod()
+            mainActivity.payDayViewModel.getWorkDateList(
+                payPeriod!!.ppEmployerId,
+                payPeriod!!.ppCutoffDate
+            ).observe(viewLifecycleOwner) { list ->
+                usedWorkDatesList.clear()
+                list.listIterator().forEach {
+                    usedWorkDatesList.add(it.wdDate)
+                }
+            }
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(WAIT_250)
+                populateDate()
             }
         }
     }
 
-    private fun gotoAddExtra() {
-        chooseToGoAhead()
+    private fun populateDate() {
+        curDateString = LocalDate.now().toString()
+        for (date in usedWorkDatesList) {
+            if (curDateString == date) {
+                curDateString = LocalDate.parse(curDateString).plusDays(1L).toString()
+            }
+        }
+        binding.tvWorkDate.text = df.getDisplayDate(curDateString)
     }
 
-    private fun selectDate() {
+    private fun setMenuActions() {
+        mainActivity.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.save_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.menu_save -> {
+                        validateWorkDateToSave()
+                        true
+                    }
+
+                    else -> {
+                        false
+                    }
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
+    }
+
+    private fun populateExtras() {
+        binding.apply {
+            val extraAdapter = WorkDateExtraAdapter(
+                mainActivity, mView, this@WorkDateAddFragment
+            )
+            rvExtras.apply {
+                layoutManager = LinearLayoutManager(mView.context)
+                adapter = extraAdapter
+            }
+            activity?.let {
+                mainActivity.workExtraViewModel.getExtraTypesByDaily(
+                    payPeriod!!.ppEmployerId
+                ).observe(viewLifecycleOwner) { extras ->
+                    extraAdapter.differ.submitList(extras)
+                    extras.listIterator().forEach { extra ->
+                        if (extra.wetIsDefault) {
+                            workExtrasDefaultList.add(extra)
+                        }
+                    }
+                    updateExtraUI(extras)
+                }
+            }
+        }
+    }
+
+    private fun updateExtraUI(extras: List<Any>) {
+        binding.apply {
+            if (extras.isEmpty()) {
+                rvExtras.visibility = View.GONE
+            } else {
+                rvExtras.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    fun addToExtraList(include: Boolean, extraType: WorkExtraTypes) {
+        if (include) {
+            workExtrasDefaultList.add(extraType)
+        } else {
+            workExtrasDefaultList.remove(extraType)
+        }
+    }
+
+    private fun setChangeDateAction() {
         binding.apply {
             tvWorkDate.setOnClickListener {
                 val curDateAll = curDateString.split("-")
@@ -110,44 +191,16 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         }
     }
 
-    private fun fillValues() {
-        if (mainActivity.mainViewModel.getPayPeriod() != null) {
-            payPeriod = mainActivity.mainViewModel.getPayPeriod()
-            mainActivity.payDayViewModel.getWorkDateList(
-                payPeriod!!.ppEmployerId,
-                payPeriod!!.ppCutoffDate
-            ).observe(viewLifecycleOwner) { list ->
-                usedWorkDatesList.clear()
-                list.listIterator().forEach {
-                    usedWorkDatesList.add(it.wdDate)
-                }
-            }
-            CoroutineScope(Dispatchers.Main).launch {
-                delay(WAIT_250)
-                fillDate()
+    private fun setClickActions() {
+        binding.apply {
+            fabAddExtra.setOnClickListener {
+                gotoAddExtra()
             }
         }
     }
 
-    private fun fillMenu() {
-        mainActivity.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.save_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        checkSaveWorkDate()
-                        true
-                    }
-
-                    else -> {
-                        false
-                    }
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.CREATED)
+    private fun gotoAddExtra() {
+        askUserToSaveNowOrAddExtras()
     }
 
     private fun gotoTimeSheet() {
@@ -157,34 +210,38 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         )
     }
 
-    private fun checkSaveWorkDate() {
+    private fun validateWorkDateToSave() {
         var found = false
         if (usedWorkDatesList.isEmpty()) {
-            chooseToGoAhead()
+            askUserToSaveNowOrAddExtras()
         } else {
             for (date in usedWorkDatesList) {
                 if (date == curDateString) {
                     found = true
-                    AlertDialog.Builder(mView.context)
-                        .setTitle("This date is already used")
-                        .setMessage(
-                            "Would you like to REPLACE the old information for " +
-                                    "this work date?"
-                        )
-                        .setPositiveButton("Yes") { _, _ ->
-                            saveWorkDate(true)
-                        }
-                        .setNegativeButton("No", null)
-                        .show()
+                    askUserToOverwriteUsedDate()
                 }
             }
             if (!found) {
-                chooseToGoAhead()
+                askUserToSaveNowOrAddExtras()
             }
         }
     }
 
-    private fun chooseToGoAhead() {
+    private fun askUserToOverwriteUsedDate() {
+        AlertDialog.Builder(mView.context)
+            .setTitle("This date is already used")
+            .setMessage(
+                "Would you like to REPLACE the old information for " +
+                        "this work date?"
+            )
+            .setPositiveButton("Yes") { _, _ ->
+                saveWorkDate(true)
+            }
+            .setNegativeButton("No", null)
+            .show()
+    }
+
+    private fun askUserToSaveNowOrAddExtras() {
         AlertDialog.Builder(requireContext())
             .setTitle("Finish adding work date")
             .setMessage("Would you like to save this date or add extras?")
@@ -242,59 +299,6 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
             WorkDateAddFragmentDirections
                 .actionWorkDateAddFragmentToWorkDateUpdateFragment()
         )
-    }
-
-    private fun fillDate() {
-        curDateString = LocalDate.now().toString()
-        for (date in usedWorkDatesList) {
-            if (curDateString == date) {
-                curDateString = LocalDate.parse(curDateString).plusDays(1L).toString()
-            }
-        }
-        binding.tvWorkDate.text = df.getDisplayDate(curDateString)
-    }
-
-    private fun fillExtras() {
-        binding.apply {
-            val extraAdapter = WorkDateExtraAdapter(
-                mainActivity, mView, this@WorkDateAddFragment
-            )
-            rvExtras.apply {
-                layoutManager = LinearLayoutManager(mView.context)
-                adapter = extraAdapter
-            }
-            activity?.let {
-                mainActivity.workExtraViewModel.getExtraTypesByDaily(
-                    payPeriod!!.ppEmployerId
-                ).observe(viewLifecycleOwner) { extras ->
-                    extraAdapter.differ.submitList(extras)
-                    extras.listIterator().forEach { extra ->
-                        if (extra.wetIsDefault) {
-                            workExtrasDefaultList.add(extra)
-                        }
-                    }
-                    updateExtraUI(extras)
-                }
-            }
-        }
-    }
-
-    fun addToExtraList(include: Boolean, extraType: WorkExtraTypes) {
-        if (include) {
-            workExtrasDefaultList.add(extraType)
-        } else {
-            workExtrasDefaultList.remove(extraType)
-        }
-    }
-
-    private fun updateExtraUI(extras: List<Any>) {
-        binding.apply {
-            if (extras.isEmpty()) {
-                rvExtras.visibility = View.GONE
-            } else {
-                rvExtras.visibility = View.VISIBLE
-            }
-        }
     }
 
     private fun getCurWorkDate(): WorkDates {

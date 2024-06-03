@@ -45,13 +45,13 @@ class TaxTypeFragment :
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        fillTaxTypeList()
+        populateTaxTypeList()
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-        setActions()
+        setClickActions()
     }
 
-    private fun setActions() {
+    private fun setClickActions() {
         binding.apply {
             fabNew.setOnClickListener {
                 mView.findNavController().navigate(
@@ -62,7 +62,7 @@ class TaxTypeFragment :
         }
     }
 
-    private fun fillTaxTypeList() {
+    private fun populateTaxTypeList() {
         taxTypeAdapter = TaxTypeAdapter(
             mainActivity, mView
         )

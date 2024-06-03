@@ -89,7 +89,7 @@ class WorkDateUpdateCustomExtraAdapter(
         mainActivity.payDayViewModel.deleteWorkDateExtra(
             extra.wdeName, extra.wdeWorkDateId, extra.wdeUpdateTime
         )
-        parentFragment.fillExtras()
+        parentFragment.populateExtras()
     }
 
     private fun activateExtra(extra: WorkDateExtras) {
@@ -129,7 +129,7 @@ class WorkDateUpdateCustomExtraAdapter(
                 )
             )
         }
-        parentFragment.fillExtras()
+        parentFragment.populateExtras()
     }
 
 }

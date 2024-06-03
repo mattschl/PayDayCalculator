@@ -46,8 +46,8 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillMenu()
-        fillValues()
+        setMenuActions()
+        populateValues()
         setCheckBoxActions()
     }
 
@@ -72,7 +72,7 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
         }
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         binding.apply {
             tvTaxRuleType.text = mainActivity.mainViewModel.getTaxTypeString()
             tvEffectiveDate.text = mainActivity.mainViewModel.getEffectiveDateString()
@@ -80,7 +80,7 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
         }
     }
 
-    private fun fillMenu() {
+    private fun setMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -138,15 +138,15 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
         val callingFragment = mainActivity.mainViewModel.getCallingFragment()
         if (!callingFragment.isNullOrBlank()) {
             if (callingFragment.contains(FRAG_TAX_RULES)) {
-                gotoTaxRules()
+                gotoTaxRulesFragment()
             }
         } else {
-            gotoTaxRules()
+            gotoTaxRulesFragment()
         }
 
     }
 
-    private fun gotoTaxRules() {
+    private fun gotoTaxRulesFragment() {
         mView.findNavController().navigate(
             TaxRuleAddFragmentDirections
                 .actionTaxRuleAddFragmentToTaxRulesFragment()

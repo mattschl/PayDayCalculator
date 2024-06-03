@@ -53,8 +53,8 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setActions()
-        fillEmployers()
+        setClickActions()
+        validateEmployers()
         selectEmployer()
         selectExtraType()
         fillValues()
@@ -108,7 +108,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                             if (extra.wetName == spExtraType.selectedItem.toString()) {
                                 curExtraType = extra
                                 fillExtraTypeInfo()
-                                fillExtrasList()
+                                populateExtrasList()
                             }
                         }
                     }
@@ -185,12 +185,12 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     for (employer in employerList) {
                         if (employer.employerName == spEmployers.selectedItem.toString()) {
                             curEmployer = employer
-                            fillExtraTypes()
+                            validateExtraType()
                             break
                         } else if (spEmployers.selectedItem.toString() ==
                             getString(R.string.add_new_employer)
                         ) {
-                            gotoEmployerAdd()
+                            gotoEmployerAddFragment()
                         }
                     }
                 }
@@ -202,7 +202,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         }
     }
 
-    private fun fillExtraTypes() {
+    private fun validateExtraType() {
         if (curEmployer != null) {
             binding.apply {
                 val extraAdapter = ArrayAdapter<Any>(
@@ -223,7 +223,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         }
     }
 
-    private fun gotoEmployerAdd() {
+    private fun gotoEmployerAddFragment() {
         mView.findNavController().navigate(
             EmployerExtraDefinitionsFragmentDirections
                 .actionEmployerExtraDefinitionsFragmentToEmployerAddFragment()
@@ -231,7 +231,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun fillExtrasList() {
+    fun populateExtrasList() {
         if (curEmployer != null && curExtraType != null) {
             binding.apply {
                 val extraDefinitionAdapter = EmployerExtraDefinitionFullAdapter(
@@ -255,25 +255,25 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     ) { extras ->
                         extraDefinitionAdapter.notifyDataSetChanged()
                         extraDefinitionAdapter.differ.submitList(extras)
-                        updateRecycler(extras)
+                        updateRecyclerUI(extras)
                     }
                 }
             }
         }
     }
 
-    private fun setActions() {
+    private fun setClickActions() {
         binding.apply {
             fabNew.setOnClickListener {
-                gotoExtraAdd()
+                gotoExtraAddFragment()
             }
             crdExtraInfo.setOnClickListener {
-                gotoExtraTypeUpdate()
+                gotoExtraTypeUpdateFragment()
             }
         }
     }
 
-    private fun gotoExtraTypeUpdate() {
+    private fun gotoExtraTypeUpdateFragment() {
         if (curExtraType != null) {
             mainActivity.mainViewModel.setEmployer(curEmployer)
             mainActivity.mainViewModel.setWorkExtraType(curExtraType)
@@ -285,7 +285,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         }
     }
 
-    private fun gotoExtraAdd() {
+    private fun gotoExtraAddFragment() {
         mainActivity.mainViewModel.setEmployer(curEmployer)
         mainActivity.mainViewModel.setWorkExtraType(curExtraType)
         mainActivity.mainViewModel.addCallingFragment(TAG)
@@ -295,7 +295,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         )
     }
 
-    private fun fillEmployers() {
+    private fun validateEmployers() {
         val employerAdapter = ArrayAdapter<Any>(
             mView.context,
             R.layout.spinner_item_bold
@@ -332,7 +332,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     }
 
 
-    private fun updateRecycler(extras: List<Any>) {
+    private fun updateRecyclerUI(extras: List<Any>) {
         binding.apply {
             if (extras.isEmpty()) {
                 rvExtras.visibility = View.GONE

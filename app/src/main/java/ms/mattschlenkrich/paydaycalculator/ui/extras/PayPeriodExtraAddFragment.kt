@@ -52,13 +52,13 @@ class PayPeriodExtraAddFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillSpinners()
+        populateSpinners()
         chooseFixedOrPercent()
-        fillMenu()
-        fillValues()
+        setMenuActions()
+        populateValues()
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         if (mainActivity.mainViewModel.getEmployer() != null) {
             curEmployer = mainActivity.mainViewModel.getEmployer()!!
         }
@@ -73,7 +73,7 @@ class PayPeriodExtraAddFragment :
         }
     }
 
-    private fun fillMenu() {
+    private fun setMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -100,10 +100,10 @@ class PayPeriodExtraAddFragment :
         if (message == ANSWER_OK) {
             binding.apply {
                 mainActivity.payDayViewModel.insertPayPeriodExtra(
-                    curPayPeriodExtra()
+                    getCurrentPayPeriodExtra()
                 )
             }
-            gotoPayDetails()
+            gotoPayDetailsFragment()
         } else {
             Toast.makeText(
                 mView.context,
@@ -113,14 +113,14 @@ class PayPeriodExtraAddFragment :
         }
     }
 
-    private fun gotoPayDetails() {
+    private fun gotoPayDetailsFragment() {
         mView.findNavController().navigate(
             PayPeriodExtraAddFragmentDirections
                 .actionPayPeriodExtraAddFragmentToPayDetailsFragment()
         )
     }
 
-    private fun curPayPeriodExtra(): WorkPayPeriodExtras {
+    private fun getCurrentPayPeriodExtra(): WorkPayPeriodExtras {
         binding.apply {
             return WorkPayPeriodExtras(
                 cf.generateRandomIdAsLong(),
@@ -190,7 +190,7 @@ class PayPeriodExtraAddFragment :
         }
     }
 
-    private fun fillSpinners() {
+    private fun populateSpinners() {
         binding.apply {
             val frequencyAdapter = ArrayAdapter(
                 mView.context, R.layout.spinner_item_bold,

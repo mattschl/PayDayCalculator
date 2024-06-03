@@ -74,37 +74,25 @@ class TimeSheetFragment :
         populateFromHistory()
     }
 
-
-    private fun populateFromHistory() {
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_500)
-            binding.apply {
-                if (mainActivity.mainViewModel.getEmployer() != null) {
-                    curEmployer = mainActivity.mainViewModel.getEmployer()!!
-                    for (i in 0 until spEmployers.adapter.count) {
-                        if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
-                            spEmployers.setSelection(i)
-                            break
-                        }
-                    }
-                    delay(WAIT_500)
-                    Log.d(
-                        TAG, "The cutoff is " +
-                                "${mainActivity.mainViewModel.getCutOffDate()} if found"
-                    )
-                    if (mainActivity.mainViewModel.getCutOffDate() != null) {
-                        curCutOff = mainActivity.mainViewModel.getCutOffDate()!!
-                        for (i in 0 until spCutOff.adapter.count) {
-                            if (spCutOff.getItemAtPosition(i).toString() == curCutOff) {
-                                spCutOff.setSelection(i)
-                                break
-                            }
-                        }
-                    }
-                }
+    private fun populateEmployers() {
+        val employerAdapter = ArrayAdapter<String>(
+            mView.context,
+            R.layout.spinner_item_bold
+        )
+        mainActivity.employerViewModel.getEmployers().observe(
+            viewLifecycleOwner
+        ) { employers ->
+            employerAdapter.clear()
+            employerAdapter.notifyDataSetChanged()
+            employers.listIterator().forEach {
+                employerAdapter.add(it.employerName)
             }
-            valuesFilled = true
+            curEmployer = employers.first()
+//            updateUI(employers)
+            employerAdapter.add(getString(R.string.add_new_employer))
+//            fillCutOffDates()
         }
+        binding.spEmployers.adapter = employerAdapter
     }
 
     private fun setClickActions() {
@@ -118,35 +106,94 @@ class TimeSheetFragment :
         }
     }
 
-    private fun gotoPayDetails() {
-        mainActivity.mainViewModel.setCutOffDate(curCutOff)
-        mainActivity.mainViewModel.setEmployer(curEmployer)
-        mainActivity.mainViewModel.setCallingFragment(TAG)
-        mView.findNavController().navigate(
-            TimeSheetFragmentDirections
-                .actionTimeSheetFragmentToPayDetailsFragment()
-        )
-    }
-
-    private fun addNewWorkDate() {
-        mainActivity.mainViewModel.setPayPeriod(getSelectedPayPeriod())
-        mainActivity.mainViewModel.setCutOffDate(curCutOff)
-        mainActivity.mainViewModel.setEmployer(curEmployer)
-        mView.findNavController().navigate(
-            TimeSheetFragmentDirections
-                .actionTimeSheetFragmentToWorkDateAddFragment()
-        )
-    }
-
-    private fun getSelectedPayPeriod(): PayPeriods {
+    private fun onSelectEmployer() {
         binding.apply {
-            return PayPeriods(
+            spEmployers.onItemSelectedListener =
+                object : OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        if (spEmployers.selectedItem.toString() !=
+                            getString(R.string.add_new_employer)
+                        ) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                curEmployer = mainActivity.employerViewModel.findEmployer(
+                                    spEmployers.selectedItem.toString()
+                                )
+                            }
+                            CoroutineScope(Dispatchers.Main).launch {
+                                delay(WAIT_100)
+                                if (valuesFilled) mainActivity.mainViewModel.setEmployer(curEmployer)
+                                mainActivity.title = getString(R.string.pay_details) +
+                                        " for ${spEmployers.selectedItem}"
+                                populateCutOffDates()
+                            }
+                        } else {
+                            gotoEmployerAdd()
+                        }
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+//                        fillEmployers()
+                    }
+                }
+        }
+    }
+
+    private fun generateCutOff() {
+        val nextCutOff = projections.generateNextCutOff(
+            curEmployer!!,
+            if (cutOffs.isEmpty()) "" else cutOffs[0]
+        )
+        mainActivity.payDayViewModel.insertPayPeriod(
+            PayPeriods(
                 cf.generateRandomIdAsLong(),
-                spCutOff.selectedItem.toString(),
+                nextCutOff,
                 curEmployer!!.employerId,
                 false,
                 df.getCurrentTimeAsString()
             )
+        )
+//        CoroutineScope(Dispatchers.Main).launch {
+//            delay(WAIT_250)
+        populateCutOffDates()
+//        }
+
+    }
+
+    private fun populateCutOffDates() {
+        if (curEmployer != null) {
+            binding.apply {
+                val cutOffAdapter = ArrayAdapter<Any>(
+                    mView.context,
+                    R.layout.spinner_item_bold
+                )
+                mainActivity.payDayViewModel.getCutOffDates(curEmployer!!.employerId).observe(
+                    viewLifecycleOwner
+                ) { dates ->
+                    cutOffAdapter.clear()
+                    cutOffs.clear()
+                    cutOffAdapter.notifyDataSetChanged()
+                    dates.listIterator().forEach {
+                        cutOffAdapter.add(it.ppCutoffDate)
+                        cutOffs.add(it.ppCutoffDate)
+                    }
+//                    Log.d(TAG, "cutOffAdapter has ${dates.size}")
+                    if (dates.isEmpty() ||
+                        dates[0].ppCutoffDate < df.getCurrentDateAsString()
+                    ) {
+                        generateCutOff()
+                    } else {
+                        cutOffAdapter.add(getString(R.string.generate_a_new_cut_off))
+                    }
+                }
+                spCutOff.adapter = cutOffAdapter
+//                gotoCurrentCutoff()
+            }
+
         }
     }
 
@@ -184,16 +231,42 @@ class TimeSheetFragment :
         }
     }
 
-    override fun populatePayDetails() {
-        mainActivity.payDayViewModel.getPayPeriod(
-            binding.spCutOff.selectedItem.toString(),
-            curEmployer!!.employerId
-        ).observe(
-            viewLifecycleOwner
-        ) { payPeriod ->
-            curPayPeriod = payPeriod
-            mainActivity.mainViewModel.setPayPeriod(payPeriod)
+    private fun fillPayDayDate() {
+        if (curCutOff != "" && curEmployer != null) {
+            binding.apply {
+                val display = df.getDisplayDate(
+                    LocalDate.parse(curCutOff)
+                        .plusDays(curEmployer!!.cutoffDaysBefore.toLong()).toString()
+                ) + " - Pay Summary"
+                tvPaySummary.text = display
+            }
         }
+    }
+
+    private fun populateExistingWorkDates() {
+        binding.apply {
+            workDateAdapter = null
+            workDateAdapter = WorkDateAdapter(
+                mainActivity, curCutOff, curEmployer!!, mView, this@TimeSheetFragment
+            )
+            rvDates.apply {
+                layoutManager = LinearLayoutManager(mView.context)
+                adapter = workDateAdapter
+            }
+            activity?.let {
+                mainActivity.payDayViewModel.getWorkDateList(
+                    curEmployer!!.employerId,
+                    curCutOff
+                ).observe(viewLifecycleOwner) { workDates ->
+                    workDateAdapter!!.differ.submitList(workDates)
+                    updateUI(workDates)
+                }
+            }
+        }
+    }
+
+    override fun populatePayDetails() {
+        getCurrentPayPeriodObject()
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
             val payCalculations = PayCalculations(
@@ -242,40 +315,6 @@ class TimeSheetFragment :
         }
     }
 
-    private fun fillPayDayDate() {
-        if (curCutOff != "" && curEmployer != null) {
-            binding.apply {
-                val display = df.getDisplayDate(
-                    LocalDate.parse(curCutOff)
-                        .plusDays(curEmployer!!.cutoffDaysBefore.toLong()).toString()
-                ) + " - Pay Summary"
-                tvPaySummary.text = display
-            }
-        }
-    }
-
-    private fun populateExistingWorkDates() {
-        binding.apply {
-            workDateAdapter = null
-            workDateAdapter = WorkDateAdapter(
-                mainActivity, curCutOff, curEmployer!!, mView, this@TimeSheetFragment
-            )
-            rvDates.apply {
-                layoutManager = LinearLayoutManager(mView.context)
-                adapter = workDateAdapter
-            }
-            activity?.let {
-                mainActivity.payDayViewModel.getWorkDateList(
-                    curEmployer!!.employerId,
-                    curCutOff
-                ).observe(viewLifecycleOwner) { workDates ->
-                    workDateAdapter!!.differ.submitList(workDates)
-                    updateUI(workDates)
-                }
-            }
-        }
-    }
-
     private fun updateUI(workDates: List<Any>) {
         binding.apply {
             if (workDates.isEmpty()) {
@@ -286,62 +325,70 @@ class TimeSheetFragment :
         }
     }
 
-    private fun generateCutOff() {
-        val nextCutOff = projections.generateNextCutOff(
-            curEmployer!!,
-            if (cutOffs.isEmpty()) "" else cutOffs[0]
-        )
-        mainActivity.payDayViewModel.insertPayPeriod(
-            PayPeriods(
+    private fun getSelectedPayPeriod(): PayPeriods {
+        binding.apply {
+            return PayPeriods(
                 cf.generateRandomIdAsLong(),
-                nextCutOff,
+                spCutOff.selectedItem.toString(),
                 curEmployer!!.employerId,
                 false,
                 df.getCurrentTimeAsString()
             )
-        )
-//        CoroutineScope(Dispatchers.Main).launch {
-//            delay(WAIT_250)
-        populateCutOffDates()
-//        }
-
+        }
     }
 
-    private fun onSelectEmployer() {
-        binding.apply {
-            spEmployers.onItemSelectedListener =
-                object : OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        if (spEmployers.selectedItem.toString() !=
-                            getString(R.string.add_new_employer)
-                        ) {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                curEmployer = mainActivity.employerViewModel.findEmployer(
-                                    spEmployers.selectedItem.toString()
-                                )
-                            }
-                            CoroutineScope(Dispatchers.Main).launch {
-                                delay(WAIT_100)
-                                if (valuesFilled) mainActivity.mainViewModel.setEmployer(curEmployer)
-                                mainActivity.title = getString(R.string.pay_details) +
-                                        " for ${spEmployers.selectedItem}"
-                                populateCutOffDates()
-                            }
-                        } else {
-                            gotoEmployerAdd()
+    private fun getCurrentPayPeriodObject() {
+        mainActivity.payDayViewModel.getPayPeriod(
+            binding.spCutOff.selectedItem.toString(),
+            curEmployer!!.employerId
+        ).observe(
+            viewLifecycleOwner
+        ) { payPeriod ->
+            curPayPeriod = payPeriod
+            mainActivity.mainViewModel.setPayPeriod(payPeriod)
+        }
+    }
+
+    private fun populateFromHistory() {
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_500)
+            binding.apply {
+                if (mainActivity.mainViewModel.getEmployer() != null) {
+                    curEmployer = mainActivity.mainViewModel.getEmployer()!!
+                    for (i in 0 until spEmployers.adapter.count) {
+                        if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
+                            spEmployers.setSelection(i)
+                            break
                         }
                     }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-//                        fillEmployers()
+                    delay(WAIT_500)
+                    Log.d(
+                        TAG, "The cutoff is " +
+                                "${mainActivity.mainViewModel.getCutOffDate()} if found"
+                    )
+                    if (mainActivity.mainViewModel.getCutOffDate() != null) {
+                        curCutOff = mainActivity.mainViewModel.getCutOffDate()!!
+                        for (i in 0 until spCutOff.adapter.count) {
+                            if (spCutOff.getItemAtPosition(i).toString() == curCutOff) {
+                                spCutOff.setSelection(i)
+                                break
+                            }
+                        }
                     }
                 }
+            }
+            valuesFilled = true
         }
+    }
+
+    private fun addNewWorkDate() {
+        mainActivity.mainViewModel.setPayPeriod(getSelectedPayPeriod())
+        mainActivity.mainViewModel.setCutOffDate(curCutOff)
+        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mView.findNavController().navigate(
+            TimeSheetFragmentDirections
+                .actionTimeSheetFragmentToWorkDateAddFragment()
+        )
     }
 
     private fun gotoEmployerAdd() {
@@ -354,58 +401,14 @@ class TimeSheetFragment :
         )
     }
 
-    private fun populateCutOffDates() {
-        if (curEmployer != null) {
-            binding.apply {
-                val cutOffAdapter = ArrayAdapter<Any>(
-                    mView.context,
-                    R.layout.spinner_item_bold
-                )
-                mainActivity.payDayViewModel.getCutOffDates(curEmployer!!.employerId).observe(
-                    viewLifecycleOwner
-                ) { dates ->
-                    cutOffAdapter.clear()
-                    cutOffs.clear()
-                    cutOffAdapter.notifyDataSetChanged()
-                    dates.listIterator().forEach {
-                        cutOffAdapter.add(it.ppCutoffDate)
-                        cutOffs.add(it.ppCutoffDate)
-                    }
-//                    Log.d(TAG, "cutOffAdapter has ${dates.size}")
-                    if (dates.isEmpty() ||
-                        dates[0].ppCutoffDate < df.getCurrentDateAsString()
-                    ) {
-                        generateCutOff()
-                    } else {
-                        cutOffAdapter.add(getString(R.string.generate_a_new_cut_off))
-                    }
-                }
-                spCutOff.adapter = cutOffAdapter
-//                gotoCurrentCutoff()
-            }
-
-        }
-    }
-
-    private fun populateEmployers() {
-        val employerAdapter = ArrayAdapter<String>(
-            mView.context,
-            R.layout.spinner_item_bold
+    private fun gotoPayDetails() {
+        mainActivity.mainViewModel.setCutOffDate(curCutOff)
+        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mView.findNavController().navigate(
+            TimeSheetFragmentDirections
+                .actionTimeSheetFragmentToPayDetailsFragment()
         )
-        mainActivity.employerViewModel.getEmployers().observe(
-            viewLifecycleOwner
-        ) { employers ->
-            employerAdapter.clear()
-            employerAdapter.notifyDataSetChanged()
-            employers.listIterator().forEach {
-                employerAdapter.add(it.employerName)
-            }
-            curEmployer = employers.first()
-//            updateUI(employers)
-            employerAdapter.add(getString(R.string.add_new_employer))
-//            fillCutOffDates()
-        }
-        binding.spEmployers.adapter = employerAdapter
     }
 
     override fun onStop() {

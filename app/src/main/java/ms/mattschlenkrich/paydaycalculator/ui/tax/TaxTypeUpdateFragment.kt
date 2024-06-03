@@ -45,14 +45,14 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillSpinner()
-        getTaxTypeList()
-        fillMenu()
-        addActions()
-        fillValues()
+        populateSpinner()
+        getTaxTypeListForValidation()
+        setMenuActions()
+        setClickActions()
+        populateValues()
     }
 
-    private fun fillSpinner() {
+    private fun populateSpinner() {
         binding.apply {
             val basedOnAdapter = ArrayAdapter(
                 mView.context, R.layout.spinner_item_bold,
@@ -63,7 +63,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
         }
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         if (mainActivity.mainViewModel.getTaxType() != null) {
             curTaxType = mainActivity.mainViewModel.getTaxType()!!
             binding.apply {
@@ -73,7 +73,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
         }
     }
 
-    private fun addActions() {
+    private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener {
                 updateWorkTaxType()
@@ -89,7 +89,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
         )
     }
 
-    private fun fillMenu() {
+    private fun setMenuActions() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_delete, menu)
@@ -171,7 +171,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
         }
     }
 
-    private fun getTaxTypeList() {
+    private fun getTaxTypeListForValidation() {
         mainActivity.workTaxViewModel.getTaxTypes().observe(
             viewLifecycleOwner
         ) { taxTypes ->

@@ -49,8 +49,8 @@ class EmployerPayRatesFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillEmployers()
-        setActions()
+        populateEmployers()
+        setClickActions()
         onSelectEmployer()
     }
 
@@ -123,15 +123,15 @@ class EmployerPayRatesFragment :
         )
     }
 
-    private fun setActions() {
+    private fun setClickActions() {
         binding.apply {
             fabNew.setOnClickListener {
-                gotoWageAdd()
+                gotoPayRateFragment()
             }
         }
     }
 
-    private fun gotoWageAdd() {
+    private fun gotoPayRateFragment() {
         mainActivity.mainViewModel.setEmployer(curEmployer)
         mainActivity.mainViewModel.setPayRate(null)
         mainActivity.mainViewModel.setCallingFragment(TAG)
@@ -141,7 +141,7 @@ class EmployerPayRatesFragment :
         )
     }
 
-    private fun fillEmployers() {
+    private fun populateEmployers() {
         binding.apply {
             val employerAdapter = ArrayAdapter<String>(
                 mView.context, R.layout.spinner_item_bold

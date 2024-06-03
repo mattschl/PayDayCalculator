@@ -52,24 +52,24 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillSpinner()
-        fillMenu()
-        setActions()
-        setDateAction()
-        fillValues()
+        populateSpinner()
+        setMenuActions()
+        setClickActions()
+        changeDate()
+        populateValues()
     }
 
-    private fun setActions() {
+    private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener {
-                savePayRate()
+                updatePayRate()
             }
         }
     }
 
-    private fun savePayRate() {
+    private fun updatePayRate() {
         binding.apply {
-            val message = checkPayRate()
+            val message = validatePayRate()
             if (message == ANSWER_OK) {
                 mainActivity.employerViewModel.updatePayRate(
                     EmployerPayRates(
@@ -106,7 +106,7 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         )
     }
 
-    private fun checkPayRate(): String {
+    private fun validatePayRate(): String {
         binding.apply {
             return if (etWage.text.isNullOrBlank()) {
                 "    ERROR!!\n" +
@@ -117,7 +117,7 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         }
     }
 
-    private fun fillSpinner() {
+    private fun populateSpinner() {
         val frequencyAdapter = ArrayAdapter(
             mView.context, R.layout.spinner_item_bold,
             resources.getStringArray(R.array.pay_per_frequencies)
@@ -126,7 +126,7 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         binding.spPerFrequency.adapter = frequencyAdapter
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         binding.apply {
             curPayRate = mainActivity.mainViewModel.getPayRate()!!
             tvEffectiveDate.text = curPayRate.eprEffectiveDate
@@ -135,7 +135,7 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         }
     }
 
-    private fun setDateAction() {
+    private fun changeDate() {
         binding.apply {
             tvEffectiveDate.setOnClickListener {
                 val curDateAll = tvEffectiveDate.text.toString().split("-")
@@ -163,7 +163,7 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         }
     }
 
-    private fun fillMenu() {
+    private fun setMenuActions() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_delete, menu)

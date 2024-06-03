@@ -61,12 +61,12 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillMenu()
-        fillSpinners()
+        setMenuActions()
+        populateSpinners()
         chooseDate()
         chooseFixedOrPercent()
         chooseExtraType()
-        fillValues()
+        populateValues()
         changeDate()
     }
 
@@ -84,9 +84,9 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                             spExtraTypes.selectedItem.toString() ==
                             getString(R.string.add_a_new_extra_type)
                         ) {
-                            gotoExtraTypeAdd()
+                            gotoExtraTypeAddFragment()
                         } else {
-                            fillFromExtraList()
+                            populateFromExtraList()
                         }
                     }
 
@@ -97,7 +97,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         }
     }
 
-    private fun fillFromExtraList() {
+    private fun populateFromExtraList() {
         binding.apply {
             for (extra in extraList) {
                 if (extra.wetName == spExtraTypes.selectedItem.toString()) {
@@ -125,7 +125,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         }
     }
 
-    private fun gotoExtraTypeAdd() {
+    private fun gotoExtraTypeAddFragment() {
         mainActivity.mainViewModel.setEmployer(curEmployer)
         mView.findNavController().navigate(
             EmployerExtraDefinitionsAddFragmentDirections
@@ -133,7 +133,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         )
     }
 
-    private fun fillMenu() {
+    private fun setMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -155,7 +155,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun getCurExtraDef(): WorkExtrasDefinitions {
+    private fun getCurrentExtraDefinition(): WorkExtrasDefinitions {
         binding.apply {
             var extraId = 0L
             for (extra in extraList) {
@@ -179,9 +179,9 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
 
     private fun saveExtra() {
         binding.apply {
-            val message = checkExtra()
+            val message = validateExtra()
             if (message == ANSWER_OK) {
-                val curExtraDef = getCurExtraDef()
+                val curExtraDef = getCurrentExtraDefinition()
                 mainActivity.workExtraViewModel.insertWorkExtraDefinition(
                     curExtraDef
                 )
@@ -202,30 +202,29 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                     FRAG_EXTRA_DEFINITIONS
                 )
             ) {
-                gotoExtraDefinitions()
+                gotoExtraDefinitionsFragment()
             }
         } else {
-            gotoEmployerUpdate()
+            gotoEmployerUpdateFragment()
         }
     }
 
-    private fun gotoExtraDefinitions() {
+    private fun gotoExtraDefinitionsFragment() {
         mView.findNavController().navigate(
             EmployerExtraDefinitionsAddFragmentDirections
                 .actionEmployerExtraDefinitionsAddFragmentToEmployerExtraDefinitionsFragment()
         )
     }
 
-    private fun gotoEmployerUpdate() {
+    private fun gotoEmployerUpdateFragment() {
         mView.findNavController().navigate(
             EmployerExtraDefinitionsAddFragmentDirections
                 .actionEmployerExtraDefinitionsAddFragmentToEmployerUpdateFragment()
         )
     }
 
-    private fun checkExtra(): String {
+    private fun validateExtra(): String {
         binding.apply {
-
             return ANSWER_OK
         }
     }
@@ -286,7 +285,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         }
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         binding.apply {
             tvEffectiveDate.text = df.getCurrentDateAsString()
             CoroutineScope(Dispatchers.Main).launch {
@@ -305,7 +304,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         }
     }
 
-    private fun fillSpinners() {
+    private fun populateSpinners() {
         curEmployer = mainActivity.mainViewModel.getEmployer()!!
         binding.apply {
             val extraTypeAdapter = ArrayAdapter<String>(

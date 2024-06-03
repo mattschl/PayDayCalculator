@@ -57,12 +57,12 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillSpinner()
-        getTaxTypeList()
-        fillMenu()
+        populateSpinner()
+        getTaxTypeListForValidation()
+        setMenuActions()
     }
 
-    private fun fillSpinner() {
+    private fun populateSpinner() {
         binding.apply {
             val basedOnAdapter = ArrayAdapter(
                 mView.context, R.layout.spinner_item_bold,
@@ -73,7 +73,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         }
     }
 
-    private fun getTaxTypeList() {
+    private fun getTaxTypeListForValidation() {
         mainActivity.workTaxViewModel.getTaxTypes().observe(
             viewLifecycleOwner
         ) { list ->
@@ -84,7 +84,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         }
     }
 
-    private fun fillMenu() {
+    private fun setMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -147,7 +147,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
             .setPositiveButton("Yes") { _, _ ->
                 mainActivity.mainViewModel.setTaxType(taxType)
                 mainActivity.mainViewModel.setTaxTypeString(taxType.taxType)
-                gotoTaxRules()
+                gotoTaxRulesFragment()
             }
             .setNegativeButton("No") { _, _ ->
                 mainActivity.mainViewModel.setTaxType(taxType)
@@ -179,31 +179,31 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         val callingFragment = mainActivity.mainViewModel.getCallingFragment()
         if (callingFragment != null) {
             if (callingFragment.contains(FRAG_EMPLOYER_UPDATE)) {
-                gotoEmployerUpdate()
+                gotoEmployerUpdateFragment()
             } else if (callingFragment.contains(FRAG_TAX_RULES)) {
 
-                gotoTaxRules()
+                gotoTaxRulesFragment()
             } else {
-                gotoTaxTypes()
+                gotoTaxTypeFragment()
             }
         }
     }
 
-    private fun gotoEmployerUpdate() {
+    private fun gotoEmployerUpdateFragment() {
         mView.findNavController().navigate(
             TaxTypeAddFragmentDirections
                 .actionTaxTypeAddFragmentToEmployerUpdateFragment()
         )
     }
 
-    private fun gotoTaxTypes() {
+    private fun gotoTaxTypeFragment() {
         mView.findNavController().navigate(
             TaxTypeAddFragmentDirections
                 .actionTaxTypeAddFragmentToTaxTypeFragment()
         )
     }
 
-    private fun gotoTaxRules() {
+    private fun gotoTaxRulesFragment() {
         mView.findNavController().navigate(
             TaxTypeAddFragmentDirections
                 .actionTaxTypeAddFragmentToTaxRulesFragment()

@@ -51,14 +51,14 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillSpinners()
-        setActions()
+        populateSpinners()
+        setClickActions()
         chooseFixedOrPercent()
-        fillMenu()
-        fillValues()
+        setMenuActions()
+        populateValues()
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         extraList = mainActivity.mainViewModel.getPayPeriodExtraList()
         if (mainActivity.mainViewModel.getEmployer() != null) {
             curEmployer = mainActivity.mainViewModel.getEmployer()!!
@@ -87,7 +87,7 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
         }
     }
 
-    private fun setActions() {
+    private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener {
                 updatePayPeriodExtra()
@@ -170,7 +170,7 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
         }
     }
 
-    private fun fillMenu() {
+    private fun setMenuActions() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_delete, menu)
@@ -221,7 +221,7 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
         }
     }
 
-    private fun fillSpinners() {
+    private fun populateSpinners() {
         binding.apply {
             val frequencyAdapter = ArrayAdapter(
                 mView.context, R.layout.spinner_item_bold,

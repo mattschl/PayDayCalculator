@@ -57,14 +57,14 @@ class WorkExtraTypeUpdateFragment : Fragment(
             curExtraType = mainActivity.mainViewModel.getWorkExtraType()!!
         }
         mainActivity.title = "Update ${curExtraType.wetName} for ${curEmployer.employerName}"
-        fillSpinners()
-        getExtraTypeList()
-        fillMenu()
-        setActions()
-        fillValues()
+        populateSpinners()
+        getExtraTypeListForValidation()
+        setMenuActions()
+        setClickActions()
+        populateValues()
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         binding.apply {
             binding.apply {
                 etExtraName.setText(curExtraType.wetName)
@@ -76,7 +76,7 @@ class WorkExtraTypeUpdateFragment : Fragment(
         }
     }
 
-    private fun setActions() {
+    private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener {
                 updateExtraType()
@@ -103,7 +103,7 @@ class WorkExtraTypeUpdateFragment : Fragment(
                 mainActivity.workExtraViewModel.updateWorkExtraType(
                     newExtraType
                 )
-                gotoWorkExtraDefinitions(newExtraType)
+                gotoWorkExtraDefinitionsFragment(newExtraType)
             } else {
                 Toast.makeText(
                     mView.context,
@@ -114,7 +114,7 @@ class WorkExtraTypeUpdateFragment : Fragment(
         }
     }
 
-    private fun gotoWorkExtraDefinitions(newExtraType: WorkExtraTypes) {
+    private fun gotoWorkExtraDefinitionsFragment(newExtraType: WorkExtraTypes) {
         mainActivity.mainViewModel.setWorkExtraType(newExtraType)
         mView.findNavController().navigate(
             WorkExtraTypeUpdateFragmentDirections
@@ -148,7 +148,7 @@ class WorkExtraTypeUpdateFragment : Fragment(
         }
     }
 
-    private fun fillMenu() {
+    private fun setMenuActions() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_delete, menu)
@@ -187,10 +187,10 @@ class WorkExtraTypeUpdateFragment : Fragment(
     }
 
     private fun gotoCallingFragment() {
-        gotoWorkExtraDefinitions(curExtraType)
+        gotoWorkExtraDefinitionsFragment(curExtraType)
     }
 
-    private fun fillSpinners() {
+    private fun populateSpinners() {
         binding.apply {
             val frequencyAdapter = ArrayAdapter(
                 mView.context, R.layout.spinner_item_bold,
@@ -202,7 +202,7 @@ class WorkExtraTypeUpdateFragment : Fragment(
         }
     }
 
-    private fun getExtraTypeList() {
+    private fun getExtraTypeListForValidation() {
         mainActivity.workExtraViewModel.getExtraDefTypes(curEmployer.employerId)
             .observe(
                 viewLifecycleOwner

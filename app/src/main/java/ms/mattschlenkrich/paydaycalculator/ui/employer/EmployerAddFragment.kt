@@ -53,74 +53,69 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getEmployerList()
-        fillSpinnersAndStartDate()
-        fillMenu()
-        setDateAction()
+        getEmployerListForValidation()
+        populateSpinners()
+        populateStartDate()
+        setMenuActions()
+        changeDate()
         setSpinnerActions()
-        setOtherActions()
+        setClickActions()
     }
 
-    private fun setOtherActions() {
-        binding.apply {
-            crdTaxes.setOnClickListener {
-                AlertDialog.Builder(mView.context)
-                    .setMessage(
-                        "You cannot add taxes until the employer is saved. " +
-                                "Save the employer first and go to edit mode."
-                    )
-                    .setNegativeButton("OK", null)
-                    .show()
-            }
-            crdExtras.setOnClickListener {
-                AlertDialog.Builder(mView.context)
-                    .setMessage(
-                        "You cannot add any extra credits or deductions until the employer is saved. " +
-                                "Save the employer first and go to edit mode."
-                    )
-                    .setNegativeButton("OK", null)
-                    .show()
+    private fun getEmployerListForValidation() {
+        mainActivity.employerViewModel.getEmployers().observe(viewLifecycleOwner) { employers ->
+            employerList.clear()
+            employers.listIterator().forEach {
+                employerList.add(it)
             }
         }
     }
 
-    private fun setSpinnerActions() {
+    private fun populateSpinners() {
         binding.apply {
-            spFrequency.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                        when (spFrequency.selectedItem.toString()) {
-                            INTERVAL_SEMI_MONTHLY -> {
-                                lblMidMonthDate.visibility = View.VISIBLE
-                                etMidMonthDate.visibility = View.VISIBLE
-                                lblMainMonthDate.visibility = View.VISIBLE
-                                etMainMonthDate.visibility = View.VISIBLE
-                            }
+            val frequencyAdapter = ArrayAdapter(
+                mView.context, R.layout.spinner_item_bold,
+                resources.getStringArray(R.array.pay_day_frequencies)
+            )
+            frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
+            spFrequency.adapter = frequencyAdapter
 
-                            INTERVAL_MONTHLY -> {
-                                lblMidMonthDate.visibility = View.GONE
-                                etMidMonthDate.visibility = View.GONE
-                                lblMainMonthDate.visibility = View.VISIBLE
-                                etMainMonthDate.visibility = View.VISIBLE
-                            }
+            val dayOfWeekAdapter = ArrayAdapter(
+                mView.context, R.layout.spinner_item_bold,
+                resources.getStringArray(R.array.pay_days)
+            )
+            dayOfWeekAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
+            spDayOfWeek.adapter = dayOfWeekAdapter
+        }
+    }
 
-                            else -> {
-                                lblMidMonthDate.visibility = View.GONE
-                                etMidMonthDate.visibility = View.GONE
-                                lblMainMonthDate.visibility = View.GONE
-                                etMainMonthDate.visibility = View.GONE
-                            }
-                        }
+    private fun populateStartDate() {
+        startDate = df.getCurrentDateAsString()
+        binding.tvStartDate.text = df.getDisplayDate(startDate)
+    }
+
+    private fun setMenuActions() {
+        mainActivity.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.save_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.menu_save -> {
+                        saveEmployerAndContinue()
+                        true
                     }
 
-                    override fun onNothingSelected(p0: AdapterView<*>?) {
-                        //not needed
+                    else -> {
+                        false
                     }
                 }
-        }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun setDateAction() {
+    private fun changeDate() {
         binding.tvStartDate.setOnClickListener {
             val curDateAll = startDate.split("-")
             val datePickerDialog = DatePickerDialog(
@@ -145,28 +140,72 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         }
     }
 
-    private fun fillMenu() {
-        mainActivity.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.save_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        saveEmployer()
-                        true
+    private fun setSpinnerActions() {
+        binding.apply {
+            spFrequency.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                        changeUiVisibilities()
                     }
 
-                    else -> {
-                        false
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
+                        //not needed
                     }
                 }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.CREATED)
+        }
     }
 
-    private fun saveEmployer() {
+    private fun setClickActions() {
+        binding.apply {
+            crdTaxes.setOnClickListener {
+                AlertDialog.Builder(mView.context)
+                    .setMessage(
+                        "You cannot add taxes until the employer is saved. " +
+                                "Save the employer first and go to edit mode."
+                    )
+                    .setNegativeButton("OK", null)
+                    .show()
+            }
+            crdExtras.setOnClickListener {
+                AlertDialog.Builder(mView.context)
+                    .setMessage(
+                        "You cannot add any extra credits or deductions until the employer is saved. " +
+                                "Save the employer first and go to edit mode."
+                    )
+                    .setNegativeButton("OK", null)
+                    .show()
+            }
+        }
+    }
+
+    private fun changeUiVisibilities() {
+        binding.apply {
+            when (spFrequency.selectedItem.toString()) {
+                INTERVAL_SEMI_MONTHLY -> {
+                    lblMidMonthDate.visibility = View.VISIBLE
+                    etMidMonthDate.visibility = View.VISIBLE
+                    lblMainMonthDate.visibility = View.VISIBLE
+                    etMainMonthDate.visibility = View.VISIBLE
+                }
+
+                INTERVAL_MONTHLY -> {
+                    lblMidMonthDate.visibility = View.GONE
+                    etMidMonthDate.visibility = View.GONE
+                    lblMainMonthDate.visibility = View.VISIBLE
+                    etMainMonthDate.visibility = View.VISIBLE
+                }
+
+                else -> {
+                    lblMidMonthDate.visibility = View.GONE
+                    etMidMonthDate.visibility = View.GONE
+                    lblMainMonthDate.visibility = View.GONE
+                    etMainMonthDate.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun saveEmployerAndContinue() {
         binding.apply {
             val message = checkEmployerToSave()
             if (message == ANSWER_OK) {
@@ -175,7 +214,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
                     curEmployer
                 )
                 addEmployerTaxRules(curEmployer.employerId)
-                chooseNextSteps(curEmployer)
+                chooseNextStepsAfterSaving(curEmployer)
             } else {
                 Toast.makeText(
                     mView.context,
@@ -183,73 +222,6 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
                     Toast.LENGTH_LONG
                 ).show()
             }
-        }
-    }
-
-    private fun addEmployerTaxRules(employerId: Long) {
-        mainActivity.workTaxViewModel.getTaxTypes().observe(
-            viewLifecycleOwner
-        ) { type ->
-            type.forEach {
-                mainActivity.workTaxViewModel.insertEmployerTaxType(
-                    EmployerTaxTypes(
-                        etrEmployerId = employerId,
-                        etrTaxType = it.taxType,
-                        etrInclude = false,
-                        etrIsDeleted = false,
-                        etrUpdateTime = df.getCurrentTimeAsString()
-                    )
-                )
-            }
-        }
-    }
-
-    private fun chooseNextSteps(curEmployer: Employers) {
-        AlertDialog.Builder(mView.context)
-            .setTitle("Choose next steps for ${curEmployer.employerName}")
-            .setMessage(
-                "The taxes have been set up automatically. \n" +
-                        "Would you like to open this employer in EDIT mode to edit taxes, " +
-                        "create extra deductions or extra items added to paychecks?"
-            )
-            .setPositiveButton("Yes") { _, _ ->
-                gotoEmployerExtras(curEmployer)
-            }
-            .setNegativeButton("No") { _, _ ->
-                gotoCallingFragment()
-            }
-            .show()
-    }
-
-    private fun gotoEmployerExtras(curEmployer: Employers) {
-        mainActivity.mainViewModel.setEmployer(curEmployer)
-        mView.findNavController().navigate(
-            EmployerAddFragmentDirections
-                .actionEmployerAddFragmentToEmployerUpdateFragment()
-        )
-    }
-
-    private fun gotoCallingFragment() {
-        mView.findNavController().navigate(
-            EmployerAddFragmentDirections
-                .actionEmployerAddFragmentToEmployerFragment()
-        )
-    }
-
-    private fun getCurrentEmployer(): Employers {
-        binding.apply {
-            return Employers(
-                nf.generateRandomIdAsLong(),
-                etName.text.toString(),
-                spFrequency.selectedItem.toString(),
-                startDate,
-                spDayOfWeek.selectedItem.toString(),
-                etDaysBefore.text.toString().toInt(),
-                etMidMonthDate.text.toString().toInt(),
-                etMainMonthDate.text.toString().toInt(),
-                false,
-                df.getCurrentTimeAsString()
-            )
         }
     }
 
@@ -284,33 +256,71 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
 
     }
 
-    private fun fillSpinnersAndStartDate() {
-        binding.apply {
-            val frequencyAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.pay_day_frequencies)
-            )
-            frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
-            spFrequency.adapter = frequencyAdapter
-
-            val dayOfWeekAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.pay_days)
-            )
-            dayOfWeekAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
-            spDayOfWeek.adapter = dayOfWeekAdapter
-            startDate = df.getCurrentDateAsString()
-            tvStartDate.text = df.getDisplayDate(startDate)
+    private fun addEmployerTaxRules(employerId: Long) {
+        mainActivity.workTaxViewModel.getTaxTypes().observe(
+            viewLifecycleOwner
+        ) { type ->
+            type.forEach {
+                mainActivity.workTaxViewModel.insertEmployerTaxType(
+                    EmployerTaxTypes(
+                        etrEmployerId = employerId,
+                        etrTaxType = it.taxType,
+                        etrInclude = false,
+                        etrIsDeleted = false,
+                        etrUpdateTime = df.getCurrentTimeAsString()
+                    )
+                )
+            }
         }
     }
 
-    private fun getEmployerList() {
-        mainActivity.employerViewModel.getEmployers().observe(viewLifecycleOwner) { employers ->
-            employerList.clear()
-            employers.listIterator().forEach {
-                employerList.add(it)
-            }
+    private fun getCurrentEmployer(): Employers {
+        binding.apply {
+            return Employers(
+                nf.generateRandomIdAsLong(),
+                etName.text.toString(),
+                spFrequency.selectedItem.toString(),
+                startDate,
+                spDayOfWeek.selectedItem.toString(),
+                etDaysBefore.text.toString().toInt(),
+                etMidMonthDate.text.toString().toInt(),
+                etMainMonthDate.text.toString().toInt(),
+                false,
+                df.getCurrentTimeAsString()
+            )
         }
+    }
+
+    private fun chooseNextStepsAfterSaving(curEmployer: Employers) {
+        AlertDialog.Builder(mView.context)
+            .setTitle("Choose next steps for ${curEmployer.employerName}")
+            .setMessage(
+                "The taxes have been set up automatically. \n" +
+                        "Would you like to open this employer in EDIT mode to edit taxes, " +
+                        "create extra deductions or extra items added to paychecks?"
+            )
+            .setPositiveButton("Yes") { _, _ ->
+                gotoEmployerExtrasFragment(curEmployer)
+            }
+            .setNegativeButton("No") { _, _ ->
+                gotoEmployerFragment()
+            }
+            .show()
+    }
+
+    private fun gotoEmployerExtrasFragment(curEmployer: Employers) {
+        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mView.findNavController().navigate(
+            EmployerAddFragmentDirections
+                .actionEmployerAddFragmentToEmployerUpdateFragment()
+        )
+    }
+
+    private fun gotoEmployerFragment() {
+        mView.findNavController().navigate(
+            EmployerAddFragmentDirections
+                .actionEmployerAddFragmentToEmployerFragment()
+        )
     }
 
     override fun onDestroy() {
