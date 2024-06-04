@@ -33,8 +33,8 @@ class WorkExtraTypeUpdateFragment : Fragment(
 
     //    private val cf = NumberFunctions()
     private val extraTypeList = ArrayList<WorkExtraTypes>()
-    private lateinit var curEmployer: Employers
-    private lateinit var curExtraType: WorkExtraTypes
+    private lateinit var currentEmployer: Employers
+    private lateinit var currentExtraType: WorkExtraTypes
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,12 +51,13 @@ class WorkExtraTypeUpdateFragment : Fragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (mainActivity.mainViewModel.getEmployer() != null) {
-            curEmployer = mainActivity.mainViewModel.getEmployer()!!
+            currentEmployer = mainActivity.mainViewModel.getEmployer()!!
         }
         if (mainActivity.mainViewModel.getWorkExtraType() != null) {
-            curExtraType = mainActivity.mainViewModel.getWorkExtraType()!!
+            currentExtraType = mainActivity.mainViewModel.getWorkExtraType()!!
         }
-        mainActivity.title = "Update ${curExtraType.wetName} for ${curEmployer.employerName}"
+        mainActivity.title =
+            "Update ${currentExtraType.wetName} for ${currentEmployer.employerName}"
         populateSpinners()
         getExtraTypeListForValidation()
         setMenuActions()
@@ -67,11 +68,11 @@ class WorkExtraTypeUpdateFragment : Fragment(
     private fun populateValues() {
         binding.apply {
             binding.apply {
-                etExtraName.setText(curExtraType.wetName)
-                spAppliesTo.setSelection(curExtraType.wetAppliesTo)
-                spAttachTo.setSelection(curExtraType.wetAttachTo)
-                chkIsCredit.isChecked = curExtraType.wetIsCredit
-                chkIsDefault.isChecked = curExtraType.wetIsDefault
+                etExtraName.setText(currentExtraType.wetName)
+                spAppliesTo.setSelection(currentExtraType.wetAppliesTo)
+                spAttachTo.setSelection(currentExtraType.wetAttachTo)
+                chkIsCredit.isChecked = currentExtraType.wetIsCredit
+                chkIsDefault.isChecked = currentExtraType.wetIsDefault
             }
         }
     }
@@ -85,32 +86,35 @@ class WorkExtraTypeUpdateFragment : Fragment(
     }
 
     private fun updateExtraType() {
+        val message = validateExtraType()
+        if (message == ANSWER_OK) {
+            val newExtraType = getUpdatedExtraType()
+            mainActivity.workExtraViewModel.updateWorkExtraType(
+                newExtraType
+            )
+            gotoWorkExtraDefinitionsFragment(newExtraType)
+        } else {
+            Toast.makeText(
+                mView.context,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun getUpdatedExtraType(): WorkExtraTypes {
         binding.apply {
-            val message = checkExtraType()
-            if (message == ANSWER_OK) {
-                val newExtraType =
-                    WorkExtraTypes(
-                        curExtraType.workExtraTypeId,
-                        etExtraName.text.toString(),
-                        curExtraType.wetEmployerId,
-                        spAppliesTo.selectedItemPosition,
-                        spAttachTo.selectedItemPosition,
-                        chkIsCredit.isChecked,
-                        chkIsDefault.isChecked,
-                        false,
-                        df.getCurrentTimeAsString()
-                    )
-                mainActivity.workExtraViewModel.updateWorkExtraType(
-                    newExtraType
-                )
-                gotoWorkExtraDefinitionsFragment(newExtraType)
-            } else {
-                Toast.makeText(
-                    mView.context,
-                    message,
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+            return WorkExtraTypes(
+                currentExtraType.workExtraTypeId,
+                etExtraName.text.toString(),
+                currentExtraType.wetEmployerId,
+                spAppliesTo.selectedItemPosition,
+                spAttachTo.selectedItemPosition,
+                chkIsCredit.isChecked,
+                chkIsDefault.isChecked,
+                false,
+                df.getCurrentTimeAsString()
+            )
         }
     }
 
@@ -122,13 +126,13 @@ class WorkExtraTypeUpdateFragment : Fragment(
         )
     }
 
-    private fun checkExtraType(): String {
+    private fun validateExtraType(): String {
         binding.apply {
             var nameFound = false
             if (extraTypeList.isNotEmpty()) {
                 for (extra in extraTypeList) {
                     if (extra.wetName == etExtraName.text.toString().trim() &&
-                        extra.wetName != curExtraType.wetName
+                        extra.wetName != currentExtraType.wetName
                     ) {
                         nameFound = true
                         break
@@ -172,13 +176,13 @@ class WorkExtraTypeUpdateFragment : Fragment(
     private fun deleteExtraType() {
         mainActivity.workExtraViewModel.updateWorkExtraType(
             WorkExtraTypes(
-                curExtraType.workExtraTypeId,
-                curExtraType.wetName,
-                curExtraType.wetEmployerId,
-                curExtraType.wetAppliesTo,
-                curExtraType.wetAttachTo,
-                curExtraType.wetIsCredit,
-                curExtraType.wetIsDefault,
+                currentExtraType.workExtraTypeId,
+                currentExtraType.wetName,
+                currentExtraType.wetEmployerId,
+                currentExtraType.wetAppliesTo,
+                currentExtraType.wetAttachTo,
+                currentExtraType.wetIsCredit,
+                currentExtraType.wetIsDefault,
                 true,
                 df.getCurrentTimeAsString()
             )
@@ -187,7 +191,7 @@ class WorkExtraTypeUpdateFragment : Fragment(
     }
 
     private fun gotoCallingFragment() {
-        gotoWorkExtraDefinitionsFragment(curExtraType)
+        gotoWorkExtraDefinitionsFragment(currentExtraType)
     }
 
     private fun populateSpinners() {
@@ -203,7 +207,7 @@ class WorkExtraTypeUpdateFragment : Fragment(
     }
 
     private fun getExtraTypeListForValidation() {
-        mainActivity.workExtraViewModel.getExtraDefTypes(curEmployer.employerId)
+        mainActivity.workExtraViewModel.getExtraDefTypes(currentEmployer.employerId)
             .observe(
                 viewLifecycleOwner
             ) { names ->

@@ -55,7 +55,6 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         populateSpinner()
         setMenuActions()
         setClickActions()
-        changeDate()
         populateValues()
     }
 
@@ -63,6 +62,10 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         binding.apply {
             fabDone.setOnClickListener {
                 updatePayRate()
+            }
+
+            tvEffectiveDate.setOnClickListener {
+                changeDate()
             }
         }
     }
@@ -137,29 +140,27 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
 
     private fun changeDate() {
         binding.apply {
-            tvEffectiveDate.setOnClickListener {
-                val curDateAll = tvEffectiveDate.text.toString().split("-")
-                val datePickerDialog = DatePickerDialog(
-                    requireContext(),
-                    { _, year, monthOfYear, dayOfMonth ->
-                        val month = monthOfYear + 1
-                        val display = "$year-${
-                            month.toString()
-                                .padStart(2, '0')
-                        }-${
-                            dayOfMonth.toString().padStart(2, '0')
-                        }"
-                        tvEffectiveDate.text = display
-                    },
-                    curDateAll[0].toInt(),
-                    curDateAll[1].toInt() - 1,
-                    curDateAll[2].toInt()
-                )
-                datePickerDialog.setTitle(
-                    getString(R.string.choose_when_this_wage_goes_into_effect)
-                )
-                datePickerDialog.show()
-            }
+            val curDateAll = tvEffectiveDate.text.toString().split("-")
+            val datePickerDialog = DatePickerDialog(
+                requireContext(),
+                { _, year, monthOfYear, dayOfMonth ->
+                    val month = monthOfYear + 1
+                    val display = "$year-${
+                        month.toString()
+                            .padStart(2, '0')
+                    }-${
+                        dayOfMonth.toString().padStart(2, '0')
+                    }"
+                    tvEffectiveDate.text = display
+                },
+                curDateAll[0].toInt(),
+                curDateAll[1].toInt() - 1,
+                curDateAll[2].toInt()
+            )
+            datePickerDialog.setTitle(
+                getString(R.string.choose_when_this_wage_goes_into_effect)
+            )
+            datePickerDialog.show()
         }
     }
 

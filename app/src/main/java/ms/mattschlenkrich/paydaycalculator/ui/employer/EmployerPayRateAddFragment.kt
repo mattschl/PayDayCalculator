@@ -54,26 +54,26 @@ class EmployerPayRateAddFragment :
         super.onViewCreated(view, savedInstanceState)
         setMenuActions()
         populateSpinner()
-        changeDate()
+        setClickActions()
         populateValues()
     }
 
     private fun populateValues() {
         binding.apply {
             tvEffectiveDate.text = LocalDate.now().toString()
-            chooseDate()
+            changeEffectiveDate()
         }
     }
 
-    private fun changeDate() {
+    private fun setClickActions() {
         binding.apply {
             tvEffectiveDate.setOnClickListener {
-                chooseDate()
+                changeEffectiveDate()
             }
         }
     }
 
-    private fun chooseDate() {
+    private fun changeEffectiveDate() {
         binding.apply {
             val curDateAll = tvEffectiveDate.text.toString().split("-")
             val datePickerDialog = DatePickerDialog(

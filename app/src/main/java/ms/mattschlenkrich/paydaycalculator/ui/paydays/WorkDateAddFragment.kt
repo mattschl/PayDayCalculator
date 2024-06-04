@@ -66,7 +66,6 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         populateValues()
         setMenuActions()
         populateExtras()
-        setChangeDateAction()
         setClickActions()
     }
 
@@ -163,31 +162,29 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         }
     }
 
-    private fun setChangeDateAction() {
+    private fun changeDate() {
         binding.apply {
-            tvWorkDate.setOnClickListener {
-                val curDateAll = curDateString.split("-")
-                val datePickerDialog = DatePickerDialog(
-                    requireContext(),
-                    { _, year, monthOfYear, dayOfMonth ->
-                        val month = monthOfYear + 1
-                        val display = "$year-${
-                            month.toString()
-                                .padStart(2, '0')
-                        }-${
-                            dayOfMonth.toString().padStart(2, '0')
-                        }"
-                        curDateString = display
-                        tvWorkDate.text = df.getDisplayDate(curDateString)
+            val curDateAll = curDateString.split("-")
+            val datePickerDialog = DatePickerDialog(
+                requireContext(),
+                { _, year, monthOfYear, dayOfMonth ->
+                    val month = monthOfYear + 1
+                    val display = "$year-${
+                        month.toString()
+                            .padStart(2, '0')
+                    }-${
+                        dayOfMonth.toString().padStart(2, '0')
+                    }"
+                    curDateString = display
+                    tvWorkDate.text = df.getDisplayDate(curDateString)
 
-                    },
-                    curDateAll[0].toInt(),
-                    curDateAll[1].toInt() - 1,
-                    curDateAll[2].toInt()
-                )
-                datePickerDialog.setTitle(getString(R.string.choose_a_work_date))
-                datePickerDialog.show()
-            }
+                },
+                curDateAll[0].toInt(),
+                curDateAll[1].toInt() - 1,
+                curDateAll[2].toInt()
+            )
+            datePickerDialog.setTitle(getString(R.string.choose_a_work_date))
+            datePickerDialog.show()
         }
     }
 
@@ -195,6 +192,9 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         binding.apply {
             fabAddExtra.setOnClickListener {
                 gotoAddExtra()
+            }
+            tvWorkDate.setOnClickListener {
+
             }
         }
     }

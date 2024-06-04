@@ -143,7 +143,7 @@ class TimeSheetFragment :
         }
     }
 
-    private fun generateCutOff() {
+    private fun generateNewCutOff() {
         val nextCutOff = projections.generateNextCutOff(
             curEmployer!!,
             if (cutOffs.isEmpty()) "" else cutOffs[0]
@@ -185,7 +185,7 @@ class TimeSheetFragment :
                     if (dates.isEmpty() ||
                         dates[0].ppCutoffDate < df.getCurrentDateAsString()
                     ) {
-                        generateCutOff()
+                        generateNewCutOff()
                     } else {
                         cutOffAdapter.add(getString(R.string.generate_a_new_cut_off))
                     }
@@ -217,10 +217,10 @@ class TimeSheetFragment :
                                 populateExistingWorkDates()
                                 populatePayDetails()
                             } else {
-                                generateCutOff()
+                                generateNewCutOff()
                             }
                         } else {
-                            generateCutOff()
+                            generateNewCutOff()
                         }
                     }
 

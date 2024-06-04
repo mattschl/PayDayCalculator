@@ -83,7 +83,7 @@ class PayPeriodExtraAddFragment :
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
-                        saveExtra()
+                        saveExtraIfValid()
                         true
                     }
 
@@ -95,12 +95,12 @@ class PayPeriodExtraAddFragment :
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun saveExtra() {
-        val message = checkExtra()
+    private fun saveExtraIfValid() {
+        val message = validateExtra()
         if (message == ANSWER_OK) {
             binding.apply {
                 mainActivity.payDayViewModel.insertPayPeriodExtra(
-                    getCurrentPayPeriodExtra()
+                    getNewPayPeriodExtra()
                 )
             }
             gotoPayDetailsFragment()
@@ -120,7 +120,7 @@ class PayPeriodExtraAddFragment :
         )
     }
 
-    private fun getCurrentPayPeriodExtra(): WorkPayPeriodExtras {
+    private fun getNewPayPeriodExtra(): WorkPayPeriodExtras {
         binding.apply {
             return WorkPayPeriodExtras(
                 cf.generateRandomIdAsLong(),
@@ -140,7 +140,7 @@ class PayPeriodExtraAddFragment :
         }
     }
 
-    private fun checkExtra(): String {
+    private fun validateExtra(): String {
         binding.apply {
             var nameFound = false
             if (extraList.isNotEmpty()) {

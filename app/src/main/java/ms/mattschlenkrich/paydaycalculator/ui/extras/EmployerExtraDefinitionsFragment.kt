@@ -255,7 +255,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     ) { extras ->
                         extraDefinitionAdapter.notifyDataSetChanged()
                         extraDefinitionAdapter.differ.submitList(extras)
-                        updateRecyclerUI(extras)
+                        updateExtrasUI(extras)
                     }
                 }
             }
@@ -332,7 +332,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     }
 
 
-    private fun updateRecyclerUI(extras: List<Any>) {
+    private fun updateExtrasUI(extras: List<Any>) {
         binding.apply {
             if (extras.isEmpty()) {
                 rvExtras.visibility = View.GONE

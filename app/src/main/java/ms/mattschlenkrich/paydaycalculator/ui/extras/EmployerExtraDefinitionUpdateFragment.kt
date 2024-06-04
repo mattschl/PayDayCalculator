@@ -50,7 +50,6 @@ class EmployerExtraDefinitionUpdateFragment :
         super.onViewCreated(view, savedInstanceState)
         setMenuActions()
         populateValues()
-        changeDate()
         chooseFixedOrPercent()
         setClickActions()
     }
@@ -58,18 +57,21 @@ class EmployerExtraDefinitionUpdateFragment :
     private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener {
-                updateDefinition()
+                updateDefinitionIfValid()
+            }
+            tvEffectiveDate.setOnClickListener {
+                changeDate()
             }
         }
     }
 
-    private fun updateDefinition() {
-        val message = checkExtra()
+    private fun updateDefinitionIfValid() {
+        val message = validateExtraDefinition()
         if (message == ANSWER_OK) {
             mainActivity.workExtraViewModel.updateWorkExtraDefinition(
-                getCurrentDefinition()
+                getNewDefinition()
             )
-            gotoCallingFragment()
+            gotoEmployerExtraDefinitionsFragment()
         } else {
             Toast.makeText(
                 mView.context,
@@ -79,7 +81,7 @@ class EmployerExtraDefinitionUpdateFragment :
         }
     }
 
-    private fun getCurrentDefinition(): WorkExtrasDefinitions {
+    private fun getNewDefinition(): WorkExtrasDefinitions {
         binding.apply {
             val curDef = curExtraDefinitionFull.definition
             return WorkExtrasDefinitions(
@@ -95,7 +97,7 @@ class EmployerExtraDefinitionUpdateFragment :
         }
     }
 
-    private fun checkExtra(): String {
+    private fun validateExtraDefinition(): String {
         binding.apply {
             var nameFound = false
             if (definitionList.isNotEmpty()) {
@@ -145,28 +147,26 @@ class EmployerExtraDefinitionUpdateFragment :
 
     private fun changeDate() {
         binding.apply {
-            tvEffectiveDate.setOnClickListener {
-                val curDateAll = tvEffectiveDate.text.toString()
-                    .split("-")
-                val datePickerDialog = DatePickerDialog(
-                    mView.context,
-                    { _, year, monthOfYear, dayOfMonth ->
-                        val month = monthOfYear + 1
-                        val display = "$year-${
-                            month.toString()
-                                .padStart(2, '0')
-                        }-${
-                            dayOfMonth.toString().padStart(2, '0')
-                        }"
-                        tvEffectiveDate.text = display
-                    },
-                    curDateAll[0].toInt(),
-                    curDateAll[1].toInt() - 1,
-                    curDateAll[2].toInt()
-                )
-                datePickerDialog.setTitle("Choose when this will take effect")
-                datePickerDialog.show()
-            }
+            val curDateAll = tvEffectiveDate.text.toString()
+                .split("-")
+            val datePickerDialog = DatePickerDialog(
+                mView.context,
+                { _, year, monthOfYear, dayOfMonth ->
+                    val month = monthOfYear + 1
+                    val display = "$year-${
+                        month.toString()
+                            .padStart(2, '0')
+                    }-${
+                        dayOfMonth.toString().padStart(2, '0')
+                    }"
+                    tvEffectiveDate.text = display
+                },
+                curDateAll[0].toInt(),
+                curDateAll[1].toInt() - 1,
+                curDateAll[2].toInt()
+            )
+            datePickerDialog.setTitle("Choose when this will take effect")
+            datePickerDialog.show()
         }
     }
 
@@ -226,10 +226,10 @@ class EmployerExtraDefinitionUpdateFragment :
             curExtraDefinitionFull.definition.workExtraDefId,
             df.getCurrentTimeAsString()
         )
-        gotoCallingFragment()
+        gotoEmployerExtraDefinitionsFragment()
     }
 
-    private fun gotoCallingFragment() {
+    private fun gotoEmployerExtraDefinitionsFragment() {
         mView.findNavController().navigate(
             EmployerExtraDefinitionUpdateFragmentDirections
                 .actionEmployerExtraDefinitionUpdateFragmentToEmployerExtraDefinitionsFragment()

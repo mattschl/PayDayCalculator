@@ -60,29 +60,27 @@ class WorkDateUpdateFragment : Fragment(
 
     private fun changeDate() {
         binding.apply {
-            tvWorkDate.setOnClickListener {
-                val curDateAll = curDateString.split("-")
-                val datePickerDialog = DatePickerDialog(
-                    requireContext(),
-                    { _, year, monthOfYear, dayOfMonth ->
-                        val month = monthOfYear + 1
-                        val display = "$year-${
-                            month.toString()
-                                .padStart(2, '0')
-                        }-${
-                            dayOfMonth.toString().padStart(2, '0')
-                        }"
-                        curDateString = display
-                        tvWorkDate.text = df.getDisplayDate(display)
+            val curDateAll = curDateString.split("-")
+            val datePickerDialog = DatePickerDialog(
+                requireContext(),
+                { _, year, monthOfYear, dayOfMonth ->
+                    val month = monthOfYear + 1
+                    val display = "$year-${
+                        month.toString()
+                            .padStart(2, '0')
+                    }-${
+                        dayOfMonth.toString().padStart(2, '0')
+                    }"
+                    curDateString = display
+                    tvWorkDate.text = df.getDisplayDate(display)
 
-                    },
-                    curDateAll[0].toInt(),
-                    curDateAll[1].toInt() - 1,
-                    curDateAll[2].toInt()
-                )
-                datePickerDialog.setTitle(getString(R.string.choose_a_work_date))
-                datePickerDialog.show()
-            }
+                },
+                curDateAll[0].toInt(),
+                curDateAll[1].toInt() - 1,
+                curDateAll[2].toInt()
+            )
+            datePickerDialog.setTitle(getString(R.string.choose_a_work_date))
+            datePickerDialog.show()
         }
     }
 
@@ -93,6 +91,9 @@ class WorkDateUpdateFragment : Fragment(
             }
             fabAddExtra.setOnClickListener {
                 gotoWorkDateExtraAddFragment()
+            }
+            tvWorkDate.setOnClickListener {
+                changeDate()
             }
         }
     }

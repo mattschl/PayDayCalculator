@@ -67,7 +67,6 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         getEmployerListForValidation()
         populateSpinners()
         setMenuActions()
-        changeDate()
         setClickActions()
         setSpinnerActions()
         populateValues()
@@ -76,7 +75,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener {
-                updateEmployer()
+                updateEmployerIfValid()
             }
             fabAddTax.setOnClickListener {
                 gotoTaxTypesAddFragment()
@@ -90,6 +89,9 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
             }
             btnWage.setOnClickListener {
                 gotoPayRateFragment(curEmployer)
+            }
+            binding.tvStartDate.setOnClickListener {
+                changeDate()
             }
         }
     }
@@ -248,28 +250,27 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     }
 
     private fun changeDate() {
-        binding.tvStartDate.setOnClickListener {
-            val curDateAll = startDate.split("-")
-            val datePickerDialog = DatePickerDialog(
-                requireContext(),
-                { _, year, monthOfYear, dayOfMonth ->
-                    val month = monthOfYear + 1
-                    val display = "$year-${
-                        month.toString()
-                            .padStart(2, '0')
-                    }-${
-                        dayOfMonth.toString().padStart(2, '0')
-                    }"
-                    startDate = display
-                    binding.tvStartDate.text = df.getDisplayDate(startDate)
-                },
-                curDateAll[0].toInt(),
-                curDateAll[1].toInt() - 1,
-                curDateAll[2].toInt()
-            )
-            datePickerDialog.setTitle("Choose the first date")
-            datePickerDialog.show()
-        }
+        val curDateAll = startDate.split("-")
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            { _, year, monthOfYear, dayOfMonth ->
+                val month = monthOfYear + 1
+                val display = "$year-${
+                    month.toString()
+                        .padStart(2, '0')
+                }-${
+                    dayOfMonth.toString().padStart(2, '0')
+                }"
+                startDate = display
+                binding.tvStartDate.text = df.getDisplayDate(startDate)
+            },
+            curDateAll[0].toInt(),
+            curDateAll[1].toInt() - 1,
+            curDateAll[2].toInt()
+        )
+        datePickerDialog.setTitle("Choose the first date")
+        datePickerDialog.show()
+
     }
 
     private fun setMenuActions() {
@@ -313,7 +314,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         gotoCallingFragment()
     }
 
-    private fun updateEmployer() {
+    private fun updateEmployerIfValid() {
         val message = validateEmployer()
         if (message == ANSWER_OK) {
             employerViewModel.updateEmployer(

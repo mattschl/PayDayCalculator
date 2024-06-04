@@ -49,7 +49,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        populatetSpinners()
+        populateSpinners()
         setMenuActions()
         populateValues()
         chooseFixedOrPercent()
@@ -97,7 +97,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         }
     }
 
-    private fun populatetSpinners() {
+    private fun populateSpinners() {
         binding.apply {
             val frequencies = ArrayList<String>()
             for (i in 0..1) {
@@ -129,7 +129,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
-                        checkSaveWorkDateExtra()
+                        saveWorkDateExtraIfValid()
                         true
                     }
 
@@ -141,11 +141,11 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun checkSaveWorkDateExtra() {
-        val message = checkExtra()
+    private fun saveWorkDateExtraIfValid() {
+        val message = validateExtra()
         if (message == ANSWER_OK) {
             mainActivity.payDayViewModel.insertWorkDateExtra(
-                getCurrentExtra()
+                getNewWorkDateExtra()
             )
             gotoCallingFragment()
         } else {
@@ -165,7 +165,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         )
     }
 
-    private fun getCurrentExtra(): WorkDateExtras {
+    private fun getNewWorkDateExtra(): WorkDateExtras {
         binding.apply {
             return WorkDateExtras(
                 cf.generateRandomIdAsLong(),
@@ -183,7 +183,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         }
     }
 
-    private fun checkExtra(): String {
+    private fun validateExtra(): String {
         binding.apply {
             var nameFound = false
             if (extraList.isNotEmpty()) {

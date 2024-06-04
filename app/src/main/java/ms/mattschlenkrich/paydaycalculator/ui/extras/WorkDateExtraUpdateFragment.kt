@@ -59,16 +59,16 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
     private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener {
-                updateWorkDateExtra()
+                updateWorkDateExtraIfValid()
             }
         }
     }
 
-    private fun updateWorkDateExtra() {
-        val message = checkExtra()
+    private fun updateWorkDateExtraIfValid() {
+        val message = validateExtra()
         if (message == ANSWER_OK) {
             mainActivity.payDayViewModel.updateWorkDateExtra(
-                getCurrentWorkDateExtra()
+                getUpdatedWorkDateExtra()
             )
             gotoWorkDateUpdateFragment()
         } else {
@@ -80,7 +80,7 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
         }
     }
 
-    private fun checkExtra(): String {
+    private fun validateExtra(): String {
         binding.apply {
             var nameFound = false
             if (extraList.isNotEmpty()) {
@@ -188,7 +188,7 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
 
     private fun deleteExtra() {
         binding.apply {
-            val extra = getCurrentWorkDateExtra()
+            val extra = getUpdatedWorkDateExtra()
             mainActivity.payDayViewModel.updateWorkDateExtra(
                 WorkDateExtras(
                     extra.workDateExtraId,
@@ -216,7 +216,7 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
         )
     }
 
-    private fun getCurrentWorkDateExtra(): WorkDateExtras {
+    private fun getUpdatedWorkDateExtra(): WorkDateExtras {
         binding.apply {
             val value = if (
                 cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) >= 1.0 &&

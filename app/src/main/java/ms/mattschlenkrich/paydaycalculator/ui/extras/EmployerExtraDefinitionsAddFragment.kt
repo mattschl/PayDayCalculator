@@ -63,11 +63,10 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         super.onViewCreated(view, savedInstanceState)
         setMenuActions()
         populateSpinners()
-        chooseDate()
+        setClickActions()
         chooseFixedOrPercent()
         chooseExtraType()
         populateValues()
-        changeDate()
     }
 
     private fun chooseExtraType() {
@@ -143,7 +142,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
-                        saveExtra()
+                        saveExtraIfValid()
                         true
                     }
 
@@ -177,13 +176,14 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         }
     }
 
-    private fun saveExtra() {
+    private fun saveExtraIfValid() {
         binding.apply {
             val message = validateExtra()
             if (message == ANSWER_OK) {
-                val curExtraDef = getCurrentExtraDefinition()
+                val currentExtraDefinition =
+                    getCurrentExtraDefinition()
                 mainActivity.workExtraViewModel.insertWorkExtraDefinition(
-                    curExtraDef
+                    currentExtraDefinition
                 )
                 gotoCallingFragment()
             } else {
@@ -251,7 +251,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         }
     }
 
-    private fun chooseDate() {
+    private fun setClickActions() {
         binding.apply {
             tvEffectiveDate.setOnClickListener {
                 changeDate()

@@ -106,29 +106,33 @@ class WorkExtraTypeAddFragment : Fragment(
     }
 
     private fun saveExtraType() {
+        val message = checkExtraType()
+        if (message == ANSWER_OK) {
+            val newWorkExtraType = getNewWorkExtraType()
+            mainActivity.workExtraViewModel.insertWorkExtraType(newWorkExtraType)
+            gotoNextStep(newWorkExtraType)
+        } else {
+            Toast.makeText(
+                mView.context,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun getNewWorkExtraType(): WorkExtraTypes {
         binding.apply {
-            val message = checkExtraType()
-            if (message == ANSWER_OK) {
-                val curWorkExtraType = WorkExtraTypes(
-                    cf.generateRandomIdAsLong(),
-                    etExtraName.text.toString(),
-                    curEmployer.employerId,
-                    spAppliesTo.selectedItemPosition,
-                    spAttachTo.selectedItemPosition,
-                    chkIsCredit.isChecked,
-                    chkIsDefault.isChecked,
-                    false,
-                    df.getCurrentTimeAsString()
-                )
-                mainActivity.workExtraViewModel.insertWorkExtraType(curWorkExtraType)
-                gotoNextStep(curWorkExtraType)
-            } else {
-                Toast.makeText(
-                    mView.context,
-                    message,
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+            return WorkExtraTypes(
+                cf.generateRandomIdAsLong(),
+                etExtraName.text.toString(),
+                curEmployer.employerId,
+                spAppliesTo.selectedItemPosition,
+                spAttachTo.selectedItemPosition,
+                chkIsCredit.isChecked,
+                chkIsDefault.isChecked,
+                false,
+                df.getCurrentTimeAsString()
+            )
         }
     }
 

@@ -99,7 +99,7 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
         val message = checkExtra()
         if (message == ANSWER_OK) {
             mainActivity.payDayViewModel.updatePayPeriodExtra(
-                getCurPayPeriodExtra()
+                getCurrentPayPeriodExtra()
             )
             gotoPayDetailFragments()
         } else {
@@ -120,7 +120,7 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
         )
     }
 
-    private fun getCurPayPeriodExtra(): WorkPayPeriodExtras {
+    private fun getCurrentPayPeriodExtra(): WorkPayPeriodExtras {
         binding.apply {
             return WorkPayPeriodExtras(
                 oldPayPeriodExtra.workPayPeriodExtraId,
