@@ -94,7 +94,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
-                        saveTaxType()
+                        saveTaxTypeIfValidAndAttachToEmployers()
                         true
                     }
 
@@ -106,34 +106,37 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun saveTaxType() {
-        binding.apply {
-            val message = checkTaxType()
-            if (message == ANSWER_OK) {
-                val taxType = TaxTypes(
-                    cf.generateRandomIdAsLong(),
-                    etTaxType.text.toString(),
-                    spBasedOn.selectedItemPosition,
-                    false,
-                    df.getCurrentTimeAsString()
-                )
-                mainActivity.workTaxViewModel.insertTaxType(
-                    taxType
-                )
-                CoroutineScope(Dispatchers.Main).launch {
-                    delay(WAIT_500)
-                    attachToEmployers(taxType)
-                    delay(WAIT_500)
-                    chooseNextStep(taxType)
-                }
-            } else {
-                Toast.makeText(
-                    mView.context,
-                    message,
-                    Toast.LENGTH_LONG
-                ).show()
+    private fun saveTaxTypeIfValidAndAttachToEmployers() {
+        val message = checkTaxType()
+        if (message == ANSWER_OK) {
+            val taxType = getCurrentTaxType()
+            mainActivity.workTaxViewModel.insertTaxType(
+                taxType
+            )
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(WAIT_500)
+                attachTaxTypeToEmployers(taxType)
+                delay(WAIT_500)
+                chooseNextStep(taxType)
             }
+        } else {
+            Toast.makeText(
+                mView.context,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
 
+    private fun getCurrentTaxType(): TaxTypes {
+        binding.apply {
+            return TaxTypes(
+                cf.generateRandomIdAsLong(),
+                etTaxType.text.toString(),
+                spBasedOn.selectedItemPosition,
+                false,
+                df.getCurrentTimeAsString()
+            )
         }
     }
 
@@ -157,7 +160,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
             .show()
     }
 
-    private fun attachToEmployers(taxType: TaxTypes) {
+    private fun attachTaxTypeToEmployers(taxType: TaxTypes) {
         mainActivity.employerViewModel.getEmployers().observe(
             viewLifecycleOwner
         ) { employers ->

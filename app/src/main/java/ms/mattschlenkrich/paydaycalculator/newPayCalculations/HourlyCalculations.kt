@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.payFunctions
+package ms.mattschlenkrich.paydaycalculator.newPayCalculations
 
 import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
 

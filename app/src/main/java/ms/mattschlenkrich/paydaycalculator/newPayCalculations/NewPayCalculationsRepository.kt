@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.payFunctions
+package ms.mattschlenkrich.paydaycalculator.newPayCalculations
 
 import android.view.View
 import androidx.lifecycle.findViewTreeLifecycleOwner
@@ -8,6 +8,7 @@ import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.tax.TaxAndAmount
 import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.tax.WorkTaxRules
+import ms.mattschlenkrich.paydaycalculator.payFunctions.IPayCalculations
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 class NewPayCalculationsRepository(

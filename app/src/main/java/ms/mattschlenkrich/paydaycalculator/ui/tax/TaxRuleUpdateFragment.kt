@@ -93,37 +93,41 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
 
     private fun setClickActions() {
         binding.fabDone.setOnClickListener {
-            updateTaxRule()
+            updateTaxRuleIfValid()
         }
     }
 
-    private fun updateTaxRule() {
+    private fun updateTaxRuleIfValid() {
+        val message = checkTaxRule()
+        if (message == ANSWER_OK) {
+            mainActivity.workTaxViewModel.updateTaxRule(
+                getUpdatedTaxRule()
+            )
+            gotoCallingFragment()
+        } else {
+            Toast.makeText(
+                mView.context,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun getUpdatedTaxRule(): WorkTaxRules {
         binding.apply {
-            val message = checkTaxRule()
-            if (message == ANSWER_OK) {
-                mainActivity.workTaxViewModel.updateTaxRule(
-                    WorkTaxRules(
-                        curTaxRule!!.workTaxRuleId,
-                        curTaxRule!!.wtType,
-                        curTaxRule!!.wtLevel,
-                        curTaxRule!!.wtEffectiveDate,
-                        cf.getDoubleFromPercentString(etPercentage.text.toString()),
-                        chkExemption.isChecked,
-                        cf.getDoubleFromDollars(etExemption.text.toString()),
-                        chkUpperLimit.isChecked,
-                        cf.getDoubleFromDollars(etUpperLimit.text.toString()),
-                        false,
-                        df.getCurrentTimeAsString()
-                    )
-                )
-                gotoCallingFragment()
-            } else {
-                Toast.makeText(
-                    mView.context,
-                    message,
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+            return WorkTaxRules(
+                curTaxRule!!.workTaxRuleId,
+                curTaxRule!!.wtType,
+                curTaxRule!!.wtLevel,
+                curTaxRule!!.wtEffectiveDate,
+                cf.getDoubleFromPercentString(etPercentage.text.toString()),
+                chkExemption.isChecked,
+                cf.getDoubleFromDollars(etExemption.text.toString()),
+                chkUpperLimit.isChecked,
+                cf.getDoubleFromDollars(etUpperLimit.text.toString()),
+                false,
+                df.getCurrentTimeAsString()
+            )
         }
     }
 

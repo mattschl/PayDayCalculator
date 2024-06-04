@@ -45,7 +45,6 @@ class PayCalculations(
 
     init {
         CoroutineScope(Dispatchers.Main).launch {
-
             calculateRate()
             delay(WAIT_250)
             calculateWorkDates()

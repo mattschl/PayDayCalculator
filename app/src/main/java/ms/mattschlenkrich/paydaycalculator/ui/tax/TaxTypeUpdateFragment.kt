@@ -76,12 +76,12 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener {
-                updateWorkTaxType()
+                updateWorkTaxTypeIfValid()
             }
         }
     }
 
-    private fun gotoCallingFragment() {
+    private fun gotoTaxTypesFragment() {
         mainActivity.mainViewModel.setTaxType(null)
         mView.findNavController().navigate(
             TaxTypeUpdateFragmentDirections
@@ -120,23 +120,16 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
                 df.getCurrentTimeAsString()
             )
         )
-        gotoCallingFragment()
+        gotoTaxTypesFragment()
     }
 
-    private fun updateWorkTaxType() {
-        val message = checkTaxType()
+    private fun updateWorkTaxTypeIfValid() {
+        val message = validateTaxType()
         if (message == ANSWER_OK) {
-            binding.apply {
-                mainActivity.workTaxViewModel.updateWorkTaxType(
-                    TaxTypes(
-                        curTaxType.taxTypeId, etTaxType.text.toString(),
-                        spBasedOn.selectedItemPosition,
-                        false,
-                        df.getCurrentTimeAsString()
-                    )
-                )
-                gotoCallingFragment()
-            }
+            mainActivity.workTaxViewModel.updateWorkTaxType(
+                getCurrentTaxType()
+            )
+            gotoTaxTypesFragment()
         } else {
             Toast.makeText(
                 mView.context,
@@ -146,7 +139,18 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
         }
     }
 
-    private fun checkTaxType(): String {
+    private fun getCurrentTaxType(): TaxTypes {
+        binding.apply {
+            return TaxTypes(
+                curTaxType.taxTypeId, etTaxType.text.toString(),
+                spBasedOn.selectedItemPosition,
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
+    private fun validateTaxType(): String {
         binding.apply {
             var nameFound = false
             if (taxTypeList.isNotEmpty()) {

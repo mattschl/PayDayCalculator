@@ -90,7 +90,7 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
-                        saveTaxRule()
+                        saveTaxRuleIfValid()
                         true
                     }
 
@@ -102,26 +102,12 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun saveTaxRule() {
+    private fun saveTaxRuleIfValid() {
         binding.apply {
             val message = checkTaxRule()
             if (message == ANSWER_OK) {
                 mainActivity.workTaxViewModel.insertTaxRule(
-                    WorkTaxRules(
-                        cf.generateRandomIdAsLong(),
-                        tvTaxRuleType.text.toString(),
-                        tvTaxRuleLevel.text.toString().toInt(),
-                        wtEffectiveDate = tvEffectiveDate.text.toString(),
-                        cf.getDoubleFromPercentString(etPercentage.text.toString()),
-                        chkExemption.isChecked,
-                        if (chkExemption.isChecked)
-                            cf.getDoubleFromDollars(etExemption.text.toString()) else 0.0,
-                        chkUpperLimit.isChecked,
-                        if (chkUpperLimit.isChecked)
-                            cf.getDoubleFromDollars(etUpperLimit.text.toString()) else 0.0,
-                        false,
-                        df.getCurrentTimeAsString()
-                    )
+                    getCurrentTaxRule()
                 )
                 gotoCallingFragment()
             } else {
@@ -131,6 +117,26 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
                     Toast.LENGTH_LONG
                 ).show()
             }
+        }
+    }
+
+    private fun getCurrentTaxRule(): WorkTaxRules {
+        binding.apply {
+            return WorkTaxRules(
+                cf.generateRandomIdAsLong(),
+                tvTaxRuleType.text.toString(),
+                tvTaxRuleLevel.text.toString().toInt(),
+                wtEffectiveDate = tvEffectiveDate.text.toString(),
+                cf.getDoubleFromPercentString(etPercentage.text.toString()),
+                chkExemption.isChecked,
+                if (chkExemption.isChecked)
+                    cf.getDoubleFromDollars(etExemption.text.toString()) else 0.0,
+                chkUpperLimit.isChecked,
+                if (chkUpperLimit.isChecked)
+                    cf.getDoubleFromDollars(etUpperLimit.text.toString()) else 0.0,
+                false,
+                df.getCurrentTimeAsString()
+            )
         }
     }
 

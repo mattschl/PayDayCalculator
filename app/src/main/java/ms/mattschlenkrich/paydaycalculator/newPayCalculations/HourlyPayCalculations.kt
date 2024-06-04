@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.payFunctions
+package ms.mattschlenkrich.paydaycalculator.newPayCalculations
 
 class HourlyPayCalculations(
     private val hourlyCalculations: HourlyCalculations,
