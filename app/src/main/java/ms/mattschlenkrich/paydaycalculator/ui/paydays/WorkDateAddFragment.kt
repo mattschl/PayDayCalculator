@@ -194,7 +194,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                 gotoAddExtra()
             }
             tvWorkDate.setOnClickListener {
-
+                changeDate()
             }
         }
     }
