@@ -50,6 +50,7 @@ class PayCalculations(
             calculateWorkDates()
             calculateExtrasCustomPerPay()
             calculateExtrasPerDay()
+            delay(WAIT_250)
             calculateExtrasPerPay()
             calculateExtraTypes()
             calculateTaxRates()
@@ -450,6 +451,7 @@ class PayCalculations(
         private var creditTotalByDate: Double? = null
         private var creditTotalsByPay: Double? = null
         private var debitTotalsByPay: Double? = null
+
 
         private fun getCreditTotalByDate(): Double {
             if (creditTotalByDate != null) {

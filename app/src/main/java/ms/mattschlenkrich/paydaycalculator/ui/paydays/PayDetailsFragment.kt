@@ -78,22 +78,11 @@ class PayDetailsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         populateEmployers()
-        setClickActions()
+        createClickActions()
+        createMenuAction()
         onSelectEmployer()
         onSelectCutOffDate()
-        setMenuAction()
         populateFromHistory()
-    }
-
-    private fun setClickActions() {
-        binding.apply {
-            fabAddExtra.setOnClickListener {
-                chooseToGotoExtraAdd(true)
-            }
-            fabAddDeduction.setOnClickListener {
-                chooseToGotoExtraAdd(false)
-            }
-        }
     }
 
     private fun populateEmployers() {
@@ -113,6 +102,48 @@ class PayDetailsFragment :
             employerAdapter.add(getString(R.string.add_new_employer))
         }
         binding.spEmployers.adapter = employerAdapter
+    }
+
+    private fun createClickActions() {
+        binding.apply {
+            fabAddExtra.setOnClickListener {
+                chooseToGotoExtraAdd(true)
+            }
+            fabAddDeduction.setOnClickListener {
+                chooseToGotoExtraAdd(false)
+            }
+        }
+    }
+
+    private fun chooseToGotoExtraAdd(isCredit: Boolean) {
+//        Log.d(TAG, "IN THE FUNCTION the button actions")
+        AlertDialog.Builder(mView.context)
+            .setTitle("Warning!")
+            .setMessage(
+                "It is best to add custom extras only after all the " +
+                        "work hours have been entered. " +
+                        "If it is based on the number of hours, days or a percentage, " +
+                        "the results could be improperly calculated. "
+            )
+            .setPositiveButton("Continue") { _, _ ->
+                gotoExtraAddFragment(isCredit)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun gotoExtraAddFragment(isCredit: Boolean) {
+        mainActivity.payDayViewModel.getPayPeriod(
+            curCutOff, curEmployer!!.employerId
+        ).observe(viewLifecycleOwner) { payPeriod ->
+            mainActivity.mainViewModel.setPayPeriod(payPeriod)
+        }
+        mainActivity.mainViewModel.setEmployer(curEmployer!!)
+        mainActivity.mainViewModel.setIsCredit(isCredit)
+        mView.findNavController().navigate(
+            PayDetailsFragmentDirections
+                .actionPayDetailsFragmentToPayPeriodExtraAddFragment()
+        )
     }
 
     private fun onSelectEmployer() {
@@ -217,7 +248,7 @@ class PayDetailsFragment :
         }
     }
 
-    private fun setMenuAction() {
+    private fun createMenuAction() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_delete, menu)
@@ -249,37 +280,6 @@ class PayDetailsFragment :
                 tvPaySummary.text = display
             }
         }
-    }
-
-    private fun chooseToGotoExtraAdd(isCredit: Boolean) {
-//        Log.d(TAG, "IN THE FUNCTION the button actions")
-        AlertDialog.Builder(mView.context)
-            .setTitle("Warning!")
-            .setMessage(
-                "It is best to add custom extras only after all the " +
-                        "work hours have been entered. " +
-                        "If it is based on the number of hours, days or a percentage, " +
-                        "the results could be improperly calculated. "
-            )
-            .setPositiveButton("Continue") { _, _ ->
-                gotoExtraAddFragment(isCredit)
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-
-    private fun gotoExtraAddFragment(isCredit: Boolean) {
-        mainActivity.payDayViewModel.getPayPeriod(
-            curCutOff, curEmployer!!.employerId
-        ).observe(viewLifecycleOwner) { payPeriod ->
-            mainActivity.mainViewModel.setPayPeriod(payPeriod)
-        }
-        mainActivity.mainViewModel.setEmployer(curEmployer!!)
-        mainActivity.mainViewModel.setIsCredit(isCredit)
-        mView.findNavController().navigate(
-            PayDetailsFragmentDirections
-                .actionPayDetailsFragmentToPayPeriodExtraAddFragment()
-        )
     }
 
     override fun populatePayDetails() {
@@ -416,7 +416,7 @@ class PayDetailsFragment :
                         }
                     }
                 if (i < workDateExtrasAndDates.size - 1) {
-                    if (workDateExtrasAndDates[i].workDateExtra.wdeName
+                    if (workDateExtra.wdeName
                         != workDateExtrasAndDates[i + 1].workDateExtra.wdeName
                     ) {
                         extraList.add(
@@ -580,7 +580,7 @@ class PayDetailsFragment :
     private fun getCreditList(extraList: ArrayList<WorkPayPeriodExtras>):
             ArrayList<WorkPayPeriodExtras> {
         val creditList = ArrayList<WorkPayPeriodExtras>()
-        var creditTotal = 0.0
+        creditTotal = 0.0
         for (extra in extraList) {
             if (extra.ppeIsCredit) {
                 creditList.add(extra)

@@ -11,7 +11,7 @@ import ms.mattschlenkrich.paydaycalculator.model.tax.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.payFunctions.IPayCalculations
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
-class NewPayCalculationsRepository(
+class NewPayCalculations(
     private val mainActivity: MainActivity,
     private val employer: Employers,
     private val cutOff: String,
