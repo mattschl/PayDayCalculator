@@ -323,7 +323,7 @@ class PayDetailsFragment :
                 if (payCalculations.pay.getPayReg() > 0.0) {
                     llRegPay.visibility = View.VISIBLE
                     tvRegHours.text = payCalculations.hours.getHoursReg().toString()
-                    tvRegRate.text = cf.displayDollars(payCalculations.rate)
+                    tvRegRate.text = cf.displayDollars(payCalculations.payRate)
                     tvRegPay.text = cf.displayDollars(payCalculations.pay.getPayReg())
                 } else {
                     llRegPay.visibility = View.GONE
@@ -331,7 +331,7 @@ class PayDetailsFragment :
                 if (payCalculations.pay.getPayOt() > 0.0) {
                     llOtPay.visibility = View.VISIBLE
                     tvOtHours.text = payCalculations.hours.getHoursOt().toString()
-                    tvOtRate.text = cf.displayDollars(payCalculations.rate * 1.5)
+                    tvOtRate.text = cf.displayDollars(payCalculations.payRate * 1.5)
                     tvOTPay.text = cf.displayDollars(payCalculations.pay.getPayOt())
                 } else {
                     llOtPay.visibility = View.GONE
@@ -339,7 +339,7 @@ class PayDetailsFragment :
                 if (payCalculations.pay.getPayDblOt() > 0.0) {
                     llDblOtPay.visibility = View.VISIBLE
                     tvDblOtHours.text = payCalculations.hours.getHoursDblOt().toString()
-                    tvDblOtRate.text = cf.displayDollars(payCalculations.rate * 2)
+                    tvDblOtRate.text = cf.displayDollars(payCalculations.payRate * 2)
                     tvDblOtPay.text = cf.displayDollars(payCalculations.pay.getPayDblOt())
                 } else {
                     llDblOtPay.visibility = View.GONE
@@ -347,7 +347,7 @@ class PayDetailsFragment :
                 if (payCalculations.pay.getPayStat() > 0.0) {
                     llStatPay.visibility = View.VISIBLE
                     tvStatHours.text = payCalculations.hours.getHoursStat().toString()
-                    tvStatRate.text = cf.displayDollars(payCalculations.rate)
+                    tvStatRate.text = cf.displayDollars(payCalculations.payRate)
                     tvStatPay.text = cf.displayDollars(payCalculations.pay.getPayStat())
                 } else {
                     llStatPay.visibility = View.GONE
@@ -386,7 +386,6 @@ class PayDetailsFragment :
                     processExtraByPayPeriod(extraList, it, payCalculations)
                 }
             }
-
         }
         return extraList as ArrayList<WorkPayPeriodExtras>
     }
@@ -568,9 +567,7 @@ class PayDetailsFragment :
         CoroutineScope(Dispatchers.Main).launch {
             val extrasList =
                 processExtras(payCalculations)
-//            Log.d(TAG, "Before delay size is ${extrasList.size}")
             delay(WAIT_1000)
-//            Log.d(TAG, "AFTER delay size is ${extrasList.size}")
             populateCredits(extrasList)
             populateDeductions(payCalculations, extrasList)
             mainActivity.mainViewModel.setPayPeriodExtraList(extrasList)

@@ -27,7 +27,7 @@ class PayCalculations(
     private val mainActivity: MainActivity,
     private val employer: Employers,
     private val mView: View,
-    private val curPayPeriod: PayPeriods,
+    private val currentPayPeriod: PayPeriods,
 ) {
     private val workDates = ArrayList<WorkDates>()
     private val workDateExtrasFull = ArrayList<WorkDateExtraAndTypeFull>()
@@ -36,7 +36,7 @@ class PayCalculations(
     private val taxRules = ArrayList<WorkTaxRules>()
     private val taxTypes = ArrayList<TaxTypes>()
     private val payPeriodExtras = ArrayList<WorkPayPeriodExtras>()
-    var rate = 0.0
+    var payRate = 0.0
     val hours = Hours()
     val pay = Pay()
     val extras = Extras()
@@ -45,22 +45,24 @@ class PayCalculations(
 
     init {
         CoroutineScope(Dispatchers.Main).launch {
-            calculateRate()
+            getCurrentPayRate()
             delay(WAIT_250)
-            calculateWorkDates()
-            calculateExtrasCustomPerPay()
-            calculateExtrasPerDay()
+            processWorkDates()
+            processExtrasCustomPerPay()
+            processExtrasPerDay()
             delay(WAIT_250)
-            calculateExtrasPerPay()
-            calculateExtraTypes()
-            calculateTaxRates()
+            processExtrasPerPay()
+            processExtraTypes()
+            processTaxRates()
         }
     }
 
+    fun getDebitExtraAndTotalByPay(): List<ExtraAndTotal> {
+        TODO("Not yet implemented")
+    }
+
     inner class Deductions {
-
         private var debitExtraAndTotalByPay: ArrayList<ExtraAndTotal>? = null
-
         fun getDebitExtraAndTotalByPay(): ArrayList<ExtraAndTotal> {
             if (debitExtraAndTotalByPay != null) {
                 return debitExtraAndTotalByPay!!
@@ -185,7 +187,7 @@ class PayCalculations(
                     ) {
                         for (date in workDates) {
                             if (date.workDateId == workDateExtrasFull[i].extra.wdeWorkDateId) {
-                                total += workDateExtrasFull[i].extra.wdeValue * rate * (
+                                total += workDateExtrasFull[i].extra.wdeValue * payRate * (
                                         date.wdRegHours + date.wdOtHours + date.wdDblOtHours
                                         )
                             }
@@ -205,7 +207,7 @@ class PayCalculations(
                     ) {
                         for (date in workDates) {
                             if (date.workDateId == workDateExtrasFull[i].extra.wdeWorkDateId) {
-                                total += workDateExtrasFull[i].extra.wdeValue * rate * (
+                                total += workDateExtrasFull[i].extra.wdeValue * payRate * (
                                         date.wdRegHours + date.wdOtHours + date.wdDblOtHours
                                         )
                             }
@@ -405,15 +407,15 @@ class PayCalculations(
 
     inner class Pay {
         fun getPayReg(): Double {
-            return hours.getHoursReg() * rate
+            return hours.getHoursReg() * payRate
         }
 
         fun getPayOt(): Double {
-            return hours.getHoursOt() * rate * 1.5
+            return hours.getHoursOt() * payRate * 1.5
         }
 
         fun getPayDblOt(): Double {
-            return hours.getHoursDblOt() * rate * 2
+            return hours.getHoursDblOt() * payRate * 2
         }
 
         fun getPayHourly(): Double {
@@ -421,16 +423,8 @@ class PayCalculations(
         }
 
         fun getPayStat(): Double {
-            return hours.getHoursStat() * rate
+            return hours.getHoursStat() * payRate
         }
-
-//        fun getPayNet(): Double {
-//            return if (getPayGross() - getDebitTotalsByPay() - tax.getAllTaxDeductions() > 0.0) {
-//                getPayGross() - getDebitTotalsByPay() - tax.getAllTaxDeductions()
-//            } else {
-//                0.0
-//            }
-//        }
 
         fun getPayGross(): Double {
             return if (getPayHourly() > 0.0) {
@@ -443,10 +437,6 @@ class PayCalculations(
         fun getPayTimeWorked(): Double {
             return getPayReg() + getPayOt() + getPayDblOt()
         }
-
-//        fun getCreditTotalAll(): Double {
-//            return getCreditTotalByDate() + getCreditTotalsByPay()
-//        }
 
         private var creditTotalByDate: Double? = null
         private var creditTotalsByPay: Double? = null
@@ -572,32 +562,28 @@ class PayCalculations(
                             0.0
                         }
                     }
-                for (def in taxRules) {
-//                Log.d(
-//                    TAG, "looping through taxDef - ${def.wtType} " +
-//                            "and - ${def.wtPercent} "
-//                )
-                    if (def.wtType == taxType.taxType && runningRemainder > 0) {
+                for (definition in taxRules) {
+                    if (definition.wtType == taxType.taxType && runningRemainder > 0) {
                         var taxable: Double
                         runningRemainder -=
-                            if (def.wtHasExemption) {
-                                getTaxFactor(def.wtExemptionAmount)
+                            if (definition.wtHasExemption) {
+                                getTaxFactor(definition.wtExemptionAmount)
                             } else {
                                 0.0
                             }
                         if (runningRemainder < 0.0) {
                             runningRemainder = 0.0
                         }
-                        if (def.wtHasBracket &&
-                            runningRemainder >= getTaxFactor(def.wtBracketAmount)
+                        if (definition.wtHasBracket &&
+                            runningRemainder >= getTaxFactor(definition.wtBracketAmount)
                         ) {
-                            taxable = getTaxFactor(def.wtBracketAmount)
-                            runningRemainder -= getTaxFactor(def.wtBracketAmount)
+                            taxable = getTaxFactor(definition.wtBracketAmount)
+                            runningRemainder -= getTaxFactor(definition.wtBracketAmount)
                         } else {
                             taxable = runningRemainder
                             runningRemainder = 0.0
                         }
-                        taxTotal += taxable * def.wtPercent
+                        taxTotal += taxable * definition.wtPercent
                     }
                 }
                 taxesAndAmounts.add(
@@ -612,14 +598,14 @@ class PayCalculations(
         }
     }
 
-    private fun calculateRate() {
+    private fun getCurrentPayRate() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.employerViewModel.getEmployerPayRates(
                 employer.employerId
             ).observe(lifecycleOwner) { rates ->
                 rates.listIterator().forEach {
-                    if (it.eprEffectiveDate <= curPayPeriod.ppCutoffDate) {
-                        rate = fixRateByInterval(it)
+                    if (it.eprEffectiveDate <= currentPayPeriod.ppCutoffDate) {
+                        payRate = fixRateByInterval(it)
                     }
                 }
             }
@@ -644,10 +630,10 @@ class PayCalculations(
         return fixedRate
     }
 
-    private fun calculateWorkDates() {
+    private fun processWorkDates() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.payDayViewModel.getWorkDateList(
-                employer.employerId, curPayPeriod.ppCutoffDate
+                employer.employerId, currentPayPeriod.ppCutoffDate
             ).observe(lifecycleOwner) { list ->
                 workDates.clear()
                 list.listIterator().forEach {
@@ -657,10 +643,10 @@ class PayCalculations(
         }
     }
 
-    private fun calculateExtrasPerDay() {
+    private fun processExtrasPerDay() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.payDayViewModel.getWorkDateExtrasPerPay(
-                employer.employerId, curPayPeriod.ppCutoffDate
+                employer.employerId, currentPayPeriod.ppCutoffDate
             ).observe(lifecycleOwner) { list ->
                 workDateExtrasFull.clear()
                 list.listIterator().forEach {
@@ -670,10 +656,10 @@ class PayCalculations(
         }
     }
 
-    private fun calculateExtrasPerPay() {
+    private fun processExtrasPerPay() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.workExtraViewModel.getExtraTypesAndDef(
-                employer.employerId, curPayPeriod.ppCutoffDate, 3
+                employer.employerId, currentPayPeriod.ppCutoffDate, 3
             ).observe(lifecycleOwner) { list ->
                 workExtrasByPay.clear()
                 list.listIterator().forEach {
@@ -683,20 +669,10 @@ class PayCalculations(
         }
     }
 
-//    private fun findPayPeriod() {
-//        mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
-//            mainActivity.payDayViewModel.getPayPeriod(
-//                cutOff, employer.employerId
-//            ).observe(lifecycleOwner) { payPeriod ->
-//                curPayPeriod = payPeriod
-//            }
-//        }
-//    }
-
-    private fun calculateExtrasCustomPerPay() {
+    private fun processExtrasCustomPerPay() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.payDayViewModel.getPayPeriodExtras(
-                curPayPeriod.payPeriodId
+                currentPayPeriod.payPeriodId
             ).observe(lifecycleOwner) { list ->
                 list.listIterator().forEach {
                     payPeriodExtras.add(it)
@@ -705,7 +681,7 @@ class PayCalculations(
         }
     }
 
-    private fun calculateExtraTypes() {
+    private fun processExtraTypes() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.workExtraViewModel.getWorkExtraTypeList(
                 employer.employerId
@@ -720,11 +696,11 @@ class PayCalculations(
         }
     }
 
-    private fun calculateTaxRates() {
+    private fun processTaxRates() {
         var effectiveDate = ""
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.workTaxViewModel.getCurrentEffectiveDate(
-                curPayPeriod.ppCutoffDate
+                currentPayPeriod.ppCutoffDate
             ).observe(lifecycleOwner) { date ->
                 effectiveDate = date
             }
@@ -749,12 +725,7 @@ class PayCalculations(
 //                    var counter = 0
                     list.listIterator().forEach {
                         taxRules.add(it)
-//                        counter += 1
-//                        Log.d(
-//                            TAG, "iterating tax def for ${it.wtType} value is " +
-//                                    "${it.wtPercent} | counter $counter " +
-//                                    "LEVEL is ${it.wtLevel}"
-//                        )
+
                     }
                 }
             }

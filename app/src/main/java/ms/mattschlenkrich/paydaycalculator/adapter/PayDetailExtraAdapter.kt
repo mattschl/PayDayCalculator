@@ -19,7 +19,7 @@ import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.ListPayDetailExtraItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
-import ms.mattschlenkrich.paydaycalculator.ui.paydays.PayDetailsFragment
+import ms.mattschlenkrich.paydaycalculator.ui.paydays.IPayDetailsFragment
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.PayDetailsFragmentDirections
 
 //private const val TAG = "PayDetailExtraAdapter"
@@ -28,7 +28,7 @@ class PayDetailExtraAdapter(
     private val mainActivity: MainActivity,
     private val creditList: ArrayList<WorkPayPeriodExtras>,
     private val mView: View,
-    private val parentFragment: PayDetailsFragment
+    private val parentFragment: IPayDetailsFragment
 ) : RecyclerView.Adapter<PayDetailExtraAdapter.CreditViewHolder>() {
 
     private val cf = NumberFunctions()
