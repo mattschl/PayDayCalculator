@@ -415,5 +415,13 @@
     <action
         android:id="@+id/action_global_newPayDetailFragment"
         app:destination="@id/newPayDetailFragment" />
+    <fragment
+        android:id="@+id/newTimeSheetFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.NewTimeSheetFragment"
+        android:label="NewTimeSheetFragment"
+        tools:layout="@layout/fragment_time_sheet" />
+    <action
+        android:id="@+id/action_global_newTimeSheetFragment"
+        app:destination="@id/newTimeSheetFragment" />
 
 </navigation>

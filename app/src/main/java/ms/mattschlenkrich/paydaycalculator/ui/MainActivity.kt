@@ -142,7 +142,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun gotoTimeSheet() {
         findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalTimeSheetFragment()
+            NavGraphDirections.actionGlobalNewTimeSheetFragment()
         )
 //        findNavController(R.id.nav_host_fragment_container).navigate(
 //            NavGraphDirections.actionGlobalTimeSheetFragment2()
