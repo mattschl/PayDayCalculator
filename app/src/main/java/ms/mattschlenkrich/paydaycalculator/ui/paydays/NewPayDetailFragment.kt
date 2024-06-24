@@ -37,7 +37,8 @@ import ms.mattschlenkrich.paydaycalculator.model.extras.ExtraDefinitionAndType
 import ms.mattschlenkrich.paydaycalculator.model.extras.WorkDateExtrasAndDates
 import ms.mattschlenkrich.paydaycalculator.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodExtras
-import ms.mattschlenkrich.paydaycalculator.payFunctions.PayCalculations
+import ms.mattschlenkrich.paydaycalculator.payFunctions.IPayCalculations
+import ms.mattschlenkrich.paydaycalculator.payFunctions.NewPayCalculations
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import java.time.LocalDate
 
@@ -293,7 +294,7 @@ class NewPayDetailFragment :
         }
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
-            val payCalculations = PayCalculations(
+            val payCalculations = NewPayCalculations(
                 mainActivity, curEmployer!!, mView, curPayPeriod!!
             )
             delay(WAIT_500)
@@ -302,62 +303,62 @@ class NewPayDetailFragment :
             binding.apply {
                 var display = "Gross ${
                     cf.displayDollars(
-                        payCalculations.pay.getPayGross()
+                        payCalculations.getPayGross()
                     )
                 }"
                 tvGrossPay.text = display
                 display = cf.displayDollars(
-                    -payCalculations.pay.getDebitTotalsByPay()
-                            - payCalculations.tax.getAllTaxDeductions()
+                    -payCalculations.getDebitTotalsByPay()
+                            - payCalculations.getAllTaxDeductions()
                 )
                 tvDeductions.text = display
                 tvDeductions.setTextColor(Color.RED)
                 display = "NET: ${
                     cf.displayDollars(
-                        payCalculations.pay.getPayGross()
-                                - payCalculations.pay.getDebitTotalsByPay()
-                                - payCalculations.tax.getAllTaxDeductions()
+                        payCalculations.getPayGross()
+                                - payCalculations.getDebitTotalsByPay()
+                                - payCalculations.getAllTaxDeductions()
                     )
                 }"
                 tvNetPay.text = display
-                if (payCalculations.pay.getPayReg() > 0.0) {
+                if (payCalculations.getPayReg() > 0.0) {
                     llRegPay.visibility = View.VISIBLE
-                    tvRegHours.text = payCalculations.hours.getHoursReg().toString()
-                    tvRegRate.text = cf.displayDollars(payCalculations.payRate)
-                    tvRegPay.text = cf.displayDollars(payCalculations.pay.getPayReg())
+                    tvRegHours.text = payCalculations.getHoursReg().toString()
+                    tvRegRate.text = cf.displayDollars(payCalculations.getPayRate())
+                    tvRegPay.text = cf.displayDollars(payCalculations.getPayReg())
                 } else {
                     llRegPay.visibility = View.GONE
                 }
-                if (payCalculations.pay.getPayOt() > 0.0) {
+                if (payCalculations.getPayOt() > 0.0) {
                     llOtPay.visibility = View.VISIBLE
-                    tvOtHours.text = payCalculations.hours.getHoursOt().toString()
-                    tvOtRate.text = cf.displayDollars(payCalculations.payRate * 1.5)
-                    tvOTPay.text = cf.displayDollars(payCalculations.pay.getPayOt())
+                    tvOtHours.text = payCalculations.getHoursOt().toString()
+                    tvOtRate.text = cf.displayDollars(payCalculations.getPayRate() * 1.5)
+                    tvOTPay.text = cf.displayDollars(payCalculations.getPayOt())
                 } else {
                     llOtPay.visibility = View.GONE
                 }
-                if (payCalculations.pay.getPayDblOt() > 0.0) {
+                if (payCalculations.getPayDblOt() > 0.0) {
                     llDblOtPay.visibility = View.VISIBLE
-                    tvDblOtHours.text = payCalculations.hours.getHoursDblOt().toString()
-                    tvDblOtRate.text = cf.displayDollars(payCalculations.payRate * 2)
-                    tvDblOtPay.text = cf.displayDollars(payCalculations.pay.getPayDblOt())
+                    tvDblOtHours.text = payCalculations.getHoursDblOt().toString()
+                    tvDblOtRate.text = cf.displayDollars(payCalculations.getPayRate() * 2)
+                    tvDblOtPay.text = cf.displayDollars(payCalculations.getPayDblOt())
                 } else {
                     llDblOtPay.visibility = View.GONE
                 }
-                if (payCalculations.pay.getPayStat() > 0.0) {
+                if (payCalculations.getPayStat() > 0.0) {
                     llStatPay.visibility = View.VISIBLE
-                    tvStatHours.text = payCalculations.hours.getHoursStat().toString()
-                    tvStatRate.text = cf.displayDollars(payCalculations.payRate)
-                    tvStatPay.text = cf.displayDollars(payCalculations.pay.getPayStat())
+                    tvStatHours.text = payCalculations.getHoursStat().toString()
+                    tvStatRate.text = cf.displayDollars(payCalculations.getPayRate())
+                    tvStatPay.text = cf.displayDollars(payCalculations.getPayStat())
                 } else {
                     llStatPay.visibility = View.GONE
                 }
-                tvHourlyTotal.text = cf.displayDollars(payCalculations.pay.getPayHourly())
+                tvHourlyTotal.text = cf.displayDollars(payCalculations.getPayHourly())
             }
         }
     }
 
-    private fun processExtras(payCalculations: PayCalculations): ArrayList<WorkPayPeriodExtras> {
+    private fun processExtras(payCalculations: IPayCalculations): ArrayList<WorkPayPeriodExtras> {
         val extraList = mutableListOf<WorkPayPeriodExtras>()
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
@@ -452,7 +453,7 @@ class NewPayDetailFragment :
     private fun processExtraByPayPeriod(
         extraList: MutableList<WorkPayPeriodExtras>,
         it: ExtraDefinitionAndType,
-        payCalculations: PayCalculations
+        payCalculations: IPayCalculations
     ) {
         var notFound = true
         for (extra in extraList) {
@@ -464,9 +465,9 @@ class NewPayDetailFragment :
             when (it.extraType.wetAppliesTo) {
                 0 -> {
                     val sum = if (it.definition.weIsFixed) {
-                        payCalculations.hours.getHoursWorked() * it.definition.weValue
+                        payCalculations.getHoursWorked() * it.definition.weValue
                     } else {
-                        payCalculations.pay.getPayTimeWorked() * it.definition.weValue / 100
+                        payCalculations.getPayTimeWorked() * it.definition.weValue / 100
                     }
                     extraList.add(
                         createWorkPayPeriodExtra(it, sum)
@@ -476,9 +477,9 @@ class NewPayDetailFragment :
                 1 -> {
                     val sum =
                         if (it.definition.weIsFixed) {
-                            payCalculations.hours.getDaysWorked() * it.definition.weValue
+                            payCalculations.getDaysWorked() * it.definition.weValue
                         } else {
-                            payCalculations.pay.getPayTimeWorked() * it.definition.weValue / 100
+                            payCalculations.getPayTimeWorked() * it.definition.weValue / 100
                         }
                     extraList.add(
                         createWorkPayPeriodExtra(it, sum)
@@ -492,7 +493,7 @@ class NewPayDetailFragment :
                         )
                     } else {
                         val sum =
-                            payCalculations.pay.getPayHourly() * it.definition.weValue / 100
+                            payCalculations.getPayHourly() * it.definition.weValue / 100
                         extraList.add(
                             createWorkPayPeriodExtra(it, sum)
                         )
@@ -521,24 +522,24 @@ class NewPayDetailFragment :
 
     private fun processExtrasByManuallyAdded(
         it: WorkPayPeriodExtras,
-        payCalculations: PayCalculations,
+        payCalculations: IPayCalculations,
         extraList: MutableList<WorkPayPeriodExtras>
     ) {
         var sum = 0.0
         when (it.ppeAppliesTo) {
             0 -> {
                 sum = if (it.ppeIsFixed) {
-                    payCalculations.hours.getHoursWorked() * it.ppeValue
+                    payCalculations.getHoursWorked() * it.ppeValue
                 } else {
-                    payCalculations.pay.getPayTimeWorked() * it.ppeValue / 100
+                    payCalculations.getPayTimeWorked() * it.ppeValue / 100
                 }
             }
 
             1 -> {
                 sum = if (it.ppeIsFixed) {
-                    payCalculations.hours.getDaysWorked() * it.ppeValue
+                    payCalculations.getDaysWorked() * it.ppeValue
                 } else {
-                    payCalculations.pay.getPayTimeWorked() * it.ppeValue / 100
+                    payCalculations.getPayTimeWorked() * it.ppeValue / 100
                 }
             }
 
@@ -563,7 +564,7 @@ class NewPayDetailFragment :
         )
     }
 
-    private fun populateExtras(payCalculations: PayCalculations) {
+    private fun populateExtras(payCalculations: IPayCalculations) {
         CoroutineScope(Dispatchers.Main).launch {
             val extrasList =
                 processExtras(payCalculations)
@@ -607,7 +608,7 @@ class NewPayDetailFragment :
     }
 
     private fun getDeductions(
-        payCalculations: PayCalculations,
+        payCalculations: IPayCalculations,
         extraList: ArrayList<WorkPayPeriodExtras>,
     ): ArrayList<WorkPayPeriodExtras> {
         val debitList = ArrayList<WorkPayPeriodExtras>()
@@ -621,21 +622,24 @@ class NewPayDetailFragment :
             }
         }
         val tempTaxList = ArrayList<ExtraAndTotal>()
-        for (tax in payCalculations.tax.getTaxList()
-        ) {
-            tempTaxList.add(
-                ExtraAndTotal(
-                    tax.taxType, tax.amount
+        val newTaxList = payCalculations.getTaxList()
+        if (!newTaxList.isNullOrEmpty()) {
+            for (tax in newTaxList
+            ) {
+                tempTaxList.add(
+                    ExtraAndTotal(
+                        tax.taxType, tax.amount
+                    )
                 )
-            )
-            debitTotal += tax.amount
+                debitTotal += tax.amount
+            }
         }
         taxList = tempTaxList
         return debitList
     }
 
     private fun populateDeductions(
-        payCalculations: PayCalculations,
+        payCalculations: IPayCalculations,
         extraList: ArrayList<WorkPayPeriodExtras>,
     ) {
         val debitList = getDeductions(

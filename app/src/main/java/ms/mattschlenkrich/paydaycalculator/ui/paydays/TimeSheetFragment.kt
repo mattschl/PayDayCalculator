@@ -405,9 +405,13 @@ class TimeSheetFragment :
         mainActivity.mainViewModel.setCutOffDate(curCutOff)
         mainActivity.mainViewModel.setEmployer(curEmployer)
         mainActivity.mainViewModel.setCallingFragment(TAG)
+//        mView.findNavController().navigate(
+//            TimeSheetFragmentDirections
+//                .actionTimeSheetFragmentToPayDetailsFragment()
+//        )
         mView.findNavController().navigate(
             TimeSheetFragmentDirections
-                .actionTimeSheetFragmentToPayDetailsFragment()
+                .actionTimeSheetFragmentToNewPayDetailFragment()
         )
     }
 

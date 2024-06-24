@@ -57,10 +57,6 @@ class PayCalculations(
         }
     }
 
-    fun getDebitExtraAndTotalByPay(): List<ExtraAndTotal> {
-        TODO("Not yet implemented")
-    }
-
     inner class Deductions {
         private var debitExtraAndTotalByPay: ArrayList<ExtraAndTotal>? = null
         fun getDebitExtraAndTotalByPay(): ArrayList<ExtraAndTotal> {
@@ -447,11 +443,11 @@ class PayCalculations(
             if (creditTotalByDate != null) {
                 return creditTotalByDate!!
             }
-            var total = 0.0
+            var subTotal = 0.0
             for (extra in extras.getCreditExtraAndTotalsByDate()) {
-                total += extra.amount
+                subTotal += extra.amount
             }
-            creditTotalByDate = if (getPayHourly() > 0.0) total else 0.0
+            creditTotalByDate = if (getPayHourly() > 0.0) subTotal else 0.0
             return creditTotalByDate!!
         }
 
@@ -459,27 +455,27 @@ class PayCalculations(
             if (creditTotalsByPay != null) {
                 return creditTotalsByPay!!
             }
-            var total = 0.0
+            var subTotal = 0.0
             for (extra in extras.getCreditExtrasAndTotalsByPay()) {
 //                Log.d(TAG, "extra is ${extra.extraName} and amount is ${extra.amount}")
-                total += extra.amount
+                subTotal += extra.amount
             }
-            creditTotalsByPay = total
-            return total
+            creditTotalsByPay = subTotal
+            return subTotal
         }
 
         fun getDebitTotalsByPay(): Double {
             if (debitTotalsByPay != null) {
                 return debitTotalsByPay!!
             }
-            var total = 0.0
+            var subTotal = 0.0
             for (extra in deductions.getDebitExtraAndTotalByPay()) {
 //                Log.d(TAG, "extra is ${extra.extraName} and amount is ${extra.amount}")
-                total += extra.amount
+                subTotal += extra.amount
             }
-            debitTotalsByPay = if (getPayHourly() > 0.0) total else 0.0
+            debitTotalsByPay = if (getPayHourly() > 0.0) subTotal else 0.0
             return if (getPayHourly() > 0.0) {
-                total
+                subTotal
             } else {
                 0.0
             }

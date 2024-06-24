@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun gotoPayDetails() {
         findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalPayDetailsFragment()
+            NavGraphDirections.actionGlobalNewPayDetailFragment()
         )
 //        findNavController(R.id.nav_host_fragment_container).navigate(
 //            NavGraphDirections.actionGlobalPayDetailsFragment2()
