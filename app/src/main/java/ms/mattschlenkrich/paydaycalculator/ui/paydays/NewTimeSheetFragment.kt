@@ -65,9 +65,9 @@ class NewTimeSheetFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         populateEmployers()
+        setClickActions()
         onSelectEmployer()
         onSelectCutOffDate()
-        setClickActions()
         populateFromHistory()
     }
 
@@ -85,9 +85,7 @@ class NewTimeSheetFragment :
                 employerAdapter.add(it.employerName)
             }
             curEmployer = employers.first()
-//            updateUI(employers)
             employerAdapter.add(getString(R.string.add_new_employer))
-//            fillCutOffDates()
         }
         binding.spEmployers.adapter = employerAdapter
     }
@@ -154,11 +152,7 @@ class NewTimeSheetFragment :
                 df.getCurrentTimeAsString()
             )
         )
-//        CoroutineScope(Dispatchers.Main).launch {
-//            delay(WAIT_250)
         populateCutOffDates()
-//        }
-
     }
 
     private fun populateCutOffDates() {
@@ -188,9 +182,7 @@ class NewTimeSheetFragment :
                     }
                 }
                 spCutOff.adapter = cutOffAdapter
-//                gotoCurrentCutoff()
             }
-
         }
     }
 
@@ -263,7 +255,7 @@ class NewTimeSheetFragment :
     }
 
     override fun populatePayDetails() {
-        getCurrentPayPeriodObject()
+        getSelectedPayPeriodObject()
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
             val payCalculations = NewPayCalculations(
@@ -334,7 +326,7 @@ class NewTimeSheetFragment :
         }
     }
 
-    private fun getCurrentPayPeriodObject() {
+    private fun getSelectedPayPeriodObject() {
         mainActivity.payDayViewModel.getPayPeriod(
             binding.spCutOff.selectedItem.toString(),
             curEmployer!!.employerId

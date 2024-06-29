@@ -178,7 +178,6 @@ class NewPayDetailFragment :
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
-//                        fillEmployers()
                     }
                 }
         }
@@ -224,6 +223,14 @@ class NewPayDetailFragment :
         }
     }
 
+    private fun gotoEmployerAdd() {
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mView.findNavController().navigate(
+            PayDetailsFragmentDirections
+                .actionPayDetailsFragmentToEmployerAddFragment()
+        )
+    }
+
     private fun onSelectCutOffDate() {
         binding.apply {
             spCutOff.onItemSelectedListener =
@@ -237,37 +244,27 @@ class NewPayDetailFragment :
                         if (curCutOff != spCutOff.selectedItem.toString()) {
                             curCutOff = spCutOff.selectedItem.toString()
                             if (valuesFilled) mainActivity.mainViewModel.setCutOffDate(curCutOff)
+                            getCurrentPayPeriodObject()
                             populatePayDayDate()
                             populatePayDetails()
                         }
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
-//                        fillCutOffDates()*///-
                     }
                 }
         }
     }
 
-    private fun createMenuAction() {
-        mainActivity.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.menu_delete, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_delete -> {
-                        chooseDeletingPayDay()
-                        true
-                    }
-
-                    else -> {
-                        false
-                    }
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.CREATED)
+    private fun getCurrentPayPeriodObject() {
+        mainActivity.payDayViewModel.getPayPeriod(
+            curCutOff, curEmployer!!.employerId
+        ).observe(
+            viewLifecycleOwner
+        ) { payPeriod ->
+            curPayPeriod = payPeriod
+            mainActivity.mainViewModel.setPayPeriod(payPeriod)
+        }
     }
 
     private fun populatePayDayDate() {
@@ -284,14 +281,6 @@ class NewPayDetailFragment :
     }
 
     override fun populatePayDetails() {
-        mainActivity.payDayViewModel.getPayPeriod(
-            curCutOff, curEmployer!!.employerId
-        ).observe(
-            viewLifecycleOwner
-        ) { payPeriod ->
-            curPayPeriod = payPeriod
-            mainActivity.mainViewModel.setPayPeriod(payPeriod)
-        }
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
             val payCalculations = NewPayCalculations(
@@ -358,6 +347,66 @@ class NewPayDetailFragment :
         }
     }
 
+    private fun createMenuAction() {
+        mainActivity.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_delete, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.menu_delete -> {
+                        chooseDeletingPayDay()
+                        true
+                    }
+
+                    else -> {
+                        false
+                    }
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
+    }
+
+    private fun chooseDeletingPayDay() {
+        android.app.AlertDialog.Builder(mView.context)
+            .setTitle("Confirm Delete Pay Period")
+            .setMessage(
+                "**Warning!! \n" +
+                        "This action cannot be undone! " +
+                        "All the work dates will have to b re-entered."
+            )
+            .setPositiveButton("DELETE") { _, _ ->
+                deletePayDay()
+            }
+            .setNegativeButton("CANCEL", null)
+            .create().show()
+    }
+
+    private fun deletePayDay() {
+        mainActivity.payDayViewModel.updatePayPeriod(
+            PayPeriods(
+                curPayPeriod!!.payPeriodId,
+                curPayPeriod!!.ppCutoffDate,
+                curPayPeriod!!.ppEmployerId,
+                true,
+                df.getCurrentTimeAsString()
+            )
+        )
+        populateCutOffDates(curEmployer)
+    }
+
+    private fun populateExtras(payCalculations: IPayCalculations) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val extrasList =
+                processExtras(payCalculations)
+            delay(WAIT_1000)
+            populateCredits(extrasList)
+            populateDeductions(payCalculations, extrasList)
+            mainActivity.mainViewModel.setPayPeriodExtraList(extrasList)
+        }
+    }
+
     private fun processExtras(payCalculations: IPayCalculations): ArrayList<WorkPayPeriodExtras> {
         val extraList = mutableListOf<WorkPayPeriodExtras>()
         CoroutineScope(Dispatchers.Main).launch {
@@ -389,6 +438,50 @@ class NewPayDetailFragment :
             }
         }
         return extraList as ArrayList<WorkPayPeriodExtras>
+    }
+
+    private fun processExtrasByManuallyAdded(
+        it: WorkPayPeriodExtras,
+        payCalculations: IPayCalculations,
+        extraList: MutableList<WorkPayPeriodExtras>
+    ) {
+        var sum = 0.0
+        when (it.ppeAppliesTo) {
+            0 -> {
+                sum = if (it.ppeIsFixed) {
+                    payCalculations.getHoursWorked() * it.ppeValue
+                } else {
+                    payCalculations.getPayTimeWorked() * it.ppeValue / 100
+                }
+            }
+
+            1 -> {
+                sum = if (it.ppeIsFixed) {
+                    payCalculations.getDaysWorked() * it.ppeValue
+                } else {
+                    payCalculations.getPayTimeWorked() * it.ppeValue / 100
+                }
+            }
+
+            3 -> {
+                sum = it.ppeValue
+            }
+        }
+        extraList.add(
+            WorkPayPeriodExtras(
+                it.workPayPeriodExtraId,
+                it.ppePayPeriodId,
+                it.ppeExtraTypeId,
+                it.ppeName,
+                it.ppeAppliesTo,
+                it.ppeAttachTo,
+                sum,
+                it.ppeIsFixed,
+                it.ppeIsCredit,
+                it.ppeIsDeleted,
+                it.ppeUpdateTime
+            )
+        )
     }
 
     private fun processExtrasByDay(
@@ -520,61 +613,6 @@ class NewPayDetailFragment :
         df.getCurrentTimeAsString()
     )
 
-    private fun processExtrasByManuallyAdded(
-        it: WorkPayPeriodExtras,
-        payCalculations: IPayCalculations,
-        extraList: MutableList<WorkPayPeriodExtras>
-    ) {
-        var sum = 0.0
-        when (it.ppeAppliesTo) {
-            0 -> {
-                sum = if (it.ppeIsFixed) {
-                    payCalculations.getHoursWorked() * it.ppeValue
-                } else {
-                    payCalculations.getPayTimeWorked() * it.ppeValue / 100
-                }
-            }
-
-            1 -> {
-                sum = if (it.ppeIsFixed) {
-                    payCalculations.getDaysWorked() * it.ppeValue
-                } else {
-                    payCalculations.getPayTimeWorked() * it.ppeValue / 100
-                }
-            }
-
-            3 -> {
-                sum = it.ppeValue
-            }
-        }
-        extraList.add(
-            WorkPayPeriodExtras(
-                it.workPayPeriodExtraId,
-                it.ppePayPeriodId,
-                it.ppeExtraTypeId,
-                it.ppeName,
-                it.ppeAppliesTo,
-                it.ppeAttachTo,
-                sum,
-                it.ppeIsFixed,
-                it.ppeIsCredit,
-                it.ppeIsDeleted,
-                it.ppeUpdateTime
-            )
-        )
-    }
-
-    private fun populateExtras(payCalculations: IPayCalculations) {
-        CoroutineScope(Dispatchers.Main).launch {
-            val extrasList =
-                processExtras(payCalculations)
-            delay(WAIT_1000)
-            populateCredits(extrasList)
-            populateDeductions(payCalculations, extrasList)
-            mainActivity.mainViewModel.setPayPeriodExtraList(extrasList)
-        }
-    }
-
     private fun getCreditList(extraList: ArrayList<WorkPayPeriodExtras>):
             ArrayList<WorkPayPeriodExtras> {
         val creditList = ArrayList<WorkPayPeriodExtras>()
@@ -689,42 +727,6 @@ class NewPayDetailFragment :
                 valuesFilled = true
             }
         }
-    }
-
-    private fun chooseDeletingPayDay() {
-        android.app.AlertDialog.Builder(mView.context)
-            .setTitle("Confirm Delete Pay Period")
-            .setMessage(
-                "**Warning!! \n" +
-                        "This action cannot be undone! " +
-                        "All the work dates will have to b re-entered."
-            )
-            .setPositiveButton("DELETE") { _, _ ->
-                deletePayDay()
-            }
-            .setNegativeButton("CANCEL", null)
-            .create().show()
-    }
-
-    private fun deletePayDay() {
-        mainActivity.payDayViewModel.updatePayPeriod(
-            PayPeriods(
-                curPayPeriod!!.payPeriodId,
-                curPayPeriod!!.ppCutoffDate,
-                curPayPeriod!!.ppEmployerId,
-                true,
-                df.getCurrentTimeAsString()
-            )
-        )
-        populateCutOffDates(curEmployer)
-    }
-
-    private fun gotoEmployerAdd() {
-        mainActivity.mainViewModel.setCallingFragment(TAG)
-        mView.findNavController().navigate(
-            PayDetailsFragmentDirections
-                .actionPayDetailsFragmentToEmployerAddFragment()
-        )
     }
 
     override fun onStop() {
