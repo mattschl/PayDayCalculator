@@ -395,8 +395,8 @@ class NewTimeSheetFragment :
 //                .actionTimeSheetFragmentToPayDetailsFragment()
 //        )
         mView.findNavController().navigate(
-            TimeSheetFragmentDirections
-                .actionTimeSheetFragmentToNewPayDetailFragment()
+            NewTimeSheetFragmentDirections
+                .actionNewTimeSheetFragmentToNewPayDetailFragment()
         )
     }
 

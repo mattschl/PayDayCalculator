@@ -411,7 +411,11 @@
         android:id="@+id/newPayDetailFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.NewPayDetailFragment"
         android:label="NewPayDetailFragment"
-        tools:layout="@layout/fragment_pay_details" />
+        tools:layout="@layout/fragment_pay_details">
+        <action
+            android:id="@+id/action_newPayDetailFragment_to_newTimeSheetFragment"
+            app:destination="@id/newTimeSheetFragment" />
+    </fragment>
     <action
         android:id="@+id/action_global_newPayDetailFragment"
         app:destination="@id/newPayDetailFragment" />
@@ -419,7 +423,11 @@
         android:id="@+id/newTimeSheetFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.NewTimeSheetFragment"
         android:label="NewTimeSheetFragment"
-        tools:layout="@layout/fragment_time_sheet" />
+        tools:layout="@layout/fragment_time_sheet">
+        <action
+            android:id="@+id/action_newTimeSheetFragment_to_newPayDetailFragment"
+            app:destination="@id/newPayDetailFragment" />
+    </fragment>
     <action
         android:id="@+id/action_global_newTimeSheetFragment"
         app:destination="@id/newTimeSheetFragment" />

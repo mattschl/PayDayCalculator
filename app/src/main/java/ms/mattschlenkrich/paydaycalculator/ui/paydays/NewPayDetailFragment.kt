@@ -194,7 +194,7 @@ class NewPayDetailFragment :
                     viewLifecycleOwner
                 ) { dates ->
                     cutOffs.clear()
-                    cutOffAdapter.notifyDataSetChanged()
+                    cutOffAdapter.clear()
                     dates.listIterator().forEach {
                         cutOffAdapter.add(it.ppCutoffDate)
                     }
@@ -282,6 +282,7 @@ class NewPayDetailFragment :
 
     override fun populatePayDetails() {
         CoroutineScope(Dispatchers.Main).launch {
+            getCurrentPayPeriodObject()
             delay(WAIT_250)
             val payCalculations = NewPayCalculations(
                 mainActivity, curEmployer!!, mView, curPayPeriod!!
@@ -356,7 +357,7 @@ class NewPayDetailFragment :
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.menu_delete -> {
-                        chooseDeletingPayDay()
+                        chooseDeletingCutoffDate()
                         true
                     }
 
@@ -368,7 +369,7 @@ class NewPayDetailFragment :
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun chooseDeletingPayDay() {
+    private fun chooseDeletingCutoffDate() {
         android.app.AlertDialog.Builder(mView.context)
             .setTitle("Confirm Delete Pay Period")
             .setMessage(
