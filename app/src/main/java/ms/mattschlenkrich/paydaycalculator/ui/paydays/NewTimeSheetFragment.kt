@@ -68,7 +68,7 @@ class NewTimeSheetFragment :
         setClickActions()
         onSelectEmployer()
         onSelectCutOffDate()
-        populateFromHistory()
+//        populateFromHistory()
     }
 
     private fun populateEmployers() {
@@ -95,9 +95,9 @@ class NewTimeSheetFragment :
             fabAddDate.setOnClickListener {
                 addNewWorkDate()
             }
-            crdPayDetails.setOnClickListener {
-                gotoPayDetails()
-            }
+//            crdPayDetails.setOnClickListener {
+//                gotoPayDetails()
+//            }
         }
     }
 
@@ -371,8 +371,8 @@ class NewTimeSheetFragment :
         mainActivity.mainViewModel.setCutOffDate(curCutOff)
         mainActivity.mainViewModel.setEmployer(curEmployer)
         mView.findNavController().navigate(
-            TimeSheetFragmentDirections
-                .actionTimeSheetFragmentToWorkDateAddFragment()
+            NewTimeSheetFragmentDirections
+                .actionNewTimeSheetFragmentToWorkDateAddFragment()
         )
     }
 

@@ -639,11 +639,11 @@ class NewPayCalculations(
     }
 
     override fun getPayOt(): Double {
-        return otHours * payRate
+        return otHours * payRate * 1.5
     }
 
     override fun getPayDblOt(): Double {
-        return dblOtHours * payRate
+        return dblOtHours * payRate * 2
     }
 
     override fun getPayHourly(): Double {

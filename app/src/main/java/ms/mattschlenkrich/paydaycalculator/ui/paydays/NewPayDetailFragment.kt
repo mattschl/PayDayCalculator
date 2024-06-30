@@ -83,7 +83,7 @@ class NewPayDetailFragment :
         createMenuAction()
         onSelectEmployer()
         onSelectCutOffDate()
-        populateFromHistory()
+//        populateFromHistory()
     }
 
     private fun populateEmployers() {

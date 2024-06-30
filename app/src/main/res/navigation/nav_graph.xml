@@ -427,6 +427,12 @@
         <action
             android:id="@+id/action_newTimeSheetFragment_to_newPayDetailFragment"
             app:destination="@id/newPayDetailFragment" />
+        <action
+            android:id="@+id/action_newTimeSheetFragment_to_workDateAddFragment"
+            app:destination="@id/workDateAddFragment" />
+        <action
+            android:id="@+id/action_newTimeSheetFragment_to_workDateUpdateFragment"
+            app:destination="@id/workDateUpdateFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_newTimeSheetFragment"
