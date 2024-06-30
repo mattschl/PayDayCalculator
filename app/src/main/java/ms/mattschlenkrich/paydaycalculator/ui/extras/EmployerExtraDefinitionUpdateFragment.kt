@@ -175,16 +175,6 @@ class EmployerExtraDefinitionUpdateFragment :
             if (mainActivity.mainViewModel.getExtraDefinitionFull() != null) {
                 curExtraDefinitionFull =
                     mainActivity.mainViewModel.getExtraDefinitionFull()!!
-//                mainActivity.workExtraViewModel.getWorkExtraDefinitions(
-//                    curExtraDefinitionFull.employer.employerId
-//                ).observe(
-//                    viewLifecycleOwner
-//                ) { definition ->
-//                    definitionList.clear()
-//                    definition.listIterator().forEach {
-//                        definitionList.add(it.weDefNameId)
-//                    }
-//                }
                 tvEmployer.text = curExtraDefinitionFull.employer.employerName
                 etName.setText(curExtraDefinitionFull.extraType.wetName)
                 etValue.setText(

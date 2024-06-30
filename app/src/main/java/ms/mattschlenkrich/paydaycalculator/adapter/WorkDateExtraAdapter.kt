@@ -64,9 +64,6 @@ class WorkDateExtraAdapter(
                 parentFragment.addToExtraList(chkExtra.isChecked, extra)
             }
             btnEdit.visibility = View.GONE
-//            holder.itemBinding.btnEdit.setOnClickListener {
-//                chooseSaveOrNot()
-//            }
         }
     }
 

@@ -33,8 +33,6 @@ class EmployerWageAdapter(
         }
         get() = paintFlags and Paint.STRIKE_THRU_TEXT_FLAG == Paint.STRIKE_THRU_TEXT_FLAG
 
-//    private val df = DateFunctions()
-
     class WageViewHolder(val itemBinding: ListWagesItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 

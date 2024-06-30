@@ -51,29 +51,7 @@ class WorkExtraTypesFragment : Fragment(
             setHasFixedSize(true)
             adapter = extraTypeAdapter
         }
-        activity?.let {
-//            mainActivity.workExtraViewModel.getExtraDefinitionTypes(
-//            ).observe(
-//                viewLifecycleOwner
-//            ) { typesList ->
-//                extraTypeAdapter.differ.submitList(typesList)
-//                updateUI(typesList)
-//            }
-        }
-
     }
-//
-//    private fun updateUI(typesList: List<WorkExtraTypes>) {
-//        binding.apply {
-//            if (typesList.isEmpty()) {
-//                crdNoInfo.visibility = View.VISIBLE
-//                rvTypes.visibility = View.GONE
-//            } else {
-//                crdNoInfo.visibility = View.GONE
-//                rvTypes.visibility = View.VISIBLE
-//            }
-//        }
-//    }
 
     override fun onDestroy() {
         super.onDestroy()

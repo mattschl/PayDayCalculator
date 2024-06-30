@@ -145,13 +145,6 @@ class WorkExtraTypeAddFragment : Fragment(
         )
     }
 
-//    private fun gotoCallingFragment() {
-//        mView.findNavController().navigate(
-//            WorkExtraTypeAddFragmentDirections
-//                .actionWorkExtraTypeAddFragmentToEmployerUpdateFragment()
-//        )
-//    }
-
     private fun checkExtraType(): String {
         binding.apply {
             var nameFound = false

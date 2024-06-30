@@ -68,12 +68,16 @@ class EmployerTaxTypeAdapter(
                 parentFragment.populateTaxes(employerTaxType.etrEmployerId)
             }
             btnEdit.setOnClickListener {
-                mainActivity.mainViewModel.setTaxTypeString(employerTaxType.etrTaxType)
-                mView.findNavController().navigate(
-                    EmployerUpdateFragmentDirections
-                        .actionEmployerUpdateFragmentToTaxRulesFragment()
-                )
+                gotoTaxRules(employerTaxType)
             }
         }
+    }
+
+    private fun gotoTaxRules(employerTaxType: EmployerTaxTypes) {
+        mainActivity.mainViewModel.setTaxTypeString(employerTaxType.etrTaxType)
+        mView.findNavController().navigate(
+            EmployerUpdateFragmentDirections
+                .actionEmployerUpdateFragmentToTaxRulesFragment()
+        )
     }
 }

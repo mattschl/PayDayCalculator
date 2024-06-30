@@ -133,7 +133,7 @@ class EmployerPayRateAddFragment :
         val curEmployer = mainActivity.mainViewModel.getEmployer()!!
         val message = validatePayRate()
         if (message == ANSWER_OK) {
-            val curWage = getCurPayRates(curEmployer)
+            val curWage = getCurrentPayRates(curEmployer)
             mainActivity.employerViewModel.insertPayRate(curWage)
             gotoCallingFragment()
         } else {
@@ -145,7 +145,7 @@ class EmployerPayRateAddFragment :
         }
     }
 
-    private fun getCurPayRates(
+    private fun getCurrentPayRates(
         curEmployer: Employers
     ): EmployerPayRates {
         binding.apply {

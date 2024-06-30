@@ -37,10 +37,14 @@ class StartFragment : Fragment(R.layout.fragment_start) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         CoroutineScope(Dispatchers.Main).launch {
             delay(1500)
-            findNavController().navigate(
-                NavGraphDirections.actionGlobalTimeSheetFragment()
-            )
+            gotoTimeSheetFragment()
         }
+    }
+
+    private fun gotoTimeSheetFragment() {
+        findNavController().navigate(
+            NavGraphDirections.actionGlobalTimeSheetFragment()
+        )
     }
 
     override fun onDestroy() {
