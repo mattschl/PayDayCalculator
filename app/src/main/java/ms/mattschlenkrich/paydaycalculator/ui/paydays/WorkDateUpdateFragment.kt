@@ -111,8 +111,8 @@ class WorkDateUpdateFragment : Fragment(
             mainActivity.payDayViewModel.updateWorkDate(
                 getCurrentWorkDate()
             )
+            gotoTimeSheetFragment()
         }
-        gotoTimeSheetFragment()
     }
 
     private fun gotoTimeSheetFragment() {

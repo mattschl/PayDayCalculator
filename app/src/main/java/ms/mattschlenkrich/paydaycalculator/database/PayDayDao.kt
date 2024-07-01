@@ -58,7 +58,7 @@ interface PayDayDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkDate(workDate: WorkDates)
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateWorkDate(workDate: WorkDates)
 
     @Delete
