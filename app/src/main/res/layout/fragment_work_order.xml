@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.workOrder.WorkOrderFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/lblEmployer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/employer"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintBaseline_toBaselineOf="@id/spEmployers"
+            app:layout_constraintEnd_toStartOf="@id/spEmployers"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Spinner
+            android:id="@+id/spEmployers"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="@dimen/minimum_touch_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblEmployer"
+            app:layout_constraintTop_toBottomOf="@id/lblDate" />
+
+
+        <TextView
+            android:id="@+id/lblDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minimum_touch_height"
+            android:text="@string/work_date"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/lblWorkOrder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/work_order"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintBaseline_toBaselineOf="@id/acWorkOrder"
+            app:layout_constraintEnd_toStartOf="@id/acWorkOrder"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+        <AutoCompleteTextView
+            android:id="@+id/acWorkOrder"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:hint="@string/type_numbers"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblWorkOrder"
+            app:layout_constraintTop_toBottomOf="@+id/spEmployers" />
+
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/description"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/acWorkOrder" />
+
+        <TextView
+            android:id="@+id/lblHours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hours"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintBaseline_toBaselineOf="@id/etHours"
+            app:layout_constraintEnd_toStartOf="@id/etHours"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/etHours"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:hint="@string/zero_double"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:minHeight="48dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblHours"
+            app:layout_constraintTop_toBottomOf="@id/tvDescription"
+            tools:ignore="DuplicateSpeakableTextCheck" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_25dp"
+            android:layout_marginEnd="@dimen/dimen_25dp"
+            android:backgroundTint="@color/dark_green"
+            android:contentDescription="@string/add_new"
+            android:src="@drawable/ic_done"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etHours" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

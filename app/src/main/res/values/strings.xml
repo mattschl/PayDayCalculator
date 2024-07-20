@@ -163,4 +163,6 @@
     <string name="rates">Rates</string>
     <string name="add_new_credit">Add new Credit</string>
     <string name="add_new_deductions">Add new Deductions</string>
+    <string name="work_order">Work Order</string>
+    <string name="type_numbers">Type Numbers</string>
 </resources>
