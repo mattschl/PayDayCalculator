@@ -165,4 +165,10 @@
     <string name="add_new_deductions">Add new Deductions</string>
     <string name="work_order">Work Order</string>
     <string name="type_numbers">Type Numbers</string>
+    <string name="work_order_number">Work Order Number</string>
+    <string name="text_zeros">0000</string>
+    <string name="address">Address</string>
+    <string name="enter_address">Enter Address</string>
+    <string name="history">History</string>
+    <string name="summary">Summary</string>
 </resources>

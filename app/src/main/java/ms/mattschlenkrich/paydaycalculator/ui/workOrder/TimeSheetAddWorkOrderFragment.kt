@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import ms.mattschlenkrich.paydaycalculator.R
 
-class WorkOrderFragment : Fragment(R.layout.fragment_work_order) {
+class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_work_order) {
 
 
     override fun onCreateView(
@@ -15,7 +15,7 @@ class WorkOrderFragment : Fragment(R.layout.fragment_work_order) {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_work_order, container, false)
+        return inflater.inflate(R.layout.fragment_time_sheet_add_work_order, container, false)
     }
 
 
