@@ -104,10 +104,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/etDescription" />
 
-        <Spinner
-            android:id="@+id/spHistory"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvHistory"
             android:layout_width="0dp"
-            android:layout_height="@dimen/minimum_touch_height"
+            android:layout_height="wrap_content"
             android:layout_margin="@dimen/dimen_15dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -124,7 +124,19 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/spHistory" />
+            app:layout_constraintTop_toBottomOf="@id/rvHistory" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabNew"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dimen_25dp"
+            android:layout_marginBottom="@dimen/dimen_25dp"
+            android:backgroundTint="@color/dark_green"
+            android:contentDescription="@string/add_new"
+            android:src="@drawable/ic_add"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

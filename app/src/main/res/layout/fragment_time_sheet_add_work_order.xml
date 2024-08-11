@@ -75,18 +75,18 @@
             app:layout_constraintTop_toBottomOf="@id/acWorkOrder" />
 
         <TextView
-            android:id="@+id/lblHours"
+            android:id="@+id/lblRegHours"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/hours"
+            android:text="@string/reg_hours"
             android:textColor="@color/black"
             android:textSize="20sp"
-            app:layout_constraintBaseline_toBaselineOf="@id/etHours"
-            app:layout_constraintEnd_toStartOf="@id/etHours"
+            app:layout_constraintBaseline_toBaselineOf="@id/etRegHours"
+            app:layout_constraintEnd_toStartOf="@id/etRegHours"
             app:layout_constraintStart_toStartOf="parent" />
 
         <EditText
-            android:id="@+id/etHours"
+            android:id="@+id/etRegHours"
             android:layout_width="@dimen/text_box_wide"
             android:layout_height="@dimen/minimum_touch_height"
             android:hint="@string/zero_double"
@@ -97,8 +97,63 @@
             android:textColor="@color/black"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/lblHours"
+            app:layout_constraintStart_toEndOf="@id/lblRegHours"
             app:layout_constraintTop_toBottomOf="@id/tvDescription"
+            tools:ignore="DuplicateSpeakableTextCheck" />
+
+        <TextView
+            android:id="@+id/lblOtHours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/overtime_hours"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintBaseline_toBaselineOf="@id/etOtHours"
+            app:layout_constraintEnd_toStartOf="@id/etOtHours"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/etOtHours"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:hint="@string/zero_double"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:minHeight="48dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblOtHours"
+            app:layout_constraintTop_toBottomOf="@id/etRegHours"
+            tools:ignore="DuplicateSpeakableTextCheck" />
+
+
+        <TextView
+            android:id="@+id/lblDblOtHours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/double_overtime"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintBaseline_toBaselineOf="@id/etDblOtHours"
+            app:layout_constraintEnd_toStartOf="@id/etDblOtHours"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/etDblOtHours"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:hint="@string/zero_double"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:minHeight="48dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblDblOtHours"
+            app:layout_constraintTop_toBottomOf="@id/etOtHours"
             tools:ignore="DuplicateSpeakableTextCheck" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -108,10 +163,10 @@
             android:layout_marginTop="@dimen/dimen_25dp"
             android:layout_marginEnd="@dimen/dimen_25dp"
             android:backgroundTint="@color/dark_green"
-            android:contentDescription="@string/add_new"
+            android:contentDescription="@string/done"
             android:src="@drawable/ic_done"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etHours" />
+            app:layout_constraintTop_toBottomOf="@id/etDblOtHours" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

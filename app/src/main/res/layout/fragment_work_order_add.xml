@@ -92,6 +92,68 @@
             app:layout_constraintTop_toBottomOf="@id/lblDescription"
             tools:ignore="VisualLintTextFieldSize" />
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/crdWorkOrder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dimen_8dp"
+            android:backgroundTint="@color/white"
+            android:elevation="10dp"
+            app:cardCornerRadius="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etDescription">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:ignore="TextSizeCheck">
+
+                <TextView
+                    android:id="@+id/lblWorkOrderHistory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_15dp"
+                    android:text="@string/work_order_history"
+                    android:textSize="@dimen/text_size_large"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/fabAddWorkOrder"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fabAddWorkOrder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/add_new_extra"
+                    android:foregroundTint="@color/black"
+                    android:src="@drawable/ic_add"
+                    app:layout_constraintEnd_toStartOf="@id/lblWorkOrderHistory"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="ImageContrastCheck,DuplicateSpeakableTextCheck" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvWorkOrders"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_10dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/fabAddWorkOrder" />
+
+                <TextView
+                    android:id="@+id/tvWorkOrderSummary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/summary"
+                    android:textSize="@dimen/text_size_large"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/rvWorkOrders" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabDone"
             android:layout_width="wrap_content"
@@ -102,7 +164,7 @@
             android:contentDescription="@string/add_new"
             android:src="@drawable/ic_done"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etDescription" />
+            app:layout_constraintTop_toBottomOf="@id/crdWorkOrder" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

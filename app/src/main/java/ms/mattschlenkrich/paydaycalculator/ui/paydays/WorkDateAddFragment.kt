@@ -196,7 +196,16 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
             tvWorkDate.setOnClickListener {
                 changeDate()
             }
+            fabAddWorkOrder.setOnClickListener {
+                gotoTimeSheetAddWorkOrder()
+            }
         }
+    }
+
+    private fun gotoTimeSheetAddWorkOrder() {
+        TODO("Not yet implemented")
+        //Need to save the current work date information in a temp location.
+        //Need to goto the WorkOrderAddFragment
     }
 
     private fun gotoAddExtra() {

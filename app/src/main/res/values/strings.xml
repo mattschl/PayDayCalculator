@@ -171,4 +171,7 @@
     <string name="enter_address">Enter Address</string>
     <string name="history">History</string>
     <string name="summary">Summary</string>
+    <string name="work_orders">Work Orders</string>
+    <string name="done">Done</string>
+    <string name="work_order_history">Work Order History</string>
 </resources>
