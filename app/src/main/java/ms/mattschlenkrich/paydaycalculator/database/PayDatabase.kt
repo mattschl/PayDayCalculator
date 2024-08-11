@@ -21,6 +21,8 @@ import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodTax
 import ms.mattschlenkrich.paydaycalculator.model.tax.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.tax.WorkTaxRules
+import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
+import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
 
 
 @Database(
@@ -38,6 +40,8 @@ import ms.mattschlenkrich.paydaycalculator.model.tax.WorkTaxRules
         TaxEffectiveDates::class,
         EmployerTaxTypes::class,
         EmployerPayRates::class,
+        WorkOrder::class,
+        WorkOrderHistory::class,
     ],
     views = [ExtraDefinitionAndType::class,
         ExtraTypeAndDefByDay::class],
@@ -49,6 +53,7 @@ abstract class PayDatabase : RoomDatabase() {
     abstract fun getWorkTaxDao(): WorkTaxDao
     abstract fun getWorkExtraDao(): WorkExtraDao
     abstract fun getPayDayDao(): PayDayDao
+    abstract fun getWorkOrderDao(): WorkOrderDao
 
     companion object {
         @Volatile

@@ -9,6 +9,7 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetAddWorkOrderBinding
+import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_work_order) {
@@ -19,6 +20,7 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
     private val nf = NumberFunctions()
+    private val workOrderList = ArrayList<WorkOrder>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,11 +38,16 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setDefaultValues()
-        getWorkOrderList()
+        populateWorkOrderList()
         setClickActions()
     }
 
     private fun setDefaultValues() {
+        TODO("Not yet implemented")
+    }
+
+    private fun populateWorkOrderList() {
+        getWorkOrderList()
         TODO("Not yet implemented")
     }
 
@@ -49,6 +56,14 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
     }
 
     private fun setClickActions() {
+        binding.apply {
+            fabDone.setOnClickListener {
+                validateWorkOrderEntry()
+            }
+        }
+    }
+
+    private fun validateWorkOrderEntry() {
         TODO("Not yet implemented")
     }
 

@@ -17,6 +17,7 @@ import ms.mattschlenkrich.paydaycalculator.databinding.ActivityMainBinding
 import ms.mattschlenkrich.paydaycalculator.repository.EmployerRepository
 import ms.mattschlenkrich.paydaycalculator.repository.PayDayRepository
 import ms.mattschlenkrich.paydaycalculator.repository.WorkExtraRepository
+import ms.mattschlenkrich.paydaycalculator.repository.WorkOrderRepository
 import ms.mattschlenkrich.paydaycalculator.repository.WorkTaxRepository
 import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModel
 import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModelFactory
@@ -26,6 +27,8 @@ import ms.mattschlenkrich.paydaycalculator.viewModel.PayDayViewModel
 import ms.mattschlenkrich.paydaycalculator.viewModel.PayDayViewModelFactory
 import ms.mattschlenkrich.paydaycalculator.viewModel.WorkExtraViewModel
 import ms.mattschlenkrich.paydaycalculator.viewModel.WorkExtraViewModelFactory
+import ms.mattschlenkrich.paydaycalculator.viewModel.WorkOrderViewModel
+import ms.mattschlenkrich.paydaycalculator.viewModel.WorkOrderViewModelFactory
 import ms.mattschlenkrich.paydaycalculator.viewModel.WorkTaxViewModel
 import ms.mattschlenkrich.paydaycalculator.viewModel.WorkTaxViewModelFactory
 
@@ -37,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var workTaxViewModel: WorkTaxViewModel
     lateinit var workExtraViewModel: WorkExtraViewModel
     lateinit var payDayViewModel: PayDayViewModel
+    lateinit var workOrderViewModel: WorkOrderViewModel
 //    private val df = DateFunctions()
 
     private fun gotoEmployer() {
@@ -56,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         setupWorkTaxViewModel()
         setupWorkExtraViewModel()
         setupPayDayViewModel()
+        setupWorkOrderViewModel()
         fillMenus()
     }
 
@@ -223,5 +228,14 @@ class MainActivity : AppCompatActivity() {
         workTaxViewModel = ViewModelProvider(
             this, workTaxViewModelFactory
         )[WorkTaxViewModel::class.java]
+    }
+
+    private fun setupWorkOrderViewModel() {
+        val workOrderRepository = WorkOrderRepository(PayDatabase(this))
+        val workOrderViewModelFactory =
+            WorkOrderViewModelFactory(application, workOrderRepository)
+        workOrderViewModel = ViewModelProvider(
+            this, workOrderViewModelFactory
+        )[WorkOrderViewModel::class.java]
     }
 }
