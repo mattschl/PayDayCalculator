@@ -14,8 +14,8 @@ android {
         applicationId = "ms.mattschlenkrich.paydaycalculator"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "v1.0"
+        versionCode = 2
+        versionName = "v1.2"
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
@@ -72,7 +72,7 @@ dependencies {
 //    implementation("androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version")
 
     //Lifecycle architecture
-    val lifecycle_version = "2.8.3"
+    val lifecycle_version = "2.8.4"
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     // LiveData

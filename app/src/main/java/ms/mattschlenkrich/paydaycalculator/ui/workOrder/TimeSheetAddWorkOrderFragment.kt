@@ -25,13 +25,13 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentTimeSheetAddWorkOrderBinding.inflate(
             inflater, container, false
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "Add time to work order"
+        mainActivity.title = getString(R.string.add_time_to_work_order)
         return mView
     }
 

@@ -174,4 +174,6 @@
     <string name="work_orders">Work Orders</string>
     <string name="done">Done</string>
     <string name="work_order_history">Work Order History</string>
+    <string name="add_time_to_work_order">Add time to work order</string>
+    <string name="add_new_work_order">Add new work order</string>
 </resources>
