@@ -32,7 +32,7 @@ import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import java.time.LocalDate
 
-//private const val TAG = "WorkDateAdd"
+private const val TAG = "WorkDateAdd"
 
 class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
 
@@ -203,9 +203,12 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     }
 
     private fun gotoTimeSheetAddWorkOrder() {
-        TODO("Not yet implemented")
-        //Need to save the current work date information in a temp location.
-        //Need to goto the WorkOrderAddFragment
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mainActivity.mainViewModel.setWorkDateObject(getCurWorkDate())
+        mView.findNavController().navigate(
+            WorkDateAddFragmentDirections
+                .actionWorkDateAddFragmentToTimeSheetAddWorkOrderFragment()
+        )
     }
 
     private fun gotoAddExtra() {

@@ -28,6 +28,14 @@
             app:layout_constraintStart_toEndOf="@id/lblEmployer"
             app:layout_constraintTop_toBottomOf="@id/lblDate" />
 
+        <TextView
+            android:id="@+id/tvEmployers"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblEmployer"
+            app:layout_constraintTop_toBottomOf="@id/lblDate" />
 
         <TextView
             android:id="@+id/lblDate"

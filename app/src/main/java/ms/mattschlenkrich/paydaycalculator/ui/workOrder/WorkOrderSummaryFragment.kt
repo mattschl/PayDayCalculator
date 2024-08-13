@@ -6,17 +6,44 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderSummaryBinding
+import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 class WorkOrderSummaryFragment : Fragment() {
 
+    private var _binding: FragmentWorkOrderSummaryBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var mView: View
+    private lateinit var mainActivity: MainActivity
+    private val df = DateFunctions()
+    private val nf = NumberFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_work_order_summary, container, false)
+    ): View {
+        _binding = FragmentWorkOrderSummaryBinding.inflate(
+            inflater, container, false
+        )
+        mView = binding.root
+        mainActivity = (activity as MainActivity)
+        mainActivity.title = getString(R.string.work_order_summary)
+        return mView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        getValues()
+    }
 
+    private fun getValues() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 }

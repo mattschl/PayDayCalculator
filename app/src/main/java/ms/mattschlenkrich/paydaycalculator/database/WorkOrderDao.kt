@@ -19,5 +19,5 @@ interface WorkOrderDao {
         "SELECT * FROM workOrders " +
                 "WHERE woEmployerId = :employerId"
     )
-    fun getWorkOrdersByEmployerId(employerId: Long): LiveData<WorkOrder>
+    fun getWorkOrdersByEmployerId(employerId: Long): LiveData<List<WorkOrder>>
 }
