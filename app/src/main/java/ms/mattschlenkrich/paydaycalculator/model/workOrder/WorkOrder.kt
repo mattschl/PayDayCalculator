@@ -16,7 +16,7 @@ import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 )
 data class WorkOrder(
     @PrimaryKey
-    val workOrderId: Long,
+    val workOrderId: String,
     @ColumnInfo(index = true)
     val woEmployerId: Long,
     val woAddress: String,

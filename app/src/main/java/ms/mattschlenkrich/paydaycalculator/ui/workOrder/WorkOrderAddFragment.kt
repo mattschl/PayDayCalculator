@@ -4,11 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderAddBinding
+import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
@@ -21,6 +30,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
     private val df = DateFunctions()
     private val nf = NumberFunctions()
     private val workOrderList = ArrayList<WorkOrder>()
+    private lateinit var curEmployer: Employers
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,26 +50,149 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
         setDefaultValues()
         getWorkOrderList()
         setClickActions()
+        onSelectEmployer()
     }
 
     private fun setDefaultValues() {
-        TODO("Not yet implemented")
+        if (mainActivity.mainViewModel.getEmployer() != null) {
+            curEmployer = mainActivity.mainViewModel.getEmployer()!!
+            binding.apply {
+                spEmployers.visibility = View.INVISIBLE
+                tvEmployer.visibility = View.VISIBLE
+                tvEmployer.text = curEmployer.employerName
+            }
+            getWorkOrderList()
+        } else {
+            binding.apply {
+                spEmployers.visibility = View.VISIBLE
+                tvEmployer.visibility = View.INVISIBLE
+            }
+            populateEmployers()
+        }
+    }
+
+    private fun populateEmployers() {
+        mainActivity.employerViewModel.getEmployers().observe(
+            viewLifecycleOwner
+        ) { list ->
+            binding.apply {
+                val employerAdapter = ArrayAdapter<Any>(
+                    mView.context,
+                    R.layout.spinner_item_bold
+                )
+                list.listIterator().forEach {
+                    employerAdapter.add(it.employerName)
+                }
+                spEmployers.adapter = employerAdapter
+            }
+        }
     }
 
     private fun getWorkOrderList() {
-        TODO("Not yet implemented")
+        workOrderList.clear()
+        mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
+            curEmployer.employerId
+        ).observe(
+            viewLifecycleOwner
+        ) { list ->
+            list.listIterator().forEach {
+                workOrderList.add(it)
+            }
+        }
     }
 
     private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener {
-                validateWorkOrder()
+                prepareToSave()
             }
         }
     }
 
-    private fun validateWorkOrder() {
-        TODO("Not yet implemented")
+    private fun prepareToSave() {
+        val answer = validateWorkOrder()
+        if (answer != ANSWER_OK) {
+            saveWorkOrder()
+        } else {
+            Toast.makeText(
+                mView.context,
+                answer, Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun saveWorkOrder() {
+        mainActivity.workOrderViewModel.insertWorkOrder(getCurrentWorkOrder())
+        gotoCallingFragment()
+    }
+
+    private fun gotoCallingFragment() {
+        gotoTimeSheetAddWorkOrderFragment()
+    }
+
+    private fun gotoTimeSheetAddWorkOrderFragment() {
+        mView.findNavController().navigate(
+            WorkOrderAddFragmentDirections
+                .actionWorkOrderAddFragmentToTimeSheetAddWorkOrderFragment()
+        )
+    }
+
+    private fun getCurrentWorkOrder(): WorkOrder {
+        binding.apply {
+            return WorkOrder(
+                etWorkOrderNumber.text.toString(),
+                curEmployer.employerId,
+                etAddress.text.toString(),
+                etDescription.text.toString()
+            )
+        }
+    }
+
+    private fun onSelectEmployer() {
+        binding.apply {
+            spEmployers.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            curEmployer = mainActivity.employerViewModel.findEmployer(
+                                spEmployers.selectedItem.toString()
+                            )
+                        }
+                        getWorkOrderList()
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                        //not needed
+                    }
+                }
+        }
+    }
+
+    private fun validateWorkOrder(): String {
+        binding.apply {
+            if (etWorkOrderNumber.text.isEmpty()) {
+                return getString(R.string.please_enter_a_work_order_number)
+            }
+            for (workOrder in workOrderList) {
+                if (workOrder.workOrderId ==
+                    etWorkOrderNumber.text.toString()
+                ) {
+                    return getString(R.string.this_work_order_has_been_used)
+                }
+            }
+            if (etAddress.text.isEmpty()) {
+                return getString(R.string.please_enter_an_address)
+            }
+            if (etDescription.text.isEmpty()) {
+                return getString(R.string.please_enter_a_description)
+            }
+        }
+        return ANSWER_OK
     }
 
     override fun onDestroy() {

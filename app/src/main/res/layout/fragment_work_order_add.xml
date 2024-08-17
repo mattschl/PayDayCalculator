@@ -10,6 +10,39 @@
         android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/lblEmployer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/employer"
+            android:textColor="@color/black"
+            android:textSize="@dimen/label_text_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/spEmployers"
+            app:layout_constraintEnd_toStartOf="@id/spEmployers"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Spinner
+            android:id="@+id/spEmployers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="@dimen/text_box_wide"
+            android:minHeight="@dimen/minimum_touch_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblEmployer"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvEmployer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/employer_name"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            android:visibility="invisible"
+            app:layout_constraintBaseline_toBaselineOf="@id/spEmployers"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblEmployer" />
+
+        <TextView
             android:id="@+id/lblWorkOrderNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -32,7 +65,7 @@
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lblWorkOrderNumber"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spEmployers"
             tools:ignore="TextFields" />
 
         <TextView
@@ -90,7 +123,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lblDescription"
-            tools:ignore="VisualLintTextFieldSize" />
+            tools:ignore="VisualLintTextFieldSize,TextContrastCheck" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/crdWorkOrder"

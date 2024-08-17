@@ -1,18 +1,23 @@
 package ms.mattschlenkrich.paydaycalculator.ui.workOrder
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetAddWorkOrderBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
+import ms.mattschlenkrich.paydaycalculator.model.workOrder.TempTimeSheetWorkOrderInfo
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
+
+private const val TAG = "TimeSheetAddWorkOrder"
 
 class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_work_order) {
 
@@ -47,14 +52,17 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
     }
 
     private fun setInfoValues() {
-        if (mainActivity.mainViewModel.getWorkDateObject() != null) {
+        if (mainActivity.mainViewModel.getTempTimeSheetWorkOrderInfo() != null) {
+
+        } else if (mainActivity.mainViewModel.getWorkDateObject() != null) {
             workDateObject = mainActivity.mainViewModel.getWorkDateObject()!!
             binding.apply {
                 lblDate.text = df.getDisplayDate(workDateObject.wdDate)
-                if (mainActivity.mainViewModel.getEmployerString() != null) {
+                if (mainActivity.mainViewModel.getEmployer() != null) {
+                    curEmployer = mainActivity.mainViewModel.getEmployer()!!
                     spEmployers.visibility = View.INVISIBLE
                     tvEmployers.visibility = View.VISIBLE
-                    tvEmployers.text = mainActivity.mainViewModel.getEmployerString()
+                    tvEmployers.text = curEmployer.employerName
                 }
             }
         }
@@ -85,12 +93,67 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
     private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener {
-                validateWorkOrderEntry()
+                validateWorkOrderNumber()
             }
         }
     }
 
-    private fun validateWorkOrderEntry() {
+    private fun validateWorkOrderNumber() {
+        if (checkIfWorOrderExists()) {
+            prepareToSave()
+        } else {
+            AlertDialog.Builder(mView.context)
+                .setTitle(
+                    "Create Work Order: " +
+                            "${binding.acWorkOrder.text}?"
+                )
+                .setMessage(
+                    "This Work Order does not exist." +
+                            "Would you like to create a new one?"
+                )
+                .setPositiveButton("Yes") { _, _ ->
+                    gotoWorkOrderAddFragment()
+                }
+                .setNegativeButton("No", null)
+                .show()
+        }
+    }
+
+    private fun checkIfWorOrderExists(): Boolean {
+        for (workOrder in workOrderList) {
+            if (binding.acWorkOrder.text.toString() == workOrder) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun gotoWorkOrderAddFragment() {
+        binding.apply {
+            mainActivity.mainViewModel.setTempTimeSheetWorkOrderInfo(
+                TempTimeSheetWorkOrderInfo(
+                    0L,
+                    lblDate.text.toString(),
+                    etRegHours.text.toString().toDouble(),
+                    etOtHours.text.toString().toDouble(),
+                    etDblOtHours.text.toString().toDouble()
+                )
+            )
+        }
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mView.findNavController().navigate(
+            TimeSheetAddWorkOrderFragmentDirections
+                .actionTimeSheetAddWorkOrderFragmentToWorkOrderAddFragment()
+        )
+    }
+
+    private fun prepareToSave() {
+        TODO("Not yet implemented")
+    }
+
+
+    private fun validateWorkOrderEntry(): String {
+
         TODO("Not yet implemented")
     }
 

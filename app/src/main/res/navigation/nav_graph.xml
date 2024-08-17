@@ -454,6 +454,21 @@
         <action
             android:id="@+id/action_timeSheetAddWorkOrderFragment_to_workDateUpdateFragment"
             app:destination="@id/workDateUpdateFragment" />
+        <action
+            android:id="@+id/action_timeSheetAddWorkOrderFragment_to_workOrderAddFragment"
+            app:destination="@id/workOrderAddFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/workOrderAddFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.workOrder.WorkOrderAddFragment"
+        android:label="fragment_work_order_add"
+        tools:layout="@layout/fragment_work_order_add">
+        <action
+            android:id="@+id/action_workOrderAddFragment_to_timeSheetAddWorkOrderFragment"
+            app:destination="@id/timeSheetAddWorkOrderFragment" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_workOrderAddFragment"
+        app:destination="@id/workOrderAddFragment" />
 
 </navigation>
