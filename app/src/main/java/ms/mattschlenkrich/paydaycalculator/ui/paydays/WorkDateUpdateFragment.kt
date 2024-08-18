@@ -33,6 +33,7 @@ class WorkDateUpdateFragment : Fragment(
     private lateinit var mainActivity: MainActivity
     private lateinit var curDate: WorkDates
     private lateinit var curDateString: String
+    private lateinit var currentWorkDateObject: WorkDates
     private val workDateExtras = ArrayList<WorkDateExtras>()
     private val customWorkDateExtras = ArrayList<WorkDateExtras>()
     private val df = DateFunctions()
@@ -101,6 +102,9 @@ class WorkDateUpdateFragment : Fragment(
     }
 
     private fun gotoTimeSheetAddWorkOrderFragment() {
+        mainActivity.mainViewModel.setWorkDateObject(
+            getCurrentWorkDate()
+        )
         TODO("Not yet implemented")
         //Need to save the date and add the current work date data into temp variable
         //Need to go to TimeSheetAddWorkOrderFragment
@@ -146,6 +150,15 @@ class WorkDateUpdateFragment : Fragment(
                 etStat.setText(curDate.wdStatHours.toString())
             }
             populateExtras()
+            populateWorkOrderHistory()
+        }
+    }
+
+    private fun populateWorkOrderHistory() {
+        activity?.let {
+            mainActivity.workOrderViewModel.insertWorkOrderHistory(
+                curDate.workDateId
+            )
         }
     }
 
@@ -172,10 +185,12 @@ class WorkDateUpdateFragment : Fragment(
     }
 
     fun populateExtras() {
-        val currentWorkDateObject =
+        currentWorkDateObject =
             mainActivity.mainViewModel.getWorkDateObject()!!
         activity?.let {
-            mainActivity.payDayViewModel.getWorkDateExtras(curDate.workDateId)
+            mainActivity.payDayViewModel.getWorkDateExtras(
+                curDate.workDateId
+            )
                 .observe(viewLifecycleOwner) { extras ->
                     workDateExtras.clear()
                     customWorkDateExtras.clear()

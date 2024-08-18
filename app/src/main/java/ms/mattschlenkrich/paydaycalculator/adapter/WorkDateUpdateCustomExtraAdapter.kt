@@ -24,7 +24,7 @@ class WorkDateUpdateCustomExtraAdapter(
 ) : RecyclerView.Adapter<WorkDateUpdateCustomExtraAdapter.ViewHolder>() {
 
     private val df = DateFunctions()
-    private val cf = NumberFunctions()
+    private val nf = NumberFunctions()
 
     class ViewHolder(
         val itemBinding: ListWorkDateExtraItemBinding
@@ -53,9 +53,9 @@ class WorkDateUpdateCustomExtraAdapter(
                 "subtract "
             }
             display += if (extra.wdeIsFixed) {
-                cf.displayDollars(extra.wdeValue)
+                nf.displayDollars(extra.wdeValue)
             } else {
-                cf.getPercentStringFromDouble(extra.wdeValue)
+                nf.getPercentStringFromDouble(extra.wdeValue)
             }
             chkExtra.text = display
             chkExtra.isChecked = !extra.wdeIsDeleted
@@ -115,7 +115,7 @@ class WorkDateUpdateCustomExtraAdapter(
             Log.d(TAG, "ADDING the extra")
             mainActivity.payDayViewModel.insertWorkDateExtra(
                 WorkDateExtras(
-                    cf.generateRandomIdAsLong(),
+                    nf.generateRandomIdAsLong(),
                     extra.wdeWorkDateId,
                     extra.wdeExtraTypeId,
                     extra.wdeName,

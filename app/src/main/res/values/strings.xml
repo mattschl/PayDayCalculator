@@ -181,4 +181,5 @@
     <string name="please_enter_an_address">Please enter an address.</string>
     <string name="please_enter_a_description">Please enter a description.</string>
     <string name="please_enter_a_work_order_number">Please enter a Work Order Number.</string>
+    <string name="details">Details</string>
 </resources>

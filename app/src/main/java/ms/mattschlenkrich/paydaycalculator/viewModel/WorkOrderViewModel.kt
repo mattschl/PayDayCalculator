@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
+import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
 import ms.mattschlenkrich.paydaycalculator.repository.WorkOrderRepository
 
 class WorkOrderViewModel(
@@ -24,4 +25,17 @@ class WorkOrderViewModel(
 
     fun getWorkOrdersByEmployerId(employerId: Long) =
         workOrderRepository.getWorkOrdersByEmployerId(employerId)
+
+    fun insertWorkOrderHistory(history: WorkOrderHistory) =
+        viewModelScope.launch {
+            workOrderRepository.insertWorkOrderHistory(history)
+        }
+
+    fun updateWorkOrderHistory(history: WorkOrderHistory) =
+        viewModelScope.launch {
+            workOrderRepository.updateWorkOrderHistory(history)
+        }
+
+    fun getWorkOrderHistory(workDate: String) =
+        workOrderRepository.getWorkOrderHistory(workDate)
 }

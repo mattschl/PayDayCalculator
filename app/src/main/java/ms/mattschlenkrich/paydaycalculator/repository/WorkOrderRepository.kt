@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paydaycalculator.repository
 
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
+import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
 
 class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun insertWorkOrder(workOrder: WorkOrder) =
@@ -12,4 +13,13 @@ class WorkOrderRepository(private val db: PayDatabase) {
 
     fun getWorkOrdersByEmployerId(employerId: Long) =
         db.getWorkOrderDao().getWorkOrdersByEmployerId(employerId)
+
+    suspend fun insertWorkOrderHistory(history: WorkOrderHistory) =
+        db.getWorkOrderDao().insertWorkOrderHistory(history)
+
+    suspend fun updateWorkOrderHistory(history: WorkOrderHistory) =
+        db.getWorkOrderDao().updateWorkOrderHistory(history)
+
+    fun getWorkOrderHistory(workDate: String) =
+        db.getWorkOrderDao().getWorkOrderHistory(workDate)
 }

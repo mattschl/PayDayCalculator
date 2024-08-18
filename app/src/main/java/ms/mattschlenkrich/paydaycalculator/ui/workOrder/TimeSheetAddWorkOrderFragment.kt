@@ -6,15 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetAddWorkOrderBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.TempTimeSheetWorkOrderInfo
+import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 private const val TAG = "TimeSheetAddWorkOrder"
@@ -148,13 +151,76 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
     }
 
     private fun prepareToSave() {
-        TODO("Not yet implemented")
+        val answer = validateEntry()
+        if (answer != ANSWER_OK) {
+            saveEntry()
+        } else {
+            Toast.makeText(
+                mView.context,
+                answer, Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun saveEntry() {
+        mainActivity.workOrderViewModel.insertWorkOrderHistory(
+            getCurHistory()
+        )
+        gotoCallingFragment()
+    }
+
+    private fun getCurHistory(): WorkOrderHistory {
+        binding.apply {
+            return WorkOrderHistory(
+                nf.generateRandomIdAsLong(),
+                acWorkOrder.text.toString(),
+                lblDate.text.toString(),
+                etRegHours.text.toString().toDouble(),
+                etOtHours.text.toString().toDouble(),
+                etDblOtHours.text.toString().toDouble()
+            )
+        }
     }
 
 
-    private fun validateWorkOrderEntry(): String {
+    private fun validateEntry(): String {
+        binding.apply {
+            etRegHours.setText(
+                if (etRegHours.text.isNullOrBlank()) {
+                    "0.0"
+                } else {
+                    etRegHours.text.toString().toDouble().toString()
+                }
+            )
+            etOtHours.setText(
+                if (etOtHours.text.isNullOrBlank()) {
+                    "0.0"
+                } else {
+                    etOtHours.text.toString().toDouble().toString()
+                }
+            )
+            etDblOtHours.setText(
+                if (etDblOtHours.text.isNullOrBlank()) {
+                    "0.0"
+                } else {
+                    etDblOtHours.text.toString().toDouble().toString()
+                }
+            )
+            if (etRegHours.text.toString().toDouble() == 0.0
+                && etOtHours.text.toString().toDouble() == 0.0
+                && etDblOtHours.text.toString().toDouble() == 0.0
+            ) {
+                return "There was no time entered. Please enter some time."
+            }
+        }
+        return ANSWER_OK
+    }
 
-        TODO("Not yet implemented")
+    private fun gotoCallingFragment() {
+        mView.findNavController().navigate(
+            TimeSheetAddWorkOrderFragmentDirections
+                .actionTimeSheetAddWorkOrderFragmentToWorkDateUpdateFragment()
+        )
     }
 
     override fun onDestroy() {
