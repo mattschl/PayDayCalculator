@@ -1,10 +1,13 @@
 package ms.mattschlenkrich.paydaycalculator.model.workOrder
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
+import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
 
 @Entity(
     tableName = "workOrderHistory",
@@ -12,20 +15,25 @@ import androidx.room.PrimaryKey
         entity = WorkOrder::class,
         parentColumns = ["workOrderId"],
         childColumns = ["woHistoryWorkOrderId"]
+    ), ForeignKey(
+        entity = WorkDates::class,
+        parentColumns = ["workDateId"],
+        childColumns = ["woHistoryWorkDateId"]
     )],
     indices = [Index(
-        value = ["woHistoryWorkOrderId", "woHistoryWorkDate"],
+        value = ["woHistoryWorkOrderId", "woHistoryWorkDateId"],
         unique = true
     )]
 )
+@Parcelize
 data class WorkOrderHistory(
     @PrimaryKey
     val woHistoryId: Long,
     @ColumnInfo(index = true)
     val woHistoryWorkOrderId: String,
     @ColumnInfo(index = true)
-    val woHistoryWorkDate: String,
+    val woHistoryWorkDateId: Long,
     val woHistoryRegHours: Double,
     val woHistoryOtHours: Double,
     val woHistoryDblOtHours: Double,
-)
+) : Parcelable

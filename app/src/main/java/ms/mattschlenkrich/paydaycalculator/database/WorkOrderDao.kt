@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistoryFull
 
 @Dao
 interface WorkOrderDao {
@@ -30,8 +31,8 @@ interface WorkOrderDao {
 
     @Query(
         "SELECT * FROM workOrderHistory " +
-                "WHERE woHistoryWorkDate = :workDate " +
+                "WHERE woHistoryWorkDateId = :workDateId " +
                 "Order by woHistoryWorkOrderId"
     )
-    fun getWorkOrderHistory(workDate: String): LiveData<List<WorkOrderHistory>>
+    fun getWorkOrderHistory(workDateId: Long): LiveData<List<WorkOrderHistoryFull>>
 }

@@ -15,13 +15,14 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateUpdateCustomExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
-//private const val TAG = "WorkDateUpdate"
+private const val TAG = "WorkDateUpdate"
 
 class WorkDateUpdateFragment : Fragment(
     R.layout.fragment_work_date_update
@@ -37,7 +38,7 @@ class WorkDateUpdateFragment : Fragment(
     private val workDateExtras = ArrayList<WorkDateExtras>()
     private val customWorkDateExtras = ArrayList<WorkDateExtras>()
     private val df = DateFunctions()
-//    private val cf = NumberFunctions()
+    private val nf = NumberFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -105,9 +106,11 @@ class WorkDateUpdateFragment : Fragment(
         mainActivity.mainViewModel.setWorkDateObject(
             getCurrentWorkDate()
         )
-        TODO("Not yet implemented")
-        //Need to save the date and add the current work date data into temp variable
-        //Need to go to TimeSheetAddWorkOrderFragment
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mView.findNavController().navigate(
+            WorkDateUpdateFragmentDirections
+                .actionWorkDateUpdateFragmentToTimeSheetAddWorkOrderFragment()
+        )
     }
 
     private fun gotoWorkDateExtraAddFragment() {
@@ -149,6 +152,8 @@ class WorkDateUpdateFragment : Fragment(
                 etDblOt.setText(curDate.wdDblOtHours.toString())
                 etStat.setText(curDate.wdStatHours.toString())
             }
+            currentWorkDateObject =
+                mainActivity.mainViewModel.getWorkDateObject()!!
             populateExtras()
             populateWorkOrderHistory()
         }
@@ -156,9 +161,11 @@ class WorkDateUpdateFragment : Fragment(
 
     private fun populateWorkOrderHistory() {
         activity?.let {
-            mainActivity.workOrderViewModel.insertWorkOrderHistory(
-                curDate.workDateId
-            )
+            mainActivity.workOrderViewModel.getWorkOrderHistory(
+                currentWorkDateObject.workDateId
+            ).observe(viewLifecycleOwner) { list ->
+
+            }
         }
     }
 
@@ -185,8 +192,6 @@ class WorkDateUpdateFragment : Fragment(
     }
 
     fun populateExtras() {
-        currentWorkDateObject =
-            mainActivity.mainViewModel.getWorkDateObject()!!
         activity?.let {
             mainActivity.payDayViewModel.getWorkDateExtras(
                 curDate.workDateId

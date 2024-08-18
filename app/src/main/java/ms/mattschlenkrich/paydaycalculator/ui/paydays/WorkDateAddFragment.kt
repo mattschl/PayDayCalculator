@@ -33,6 +33,9 @@ import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import java.time.LocalDate
 
 private const val TAG = "WorkDateAdd"
+private const val TIME_SHEET = "timeSheet"
+private const val WORK_DATE_UPDATE = "workDateUpdate"
+private const val ADD_WORK_ORDER = "AddWorkOrder"
 
 class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
 
@@ -44,7 +47,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private val workExtrasDefaultList = ArrayList<WorkExtraTypes>()
     private var payPeriod: PayPeriods? = null
     private val df = DateFunctions()
-    private val cf = NumberFunctions()
+    private val nf = NumberFunctions()
 
     private val usedWorkDatesList = ArrayList<String>()
 
@@ -197,7 +200,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                 changeDate()
             }
             fabAddWorkOrder.setOnClickListener {
-                gotoTimeSheetAddWorkOrder()
+                saveWorkDate(ADD_WORK_ORDER)
             }
         }
     }
@@ -247,7 +250,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                         "this work date?"
             )
             .setPositiveButton("Yes") { _, _ ->
-                saveWorkDate(true)
+                saveWorkDate(TIME_SHEET)
             }
             .setNegativeButton("No", null)
             .show()
@@ -258,25 +261,29 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
             .setTitle("Finish adding work date")
             .setMessage("Would you like to save this date or add extras?")
             .setPositiveButton("Save Now") { _, _ ->
-                saveWorkDate(true)
+                saveWorkDate(TIME_SHEET)
             }
             .setNeutralButton("Save and add extras") { _, _ ->
-                saveWorkDate(false)
+                saveWorkDate(WORK_DATE_UPDATE)
             }
             .setNegativeButton("Abort", null)
             .show()
     }
 
-    fun saveWorkDate(goBack: Boolean) {
+    fun saveWorkDate(goBackTo: String) {
         val workDate = getCurWorkDate()
         mainActivity.payDayViewModel.insertWorkDate(workDate)
         saveExtras(workDate)
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
-            if (goBack) {
+            if (goBackTo == TIME_SHEET) {
                 gotoTimeSheet()
-            } else {
+            }
+            if (goBackTo == WORK_DATE_UPDATE) {
                 gotoWorkDateUpdate(workDate)
+            }
+            if (goBackTo == ADD_WORK_ORDER) {
+                gotoTimeSheetAddWorkOrder()
             }
         }
     }
@@ -288,7 +295,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
             ).observe(viewLifecycleOwner) { extra ->
                 mainActivity.payDayViewModel.insertWorkDateExtra(
                     WorkDateExtras(
-                        cf.generateRandomIdAsLong(),
+                        nf.generateRandomIdAsLong(),
                         workDate.workDateId,
                         extra.extraType.workExtraTypeId,
                         extra.extraType.wetName,
@@ -316,7 +323,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private fun getCurWorkDate(): WorkDates {
         binding.apply {
             return WorkDates(
-                cf.generateRandomIdAsLong(),
+                nf.generateRandomIdAsLong(),
                 payPeriod!!.payPeriodId,
                 payPeriod!!.ppEmployerId,
                 payPeriod!!.ppCutoffDate,
