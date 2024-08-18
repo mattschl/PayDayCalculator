@@ -13,6 +13,7 @@ import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.tax.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.TempTimeSheetWorkOrderInfo
+import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
 
 class MainViewModel(
     app: Application,
@@ -40,8 +41,17 @@ class MainViewModel(
     private var payPeriodExtra: WorkPayPeriodExtras? = null
     private var payPeriodExtraList = ArrayList<WorkPayPeriodExtras>()
     private var tempTimeSheetWorkOrderInfo: TempTimeSheetWorkOrderInfo? = null
+    private var workOrderHistory: WorkOrderHistory? = null
 
-    fun setTempTimeSheetWorkOrderInfo(newInfo: TempTimeSheetWorkOrderInfo) {
+    fun setWorkOrderHistory(newWorkOrderHistory: WorkOrderHistory?) {
+        workOrderHistory = newWorkOrderHistory
+    }
+
+    fun getWorkOrderHistory(): WorkOrderHistory? {
+        return workOrderHistory
+    }
+
+    fun setTempTimeSheetWorkOrderInfo(newInfo: TempTimeSheetWorkOrderInfo?) {
         tempTimeSheetWorkOrderInfo = newInfo
     }
 

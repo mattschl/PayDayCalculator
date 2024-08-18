@@ -14,6 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateUpdateCustomExtraAdapter
+import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateWorkOrderHistoryAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
@@ -164,7 +165,17 @@ class WorkDateUpdateFragment : Fragment(
             mainActivity.workOrderViewModel.getWorkOrderHistory(
                 currentWorkDateObject.workDateId
             ).observe(viewLifecycleOwner) { list ->
-
+                val workOrderAdapter =
+                    WorkDateWorkOrderHistoryAdapter(
+                        mainActivity,
+                        mView,
+                        this@WorkDateUpdateFragment,
+                        list as ArrayList
+                    )
+                binding.rvWorkOrders.apply {
+                    layoutManager = LinearLayoutManager(mView.context)
+                    adapter = workOrderAdapter
+                }
             }
         }
     }

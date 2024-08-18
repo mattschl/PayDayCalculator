@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.model.payperiod
+package ms.mattschlenkrich.paydaycalculator.model.workOrder
 
 import android.os.Parcelable
 import androidx.room.Embedded
@@ -7,13 +7,13 @@ import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 
 @Parcelize
-data class WorkDateFull(
+data class WorkOrderFull(
     @Embedded
-    val date: WorkDates,
+    val workOrder: WorkOrder,
     @Relation(
         entity = Employers::class,
-        parentColumn = "wdEmployerId",
-        entityColumn = "employerId"
+        parentColumn = "employerId",
+        entityColumn = "woEmployerId"
     )
     val employer: Employers
 ) : Parcelable

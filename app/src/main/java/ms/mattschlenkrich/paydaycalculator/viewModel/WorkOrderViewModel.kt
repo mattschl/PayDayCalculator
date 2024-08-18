@@ -23,6 +23,11 @@ class WorkOrderViewModel(
             workOrderRepository.updateWorkOrder(workOrder)
         }
 
+    fun deleteWorkOrder(workOrder: WorkOrder) =
+        viewModelScope.launch {
+            workOrderRepository.deleteWorkOrder(workOrder)
+        }
+
     fun getWorkOrdersByEmployerId(employerId: Long) =
         workOrderRepository.getWorkOrdersByEmployerId(employerId)
 
@@ -34,6 +39,11 @@ class WorkOrderViewModel(
     fun updateWorkOrderHistory(history: WorkOrderHistory) =
         viewModelScope.launch {
             workOrderRepository.updateWorkOrderHistory(history)
+        }
+
+    fun deleteWorkOrderHistory(history: WorkOrderHistory) =
+        viewModelScope.launch {
+            workOrderRepository.deleteWorkOrderHistory(history)
         }
 
     fun getWorkOrderHistory(workDateId: Long) =

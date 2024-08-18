@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paydaycalculator.adapter
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,14 +10,14 @@ import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkOrderHistoryItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistoryFull
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
-import ms.mattschlenkrich.paydaycalculator.ui.workOrder.TimeSheetAddWorkOrderFragment
+import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragment
 
-class WorkOrderHistoryAdapter(
+class WorkDateWorkOrderHistoryAdapter(
     val mainActivity: MainActivity,
     val mView: View,
-    private val parentFragment: TimeSheetAddWorkOrderFragment,
+    private val parentFragment: WorkDateUpdateFragment,
     private val workOrderHistory: ArrayList<WorkOrderHistoryFull>
-) : RecyclerView.Adapter<WorkOrderHistoryAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<WorkDateWorkOrderHistoryAdapter.ViewHolder>() {
 
     private val df = DateFunctions()
     private val nf = NumberFunctions()
@@ -72,7 +73,25 @@ class WorkOrderHistoryAdapter(
     }
 
     private fun chooseOptions(history: WorkOrderHistoryFull) {
-        TODO("Set up the options for the work order history ")
+        AlertDialog.Builder(mView.context)
+            .setTitle("Choose option")
+            .setPositiveButton("Edit") { _, _ ->
+                editWorkOrderHistory(history)
+            }
+            .setNegativeButton("Delete") { _, _ ->
+                deleteWorkOrderHistory(history)
+            }
+            .setNeutralButton("Cancel", null)
+            .show()
+    }
+
+    private fun deleteWorkOrderHistory(history: WorkOrderHistoryFull) {
+        mainActivity.workOrderViewModel.deleteWorkOrderHistory(history.history)
+    }
+
+    private fun editWorkOrderHistory(history: WorkOrderHistoryFull) {
+        mainActivity.mainViewModel.setWorkOrderHistory(history.history)
+        
     }
 
     override fun getItemCount(): Int {

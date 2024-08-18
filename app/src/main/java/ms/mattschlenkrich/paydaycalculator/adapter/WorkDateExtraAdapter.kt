@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateExtraItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
+import ms.mattschlenkrich.paydaycalculator.ui.paydays.WORK_DATE_UPDATE
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateAddFragment
 
 class WorkDateExtraAdapter(
@@ -72,7 +73,7 @@ class WorkDateExtraAdapter(
             .setTitle("Choose the next step")
             .setMessage("In order to add extras, this work date must be saved.")
             .setPositiveButton("Save") { _, _ ->
-                parentFragment.saveWorkDate(false)
+                parentFragment.saveWorkDate(WORK_DATE_UPDATE)
             }
             .setNegativeButton("Not yet", null)
             .show()

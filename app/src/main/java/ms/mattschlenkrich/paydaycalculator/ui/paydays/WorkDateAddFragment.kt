@@ -33,9 +33,9 @@ import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import java.time.LocalDate
 
 private const val TAG = "WorkDateAdd"
-private const val TIME_SHEET = "timeSheet"
-private const val WORK_DATE_UPDATE = "workDateUpdate"
-private const val ADD_WORK_ORDER = "AddWorkOrder"
+const val TIME_SHEET = "timeSheet"
+const val WORK_DATE_UPDATE = "workDateUpdate"
+const val ADD_WORK_ORDER = "AddWorkOrder"
 
 class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
 

@@ -12,14 +12,14 @@ data class WorkOrderHistoryFull(
     val history: WorkOrderHistory,
     @Relation(
         entity = WorkDateFull::class,
-        parentColumn = "workDateId",
-        entityColumn = "woHistoryWorkDateId"
+        parentColumn = "woHistoryWorkDateId",
+        entityColumn = "workDateId"
     )
     val workDateFull: WorkDateFull,
     @Relation(
         entity = WorkOrder::class,
-        parentColumn = "workOrderId",
-        entityColumn = "woHistoryWorkOrderId"
+        parentColumn = "woHistoryWorkOrderId",
+        entityColumn = "workOrderId"
     )
     val workOrder: WorkOrder
 ) : Parcelable

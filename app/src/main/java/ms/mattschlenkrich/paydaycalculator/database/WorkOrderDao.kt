@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paydaycalculator.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -17,6 +18,9 @@ interface WorkOrderDao {
     @Update
     suspend fun updateWorkOrder(workOrder: WorkOrder)
 
+    @Delete
+    suspend fun deleteWorkOrder(workOrder: WorkOrder)
+
     @Query(
         "SELECT * FROM workOrders " +
                 "WHERE woEmployerId = :employerId"
@@ -28,6 +32,9 @@ interface WorkOrderDao {
 
     @Update
     suspend fun updateWorkOrderHistory(history: WorkOrderHistory)
+
+    @Delete
+    suspend fun deleteWorkOrderHistory(history: WorkOrderHistory)
 
     @Query(
         "SELECT * FROM workOrderHistory " +
