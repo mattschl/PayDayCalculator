@@ -74,6 +74,7 @@ abstract class PayDatabase : RoomDatabase() {
                 PAY_DB_NAME
             )
                 .createFromAsset("pay.db")
+                .fallbackToDestructiveMigration()
                 .build()
         }
     }

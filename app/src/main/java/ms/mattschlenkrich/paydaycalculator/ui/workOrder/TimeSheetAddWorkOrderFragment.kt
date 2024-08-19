@@ -55,10 +55,10 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
     }
 
     private fun setInfoValues() {
+        workDateObject = mainActivity.mainViewModel.getWorkDateObject()!!
         if (mainActivity.mainViewModel.getTempTimeSheetWorkOrderInfo() != null) {
-
+            TODO("enter old values")
         } else if (mainActivity.mainViewModel.getWorkDateObject() != null) {
-            workDateObject = mainActivity.mainViewModel.getWorkDateObject()!!
             binding.apply {
                 lblDate.text = df.getDisplayDate(workDateObject.wdDate)
                 if (mainActivity.mainViewModel.getEmployer() != null) {
@@ -87,7 +87,7 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
             workDateObject.wdEmployerId
         ).observe(viewLifecycleOwner) { list ->
             list.listIterator().forEach {
-                newList.add(it.workOrderId.toString())
+                newList.add(it.workOrderId)
             }
         }
         return newList
@@ -137,9 +137,12 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
                 TempTimeSheetWorkOrderInfo(
                     0L,
                     lblDate.text.toString(),
-                    etRegHours.text.toString().toDouble(),
-                    etOtHours.text.toString().toDouble(),
-                    etDblOtHours.text.toString().toDouble()
+                    if (etRegHours.text.isNullOrBlank())
+                        0.0 else etRegHours.text.toString().toDouble(),
+                    if (etOtHours.text.isNullOrBlank())
+                        0.0 else etOtHours.text.toString().toDouble(),
+                    if (etDblOtHours.text.isNullOrBlank())
+                        0.0 else etDblOtHours.text.toString().toDouble()
                 )
             )
         }
@@ -152,7 +155,7 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
 
     private fun prepareToSave() {
         val answer = validateEntry()
-        if (answer != ANSWER_OK) {
+        if (answer == ANSWER_OK) {
             saveEntry()
         } else {
             Toast.makeText(
@@ -174,7 +177,7 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
             return WorkOrderHistory(
                 nf.generateRandomIdAsLong(),
                 acWorkOrder.text.toString(),
-                lblDate.text.toString(),
+                workDateObject.workDateId,
                 etRegHours.text.toString().toDouble(),
                 etOtHours.text.toString().toDouble(),
                 etDblOtHours.text.toString().toDouble()

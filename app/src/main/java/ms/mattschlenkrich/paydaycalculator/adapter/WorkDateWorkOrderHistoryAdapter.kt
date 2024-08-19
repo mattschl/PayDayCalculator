@@ -38,7 +38,7 @@ class WorkDateWorkOrderHistoryAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val history = workOrderHistory[position]
         holder.itemBinding.apply {
-            tvDate.text = df.getDisplayDate(history.workDateFull.date.wdDate)
+            tvDate.text = df.getDisplayDate(history.workDate.wdDate)
             tvWorkOrder.text = history.workOrder.workOrderId
             var display = ""
             if (history.history.woHistoryRegHours != 0.0) {
@@ -91,7 +91,7 @@ class WorkDateWorkOrderHistoryAdapter(
 
     private fun editWorkOrderHistory(history: WorkOrderHistoryFull) {
         mainActivity.mainViewModel.setWorkOrderHistory(history.history)
-        
+
     }
 
     override fun getItemCount(): Int {

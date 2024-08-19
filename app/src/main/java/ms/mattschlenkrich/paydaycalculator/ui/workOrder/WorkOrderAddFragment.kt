@@ -14,8 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
-import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
-import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
@@ -27,8 +25,9 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private val df = DateFunctions()
-    private val nf = NumberFunctions()
+
+    //    private val df = DateFunctions()
+//    private val nf = NumberFunctions()
     private val workOrderList = ArrayList<WorkOrder>()
     private lateinit var curEmployer: Employers
 
@@ -111,7 +110,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
 
     private fun prepareToSave() {
         val answer = validateWorkOrder()
-        if (answer != ANSWER_OK) {
+        if (answer == ANSWER_OK) {
             saveWorkOrder()
         } else {
             Toast.makeText(

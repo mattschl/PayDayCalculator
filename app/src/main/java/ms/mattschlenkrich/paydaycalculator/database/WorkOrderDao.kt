@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
@@ -36,6 +37,7 @@ interface WorkOrderDao {
     @Delete
     suspend fun deleteWorkOrderHistory(history: WorkOrderHistory)
 
+    @Transaction
     @Query(
         "SELECT * FROM workOrderHistory " +
                 "WHERE woHistoryWorkDateId = :workDateId " +

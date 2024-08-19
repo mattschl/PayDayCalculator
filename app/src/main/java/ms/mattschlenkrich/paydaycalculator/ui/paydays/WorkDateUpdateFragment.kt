@@ -161,20 +161,55 @@ class WorkDateUpdateFragment : Fragment(
     }
 
     private fun populateWorkOrderHistory() {
-        activity?.let {
-            mainActivity.workOrderViewModel.getWorkOrderHistory(
-                currentWorkDateObject.workDateId
-            ).observe(viewLifecycleOwner) { list ->
-                val workOrderAdapter =
-                    WorkDateWorkOrderHistoryAdapter(
-                        mainActivity,
-                        mView,
-                        this@WorkDateUpdateFragment,
-                        list as ArrayList
-                    )
-                binding.rvWorkOrders.apply {
-                    layoutManager = LinearLayoutManager(mView.context)
-                    adapter = workOrderAdapter
+        binding.apply {
+            activity?.let {
+                mainActivity.workOrderViewModel.getWorkOrderHistory(
+                    currentWorkDateObject.workDateId
+                ).observe(viewLifecycleOwner) { list ->
+                    if (list.isNotEmpty()) {
+                        tvWorkOrderSummary.visibility = View.VISIBLE
+                    } else {
+                        tvWorkOrderSummary.visibility = View.GONE
+                    }
+                    val workOrderAdapter =
+                        WorkDateWorkOrderHistoryAdapter(
+                            mainActivity,
+                            mView,
+                            this@WorkDateUpdateFragment,
+                            list as ArrayList
+                        )
+                    rvWorkOrders.apply {
+                        layoutManager = LinearLayoutManager(mView.context)
+                        adapter = workOrderAdapter
+                    }
+                    var regHours = 0.0
+                    var otHours = 0.0
+                    var dblOtHours = 0.0
+                    list.listIterator().forEach {
+                        regHours += it.history.woHistoryRegHours
+                        otHours += it.history.woHistoryOtHours
+                        dblOtHours += it.history.woHistoryDblOtHours
+                    }
+                    var display = "Summary - "
+                    if (regHours != 0.0) {
+                        display = "Reg: " +
+                                nf.getNumberFromDouble(regHours)
+                    }
+                    if (display != "Summary - ") {
+                        display += " | "
+                    }
+                    if (otHours != 0.0) {
+                        display += "Ot: " +
+                                nf.getNumberFromDouble(otHours)
+                    }
+                    if (display != "Summary - ") {
+                        display += " | "
+                    }
+                    if (dblOtHours != 0.0) {
+                        display += "Ot: " +
+                                nf.getNumberFromDouble(dblOtHours)
+                    }
+                    tvWorkOrderSummary.text = display
                 }
             }
         }

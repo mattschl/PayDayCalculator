@@ -9,11 +9,11 @@ import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 @Parcelize
 data class WorkOrderFull(
     @Embedded
-    val workOrder: WorkOrder,
+    var workOrder: WorkOrder,
     @Relation(
         entity = Employers::class,
-        parentColumn = "employerId",
-        entityColumn = "woEmployerId"
+        parentColumn = "woEmployerId",
+        entityColumn = "employerId"
     )
-    val employer: Employers
+    var employer: Employers
 ) : Parcelable
