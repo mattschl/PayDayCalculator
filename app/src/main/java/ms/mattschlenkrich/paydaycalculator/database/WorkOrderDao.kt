@@ -24,6 +24,12 @@ interface WorkOrderDao {
 
     @Query(
         "SELECT * FROM workOrders " +
+                "WHERE workOrderId = :workOrderNum"
+    )
+    fun getWorkOrder(workOrderNum: String): LiveData<WorkOrder>
+
+    @Query(
+        "SELECT * FROM workOrders " +
                 "WHERE woEmployerId = :employerId"
     )
     fun getWorkOrdersByEmployerId(employerId: Long): LiveData<List<WorkOrder>>

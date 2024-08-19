@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -52,6 +53,33 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
         setInfoValues()
         populateWorkOrderList()
         setClickActions()
+        onSelectWorkOrder()
+    }
+
+    private fun onSelectWorkOrder() {
+        binding.apply {
+            acWorkOrder.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        mainActivity.workOrderViewModel.getWorkOrder(
+                            acWorkOrder.text.toString()
+                        ).observe(viewLifecycleOwner) { workOrder ->
+                            val disp = workOrder.woAddress +
+                                    " | " + workOrder.woDescription
+                            binding.tvDescription.text = disp
+                        }
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                        ///not needed
+                    }
+                }
+        }
     }
 
     private fun setInfoValues() {
@@ -184,7 +212,6 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
             )
         }
     }
-
 
     private fun validateEntry(): String {
         binding.apply {

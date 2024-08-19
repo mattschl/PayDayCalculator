@@ -14,6 +14,9 @@ class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun deleteWorkOrder(workOrder: WorkOrder) =
         db.getWorkOrderDao().deleteWorkOrder(workOrder)
 
+    fun getWorkOrder(workOrderNum: String) =
+        db.getWorkOrderDao().getWorkOrder(workOrderNum)
+
     fun getWorkOrdersByEmployerId(employerId: Long) =
         db.getWorkOrderDao().getWorkOrdersByEmployerId(employerId)
 

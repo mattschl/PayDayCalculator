@@ -192,20 +192,20 @@ class WorkDateUpdateFragment : Fragment(
                     }
                     var display = "Summary - "
                     if (regHours != 0.0) {
-                        display = "Reg: " +
+                        display += "Reg: " +
                                 nf.getNumberFromDouble(regHours)
                     }
-                    if (display != "Summary - ") {
-                        display += " | "
-                    }
                     if (otHours != 0.0) {
+                        if (display != "Summary - ") {
+                            display += " | "
+                        }
                         display += "Ot: " +
                                 nf.getNumberFromDouble(otHours)
                     }
-                    if (display != "Summary - ") {
-                        display += " | "
-                    }
                     if (dblOtHours != 0.0) {
+                        if (display != "Summary - ") {
+                            display += " | "
+                        }
                         display += "Ot: " +
                                 nf.getNumberFromDouble(dblOtHours)
                     }

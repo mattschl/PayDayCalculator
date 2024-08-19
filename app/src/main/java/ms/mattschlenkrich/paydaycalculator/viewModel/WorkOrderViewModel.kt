@@ -28,6 +28,9 @@ class WorkOrderViewModel(
             workOrderRepository.deleteWorkOrder(workOrder)
         }
 
+    fun getWorkOrder(workOrderNum: String) =
+        workOrderRepository.getWorkOrder(workOrderNum)
+
     fun getWorkOrdersByEmployerId(employerId: Long) =
         workOrderRepository.getWorkOrdersByEmployerId(employerId)
 
