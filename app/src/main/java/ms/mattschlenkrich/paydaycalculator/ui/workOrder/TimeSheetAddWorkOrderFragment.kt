@@ -17,7 +17,7 @@ import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetAddWorkOrderBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
-import ms.mattschlenkrich.paydaycalculator.model.workOrder.TempTimeSheetWorkOrderInfo
+import ms.mattschlenkrich.paydaycalculator.model.workOrder.TempWorkOrderInfo
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
@@ -84,8 +84,8 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
 
     private fun setInfoValues() {
         workDateObject = mainActivity.mainViewModel.getWorkDateObject()!!
-        if (mainActivity.mainViewModel.getTempTimeSheetWorkOrderInfo() != null) {
-            TODO("enter old values")
+        if (mainActivity.mainViewModel.getTempWorkOrderInfo() != null) {
+
         } else if (mainActivity.mainViewModel.getWorkDateObject() != null) {
             binding.apply {
                 lblDate.text = df.getDisplayDate(workDateObject.wdDate)
@@ -95,6 +95,22 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
                     tvEmployers.visibility = View.VISIBLE
                     tvEmployers.text = curEmployer.employerName
                 }
+            }
+        }
+        if (mainActivity.mainViewModel.getTempWorkOrderInfo() != null) {
+            binding.apply {
+                val tempWorkOrder =
+                    mainActivity.mainViewModel.getTempWorkOrderInfo()!!
+                acWorkOrder.setText(tempWorkOrder.tempID)
+                etRegHours.setText(
+                    nf.getNumberFromDouble(tempWorkOrder.woHistoryRegHours)
+                )
+                etOtHours.setText(
+                    nf.getNumberFromDouble(tempWorkOrder.woHistoryOtHours)
+                )
+                etDblOtHours.setText(
+                    nf.getNumberFromDouble(tempWorkOrder.woHistoryDblOtHours)
+                )
             }
         }
     }
@@ -161,9 +177,10 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
 
     private fun gotoWorkOrderAddFragment() {
         binding.apply {
-            mainActivity.mainViewModel.setTempTimeSheetWorkOrderInfo(
-                TempTimeSheetWorkOrderInfo(
-                    0L,
+            mainActivity.mainViewModel.setTempWorkOrderInfo(
+                TempWorkOrderInfo(
+                    if (acWorkOrder.text.isNullOrBlank())
+                        "00000" else acWorkOrder.text.toString(),
                     lblDate.text.toString(),
                     if (etRegHours.text.isNullOrBlank())
                         0.0 else etRegHours.text.toString().toDouble(),
@@ -194,6 +211,7 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
     }
 
     private fun saveEntry() {
+        mainActivity.mainViewModel.setTempWorkOrderInfo(null)
         mainActivity.workOrderViewModel.insertWorkOrderHistory(
             getCurHistory()
         )

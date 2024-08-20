@@ -16,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.paydaycalculator.NavGraphDirections
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
@@ -87,7 +88,15 @@ class TimeSheetFragment :
             employers.listIterator().forEach {
                 employerAdapter.add(it.employerName)
             }
-            curEmployer = employers.first()
+            if (employers.isNotEmpty()) {
+                curEmployer = employers.first()
+            } else {
+                mainActivity.findNavController(
+                    R.id.nav_host_fragment_container
+                ).navigate(
+                    NavGraphDirections.actionGlobalEmployerFragment()
+                )
+            }
 //            updateUI(employers)
             employerAdapter.add(getString(R.string.add_new_employer))
 //            fillCutOffDates()
