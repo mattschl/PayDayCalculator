@@ -24,4 +24,6 @@ data class WorkOrder(
     val woEmployerId: Long,
     val woAddress: String,
     val woDescription: String,
+    val woDeleted: Boolean,
+    val woUpdateTime: String,
 ) : Parcelable

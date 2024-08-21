@@ -36,4 +36,6 @@ data class WorkOrderHistory(
     val woHistoryRegHours: Double,
     val woHistoryOtHours: Double,
     val woHistoryDblOtHours: Double,
+    val woHistoryDeleted: Boolean,
+    val woHistoryUpDateTime: String,
 ) : Parcelable

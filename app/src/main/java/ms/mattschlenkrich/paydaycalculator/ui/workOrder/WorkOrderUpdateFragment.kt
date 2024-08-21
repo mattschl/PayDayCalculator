@@ -20,7 +20,7 @@ import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
-class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
+class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
 
     private var _binding: FragmentWorkOrderAddBinding? = null
     private val binding get() = _binding!!

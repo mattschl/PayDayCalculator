@@ -10,34 +10,6 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/lblEmployer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/employer"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            app:layout_constraintBaseline_toBaselineOf="@id/spEmployers"
-            app:layout_constraintEnd_toStartOf="@id/spEmployers"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Spinner
-            android:id="@+id/spEmployers"
-            android:layout_width="@dimen/text_box_wide"
-            android:layout_height="@dimen/minimum_touch_height"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/lblEmployer"
-            app:layout_constraintTop_toBottomOf="@id/lblDate" />
-
-        <TextView
-            android:id="@+id/tvEmployers"
-            android:layout_width="@dimen/text_box_wide"
-            android:layout_height="@dimen/minimum_touch_height"
-            android:visibility="invisible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/lblEmployer"
-            app:layout_constraintTop_toBottomOf="@id/lblDate" />
-
-        <TextView
             android:id="@+id/lblDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,6 +20,26 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/lblEmployer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/employer"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvEmployers"
+            app:layout_constraintEnd_toStartOf="@id/tvEmployers"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tvEmployers"
+            android:layout_width="@dimen/text_box_wide"
+            android:layout_height="@dimen/minimum_touch_height"
+            app:flow_verticalAlign="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lblEmployer"
+            app:layout_constraintTop_toBottomOf="@id/lblDate" />
 
         <TextView
             android:id="@+id/lblWorkOrder"
@@ -69,7 +61,7 @@
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lblWorkOrder"
-            app:layout_constraintTop_toBottomOf="@+id/spEmployers" />
+            app:layout_constraintTop_toBottomOf="@+id/tvEmployers" />
 
         <TextView
             android:id="@+id/tvDescription"
@@ -78,6 +70,7 @@
             android:text="@string/description"
             android:textColor="@color/black"
             android:textSize="18sp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/acWorkOrder" />

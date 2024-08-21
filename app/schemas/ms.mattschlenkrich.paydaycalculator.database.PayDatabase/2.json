@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "bd7c2256574b09732c65fe455e54a437",
+    "identityHash": "4e0d79c029377af4f3d83ef954f97b28",
     "entities": [
       {
         "tableName": "employers",
@@ -1272,7 +1272,7 @@
       },
       {
         "tableName": "workOrders",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workOrderId` TEXT NOT NULL, `woEmployerId` INTEGER NOT NULL, `woAddress` TEXT NOT NULL, `woDescription` TEXT NOT NULL, PRIMARY KEY(`workOrderId`), FOREIGN KEY(`woEmployerId`) REFERENCES `employers`(`employerId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workOrderId` TEXT NOT NULL, `woEmployerId` INTEGER NOT NULL, `woAddress` TEXT NOT NULL, `woDescription` TEXT NOT NULL, `woDeleted` INTEGER NOT NULL, `woUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workOrderId`), FOREIGN KEY(`woEmployerId`) REFERENCES `employers`(`employerId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "workOrderId",
@@ -1295,6 +1295,18 @@
           {
             "fieldPath": "woDescription",
             "columnName": "woDescription",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woDeleted",
+            "columnName": "woDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woUpdateTime",
+            "columnName": "woUpdateTime",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -1332,7 +1344,7 @@
       },
       {
         "tableName": "workOrderHistory",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`woHistoryId` INTEGER NOT NULL, `woHistoryWorkOrderId` TEXT NOT NULL, `woHistoryWorkDateId` INTEGER NOT NULL, `woHistoryRegHours` REAL NOT NULL, `woHistoryOtHours` REAL NOT NULL, `woHistoryDblOtHours` REAL NOT NULL, PRIMARY KEY(`woHistoryId`), FOREIGN KEY(`woHistoryWorkOrderId`) REFERENCES `workOrders`(`workOrderId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`woHistoryWorkDateId`) REFERENCES `workDates`(`workDateId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`woHistoryId` INTEGER NOT NULL, `woHistoryWorkOrderId` TEXT NOT NULL, `woHistoryWorkDateId` INTEGER NOT NULL, `woHistoryRegHours` REAL NOT NULL, `woHistoryOtHours` REAL NOT NULL, `woHistoryDblOtHours` REAL NOT NULL, `woHistoryDeleted` INTEGER NOT NULL, `woHistoryUpDateTime` TEXT NOT NULL, PRIMARY KEY(`woHistoryId`), FOREIGN KEY(`woHistoryWorkOrderId`) REFERENCES `workOrders`(`workOrderId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`woHistoryWorkDateId`) REFERENCES `workDates`(`workDateId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "woHistoryId",
@@ -1368,6 +1380,18 @@
             "fieldPath": "woHistoryDblOtHours",
             "columnName": "woHistoryDblOtHours",
             "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woHistoryDeleted",
+            "columnName": "woHistoryDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woHistoryUpDateTime",
+            "columnName": "woHistoryUpDateTime",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -1445,7 +1469,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bd7c2256574b09732c65fe455e54a437')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4e0d79c029377af4f3d83ef954f97b28')"
     ]
   }
 }

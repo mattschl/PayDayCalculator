@@ -83,16 +83,12 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
     }
 
     private fun setInfoValues() {
-        workDateObject = mainActivity.mainViewModel.getWorkDateObject()!!
-        if (mainActivity.mainViewModel.getTempWorkOrderInfo() != null) {
-
-        } else if (mainActivity.mainViewModel.getWorkDateObject() != null) {
+        if (mainActivity.mainViewModel.getWorkDateObject() != null) {
+            workDateObject = mainActivity.mainViewModel.getWorkDateObject()!!
             binding.apply {
                 lblDate.text = df.getDisplayDate(workDateObject.wdDate)
                 if (mainActivity.mainViewModel.getEmployer() != null) {
                     curEmployer = mainActivity.mainViewModel.getEmployer()!!
-                    spEmployers.visibility = View.INVISIBLE
-                    tvEmployers.visibility = View.VISIBLE
                     tvEmployers.text = curEmployer.employerName
                 }
             }
@@ -226,7 +222,9 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
                 workDateObject.workDateId,
                 etRegHours.text.toString().toDouble(),
                 etOtHours.text.toString().toDouble(),
-                etDblOtHours.text.toString().toDouble()
+                etDblOtHours.text.toString().toDouble(),
+                false,
+                df.getCurrentTimeAsString()
             )
         }
     }
