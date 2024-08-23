@@ -110,7 +110,7 @@ class WorkDateUpdateFragment : Fragment(
         mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
             WorkDateUpdateFragmentDirections
-                .actionWorkDateUpdateFragmentToTimeSheetAddWorkOrderFragment()
+                .actionWorkDateUpdateFragmentToWorkOrderHistoryAddFragment()
         )
     }
 

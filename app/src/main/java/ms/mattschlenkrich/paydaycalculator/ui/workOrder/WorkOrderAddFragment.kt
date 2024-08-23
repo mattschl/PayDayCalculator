@@ -144,7 +144,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
     private fun gotoTimeSheetAddWorkOrderFragment() {
         mView.findNavController().navigate(
             WorkOrderAddFragmentDirections
-                .actionWorkOrderAddFragmentToTimeSheetAddWorkOrderFragment()
+                .actionWorkOrderAddFragmentToWorkOrderHistoryAddFragment()
         )
     }
 

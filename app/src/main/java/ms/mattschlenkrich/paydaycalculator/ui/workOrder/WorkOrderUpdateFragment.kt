@@ -138,13 +138,13 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
     }
 
     private fun gotoCallingFragment() {
-        gotoTimeSheetAddWorkOrderFragment()
+        gotoWorkOrderHistoryAddFragment()
     }
 
-    private fun gotoTimeSheetAddWorkOrderFragment() {
+    private fun gotoWorkOrderHistoryAddFragment() {
         mView.findNavController().navigate(
             WorkOrderAddFragmentDirections
-                .actionWorkOrderAddFragmentToTimeSheetAddWorkOrderFragment()
+                .actionWorkOrderAddFragmentToWorkOrderHistoryAddFragment()
         )
     }
 

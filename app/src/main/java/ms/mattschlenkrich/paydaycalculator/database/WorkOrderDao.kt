@@ -21,7 +21,7 @@ interface WorkOrderDao {
     @Query(
         "UPDATE workOrders " +
                 "SET woDeleted = 1, " +
-                "woUpdateTime = ':updateTime' " +
+                "woUpdateTime = :updateTime " +
                 "WHERE workOrderId = :workOrderId"
     )
     suspend fun deleteWorkOrder(workOrderId: Long, updateTime: String)
@@ -48,7 +48,7 @@ interface WorkOrderDao {
     @Query(
         "UPDATE workOrderHistory " +
                 "SET woHistoryDeleted = 1, " +
-                "woHistoryUpdateTime = ':updateTime' " +
+                "woHistoryUpdateTime = :updateTime " +
                 "WHERE woHistoryId = :historyID"
     )
     suspend fun deleteWorkOrderHistory(historyID: Long, updateTime: String)

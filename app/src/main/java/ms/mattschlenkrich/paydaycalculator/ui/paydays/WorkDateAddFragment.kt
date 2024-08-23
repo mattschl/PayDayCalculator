@@ -210,7 +210,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         mainActivity.mainViewModel.setWorkDateObject(getCurWorkDate())
         mView.findNavController().navigate(
             WorkDateAddFragmentDirections
-                .actionWorkDateAddFragmentToTimeSheetAddWorkOrderFragment()
+                .actionWorkDateAddFragmentToWorkOrderHistoryAddFragment()
         )
     }
 
