@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
@@ -11,6 +12,7 @@ import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkOrderHistoryItemB
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistoryFull
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragment
+import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragmentDirections
 
 class WorkDateWorkOrderHistoryAdapter(
     val mainActivity: MainActivity,
@@ -86,11 +88,17 @@ class WorkDateWorkOrderHistoryAdapter(
     }
 
     private fun deleteWorkOrderHistory(history: WorkOrderHistoryFull) {
-        mainActivity.workOrderViewModel.deleteWorkOrderHistory(history.history)
+        mainActivity.workOrderViewModel.deleteWorkOrderHistory(
+            history.history.woHistoryId, df.getCurrentTimeAsString()
+        )
     }
 
     private fun editWorkOrderHistory(history: WorkOrderHistoryFull) {
         mainActivity.mainViewModel.setWorkOrderHistory(history.history)
+        mView.findNavController().navigate(
+            WorkDateUpdateFragmentDirections
+                .actionWorkDateUpdateFragmentToWorkOrderUpdateFragment()
+        )
 
     }
 

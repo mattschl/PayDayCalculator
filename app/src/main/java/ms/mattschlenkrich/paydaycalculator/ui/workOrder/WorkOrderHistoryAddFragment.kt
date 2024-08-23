@@ -14,7 +14,7 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetAddWorkOrderBinding
+import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderHistoryBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.TempWorkOrderInfo
@@ -23,9 +23,9 @@ import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 private const val TAG = "TimeSheetAddWorkOrder"
 
-class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_work_order) {
+class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_history) {
 
-    private var _binding: FragmentTimeSheetAddWorkOrderBinding? = null
+    private var _binding: FragmentWorkOrderHistoryBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
@@ -39,7 +39,7 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentTimeSheetAddWorkOrderBinding.inflate(
+        _binding = FragmentWorkOrderHistoryBinding.inflate(
             inflater, container, false
         )
         mView = binding.root
@@ -189,8 +189,8 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
         }
         mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
-            TimeSheetAddWorkOrderFragmentDirections
-                .actionTimeSheetAddWorkOrderFragmentToWorkOrderAddFragment()
+            WorkOrderHistoryAddFragmentDirections
+                .actionWorkOrderHistoryAddFragmentToWorkOrderAddFragment()
         )
     }
 
@@ -223,6 +223,8 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
                 etRegHours.text.toString().toDouble(),
                 etOtHours.text.toString().toDouble(),
                 etDblOtHours.text.toString().toDouble(),
+                if (etNote.text.isNullOrBlank()) null
+                else etNote.text.toString(),
                 false,
                 df.getCurrentTimeAsString()
             )
@@ -264,8 +266,8 @@ class TimeSheetAddWorkOrderFragment : Fragment(R.layout.fragment_time_sheet_add_
 
     private fun gotoCallingFragment() {
         mView.findNavController().navigate(
-            TimeSheetAddWorkOrderFragmentDirections
-                .actionTimeSheetAddWorkOrderFragmentToWorkDateUpdateFragment()
+            WorkOrderHistoryAddFragmentDirections
+                .actionWorkOrderHistoryAddFragmentToWorkDateUpdateFragment()
         )
     }
 

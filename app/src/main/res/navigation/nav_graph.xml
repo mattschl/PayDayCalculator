@@ -302,6 +302,9 @@
         <action
             android:id="@+id/action_workDateUpdateFragment_to_timeSheetAddWorkOrderFragment"
             app:destination="@id/timeSheetAddWorkOrderFragment" />
+        <action
+            android:id="@+id/action_workDateUpdateFragment_to_workOrderUpdateFragment"
+            app:destination="@id/workOrderUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/employerPayRatesFragment"
@@ -444,20 +447,29 @@
         android:id="@+id/action_global_newTimeSheetFragment"
         app:destination="@id/newTimeSheetFragment" />
     <fragment
-        android:id="@+id/timeSheetAddWorkOrderFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.workOrder.TimeSheetAddWorkOrderFragment"
+        android:id="@+id/workOrderHistoryAddFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.workOrder.WorkOrderHistoryAddFragment"
         android:label="fragment_time_sheet_add_work_order"
-        tools:layout="@layout/fragment_time_sheet_add_work_order">
+        tools:layout="@layout/fragment_work_order_history">
+
         <action
-            android:id="@+id/action_timeSheetAddWorkOrderFragment_to_workDateAddFragment"
-            app:destination="@id/workDateAddFragment" />
-        <action
-            android:id="@+id/action_timeSheetAddWorkOrderFragment_to_workDateUpdateFragment"
+            android:id="@+id/action_workOrderHistoryAddFragment_to_workDateUpdateFragment"
             app:destination="@id/workDateUpdateFragment" />
         <action
-            android:id="@+id/action_timeSheetAddWorkOrderFragment_to_workOrderAddFragment"
+            android:id="@+id/action_workOrderHistoryAddFragment_to_workOrderAddFragment"
             app:destination="@id/workOrderAddFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/workOrderHistoryUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.workOrder.WorkOrderHistoryUpdateFragment"
+        android:label="fragment_time_sheet_add_work_order"
+        tools:layout="@layout/fragment_work_order_history">
+
+        <action
+            android:id="@+id/action_workOrderHistoryUpdateFragment_to_workDateUpdateFragment"
+            app:destination="@id/workDateUpdateFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/workOrderAddFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.workOrder.WorkOrderAddFragment"
@@ -466,6 +478,16 @@
         <action
             android:id="@+id/action_workOrderAddFragment_to_timeSheetAddWorkOrderFragment"
             app:destination="@id/timeSheetAddWorkOrderFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/workOrderUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.workOrder.WorkOrderUpdateFragment"
+        android:label="fragment_work_order_add"
+        tools:layout="@layout/fragment_work_order_add">
+
+        <action
+            android:id="@+id/action_workOrderUpdateFragment_to_workDateUpdateFragment"
+            app:destination="@id/workDateUpdateFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_workOrderAddFragment"
