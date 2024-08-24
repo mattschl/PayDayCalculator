@@ -163,7 +163,7 @@ class WorkDateUpdateFragment : Fragment(
     private fun populateWorkOrderHistory() {
         binding.apply {
             activity?.let {
-                mainActivity.workOrderViewModel.getWorkOrderHistory(
+                mainActivity.workOrderViewModel.getWorkOrderHistories(
                     currentWorkDateObject.workDateId
                 ).observe(viewLifecycleOwner) { list ->
                     if (list.isNotEmpty()) {

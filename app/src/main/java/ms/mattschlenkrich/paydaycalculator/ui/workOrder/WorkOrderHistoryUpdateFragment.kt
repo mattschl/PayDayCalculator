@@ -50,7 +50,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setInfoValues()
+        setExistingValues()
         populateWorkOrderList()
         setClickActions()
         onSelectWorkOrder()
@@ -82,7 +82,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         }
     }
 
-    private fun setInfoValues() {
+    private fun setExistingValues() {
         if (mainActivity.mainViewModel.getWorkDateObject() != null) {
             workDateObject = mainActivity.mainViewModel.getWorkDateObject()!!
             binding.apply {
@@ -93,21 +93,43 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
                 }
             }
         }
-        if (mainActivity.mainViewModel.getTempWorkOrderInfo() != null) {
-            binding.apply {
-                val tempWorkOrder =
-                    mainActivity.mainViewModel.getTempWorkOrderInfo()!!
-                acWorkOrder.setText(tempWorkOrder.tempID)
-                etRegHours.setText(
-                    nf.getNumberFromDouble(tempWorkOrder.woHistoryRegHours)
-                )
-                etOtHours.setText(
-                    nf.getNumberFromDouble(tempWorkOrder.woHistoryOtHours)
-                )
-                etDblOtHours.setText(
-                    nf.getNumberFromDouble(tempWorkOrder.woHistoryDblOtHours)
-                )
-            }
+//        if (mainActivity.mainViewModel.getTempWorkOrderInfo() != null) {
+//            binding.apply {
+//                val tempWorkOrder =
+//                    mainActivity.mainViewModel.getTempWorkOrderInfo()!!
+//                acWorkOrder.setText(tempWorkOrder.tempID)
+//                etRegHours.setText(
+//                    nf.getNumberFromDouble(tempWorkOrder.woHistoryRegHours)
+//                )
+//                etOtHours.setText(
+//                    nf.getNumberFromDouble(tempWorkOrder.woHistoryOtHours)
+//                )
+//                etDblOtHours.setText(
+//                    nf.getNumberFromDouble(tempWorkOrder.woHistoryDblOtHours)
+//                )
+//                etNote.setText(
+//                    tempWorkOrder.woHistoryNote
+//                )
+//            }
+//        }
+        if (mainActivity.mainViewModel.getWorkOrderHistory() != null) {
+            val historyId = mainActivity.mainViewModel.getWorkOrderHistory()!!.woHistoryId
+            mainActivity.workOrderViewModel.getWorkOrderHistory(historyId)
+                .observe(viewLifecycleOwner) { history ->
+                    binding.apply {
+                        acWorkOrder.setText(history.woHistoryWorkOrderId)
+                        etRegHours.setText(
+                            nf.getNumberFromDouble(history.woHistoryRegHours)
+                        )
+                        etOtHours.setText(
+                            nf.getNumberFromDouble(history.woHistoryOtHours)
+                        )
+                        etDblOtHours.setText(
+                            nf.getNumberFromDouble(history.woHistoryDblOtHours)
+                        )
+                        etNote.setText(history.woHistoryNote)
+                    }
+                }
         }
     }
 
@@ -183,7 +205,9 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
                     if (etOtHours.text.isNullOrBlank())
                         0.0 else etOtHours.text.toString().toDouble(),
                     if (etDblOtHours.text.isNullOrBlank())
-                        0.0 else etDblOtHours.text.toString().toDouble()
+                        0.0 else etDblOtHours.text.toString().toDouble(),
+                    if (etNote.text.isNullOrBlank())
+                        null else etNote.text.toString()
                 )
             )
         }

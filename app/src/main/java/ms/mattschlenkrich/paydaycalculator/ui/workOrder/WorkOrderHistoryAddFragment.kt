@@ -183,7 +183,9 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
                     if (etOtHours.text.isNullOrBlank())
                         0.0 else etOtHours.text.toString().toDouble(),
                     if (etDblOtHours.text.isNullOrBlank())
-                        0.0 else etDblOtHours.text.toString().toDouble()
+                        0.0 else etDblOtHours.text.toString().toDouble(),
+                    if (etNote.text.isNullOrBlank())
+                        null else etNote.text.toString()
                 )
             )
         }

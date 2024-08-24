@@ -60,5 +60,11 @@ interface WorkOrderDao {
                 "AND woHistoryDeleted = 0 " +
                 "Order by woHistoryUpdateTime"
     )
-    fun getWorkOrderHistory(workDateId: Long): LiveData<List<WorkOrderHistoryFull>>
+    fun getWorkOrderHistories(workDateId: Long): LiveData<List<WorkOrderHistoryFull>>
+
+    @Query(
+        "SELECT * FROM workOrderHistory " +
+                "WHERE woHistoryId = :historyID"
+    )
+    fun getWorkOrderHistory(historyID: Long): LiveData<WorkOrderHistory>
 }

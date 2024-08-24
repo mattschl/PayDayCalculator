@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "4e0d79c029377af4f3d83ef954f97b28",
+    "identityHash": "f25367a030972830c25b32714415c977",
     "entities": [
       {
         "tableName": "employers",
@@ -1344,7 +1344,7 @@
       },
       {
         "tableName": "workOrderHistory",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`woHistoryId` INTEGER NOT NULL, `woHistoryWorkOrderId` TEXT NOT NULL, `woHistoryWorkDateId` INTEGER NOT NULL, `woHistoryRegHours` REAL NOT NULL, `woHistoryOtHours` REAL NOT NULL, `woHistoryDblOtHours` REAL NOT NULL, `woHistoryDeleted` INTEGER NOT NULL, `woHistoryUpDateTime` TEXT NOT NULL, PRIMARY KEY(`woHistoryId`), FOREIGN KEY(`woHistoryWorkOrderId`) REFERENCES `workOrders`(`workOrderId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`woHistoryWorkDateId`) REFERENCES `workDates`(`workDateId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`woHistoryId` INTEGER NOT NULL, `woHistoryWorkOrderId` TEXT NOT NULL, `woHistoryWorkDateId` INTEGER NOT NULL, `woHistoryRegHours` REAL NOT NULL, `woHistoryOtHours` REAL NOT NULL, `woHistoryDblOtHours` REAL NOT NULL, `woHistoryNote` TEXT, `woHistoryDeleted` INTEGER NOT NULL, `woHistoryUpdateTime` TEXT NOT NULL, PRIMARY KEY(`woHistoryId`), FOREIGN KEY(`woHistoryWorkOrderId`) REFERENCES `workOrders`(`workOrderId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`woHistoryWorkDateId`) REFERENCES `workDates`(`workDateId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "woHistoryId",
@@ -1383,14 +1383,20 @@
             "notNull": true
           },
           {
+            "fieldPath": "woHistoryNote",
+            "columnName": "woHistoryNote",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
             "fieldPath": "woHistoryDeleted",
             "columnName": "woHistoryDeleted",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "woHistoryUpDateTime",
-            "columnName": "woHistoryUpDateTime",
+            "fieldPath": "woHistoryUpdateTime",
+            "columnName": "woHistoryUpdateTime",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -1469,7 +1475,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4e0d79c029377af4f3d83ef954f97b28')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f25367a030972830c25b32714415c977')"
     ]
   }
 }

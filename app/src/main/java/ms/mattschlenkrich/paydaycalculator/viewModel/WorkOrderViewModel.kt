@@ -49,6 +49,9 @@ class WorkOrderViewModel(
             workOrderRepository.deleteWorkOrderHistory(historyId, updateTime)
         }
 
-    fun getWorkOrderHistory(workDateId: Long) =
-        workOrderRepository.getWorkOrderHistory(workDateId)
+    fun getWorkOrderHistories(workDateId: Long) =
+        workOrderRepository.getWorkOrderHistories(workDateId)
+
+    fun getWorkOrderHistory(historyID: Long) =
+        workOrderRepository.getWorkOrderHistory(historyID)
 }

@@ -175,7 +175,7 @@
             <EditText
                 android:id="@+id/etNote"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/minimum_touch_height"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dimen_20dp"
                 android:layout_marginEnd="@dimen/dimen_20dp"
                 android:hint="@string/enter_work_done"

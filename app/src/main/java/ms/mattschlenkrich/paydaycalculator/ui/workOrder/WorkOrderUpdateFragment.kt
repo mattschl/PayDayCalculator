@@ -42,7 +42,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = getString(R.string.add_new_work_order)
+        mainActivity.title = getString(R.string.update_work_order)
         return mView
     }
 

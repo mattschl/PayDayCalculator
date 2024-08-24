@@ -6,4 +6,5 @@ data class TempWorkOrderInfo(
     val woHistoryRegHours: Double,
     val woHistoryOtHours: Double,
     val woHistoryDblOtHours: Double,
+    val woHistoryNote: String?,
 )
