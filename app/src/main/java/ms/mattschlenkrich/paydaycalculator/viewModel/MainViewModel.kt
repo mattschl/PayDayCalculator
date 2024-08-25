@@ -42,6 +42,15 @@ class MainViewModel(
     private var payPeriodExtraList = ArrayList<WorkPayPeriodExtras>()
     private var tempWorkOrderInfo: TempWorkOrderInfo? = null
     private var workOrderHistory: WorkOrderHistory? = null
+    private var workOrderId: String? = null
+
+    fun setWorkOrderId(newWorkOrderId: String?) {
+        workOrderId = newWorkOrderId
+    }
+
+    fun getWorkOrderId(): String? {
+        return workOrderId
+    }
 
     fun setWorkOrderHistory(newWorkOrderHistory: WorkOrderHistory?) {
         workOrderHistory = newWorkOrderHistory

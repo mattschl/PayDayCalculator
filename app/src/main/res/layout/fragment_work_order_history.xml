@@ -11,7 +11,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/relativeLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/lblDate"
@@ -21,6 +21,7 @@
                 android:text="@string/work_date"
                 android:textColor="@color/black"
                 android:textSize="20sp"
+                android:textStyle="italic"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -32,6 +33,7 @@
                 android:text="@string/employer"
                 android:textColor="@color/black"
                 android:textSize="20sp"
+                android:textStyle="italic"
                 app:layout_constraintBaseline_toBaselineOf="@id/tvEmployers"
                 app:layout_constraintEnd_toStartOf="@id/tvEmployers"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -40,6 +42,9 @@
                 android:id="@+id/tvEmployers"
                 android:layout_width="@dimen/text_box_wide"
                 android:layout_height="@dimen/minimum_touch_height"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_large"
+                android:textStyle="bold"
                 app:flow_verticalAlign="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblEmployer"
@@ -52,6 +57,7 @@
                 android:text="@string/work_order"
                 android:textColor="@color/black"
                 android:textSize="20sp"
+                android:textStyle="italic"
                 app:layout_constraintBaseline_toBaselineOf="@id/acWorkOrder"
                 app:layout_constraintEnd_toStartOf="@id/acWorkOrder"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -59,20 +65,32 @@
 
             <AutoCompleteTextView
                 android:id="@+id/acWorkOrder"
-                android:layout_width="@dimen/text_box_wide"
+                android:layout_width="@dimen/text_box_medium"
                 android:layout_height="@dimen/minimum_touch_height"
                 android:hint="@string/type_numbers"
                 android:textColor="@color/black"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/btnEditWorkOrder"
                 app:layout_constraintStart_toEndOf="@id/lblWorkOrder"
                 app:layout_constraintTop_toBottomOf="@+id/tvEmployers" />
+
+            <Button
+                android:id="@+id/btnEditWorkOrder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/edit"
+                android:visibility="gone"
+                app:layout_constraintBaseline_toBaselineOf="@id/acWorkOrder"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/acWorkOrder" />
+
 
             <TextView
                 android:id="@+id/tvDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/description"
-                android:textColor="@color/black"
+                android:textColor="@color/deep_red"
                 android:textSize="18sp"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -86,6 +104,7 @@
                 android:text="@string/reg_hours"
                 android:textColor="@color/black"
                 android:textSize="20sp"
+                android:textStyle="italic"
                 app:layout_constraintBaseline_toBaselineOf="@id/etRegHours"
                 app:layout_constraintEnd_toStartOf="@id/etRegHours"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -98,9 +117,11 @@
                 android:importantForAutofill="no"
                 android:inputType="numberDecimal"
                 android:minHeight="48dp"
+                android:selectAllOnFocus="true"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="20sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblRegHours"
                 app:layout_constraintTop_toBottomOf="@id/tvDescription"
@@ -113,6 +134,7 @@
                 android:text="@string/overtime_hours"
                 android:textColor="@color/black"
                 android:textSize="20sp"
+                android:textStyle="italic"
                 app:layout_constraintBaseline_toBaselineOf="@id/etOtHours"
                 app:layout_constraintEnd_toStartOf="@id/etOtHours"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -125,9 +147,11 @@
                 android:importantForAutofill="no"
                 android:inputType="numberDecimal"
                 android:minHeight="48dp"
+                android:selectAllOnFocus="true"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="20sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblOtHours"
                 app:layout_constraintTop_toBottomOf="@id/etRegHours"
@@ -141,6 +165,7 @@
                 android:text="@string/double_overtime"
                 android:textColor="@color/black"
                 android:textSize="20sp"
+                android:textStyle="italic"
                 app:layout_constraintBaseline_toBaselineOf="@id/etDblOtHours"
                 app:layout_constraintEnd_toStartOf="@id/etDblOtHours"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -153,9 +178,11 @@
                 android:importantForAutofill="no"
                 android:inputType="numberDecimal"
                 android:minHeight="48dp"
+                android:selectAllOnFocus="true"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="20sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblDblOtHours"
                 app:layout_constraintTop_toBottomOf="@id/etOtHours"
@@ -168,6 +195,7 @@
                 android:text="@string/work_done"
                 android:textColor="@color/black"
                 android:textSize="20sp"
+                android:textStyle="italic"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/etDblOtHours" />
@@ -182,9 +210,9 @@
                 android:importantForAutofill="no"
                 android:inputType="textMultiLine"
                 android:minHeight="48dp"
-                android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="20sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/lblNote" />

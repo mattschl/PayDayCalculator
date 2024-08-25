@@ -8,8 +8,18 @@ class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun insertWorkOrder(workOrder: WorkOrder) =
         db.getWorkOrderDao().insertWorkOrder(workOrder)
 
-    suspend fun updateWorkOrder(workOrder: WorkOrder) =
-        db.getWorkOrderDao().updateWorkOrder(workOrder)
+    suspend fun updateWorkOrder(
+        workOrderId: String,
+        employerId: Long,
+        address: String,
+        description: String,
+        isDeleted: Boolean,
+        updateTime: String,
+    ) =
+        db.getWorkOrderDao().updateWorkOrder(
+            workOrderId, employerId, address,
+            description, isDeleted, updateTime
+        )
 
     suspend fun deleteWorkOrder(workOrderId: Long, updateTime: String) =
         db.getWorkOrderDao().deleteWorkOrder(workOrderId, updateTime)
@@ -23,8 +33,21 @@ class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun insertWorkOrderHistory(history: WorkOrderHistory) =
         db.getWorkOrderDao().insertWorkOrderHistory(history)
 
-    suspend fun updateWorkOrderHistory(history: WorkOrderHistory) =
-        db.getWorkOrderDao().updateWorkOrderHistory(history)
+    suspend fun updateWorkOrderHistory(
+        historyID: Long,
+        workOrderId: String,
+        workDateId: Long,
+        regHours: Double,
+        otHours: Double,
+        dblOtHours: Double,
+        note: String?,
+        isDeleted: Boolean,
+        updateTime: String
+    ) =
+        db.getWorkOrderDao().updateWorkOrderHistory(
+            historyID, workOrderId, workDateId, regHours,
+            otHours, dblOtHours, note, isDeleted, updateTime
+        )
 
     suspend fun deleteWorkOrderHistory(historyID: Long, updateTime: String) =
         db.getWorkOrderDao().deleteWorkOrderHistory(historyID, updateTime)

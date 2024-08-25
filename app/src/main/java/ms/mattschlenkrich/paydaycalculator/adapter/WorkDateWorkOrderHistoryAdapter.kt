@@ -76,7 +76,7 @@ class WorkDateWorkOrderHistoryAdapter(
 
     private fun chooseOptions(history: WorkOrderHistoryFull) {
         AlertDialog.Builder(mView.context)
-            .setTitle("Choose option")
+            .setTitle("Choose option for this item")
             .setPositiveButton("Edit") { _, _ ->
                 editWorkOrderHistory(history)
             }
@@ -97,7 +97,7 @@ class WorkDateWorkOrderHistoryAdapter(
         mainActivity.mainViewModel.setWorkOrderHistory(history.history)
         mView.findNavController().navigate(
             WorkDateUpdateFragmentDirections
-                .actionWorkDateUpdateFragmentToWorkOrderUpdateFragment()
+                .actionWorkDateUpdateFragmentToWorkOrderHistoryUpdateFragment()
         )
 
     }

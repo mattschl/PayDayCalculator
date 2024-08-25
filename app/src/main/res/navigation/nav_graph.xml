@@ -307,6 +307,9 @@
         <action
             android:id="@+id/action_workDateUpdateFragment_to_workOrderHistoryAddFragment"
             app:destination="@id/workOrderHistoryAddFragment" />
+        <action
+            android:id="@+id/action_workDateUpdateFragment_to_workOrderHistoryUpdateFragment"
+            app:destination="@id/workOrderHistoryUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/employerPayRatesFragment"
@@ -470,6 +473,12 @@
         <action
             android:id="@+id/action_workOrderHistoryUpdateFragment_to_workDateUpdateFragment"
             app:destination="@id/workDateUpdateFragment" />
+        <action
+            android:id="@+id/action_workOrderHistoryUpdateFragment_to_workOrderUpdateFragment"
+            app:destination="@id/workOrderUpdateFragment" />
+        <action
+            android:id="@+id/action_workOrderHistoryUpdateFragment_to_workOrderAddFragment"
+            app:destination="@id/workOrderAddFragment" />
     </fragment>
 
     <fragment
@@ -481,6 +490,9 @@
         <action
             android:id="@+id/action_workOrderAddFragment_to_workOrderHistoryAddFragment"
             app:destination="@id/workOrderHistoryAddFragment" />
+        <action
+            android:id="@+id/action_workOrderAddFragment_to_workOrderHistoryUpdateFragment"
+            app:destination="@id/workOrderHistoryUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/workOrderUpdateFragment"
@@ -491,6 +503,9 @@
         <action
             android:id="@+id/action_workOrderUpdateFragment_to_workDateUpdateFragment"
             app:destination="@id/workDateUpdateFragment" />
+        <action
+            android:id="@+id/action_workOrderUpdateFragment_to_workOrderHistoryUpdateFragment"
+            app:destination="@id/workOrderHistoryUpdateFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_workOrderAddFragment"

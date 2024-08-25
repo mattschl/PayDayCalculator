@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -58,27 +57,38 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
 
     private fun onSelectWorkOrder() {
         binding.apply {
-            acWorkOrder.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        mainActivity.workOrderViewModel.getWorkOrder(
-                            acWorkOrder.text.toString()
-                        ).observe(viewLifecycleOwner) { workOrder ->
-                            val disp = workOrder.woAddress +
-                                    " | " + workOrder.woDescription
-                            binding.tvDescription.text = disp
-                        }
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        ///not needed
-                    }
+            acWorkOrder.setOnItemClickListener { parent, view, position, id ->
+                mainActivity.workOrderViewModel.getWorkOrder(
+                    acWorkOrder.text.toString()
+                ).observe(viewLifecycleOwner) { workOrder ->
+                    val disp = workOrder.woAddress +
+                            " | " + workOrder.woDescription
+                    binding.tvDescription.text = disp
+                    binding.tvDescription.visibility = View.VISIBLE
+                    binding.btnEditWorkOrder.visibility = View.VISIBLE
                 }
+            }
+//            acWorkOrder.onItemSelectedListener =
+//                object : AdapterView.OnItemSelectedListener {
+//                    override fun onItemSelected(
+//                        parent: AdapterView<*>?,
+//                        view: View?,
+//                        position: Int,
+//                        id: Long
+//                    ) {
+//                        mainActivity.workOrderViewModel.getWorkOrder(
+//                            acWorkOrder.text.toString()
+//                        ).observe(viewLifecycleOwner) { workOrder ->
+//                            val disp = workOrder.woAddress +
+//                                    " | " + workOrder.woDescription
+//                            binding.tvDescription.text = disp
+//                        }
+//                    }
+//
+//                    override fun onNothingSelected(parent: AdapterView<*>?) {
+//                        ///not needed
+//                    }
+//                }
         }
     }
 
