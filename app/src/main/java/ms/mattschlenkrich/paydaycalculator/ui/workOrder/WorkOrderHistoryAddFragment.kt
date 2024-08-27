@@ -12,6 +12,7 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderHistoryBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
@@ -20,7 +21,7 @@ import ms.mattschlenkrich.paydaycalculator.model.workOrder.TempWorkOrderInfo
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
-private const val TAG = "TimeSheetAddWorkOrder"
+private const val TAG = FRAG_WORK_ORDER_HISTORY_ADD
 
 class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_history) {
 
@@ -68,27 +69,6 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
                     binding.btnEditWorkOrder.visibility = View.VISIBLE
                 }
             }
-//            acWorkOrder.onItemSelectedListener =
-//                object : AdapterView.OnItemSelectedListener {
-//                    override fun onItemSelected(
-//                        parent: AdapterView<*>?,
-//                        view: View?,
-//                        position: Int,
-//                        id: Long
-//                    ) {
-//                        mainActivity.workOrderViewModel.getWorkOrder(
-//                            acWorkOrder.text.toString()
-//                        ).observe(viewLifecycleOwner) { workOrder ->
-//                            val disp = workOrder.woAddress +
-//                                    " | " + workOrder.woDescription
-//                            binding.tvDescription.text = disp
-//                        }
-//                    }
-//
-//                    override fun onNothingSelected(parent: AdapterView<*>?) {
-//                        ///not needed
-//                    }
-//                }
         }
     }
 
@@ -148,7 +128,22 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
             fabDone.setOnClickListener {
                 validateWorkOrderNumber()
             }
+            btnEditWorkOrder.setOnClickListener {
+                gotoWorkOrderUpdateFragment()
+            }
         }
+    }
+
+    private fun gotoWorkOrderUpdateFragment() {
+        mainActivity.mainViewModel.setWorkOrderId(
+            binding.acWorkOrder.text.toString()
+        )
+        setTempWorkOderHistory()
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mView.findNavController().navigate(
+            WorkOrderHistoryAddFragmentDirections
+                .actionWorkOrderHistoryAddFragmentToWorkOrderUpdateFragment()
+        )
     }
 
     private fun validateWorkOrderNumber() {
@@ -182,6 +177,15 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
     }
 
     private fun gotoWorkOrderAddFragment() {
+        setTempWorkOderHistory()
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mView.findNavController().navigate(
+            WorkOrderHistoryAddFragmentDirections
+                .actionWorkOrderHistoryAddFragmentToWorkOrderAddFragment()
+        )
+    }
+
+    private fun setTempWorkOderHistory() {
         binding.apply {
             mainActivity.mainViewModel.setTempWorkOrderInfo(
                 TempWorkOrderInfo(
@@ -189,21 +193,16 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
                         "00000" else acWorkOrder.text.toString(),
                     lblDate.text.toString(),
                     if (etRegHours.text.isNullOrBlank())
-                        0.0 else etRegHours.text.toString().toDouble(),
+                        0.0 else etRegHours.text.toString().trim().toDouble(),
                     if (etOtHours.text.isNullOrBlank())
-                        0.0 else etOtHours.text.toString().toDouble(),
+                        0.0 else etOtHours.text.toString().trim().toDouble(),
                     if (etDblOtHours.text.isNullOrBlank())
-                        0.0 else etDblOtHours.text.toString().toDouble(),
+                        0.0 else etDblOtHours.text.toString().trim().toDouble(),
                     if (etNote.text.isNullOrBlank())
                         null else etNote.text.toString()
                 )
             )
         }
-        mainActivity.mainViewModel.setCallingFragment(TAG)
-        mView.findNavController().navigate(
-            WorkOrderHistoryAddFragmentDirections
-                .actionWorkOrderHistoryAddFragmentToWorkOrderAddFragment()
-        )
     }
 
     private fun prepareToSave() {
@@ -232,11 +231,14 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
                 nf.generateRandomIdAsLong(),
                 acWorkOrder.text.toString(),
                 workDateObject.workDateId,
-                etRegHours.text.toString().toDouble(),
-                etOtHours.text.toString().toDouble(),
-                etDblOtHours.text.toString().toDouble(),
-                if (etNote.text.isNullOrBlank()) null
-                else etNote.text.toString(),
+                if (etRegHours.text.isNullOrBlank())
+                    0.0 else etRegHours.text.toString().toDouble(),
+                if (etOtHours.text.isNullOrBlank())
+                    0.0 else etOtHours.text.toString().toDouble(),
+                if (etDblOtHours.text.isNullOrBlank())
+                    0.0 else etDblOtHours.text.toString().toDouble(),
+                if (etNote.text.isNullOrBlank())
+                    null else etNote.text.toString(),
                 false,
                 df.getCurrentTimeAsString()
             )
@@ -249,21 +251,21 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
                 if (etRegHours.text.isNullOrBlank()) {
                     "0.0"
                 } else {
-                    etRegHours.text.toString().toDouble().toString()
+                    etRegHours.text.toString().trim().toDouble().toString()
                 }
             )
             etOtHours.setText(
                 if (etOtHours.text.isNullOrBlank()) {
                     "0.0"
                 } else {
-                    etOtHours.text.toString().toDouble().toString()
+                    etOtHours.text.toString().trim().toDouble().toString()
                 }
             )
             etDblOtHours.setText(
                 if (etDblOtHours.text.isNullOrBlank()) {
                     "0.0"
                 } else {
-                    etDblOtHours.text.toString().toDouble().toString()
+                    etDblOtHours.text.toString().trim().toDouble().toString()
                 }
             )
             if (etRegHours.text.toString().toDouble() == 0.0

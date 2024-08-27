@@ -463,6 +463,9 @@
         <action
             android:id="@+id/action_workOrderHistoryAddFragment_to_workOrderAddFragment"
             app:destination="@id/workOrderAddFragment" />
+        <action
+            android:id="@+id/action_workOrderHistoryAddFragment_to_workOrderUpdateFragment"
+            app:destination="@id/workOrderUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/workOrderHistoryUpdateFragment"
@@ -506,6 +509,9 @@
         <action
             android:id="@+id/action_workOrderUpdateFragment_to_workOrderHistoryUpdateFragment"
             app:destination="@id/workOrderHistoryUpdateFragment" />
+        <action
+            android:id="@+id/action_workOrderUpdateFragment_to_workOrderHistoryAddFragment"
+            app:destination="@id/workOrderHistoryAddFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_workOrderAddFragment"

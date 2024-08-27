@@ -15,6 +15,8 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ODER_HISTORY_UPDATE
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
@@ -52,6 +54,12 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
         getWorkOrderList()
         setClickActions()
         onSelectEmployer()
+        populateHistory()
+    }
+
+    private fun populateHistory() {
+        //TODO("Not yet implemented")
+
     }
 
     private fun setDefaultValues() {
@@ -70,15 +78,19 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
             }
             populateEmployers()
         }
-        if (mainActivity.mainViewModel.getTempWorkOrderInfo() != null) {
-            setValuesFromHistory()
+        mainActivity.workOrderViewModel.getWorkOrder(
+            mainActivity.mainViewModel.getWorkOrderId()!!
+        ).observe(viewLifecycleOwner) { tempWorkOrder ->
+            setValuesFromHistory(tempWorkOrder)
         }
     }
 
-    private fun setValuesFromHistory() {
-        val tempWorkOrder = mainActivity.mainViewModel.getTempWorkOrderInfo()!!
+    private fun setValuesFromHistory(workOrder: WorkOrder) {
+
         binding.apply {
-            etWorkOrderNumber.setText(tempWorkOrder.tempID)
+            etWorkOrderNumber.setText(workOrder.workOrderId)
+            etAddress.setText(workOrder.woAddress)
+            etDescription.setText(workOrder.woDescription)
         }
     }
 
@@ -115,15 +127,15 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
     private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener {
-                prepareToSave()
+                prepareToUpdate()
             }
         }
     }
 
-    private fun prepareToSave() {
+    private fun prepareToUpdate() {
         val answer = validateWorkOrder()
         if (answer == ANSWER_OK) {
-            saveWorkOrder()
+            updateWorkOrder()
         } else {
             Toast.makeText(
                 mView.context,
@@ -132,19 +144,42 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
         }
     }
 
-    private fun saveWorkOrder() {
-        mainActivity.workOrderViewModel.insertWorkOrder(getCurrentWorkOrder())
+    private fun updateWorkOrder() {
+        val workOrder = getCurrentWorkOrder()
+        mainActivity.workOrderViewModel.updateWorkOrder(
+            workOrder.workOrderId,
+            workOrder.woEmployerId,
+            workOrder.woAddress,
+            workOrder.woDescription,
+            false,
+            df.getCurrentTimeAsString()
+        )
         gotoCallingFragment()
     }
 
     private fun gotoCallingFragment() {
-        gotoWorkOrderHistoryAddFragment()
+        if (mainActivity.mainViewModel.getCallingFragment()
+            == FRAG_WORK_ORDER_HISTORY_ADD
+        ) {
+            gotoWorkOrderHistoryAddFragment()
+        } else if (mainActivity.mainViewModel.getCallingFragment()
+            == FRAG_WORK_ODER_HISTORY_UPDATE
+        ) {
+            gotoWorkOrderHistoryUpdateFragment()
+        }
+    }
+
+    private fun gotoWorkOrderHistoryUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkOrderUpdateFragmentDirections
+                .actionWorkOrderUpdateFragmentToWorkOrderHistoryUpdateFragment()
+        )
     }
 
     private fun gotoWorkOrderHistoryAddFragment() {
         mView.findNavController().navigate(
-            WorkOrderAddFragmentDirections
-                .actionWorkOrderAddFragmentToWorkOrderHistoryAddFragment()
+            WorkOrderUpdateFragmentDirections
+                .actionWorkOrderUpdateFragmentToWorkOrderHistoryAddFragment()
         )
     }
 
@@ -188,17 +223,8 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
 
     private fun validateWorkOrder(): String {
         binding.apply {
-            if (etWorkOrderNumber.text.isEmpty()) {
-                return getString(R.string.please_enter_a_work_order_number)
-            }
-            for (workOrder in workOrderList) {
-                if (workOrder.workOrderId ==
-                    etWorkOrderNumber.text.toString()
-                ) {
-                    return getString(R.string.this_work_order_has_been_used)
-                }
-            }
-            if (etAddress.text.isEmpty()) {
+
+        if (etAddress.text.isEmpty()) {
                 return getString(R.string.please_enter_an_address)
             }
             if (etDescription.text.isEmpty()) {
