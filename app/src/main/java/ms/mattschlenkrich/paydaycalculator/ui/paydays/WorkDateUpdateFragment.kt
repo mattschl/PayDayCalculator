@@ -163,7 +163,7 @@ class WorkDateUpdateFragment : Fragment(
     private fun populateWorkOrderHistory() {
         binding.apply {
             activity?.let {
-                mainActivity.workOrderViewModel.getWorkOrderHistories(
+                mainActivity.workOrderViewModel.getWorkOrderHistoriesByDate(
                     currentWorkDateObject.workDateId
                 ).observe(viewLifecycleOwner) { list ->
                     if (list.isNotEmpty()) {
@@ -175,10 +175,9 @@ class WorkDateUpdateFragment : Fragment(
                         WorkDateWorkOrderHistoryAdapter(
                             mainActivity,
                             mView,
-                            this@WorkDateUpdateFragment,
                             list as ArrayList
                         )
-                    rvWorkOrders.apply {
+                    rvHistory.apply {
                         layoutManager = LinearLayoutManager(mView.context)
                         adapter = workOrderAdapter
                     }

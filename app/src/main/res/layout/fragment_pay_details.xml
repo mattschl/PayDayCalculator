@@ -435,7 +435,7 @@
 
                             <View
                                 android:layout_width="match_parent"
-                                android:layout_height="@dimen/dim_5dp"
+                                android:layout_height="@dimen/dimen_5dp"
                                 android:backgroundTint="@color/black" />
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>

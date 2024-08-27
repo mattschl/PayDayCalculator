@@ -5,8 +5,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dim_5dp"
-        android:layout_marginEnd="@dimen/dim_5dp"
+        android:layout_marginStart="@dimen/dimen_5dp"
+        android:layout_marginEnd="@dimen/dimen_5dp"
         android:minHeight="@dimen/minimum_touch_height"
         android:paddingTop="@dimen/dimen_10dp">
 

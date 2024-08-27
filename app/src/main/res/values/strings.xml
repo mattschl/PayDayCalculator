@@ -185,4 +185,7 @@
     <string name="work_done">Work Done</string>
     <string name="enter_work_done">Enter work done</string>
     <string name="update_work_order">Update Work Order</string>
+    <string name="hour_summary">Hour Summary</string>
+    <string name="work_summary">Work Summary</string>
+    <string name="no_time">No time</string>
 </resources>

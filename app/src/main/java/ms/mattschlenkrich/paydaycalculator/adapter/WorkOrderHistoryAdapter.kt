@@ -1,34 +1,31 @@
 package ms.mattschlenkrich.paydaycalculator.adapter
 
-import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkOrderHistoryItemBinding
+import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkOrderHistoryDetailItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistoryFull
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
-import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragmentDirections
 
-class WorkDateWorkOrderHistoryAdapter(
+class WorkOrderHistoryAdapter(
     val mainActivity: MainActivity,
     val mView: View,
-    private val workOrderHistory: ArrayList<WorkOrderHistoryFull>
-) : RecyclerView.Adapter<WorkDateWorkOrderHistoryAdapter.ViewHolder>() {
+    private val workOrderHistory: List<WorkOrderHistoryFull>
+) : RecyclerView.Adapter<WorkOrderHistoryAdapter.ViewHolder>() {
 
     private val df = DateFunctions()
     private val nf = NumberFunctions()
 
     class ViewHolder(
-        val itemBinding: ListWorkOrderHistoryItemBinding
+        val itemBinding: ListWorkOrderHistoryDetailItemBinding
     ) : RecyclerView.ViewHolder(itemBinding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-            ListWorkOrderHistoryItemBinding.inflate(
+            ListWorkOrderHistoryDetailItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent, false
             )
@@ -38,13 +35,14 @@ class WorkDateWorkOrderHistoryAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val history = workOrderHistory[position]
         holder.itemBinding.apply {
-            tvAddress.text = history.workOrder.woAddress
-            tvWorkOrder.text = history.workOrder.workOrderId
+            tvDate.text =
+                df.getDisplayDate(history.workDate.wdDate)
             var display = ""
-            if (history.history.woHistoryRegHours != 0.0) {
+            val regHours = history.history.woHistoryRegHours
+            if (regHours != 0.0) {
                 display = "Reg: " +
                         nf.getNumberFromDouble(
-                            history.history.woHistoryRegHours
+                            regHours
                         )
             }
             if (history.history.woHistoryOtHours != 0.0) {
@@ -65,39 +63,10 @@ class WorkDateWorkOrderHistoryAdapter(
                             history.history.woHistoryDblOtHours
                         )
             }
-            tvDetails.text = display
-            holder.itemView.setOnClickListener {
-                chooseOptions(history)
-            }
+            tvHours.text = display
+            tvSummary.text =
+                history.history.woHistoryNote
         }
-    }
-
-    private fun chooseOptions(history: WorkOrderHistoryFull) {
-        AlertDialog.Builder(mView.context)
-            .setTitle("Choose option for this item")
-            .setPositiveButton("Edit") { _, _ ->
-                editWorkOrderHistory(history)
-            }
-            .setNegativeButton("Delete") { _, _ ->
-                deleteWorkOrderHistory(history)
-            }
-            .setNeutralButton("Cancel", null)
-            .show()
-    }
-
-    private fun deleteWorkOrderHistory(history: WorkOrderHistoryFull) {
-        mainActivity.workOrderViewModel.deleteWorkOrderHistory(
-            history.history.woHistoryId, df.getCurrentTimeAsString()
-        )
-    }
-
-    private fun editWorkOrderHistory(history: WorkOrderHistoryFull) {
-        mainActivity.mainViewModel.setWorkOrderHistory(history.history)
-        mView.findNavController().navigate(
-            WorkDateUpdateFragmentDirections
-                .actionWorkDateUpdateFragmentToWorkOrderHistoryUpdateFragment()
-        )
-
     }
 
     override fun getItemCount(): Int {

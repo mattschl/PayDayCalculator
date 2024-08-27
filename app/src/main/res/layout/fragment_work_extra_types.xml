@@ -12,7 +12,7 @@
             android:id="@+id/rvTypes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dim_5dp"
+            android:layout_margin="@dimen/dimen_5dp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

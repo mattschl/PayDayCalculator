@@ -9,17 +9,21 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.adapter.WorkOrderHistoryAdapter
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ODER_HISTORY_UPDATE
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
+import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
+import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistoryFull
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
@@ -31,7 +35,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
 
     private val df = DateFunctions()
 
-    //    private val nf = NumberFunctions()
+    private val nf = NumberFunctions()
     private val workOrderList = ArrayList<WorkOrder>()
     private lateinit var curEmployer: Employers
 
@@ -54,12 +58,61 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
         getWorkOrderList()
         setClickActions()
         onSelectEmployer()
-        populateHistory()
     }
 
-    private fun populateHistory() {
-        //TODO("Not yet implemented")
+    private fun populateHistory(workOrderId: String) {
+        mainActivity.workOrderViewModel.getWorkOrderHistoriesById(
+            workOrderId
+        ).observe(viewLifecycleOwner) { historyList ->
+            calculateTotals(historyList)
+            val workOrderHistoryAdapter =
+                WorkOrderHistoryAdapter(
+                    mainActivity,
+                    mView,
+                    historyList
+                )
+            binding.rvHistory.apply {
+                layoutManager = LinearLayoutManager(mView.context)
+                adapter = workOrderHistoryAdapter
+            }
+        }
+    }
 
+    private fun calculateTotals(historyList: List<WorkOrderHistoryFull>) {
+        var regHours = 0.0
+        var otHours = 0.0
+        var dblOtHours = 0.0
+        historyList.listIterator().forEach {
+            regHours += it.history.woHistoryRegHours
+            otHours += it.history.woHistoryOtHours
+            dblOtHours += it.history.woHistoryDblOtHours
+        }
+        var display = ""
+        if (regHours != 0.0) {
+            display = "Reg: " +
+                    nf.getNumberFromDouble(
+                        regHours
+                    )
+        }
+        if (otHours != 0.0) {
+            if (display.isNotBlank()) {
+                display += " | "
+            }
+            display += "Ot: " +
+                    nf.getNumberFromDouble(
+                        otHours
+                    )
+        }
+        if (dblOtHours != 0.0) {
+            if (display.isNotBlank()) {
+                display += " | "
+            }
+            display += "Ot: " +
+                    nf.getNumberFromDouble(
+                        dblOtHours
+                    )
+        }
+        binding.tvWorkOrderSummary.text = display
     }
 
     private fun setDefaultValues() {
@@ -92,6 +145,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
             etAddress.setText(workOrder.woAddress)
             etDescription.setText(workOrder.woDescription)
         }
+        populateHistory(workOrder.workOrderId)
     }
 
     private fun populateEmployers() {
@@ -224,7 +278,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
     private fun validateWorkOrder(): String {
         binding.apply {
 
-        if (etAddress.text.isEmpty()) {
+            if (etAddress.text.isEmpty()) {
                 return getString(R.string.please_enter_an_address)
             }
             if (etDescription.text.isEmpty()) {

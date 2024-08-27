@@ -10,7 +10,7 @@
             android:id="@+id/chkExtra"
             android:layout_width="@dimen/text_box_extra_wide"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dim_5dp"
+            android:layout_marginStart="@dimen/dimen_5dp"
             app:layout_constraintEnd_toStartOf="@id/btnEdit"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
