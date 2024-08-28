@@ -17,7 +17,8 @@ interface WorkOrderDao {
 
     @Query(
         "Update workOrders " +
-                "SET woEmployerId = :employerId, " +
+                "SET woNumber = :workOrderNumber, " +
+                "woEmployerId = :employerId, " +
                 "woAddress = :address, " +
                 "woDescription = :description," +
                 "woDeleted = :isDeleted," +
@@ -25,7 +26,8 @@ interface WorkOrderDao {
                 "WHERE workOrderId = :workOrderId"
     )
     suspend fun updateWorkOrder(
-        workOrderId: String,
+        workOrderId: Long,
+        workOrderNumber: String,
         employerId: Long,
         address: String,
         description: String,
@@ -41,9 +43,25 @@ interface WorkOrderDao {
     )
     suspend fun deleteWorkOrder(workOrderId: Long, updateTime: String)
 
+
+    @Query(
+        "UPDATE workOrders " +
+                "SET woDeleted = 1, " +
+                "woUpdateTime = :updateTime " +
+                "WHERE workOrderId = :workOrderNumber"
+    )
+    suspend fun deleteWorkOrder(workOrderNumber: String, updateTime: String)
+
     @Query(
         "SELECT * FROM workOrders " +
-                "WHERE workOrderId = :workOrderNum " +
+                "WHERE workOrderId = :workOrderId " +
+                "AND woDeleted = 0"
+    )
+    fun getWorkOrder(workOrderId: Long): LiveData<WorkOrder>
+
+    @Query(
+        "SELECT * FROM workOrders " +
+                "WHERE woNumber = :workOrderNum " +
                 "AND woDeleted = 0"
     )
     fun getWorkOrder(workOrderNum: String): LiveData<WorkOrder>
@@ -71,7 +89,7 @@ interface WorkOrderDao {
     )
     suspend fun updateWorkOrderHistory(
         historyID: Long,
-        workOrderId: String,
+        workOrderId: Long,
         workDateId: Long,
         regHours: Double,
         otHours: Double,
@@ -105,11 +123,22 @@ interface WorkOrderDao {
                 "AND woHistoryDeleted = 0 " +
                 "Order BY woHistoryUpdateTime"
     )
-    fun getWorkOrderHistoriesById(workOrderId: String): LiveData<List<WorkOrderHistoryFull>>
+    fun getWorkOrderHistoriesById(workOrderId: Long): LiveData<List<WorkOrderHistoryFull>>
 
+
+    @Transaction
+    @Query(
+        "SELECT * FROM workOrderHistory " +
+                "WHERE woHistoryWorkOrderId = :workOrderNumber " +
+                "AND woHistoryDeleted = 0 " +
+                "Order BY woHistoryUpdateTime"
+    )
+    fun getWorkOrderHistoriesByNumber(workOrderNumber: String): LiveData<List<WorkOrderHistoryFull>>
+
+    @Transaction
     @Query(
         "SELECT * FROM workOrderHistory " +
                 "WHERE woHistoryId = :historyID"
     )
-    fun getWorkOrderHistory(historyID: Long): LiveData<WorkOrderHistory>
+    fun getWorkOrderHistory(historyID: Long): LiveData<WorkOrderHistoryFull>
 }

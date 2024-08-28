@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "f25367a030972830c25b32714415c977",
+    "identityHash": "34318512192b141ca2e0b2898449002f",
     "entities": [
       {
         "tableName": "employers",
@@ -1272,11 +1272,17 @@
       },
       {
         "tableName": "workOrders",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workOrderId` TEXT NOT NULL, `woEmployerId` INTEGER NOT NULL, `woAddress` TEXT NOT NULL, `woDescription` TEXT NOT NULL, `woDeleted` INTEGER NOT NULL, `woUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workOrderId`), FOREIGN KEY(`woEmployerId`) REFERENCES `employers`(`employerId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workOrderId` INTEGER NOT NULL, `woNumber` TEXT NOT NULL, `woEmployerId` INTEGER NOT NULL, `woAddress` TEXT NOT NULL, `woDescription` TEXT NOT NULL, `woDeleted` INTEGER NOT NULL, `woUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workOrderId`), FOREIGN KEY(`woEmployerId`) REFERENCES `employers`(`employerId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "workOrderId",
             "columnName": "workOrderId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woNumber",
+            "columnName": "woNumber",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -1319,6 +1325,15 @@
         },
         "indices": [
           {
+            "name": "index_workOrders_woNumber",
+            "unique": true,
+            "columnNames": [
+              "woNumber"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_workOrders_woNumber` ON `${TABLE_NAME}` (`woNumber`)"
+          },
+          {
             "name": "index_workOrders_woEmployerId",
             "unique": false,
             "columnNames": [
@@ -1344,7 +1359,7 @@
       },
       {
         "tableName": "workOrderHistory",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`woHistoryId` INTEGER NOT NULL, `woHistoryWorkOrderId` TEXT NOT NULL, `woHistoryWorkDateId` INTEGER NOT NULL, `woHistoryRegHours` REAL NOT NULL, `woHistoryOtHours` REAL NOT NULL, `woHistoryDblOtHours` REAL NOT NULL, `woHistoryNote` TEXT, `woHistoryDeleted` INTEGER NOT NULL, `woHistoryUpdateTime` TEXT NOT NULL, PRIMARY KEY(`woHistoryId`), FOREIGN KEY(`woHistoryWorkOrderId`) REFERENCES `workOrders`(`workOrderId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`woHistoryWorkDateId`) REFERENCES `workDates`(`workDateId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`woHistoryId` INTEGER NOT NULL, `woHistoryWorkOrderId` INTEGER NOT NULL, `woHistoryWorkDateId` INTEGER NOT NULL, `woHistoryRegHours` REAL NOT NULL, `woHistoryOtHours` REAL NOT NULL, `woHistoryDblOtHours` REAL NOT NULL, `woHistoryNote` TEXT, `woHistoryDeleted` INTEGER NOT NULL, `woHistoryUpdateTime` TEXT NOT NULL, PRIMARY KEY(`woHistoryId`), FOREIGN KEY(`woHistoryWorkOrderId`) REFERENCES `workOrders`(`workOrderId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`woHistoryWorkDateId`) REFERENCES `workDates`(`workDateId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "woHistoryId",
@@ -1355,7 +1370,7 @@
           {
             "fieldPath": "woHistoryWorkOrderId",
             "columnName": "woHistoryWorkOrderId",
-            "affinity": "TEXT",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -1475,7 +1490,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f25367a030972830c25b32714415c977')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '34318512192b141ca2e0b2898449002f')"
     ]
   }
 }

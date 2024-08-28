@@ -30,7 +30,7 @@ data class WorkOrderHistory(
     @PrimaryKey
     val woHistoryId: Long,
     @ColumnInfo(index = true)
-    val woHistoryWorkOrderId: String,
+    val woHistoryWorkOrderId: Long,
     @ColumnInfo(index = true)
     val woHistoryWorkDateId: Long,
     val woHistoryRegHours: Double,

@@ -12,7 +12,7 @@ import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.tax.WorkTaxRules
-import ms.mattschlenkrich.paydaycalculator.model.workOrder.TempWorkOrderInfo
+import ms.mattschlenkrich.paydaycalculator.model.workOrder.TempWorkOrderHistoryInfo
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
 
 class MainViewModel(
@@ -40,16 +40,16 @@ class MainViewModel(
     private var isCredit = false
     private var payPeriodExtra: WorkPayPeriodExtras? = null
     private var payPeriodExtraList = ArrayList<WorkPayPeriodExtras>()
-    private var tempWorkOrderInfo: TempWorkOrderInfo? = null
+    private var tempWorkOrderInfo: TempWorkOrderHistoryInfo? = null
     private var workOrderHistory: WorkOrderHistory? = null
-    private var workOrderId: String? = null
+    private var workOrderNumber: String? = null
 
-    fun setWorkOrderId(newWorkOrderId: String?) {
-        workOrderId = newWorkOrderId
+    fun setWorkOrderNumber(newWorkOrderNumber: String?) {
+        workOrderNumber = newWorkOrderNumber
     }
 
-    fun getWorkOrderId(): String? {
-        return workOrderId
+    fun getWorkOrderNumber(): String? {
+        return workOrderNumber
     }
 
     fun setWorkOrderHistory(newWorkOrderHistory: WorkOrderHistory?) {
@@ -60,11 +60,11 @@ class MainViewModel(
         return workOrderHistory
     }
 
-    fun setTempWorkOrderInfo(newInfo: TempWorkOrderInfo?) {
+    fun setTempWorkOrderInfo(newInfo: TempWorkOrderHistoryInfo?) {
         tempWorkOrderInfo = newInfo
     }
 
-    fun getTempWorkOrderInfo(): TempWorkOrderInfo? {
+    fun getTempWorkOrderInfo(): TempWorkOrderHistoryInfo? {
         return tempWorkOrderInfo
     }
 

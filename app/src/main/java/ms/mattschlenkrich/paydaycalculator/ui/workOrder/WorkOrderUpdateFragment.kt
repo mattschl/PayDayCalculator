@@ -38,6 +38,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
     private val nf = NumberFunctions()
     private val workOrderList = ArrayList<WorkOrder>()
     private lateinit var curEmployer: Employers
+    private lateinit var curWorkOrder: WorkOrder
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,7 +61,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
         onSelectEmployer()
     }
 
-    private fun populateHistory(workOrderId: String) {
+    private fun populateHistory(workOrderId: Long) {
         mainActivity.workOrderViewModel.getWorkOrderHistoriesById(
             workOrderId
         ).observe(viewLifecycleOwner) { historyList ->
@@ -132,16 +133,17 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
             populateEmployers()
         }
         mainActivity.workOrderViewModel.getWorkOrder(
-            mainActivity.mainViewModel.getWorkOrderId()!!
+            mainActivity.mainViewModel.getWorkOrderNumber()!!
         ).observe(viewLifecycleOwner) { tempWorkOrder ->
-            setValuesFromHistory(tempWorkOrder)
+            curWorkOrder = tempWorkOrder
+            setValuesFromHistory(curWorkOrder)
         }
     }
 
     private fun setValuesFromHistory(workOrder: WorkOrder) {
 
         binding.apply {
-            etWorkOrderNumber.setText(workOrder.workOrderId)
+            etWorkOrderNumber.setText(workOrder.woNumber)
             etAddress.setText(workOrder.woAddress)
             etDescription.setText(workOrder.woDescription)
         }
@@ -202,6 +204,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
         val workOrder = getCurrentWorkOrder()
         mainActivity.workOrderViewModel.updateWorkOrder(
             workOrder.workOrderId,
+            workOrder.woNumber,
             workOrder.woEmployerId,
             workOrder.woAddress,
             workOrder.woDescription,
@@ -240,6 +243,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
     private fun getCurrentWorkOrder(): WorkOrder {
         binding.apply {
             return WorkOrder(
+                curWorkOrder.workOrderId,
                 etWorkOrderNumber.text.toString(),
                 curEmployer.employerId,
                 etAddress.text.toString(),

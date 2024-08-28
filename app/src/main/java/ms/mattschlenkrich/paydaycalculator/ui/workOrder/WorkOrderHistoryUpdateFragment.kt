@@ -17,9 +17,10 @@ import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderHistoryBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
-import ms.mattschlenkrich.paydaycalculator.model.workOrder.TempWorkOrderInfo
+import ms.mattschlenkrich.paydaycalculator.model.workOrder.TempWorkOrderHistoryInfo
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistoryFull
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 private const val TAG = FRAG_WORK_ODER_HISTORY_UPDATE
@@ -35,7 +36,8 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
     private lateinit var workOrderList: ArrayList<String>
     private lateinit var workDateObject: WorkDates
     private lateinit var curEmployer: Employers
-    private lateinit var curHistory: WorkOrderHistory
+    private lateinit var curHistory: WorkOrderHistoryFull
+    private lateinit var curWorkOrder: WorkOrder
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,6 +66,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
                 mainActivity.workOrderViewModel.getWorkOrder(
                     acWorkOrder.text.toString()
                 ).observe(viewLifecycleOwner) { workOrder ->
+                    curWorkOrder = workOrder
                     displayWorkOrderInfo(workOrder)
                 }
             }
@@ -97,27 +100,31 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
                 .observe(viewLifecycleOwner) { history ->
                     curHistory = history
                     binding.apply {
-                        acWorkOrder.setText(history.woHistoryWorkOrderId)
-                        acWorkOrder.isEnabled = false
-//                        setOnWorkOrderSelected(history.woHistoryWorkOrderId)
+                        acWorkOrder.setText(history.workOrder.woNumber)
+                        mainActivity.workOrderViewModel.getWorkOrder(
+                            history.workOrder.woNumber
+                        ).observe(viewLifecycleOwner) { workOrder ->
+                            curWorkOrder = workOrder
+                        }
                         etRegHours.setText(
-                            nf.getNumberFromDouble(history.woHistoryRegHours)
+                            nf.getNumberFromDouble(history.history.woHistoryRegHours)
                         )
                         etOtHours.setText(
-                            nf.getNumberFromDouble(history.woHistoryOtHours)
+                            nf.getNumberFromDouble(history.history.woHistoryOtHours)
                         )
                         etDblOtHours.setText(
-                            nf.getNumberFromDouble(history.woHistoryDblOtHours)
+                            nf.getNumberFromDouble(history.history.woHistoryDblOtHours)
                         )
-                        etNote.setText(history.woHistoryNote)
+                        etNote.setText(history.history.woHistoryNote)
                         btnEditWorkOrder.visibility = View.VISIBLE
                     }
-                    if (mainActivity.mainViewModel.getWorkOrderId() != null) {
+                    if (mainActivity.mainViewModel.getWorkOrderNumber() != null) {
                         mainActivity.workOrderViewModel.getWorkOrder(
-                            curHistory.woHistoryWorkOrderId
+                            curHistory.history.woHistoryWorkOrderId
                         ).observe(
                             viewLifecycleOwner
                         ) { workOrder ->
+                            curWorkOrder = workOrder
                             displayWorkOrderInfo(workOrder)
                         }
                     }
@@ -126,13 +133,14 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         if (mainActivity.mainViewModel.getTempWorkOrderInfo() != null) {
             val tempWorkOrderInfo =
                 mainActivity.mainViewModel.getTempWorkOrderInfo()!!
+            mainActivity.workOrderViewModel.getWorkOrder(
+                tempWorkOrderInfo.woHistoryWorkOrderNumber
+            ).observe(viewLifecycleOwner) { workOrder ->
+                curWorkOrder = workOrder
+            }
             binding.apply {
                 acWorkOrder.setText(
-                    if (mainActivity.mainViewModel.getWorkOrderId() != null) {
-                        mainActivity.mainViewModel.getWorkOrderId()!!
-                    } else {
-                        "0"
-                    }
+                    tempWorkOrderInfo.woHistoryWorkOrderNumber
                 )
                 etRegHours.setText(
                     nf.getNumberFromDouble(
@@ -157,7 +165,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
     }
 
     private fun setOnWorkOrderSelected(workOrderId: String) {
-        mainActivity.mainViewModel.setWorkOrderId(workOrderId)
+        mainActivity.mainViewModel.setWorkOrderNumber(workOrderId)
         setTempWorkOrderInfo()
     }
 
@@ -184,7 +192,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
             workDateObject.wdEmployerId
         ).observe(viewLifecycleOwner) { list ->
             list.listIterator().forEach {
-                newList.add(it.workOrderId)
+                newList.add(it.woNumber)
             }
         }
         return newList
@@ -245,9 +253,9 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
     private fun setTempWorkOrderInfo() {
         binding.apply {
             mainActivity.mainViewModel.setTempWorkOrderInfo(
-                TempWorkOrderInfo(
+                TempWorkOrderHistoryInfo(
                     if (acWorkOrder.text.isNullOrBlank())
-                        "00000" else acWorkOrder.text.toString(),
+                        "0" else acWorkOrder.text.toString(),
                     lblDate.text.toString(),
                     if (etRegHours.text.isNullOrBlank())
                         0.0 else etRegHours.text.toString().toDouble(),
@@ -279,7 +287,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         val history = getCurHistory()
         mainActivity.workOrderViewModel.updateWorkOrderHistory(
             history.woHistoryId,
-            history.woHistoryWorkOrderId,
+            curWorkOrder.workOrderId,
             history.woHistoryWorkDateId,
             history.woHistoryRegHours,
             history.woHistoryOtHours,
@@ -294,8 +302,8 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
     private fun getCurHistory(): WorkOrderHistory {
         binding.apply {
             return WorkOrderHistory(
-                curHistory.woHistoryId,
-                acWorkOrder.text.toString(),
+                curHistory.history.woHistoryId,
+                curWorkOrder.workOrderId,
                 workDateObject.workDateId,
                 if (etRegHours.text.isNullOrBlank())
                     0.0 else etRegHours.text.toString().toDouble(),

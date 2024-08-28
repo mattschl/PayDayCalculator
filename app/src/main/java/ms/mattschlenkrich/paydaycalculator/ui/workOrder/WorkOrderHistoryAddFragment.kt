@@ -17,7 +17,8 @@ import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderHistoryBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
-import ms.mattschlenkrich.paydaycalculator.model.workOrder.TempWorkOrderInfo
+import ms.mattschlenkrich.paydaycalculator.model.workOrder.TempWorkOrderHistoryInfo
+import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
@@ -34,6 +35,7 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
     private lateinit var workOrderList: ArrayList<String>
     private lateinit var workDateObject: WorkDates
     private lateinit var curEmployer: Employers
+    private lateinit var curWorkOrder: WorkOrder
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,10 +60,11 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
 
     private fun onSelectWorkOrder() {
         binding.apply {
-            acWorkOrder.setOnItemClickListener { parent, view, position, id ->
+            acWorkOrder.setOnItemClickListener { _, _, _, _ ->
                 mainActivity.workOrderViewModel.getWorkOrder(
                     acWorkOrder.text.toString()
                 ).observe(viewLifecycleOwner) { workOrder ->
+                    curWorkOrder = workOrder
                     val disp = workOrder.woAddress +
                             " | " + workOrder.woDescription
                     binding.tvDescription.text = disp
@@ -87,7 +90,7 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
             binding.apply {
                 val tempWorkOrder =
                     mainActivity.mainViewModel.getTempWorkOrderInfo()!!
-                acWorkOrder.setText(tempWorkOrder.tempID)
+                acWorkOrder.setText(tempWorkOrder.woHistoryWorkOrderNumber)
                 etRegHours.setText(
                     nf.getNumberFromDouble(tempWorkOrder.woHistoryRegHours)
                 )
@@ -117,7 +120,7 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
             workDateObject.wdEmployerId
         ).observe(viewLifecycleOwner) { list ->
             list.listIterator().forEach {
-                newList.add(it.workOrderId)
+                newList.add(it.woNumber)
             }
         }
         return newList
@@ -135,7 +138,7 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
     }
 
     private fun gotoWorkOrderUpdateFragment() {
-        mainActivity.mainViewModel.setWorkOrderId(
+        mainActivity.mainViewModel.setWorkOrderNumber(
             binding.acWorkOrder.text.toString()
         )
         setTempWorkOderHistory()
@@ -188,9 +191,9 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
     private fun setTempWorkOderHistory() {
         binding.apply {
             mainActivity.mainViewModel.setTempWorkOrderInfo(
-                TempWorkOrderInfo(
+                TempWorkOrderHistoryInfo(
                     if (acWorkOrder.text.isNullOrBlank())
-                        "00000" else acWorkOrder.text.toString(),
+                        "00" else acWorkOrder.text.toString(),
                     lblDate.text.toString(),
                     if (etRegHours.text.isNullOrBlank())
                         0.0 else etRegHours.text.toString().trim().toDouble(),
@@ -229,7 +232,7 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         binding.apply {
             return WorkOrderHistory(
                 nf.generateRandomIdAsLong(),
-                acWorkOrder.text.toString(),
+                curWorkOrder.workOrderId,
                 workDateObject.workDateId,
                 if (etRegHours.text.isNullOrBlank())
                     0.0 else etRegHours.text.toString().toDouble(),

@@ -39,7 +39,7 @@ class WorkDateWorkOrderHistoryAdapter(
         val history = workOrderHistory[position]
         holder.itemBinding.apply {
             tvAddress.text = history.workOrder.woAddress
-            tvWorkOrder.text = history.workOrder.workOrderId
+            tvWorkOrder.text = history.workOrder.woNumber
             var display = ""
             if (history.history.woHistoryRegHours != 0.0) {
                 display = "Reg: " +

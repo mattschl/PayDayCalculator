@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderAddBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
@@ -29,7 +30,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
 
     private val df = DateFunctions()
 
-    //    private val nf = NumberFunctions()
+    private val nf = NumberFunctions()
     private val workOrderList = ArrayList<WorkOrder>()
     private lateinit var curEmployer: Employers
 
@@ -78,7 +79,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
     private fun setValuesFromHistory() {
         val tempWorkOrder = mainActivity.mainViewModel.getTempWorkOrderInfo()!!
         binding.apply {
-            etWorkOrderNumber.setText(tempWorkOrder.tempID)
+            etWorkOrderNumber.setText(tempWorkOrder.woHistoryWorkOrderNumber)
         }
     }
 
@@ -151,6 +152,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
     private fun getCurrentWorkOrder(): WorkOrder {
         binding.apply {
             return WorkOrder(
+                nf.generateRandomIdAsLong(),
                 etWorkOrderNumber.text.toString(),
                 curEmployer.employerId,
                 etAddress.text.toString(),
@@ -192,7 +194,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
                 return getString(R.string.please_enter_a_work_order_number)
             }
             for (workOrder in workOrderList) {
-                if (workOrder.workOrderId ==
+                if (workOrder.woNumber ==
                     etWorkOrderNumber.text.toString()
                 ) {
                     return getString(R.string.this_work_order_has_been_used)
