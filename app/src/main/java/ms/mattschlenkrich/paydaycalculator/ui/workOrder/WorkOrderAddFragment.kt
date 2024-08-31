@@ -134,7 +134,9 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
     }
 
     private fun saveWorkOrder() {
-        mainActivity.workOrderViewModel.insertWorkOrder(getCurrentWorkOrder())
+        val newWorkOrder = getCurrentWorkOrder()
+        mainActivity.workOrderViewModel.insertWorkOrder(newWorkOrder)
+        mainActivity.mainViewModel.setWorkOrder(newWorkOrder)
         gotoCallingFragment()
     }
 

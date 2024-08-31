@@ -85,14 +85,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
 
     private fun setExistingValues() {
         if (mainActivity.mainViewModel.getWorkDateObject() != null) {
-            workDateObject = mainActivity.mainViewModel.getWorkDateObject()!!
-            binding.apply {
-                lblDate.text = df.getDisplayDate(workDateObject.wdDate)
-                if (mainActivity.mainViewModel.getEmployer() != null) {
-                    curEmployer = mainActivity.mainViewModel.getEmployer()!!
-                    tvEmployers.text = curEmployer.employerName
-                }
-            }
+            populateWorkDateValues()
         }
         if (mainActivity.mainViewModel.getWorkOrderHistory() != null) {
             val historyId = mainActivity.mainViewModel.getWorkOrderHistory()!!.woHistoryId
@@ -160,6 +153,17 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
                 etNote.setText(
                     tempWorkOrderInfo.woHistoryNote
                 )
+            }
+        }
+    }
+
+    private fun populateWorkDateValues() {
+        workDateObject = mainActivity.mainViewModel.getWorkDateObject()!!
+        binding.apply {
+            lblDate.text = df.getDisplayDate(workDateObject.wdDate)
+            if (mainActivity.mainViewModel.getEmployer() != null) {
+                curEmployer = mainActivity.mainViewModel.getEmployer()!!
+                tvEmployers.text = curEmployer.employerName
             }
         }
     }

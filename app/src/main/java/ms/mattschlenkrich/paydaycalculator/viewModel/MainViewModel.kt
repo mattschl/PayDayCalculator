@@ -13,6 +13,7 @@ import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.tax.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.TempWorkOrderHistoryInfo
+import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
 
 class MainViewModel(
@@ -43,6 +44,15 @@ class MainViewModel(
     private var tempWorkOrderInfo: TempWorkOrderHistoryInfo? = null
     private var workOrderHistory: WorkOrderHistory? = null
     private var workOrderNumber: String? = null
+    private var workOrder: WorkOrder? = null
+
+    fun getWorkOrder(): WorkOrder? {
+        return workOrder
+    }
+
+    fun setWorkOrder(newWorkOrder: WorkOrder?) {
+        workOrder = newWorkOrder
+    }
 
     fun setWorkOrderNumber(newWorkOrderNumber: String?) {
         workOrderNumber = newWorkOrderNumber

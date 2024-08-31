@@ -22,6 +22,7 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateAddBinding
@@ -205,9 +206,12 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         }
     }
 
-    private fun gotoTimeSheetAddWorkOrder() {
+    private fun gotoTimeSheetAddWorkOrder(workDate: WorkDates) {
         mainActivity.mainViewModel.setCallingFragment(TAG)
-        mainActivity.mainViewModel.setWorkDateObject(getCurWorkDate())
+        mainActivity.mainViewModel.setWorkDateObject(workDate)
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_100)
+        }
         mView.findNavController().navigate(
             WorkDateAddFragmentDirections
                 .actionWorkDateAddFragmentToWorkOrderHistoryAddFragment()
@@ -283,7 +287,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                 gotoWorkDateUpdate(workDate)
             }
             if (goBackTo == ADD_WORK_ORDER) {
-                gotoTimeSheetAddWorkOrder()
+                gotoTimeSheetAddWorkOrder(workDate)
             }
         }
     }
