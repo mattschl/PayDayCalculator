@@ -142,8 +142,8 @@ class NewPayDetailFragment :
         mainActivity.mainViewModel.setEmployer(curEmployer!!)
         mainActivity.mainViewModel.setIsCredit(isCredit)
         mView.findNavController().navigate(
-            PayDetailsFragmentDirections
-                .actionPayDetailsFragmentToPayPeriodExtraAddFragment()
+            NewPayDetailFragmentDirections
+                .actionNewPayDetailsFragmentToPayPeriodExtraAddFragment()
         )
     }
 
@@ -216,8 +216,9 @@ class NewPayDetailFragment :
                 )
                 .setPositiveButton("Ok") { _, _ ->
                     mView.findNavController().navigate(
-                        PayDetailsFragmentDirections
-                            .actionPayDetailsFragmentToTimeSheetFragment()
+                        NewPayDetailFragmentDirections
+                            .actionNewPayDetailFragmentToNewTimeSheetFragment()
+
                     )
                 }.show()
         }
@@ -226,8 +227,8 @@ class NewPayDetailFragment :
     private fun gotoEmployerAdd() {
         mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
-            PayDetailsFragmentDirections
-                .actionPayDetailsFragmentToEmployerAddFragment()
+            NewPayDetailFragmentDirections
+                .actionNewPayDetailsFragmentToEmployerAddFragment()
         )
     }
 

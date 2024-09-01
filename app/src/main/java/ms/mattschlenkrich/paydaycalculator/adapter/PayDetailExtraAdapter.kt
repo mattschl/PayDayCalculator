@@ -20,7 +20,7 @@ import ms.mattschlenkrich.paydaycalculator.databinding.ListPayDetailExtraItemBin
 import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.IPayDetailsFragment
-import ms.mattschlenkrich.paydaycalculator.ui.paydays.PayDetailsFragmentDirections
+import ms.mattschlenkrich.paydaycalculator.ui.paydays.NewPayDetailFragmentDirections
 
 //private const val TAG = "PayDetailExtraAdapter"
 
@@ -105,8 +105,8 @@ class PayDetailExtraAdapter(
         mainActivity.mainViewModel.setPayPeriodExtra(newExtra)
         mainActivity.mainViewModel.addCallingFragment(FRAG_PAY_DETAILS)
         mView.findNavController().navigate(
-            PayDetailsFragmentDirections
-                .actionPayDetailsFragmentToPayPeriodExtraUpdateFragment()
+            NewPayDetailFragmentDirections
+                .actionNewPayDetailsFragmentToPayPeriodExtraUpdateFragment()
         )
     }
 

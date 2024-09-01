@@ -188,4 +188,7 @@
     <string name="hour_summary">Hour Summary</string>
     <string name="work_summary">Work Summary</string>
     <string name="no_time">No time</string>
+    <string name="transfer">Transfer</string>
+    <string name="transfer_totals">Transfer Totals</string>
+    <string name="wo_totals">WO Totals</string>
 </resources>

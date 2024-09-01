@@ -381,8 +381,8 @@ class NewTimeSheetFragment :
         mainActivity.mainViewModel.setEmployer(null)
         mainActivity.mainViewModel.setCutOffDate(null)
         mView.findNavController().navigate(
-            TimeSheetFragmentDirections
-                .actionTimeSheetFragmentToEmployerAddFragment()
+            NewTimeSheetFragmentDirections
+                .actionNewTimeSheetFragmentToEmployerAddFragment()
         )
     }
 

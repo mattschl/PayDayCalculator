@@ -52,8 +52,8 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        populateValues()
         populateWorkOrderList()
-        setInfoValues()
         setClickActions()
     }
 
@@ -86,7 +86,7 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         }
     }
 
-    private fun setInfoValues() {
+    private fun populateValues() {
         populateWorkDateInfo()
         populateTempWorkOrderInfo()
     }
@@ -106,6 +106,7 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
                 etDblOtHours.setText(
                     nf.getNumberFromDouble(tempWorkOrderHistory.woHistoryDblOtHours)
                 )
+                etNote.setText(tempWorkOrderHistory.woHistoryNote)
                 setCurWorkOrder()
             }
         }
