@@ -64,6 +64,19 @@ class WorkDateUpdateFragment : Fragment(
         super.onViewCreated(view, savedInstanceState)
         populateValues()
         setClickActions()
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            updateHourlyTotals()
+        }
+    }
+
+    private fun updateHourlyTotals() {
+        if (regHours > currentWorkDateObject.wdRegHours ||
+            otHours > currentWorkDateObject.wdOtHours ||
+            dblOtHours > currentWorkDateObject.wdDblOtHours
+        ) {
+            transferWorkOrderTotals()
+        }
     }
 
     private fun changeDate() {
@@ -202,68 +215,60 @@ class WorkDateUpdateFragment : Fragment(
 
     private fun populateWorkOrderHistory() {
         binding.apply {
-            activity?.let {
-                mainActivity.workOrderViewModel.getWorkOrderHistoriesByDate(
-                    currentWorkDateObject.workDateId
-                ).observe(viewLifecycleOwner) { list ->
-                    if (list.isNotEmpty()) {
-                        btnTransfer.visibility = View.VISIBLE
-                        tvWorkOrderSummary.visibility = View.VISIBLE
-                    } else {
-                        btnTransfer.visibility = View.GONE
-                        tvWorkOrderSummary.visibility = View.GONE
-                    }
-                    val workOrderAdapter =
-                        WorkDateWorkOrderHistoryAdapter(
-                            mainActivity,
-                            mView,
-                            list as ArrayList
-                        )
-                    rvHistory.apply {
-                        layoutManager = LinearLayoutManager(mView.context)
-                        adapter = workOrderAdapter
-                    }
-                    regHours = 0.0
-                    otHours = 0.0
-                    dblOtHours = 0.0
-                    list.listIterator().forEach {
-                        regHours += it.history.woHistoryRegHours
-                        otHours += it.history.woHistoryOtHours
-                        dblOtHours += it.history.woHistoryDblOtHours
-                    }
-                    var display = getString(R.string.wo_totals) +
-                            " - "
-                    if (regHours != 0.0) {
-                        display += "Reg: " +
-                                nf.getNumberFromDouble(regHours)
-                    }
-                    if (otHours != 0.0) {
-                        if (display != getString(R.string.wo_totals) +
-                            " - "
-                        ) {
-                            display += " | "
-                        }
-                        display += "Ot: " +
-                                nf.getNumberFromDouble(otHours)
-                    }
-                    if (dblOtHours != 0.0) {
-                        if (display != getString(R.string.wo_totals) +
-                            " - "
-                        ) {
-                            display += " | "
-                        }
-                        display += "Ot: " +
-                                nf.getNumberFromDouble(dblOtHours)
-                    }
-                    tvWorkOrderSummary.text = display
+            mainActivity.workOrderViewModel.getWorkOrderHistoriesByDate(
+                currentWorkDateObject.workDateId
+            ).observe(viewLifecycleOwner) { list ->
+                if (list.isNotEmpty()) {
+                    btnTransfer.visibility = View.VISIBLE
+                    tvWorkOrderSummary.visibility = View.VISIBLE
+                } else {
+                    btnTransfer.visibility = View.GONE
+                    tvWorkOrderSummary.visibility = View.GONE
                 }
+                val workOrderAdapter =
+                    WorkDateWorkOrderHistoryAdapter(
+                        mainActivity,
+                        mView,
+                        list as ArrayList
+                    )
+                rvHistory.apply {
+                    layoutManager = LinearLayoutManager(mView.context)
+                    adapter = workOrderAdapter
+                }
+                regHours = 0.0
+                otHours = 0.0
+                dblOtHours = 0.0
+                list.listIterator().forEach {
+                    regHours += it.history.woHistoryRegHours
+                    otHours += it.history.woHistoryOtHours
+                    dblOtHours += it.history.woHistoryDblOtHours
+                }
+                var display = getString(R.string.wo_totals) +
+                        " - "
+                if (regHours != 0.0) {
+                    display += "Reg: " +
+                            nf.getNumberFromDouble(regHours)
+                }
+                if (otHours != 0.0) {
+                    if (display != getString(R.string.wo_totals) +
+                        " - "
+                    ) {
+                        display += " | "
+                    }
+                    display += "Ot: " +
+                            nf.getNumberFromDouble(otHours)
+                }
+                if (dblOtHours != 0.0) {
+                    if (display != getString(R.string.wo_totals) +
+                        " - "
+                    ) {
+                        display += " | "
+                    }
+                    display += "Ot: " +
+                            nf.getNumberFromDouble(dblOtHours)
+                }
+                tvWorkOrderSummary.text = display
             }
-        }
-        if (regHours > currentWorkDateObject.wdRegHours ||
-            otHours > currentWorkDateObject.wdOtHours ||
-            dblOtHours > currentWorkDateObject.wdDblOtHours
-        ) {
-            transferWorkOrderTotals()
         }
     }
 

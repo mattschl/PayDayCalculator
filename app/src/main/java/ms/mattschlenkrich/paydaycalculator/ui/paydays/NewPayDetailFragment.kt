@@ -83,7 +83,7 @@ class NewPayDetailFragment :
         createMenuAction()
         onSelectEmployer()
         onSelectCutOffDate()
-//        populateFromHistory()
+        populateFromHistory()
     }
 
     private fun populateEmployers() {
@@ -687,7 +687,7 @@ class NewPayDetailFragment :
         )
         CoroutineScope(Dispatchers.Main).launch {
             binding.apply {
-                delay(WAIT_250)
+                delay(WAIT_500)
                 val deductionListAdapter = PayDetailExtraAdapter(
                     mainActivity, debitList, mView, this@NewPayDetailFragment
                 )
