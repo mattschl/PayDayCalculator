@@ -191,4 +191,5 @@
     <string name="transfer">Transfer</string>
     <string name="transfer_totals">Transfer Totals</string>
     <string name="wo_totals">WO Totals</string>
+    <string name="no_work_orders_to_view">No work orders to view</string>
 </resources>

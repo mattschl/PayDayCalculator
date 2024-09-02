@@ -68,7 +68,7 @@ class NewTimeSheetFragment :
         setClickActions()
         onSelectEmployer()
         onSelectCutOffDate()
-//        populateFromHistory()
+        populateFromHistory()
     }
 
     private fun populateEmployers() {

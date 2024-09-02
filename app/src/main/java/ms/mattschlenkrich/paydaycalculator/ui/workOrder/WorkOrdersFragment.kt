@@ -6,40 +6,49 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
-import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderSummaryBinding
+import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrdersBinding
+import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
-class WorkOrderSummaryFragment :
-    Fragment(R.layout.fragment_work_order_summary) {
 
-    private var _binding: FragmentWorkOrderSummaryBinding? = null
+class WorkOrdersFragment :
+    Fragment(R.layout.fragment_work_orders) {
+
+    var _binding: FragmentWorkOrdersBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private val df = DateFunctions()
-    private val nf = NumberFunctions()
+    private var curEmployer: Employers? = null
+    private var employerList = ArrayList<Employers>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentWorkOrderSummaryBinding.inflate(
+        _binding = FragmentWorkOrdersBinding.inflate(
             inflater, container, false
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = getString(R.string.work_order_summary)
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getValues()
+        populateEmployers()
+        onSelectEmployer()
+        setClickActions()
     }
 
-    private fun getValues() {
+    private fun populateEmployers() {
+        TODO("Not yet implemented")
+    }
+
+    private fun onSelectEmployer() {
+        TODO("Not yet implemented")
+    }
+
+    private fun setClickActions() {
         TODO("Not yet implemented")
     }
 
