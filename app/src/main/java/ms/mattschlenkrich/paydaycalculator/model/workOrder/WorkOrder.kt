@@ -17,12 +17,13 @@ import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
         childColumns = ["woEmployerId"]
     )],
     indices =
-    [Index(value = ["woNumber"], unique = true)]
+    [Index(value = ["woNumber", "woEmployerId"], unique = true)]
 )
 @Parcelize
 data class WorkOrder(
     @PrimaryKey
     val workOrderId: Long,
+    @ColumnInfo(index = true)
     val woNumber: String,
     @ColumnInfo(index = true)
     val woEmployerId: Long,

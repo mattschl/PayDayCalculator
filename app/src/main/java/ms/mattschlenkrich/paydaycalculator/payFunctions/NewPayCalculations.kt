@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerPayRates
@@ -50,6 +51,7 @@ class NewPayCalculations(
     private var dblOtHours = 0.0
     private var statHours = 0.0
     private var daysWorked = 0
+    private var df = DateFunctions()
 
     init {
         CoroutineScope(Dispatchers.Main).launch {
@@ -195,16 +197,22 @@ class NewPayCalculations(
             mainActivity.workTaxViewModel.getCurrentEffectiveDate(
                 currentPayPeriod.ppCutoffDate
             ).observe(lifecycleOwner) { date ->
-                effectiveDate = date
+                if (date.isNullOrBlank()) {
+                    effectiveDate = df.getCurrentDateAsString()
+                } else {
+                    effectiveDate = date
+                }
             }
         }
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.workTaxViewModel.getTaxTypesByEmployer(
                 employer.employerId
             ).observe(lifecycleOwner) { types ->
-                taxTypes.clear()
-                types.listIterator().forEach {
-                    taxTypes.add(it)
+                if (types.isNotEmpty()) {
+                    taxTypes.clear()
+                    types.listIterator().forEach {
+                        taxTypes.add(it)
+                    }
                 }
             }
         }
@@ -214,11 +222,13 @@ class NewPayCalculations(
                 mainActivity.workTaxViewModel.getTaxDefByDate(
                     effectiveDate
                 ).observe(lifecycleOwner) { list ->
-                    taxRules.clear()
+                    if (list.isNotEmpty()) {
+                        taxRules.clear()
 //                    var counter = 0
-                    list.listIterator().forEach {
-                        taxRules.add(it)
+                        list.listIterator().forEach {
+                            taxRules.add(it)
 
+                        }
                     }
                 }
             }

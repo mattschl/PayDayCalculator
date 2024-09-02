@@ -26,11 +26,12 @@ private const val TAG = FRAG_WORK_ORDERS
 class WorkOrdersFragment :
     Fragment(R.layout.fragment_work_orders) {
 
-    var _binding: FragmentWorkOrdersBinding? = null
+    private var _binding: FragmentWorkOrdersBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private var curEmployer: Employers? = null
+    private var workOrderAdapter: WorkOrdersAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,6 +47,7 @@ class WorkOrdersFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        mainActivity.title = getString(R.string.work_orders)
         populateEmployers()
         onSelectEmployer()
         setClickActions()
@@ -106,17 +108,18 @@ class WorkOrdersFragment :
     }
 
     private fun populateWorkOrders(employerId: Long) {
+        workOrderAdapter = WorkOrdersAdapter(
+            mainActivity, mView, TAG
+        )
         mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
             employerId
-        ).observe(viewLifecycleOwner) { workOrderList ->
-            val workOrdersAdapter = WorkOrdersAdapter(
-                mainActivity, mView, workOrderList
-            )
-            binding.rvWorkOrders.apply {
-                layoutManager =
-                    LinearLayoutManager(mView.context)
-                adapter = workOrdersAdapter
-            }
+        ).observe(viewLifecycleOwner) { list ->
+            workOrderAdapter!!.differ.submitList(list)
+        }
+        binding.rvWorkOrders.apply {
+            layoutManager =
+                LinearLayoutManager(mView.context)
+            adapter = workOrderAdapter!!
         }
     }
 
@@ -133,6 +136,31 @@ class WorkOrdersFragment :
         binding.apply {
             fabNew.setOnClickListener {
                 addNewWorkOrder()
+            }
+            etWorkOrder.setOnKeyListener { _, _, _ ->
+                searchWorkOrders(etWorkOrder.text.toString())
+                false
+            }
+            btnCancel.setOnClickListener {
+                resetSearch()
+            }
+        }
+    }
+
+    private fun resetSearch() {
+        binding.etWorkOrder.setText(getString(R.string.blank))
+        populateWorkOrders(curEmployer!!.employerId)
+    }
+
+    private fun searchWorkOrders(query: String) {
+        if (workOrderAdapter != null &&
+            curEmployer != null
+        ) {
+            val searchQuery = "%$query%"
+            mainActivity.workOrderViewModel.searchWorkOrders(
+                curEmployer!!.employerId, searchQuery
+            ).observe(viewLifecycleOwner) { list ->
+                workOrderAdapter!!.differ.submitList(list)
             }
         }
     }

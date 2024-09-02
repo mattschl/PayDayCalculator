@@ -137,6 +137,9 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
         val newWorkOrder = getCurrentWorkOrder()
         mainActivity.workOrderViewModel.insertWorkOrder(newWorkOrder)
         mainActivity.mainViewModel.setWorkOrder(newWorkOrder)
+        mainActivity.mainViewModel.setWorkOrderNumber(
+            newWorkOrder.woNumber
+        )
         gotoCallingFragment()
     }
 

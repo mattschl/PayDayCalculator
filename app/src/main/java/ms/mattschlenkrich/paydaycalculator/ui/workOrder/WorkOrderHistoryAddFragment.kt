@@ -96,7 +96,11 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
             binding.apply {
                 val tempWorkOrderHistory =
                     mainActivity.mainViewModel.getTempWorkOrderInfo()!!
-                acWorkOrder.setText(tempWorkOrderHistory.woHistoryWorkOrderNumber)
+                if (mainActivity.mainViewModel.getWorkOrderNumber() != null) {
+                    acWorkOrder.setText(mainActivity.mainViewModel.getWorkOrderNumber()!!)
+                } else {
+                    acWorkOrder.setText(tempWorkOrderHistory.woHistoryWorkOrderNumber)
+                }
                 etRegHours.setText(
                     nf.getNumberFromDouble(tempWorkOrderHistory.woHistoryRegHours)
                 )

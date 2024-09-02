@@ -68,9 +68,21 @@ interface WorkOrderDao {
 
     @Query(
         "SELECT * FROM workOrders " +
-                "WHERE woEmployerId = :employerId"
+                "WHERE woEmployerId = :employerId " +
+                "AND woDeleted = 0 " +
+                "ORDER BY woNumber"
     )
     fun getWorkOrdersByEmployerId(employerId: Long): LiveData<List<WorkOrder>>
+
+    @Query(
+        "SELECT * FROM workOrders " +
+                "WHERE woEmployerId = :employerId " +
+                "AND (woNumber LIKE :query " +
+                "OR woAddress LIKE :query) " +
+                "ORDER BY woNumber"
+    )
+    fun searchWorkOrders(employerId: Long, query: String):
+            LiveData<List<WorkOrder>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWorkOrderHistory(history: WorkOrderHistory)

@@ -85,8 +85,12 @@ class NewTimeSheetFragment :
             employers.listIterator().forEach {
                 employerAdapter.add(it.employerName)
             }
-            curEmployer = employers.first()
             employerAdapter.add(getString(R.string.add_new_employer))
+            if (employers.isNotEmpty()) {
+                curEmployer = employers.first()
+            } else {
+                gotoEmployerAdd()
+            }
         }
         binding.spEmployers.adapter = employerAdapter
     }

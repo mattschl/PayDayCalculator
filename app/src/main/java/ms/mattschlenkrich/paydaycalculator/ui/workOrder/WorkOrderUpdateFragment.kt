@@ -18,6 +18,7 @@ import ms.mattschlenkrich.paydaycalculator.adapter.WorkOrderHistoryAdapter
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ODER_HISTORY_UPDATE
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDERS
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderAddBinding
@@ -215,15 +216,27 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
     }
 
     private fun gotoCallingFragment() {
-        if (mainActivity.mainViewModel.getCallingFragment()
-            == FRAG_WORK_ORDER_HISTORY_ADD
-        ) {
-            gotoWorkOrderHistoryAddFragment()
-        } else if (mainActivity.mainViewModel.getCallingFragment()
-            == FRAG_WORK_ODER_HISTORY_UPDATE
-        ) {
-            gotoWorkOrderHistoryUpdateFragment()
+        when (mainActivity.mainViewModel.getCallingFragment()) {
+
+            FRAG_WORK_ORDER_HISTORY_ADD -> {
+                gotoWorkOrderHistoryAddFragment()
+            }
+
+            FRAG_WORK_ODER_HISTORY_UPDATE -> {
+                gotoWorkOrderHistoryUpdateFragment()
+            }
+
+            FRAG_WORK_ORDERS -> {
+                gotoWorkOrdersFragment()
+            }
         }
+    }
+
+    private fun gotoWorkOrdersFragment() {
+        mView.findNavController().navigate(
+            WorkOrderUpdateFragmentDirections
+                .actionWorkOrderUpdateFragmentToWorkOrdersFragment()
+        )
     }
 
     private fun gotoWorkOrderHistoryUpdateFragment() {

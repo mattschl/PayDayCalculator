@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkOrderItemBinding
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
@@ -14,7 +16,7 @@ import ms.mattschlenkrich.paydaycalculator.ui.workOrder.WorkOrdersFragmentDirect
 class WorkOrdersAdapter(
     val mainActivity: MainActivity,
     val mView: View,
-    private val workOrderList: List<WorkOrder>
+    private val parentFragmentTag: String
 ) : RecyclerView.Adapter<WorkOrdersAdapter.ViewHolder>() {
 
 //    private val df = DateFunctions()
@@ -23,6 +25,20 @@ class WorkOrdersAdapter(
     class ViewHolder(
         val itemBinding: ListWorkOrderItemBinding
     ) : RecyclerView.ViewHolder(itemBinding.root)
+
+    private val differCallBack =
+        object : DiffUtil.ItemCallback<WorkOrder>() {
+            override fun areItemsTheSame(oldItem: WorkOrder, newItem: WorkOrder): Boolean {
+                return oldItem.workOrderId == newItem.workOrderId &&
+                        oldItem.woNumber == newItem.woNumber
+            }
+
+            override fun areContentsTheSame(oldItem: WorkOrder, newItem: WorkOrder): Boolean {
+                return oldItem == newItem
+            }
+        }
+
+    val differ = AsyncListDiffer(this, differCallBack)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
@@ -34,7 +50,7 @@ class WorkOrdersAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val workOrder = workOrderList[position]
+        val workOrder = differ.currentList[position]
         holder.itemBinding.apply {
             tvWorkOrderNumber.text = workOrder.woNumber
             tvAddress.text = workOrder.woAddress
@@ -53,12 +69,17 @@ class WorkOrdersAdapter(
             )
             .setPositiveButton("Open") { _, _ ->
                 mainActivity.mainViewModel.setWorkOrder(workOrder)
+                mainActivity.mainViewModel.setWorkOrderNumber(
+                    workOrder.woNumber
+                )
                 gotoWorkOrderUpdate()
             }
             .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun gotoWorkOrderUpdate() {
+        mainActivity.mainViewModel.setCallingFragment(parentFragmentTag)
         mView.findNavController().navigate(
             WorkOrdersFragmentDirections
                 .actionWorkOrdersFragmentToWorkOrderUpdateFragment()
@@ -66,6 +87,6 @@ class WorkOrdersAdapter(
     }
 
     override fun getItemCount(): Int {
-        return workOrderList.size
+        return differ.currentList.size
     }
 }

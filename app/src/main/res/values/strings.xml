@@ -193,4 +193,8 @@
     <string name="wo_totals">WO Totals</string>
     <string name="no_work_orders_to_view">No work orders to view</string>
     <string name="view_work_orders">View Work Orders</string>
+    <string name="search">Search</string>
+    <string name="type_number_or_address_search">Type number or address search</string>
+    <string name="reset">RESET</string>
+    <string name="blank"> </string>
 </resources>

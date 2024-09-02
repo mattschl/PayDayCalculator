@@ -53,6 +53,9 @@ class WorkOrderViewModel(
     fun getWorkOrdersByEmployerId(employerId: Long) =
         workOrderRepository.getWorkOrdersByEmployerId(employerId)
 
+    fun searchWorkOrders(employerId: Long, query: String) =
+        workOrderRepository.searchWorkOrders(employerId, query)
+
     fun insertWorkOrderHistory(history: WorkOrderHistory) =
         viewModelScope.launch {
             workOrderRepository.insertWorkOrderHistory(history)

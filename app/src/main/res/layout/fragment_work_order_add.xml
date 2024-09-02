@@ -4,201 +4,206 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.workOrder.WorkOrderAddFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/ConstraintLayout"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/lblEmployer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/employer"
-            android:textColor="@color/black"
-            android:textSize="@dimen/label_text_size"
-            app:layout_constraintBaseline_toBaselineOf="@id/spEmployers"
-            app:layout_constraintEnd_toStartOf="@id/spEmployers"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Spinner
-            android:id="@+id/spEmployers"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="@dimen/text_box_wide"
-            android:minHeight="@dimen/minimum_touch_height"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/lblEmployer"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tvEmployer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/employer_name"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_size_large"
-            android:visibility="invisible"
-            app:layout_constraintBaseline_toBaselineOf="@id/spEmployers"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/lblEmployer" />
-
-        <TextView
-            android:id="@+id/lblWorkOrderNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/work_order_number"
-            android:textColor="@color/black"
-            android:textSize="@dimen/label_text_size"
-            android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/etWorkOrderNumber"
-            app:layout_constraintEnd_toStartOf="@id/etWorkOrderNumber"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <EditText
-            android:id="@+id/etWorkOrderNumber"
-            android:layout_width="@dimen/text_box_wide"
-            android:layout_height="@dimen/minimum_touch_height"
-            android:hint="@string/text_zeros"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/lblWorkOrderNumber"
-            app:layout_constraintTop_toBottomOf="@id/spEmployers"
-            tools:ignore="TextFields" />
-
-        <TextView
-            android:id="@+id/lblAddress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/address"
-            android:textColor="@color/black"
-            android:textSize="@dimen/label_text_size"
-            android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/etAddress"
-            app:layout_constraintEnd_toStartOf="@id/etAddress"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <EditText
-            android:id="@+id/etAddress"
-            android:layout_width="@dimen/layout_width_wide"
-            android:layout_height="@dimen/minimum_touch_height"
-            android:hint="@string/enter_address"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/lblAddress"
-            app:layout_constraintTop_toBottomOf="@id/etWorkOrderNumber" />
-
-        <TextView
-            android:id="@+id/lblDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/description"
-            android:textColor="@color/black"
-            android:textSize="@dimen/label_text_size"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etAddress" />
-
-        <EditText
-            android:id="@+id/etDescription"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dimen_15dp"
-            android:ems="10"
-            android:gravity="start|top"
-            android:hint="@string/enter_description"
-            android:importantForAutofill="no"
-            android:inputType="textMultiLine"
-            android:isScrollContainer="true"
-            android:maxHeight="@dimen/layout_width_wide"
-            android:minHeight="@dimen/minimum_touch_height"
-            android:textColor="@color/black"
-            android:textSize="@dimen/label_text_size"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lblDescription"
-            tools:ignore="VisualLintTextFieldSize,TextContrastCheck" />
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/crdWorkOrder"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ConstraintLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dimen_8dp"
-            android:backgroundTint="@color/white"
-            android:elevation="10dp"
-            app:cardCornerRadius="10dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etDescription">
+            android:layout_height="match_parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <TextView
+                android:id="@+id/lblEmployer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/employer"
+                android:textColor="@color/black"
+                android:textSize="@dimen/label_text_size"
+                app:layout_constraintBaseline_toBaselineOf="@id/spEmployers"
+                app:layout_constraintEnd_toStartOf="@id/spEmployers"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Spinner
+                android:id="@+id/spEmployers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="@dimen/text_box_wide"
+                android:minHeight="@dimen/minimum_touch_height"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/lblEmployer"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvEmployer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/employer_name"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_large"
+                android:visibility="invisible"
+                app:layout_constraintBaseline_toBaselineOf="@id/spEmployers"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/lblEmployer" />
+
+            <TextView
+                android:id="@+id/lblWorkOrderNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/work_order_number"
+                android:textColor="@color/black"
+                android:textSize="@dimen/label_text_size"
+                android:textStyle="bold"
+                app:layout_constraintBaseline_toBaselineOf="@id/etWorkOrderNumber"
+                app:layout_constraintEnd_toStartOf="@id/etWorkOrderNumber"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <EditText
+                android:id="@+id/etWorkOrderNumber"
+                android:layout_width="@dimen/text_box_wide"
+                android:layout_height="@dimen/minimum_touch_height"
+                android:hint="@string/text_zeros"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/lblWorkOrderNumber"
+                app:layout_constraintTop_toBottomOf="@id/spEmployers"
+                tools:ignore="TextFields" />
+
+            <TextView
+                android:id="@+id/lblAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/address"
+                android:textColor="@color/black"
+                android:textSize="@dimen/label_text_size"
+                android:textStyle="bold"
+                app:layout_constraintBaseline_toBaselineOf="@id/etAddress"
+                app:layout_constraintEnd_toStartOf="@id/etAddress"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <EditText
+                android:id="@+id/etAddress"
+                android:layout_width="@dimen/layout_width_wide"
+                android:layout_height="@dimen/minimum_touch_height"
+                android:hint="@string/enter_address"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/lblAddress"
+                app:layout_constraintTop_toBottomOf="@id/etWorkOrderNumber" />
+
+            <TextView
+                android:id="@+id/lblDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/description"
+                android:textColor="@color/black"
+                android:textSize="@dimen/label_text_size"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etAddress" />
+
+            <EditText
+                android:id="@+id/etDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/dimen_15dp"
+                android:ems="10"
+                android:gravity="start|top"
+                android:hint="@string/enter_description"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine"
+                android:isScrollContainer="true"
+                android:maxHeight="@dimen/layout_width_wide"
+                android:minHeight="@dimen/minimum_touch_height"
+                android:textColor="@color/black"
+                android:textSize="@dimen/label_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lblDescription"
+                tools:ignore="VisualLintTextFieldSize,TextContrastCheck" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/crdWorkOrder"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:ignore="TextSizeCheck">
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/dimen_8dp"
+                android:backgroundTint="@color/white"
+                android:elevation="10dp"
+                app:cardCornerRadius="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etDescription">
 
-                <TextView
-                    android:id="@+id/lblWorkOrderHistory"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dimen_15dp"
-                    android:text="@string/work_order_history"
-                    android:textSize="@dimen/text_size_large"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/fabAddWorkOrder"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fabAddWorkOrder"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/add_new_extra"
-                    android:foregroundTint="@color/black"
-                    android:src="@drawable/ic_add"
-                    app:layout_constraintEnd_toStartOf="@id/lblWorkOrderHistory"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:ignore="ImageContrastCheck,DuplicateSpeakableTextCheck" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvHistory"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dimen_10dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/fabAddWorkOrder" />
+                    android:layout_height="match_parent"
+                    tools:ignore="TextSizeCheck">
 
-                <TextView
-                    android:id="@+id/tvWorkOrderSummary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/summary"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_large"
-                    android:textStyle="bold|italic"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/rvHistory" />
+                    <TextView
+                        android:id="@+id/lblWorkOrderHistory"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dimen_15dp"
+                        android:text="@string/work_order_history"
+                        android:textSize="@dimen/text_size_large"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/fabAddWorkOrder"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/fabAddWorkOrder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/add_new_extra"
+                        android:foregroundTint="@color/black"
+                        android:src="@drawable/ic_add"
+                        app:layout_constraintEnd_toStartOf="@id/lblWorkOrderHistory"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:ignore="ImageContrastCheck,DuplicateSpeakableTextCheck" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabDone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dimen_25dp"
-            android:layout_marginEnd="@dimen/dimen_25dp"
-            android:backgroundTint="@color/dark_green"
-            android:contentDescription="@string/add_new"
-            android:src="@drawable/ic_done"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/crdWorkOrder" />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvHistory"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dimen_10dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/fabAddWorkOrder" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <TextView
+                        android:id="@+id/tvWorkOrderSummary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/summary"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_large"
+                        android:textStyle="bold|italic"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/rvHistory" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabDone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_25dp"
+                android:layout_marginEnd="@dimen/dimen_25dp"
+                android:backgroundTint="@color/dark_green"
+                android:contentDescription="@string/add_new"
+                android:src="@drawable/ic_done"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </layout>

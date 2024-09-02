@@ -37,6 +37,9 @@ class WorkOrderRepository(private val db: PayDatabase) {
     fun getWorkOrdersByEmployerId(employerId: Long) =
         db.getWorkOrderDao().getWorkOrdersByEmployerId(employerId)
 
+    fun searchWorkOrders(employerId: Long, query: String) =
+        db.getWorkOrderDao().searchWorkOrders(employerId, query)
+
     suspend fun insertWorkOrderHistory(history: WorkOrderHistory) =
         db.getWorkOrderDao().insertWorkOrderHistory(history)
 
