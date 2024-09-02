@@ -154,7 +154,21 @@ class WorkDateAdapter(
                 df.getCurrentTimeAsString()
             )
         )
+        deleteExtras(workDate)
+        deleteWorkOrders(workDate)
         parentFragment.populatePayDetails()
+    }
+
+    private fun deleteWorkOrders(workDate: WorkDates) {
+        mainActivity.workOrderViewModel.deleteWorkOrderHistoryByWorkDateId(
+            workDate.workDateId, df.getCurrentTimeAsString()
+        )
+    }
+
+    private fun deleteExtras(workDate: WorkDates) {
+        mainActivity.payDayViewModel.deleteWorkDateExtrasByDateId(
+            workDate.workDateId, df.getCurrentTimeAsString()
+        )
     }
 
     private fun gotoWorkDateUpdate(workDate: WorkDates) {

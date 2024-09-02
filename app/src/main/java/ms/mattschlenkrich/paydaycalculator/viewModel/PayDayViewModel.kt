@@ -35,8 +35,31 @@ class PayDayViewModel(
             payDayRepository.updateWorkDate(workDate)
         }
 
+    fun updateWorkDates(
+        id: Long,
+        payPeriodId: Long,
+        employerId: Long,
+        cutOffDate: String,
+        date: String,
+        regHours: Double,
+        otHours: Double,
+        dblOtHours: Double,
+        statHours: Double,
+        isDeleted: Boolean,
+        updateTime: String
+    ) = viewModelScope.launch {
+        payDayRepository.updateWorkDates(
+            id, payPeriodId, employerId, cutOffDate,
+            date, regHours, otHours, dblOtHours,
+            statHours, isDeleted, updateTime
+        )
+    }
+
     fun getWorkDateList(employerId: Long, cutOff: String) =
         payDayRepository.getWorkDateList(employerId, cutOff)
+
+    fun getWorkDateListUsed(employerId: Long, cutOff: String) =
+        payDayRepository.getWorkDateListUsed(employerId, cutOff)
 
     fun insertWorkDate(workDate: WorkDates) =
         viewModelScope.launch {
@@ -73,6 +96,14 @@ class PayDayViewModel(
         extraName: String, workDateId: Long, updateTime: String
     ) = viewModelScope.launch {
         payDayRepository.deleteWorkDateExtra(extraName, workDateId, updateTime)
+    }
+
+    fun deleteWorkDateExtrasByDateId(
+        workDateId: Long, updateTime: String
+    ) = viewModelScope.launch {
+        payDayRepository.deleteWorkDateExtrasByDateId(
+            workDateId, updateTime
+        )
     }
 
     fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String) =

@@ -55,11 +55,47 @@ interface PayDayDao {
     )
     fun getWorkDateList(employerId: Long, cutOff: String): LiveData<List<WorkDates>>
 
+    @Query(
+        "SELECT * FROM $TABLE_WORK_DATES " +
+                "WHERE wdEmployerId = :employerId " +
+                "AND wdCutoffDate = :cutOff " +
+                "ORDER BY wdDate"
+    )
+    fun getWorkDateListUsed(employerId: Long, cutOff: String): LiveData<List<WorkDates>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkDate(workDate: WorkDates)
 
-    @Update(onConflict = OnConflictStrategy.REPLACE)
+    @Update
     suspend fun updateWorkDate(workDate: WorkDates)
+
+    @Query(
+        "UPDATE workDates " +
+                "SET wdPayPeriodId = :payPeriodId, " +
+                "wdEmployerId = :employerId, " +
+                "wdCutoffDate = :cutOffDate, " +
+                "wdDate = :date, " +
+                "wdRegHours = :regHours," +
+                "wdOtHours = :otHours," +
+                "wdDblOtHours = :dblOtHours, " +
+                "wdStatHours = :statHours, " +
+                "wdIsDeleted = :isDeleted, " +
+                "wdUpdateTime = :updateTime " +
+                "WHERE workDateId = :id"
+    )
+    suspend fun updateWorkDates(
+        id: Long,
+        payPeriodId: Long,
+        employerId: Long,
+        cutOffDate: String,
+        date: String,
+        regHours: Double,
+        otHours: Double,
+        dblOtHours: Double,
+        statHours: Double,
+        isDeleted: Boolean,
+        updateTime: String
+    )
 
     @Delete
     suspend fun deleteWorkDateExtra(extraTypes: WorkExtraTypes)
@@ -93,6 +129,16 @@ interface PayDayDao {
     )
     suspend fun deleteWorkDateExtra(
         extraName: String, workDateId: Long, updateTime: String
+    )
+
+    @Query(
+        "UPDATE workDateExtras " +
+                "SET wdeIsDeleted = 1, " +
+                "wdeUpdateTime = :updateTime " +
+                "WHERE wdeWorkDateId = :workDateId"
+    )
+    suspend fun deleteWorkDateExtrasByDateId(
+        workDateId: Long, updateTime: String
     )
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)

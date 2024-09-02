@@ -92,4 +92,12 @@ class WorkOrderViewModel(
 
     fun getWorkOrderHistory(historyID: Long) =
         workOrderRepository.getWorkOrderHistory(historyID)
+
+    fun deleteWorkOrderHistoryByWorkDateId(
+        workDateId: Long, updateTime: String
+    ) = viewModelScope.launch {
+        workOrderRepository.deleteWorkOrderHistoryByWorkDateId(
+            workDateId, updateTime
+        )
+    }
 }

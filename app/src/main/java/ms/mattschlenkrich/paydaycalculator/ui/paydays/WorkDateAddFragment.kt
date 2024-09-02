@@ -51,7 +51,8 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private val df = DateFunctions()
     private val nf = NumberFunctions()
 
-    private val usedWorkDatesList = ArrayList<String>()
+    private val workDatesList = ArrayList<WorkDates>()
+    private val usedWorkDatesList = ArrayList<WorkDates>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,7 +77,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private fun populateValues() {
         if (mainActivity.mainViewModel.getPayPeriod() != null) {
             payPeriod = mainActivity.mainViewModel.getPayPeriod()
-            populateUsedWorkDateList()
+            populateWorkDateLists()
             CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_250)
                 populateDate()
@@ -85,22 +86,26 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         }
     }
 
-    private fun populateUsedWorkDateList() {
-        mainActivity.payDayViewModel.getWorkDateList(
+    private fun populateWorkDateLists() {
+        mainActivity.payDayViewModel.getWorkDateListUsed(
             payPeriod!!.ppEmployerId,
             payPeriod!!.ppCutoffDate
         ).observe(viewLifecycleOwner) { list ->
             usedWorkDatesList.clear()
+            workDatesList.clear()
             list.listIterator().forEach {
-                usedWorkDatesList.add(it.wdDate)
+                if (!it.wdIsDeleted) {
+                    workDatesList.add(it)
+                }
+                usedWorkDatesList.add(it)
             }
         }
     }
 
     private fun populateDate() {
         curDateString = LocalDate.now().toString()
-        for (date in usedWorkDatesList) {
-            if (curDateString == date) {
+        for (date in workDatesList) {
+            if (curDateString == date.wdDate) {
                 curDateString = LocalDate.parse(curDateString).plusDays(1L).toString()
             }
         }
@@ -236,9 +241,9 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
             askUserToSaveNowOrAddExtras(fragment)
         } else {
             for (date in usedWorkDatesList) {
-                if (date == curDateString) {
+                if (date.wdDate == curDateString) {
                     found = true
-                    askUserToOverwriteUsedDate(fragment)
+                    askUserToOverwriteUsedDate(date, fragment)
                 }
             }
             if (!found) {
@@ -247,7 +252,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         }
     }
 
-    private fun askUserToOverwriteUsedDate(fragment: String) {
+    private fun askUserToOverwriteUsedDate(date: WorkDates, fragment: String) {
         AlertDialog.Builder(mView.context)
             .setTitle("This date is already used")
             .setMessage(
@@ -255,7 +260,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                         "this work date?"
             )
             .setPositiveButton("Yes") { _, _ ->
-                saveWorkDate(fragment)
+                overWriteWorkDate(date, fragment)
             }
             .setNegativeButton("No", null)
             .show()
@@ -289,6 +294,42 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                 gotoTimeSheetAddWorkOrder(workDate)
             }
         }
+    }
+
+    fun overWriteWorkDate(date: WorkDates, goBackTo: String) {
+        val workDate = getUpdatedWorkDate(date)
+        mainActivity.payDayViewModel.updateWorkDate(workDate)
+        mainActivity.mainViewModel.setWorkDateObject(workDate)
+        saveExtras(workDate)
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_500)
+            if (goBackTo == FRAG_TIME_SHEET) {
+                gotoTimeSheet()
+            }
+            if (goBackTo == FRAG_WORK_DATE_UPDATE) {
+                gotoWorkDateUpdate(workDate)
+            }
+            if (goBackTo == FRAG_WORK_ORDER_HISTORY_ADD) {
+                gotoTimeSheetAddWorkOrder(workDate)
+            }
+        }
+    }
+
+    private fun getUpdatedWorkDate(date: WorkDates): WorkDates {
+        val tempWorkDate = getCurWorkDate()
+        return WorkDates(
+            date.workDateId,
+            tempWorkDate.wdPayPeriodId,
+            tempWorkDate.wdEmployerId,
+            tempWorkDate.wdCutoffDate,
+            tempWorkDate.wdDate,
+            tempWorkDate.wdRegHours,
+            tempWorkDate.wdOtHours,
+            tempWorkDate.wdDblOtHours,
+            tempWorkDate.wdStatHours,
+            false,
+            df.getCurrentTimeAsString()
+        )
     }
 
     private fun saveExtras(workDate: WorkDates) {

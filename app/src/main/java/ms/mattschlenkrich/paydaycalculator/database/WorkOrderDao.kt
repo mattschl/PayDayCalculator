@@ -153,4 +153,14 @@ interface WorkOrderDao {
                 "WHERE woHistoryId = :historyID"
     )
     fun getWorkOrderHistory(historyID: Long): LiveData<WorkOrderHistoryFull>
+
+    @Query(
+        "UPDATE workOrderHistory " +
+                "SET woHistoryDeleted = 1, " +
+                "woHistoryUpdateTime = :updateTime " +
+                "WHERE woHistoryWorkDateId = :workDateId"
+    )
+    suspend fun deleteWorkOrderHistoryByWorkDateId(
+        workDateId: Long, updateTime: String
+    )
 }
