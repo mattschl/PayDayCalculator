@@ -19,6 +19,9 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_EMPLOYERS
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_TIME_SHEET
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDERS
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_SEMI_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
@@ -303,9 +306,44 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
                 gotoEmployerExtrasFragment(curEmployer)
             }
             .setNegativeButton("No") { _, _ ->
-                gotoEmployerFragment()
+                gotoCallingFragment(curEmployer)
             }
             .show()
+    }
+
+    private fun gotoCallingFragment(employer: Employers) {
+        val fragment = mainActivity.mainViewModel.getCallingFragment()
+        if (fragment != null) {
+            when (fragment) {
+                FRAG_EMPLOYERS -> {
+                    gotoEmployerFragment()
+                }
+
+                FRAG_WORK_ORDERS -> {
+                    gotoWorkOrdersFragment(employer)
+                }
+
+                FRAG_TIME_SHEET -> {
+                    gotoTimeSheetFragment(employer)
+                }
+            }
+        }
+    }
+
+    private fun gotoTimeSheetFragment(employer: Employers) {
+        mainActivity.mainViewModel.setEmployer(employer)
+        mView.findNavController().navigate(
+            EmployerAddFragmentDirections
+                .actionEmployerAddFragmentToNewTimeSheetFragment()
+        )
+    }
+
+    private fun gotoWorkOrdersFragment(employer: Employers) {
+        mainActivity.mainViewModel.setEmployer(employer)
+        mView.findNavController().navigate(
+            EmployerAddFragmentDirections
+                .actionEmployerAddFragmentToWorkOrdersFragment()
+        )
     }
 
     private fun gotoEmployerExtrasFragment(curEmployer: Employers) {
@@ -317,6 +355,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun gotoEmployerFragment() {
+        mainActivity.mainViewModel.setEmployer(null)
         mView.findNavController().navigate(
             EmployerAddFragmentDirections
                 .actionEmployerAddFragmentToEmployerFragment()

@@ -45,6 +45,12 @@
         <action
             android:id="@+id/action_employerAddFragment_to_employerPayRatesFragment"
             app:destination="@id/employerPayRatesFragment" />
+        <action
+            android:id="@+id/action_employerAddFragment_to_workOrdersFragment"
+            app:destination="@id/workOrdersFragment" />
+        <action
+            android:id="@+id/action_employerAddFragment_to_newTimeSheetFragment"
+            app:destination="@id/newTimeSheetFragment" />
     </fragment>
     <fragment
         android:id="@+id/employerUpdateFragment"
@@ -451,6 +457,9 @@
         <action
             android:id="@+id/action_workOrderAddFragment_to_workOrderHistoryUpdateFragment"
             app:destination="@id/workOrderHistoryUpdateFragment" />
+        <action
+            android:id="@+id/action_workOrderAddFragment_to_workOrdersFragment"
+            app:destination="@id/workOrdersFragment" />
     </fragment>
     <fragment
         android:id="@+id/workOrderUpdateFragment"
@@ -467,9 +476,30 @@
         <action
             android:id="@+id/action_workOrderUpdateFragment_to_workOrderHistoryAddFragment"
             app:destination="@id/workOrderHistoryAddFragment" />
+        <action
+            android:id="@+id/action_workOrderUpdateFragment_to_workOrdersFragment"
+            app:destination="@id/workOrdersFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_workOrderAddFragment"
         app:destination="@id/workOrderAddFragment" />
+    <fragment
+        android:id="@+id/workOrdersFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.workOrder.WorkOrdersFragment"
+        android:label="fragment_work_orders"
+        tools:layout="@layout/fragment_work_orders">
+        <action
+            android:id="@+id/action_workOrdersFragment_to_employerAddFragment"
+            app:destination="@id/employerAddFragment" />
+        <action
+            android:id="@+id/action_workOrdersFragment_to_workOrderAddFragment"
+            app:destination="@id/workOrderAddFragment" />
+        <action
+            android:id="@+id/action_workOrdersFragment_to_workOrderUpdateFragment"
+            app:destination="@id/workOrderUpdateFragment" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_workOrdersFragment"
+        app:destination="@id/workOrdersFragment" />
 
 </navigation>

@@ -4,12 +4,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.adapter.WorkOrdersAdapter
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDERS
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrdersBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
+private const val TAG = FRAG_WORK_ORDERS
 
 class WorkOrdersFragment :
     Fragment(R.layout.fragment_work_orders) {
@@ -19,7 +31,6 @@ class WorkOrdersFragment :
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private var curEmployer: Employers? = null
-    private var employerList = ArrayList<Employers>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,15 +52,97 @@ class WorkOrdersFragment :
     }
 
     private fun populateEmployers() {
-        TODO("Not yet implemented")
+        val employerAdapter = ArrayAdapter<String>(
+            mView.context,
+            R.layout.spinner_item_bold
+        )
+        mainActivity.employerViewModel.getEmployers().observe(
+            viewLifecycleOwner
+        ) { employers ->
+            employerAdapter.clear()
+            employerAdapter.notifyDataSetChanged()
+            employers.listIterator().forEach {
+                employerAdapter.add(it.employerName)
+            }
+            curEmployer = employers.first()
+            employerAdapter.add(getString(R.string.add_new_employer))
+        }
+        binding.spEmployers.adapter = employerAdapter
     }
 
     private fun onSelectEmployer() {
-        TODO("Not yet implemented")
+        binding.apply {
+            spEmployers.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        if (spEmployers.selectedItem.toString() !=
+                            getString(R.string.add_new_employer)
+                        ) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                curEmployer = mainActivity.employerViewModel.findEmployer(
+                                    spEmployers.selectedItem.toString()
+                                )
+                            }
+                            CoroutineScope(Dispatchers.Main).launch {
+                                delay(WAIT_250)
+                                mainActivity.mainViewModel.setEmployer(curEmployer)
+                                populateWorkOrders(curEmployer!!.employerId)
+                            }
+                        } else {
+                            gotoEmployerAdd()
+                        }
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+//                        fillEmployers()
+                    }
+                }
+        }
+    }
+
+    private fun populateWorkOrders(employerId: Long) {
+        mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
+            employerId
+        ).observe(viewLifecycleOwner) { workOrderList ->
+            val workOrdersAdapter = WorkOrdersAdapter(
+                mainActivity, mView, workOrderList
+            )
+            binding.rvWorkOrders.apply {
+                layoutManager =
+                    LinearLayoutManager(mView.context)
+                adapter = workOrdersAdapter
+            }
+        }
+    }
+
+    private fun gotoEmployerAdd() {
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mainActivity.mainViewModel.setEmployer(null)
+        mView.findNavController().navigate(
+            WorkOrdersFragmentDirections
+                .actionWorkOrdersFragmentToEmployerAddFragment()
+        )
     }
 
     private fun setClickActions() {
-        TODO("Not yet implemented")
+        binding.apply {
+            fabNew.setOnClickListener {
+                addNewWorkOrder()
+            }
+        }
+    }
+
+    private fun addNewWorkOrder() {
+        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mView.findNavController().navigate(
+            WorkOrdersFragmentDirections
+                .actionWorkOrdersFragmentToWorkOrderAddFragment()
+        )
     }
 
     override fun onDestroy() {

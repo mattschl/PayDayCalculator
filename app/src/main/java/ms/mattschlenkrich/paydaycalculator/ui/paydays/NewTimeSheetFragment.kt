@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_TIME_SHEET
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
@@ -30,7 +31,7 @@ import ms.mattschlenkrich.paydaycalculator.payFunctions.PayDateProjections
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import java.time.LocalDate
 
-private const val TAG = "NewTimeSheetFragment"
+private const val TAG = FRAG_TIME_SHEET
 
 class NewTimeSheetFragment :
     Fragment(R.layout.fragment_time_sheet),
