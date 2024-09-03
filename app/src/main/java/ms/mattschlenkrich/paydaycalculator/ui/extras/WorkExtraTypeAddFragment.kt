@@ -27,7 +27,7 @@ class WorkExtraTypeAddFragment : Fragment(
     R.layout.fragment_work_extra_type_add
 ) {
 
-    var _binding: FragmentWorkExtraTypeAddBinding? = null
+    private var _binding: FragmentWorkExtraTypeAddBinding? = null
     val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity

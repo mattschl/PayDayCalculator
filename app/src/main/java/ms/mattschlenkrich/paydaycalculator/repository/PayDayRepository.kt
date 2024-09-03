@@ -32,24 +32,24 @@ class PayDayRepository(private val db: PayDatabase) {
     suspend fun updateWorkDate(workDate: WorkDates) =
         db.getPayDayDao().updateWorkDate(workDate)
 
-    suspend fun updateWorkDates(
-        id: Long,
-        payPeriodId: Long,
-        employerId: Long,
-        cutOffDate: String,
-        date: String,
-        regHours: Double,
-        otHours: Double,
-        dblOtHours: Double,
-        statHours: Double,
-        isDeleted: Boolean,
-        updateTime: String
-    ) =
-        db.getPayDayDao().updateWorkDates(
-            id, payPeriodId, employerId, cutOffDate,
-            date, regHours, otHours, dblOtHours,
-            statHours, isDeleted, updateTime
-        )
+//    suspend fun updateWorkDates(
+//        id: Long,
+//        payPeriodId: Long,
+//        employerId: Long,
+//        cutOffDate: String,
+//        date: String,
+//        regHours: Double,
+//        otHours: Double,
+//        dblOtHours: Double,
+//        statHours: Double,
+//        isDeleted: Boolean,
+//        updateTime: String
+//    ) =
+//        db.getPayDayDao().updateWorkDates(
+//            id, payPeriodId, employerId, cutOffDate,
+//            date, regHours, otHours, dblOtHours,
+//            statHours, isDeleted, updateTime
+//        )
 
 //    fun getWorkDatesAndExtras(employerId: Long, cutOffDate: String) =
 //        db.getPayDayDao().getWorkDatesAndExtras(employerId, cutOffDate)

@@ -34,15 +34,15 @@ class WorkOrderViewModel(
             )
         }
 
-    fun deleteWorkOrder(workOrderId: Long, updateTime: String) =
-        viewModelScope.launch {
-            workOrderRepository.deleteWorkOrder(workOrderId, updateTime)
-        }
-
-    fun deleteWorkOrder(workOrderNumber: String, updateTime: String) =
-        viewModelScope.launch {
-            workOrderRepository.deleteWorkOrder(workOrderNumber, updateTime)
-        }
+//    fun deleteWorkOrder(workOrderId: Long, updateTime: String) =
+//        viewModelScope.launch {
+//            workOrderRepository.deleteWorkOrder(workOrderId, updateTime)
+//        }
+//
+//    fun deleteWorkOrder(workOrderNumber: String, updateTime: String) =
+//        viewModelScope.launch {
+//            workOrderRepository.deleteWorkOrder(workOrderNumber, updateTime)
+//        }
 
     fun getWorkOrder(workOrderId: Long) =
         workOrderRepository.getWorkOrder(workOrderId)

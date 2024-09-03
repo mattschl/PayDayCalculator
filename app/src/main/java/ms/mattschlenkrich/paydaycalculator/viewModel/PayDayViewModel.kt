@@ -35,25 +35,25 @@ class PayDayViewModel(
             payDayRepository.updateWorkDate(workDate)
         }
 
-    fun updateWorkDates(
-        id: Long,
-        payPeriodId: Long,
-        employerId: Long,
-        cutOffDate: String,
-        date: String,
-        regHours: Double,
-        otHours: Double,
-        dblOtHours: Double,
-        statHours: Double,
-        isDeleted: Boolean,
-        updateTime: String
-    ) = viewModelScope.launch {
-        payDayRepository.updateWorkDates(
-            id, payPeriodId, employerId, cutOffDate,
-            date, regHours, otHours, dblOtHours,
-            statHours, isDeleted, updateTime
-        )
-    }
+//    fun updateWorkDates(
+//        id: Long,
+//        payPeriodId: Long,
+//        employerId: Long,
+//        cutOffDate: String,
+//        date: String,
+//        regHours: Double,
+//        otHours: Double,
+//        dblOtHours: Double,
+//        statHours: Double,
+//        isDeleted: Boolean,
+//        updateTime: String
+//    ) = viewModelScope.launch {
+//        payDayRepository.updateWorkDates(
+//            id, payPeriodId, employerId, cutOffDate,
+//            date, regHours, otHours, dblOtHours,
+//            statHours, isDeleted, updateTime
+//        )
+//    }
 
     fun getWorkDateList(employerId: Long, cutOff: String) =
         payDayRepository.getWorkDateList(employerId, cutOff)

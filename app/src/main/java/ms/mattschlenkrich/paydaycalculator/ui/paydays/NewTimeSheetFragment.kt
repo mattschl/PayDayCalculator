@@ -391,19 +391,19 @@ class NewTimeSheetFragment :
         )
     }
 
-    private fun gotoPayDetails() {
-        mainActivity.mainViewModel.setCutOffDate(curCutOff)
-        mainActivity.mainViewModel.setEmployer(curEmployer)
-        mainActivity.mainViewModel.setCallingFragment(TAG)
+//    private fun gotoPayDetails() {
+//        mainActivity.mainViewModel.setCutOffDate(curCutOff)
+//        mainActivity.mainViewModel.setEmployer(curEmployer)
+//        mainActivity.mainViewModel.setCallingFragment(TAG)
+////        mView.findNavController().navigate(
+////            TimeSheetFragmentDirections
+////                .actionTimeSheetFragmentToPayDetailsFragment()
+////        )
 //        mView.findNavController().navigate(
-//            TimeSheetFragmentDirections
-//                .actionTimeSheetFragmentToPayDetailsFragment()
+//            NewTimeSheetFragmentDirections
+//                .actionNewTimeSheetFragmentToNewPayDetailFragment()
 //        )
-        mView.findNavController().navigate(
-            NewTimeSheetFragmentDirections
-                .actionNewTimeSheetFragmentToNewPayDetailFragment()
-        )
-    }
+//    }
 
     override fun onStop() {
         mainActivity.mainViewModel.setEmployer(curEmployer)

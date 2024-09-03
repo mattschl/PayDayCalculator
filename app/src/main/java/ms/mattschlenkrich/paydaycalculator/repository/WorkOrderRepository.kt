@@ -22,11 +22,11 @@ class WorkOrderRepository(private val db: PayDatabase) {
             description, isDeleted, updateTime
         )
 
-    suspend fun deleteWorkOrder(workOrderId: Long, updateTime: String) =
-        db.getWorkOrderDao().deleteWorkOrder(workOrderId, updateTime)
-
-    suspend fun deleteWorkOrder(workOrderNumber: String, updateTime: String) =
-        db.getWorkOrderDao().deleteWorkOrder(workOrderNumber, updateTime)
+//    suspend fun deleteWorkOrder(workOrderId: Long, updateTime: String) =
+//        db.getWorkOrderDao().deleteWorkOrder(workOrderId, updateTime)
+//
+//    suspend fun deleteWorkOrder(workOrderNumber: String, updateTime: String) =
+//        db.getWorkOrderDao().deleteWorkOrder(workOrderNumber, updateTime)
 
     fun getWorkOrder(workOrderId: Long) =
         db.getWorkOrderDao().getWorkOrder(workOrderId)
