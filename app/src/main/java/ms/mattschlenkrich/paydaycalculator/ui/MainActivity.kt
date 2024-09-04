@@ -13,24 +13,24 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import ms.mattschlenkrich.paydaycalculator.NavGraphDirections
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
+import ms.mattschlenkrich.paydaycalculator.database.repository.EmployerRepository
+import ms.mattschlenkrich.paydaycalculator.database.repository.PayDayRepository
+import ms.mattschlenkrich.paydaycalculator.database.repository.WorkExtraRepository
+import ms.mattschlenkrich.paydaycalculator.database.repository.WorkOrderRepository
+import ms.mattschlenkrich.paydaycalculator.database.repository.WorkTaxRepository
+import ms.mattschlenkrich.paydaycalculator.database.viewModel.EmployerViewModel
+import ms.mattschlenkrich.paydaycalculator.database.viewModel.EmployerViewModelFactory
+import ms.mattschlenkrich.paydaycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paydaycalculator.database.viewModel.MainViewModelFactory
+import ms.mattschlenkrich.paydaycalculator.database.viewModel.PayDayViewModel
+import ms.mattschlenkrich.paydaycalculator.database.viewModel.PayDayViewModelFactory
+import ms.mattschlenkrich.paydaycalculator.database.viewModel.WorkExtraViewModel
+import ms.mattschlenkrich.paydaycalculator.database.viewModel.WorkExtraViewModelFactory
+import ms.mattschlenkrich.paydaycalculator.database.viewModel.WorkOrderViewModel
+import ms.mattschlenkrich.paydaycalculator.database.viewModel.WorkOrderViewModelFactory
+import ms.mattschlenkrich.paydaycalculator.database.viewModel.WorkTaxViewModel
+import ms.mattschlenkrich.paydaycalculator.database.viewModel.WorkTaxViewModelFactory
 import ms.mattschlenkrich.paydaycalculator.databinding.ActivityMainBinding
-import ms.mattschlenkrich.paydaycalculator.repository.EmployerRepository
-import ms.mattschlenkrich.paydaycalculator.repository.PayDayRepository
-import ms.mattschlenkrich.paydaycalculator.repository.WorkExtraRepository
-import ms.mattschlenkrich.paydaycalculator.repository.WorkOrderRepository
-import ms.mattschlenkrich.paydaycalculator.repository.WorkTaxRepository
-import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModel
-import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModelFactory
-import ms.mattschlenkrich.paydaycalculator.viewModel.MainViewModel
-import ms.mattschlenkrich.paydaycalculator.viewModel.MainViewModelFactory
-import ms.mattschlenkrich.paydaycalculator.viewModel.PayDayViewModel
-import ms.mattschlenkrich.paydaycalculator.viewModel.PayDayViewModelFactory
-import ms.mattschlenkrich.paydaycalculator.viewModel.WorkExtraViewModel
-import ms.mattschlenkrich.paydaycalculator.viewModel.WorkExtraViewModelFactory
-import ms.mattschlenkrich.paydaycalculator.viewModel.WorkOrderViewModel
-import ms.mattschlenkrich.paydaycalculator.viewModel.WorkOrderViewModelFactory
-import ms.mattschlenkrich.paydaycalculator.viewModel.WorkTaxViewModel
-import ms.mattschlenkrich.paydaycalculator.viewModel.WorkTaxViewModelFactory
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding

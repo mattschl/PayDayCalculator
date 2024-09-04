@@ -29,10 +29,10 @@ import ms.mattschlenkrich.paydaycalculator.common.FRAG_EMPLOYER_UPDATE
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_SEMI_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
+import ms.mattschlenkrich.paydaycalculator.database.viewModel.EmployerViewModel
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
-import ms.mattschlenkrich.paydaycalculator.viewModel.EmployerViewModel
 
 private const val TAG = FRAG_EMPLOYER_UPDATE
 

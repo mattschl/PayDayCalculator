@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.viewModel
+package ms.mattschlenkrich.paydaycalculator.database.viewModel
 
 import android.app.Application
 import androidx.lifecycle.ViewModel

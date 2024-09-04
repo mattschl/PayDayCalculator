@@ -6,6 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_VERSION
+import ms.mattschlenkrich.paydaycalculator.database.dao.EmployerDao
+import ms.mattschlenkrich.paydaycalculator.database.dao.PayDayDao
+import ms.mattschlenkrich.paydaycalculator.database.dao.WorkExtraDao
+import ms.mattschlenkrich.paydaycalculator.database.dao.WorkOrderDao
+import ms.mattschlenkrich.paydaycalculator.database.dao.WorkTaxDao
 import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerPayRates
 import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerTaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers

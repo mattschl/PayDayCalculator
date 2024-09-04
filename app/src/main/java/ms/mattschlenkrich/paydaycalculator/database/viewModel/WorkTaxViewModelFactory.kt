@@ -1,9 +1,9 @@
-package ms.mattschlenkrich.paydaycalculator.viewModel
+package ms.mattschlenkrich.paydaycalculator.database.viewModel
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import ms.mattschlenkrich.paydaycalculator.repository.WorkTaxRepository
+import ms.mattschlenkrich.paydaycalculator.database.repository.WorkTaxRepository
 
 @Suppress("UNCHECKED_CAST")
 class WorkTaxViewModelFactory(

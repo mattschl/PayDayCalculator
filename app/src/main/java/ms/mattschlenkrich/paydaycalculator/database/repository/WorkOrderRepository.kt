@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.repository
+package ms.mattschlenkrich.paydaycalculator.database.repository
 
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder

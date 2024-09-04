@@ -1,12 +1,12 @@
-package ms.mattschlenkrich.paydaycalculator.viewModel
+package ms.mattschlenkrich.paydaycalculator.database.viewModel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.paydaycalculator.database.repository.WorkOrderRepository
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
-import ms.mattschlenkrich.paydaycalculator.repository.WorkOrderRepository
 
 class WorkOrderViewModel(
     app: Application,

@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.database
+package ms.mattschlenkrich.paydaycalculator.database.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao

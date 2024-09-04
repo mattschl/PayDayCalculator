@@ -1,14 +1,14 @@
-package ms.mattschlenkrich.paydaycalculator.viewModel
+package ms.mattschlenkrich.paydaycalculator.database.viewModel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.paydaycalculator.database.repository.WorkTaxRepository
 import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerTaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.tax.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.model.tax.WorkTaxRules
-import ms.mattschlenkrich.paydaycalculator.repository.WorkTaxRepository
 
 class WorkTaxViewModel(
     app: Application,

@@ -127,7 +127,7 @@ class NewTimeSheetFragment :
                             CoroutineScope(Dispatchers.Main).launch {
                                 delay(WAIT_100)
                                 if (valuesFilled) mainActivity.mainViewModel.setEmployer(curEmployer)
-                                mainActivity.title = getString(R.string.pay_details) +
+                                mainActivity.title = getString(R.string.time_sheet) +
                                         " for ${spEmployers.selectedItem}"
                                 populateCutOffDates()
                             }
