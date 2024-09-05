@@ -15,7 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.TaxTypeAdapter
+import ms.mattschlenkrich.paydaycalculator.adapter.tax.TaxTypeAdapter
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeBinding
 import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity

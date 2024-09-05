@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.adapter
+package ms.mattschlenkrich.paydaycalculator.adapter.paydays
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.adapter.payday.TimeSheetWorkDateExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateBinding
 import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
@@ -18,8 +19,6 @@ import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.ITimeSheetFragment
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.NewTimeSheetFragmentDirections
-
-//private const val TAG = "AdapterWorkDate"
 
 class WorkDateAdapter(
     private val mainActivity: MainActivity,

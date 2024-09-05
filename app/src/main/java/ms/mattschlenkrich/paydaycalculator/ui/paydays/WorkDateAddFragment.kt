@@ -19,7 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.WorkDateExtraAdapter
+import ms.mattschlenkrich.paydaycalculator.adapter.paydays.WorkDateExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_TIME_SHEET
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_DATE_EXTRA_ADD

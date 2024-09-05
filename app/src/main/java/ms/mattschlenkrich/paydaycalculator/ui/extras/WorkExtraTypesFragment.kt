@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.ExtraTypeAdapter
+import ms.mattschlenkrich.paydaycalculator.adapter.extras.ExtraTypeAdapter
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkExtraTypesBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 

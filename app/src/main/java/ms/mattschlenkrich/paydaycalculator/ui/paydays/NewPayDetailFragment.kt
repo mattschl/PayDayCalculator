@@ -21,8 +21,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.PayDetailExtraAdapter
-import ms.mattschlenkrich.paydaycalculator.adapter.PayDetailTaxAdapter
+import ms.mattschlenkrich.paydaycalculator.adapter.extras.PayDetailExtraAdapter
+import ms.mattschlenkrich.paydaycalculator.adapter.tax.PayDetailTaxAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_DETAILS
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions

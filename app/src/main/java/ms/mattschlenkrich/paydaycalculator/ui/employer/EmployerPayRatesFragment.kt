@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.EmployerWageAdapter
+import ms.mattschlenkrich.paydaycalculator.adapter.employer.EmployerWageAdapter
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_RATES
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerPayRatesBinding

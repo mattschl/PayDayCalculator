@@ -1,6 +1,5 @@
-package ms.mattschlenkrich.paydaycalculator.adapter
+package ms.mattschlenkrich.paydaycalculator.adapter.paydays
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +12,6 @@ import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragment
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragmentDirections
-
-private const val TAG = "WorkDateUpdateCustomExtra"
 
 class WorkDateUpdateCustomExtraAdapter(
     val mainActivity: MainActivity,
@@ -93,9 +90,7 @@ class WorkDateUpdateCustomExtraAdapter(
     }
 
     private fun activateExtra(extra: WorkDateExtras) {
-        Log.d(TAG, "activateExtra is entered")
         if (extra.workDateExtraId != 0L) {
-            Log.d(TAG, "UPDATING the extra")
             mainActivity.payDayViewModel.updateWorkDateExtra(
                 WorkDateExtras(
                     extra.workDateExtraId,
@@ -112,7 +107,6 @@ class WorkDateUpdateCustomExtraAdapter(
                 )
             )
         } else {
-            Log.d(TAG, "ADDING the extra")
             mainActivity.payDayViewModel.insertWorkDateExtra(
                 WorkDateExtras(
                     nf.generateRandomIdAsLong(),
