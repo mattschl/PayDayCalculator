@@ -1,8 +1,8 @@
 package ms.mattschlenkrich.paydaycalculator.database.repository
 
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
-import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
-import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
 
 class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun insertWorkOrder(workOrder: WorkOrder) =

@@ -21,9 +21,9 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
+import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxEffectiveDates
+import ms.mattschlenkrich.paydaycalculator.database.model.tax.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxRulesBinding
-import ms.mattschlenkrich.paydaycalculator.model.tax.TaxEffectiveDates
-import ms.mattschlenkrich.paydaycalculator.model.tax.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 const val TAG = FRAG_TAX_RULES

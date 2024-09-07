@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.model.tax
+package ms.mattschlenkrich.paydaycalculator.database.model.tax
 
 
 data class TaxAndAmount(

@@ -2,9 +2,8 @@ package ms.mattschlenkrich.paydaycalculator.database.repository
 
 
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
-import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerPayRates
-import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
-
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.EmployerPayRates
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 
 class EmployerRepository(private val db: PayDatabase) {
 

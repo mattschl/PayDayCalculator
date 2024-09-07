@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.model.extras
+package ms.mattschlenkrich.paydaycalculator.database.model.extras
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
@@ -11,7 +11,7 @@ import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
 import ms.mattschlenkrich.paydaycalculator.common.WORK_EXTRA_DEFINITIONS_EMPLOYER_ID
-import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 
 
 @Entity(

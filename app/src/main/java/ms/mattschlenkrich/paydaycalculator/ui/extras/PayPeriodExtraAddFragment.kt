@@ -18,10 +18,10 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayPeriodExtraAddBinding
-import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 class PayPeriodExtraAddFragment :

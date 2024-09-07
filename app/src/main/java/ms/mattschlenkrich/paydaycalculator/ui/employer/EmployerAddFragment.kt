@@ -25,9 +25,9 @@ import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDERS
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.common.INTERVAL_SEMI_MONTHLY
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.EmployerTaxTypes
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerAddBinding
-import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerTaxTypes
-import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 //private const val TAG = "EmployerAddFragment"

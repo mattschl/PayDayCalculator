@@ -1,10 +1,10 @@
-package ms.mattschlenkrich.paydaycalculator.model.workOrder
+package ms.mattschlenkrich.paydaycalculator.database.model.workOrder
 
 import android.os.Parcelable
 import androidx.room.Embedded
 import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
-import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 
 @Parcelize
 data class WorkOrderFull(

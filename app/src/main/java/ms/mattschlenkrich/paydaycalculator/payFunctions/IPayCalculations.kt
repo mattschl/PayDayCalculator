@@ -1,7 +1,8 @@
 package ms.mattschlenkrich.paydaycalculator.payFunctions
 
-import ms.mattschlenkrich.paydaycalculator.model.extras.ExtraAndTotal
-import ms.mattschlenkrich.paydaycalculator.model.tax.TaxAndAmount
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraAndTotal
+import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxAndAmount
+
 
 interface IPayCalculations {
     fun getDebitExtrasListByPay(): List<ExtraAndTotal>?

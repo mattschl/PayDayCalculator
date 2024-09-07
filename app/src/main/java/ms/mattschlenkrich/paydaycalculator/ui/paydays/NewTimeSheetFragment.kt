@@ -23,9 +23,9 @@ import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTimeSheetBinding
-import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.payFunctions.NewPayCalculations
 import ms.mattschlenkrich.paydaycalculator.payFunctions.PayDateProjections
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity

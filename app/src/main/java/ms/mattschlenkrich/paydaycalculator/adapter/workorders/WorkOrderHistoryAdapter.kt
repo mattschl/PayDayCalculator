@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryFull
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkOrderHistoryDetailItemBinding
-import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistoryFull
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 class WorkOrderHistoryAdapter(

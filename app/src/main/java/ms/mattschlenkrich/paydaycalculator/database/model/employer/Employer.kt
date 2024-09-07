@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.model.employer
+package ms.mattschlenkrich.paydaycalculator.database.model.employer
 
 import android.os.Parcelable
 import androidx.room.Entity

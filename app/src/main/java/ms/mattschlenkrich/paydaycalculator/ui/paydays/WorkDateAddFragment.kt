@@ -29,11 +29,11 @@ import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtras
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateAddBinding
-import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtraTypes
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDateExtras
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import java.time.LocalDate
 

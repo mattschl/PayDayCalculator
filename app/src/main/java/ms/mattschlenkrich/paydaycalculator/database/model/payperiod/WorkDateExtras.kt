@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.model.payperiod
+package ms.mattschlenkrich.paydaycalculator.database.model.payperiod
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo

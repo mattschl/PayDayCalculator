@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.model.extras
+package ms.mattschlenkrich.paydaycalculator.database.model.extras
 
 import android.os.Parcelable
 import androidx.room.Embedded

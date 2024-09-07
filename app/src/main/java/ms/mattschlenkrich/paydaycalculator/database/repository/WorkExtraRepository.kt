@@ -1,9 +1,9 @@
 package ms.mattschlenkrich.paydaycalculator.database.repository
 
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
-import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtraTypes
-import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtrasDefinitions
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDateExtras
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtrasDefinitions
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtras
 
 class WorkExtraRepository(private val db: PayDatabase) {
     suspend fun insertWorkExtraDefinition(definition: WorkExtrasDefinitions) =

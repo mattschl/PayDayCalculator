@@ -13,13 +13,13 @@ import ms.mattschlenkrich.paydaycalculator.common.PAY_PERIODS_LIMIT
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_PAY_PERIODS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATE_EXTRAS
-import ms.mattschlenkrich.paydaycalculator.model.extras.WorkDateExtrasAndDates
-import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtraTypes
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDateExtraAndTypeFull
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDateExtras
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodExtras
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkDateExtrasAndDates
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtraAndTypeFull
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtras
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkPayPeriodExtras
 
 @Dao
 interface PayDayDao {

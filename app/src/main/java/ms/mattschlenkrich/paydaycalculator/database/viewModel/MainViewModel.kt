@@ -2,19 +2,19 @@ package ms.mattschlenkrich.paydaycalculator.database.viewModel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerPayRates
-import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
-import ms.mattschlenkrich.paydaycalculator.model.extras.ExtraDefinitionFull
-import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtraTypes
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDateExtras
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodExtras
-import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
-import ms.mattschlenkrich.paydaycalculator.model.tax.WorkTaxRules
-import ms.mattschlenkrich.paydaycalculator.model.workOrder.TempWorkOrderHistoryInfo
-import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
-import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.EmployerPayRates
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraDefinitionFull
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtras
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkPayPeriodExtras
+import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxTypes
+import ms.mattschlenkrich.paydaycalculator.database.model.tax.WorkTaxRules
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.TempWorkOrderHistoryInfo
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
 
 class MainViewModel(
     app: Application,

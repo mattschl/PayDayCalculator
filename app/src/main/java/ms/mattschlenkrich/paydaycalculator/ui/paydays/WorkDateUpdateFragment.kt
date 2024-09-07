@@ -21,9 +21,9 @@ import ms.mattschlenkrich.paydaycalculator.common.FRAG_TIME_SHEET
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtras
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateUpdateBinding
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDateExtras
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 private const val TAG = "WorkDateUpdate"

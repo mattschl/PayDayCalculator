@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.model.employer
+package ms.mattschlenkrich.paydaycalculator.database.model.employer
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

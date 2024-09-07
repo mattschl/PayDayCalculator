@@ -6,9 +6,9 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
-import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
-import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistoryFull
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryFull
 
 @Dao
 interface WorkOrderDao {

@@ -8,9 +8,9 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerExtraItemBinding
-import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
-import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragmentDirections
 

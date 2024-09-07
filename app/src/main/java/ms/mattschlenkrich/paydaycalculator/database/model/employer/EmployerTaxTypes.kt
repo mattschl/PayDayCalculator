@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.model.employer
+package ms.mattschlenkrich.paydaycalculator.database.model.employer
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
@@ -10,7 +10,7 @@ import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_EMPLOYER_ID
 import ms.mattschlenkrich.paydaycalculator.common.EMPLOYER_TAX_RULES_TAX_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYER_TAX_TYPES
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
-import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
+import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxTypes
 
 
 @Entity(

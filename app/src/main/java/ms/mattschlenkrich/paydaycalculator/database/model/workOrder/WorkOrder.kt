@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.model.workOrder
+package ms.mattschlenkrich.paydaycalculator.database.model.workOrder
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
@@ -7,7 +7,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
-import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 
 @Entity(
     tableName = "workOrders",

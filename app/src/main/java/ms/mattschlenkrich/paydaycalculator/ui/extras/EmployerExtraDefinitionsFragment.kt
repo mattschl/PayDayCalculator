@@ -20,9 +20,9 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.employer.EmployerExtraDefinitionFullAdapter
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_EXTRA_DEFINITIONS
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerExtraDefinitionsBinding
-import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
-import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 private const val TAG = FRAG_EXTRA_DEFINITIONS

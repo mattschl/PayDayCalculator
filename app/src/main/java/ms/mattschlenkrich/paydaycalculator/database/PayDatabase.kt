@@ -11,23 +11,23 @@ import ms.mattschlenkrich.paydaycalculator.database.dao.PayDayDao
 import ms.mattschlenkrich.paydaycalculator.database.dao.WorkExtraDao
 import ms.mattschlenkrich.paydaycalculator.database.dao.WorkOrderDao
 import ms.mattschlenkrich.paydaycalculator.database.dao.WorkTaxDao
-import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerPayRates
-import ms.mattschlenkrich.paydaycalculator.model.employer.EmployerTaxTypes
-import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
-import ms.mattschlenkrich.paydaycalculator.model.extras.ExtraDefinitionAndType
-import ms.mattschlenkrich.paydaycalculator.model.extras.ExtraTypeAndDefByDay
-import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtraTypes
-import ms.mattschlenkrich.paydaycalculator.model.extras.WorkExtrasDefinitions
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDateExtras
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkDates
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodExtras
-import ms.mattschlenkrich.paydaycalculator.model.payperiod.WorkPayPeriodTax
-import ms.mattschlenkrich.paydaycalculator.model.tax.TaxEffectiveDates
-import ms.mattschlenkrich.paydaycalculator.model.tax.TaxTypes
-import ms.mattschlenkrich.paydaycalculator.model.tax.WorkTaxRules
-import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrder
-import ms.mattschlenkrich.paydaycalculator.model.workOrder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.EmployerPayRates
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.EmployerTaxTypes
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraDefinitionAndType
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraTypeAndDefByDay
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtraTypes
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtrasDefinitions
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtras
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkPayPeriodExtras
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkPayPeriodTax
+import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxEffectiveDates
+import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxTypes
+import ms.mattschlenkrich.paydaycalculator.database.model.tax.WorkTaxRules
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
 
 
 @Database(

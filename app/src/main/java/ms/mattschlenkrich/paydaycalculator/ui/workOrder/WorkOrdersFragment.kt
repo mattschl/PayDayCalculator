@@ -17,8 +17,8 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.workorders.WorkOrdersAdapter
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDERS
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrdersBinding
-import ms.mattschlenkrich.paydaycalculator.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 private const val TAG = FRAG_WORK_ORDERS
