@@ -25,9 +25,18 @@
         <item>Monthly</item>
         <item>Annually</item>
     </string-array>
+    <string-array name="extra_based_on">
+        <item>Hourly</item>
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Per Pay</item>
+        <item>Per Pay Percentage of all</item>
+        <item>Monthly</item>
+        <item>Annually</item>
+    </string-array>
     <string-array name="tax_based_on">
         <item>Time Worked Only</item>
         <item>Time Worked and Stat</item>
-        <item>All taxable</item>
+        <item>All Hourly and Extras</item>
     </string-array>
 </resources>

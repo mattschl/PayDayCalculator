@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.EmployerPayRates
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraAndTotal
@@ -32,6 +33,7 @@ class NewPayCalculations(
     private val workDates = ArrayList<WorkDates>()
     private val workDateExtrasFull = ArrayList<WorkDateExtraAndTypeFull>()
     private val workExtrasByPay = ArrayList<ExtraDefinitionAndType>()
+    private val workExtrasByPercentage = ArrayList<ExtraDefinitionAndType>()
     private val extraTypes = ArrayList<WorkExtraTypes>()
     private val taxRules = ArrayList<WorkTaxRules>()
     private val taxTypes = ArrayList<TaxTypes>()
@@ -40,8 +42,10 @@ class NewPayCalculations(
     private var debitExtraAndTotalByPay: ArrayList<ExtraAndTotal>? = null
     private var creditExtraAndTotalByDate: ArrayList<ExtraAndTotal>? = null
     private var creditExtraAndTotalByPay: ArrayList<ExtraAndTotal>? = null
+    private var creditExtraAndTotalByPercentage: ArrayList<ExtraAndTotal>? = null
     private var creditTotalByDate = 0.0
     private var creditTotalsByPay = 0.0
+    private var creditTotalsByPercentage = 0.0
     private var debitTotalsByPay = 0.0
     private var taxDeductions = 0.0
     private var taxFactor = 0.0
@@ -62,15 +66,18 @@ class NewPayCalculations(
             delay(WAIT_100)
             processExtrasPerDay()
             processExtrasPerPay()
-            delay(WAIT_100)
             processExtrasCustomPerPay()
+            delay(WAIT_250)
+            processExtrasPerPercentage()
+            delay(WAIT_100)
             processExtraTypes()
             processTaxRates()
             delay(WAIT_100)
-            processCreditExtrasAndTotalsDate()
-            processCreditExtrasAndTotalsPay()
+            processCreditExtrasAndTotalsByDate()
+            processCreditExtrasAndTotalsByPay()
+            processCreditExtrasAndTotalsByPercentage()
             processDebitExtrasAndTotalsByPay()
-            delay(WAIT_250)
+            delay(WAIT_500)
             processTaxList()
             processTaxDeductions()
         }
@@ -164,6 +171,20 @@ class NewPayCalculations(
         }
     }
 
+    private fun processExtrasPerPercentage() {
+        mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
+            mainActivity.workExtraViewModel.getExtraTypesAndDef(
+                employer.employerId,
+                currentPayPeriod.ppCutoffDate, 4
+            ).observe(lifecycleOwner) { list ->
+                workExtrasByPercentage.clear()
+                list.listIterator().forEach {
+                    workExtrasByPercentage.add(it)
+                }
+            }
+        }
+    }
+
     private fun processExtrasCustomPerPay() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.payDayViewModel.getPayPeriodExtras(
@@ -197,10 +218,10 @@ class NewPayCalculations(
             mainActivity.workTaxViewModel.getCurrentEffectiveDate(
                 currentPayPeriod.ppCutoffDate
             ).observe(lifecycleOwner) { date ->
-                if (date.isNullOrBlank()) {
-                    effectiveDate = df.getCurrentDateAsString()
+                effectiveDate = if (date.isNullOrBlank()) {
+                    df.getCurrentDateAsString()
                 } else {
-                    effectiveDate = date
+                    date
                 }
             }
         }
@@ -235,7 +256,7 @@ class NewPayCalculations(
         }
     }
 
-    private fun processCreditExtrasAndTotalsDate() {
+    private fun processCreditExtrasAndTotalsByDate() {
         val extraList = ArrayList<ExtraAndTotal>()
         var total = 0.0
         for (i in 0 until workDateExtrasFull.size) {
@@ -307,12 +328,14 @@ class NewPayCalculations(
         creditTotalByDate = if (getPayHourly() > 0.0) subTotal else 0.0
     }
 
-    private fun processCreditExtrasAndTotalsPay() {
+    private fun processCreditExtrasAndTotalsByPay() {
         val extraList = ArrayList<ExtraAndTotal>()
         for (i in 0 until workExtrasByPay.size) {
             var notFound = true
             for (extra in payPeriodExtras) {
-                if (workExtrasByPay[i].extraType.wetName == extra.ppeName) {
+                if (workExtrasByPay[i].extraType.wetName ==
+                    extra.ppeName
+                ) {
                     notFound = false
                 }
             }
@@ -403,6 +426,39 @@ class NewPayCalculations(
             }
         }
         creditTotalsByPay = subTotal
+    }
+
+    private fun processCreditExtrasAndTotalsByPercentage() {
+        val extraList = ArrayList<ExtraAndTotal>()
+        for (i in 0 until workExtrasByPercentage.size) {
+            var notFound = true
+            for (extra in payPeriodExtras) {
+                if (workExtrasByPercentage[i].extraType.wetName ==
+                    extra.ppeName
+                ) {
+                    notFound = false
+                }
+            }
+            if (notFound) {
+                if (workExtrasByPay[i].extraType.wetIsCredit &&
+                    workExtrasByPay[i].extraType.wetIsDefault &&
+                    workExtrasByPay[i].extraType.wetAppliesTo == 4
+                ) {
+                    if (!workExtrasByPercentage[i].definition.weIsFixed) {
+                        val extraValue = workExtrasByPercentage[i].definition.weValue *
+                                getPayGross() / 100
+                        extraList.add(
+                            ExtraAndTotal(
+                                workExtrasByPercentage[i].extraType.wetName,
+                                extraValue
+                            )
+                        )
+                        creditTotalsByPercentage = extraValue
+                    }
+                }
+            }
+            creditExtraAndTotalByPercentage = extraList
+        }
     }
 
     private fun processDebitExtrasAndTotalsByPay() {
@@ -604,12 +660,16 @@ class NewPayCalculations(
         return creditExtraAndTotalByPay
     }
 
+    override fun getCreditExtrasListByPercentage(): List<ExtraAndTotal>? {
+        return creditExtraAndTotalByPercentage
+    }
+
     override fun getDebitTotalsByPay(): Double {
         return debitTotalsByPay
     }
 
     override fun getCreditTotalAll(): Double {
-        return creditTotalByDate + creditTotalsByPay
+        return creditTotalByDate + creditTotalsByPay + creditTotalsByPercentage
     }
 
     override fun getHoursWorked(): Double {

@@ -119,6 +119,13 @@ class PayDayViewModel(
             payDayRepository.updatePayPeriodExtra(payPeriodExtra)
         }
 
+    fun deletePayPeriodExtra(extraId: Long, updateTime: String) =
+        viewModelScope.launch {
+            payDayRepository.deletePayPeriodExtra(
+                extraId, updateTime
+            )
+        }
+
     fun getPayPeriodExtras(payPeriodId: Long) =
         payDayRepository.getPayPeriodExtras(payPeriodId)
 

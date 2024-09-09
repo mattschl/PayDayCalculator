@@ -7,6 +7,8 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.view.MenuHost
@@ -57,17 +59,45 @@ class WorkExtraTypeAddFragment : Fragment(
         populateSpinners()
         getExtraTypeList()
         setMenuActions()
+        onAppliesToSpinnerSelected()
+    }
+
+    private fun onAppliesToSpinnerSelected() {
+        binding.apply {
+            spAppliesTo.onItemSelectedListener =
+                object : OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        if (position == 4) {
+                            spAttachTo.setSelection(3)
+                        }
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                        //not needed
+                    }
+                }
+        }
     }
 
     private fun populateSpinners() {
         binding.apply {
-            val frequencyAdapter = ArrayAdapter(
+            val appliesToAdapter = ArrayAdapter(
+                mView.context, R.layout.spinner_item_bold,
+                resources.getStringArray(R.array.extra_based_on)
+            )
+            appliesToAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
+            spAppliesTo.adapter = appliesToAdapter
+            val attachToAdapter = ArrayAdapter(
                 mView.context, R.layout.spinner_item_bold,
                 resources.getStringArray(R.array.pay_per_frequencies)
             )
-            frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
-            spAppliesTo.adapter = frequencyAdapter
-            spAttachTo.adapter = frequencyAdapter
+            attachToAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
+            spAttachTo.adapter = attachToAdapter
         }
     }
 
@@ -106,7 +136,7 @@ class WorkExtraTypeAddFragment : Fragment(
     }
 
     private fun saveExtraType() {
-        val message = checkExtraType()
+        val message = validateExtraType()
         if (message == ANSWER_OK) {
             val newWorkExtraType = getNewWorkExtraType()
             mainActivity.workExtraViewModel.insertWorkExtraType(newWorkExtraType)
@@ -145,7 +175,7 @@ class WorkExtraTypeAddFragment : Fragment(
         )
     }
 
-    private fun checkExtraType(): String {
+    private fun validateExtraType(): String {
         binding.apply {
             var nameFound = false
             if (extraTypeList.isNotEmpty()) {
@@ -153,6 +183,15 @@ class WorkExtraTypeAddFragment : Fragment(
                     if (extra.wetName == etExtraName.text.toString().trim()) {
                         nameFound = true
                         break
+                    }
+                    if (spAppliesTo.selectedItemPosition == 4 &&
+                        extra.wetAppliesTo == 4 &&
+                        spAppliesTo.selectedItemPosition !=
+                        extra.wetAppliesTo
+                    ) {
+                        return "    ERROR!!\n" +
+                                "There can only be one extra that " +
+                                "uses the sum that includes other extras."
                     }
                 }
             }

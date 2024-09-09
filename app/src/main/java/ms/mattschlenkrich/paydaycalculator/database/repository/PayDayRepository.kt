@@ -93,6 +93,9 @@ class PayDayRepository(private val db: PayDatabase) {
     suspend fun updatePayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras) =
         db.getPayDayDao().updatePayPeriodExtra(payPeriodExtra)
 
+    suspend fun deletePayPeriodExtra(extraId: Long, updateTime: String) =
+        db.getPayDayDao().deletePayPeriodExtra(extraId, updateTime)
+
     fun getPayPeriodExtras(payPeriodId: Long) =
         db.getPayDayDao().getPayPeriodExtras(payPeriodId)
 

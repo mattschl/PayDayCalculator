@@ -296,7 +296,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         }
     }
 
-    fun overWriteWorkDate(date: WorkDates, goBackTo: String) {
+    private fun overWriteWorkDate(date: WorkDates, goBackTo: String) {
         val workDate = getUpdatedWorkDate(date)
         mainActivity.payDayViewModel.updateWorkDate(workDate)
         mainActivity.mainViewModel.setWorkDateObject(workDate)

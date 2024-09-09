@@ -594,6 +594,14 @@ class NewPayDetailFragment :
                         )
                     }
                 }
+
+                4 -> {
+                    val sum =
+                        payCalculations.getPayGross() * it.definition.weValue / 100
+                    extraList.add(
+                        createWorkPayPeriodExtra(it, sum)
+                    )
+                }
             }
         }
     }

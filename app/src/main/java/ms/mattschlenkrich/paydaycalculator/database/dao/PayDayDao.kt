@@ -172,6 +172,14 @@ interface PayDayDao {
     suspend fun updatePayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras)
 
     @Query(
+        "UPDATE workPayPeriodExtras " +
+                "SET ppeIsDeleted = 1, " +
+                "ppeUpdateTime = :updateTime " +
+                "WHERE workPayPeriodExtraId = :extraId"
+    )
+    suspend fun deletePayPeriodExtra(extraId: Long, updateTime: String)
+
+    @Query(
         "SELECT * FROM workPayPeriodExtras " +
                 "WHERE workPayPeriodExtraId = :workPayPeriodExtraId"
     )

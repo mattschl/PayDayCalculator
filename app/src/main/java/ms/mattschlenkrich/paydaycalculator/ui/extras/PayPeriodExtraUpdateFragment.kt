@@ -192,12 +192,14 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
     }
 
     private fun deleteExtra() {
+        mainActivity.payDayViewModel.deletePayPeriodExtra(
+            oldPayPeriodExtra.workPayPeriodExtraId, df.getCurrentTimeAsString()
+        )
+        gotoCallingFragment()
+    }
 
-        Toast.makeText(
-            mView.context,
-            "This function is not available",
-            Toast.LENGTH_LONG
-        ).show()
+    private fun gotoCallingFragment() {
+        gotoPayDetailFragments()
     }
 
     private fun chooseFixedOrPercent() {

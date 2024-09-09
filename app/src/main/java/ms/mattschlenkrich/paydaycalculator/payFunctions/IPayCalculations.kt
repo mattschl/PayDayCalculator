@@ -27,4 +27,5 @@ interface IPayCalculations {
     fun getPayTimeWorked(): Double
     fun getAllTaxDeductions(): Double
     fun getTaxList(): List<TaxAndAmount>?
+    fun getCreditExtrasListByPercentage(): List<ExtraAndTotal>?
 }

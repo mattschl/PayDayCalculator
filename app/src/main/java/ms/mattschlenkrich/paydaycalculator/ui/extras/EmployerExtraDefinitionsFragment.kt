@@ -54,9 +54,9 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setClickActions()
-        validateEmployers()
-        selectEmployer()
-        selectExtraType()
+        populateEmployersSpinner()
+        onSelectEmployer()
+        onSelectExtraType()
         fillValues()
     }
 
@@ -90,7 +90,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         }
     }
 
-    private fun selectExtraType() {
+    private fun onSelectExtraType() {
         binding.apply {
             spExtraType.onItemSelectedListener = object : OnItemSelectedListener {
                 override fun onItemSelected(
@@ -137,7 +137,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     tvCredit.visibility = View.VISIBLE
                     var display = "Calculated ${
                         resources.getStringArray(
-                            R.array.pay_per_frequencies
+                            R.array.extra_based_on
                         )[curExtraType!!.wetAppliesTo]
                     }"
                     tvAppliesTo.text = display
@@ -173,36 +173,37 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         )
     }
 
-    private fun selectEmployer() {
+    private fun onSelectEmployer() {
         binding.apply {
-            spEmployers.onItemSelectedListener = object : OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    for (employer in employerList) {
-                        if (employer.employerName == spEmployers.selectedItem.toString()) {
-                            curEmployer = employer
-                            validateExtraType()
-                            break
-                        } else if (spEmployers.selectedItem.toString() ==
-                            getString(R.string.add_new_employer)
-                        ) {
-                            gotoEmployerAddFragment()
+            spEmployers.onItemSelectedListener =
+                object : OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        for (employer in employerList) {
+                            if (employer.employerName == spEmployers.selectedItem.toString()) {
+                                curEmployer = employer
+                                populateExtraTypeSpinner()
+                                break
+                            } else if (spEmployers.selectedItem.toString() ==
+                                getString(R.string.add_new_employer)
+                            ) {
+                                gotoEmployerAddFragment()
+                            }
                         }
                     }
-                }
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    //not needed
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                        //not needed
+                    }
                 }
-            }
         }
     }
 
-    private fun validateExtraType() {
+    private fun populateExtraTypeSpinner() {
         if (curEmployer != null) {
             binding.apply {
                 val extraAdapter = ArrayAdapter<Any>(
@@ -295,7 +296,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         )
     }
 
-    private fun validateEmployers() {
+    private fun populateEmployersSpinner() {
         val employerAdapter = ArrayAdapter<Any>(
             mView.context,
             R.layout.spinner_item_bold
