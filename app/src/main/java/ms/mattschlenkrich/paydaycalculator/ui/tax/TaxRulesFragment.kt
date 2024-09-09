@@ -10,7 +10,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -224,9 +224,11 @@ class TaxRulesFragment :
                     mainActivity, mView
                 )
                 rvTaxRules.apply {
-                    layoutManager = StaggeredGridLayoutManager(
+                    layoutManager = GridLayoutManager(
+                        mView.context,
                         2,
-                        StaggeredGridLayoutManager.VERTICAL
+                        GridLayoutManager.VERTICAL,
+                        false
                     )
                     setHasFixedSize(true)
                     adapter = taxRuleAdapter

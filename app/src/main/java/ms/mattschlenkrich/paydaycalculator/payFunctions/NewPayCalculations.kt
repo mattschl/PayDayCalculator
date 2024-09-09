@@ -67,7 +67,7 @@ class NewPayCalculations(
             processExtrasPerDay()
             processExtrasPerPay()
             processExtrasCustomPerPay()
-            delay(WAIT_250)
+            delay(WAIT_100)
             processExtrasPerPercentage()
             delay(WAIT_100)
             processExtraTypes()
@@ -75,8 +75,8 @@ class NewPayCalculations(
             delay(WAIT_100)
             processCreditExtrasAndTotalsByDate()
             processCreditExtrasAndTotalsByPay()
-            processCreditExtrasAndTotalsByPercentage()
             processDebitExtrasAndTotalsByPay()
+            processCreditExtrasAndTotalsByPercentage()
             delay(WAIT_500)
             processTaxList()
             processTaxDeductions()
@@ -446,7 +446,7 @@ class NewPayCalculations(
                 ) {
                     if (!workExtrasByPercentage[i].definition.weIsFixed) {
                         val extraValue = workExtrasByPercentage[i].definition.weValue *
-                                getPayGross() / 100
+                                (getPayHourly() + creditTotalByDate + creditTotalsByPay) / 100
                         extraList.add(
                             ExtraAndTotal(
                                 workExtrasByPercentage[i].extraType.wetName,
@@ -725,7 +725,7 @@ class NewPayCalculations(
     }
 
     override fun getPayGross(): Double {
-        return getPayHourly() + getCreditTotalAll()
+        return getPayHourly() + creditTotalByDate + creditTotalsByPay + creditTotalsByPercentage
     }
 
     override fun getPayTimeWorked(): Double {

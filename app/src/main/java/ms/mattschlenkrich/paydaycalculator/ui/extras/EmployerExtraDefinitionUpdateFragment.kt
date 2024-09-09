@@ -17,7 +17,9 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraDefinitionFull
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtrasDefinitions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerExtraDefinitionUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
@@ -29,10 +31,12 @@ class EmployerExtraDefinitionUpdateFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var curEmployer: Employers
     private lateinit var curExtraDefinitionFull: ExtraDefinitionFull
     private val df = DateFunctions()
     private val cf = NumberFunctions()
     private val definitionList = ArrayList<String>()
+    private val extraList = ArrayList<WorkExtraTypes>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -171,6 +175,7 @@ class EmployerExtraDefinitionUpdateFragment :
     }
 
     private fun populateValues() {
+        curEmployer = mainActivity.mainViewModel.getEmployer()!!
         binding.apply {
             if (mainActivity.mainViewModel.getExtraDefinitionFull() != null) {
                 curExtraDefinitionFull =
@@ -185,7 +190,41 @@ class EmployerExtraDefinitionUpdateFragment :
                     }
                 )
                 chkIsFixed.isChecked = curExtraDefinitionFull.definition.weIsFixed
+                populateFromExtraList()
                 tvEffectiveDate.text = curExtraDefinitionFull.definition.weEffectiveDate
+            }
+        }
+    }
+
+    private fun populateFromExtraList() {
+        binding.apply {
+            var display = if (curExtraDefinitionFull.extraType.wetIsCredit) {
+                "Credit"
+            } else {
+                "Debit"
+            }
+            display += " - Calculated " +
+                    "${
+                        resources.getStringArray(
+                            R.array.extra_based_on
+                        )[curExtraDefinitionFull.extraType.wetAppliesTo]
+                    }. " +
+                    "\nAttaches to ${
+                        resources.getStringArray(
+                            R.array.pay_per_frequencies
+                        )[curExtraDefinitionFull.extraType.wetAttachTo]
+                    }. - "
+            display += if (curExtraDefinitionFull.extraType.wetIsDefault) "Is automatic"
+            else "Added Manually"
+            tvDescription.text = display
+            if (curExtraDefinitionFull.extraType.wetAppliesTo == 4) {
+                chkIsFixed.isChecked = true
+                chkIsFixed.text = getString(R.string.defaults_to_percentage)
+                chkIsFixed.isEnabled = false
+            } else {
+                chkIsFixed.text = getString(R.string.check_if_this_is_a_fixed_amount)
+                chkIsFixed.isEnabled = true
+                chkIsFixed.isChecked = false
             }
         }
     }

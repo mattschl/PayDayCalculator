@@ -11,7 +11,7 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -241,9 +241,11 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     null
                 )
                 rvExtras.apply {
-                    layoutManager = StaggeredGridLayoutManager(
+                    layoutManager = GridLayoutManager(
+                        mView.context,
                         2,
-                        StaggeredGridLayoutManager.VERTICAL
+                        GridLayoutManager.VERTICAL,
+                        false
                     )
                     setHasFixedSize(true)
                     adapter = extraDefinitionAdapter

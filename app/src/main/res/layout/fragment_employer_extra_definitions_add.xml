@@ -17,6 +17,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/for_employer"
+                android:textColor="@color/black"
                 android:textSize="@dimen/label_text_size"
                 app:layout_constraintBaseline_toBaselineOf="@id/tvEmployer"
                 app:layout_constraintEnd_toStartOf="@id/tvEmployer"
@@ -40,6 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/description"
+                android:textColor="@color/black"
                 android:textSize="@dimen/label_text_size"
                 app:layout_constraintBaseline_toBaselineOf="@id/spExtraTypes"
                 app:layout_constraintEnd_toStartOf="@id/spExtraTypes"
@@ -60,7 +62,8 @@
                 android:layout_margin="@dimen/dimen_10dp"
                 android:text="@string/description"
                 android:textAlignment="center"
-                android:textSize="@dimen/label_text_size"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_large"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/spExtraTypes" />
@@ -71,6 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/rate_or_value"
+                android:textColor="@color/black"
                 android:textSize="@dimen/label_text_size"
                 app:layout_constraintBaseline_toBaselineOf="@id/etValue"
                 app:layout_constraintEnd_toStartOf="@id/etValue"
@@ -108,13 +112,14 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/etValue"
-                tools:ignore="TextSizeCheck" />
+                tools:ignore="TextSizeCheck,VisualLintButtonSize" />
 
             <TextView
                 android:id="@+id/lblEffectiveDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/effective_date"
+                android:textColor="@color/black"
                 android:textSize="@dimen/label_text_size"
                 app:layout_constraintBaseline_toBaselineOf="@id/tvEffectiveDate"
                 app:layout_constraintEnd_toStartOf="@id/tvEffectiveDate"

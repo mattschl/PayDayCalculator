@@ -178,22 +178,24 @@ class WorkExtraTypeAddFragment : Fragment(
     private fun validateExtraType(): String {
         binding.apply {
             var nameFound = false
+            var appliesToAllFound = false
             if (extraTypeList.isNotEmpty()) {
                 for (extra in extraTypeList) {
                     if (extra.wetName == etExtraName.text.toString().trim()) {
                         nameFound = true
                         break
                     }
-                    if (spAppliesTo.selectedItemPosition == 4 &&
-                        extra.wetAppliesTo == 4 &&
-                        spAppliesTo.selectedItemPosition !=
-                        extra.wetAppliesTo
+                    if (extra.wetAppliesTo == 4 &&
+                        extra.wetName != etExtraName.text.toString().trim()
                     ) {
-                        return "    ERROR!!\n" +
-                                "There can only be one extra that " +
-                                "uses the sum that includes other extras."
+                        appliesToAllFound = true
                     }
                 }
+            }
+            if (appliesToAllFound) {
+                return "    ERROR!!\n" +
+                        "There can only be one extra that " +
+                        "uses the sum that includes other extras."
             }
             val errorMessage = if (etExtraName.text.isNullOrBlank()) {
                 "    ERROR!!\n" +

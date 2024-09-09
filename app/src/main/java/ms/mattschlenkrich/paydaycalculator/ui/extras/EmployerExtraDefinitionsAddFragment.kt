@@ -111,7 +111,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                                     R.array.pay_per_frequencies
                                 )[extra.wetAppliesTo]
                             }. " +
-                            "Attaches to ${
+                            "\nAttaches to ${
                                 resources.getStringArray(
                                     R.array.pay_per_frequencies
                                 )[extra.wetAttachTo]
@@ -121,7 +121,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                     tvDescription.text = display
                     if (extra.wetAppliesTo == 4) {
                         chkIsFixed.isChecked = false
-                        chkIsFixed.text = getString(R.string.defaults_to_percetage)
+                        chkIsFixed.text = getString(R.string.defaults_to_percentage)
                         chkIsFixed.isEnabled = false
                     } else {
                         chkIsFixed.text = getString(R.string.check_if_this_is_a_fixed_amount)

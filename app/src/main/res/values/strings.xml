@@ -197,5 +197,5 @@
     <string name="type_number_or_address_search">Type number or address search</string>
     <string name="reset">RESET</string>
     <string name="blank"> </string>
-    <string name="defaults_to_percetage">Defaults to percetage</string>
+    <string name="defaults_to_percentage">Defaults to percentage</string>
 </resources>

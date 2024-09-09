@@ -28,6 +28,7 @@ import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_DETAILS
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_1500
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
@@ -290,7 +291,7 @@ class NewPayDetailFragment :
             )
             delay(WAIT_500)
             populateExtras(payCalculations)
-            delay(WAIT_1000)
+            delay(WAIT_1500)
             binding.apply {
                 var display = "Gross ${
                     cf.displayDollars(
