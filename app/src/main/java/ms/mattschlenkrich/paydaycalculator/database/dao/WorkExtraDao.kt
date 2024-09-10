@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import androidx.room.RoomWarnings
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
@@ -38,7 +39,8 @@ interface WorkExtraDao {
         "SELECT * FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
                 "WHERE weEmployerId = :employerId "
     )
-    fun getWorkExtraDefinitions(employerId: Long): LiveData<List<WorkExtrasDefinitions>>
+    fun getWorkExtraDefinitions(employerId: Long):
+            LiveData<List<WorkExtrasDefinitions>>
 
     @Query(
         "SELECT * FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
@@ -49,8 +51,8 @@ interface WorkExtraDao {
     fun getWorkExtraDefinitions(employerId: Long, extraTypeId: Long):
             LiveData<List<WorkExtrasDefinitions>>
 
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @RewriteQueriesToDropUnusedColumns
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+//    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_WORK_EXTRAS_DEFINITIONS.*, " +
@@ -163,15 +165,14 @@ interface WorkExtraDao {
                 "WHERE weEmployerId = :employerId " +
                 "AND weIsDeleted = 0 " +
                 "AND weEffectiveDate <= :cutoffDate " +
-                "GROUP BY weExtraTypeId " +
                 "ORDER BY weEffectiveDate DESC " +
                 ") ON workExtraTypeId = weExtraTypeId " +
                 "WHERE wetEmployerId = :employerId " +
-                "AND wetAttachTo = :attachTo " +
+                "AND wetAppliesTo = :appliesTo " +
                 "AND wetIsDeleted = 0 " +
                 "ORDER BY wetName"
     )
-    fun getExtraTypesAndDef(employerId: Long, cutoffDate: String, attachTo: Int):
+    fun getExtraTypesAndDef(employerId: Long, cutoffDate: String, appliesTo: Int):
             LiveData<List<ExtraDefinitionAndType>>
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)

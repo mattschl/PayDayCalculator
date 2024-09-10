@@ -22,7 +22,8 @@ import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateExtraUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
-class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_update) {
+class WorkDateExtraUpdateFragment
+    : Fragment(R.layout.fragment_work_date_extra_update) {
 
     private var _binding: FragmentWorkDateExtraUpdateBinding? = null
     private val binding get() = _binding!!

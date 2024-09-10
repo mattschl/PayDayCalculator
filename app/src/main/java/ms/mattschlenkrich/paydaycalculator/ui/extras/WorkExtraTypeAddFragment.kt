@@ -189,6 +189,7 @@ class WorkExtraTypeAddFragment : Fragment(
                         extra.wetName != etExtraName.text.toString().trim()
                     ) {
                         appliesToAllFound = true
+                        break
                     }
                 }
             }

@@ -19,7 +19,6 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraDefinitionFull
-import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtrasDefinitions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerExtraDefinitionUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
@@ -36,7 +35,6 @@ class EmployerExtraDefinitionUpdateFragment :
     private val df = DateFunctions()
     private val cf = NumberFunctions()
     private val definitionList = ArrayList<String>()
-    private val extraList = ArrayList<WorkExtraTypes>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -66,8 +66,8 @@ class WorkExtraViewModel(
     fun getExtraTypeAndDefByTypeId(typeId: Long, cutoffDate: String) =
         workExtraRepository.getExtraTypeAndDefByTypeId(typeId, cutoffDate)
 
-    fun getExtraTypesAndDef(employerId: Long, cutoffDate: String, attachTo: Int) =
-        workExtraRepository.getExtraTypesAndDef(employerId, cutoffDate, attachTo)
+    fun getExtraTypesAndDef(employerId: Long, cutoffDate: String, appliesTo: Int) =
+        workExtraRepository.getExtraTypesAndDef(employerId, cutoffDate, appliesTo)
 
     fun insertWorkDateExtra(extra: WorkDateExtras) =
         viewModelScope.launch {

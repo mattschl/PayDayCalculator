@@ -48,8 +48,8 @@ class WorkExtraRepository(private val db: PayDatabase) {
     fun getExtraTypeAndDefByTypeId(typeId: Long, cutoffDate: String) =
         db.getWorkExtraDao().getExtraTypeAndDefByTypeId(typeId, cutoffDate)
 
-    fun getExtraTypesAndDef(employerId: Long, cutoffDate: String, attachTo: Int) =
-        db.getWorkExtraDao().getExtraTypesAndDef(employerId, cutoffDate, attachTo)
+    fun getExtraTypesAndDef(employerId: Long, cutoffDate: String, appliesTo: Int) =
+        db.getWorkExtraDao().getExtraTypesAndDef(employerId, cutoffDate, appliesTo)
 
     suspend fun insertWorkDateExtra(extra: WorkDateExtras) =
         db.getWorkExtraDao().insertWorkDateExtra(extra)

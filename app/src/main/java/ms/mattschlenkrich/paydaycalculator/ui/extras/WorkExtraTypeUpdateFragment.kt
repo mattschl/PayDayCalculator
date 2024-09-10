@@ -164,9 +164,10 @@ class WorkExtraTypeUpdateFragment : Fragment(
                         break
                     }
                     if (extra.wetAppliesTo == 4 &&
-                        extra.wetName == mainActivity.mainViewModel.getWorkExtraType()!!.wetName
+                        extra.wetName != mainActivity.mainViewModel.getWorkExtraType()!!.wetName
                     ) {
                         appliesToAllFound = true
+                        break
                     }
                 }
             }

@@ -414,6 +414,14 @@ class NewPayCalculations(
                             ExtraAndTotal(extra.ppeName, creditTotal)
                         )
                     }
+
+                    4 -> {
+                        val creditTotal =
+                            getPayGross() * extra.ppeValue / 100
+                        extraList.add(
+                            ExtraAndTotal(extra.ppeName, creditTotal)
+                        )
+                    }
                 }
             }
         }
@@ -440,9 +448,9 @@ class NewPayCalculations(
                 }
             }
             if (notFound) {
-                if (workExtrasByPay[i].extraType.wetIsCredit &&
-                    workExtrasByPay[i].extraType.wetIsDefault &&
-                    workExtrasByPay[i].extraType.wetAppliesTo == 4
+                if (workExtrasByPercentage[i].extraType.wetIsCredit &&
+                    workExtrasByPercentage[i].extraType.wetIsDefault &&
+                    workExtrasByPercentage[i].extraType.wetAppliesTo == 4
                 ) {
                     if (!workExtrasByPercentage[i].definition.weIsFixed) {
                         val extraValue = workExtrasByPercentage[i].definition.weValue *

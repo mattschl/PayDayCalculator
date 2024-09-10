@@ -80,7 +80,7 @@ class NewPayDetailFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         populateEmployers()
-        createClickActions()
+        setClickActions()
         createMenuAction()
         onSelectEmployer()
         onSelectCutOffDate()
@@ -106,7 +106,7 @@ class NewPayDetailFragment :
         binding.spEmployers.adapter = employerAdapter
     }
 
-    private fun createClickActions() {
+    private fun setClickActions() {
         binding.apply {
             fabAddExtra.setOnClickListener {
                 chooseToGotoExtraAdd(true)
@@ -118,7 +118,6 @@ class NewPayDetailFragment :
     }
 
     private fun chooseToGotoExtraAdd(isCredit: Boolean) {
-//        Log.d(TAG, "IN THE FUNCTION the button actions")
         AlertDialog.Builder(mView.context)
             .setTitle("Warning!")
             .setMessage(
@@ -191,7 +190,9 @@ class NewPayDetailFragment :
                     mView.context,
                     R.layout.spinner_item_bold
                 )
-                mainActivity.payDayViewModel.getCutOffDates(employer.employerId).observe(
+                mainActivity.payDayViewModel.getCutOffDates(
+                    employer.employerId
+                ).observe(
                     viewLifecycleOwner
                 ) { dates ->
                     cutOffs.clear()
@@ -439,6 +440,7 @@ class NewPayDetailFragment :
                     processExtraByPayPeriod(extraList, it, payCalculations)
                 }
             }
+            delay(WAIT_100)
         }
         return extraList as ArrayList<WorkPayPeriodExtras>
     }
