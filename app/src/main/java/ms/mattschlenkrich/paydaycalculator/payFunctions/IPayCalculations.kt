@@ -15,7 +15,7 @@ interface IPayCalculations {
     fun getHoursStat(): Double
     fun getPayRate(): Double
     fun getPayReg(): Double
-    fun getPayHourly(): Double
+    fun getPayAllHourly(): Double
     fun getPayOt(): Double
     fun getPayDblOt(): Double
     fun getPayStat(): Double

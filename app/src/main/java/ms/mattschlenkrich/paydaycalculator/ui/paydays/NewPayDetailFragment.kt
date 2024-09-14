@@ -346,7 +346,7 @@ class NewPayDetailFragment :
                 } else {
                     llStatPay.visibility = View.GONE
                 }
-                tvHourlyTotal.text = cf.displayDollars(payCalculations.getPayHourly())
+                tvHourlyTotal.text = cf.displayDollars(payCalculations.getPayAllHourly())
             }
         }
     }
@@ -591,7 +591,7 @@ class NewPayDetailFragment :
                         )
                     } else {
                         val sum =
-                            payCalculations.getPayHourly() * it.definition.weValue / 100
+                            payCalculations.getPayAllHourly() * it.definition.weValue / 100
                         extraList.add(
                             createWorkPayPeriodExtra(it, sum)
                         )

@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paydaycalculator.payFunctions
 
 import android.view.View
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraAndTotal
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriodHourlySummary
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxAndAmount
@@ -14,30 +15,28 @@ class PayCalculations(
     currentPayPeriod: PayPeriods,
 ) : IPayCalculations {
     private var workDateList = ArrayList<WorkDates>()
-    private var daysWorked = 0
-    private var hoursReg = 0.0
-    private var hoursOt = 0.0
-    private var hoursDblOt = 0.0
-    private var hoursStat = 0.0
-    private var payRate = 0.0
+    private val hourly = PayPeriodHourlySummary(
+        0, 0.0, 0.0,
+        0.0, 0.0, 0.0,
+    )
 
     init {
         val workDateCalculations = WorkDateCalculations(
             mainActivity, mView, currentPayPeriod
         )
         workDateList = workDateCalculations.processWorkDates()
-        daysWorked = workDateCalculations.getDaysWorked()
-        hoursReg = workDateCalculations.getHoursReg()
-        hoursOt = workDateCalculations.getHoursOt()
-        hoursDblOt = workDateCalculations.getHoursDblOt()
-        hoursStat = workDateCalculations.getHoursStat()
+        hourly.daysWorked = workDateCalculations.getDaysWorked()
+        hourly.hoursReg = workDateCalculations.getHoursReg()
+        hourly.hoursOt = workDateCalculations.getHoursOt()
+        hourly.hoursDblOt = workDateCalculations.getHoursDblOt()
+        hourly.hoursStat = workDateCalculations.getHoursStat()
 
         val employerPayRate = EmployerPayRate(
             mainActivity,
             mView,
             currentPayPeriod
         )
-        payRate = employerPayRate.getPayRate()
+        hourly.payRate = employerPayRate.getPayRate()
     }
 
     override fun getDebitExtrasListByPay(): List<ExtraAndTotal>? {
@@ -65,55 +64,55 @@ class PayCalculations(
     }
 
     override fun getHoursWorked(): Double {
-        return hoursReg + hoursOt + hoursDblOt
+        return hourly.hoursReg + hourly.hoursOt + hourly.hoursDblOt
     }
 
     override fun getHoursAll(): Double {
-        return getHoursWorked() + hoursStat
+        return getHoursWorked() + hourly.hoursStat
     }
 
     override fun getHoursReg(): Double {
-        return hoursReg
+        return hourly.hoursReg
     }
 
     override fun getHoursOt(): Double {
-        return hoursOt
+        return hourly.hoursOt
     }
 
     override fun getHoursDblOt(): Double {
-        return hoursDblOt
+        return hourly.hoursDblOt
     }
 
     override fun getHoursStat(): Double {
-        return hoursStat
+        return hourly.hoursStat
     }
 
     override fun getDaysWorked(): Int {
-        return daysWorked
+        return hourly.daysWorked
     }
 
     override fun getPayRate(): Double {
-        return payRate
+        return hourly.payRate
     }
 
     override fun getPayReg(): Double {
-        return payRate * hoursReg
+        return hourly.payRate * hourly.hoursReg
     }
 
     override fun getPayOt(): Double {
-        return round(payRate * 150) / 100 * hoursOt
+        return round(hourly.payRate * 150) / 100 * hourly.hoursOt
     }
 
     override fun getPayDblOt(): Double {
-        return round(payRate * 200) / 100 * hoursDblOt
+        return round(hourly.payRate * 200) / 100 * hourly.hoursDblOt
     }
 
     override fun getPayStat(): Double {
-        return payRate * hoursReg
+        return hourly.payRate * hourly.hoursReg
     }
 
-    override fun getPayHourly(): Double {
-        return getPayHourly() + getPayStat()
+    override fun getPayAllHourly(): Double {
+        return getPayAllHourly() + getPayStat()
     }
 
     override fun getPayTimeWorked(): Double {

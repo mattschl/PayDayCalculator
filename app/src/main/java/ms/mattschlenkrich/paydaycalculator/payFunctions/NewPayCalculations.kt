@@ -325,7 +325,7 @@ class NewPayCalculations(
                 subTotal += extra.amount
             }
         }
-        creditTotalByDate = if (getPayHourly() > 0.0) subTotal else 0.0
+        creditTotalByDate = if (getPayAllHourly() > 0.0) subTotal else 0.0
     }
 
     private fun processCreditExtrasAndTotalsByPay() {
@@ -408,7 +408,7 @@ class NewPayCalculations(
                         val creditTotal = if (extra.ppeIsFixed) {
                             extra.ppeValue
                         } else {
-                            getPayHourly() * extra.ppeValue / 100
+                            getPayAllHourly() * extra.ppeValue / 100
                         }
                         extraList.add(
                             ExtraAndTotal(extra.ppeName, creditTotal)
@@ -454,7 +454,7 @@ class NewPayCalculations(
                 ) {
                     if (!workExtrasByPercentage[i].definition.weIsFixed) {
                         val extraValue = workExtrasByPercentage[i].definition.weValue *
-                                (getPayHourly() + creditTotalByDate + creditTotalsByPay) / 100
+                                (getPayAllHourly() + creditTotalByDate + creditTotalsByPay) / 100
                         extraList.add(
                             ExtraAndTotal(
                                 workExtrasByPercentage[i].extraType.wetName,
@@ -547,7 +547,7 @@ class NewPayCalculations(
                         val debitTotal = if (extra.ppeIsFixed) {
                             extra.ppeValue
                         } else {
-                            getPayHourly() * extra.ppeValue / 100
+                            getPayAllHourly() * extra.ppeValue / 100
                         }
                         debitList.add(
                             ExtraAndTotal(extra.ppeName, debitTotal)
@@ -562,7 +562,7 @@ class NewPayCalculations(
             for (extra in debitExtraAndTotalByPay!!) {
                 subTotal += extra.amount
             }
-        debitTotalsByPay = if (getPayHourly() > 0.0) subTotal else 0.0
+        debitTotalsByPay = if (getPayAllHourly() > 0.0) subTotal else 0.0
     }
 
     private fun processTaxList() {
@@ -578,7 +578,7 @@ class NewPayCalculations(
                     }
 
                     1 -> {
-                        getPayHourly()
+                        getPayAllHourly()
                     }
 
                     2 -> {
@@ -724,7 +724,7 @@ class NewPayCalculations(
         return dblOtHours * payRate * 2
     }
 
-    override fun getPayHourly(): Double {
+    override fun getPayAllHourly(): Double {
         return getPayReg() + getPayOt() + getPayDblOt() + getPayStat()
     }
 
@@ -733,7 +733,7 @@ class NewPayCalculations(
     }
 
     override fun getPayGross(): Double {
-        return getPayHourly() + creditTotalByDate + creditTotalsByPay + creditTotalsByPercentage
+        return getPayAllHourly() + creditTotalByDate + creditTotalsByPay + creditTotalsByPercentage
     }
 
     override fun getPayTimeWorked(): Double {
