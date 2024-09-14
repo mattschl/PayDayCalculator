@@ -668,7 +668,7 @@ class NewPayCalculations(
         return creditExtraAndTotalByPay
     }
 
-    override fun getCreditExtrasListByPercentage(): List<ExtraAndTotal>? {
+    override fun getCreditExtrasListByPercentageOfAll(): List<ExtraAndTotal>? {
         return creditExtraAndTotalByPercentage
     }
 

@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 
 @Parcelize
-data class WorkOrderHistoryFull(
+data class WorkOrderHistoryWithDates(
     @Embedded
     var history: WorkOrderHistory,
     @Relation(

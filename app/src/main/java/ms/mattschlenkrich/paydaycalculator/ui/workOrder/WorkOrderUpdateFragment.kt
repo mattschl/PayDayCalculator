@@ -23,7 +23,7 @@ import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryFull
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderAddBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
@@ -80,7 +80,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
         }
     }
 
-    private fun calculateTotals(historyList: List<WorkOrderHistoryFull>) {
+    private fun calculateTotals(historyList: List<WorkOrderHistoryWithDates>) {
         var regHours = 0.0
         var otHours = 0.0
         var dblOtHours = 0.0

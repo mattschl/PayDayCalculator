@@ -1,24 +1,18 @@
-package ms.mattschlenkrich.paydaycalculator.database.model.payperiod
+package ms.mattschlenkrich.paydaycalculator.database.model.workOrder
 
 import android.os.Parcelable
-import androidx.room.DatabaseView
 import androidx.room.Embedded
 import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 
 @Parcelize
-@DatabaseView(
-    value = "SELECT * FROM workDates " +
-            "INNER JOIN employers " +
-            "ON wdEmployerId = employerId"
-)
-data class WorkDateFull(
+data class WorkOrderAndEmployer(
     @Embedded
-    var workDate: WorkDates,
+    var workOrder: WorkOrder,
     @Relation(
         entity = Employers::class,
-        parentColumn = "wdEmployerId",
+        parentColumn = "woEmployerId",
         entityColumn = "employerId"
     )
     var employer: Employers

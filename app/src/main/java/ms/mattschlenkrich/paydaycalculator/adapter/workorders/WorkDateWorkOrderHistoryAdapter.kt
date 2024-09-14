@@ -8,7 +8,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryFull
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkOrderHistoryItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragmentDirections
@@ -16,7 +16,7 @@ import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragmentDire
 class WorkDateWorkOrderHistoryAdapter(
     val mainActivity: MainActivity,
     val mView: View,
-    private val workOrderHistory: ArrayList<WorkOrderHistoryFull>
+    private val workOrderHistory: ArrayList<WorkOrderHistoryWithDates>
 ) : RecyclerView.Adapter<WorkDateWorkOrderHistoryAdapter.ViewHolder>() {
 
     private val df = DateFunctions()
@@ -72,7 +72,7 @@ class WorkDateWorkOrderHistoryAdapter(
         }
     }
 
-    private fun chooseOptions(history: WorkOrderHistoryFull) {
+    private fun chooseOptions(history: WorkOrderHistoryWithDates) {
         AlertDialog.Builder(mView.context)
             .setTitle("Choose option for this item")
             .setPositiveButton("Edit") { _, _ ->
@@ -85,13 +85,13 @@ class WorkDateWorkOrderHistoryAdapter(
             .show()
     }
 
-    private fun deleteWorkOrderHistory(history: WorkOrderHistoryFull) {
+    private fun deleteWorkOrderHistory(history: WorkOrderHistoryWithDates) {
         mainActivity.workOrderViewModel.deleteWorkOrderHistory(
             history.history.woHistoryId, df.getCurrentTimeAsString()
         )
     }
 
-    private fun editWorkOrderHistory(history: WorkOrderHistoryFull) {
+    private fun editWorkOrderHistory(history: WorkOrderHistoryWithDates) {
         mainActivity.mainViewModel.setWorkOrderHistory(history.history)
         mView.findNavController().navigate(
             WorkDateUpdateFragmentDirections

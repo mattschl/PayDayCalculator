@@ -2,12 +2,10 @@ package ms.mattschlenkrich.paydaycalculator.database.model.payperiod
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATE_EXTRAS
 
@@ -44,14 +42,3 @@ data class WorkDateExtras(
 ) : Parcelable
 
 
-@Parcelize
-data class WorkDateAndExtras(
-    @Embedded
-    val workDate: WorkDates,
-    @Relation(
-        entity = WorkDateExtras::class,
-        parentColumn = "workDateId",
-        entityColumn = "wdeWorkDateId"
-    )
-    var extras: WorkDateExtras?
-) : Parcelable

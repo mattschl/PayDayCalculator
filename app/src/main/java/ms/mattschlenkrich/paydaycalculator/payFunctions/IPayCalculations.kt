@@ -5,10 +5,7 @@ import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxAndAmount
 
 
 interface IPayCalculations {
-    fun getDebitExtrasListByPay(): List<ExtraAndTotal>?
-    fun getDebitTotalsByPay(): Double
-    fun getCreditExtrasListByDate(): List<ExtraAndTotal>?
-    fun getCreditExtrasListByPay(): List<ExtraAndTotal>?
+    fun getDaysWorked(): Int
     fun getCreditTotalAll(): Double
     fun getHoursWorked(): Double
     fun getHoursAll(): Double
@@ -16,16 +13,19 @@ interface IPayCalculations {
     fun getHoursOt(): Double
     fun getHoursDblOt(): Double
     fun getHoursStat(): Double
-    fun getDaysWorked(): Int
     fun getPayRate(): Double
     fun getPayReg(): Double
+    fun getPayHourly(): Double
     fun getPayOt(): Double
     fun getPayDblOt(): Double
-    fun getPayHourly(): Double
     fun getPayStat(): Double
     fun getPayGross(): Double
     fun getPayTimeWorked(): Double
-    fun getAllTaxDeductions(): Double
+    fun getCreditExtrasListByDate(): List<ExtraAndTotal>?
+    fun getCreditExtrasListByPay(): List<ExtraAndTotal>?
+    fun getCreditExtrasListByPercentageOfAll(): List<ExtraAndTotal>?
+    fun getDebitExtrasListByPay(): List<ExtraAndTotal>?
+    fun getDebitTotalsByPay(): Double
     fun getTaxList(): List<TaxAndAmount>?
-    fun getCreditExtrasListByPercentage(): List<ExtraAndTotal>?
+    fun getAllTaxDeductions(): Double
 }

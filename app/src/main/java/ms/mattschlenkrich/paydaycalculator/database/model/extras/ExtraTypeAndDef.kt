@@ -18,7 +18,3 @@ data class ExtraTypeAndDef(
     val extraDef: WorkExtrasDefinitions
 ) : Parcelable
 
-data class ExtraAndTotal(
-    var extraName: String,
-    var amount: Double,
-)

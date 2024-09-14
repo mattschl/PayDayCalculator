@@ -8,7 +8,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryFull
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWithDates
 
 @Dao
 interface WorkOrderDao {
@@ -126,7 +126,7 @@ interface WorkOrderDao {
                 "AND woHistoryDeleted = 0 " +
                 "Order by woHistoryUpdateTime"
     )
-    fun getWorkOrderHistoriesByDate(workDateId: Long): LiveData<List<WorkOrderHistoryFull>>
+    fun getWorkOrderHistoriesByDate(workDateId: Long): LiveData<List<WorkOrderHistoryWithDates>>
 
     @Transaction
     @Query(
@@ -135,7 +135,7 @@ interface WorkOrderDao {
                 "AND woHistoryDeleted = 0 " +
                 "Order BY woHistoryUpdateTime"
     )
-    fun getWorkOrderHistoriesById(workOrderId: Long): LiveData<List<WorkOrderHistoryFull>>
+    fun getWorkOrderHistoriesById(workOrderId: Long): LiveData<List<WorkOrderHistoryWithDates>>
 
 
     @Transaction
@@ -145,14 +145,14 @@ interface WorkOrderDao {
                 "AND woHistoryDeleted = 0 " +
                 "Order BY woHistoryUpdateTime"
     )
-    fun getWorkOrderHistoriesByNumber(workOrderNumber: String): LiveData<List<WorkOrderHistoryFull>>
+    fun getWorkOrderHistoriesByNumber(workOrderNumber: String): LiveData<List<WorkOrderHistoryWithDates>>
 
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistory " +
                 "WHERE woHistoryId = :historyID"
     )
-    fun getWorkOrderHistory(historyID: Long): LiveData<WorkOrderHistoryFull>
+    fun getWorkOrderHistory(historyID: Long): LiveData<WorkOrderHistoryWithDates>
 
     @Query(
         "UPDATE workOrderHistory " +
