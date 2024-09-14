@@ -8,26 +8,25 @@ import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 class WorkDateCalculations(
     private val mainActivity: MainActivity,
-    private val employerId: Long,
     private val mView: View,
     private val currentPayPeriod: PayPeriods
 ) {
-    private val workDateList = processWorkDates()
     private var daysWorked = 0
     private var hoursReg = 0.0
     private var hoursOt = 0.0
     private var hoursDblOt = 0.0
     private var hoursStat = 0.0
 
-    fun getWorkDateList(): ArrayList<WorkDates> {
-        return workDateList
+    fun getDaysWorked(): Int {
+        return daysWorked
     }
 
-    private fun processWorkDates(): ArrayList<WorkDates> {
+    fun processWorkDates(): ArrayList<WorkDates> {
         val workDates = ArrayList<WorkDates>()
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.payDayViewModel.getWorkDateList(
-                employerId, currentPayPeriod.ppCutoffDate
+                currentPayPeriod.ppEmployerId,
+                currentPayPeriod.ppCutoffDate
             ).observe(lifecycleOwner) { list ->
                 workDates.clear()
                 hoursReg = 0.0
@@ -51,5 +50,22 @@ class WorkDateCalculations(
             }
         }
         return workDates
+    }
+
+    fun getHoursReg(): Double {
+        return hoursReg
+    }
+
+    fun getHoursOt(): Double {
+        return hoursOt
+    }
+
+    fun getHoursDblOt(): Double {
+        return hoursDblOt
+    }
+
+    fun getHoursStat(): Double {
+        return hoursStat
+
     }
 }

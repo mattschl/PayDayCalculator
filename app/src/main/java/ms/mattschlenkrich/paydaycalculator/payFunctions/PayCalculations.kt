@@ -3,19 +3,41 @@ package ms.mattschlenkrich.paydaycalculator.payFunctions
 import android.view.View
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraAndTotal
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriods
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxAndAmount
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
+import kotlin.math.round
 
 class PayCalculations(
     mainActivity: MainActivity,
     mView: View,
     currentPayPeriod: PayPeriods,
 ) : IPayCalculations {
+    private var workDateList = ArrayList<WorkDates>()
+    private var daysWorked = 0
+    private var hoursReg = 0.0
+    private var hoursOt = 0.0
+    private var hoursDblOt = 0.0
+    private var hoursStat = 0.0
+    private var payRate = 0.0
 
     init {
         val workDateCalculations = WorkDateCalculations(
-            mainActivity, currentPayPeriod.ppEmployerId, mView, currentPayPeriod
+            mainActivity, mView, currentPayPeriod
         )
+        workDateList = workDateCalculations.processWorkDates()
+        daysWorked = workDateCalculations.getDaysWorked()
+        hoursReg = workDateCalculations.getHoursReg()
+        hoursOt = workDateCalculations.getHoursOt()
+        hoursDblOt = workDateCalculations.getHoursDblOt()
+        hoursStat = workDateCalculations.getHoursStat()
+
+        val employerPayRate = EmployerPayRate(
+            mainActivity,
+            mView,
+            currentPayPeriod
+        )
+        payRate = employerPayRate.getPayRate()
     }
 
     override fun getDebitExtrasListByPay(): List<ExtraAndTotal>? {
@@ -23,6 +45,10 @@ class PayCalculations(
     }
 
     override fun getDebitTotalsByPay(): Double {
+        TODO("Not yet implemented")
+    }
+
+    override fun getCreditExtrasListByPercentageOfAll(): List<ExtraAndTotal>? {
         TODO("Not yet implemented")
     }
 
@@ -39,66 +65,62 @@ class PayCalculations(
     }
 
     override fun getHoursWorked(): Double {
-        TODO("Not yet implemented")
+        return hoursReg + hoursOt + hoursDblOt
     }
 
     override fun getHoursAll(): Double {
-        TODO("Not yet implemented")
+        return getHoursWorked() + hoursStat
     }
 
     override fun getHoursReg(): Double {
-        TODO("Not yet implemented")
+        return hoursReg
     }
 
     override fun getHoursOt(): Double {
-        TODO("Not yet implemented")
+        return hoursOt
     }
 
     override fun getHoursDblOt(): Double {
-        TODO("Not yet implemented")
+        return hoursDblOt
     }
 
     override fun getHoursStat(): Double {
-        TODO("Not yet implemented")
+        return hoursStat
     }
 
     override fun getDaysWorked(): Int {
-        TODO("Not yet implemented")
+        return daysWorked
     }
 
     override fun getPayRate(): Double {
-        TODO("Not yet implemented")
+        return payRate
     }
 
     override fun getPayReg(): Double {
-        TODO("Not yet implemented")
+        return payRate * hoursReg
     }
 
     override fun getPayOt(): Double {
-        TODO("Not yet implemented")
+        return round(payRate * 150) / 100 * hoursOt
     }
 
     override fun getPayDblOt(): Double {
-        TODO("Not yet implemented")
-    }
-
-    override fun getPayHourly(): Double {
-        TODO("Not yet implemented")
+        return round(payRate * 200) / 100 * hoursDblOt
     }
 
     override fun getPayStat(): Double {
-        TODO("Not yet implemented")
+        return payRate * hoursReg
     }
 
-    override fun getPayGross(): Double {
-        TODO("Not yet implemented")
+    override fun getPayHourly(): Double {
+        return getPayHourly() + getPayStat()
     }
 
     override fun getPayTimeWorked(): Double {
-        TODO("Not yet implemented")
+        return getPayReg() + getPayOt() + getPayDblOt()
     }
 
-    override fun getAllTaxDeductions(): Double {
+    override fun getPayGross(): Double {
         TODO("Not yet implemented")
     }
 
@@ -106,7 +128,7 @@ class PayCalculations(
         TODO("Not yet implemented")
     }
 
-    override fun getCreditExtrasListByPercentageOfAll(): List<ExtraAndTotal>? {
+    override fun getAllTaxDeductions(): Double {
         TODO("Not yet implemented")
     }
 }

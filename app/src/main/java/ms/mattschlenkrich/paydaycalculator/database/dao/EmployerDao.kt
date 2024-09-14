@@ -54,7 +54,7 @@ interface EmployerDao {
     @Query(
         "SELECT * FROM $TABLE_EMPLOYER_PAY_RATES " +
                 "WHERE eprEmployerId = :employerId " +
-                "ORDER BY eprEffectiveDate"
+                "ORDER BY eprEffectiveDate DESC"
     )
     fun getEmployerPayRates(employerId: Long): LiveData<List<EmployerPayRates>>
 }
