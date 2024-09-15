@@ -10,7 +10,7 @@ import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtrasDefin
 
 @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
 @Parcelize
-data class PayPeriodExtraAndTypeFull(
+data class PayPeriodExtraAndTypeAndDef(
     @Embedded
     var payPeriodExtra: WorkPayPeriodExtras?,
     @Relation(

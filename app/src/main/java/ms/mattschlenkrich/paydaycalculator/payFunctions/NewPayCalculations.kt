@@ -16,7 +16,7 @@ import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraAndTotal
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraDefinitionAndType
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtraAndTypeFull
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtraAndTypeAndDef
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxAndAmount
@@ -31,7 +31,7 @@ class NewPayCalculations(
     private val currentPayPeriod: PayPeriods,
 ) : IPayCalculations {
     private val workDates = ArrayList<WorkDates>()
-    private val workDateExtrasFull = ArrayList<WorkDateExtraAndTypeFull>()
+    private val workDateExtrasFull = ArrayList<WorkDateExtraAndTypeAndDef>()
     private val workExtrasByPay = ArrayList<ExtraDefinitionAndType>()
     private val workExtrasByPercentage = ArrayList<ExtraDefinitionAndType>()
     private val extraTypes = ArrayList<WorkExtraTypes>()

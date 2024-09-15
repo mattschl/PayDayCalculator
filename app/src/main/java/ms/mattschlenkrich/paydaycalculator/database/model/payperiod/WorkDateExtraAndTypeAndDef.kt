@@ -10,7 +10,7 @@ import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtrasDefin
 
 @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
 @Parcelize
-data class WorkDateExtraAndTypeFull(
+data class WorkDateExtraAndTypeAndDef(
     @Embedded
     val extra: WorkDateExtras,
     @Relation(

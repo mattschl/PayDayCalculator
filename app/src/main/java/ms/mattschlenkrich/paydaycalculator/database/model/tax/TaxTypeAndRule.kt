@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 
 @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
 @Parcelize
-data class TaxComplete(
+data class TaxTypeAndRule(
     @Embedded
     val taxType: TaxTypes,
     @Relation(

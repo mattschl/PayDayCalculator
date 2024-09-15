@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 
 @Parcelize
-data class ExtraDefinitionFull(
+data class ExtraDefTypeAndEmployer(
     @Embedded
     val definition: WorkExtrasDefinitions,
     @Relation(

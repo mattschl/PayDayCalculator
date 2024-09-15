@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.EmployerPayRates
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
-import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraDefinitionFull
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraDefTypeAndEmployer
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtras
@@ -29,7 +29,7 @@ class MainViewModel(
     private var effectiveDateString: String? = null
     private var taxLevel: Int? = null
     private var callingFragment: String? = null
-    private var extraDefinitionFull: ExtraDefinitionFull? = null
+    private var extraDefinitionFull: ExtraDefTypeAndEmployer? = null
     private var extraType: WorkExtraTypes? = null
     private var workDateExtraList = ArrayList<WorkDateExtras>()
     private var workDateExtra: WorkDateExtras? = null
@@ -182,11 +182,11 @@ class MainViewModel(
         return employerString
     }
 
-    fun setExtraDefinitionFull(newExtra: ExtraDefinitionFull?) {
+    fun setExtraDefinitionFull(newExtra: ExtraDefTypeAndEmployer?) {
         extraDefinitionFull = newExtra
     }
 
-    fun getExtraDefinitionFull(): ExtraDefinitionFull? {
+    fun getExtraDefinitionFull(): ExtraDefTypeAndEmployer? {
         return extraDefinitionFull
     }
 

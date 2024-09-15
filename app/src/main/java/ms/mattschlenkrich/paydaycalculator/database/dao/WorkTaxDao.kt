@@ -18,8 +18,8 @@ import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_LEVEL
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_RULE_TYPE
 import ms.mattschlenkrich.paydaycalculator.common.WORK_TAX_TYPE
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.EmployerTaxTypes
-import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxComplete
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxEffectiveDates
+import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxTypeAndRule
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.WorkTaxRules
 
@@ -114,7 +114,7 @@ interface WorkTaxDao {
                 "WHERE taxTypes.ttIsDeleted == 0 " +
                 "ORDER BY taxDef.wtType, taxDef.wtLevel"
     )
-    fun getTaxTypeAndDef(effectiveDate: String): LiveData<List<TaxComplete>>
+    fun getTaxTypeAndDef(effectiveDate: String): LiveData<List<TaxTypeAndRule>>
 
     @Query(
         "SELECT * FROM workTaxRules " +

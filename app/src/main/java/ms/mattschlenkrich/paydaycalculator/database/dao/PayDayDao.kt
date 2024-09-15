@@ -16,7 +16,7 @@ import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_DATE_EXTRAS
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkDateExtrasAndDates
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtraAndTypeFull
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtraAndTypeAndDef
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkPayPeriodExtras
@@ -163,7 +163,7 @@ interface PayDayDao {
                 "ORDER BY wdeName "
     )
     fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String)
-            : LiveData<List<WorkDateExtraAndTypeFull>>
+            : LiveData<List<WorkDateExtraAndTypeAndDef>>
 
     @Insert
     suspend fun insertPayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras)

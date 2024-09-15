@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraDefinitionFull
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraDefTypeAndEmployer
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtrasDefinitions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerExtraDefinitonBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
@@ -36,18 +36,18 @@ class EmployerExtraDefinitionFullAdapter(
         RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCallBack =
-        object : DiffUtil.ItemCallback<ExtraDefinitionFull>() {
+        object : DiffUtil.ItemCallback<ExtraDefTypeAndEmployer>() {
             override fun areItemsTheSame(
-                oldItem: ExtraDefinitionFull,
-                newItem: ExtraDefinitionFull
+                oldItem: ExtraDefTypeAndEmployer,
+                newItem: ExtraDefTypeAndEmployer
             ): Boolean {
                 return oldItem.employer.employerId == newItem.employer.employerId &&
                         oldItem.definition.workExtraDefId == newItem.definition.workExtraDefId
             }
 
             override fun areContentsTheSame(
-                oldItem: ExtraDefinitionFull,
-                newItem: ExtraDefinitionFull
+                oldItem: ExtraDefTypeAndEmployer,
+                newItem: ExtraDefTypeAndEmployer
             ): Boolean {
                 return oldItem == newItem
             }
@@ -116,7 +116,7 @@ class EmployerExtraDefinitionFullAdapter(
         }
     }
 
-    private fun chooseOptionForDefinition(definition: ExtraDefinitionFull) {
+    private fun chooseOptionForDefinition(definition: ExtraDefTypeAndEmployer) {
         AlertDialog.Builder(mView.context)
             .setTitle(
                 mView.resources.getString(R.string.choose_an_action) +
@@ -145,7 +145,7 @@ class EmployerExtraDefinitionFullAdapter(
             }.show()
     }
 
-    private fun gotoExtraUpdate(definition: ExtraDefinitionFull) {
+    private fun gotoExtraUpdate(definition: ExtraDefTypeAndEmployer) {
         mainActivity.mainViewModel.setEmployerString(definition.employer.employerName)
         mainActivity.mainViewModel.setEmployer(definition.employer)
         mainActivity.mainViewModel.setExtraDefinitionFull(definition)

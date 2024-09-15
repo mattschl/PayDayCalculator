@@ -18,7 +18,7 @@ import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
-import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraDefinitionFull
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraDefTypeAndEmployer
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtrasDefinitions
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerExtraDefinitionUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
@@ -31,7 +31,7 @@ class EmployerExtraDefinitionUpdateFragment :
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var curEmployer: Employers
-    private lateinit var curExtraDefinitionFull: ExtraDefinitionFull
+    private lateinit var curExtraDefinitionFull: ExtraDefTypeAndEmployer
     private val df = DateFunctions()
     private val cf = NumberFunctions()
     private val definitionList = ArrayList<String>()

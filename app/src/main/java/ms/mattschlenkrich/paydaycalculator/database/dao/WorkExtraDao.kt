@@ -12,8 +12,8 @@ import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
 import ms.mattschlenkrich.paydaycalculator.common.TABLE_WORK_EXTRA_TYPES
+import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraDefTypeAndEmployer
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraDefinitionAndType
-import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraDefinitionFull
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraTypeAndDefByDay
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtrasDefinitions
@@ -72,7 +72,7 @@ interface WorkExtraDao {
     fun getActiveExtraDefinitionsFull(
         employerId: Long,
         extraTypeId: Long
-    ): LiveData<List<ExtraDefinitionFull>>
+    ): LiveData<List<ExtraDefTypeAndEmployer>>
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @RewriteQueriesToDropUnusedColumns

@@ -3,7 +3,7 @@ package ms.mattschlenkrich.paydaycalculator.payFunctions
 import android.view.View
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriods
-import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtraAndTypeFull
+import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtraAndTypeAndDef
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 class ExtraCalculations(
@@ -11,8 +11,8 @@ class ExtraCalculations(
     private val mView: View,
     private val currentPayPeriod: PayPeriods,
 ) {
-    private fun processExtrasPerDay(): ArrayList<WorkDateExtraAndTypeFull> {
-        val workDateExtras = ArrayList<WorkDateExtraAndTypeFull>()
+    private fun processExtrasPerDay(): ArrayList<WorkDateExtraAndTypeAndDef> {
+        val workDateExtras = ArrayList<WorkDateExtraAndTypeAndDef>()
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.payDayViewModel.getWorkDateExtrasPerPay(
                 currentPayPeriod.ppEmployerId,
