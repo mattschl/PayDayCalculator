@@ -61,10 +61,10 @@ dependencies {
     ksp("androidx.room:room-compiler:$room_version")
 
     //coRoutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
     implementation("androidx.room:room-ktx:$room_version")
 
-    val nav_version = "2.7.7"
+    val nav_version = "2.8.0"
     // Kotlin Navigation
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
@@ -72,7 +72,7 @@ dependencies {
 //    implementation("androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version")
 
     //Lifecycle architecture
-    val lifecycle_version = "2.8.4"
+    val lifecycle_version = "2.8.5"
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     // LiveData
@@ -80,7 +80,7 @@ dependencies {
     // Annotation processor
     ksp("androidx.room:room-compiler:$room_version")
 
-    val material3_version = "1.2.1"
+    val material3_version = "1.3.0"
 
     implementation("androidx.compose.material3:material3:$material3_version")
 

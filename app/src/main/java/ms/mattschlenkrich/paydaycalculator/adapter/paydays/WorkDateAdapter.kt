@@ -113,7 +113,10 @@ class WorkDateAdapter(
 
     private fun chooseOptionsForDate(workDate: WorkDates) {
         AlertDialog.Builder(mView.context)
-            .setTitle("Choose an action")
+            .setTitle(
+                "Choose an action for: " +
+                        df.getDisplayDate(workDate.wdDate)
+            )
             .setItems(
                 arrayOf(
                     "Edit this date",
@@ -134,6 +137,7 @@ class WorkDateAdapter(
                     }
                 }
             }
+            .setNegativeButton("Cancel", null)
             .show()
     }
 
