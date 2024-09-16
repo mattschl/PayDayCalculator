@@ -19,6 +19,8 @@ class PayCalculations(
         0, 0.0, 0.0,
         0.0, 0.0, 0.0,
     )
+    private var creditList: ArrayList<ExtraAndTotal>
+    private var creditTotal = 0.0
 
     init {
         val workDateCalculations = WorkDateCalculations(
@@ -37,6 +39,26 @@ class PayCalculations(
             currentPayPeriod
         )
         hourly.payRate = employerPayRate.getPayRate()
+
+        val creditCalculations = CreditCalculations(
+            mainActivity,
+            mView,
+            currentPayPeriod,
+            workDateList,
+            hourly,
+        )
+        creditList = creditCalculations.getCreditList() as ArrayList
+        creditTotal = creditCalculations.getCreditTotal()
+
+        val percentCreditCalculations =
+            PercentCreditCalculations(
+                mainActivity,
+                mView,
+                currentPayPeriod,
+                hourly,
+                creditCalculations
+            )
+        creditList.add(percentCreditCalculations.getExtraList()[0])
     }
 
     override fun getDebitExtrasListByPay(): List<ExtraAndTotal>? {
@@ -59,8 +81,16 @@ class PayCalculations(
         TODO("Not yet implemented")
     }
 
+    override fun getCredits(): List<ExtraAndTotal> {
+        return creditList
+    }
+
     override fun getCreditTotalAll(): Double {
-        TODO("Not yet implemented")
+        var total = 0.0
+        for (credit in creditList) {
+            total += credit.amount
+        }
+        return total
     }
 
     override fun getHoursWorked(): Double {

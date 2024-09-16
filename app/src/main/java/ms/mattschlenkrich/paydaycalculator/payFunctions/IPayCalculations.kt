@@ -28,4 +28,5 @@ interface IPayCalculations {
     fun getDebitTotalsByPay(): Double
     fun getTaxList(): List<TaxAndAmount>?
     fun getAllTaxDeductions(): Double
+    fun getCredits(): List<ExtraAndTotal>?
 }

@@ -245,7 +245,6 @@ class NewPayCalculations(
                 ).observe(lifecycleOwner) { list ->
                     if (list.isNotEmpty()) {
                         taxRules.clear()
-//                    var counter = 0
                         list.listIterator().forEach {
                             taxRules.add(it)
 
@@ -277,7 +276,9 @@ class NewPayCalculations(
                     !workDateExtrasFull[i].extra.wdeIsFixed
                 ) {
                     for (date in workDates) {
-                        if (date.workDateId == workDateExtrasFull[i].extra.wdeWorkDateId) {
+                        if (date.workDateId == workDateExtrasFull[i]
+                                .extra.wdeWorkDateId
+                        ) {
                             total += workDateExtrasFull[i].extra.wdeValue * payRate * (
                                     date.wdRegHours + date.wdOtHours + date.wdDblOtHours
                                     )
@@ -314,7 +315,11 @@ class NewPayCalculations(
                 extraList.add(ExtraAndTotal(workDateExtrasFull[i].extra.wdeName, total))
                 total = 0.0
             } else if (i == workDateExtrasFull.size - 1) {
-                extraList.add(ExtraAndTotal(workDateExtrasFull[i].extra.wdeName, total))
+                extraList.add(
+                    ExtraAndTotal(
+                        workDateExtrasFull[i].extra.wdeName, total
+                    )
+                )
                 total = 0.0
             }
         }
@@ -385,7 +390,7 @@ class NewPayCalculations(
                         val creditTotal = if (extra.ppeIsFixed) {
                             getHoursWorked() * extra.ppeValue
                         } else {
-                            getPayTimeWorked() +
+                            getPayTimeWorked() *
                                     extra.ppeValue / 100
                         }
                         extraList.add(
@@ -429,7 +434,6 @@ class NewPayCalculations(
         var subTotal = 0.0
         if (!creditExtraAndTotalByPay.isNullOrEmpty()) {
             for (extra in creditExtraAndTotalByPay!!) {
-//                Log.d(TAG, "extra is ${extra.extraName} and amount is ${extra.amount}")
                 subTotal += extra.amount
             }
         }
@@ -742,6 +746,10 @@ class NewPayCalculations(
 
     override fun getAllTaxDeductions(): Double {
         return taxDeductions
+    }
+
+    override fun getCredits(): List<ExtraAndTotal>? {
+        TODO("Not yet implemented")
     }
 
     override fun getTaxList(): List<TaxAndAmount>? {
