@@ -78,11 +78,11 @@ class WorkDateAdapter(
             }
             if (workDate.wdDblOtHours > 0) {
                 if (display.isNotBlank()) display += " | "
-                display += "${workDate.wdDblOtHours} Dbl Ot hr"
+                display += "${workDate.wdDblOtHours} Dbl Ot hrs"
             }
             if (workDate.wdStatHours > 0) {
                 if (display.isNotBlank()) display += " | "
-                display += "${workDate.wdStatHours} Stat or Vacation hrs"
+                display += "${workDate.wdStatHours} Stat/Vacation hrs"
             }
             tvHours.text = display
             val extrasAdapter = TimeSheetWorkDateExtraAdapter()

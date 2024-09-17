@@ -198,4 +198,9 @@
     <string name="reset">RESET</string>
     <string name="blank"> </string>
     <string name="defaults_to_percentage">Defaults to percentage</string>
+    <string name="defaults_to_fixed">Defaults to fixed amount</string>
+    <string name="credit">credit</string>
+    <string name="deduction">deduction</string>
+    <string name="by_default">by default</string>
+    <string name="manually">manually</string>
 </resources>

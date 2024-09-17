@@ -147,17 +147,19 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                         )[curExtraType!!.wetAttachTo]
                     }"
                     tvAttachTo.text = display
-                    display = if (curExtraType!!.wetIsCredit) {
-                        getString(R.string.this_is_a_credit)
-                    } else {
-                        getString(R.string.this_is_a_deduction)
-                    }
+                    display = "This is a " +
+                            if (curExtraType!!.wetIsCredit) {
+                                getString(R.string.credit)
+                            } else {
+                                getString(R.string.deduction)
+                            }
                     tvCredit.text = display
-                    display = if (curExtraType!!.wetIsDefault) {
-                        getString(R.string.is_default)
-                    } else {
-                        getString(R.string.manually_added)
-                    }
+                    display = "Applied " +
+                            if (curExtraType!!.wetIsDefault) {
+                                getString(R.string.by_default)
+                            } else {
+                                getString(R.string.manually)
+                            }
                     tvDefault.text = display
                 }
             }

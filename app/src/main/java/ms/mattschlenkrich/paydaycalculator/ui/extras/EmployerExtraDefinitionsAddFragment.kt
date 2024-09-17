@@ -64,8 +64,6 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         setMenuActions()
         populateSpinners()
         setClickActions()
-        chooseExtraType()
-        chooseFixedOrPercent()
         populateValues()
     }
 
@@ -119,13 +117,25 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                     display += if (extra.wetIsDefault) "Is automatic"
                     else "Added Manually"
                     tvDescription.text = display
-                    if (extra.wetAppliesTo == 4) {
-                        chkIsFixed.isChecked = false
-                        chkIsFixed.text = getString(R.string.defaults_to_percentage)
-                        chkIsFixed.isEnabled = false
-                    } else {
-                        chkIsFixed.text = getString(R.string.check_if_this_is_a_fixed_amount)
-                        chkIsFixed.isEnabled = true
+                    when (extra.wetAppliesTo) {
+                        4 -> {
+                            chkIsFixed.isChecked = false
+                            chkIsFixed.text = getString(R.string.defaults_to_percentage)
+                            chkIsFixed.isEnabled = false
+                            etValue.setText(getString(R.string.zero_percent))
+                        }
+
+                        1 -> {
+                            chkIsFixed.isChecked = true
+                            chkIsFixed.text = getString(R.string.defaults_to_fixed)
+                            chkIsFixed.isEnabled = false
+                            etValue.setText(getString(R.string.zero_dollars))
+                        }
+
+                        else -> {
+                            chkIsFixed.text = getString(R.string.check_if_this_is_a_fixed_amount)
+                            chkIsFixed.isEnabled = true
+                        }
                     }
                 }
             }
@@ -264,6 +274,8 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
             tvEffectiveDate.setOnClickListener {
                 changeDate()
             }
+            chooseExtraType()
+            chooseFixedOrPercent()
         }
 
     }

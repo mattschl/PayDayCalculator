@@ -3,6 +3,7 @@ package ms.mattschlenkrich.paydaycalculator.common
 import java.text.NumberFormat
 import java.util.Locale
 import java.util.Random
+import kotlin.math.round
 import kotlin.math.roundToInt
 
 @Suppress("unused")
@@ -65,5 +66,9 @@ class NumberFunctions {
         } else {
             numString.toDouble()
         }
+    }
+
+    fun roundTo2Decimals(num: Double): Double {
+        return round(num * 100) / 100
     }
 }

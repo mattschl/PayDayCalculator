@@ -33,7 +33,7 @@ class EmployerExtraDefinitionUpdateFragment :
     private lateinit var curEmployer: Employers
     private lateinit var curExtraDefinitionFull: ExtraDefTypeAndEmployer
     private val df = DateFunctions()
-    private val cf = NumberFunctions()
+    private val nf = NumberFunctions()
     private val definitionList = ArrayList<String>()
 
     override fun onCreateView(
@@ -52,7 +52,6 @@ class EmployerExtraDefinitionUpdateFragment :
         super.onViewCreated(view, savedInstanceState)
         setMenuActions()
         populateValues()
-        chooseFixedOrPercent()
         setClickActions()
     }
 
@@ -64,6 +63,7 @@ class EmployerExtraDefinitionUpdateFragment :
             tvEffectiveDate.setOnClickListener {
                 changeDate()
             }
+            chooseFixedOrPercent()
         }
     }
 
@@ -90,7 +90,7 @@ class EmployerExtraDefinitionUpdateFragment :
                 curDef.workExtraDefId,
                 curDef.weEmployerId,
                 curDef.weExtraTypeId,
-                cf.getDoubleFromDollarOrPercentString(etValue.text.toString()),
+                nf.getDoubleFromDollarOrPercentString(etValue.text.toString()),
                 chkIsFixed.isChecked,
                 tvEffectiveDate.text.toString(),
                 false,
@@ -130,14 +130,14 @@ class EmployerExtraDefinitionUpdateFragment :
             chkIsFixed.setOnClickListener {
                 etValue.setText(
                     if (chkIsFixed.isChecked) {
-                        cf.displayDollars(
-                            cf.getDoubleFromDollarOrPercentString(
+                        nf.displayDollars(
+                            nf.getDoubleFromDollarOrPercentString(
                                 etValue.text.toString()
                             )
                         )
                     } else {
-                        cf.getPercentStringFromDouble(
-                            cf.getDoubleFromDollarOrPercentString(
+                        nf.getPercentStringFromDouble(
+                            nf.getDoubleFromDollarOrPercentString(
                                 etValue.text.toString()
                             ) / 100
                         )
@@ -182,9 +182,9 @@ class EmployerExtraDefinitionUpdateFragment :
                 etName.setText(curExtraDefinitionFull.extraType.wetName)
                 etValue.setText(
                     if (curExtraDefinitionFull.definition.weIsFixed) {
-                        cf.displayDollars(curExtraDefinitionFull.definition.weValue)
+                        nf.displayDollars(curExtraDefinitionFull.definition.weValue)
                     } else {
-                        cf.getPercentStringFromDouble(curExtraDefinitionFull.definition.weValue)
+                        nf.getPercentStringFromDouble(curExtraDefinitionFull.definition.weValue)
                     }
                 )
                 chkIsFixed.isChecked = curExtraDefinitionFull.definition.weIsFixed
@@ -215,14 +215,25 @@ class EmployerExtraDefinitionUpdateFragment :
             display += if (curExtraDefinitionFull.extraType.wetIsDefault) "Is automatic"
             else "Added Manually"
             tvDescription.text = display
-            if (curExtraDefinitionFull.extraType.wetAppliesTo == 4) {
-                chkIsFixed.isChecked = true
-                chkIsFixed.text = getString(R.string.defaults_to_percentage)
-                chkIsFixed.isEnabled = false
-            } else {
-                chkIsFixed.text = getString(R.string.check_if_this_is_a_fixed_amount)
-                chkIsFixed.isEnabled = true
-                chkIsFixed.isChecked = false
+            when (curExtraDefinitionFull.extraType.wetAppliesTo) {
+                4 -> {
+                    chkIsFixed.isChecked = false
+                    chkIsFixed.text = getString(R.string.defaults_to_percentage)
+                    chkIsFixed.isEnabled = false
+                    etValue.setText(getString(R.string.zero_percent))
+                }
+
+                1 -> {
+                    chkIsFixed.isChecked = true
+                    chkIsFixed.text = getString(R.string.defaults_to_fixed)
+                    chkIsFixed.isEnabled = false
+                    etValue.setText(getString(R.string.zero_dollars))
+                }
+
+                else -> {
+                    chkIsFixed.text = getString(R.string.check_if_this_is_a_fixed_amount)
+                    chkIsFixed.isEnabled = true
+                }
             }
         }
     }
