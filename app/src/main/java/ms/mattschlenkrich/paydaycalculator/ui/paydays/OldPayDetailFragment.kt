@@ -24,7 +24,6 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.adapter.extras.PayDetailExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.adapter.tax.PayDetailTaxAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
-import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_DETAILS
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
@@ -43,9 +42,9 @@ import ms.mattschlenkrich.paydaycalculator.payFunctions.NewPayCalculations
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import java.time.LocalDate
 
-private const val TAG = FRAG_PAY_DETAILS
+private const val TAG = "OldPayDetailFragment"
 
-class NewPayDetailFragment :
+class OldPayDetailFragment :
     Fragment(R.layout.fragment_pay_details),
     IPayDetailsFragment {
 
@@ -294,6 +293,26 @@ class NewPayDetailFragment :
             populateExtras(payCalculations)
             delay(WAIT_1500)
             binding.apply {
+                var display = "Gross ${
+                    cf.displayDollars(
+                        payCalculations.getPayGross()
+                    )
+                }"
+                tvGrossPay.text = display
+                display = cf.displayDollars(
+                    -payCalculations.getDebitTotalsByPay()
+                            - payCalculations.getAllTaxDeductions()
+                )
+                tvDeductions.text = display
+                tvDeductions.setTextColor(Color.RED)
+                display = "NET: ${
+                    cf.displayDollars(
+                        payCalculations.getPayGross()
+                                - payCalculations.getDebitTotalsByPay()
+                                - payCalculations.getAllTaxDeductions()
+                    )
+                }"
+                tvNetPay.text = display
                 if (payCalculations.getPayReg() > 0.0) {
                     llRegPay.visibility = View.VISIBLE
                     tvRegHours.text = payCalculations.getHoursReg().toString()
@@ -327,26 +346,6 @@ class NewPayDetailFragment :
                     llStatPay.visibility = View.GONE
                 }
                 tvHourlyTotal.text = cf.displayDollars(payCalculations.getPayAllHourly())
-                var display = "Gross ${
-                    cf.displayDollars(
-                        payCalculations.getPayGross()
-                    )
-                }"
-                tvGrossPay.text = display
-                display = cf.displayDollars(
-                    -payCalculations.getDebitTotalsByPay()
-                            - payCalculations.getAllTaxDeductions()
-                )
-                tvDeductions.text = display
-                tvDeductions.setTextColor(Color.RED)
-                display = "NET: ${
-                    cf.displayDollars(
-                        payCalculations.getPayGross()
-                                - payCalculations.getDebitTotalsByPay()
-                                - payCalculations.getAllTaxDeductions()
-                    )
-                }"
-                tvNetPay.text = display
             }
         }
     }
@@ -648,7 +647,7 @@ class NewPayDetailFragment :
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
             val creditListAdapter = PayDetailExtraAdapter(
-                mainActivity, creditList, mView, this@NewPayDetailFragment
+                mainActivity, creditList, mView, this@OldPayDetailFragment
             )
             binding.apply {
                 rvCredits.layoutManager = LinearLayoutManager(mView.context)
@@ -700,7 +699,7 @@ class NewPayDetailFragment :
             binding.apply {
                 delay(WAIT_500)
                 val deductionListAdapter = PayDetailExtraAdapter(
-                    mainActivity, debitList, mView, this@NewPayDetailFragment
+                    mainActivity, debitList, mView, this@OldPayDetailFragment
                 )
                 rvDebits.layoutManager = LinearLayoutManager(mView.context)
                 rvDebits.adapter = deductionListAdapter

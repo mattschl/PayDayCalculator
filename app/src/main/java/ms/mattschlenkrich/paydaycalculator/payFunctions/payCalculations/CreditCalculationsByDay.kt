@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.payFunctions
+package ms.mattschlenkrich.paydaycalculator.payFunctions.payCalculations
 
 import android.view.View
 import androidx.lifecycle.findViewTreeLifecycleOwner
@@ -14,7 +14,7 @@ class CreditCalculationsByDay(
     private val currentPayPeriod: PayPeriods,
     private val workDateList: ArrayList<WorkDates>,
 ) {
-    
+
 
     private fun getWorkDateExtras(): ArrayList<WorkDateExtraAndTypeAndDef> {
         val payPeriodExtras = ArrayList<WorkDateExtraAndTypeAndDef>()

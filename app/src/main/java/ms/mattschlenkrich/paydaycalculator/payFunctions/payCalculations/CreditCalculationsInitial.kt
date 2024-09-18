@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.payFunctions
+package ms.mattschlenkrich.paydaycalculator.payFunctions.payCalculations
 
 import android.view.View
 import androidx.lifecycle.findViewTreeLifecycleOwner

@@ -6,6 +6,9 @@ import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriodHou
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxAndAmount
+import ms.mattschlenkrich.paydaycalculator.payFunctions.payCalculations.CreditCalculationsFinal
+import ms.mattschlenkrich.paydaycalculator.payFunctions.payCalculations.CreditCalculationsInitial
+import ms.mattschlenkrich.paydaycalculator.payFunctions.payCalculations.WorkDateCalculations
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import kotlin.math.round
 

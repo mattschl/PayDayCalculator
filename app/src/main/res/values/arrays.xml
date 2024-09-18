@@ -3,8 +3,6 @@
     <string-array name="pay_day_frequencies">
         <item>Bi-Weekly</item>
         <item>Weekly</item>
-        <item>Semi-Monthly</item>
-        <item>Monthly</item>
     </string-array>
     <string-array name="pay_days">
         <item>Friday</item>
