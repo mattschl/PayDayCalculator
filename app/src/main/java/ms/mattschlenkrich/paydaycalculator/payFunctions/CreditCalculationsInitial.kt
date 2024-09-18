@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paydaycalculator.payFunctions
 
 import android.view.View
 import androidx.lifecycle.findViewTreeLifecycleOwner
+import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraAndTotal
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraDefinitionAndType
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtraTypes
@@ -11,8 +12,9 @@ import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtr
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
+import kotlin.math.round
 
-class CreditCalculations(
+class CreditCalculationsInitial(
     private val mainActivity: MainActivity,
     private val mView: View,
     private val currentPayPeriod: PayPeriods,
@@ -21,6 +23,7 @@ class CreditCalculations(
 ) {
     private val creditList = getAllCreditsAndTotals()
     private val creditTotal = getTotalAllCredits()
+    private val nf = NumberFunctions()
 
     fun getCreditList(): List<ExtraAndTotal> {
         return creditList
@@ -47,82 +50,45 @@ class CreditCalculations(
     private fun getCreditExtrasByDates(): ArrayList<ExtraAndTotal> {
         val workDateExtraFinalList = ArrayList<ExtraAndTotal>()
         val workDateExtras = getWorkDateExtras()
-        var total = 0.0
         for (i in 0 until workDateExtras.size) {
+            var total = 0.0
             if (workDateExtras[i].extra.wdeIsCredit) {
                 if (workDateExtras[i].extra.wdeAppliesTo == 0 &&
-                    workDateExtras[i].extra.wdeAttachTo == 1 &&
-                    workDateExtras[i].extra.wdeIsFixed
+                    workDateExtras[i].extra.wdeAttachTo == 1
                 ) {
                     for (date in workDateList) {
-                        if (date.workDateId == workDateExtras[i]
-                                .extra.workDateExtraId
-                            && !date.wdIsDeleted
-                        ) {
+                        if (!date.wdIsDeleted) {
+                            val factor =
+                                if (workDateExtras[i].def!!.weIsFixed) {
+                                    workDateExtras[i].def!!.weValue
+                                } else {
+                                    workDateExtras[i].def!!.weValue / 100
+                                }
                             total +=
-                                workDateExtras[i].extra.wdeValue *
-                                        (
-                                                date.wdRegHours +
-                                                        date.wdOtHours +
-                                                        date.wdDblOtHours
-                                                )
-                        } else if (
-                            workDateExtras[i].extra.wdeAppliesTo == 0 &&
-                            workDateExtras[i].extra.wdeAttachTo == 1 &&
-                            !workDateExtras[i].extra.wdeIsFixed
-                        ) {
-                            total +=
-                                workDateExtras[i].extra.wdeValue *
-                                        hourlySummary.payRate * (
-                                        date.wdRegHours +
-                                                date.wdOtHours +
-                                                date.wdDblOtHours
-                                        )
+                                nf.roundTo2Decimals(
+                                    (date.wdRegHours
+                                            + date.wdDblOtHours
+                                            + date.wdDblOtHours)
+                                            * factor
+                                )
                         }
                     }
-                } else if (workDateExtras[i].extra.wdeAppliesTo == 1 &&
-                    workDateExtras[i].extra.wdeAttachTo == 1 &&
-                    workDateExtras[i].extra.wdeIsFixed
+                } else if (workDateExtras[1].extra.wdeAppliesTo == 1 &&
+                    workDateExtras[i].extra.wdeAttachTo == 1
                 ) {
                     for (date in workDateList) {
-                        if (date.workDateId == workDateExtras[i].extra.workDateExtraId &&
-                            !date.wdIsDeleted
+                        if (!date.wdIsDeleted &&
+                            (date.wdRegHours != 0.0 ||
+                                    date.wdOtHours != 0.0 ||
+                                    date.wdDblOtHours != 0.0)
                         ) {
-                            total += workDateExtras[i].extra.wdeValue
-                        }
-                    }
-                } else if (workDateExtras[i].extra.wdeAppliesTo == 1 &&
-                    workDateExtras[i].extra.wdeAttachTo == 1 &&
-                    !workDateExtras[i].extra.wdeIsFixed
-                ) {
-                    for (date in workDateList) {
-                        if (date.workDateId == workDateExtras[i].extra.workDateExtraId &&
-                            !date.wdIsDeleted
-                        ) {
-                            total += workDateExtras[i].extra.wdeValue *
-                                    hourlySummary.payRate *
-                                    (date.wdRegHours +
-                                            date.wdOtHours +
-                                            date.wdDblOtHours)
+                            total +=
+                                nf.roundTo2Decimals(
+                                    workDateExtras[i].def!!.weValue
+                                )
                         }
                     }
                 }
-            }
-            if (workDateExtras.size == 1) {
-                workDateExtraFinalList.add(
-                    ExtraAndTotal(
-                        workDateExtras[i].extra.wdeName,
-                        total
-                    )
-                )
-            } else if (i == workDateExtras.size - 1) {
-                workDateExtraFinalList.add(
-                    ExtraAndTotal(
-                        workDateExtras[i].extra.wdeName,
-                        total
-                    )
-                )
-                total = 0.0
             }
         }
         return workDateExtraFinalList
@@ -155,15 +121,19 @@ class CreditCalculations(
                     0 -> {
                         val creditTotal =
                             if (extra.ppeIsFixed) {
-                                (hourlySummary.hoursReg +
-                                        hourlySummary.hoursOt +
-                                        hourlySummary.hoursDblOt) *
-                                        extra.ppeValue
+                                round(
+                                    (hourlySummary.hoursReg +
+                                            hourlySummary.hoursOt +
+                                            hourlySummary.hoursDblOt) *
+                                            extra.ppeValue
+                                ) / 100
                             } else {
-                                (hourlySummary.hoursReg +
-                                        hourlySummary.hoursOt +
-                                        hourlySummary.hoursDblOt) *
-                                        extra.ppeValue / 100
+                                round(
+                                    (hourlySummary.hoursReg +
+                                            hourlySummary.hoursOt +
+                                            hourlySummary.hoursDblOt) *
+                                            extra.ppeValue
+                                ) / 100
                             }
                         extraList.add(
                             ExtraAndTotal(extra.ppeName, creditTotal)
@@ -176,11 +146,13 @@ class CreditCalculations(
                                 hourlySummary.daysWorked *
                                         extra.ppeValue
                             } else {
-                                hourlySummary.payRate *
-                                        (hourlySummary.hoursReg +
-                                                hourlySummary.hoursOt +
-                                                hourlySummary.hoursDblOt) *
-                                        extra.ppeValue / 100
+                                round(
+                                    hourlySummary.payRate *
+                                            (hourlySummary.hoursReg +
+                                                    hourlySummary.hoursOt +
+                                                    hourlySummary.hoursDblOt) *
+                                            extra.ppeValue
+                                ) / 100
                             }
                         extraList.add(
                             ExtraAndTotal(extra.ppeName, creditTotal)
@@ -192,12 +164,14 @@ class CreditCalculations(
                             if (extra.ppeIsFixed) {
                                 extra.ppeValue
                             } else {
-                                hourlySummary.payRate *
-                                        (hourlySummary.hoursReg +
-                                                hourlySummary.hoursOt +
-                                                hourlySummary.hoursDblOt +
-                                                hourlySummary.hoursStat) *
-                                        extra.ppeValue / 100
+                                round(
+                                    hourlySummary.payRate *
+                                            (hourlySummary.hoursReg +
+                                                    hourlySummary.hoursOt +
+                                                    hourlySummary.hoursDblOt +
+                                                    hourlySummary.hoursStat) *
+                                            extra.ppeValue
+                                ) / 100
                             }
                         extraList.add(
                             ExtraAndTotal(extra.ppeName, creditTotal)
@@ -238,11 +212,13 @@ class CreditCalculations(
                         extraList.add(
                             ExtraAndTotal(
                                 workExtrasByPay[i].extraType.wetName,
-                                workExtrasByPay[i].definition.weValue *
-                                        hourlySummary.payRate *
-                                        (hourlySummary.hoursReg +
-                                                hourlySummary.hoursOt +
-                                                hourlySummary.hoursDblOt) / 100
+                                round(
+                                    workExtrasByPay[i].definition.weValue *
+                                            hourlySummary.payRate *
+                                            (hourlySummary.hoursReg +
+                                                    hourlySummary.hoursOt +
+                                                    hourlySummary.hoursDblOt)
+                                ) / 100
 
                             )
                         )
@@ -255,11 +231,13 @@ class CreditCalculations(
                     extraList.add(
                         ExtraAndTotal(
                             workExtrasByPay[i].extraType.wetName,
-                            workExtrasByPay[i].definition.weValue *
-                                    hourlySummary.payRate *
-                                    (hourlySummary.hoursReg +
-                                            hourlySummary.hoursOt +
-                                            hourlySummary.hoursDblOt) /
+                            round(
+                                workExtrasByPay[i].definition.weValue *
+                                        hourlySummary.payRate *
+                                        (hourlySummary.hoursReg +
+                                                hourlySummary.hoursOt +
+                                                hourlySummary.hoursDblOt)
+                            ) /
                                     100
                         )
                     )

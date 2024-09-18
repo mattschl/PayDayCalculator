@@ -40,25 +40,25 @@ class PayCalculations(
         )
         hourly.payRate = employerPayRate.getPayRate()
 
-        val creditCalculations = CreditCalculations(
+        val creditCalculationsInitial = CreditCalculationsInitial(
             mainActivity,
             mView,
             currentPayPeriod,
             workDateList,
             hourly,
         )
-        creditList = creditCalculations.getCreditList() as ArrayList
-        creditTotal = creditCalculations.getCreditTotal()
+        creditList = creditCalculationsInitial.getCreditList() as ArrayList
+        creditTotal = creditCalculationsInitial.getCreditTotal()
 
-        val percentCreditCalculations =
-            PercentCreditCalculations(
+        val creditCalculationsFinal =
+            CreditCalculationsFinal(
                 mainActivity,
                 mView,
                 currentPayPeriod,
                 hourly,
-                creditCalculations
+                creditCalculationsInitial
             )
-        creditList.add(percentCreditCalculations.getExtraList()[0])
+        creditList.add(creditCalculationsFinal.getExtraList()[0])
     }
 
     override fun getDebitExtrasListByPay(): List<ExtraAndTotal>? {
@@ -126,7 +126,7 @@ class PayCalculations(
     }
 
     override fun getPayReg(): Double {
-        return hourly.payRate * hourly.hoursReg
+        return round(hourly.payRate * hourly.hoursReg * 100) / 100
     }
 
     override fun getPayOt(): Double {
@@ -138,7 +138,7 @@ class PayCalculations(
     }
 
     override fun getPayStat(): Double {
-        return hourly.payRate * hourly.hoursReg
+        return round(hourly.payRate * hourly.hoursReg * 100) / 100
     }
 
     override fun getPayAllHourly(): Double {

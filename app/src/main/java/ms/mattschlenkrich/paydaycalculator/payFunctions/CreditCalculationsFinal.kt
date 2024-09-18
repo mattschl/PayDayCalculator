@@ -8,12 +8,12 @@ import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriodHou
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
-class PercentCreditCalculations(
+class CreditCalculationsFinal(
     private val mainActivity: MainActivity,
     private val mView: View,
     private val currentPayPeriod: PayPeriods,
     private val hourlySummary: PayPeriodHourlySummary,
-    private val creditCalculations: CreditCalculations
+    private val creditCalculations: CreditCalculationsInitial
 ) {
     fun getExtraList(): List<ExtraAndTotal> {
         val extraList = ArrayList<ExtraAndTotal>()
