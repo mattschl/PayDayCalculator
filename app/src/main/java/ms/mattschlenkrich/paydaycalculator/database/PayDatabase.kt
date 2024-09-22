@@ -8,6 +8,7 @@ import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paydaycalculator.common.PAY_DB_VERSION
 import ms.mattschlenkrich.paydaycalculator.database.dao.EmployerDao
 import ms.mattschlenkrich.paydaycalculator.database.dao.PayDayDao
+import ms.mattschlenkrich.paydaycalculator.database.dao.PayDetailDao
 import ms.mattschlenkrich.paydaycalculator.database.dao.WorkExtraDao
 import ms.mattschlenkrich.paydaycalculator.database.dao.WorkOrderDao
 import ms.mattschlenkrich.paydaycalculator.database.dao.WorkTaxDao
@@ -26,8 +27,12 @@ import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkPayPerio
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.WorkTaxRules
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.JobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWorkSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkSpec
 
 
 @Database(
@@ -47,6 +52,10 @@ import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHis
         EmployerPayRates::class,
         WorkOrder::class,
         WorkOrderHistory::class,
+        WorkSpec::class,
+        JobSpec::class,
+        WorkOrderHistoryWorkSpec::class,
+        WorkOrderJobSpec::class,
     ],
     views = [ExtraDefinitionAndType::class,
         ExtraTypeAndDefByDay::class],
@@ -59,6 +68,7 @@ abstract class PayDatabase : RoomDatabase() {
     abstract fun getWorkExtraDao(): WorkExtraDao
     abstract fun getPayDayDao(): PayDayDao
     abstract fun getWorkOrderDao(): WorkOrderDao
+    abstract fun getPayDetailDao(): PayDetailDao
 
     companion object {
         @Volatile

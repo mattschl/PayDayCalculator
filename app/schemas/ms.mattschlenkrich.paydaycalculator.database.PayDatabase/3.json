@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "787e2d609534baec05b5270fce942a8c",
+    "identityHash": "f2c38a59ac730d5e7efb12b941ee5ea6",
     "entities": [
       {
         "tableName": "employers",
@@ -1486,6 +1486,274 @@
             ]
           }
         ]
+      },
+      {
+        "tableName": "workSpecs",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workSpecId` INTEGER NOT NULL, `wsName` TEXT NOT NULL, `wsIsDeleted` INTEGER NOT NULL, `wsUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workSpecId`))",
+        "fields": [
+          {
+            "fieldPath": "workSpecId",
+            "columnName": "workSpecId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wsName",
+            "columnName": "wsName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wsIsDeleted",
+            "columnName": "wsIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wsUpdateTime",
+            "columnName": "wsUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workSpecId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "jobSpecs",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`jobSpecId` INTEGER NOT NULL, `jsName` TEXT NOT NULL, `jsIsDeleted` INTEGER NOT NULL, `jsUpdateTime` TEXT NOT NULL, PRIMARY KEY(`jobSpecId`))",
+        "fields": [
+          {
+            "fieldPath": "jobSpecId",
+            "columnName": "jobSpecId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jsName",
+            "columnName": "jsName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jsIsDeleted",
+            "columnName": "jsIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jsUpdateTime",
+            "columnName": "jsUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "jobSpecId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "workOderHistoryWorkSpec",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workOrderHistoryWorkSpecId` INTEGER NOT NULL, `wohwsHistoryId` INTEGER NOT NULL, `wohwsWorkSpecId` INTEGER NOT NULL, `wohwsIsDeleted` INTEGER NOT NULL, `wohwsUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workOrderHistoryWorkSpecId`), FOREIGN KEY(`wohwsHistoryId`) REFERENCES `workOrderHistory`(`woHistoryId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`wohwsWorkSpecId`) REFERENCES `workSpecs`(`workSpecId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "workOrderHistoryWorkSpecId",
+            "columnName": "workOrderHistoryWorkSpecId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wohwsHistoryId",
+            "columnName": "wohwsHistoryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wohwsWorkSpecId",
+            "columnName": "wohwsWorkSpecId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wohwsIsDeleted",
+            "columnName": "wohwsIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wohwsUpdateTime",
+            "columnName": "wohwsUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workOrderHistoryWorkSpecId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_workOderHistoryWorkSpec_wohwsHistoryId_wohwsWorkSpecId",
+            "unique": true,
+            "columnNames": [
+              "wohwsHistoryId",
+              "wohwsWorkSpecId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_workOderHistoryWorkSpec_wohwsHistoryId_wohwsWorkSpecId` ON `${TABLE_NAME}` (`wohwsHistoryId`, `wohwsWorkSpecId`)"
+          },
+          {
+            "name": "index_workOderHistoryWorkSpec_wohwsHistoryId",
+            "unique": false,
+            "columnNames": [
+              "wohwsHistoryId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workOderHistoryWorkSpec_wohwsHistoryId` ON `${TABLE_NAME}` (`wohwsHistoryId`)"
+          },
+          {
+            "name": "index_workOderHistoryWorkSpec_wohwsWorkSpecId",
+            "unique": false,
+            "columnNames": [
+              "wohwsWorkSpecId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workOderHistoryWorkSpec_wohwsWorkSpecId` ON `${TABLE_NAME}` (`wohwsWorkSpecId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "workOrderHistory",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wohwsHistoryId"
+            ],
+            "referencedColumns": [
+              "woHistoryId"
+            ]
+          },
+          {
+            "table": "workSpecs",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wohwsWorkSpecId"
+            ],
+            "referencedColumns": [
+              "workSpecId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "workOrderJobSpecs",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workOrderJobSpecId` INTEGER NOT NULL, `wojsWWorkOrderId` INTEGER NOT NULL, `wojsJobSpecId` INTEGER NOT NULL, `wojsIsDeleted` INTEGER NOT NULL, `wojsUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workOrderJobSpecId`), FOREIGN KEY(`wojsWWorkOrderId`) REFERENCES `workOrders`(`workOrderId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`wojsJobSpecId`) REFERENCES `jobSpecs`(`jobSpecId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "workOrderJobSpecId",
+            "columnName": "workOrderJobSpecId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wojsWWorkOrderId",
+            "columnName": "wojsWWorkOrderId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wojsJobSpecId",
+            "columnName": "wojsJobSpecId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wojsIsDeleted",
+            "columnName": "wojsIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wojsUpdateTime",
+            "columnName": "wojsUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workOrderJobSpecId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_workOrderJobSpecs_wojsWWorkOrderId_wojsJobSpecId",
+            "unique": true,
+            "columnNames": [
+              "wojsWWorkOrderId",
+              "wojsJobSpecId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_workOrderJobSpecs_wojsWWorkOrderId_wojsJobSpecId` ON `${TABLE_NAME}` (`wojsWWorkOrderId`, `wojsJobSpecId`)"
+          },
+          {
+            "name": "index_workOrderJobSpecs_wojsWWorkOrderId",
+            "unique": false,
+            "columnNames": [
+              "wojsWWorkOrderId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workOrderJobSpecs_wojsWWorkOrderId` ON `${TABLE_NAME}` (`wojsWWorkOrderId`)"
+          },
+          {
+            "name": "index_workOrderJobSpecs_wojsJobSpecId",
+            "unique": false,
+            "columnNames": [
+              "wojsJobSpecId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workOrderJobSpecs_wojsJobSpecId` ON `${TABLE_NAME}` (`wojsJobSpecId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "workOrders",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wojsWWorkOrderId"
+            ],
+            "referencedColumns": [
+              "workOrderId"
+            ]
+          },
+          {
+            "table": "jobSpecs",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wojsJobSpecId"
+            ],
+            "referencedColumns": [
+              "jobSpecId"
+            ]
+          }
+        ]
       }
     ],
     "views": [
@@ -1500,7 +1768,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '787e2d609534baec05b5270fce942a8c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f2c38a59ac730d5e7efb12b941ee5ea6')"
     ]
   }
 }

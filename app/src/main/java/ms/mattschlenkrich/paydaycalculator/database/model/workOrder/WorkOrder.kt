@@ -11,13 +11,18 @@ import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 
 @Entity(
     tableName = "workOrders",
-    foreignKeys = [ForeignKey(
-        entity = Employers::class,
-        parentColumns = ["employerId"],
-        childColumns = ["woEmployerId"]
-    )],
+    foreignKeys = [
+        ForeignKey(
+            entity = Employers::class,
+            parentColumns = ["employerId"],
+            childColumns = ["woEmployerId"]
+        )],
     indices =
-    [Index(value = ["woNumber", "woEmployerId"], unique = true)]
+    [Index(
+        value = ["woNumber", "woEmployerId"],
+        unique = true
+    )
+    ]
 )
 @Parcelize
 data class WorkOrder(

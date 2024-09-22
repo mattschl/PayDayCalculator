@@ -81,7 +81,7 @@ class NewPayDetailFragment :
         super.onViewCreated(view, savedInstanceState)
         populateEmployers()
         setClickActions()
-        createMenuAction()
+        setMenuAction()
         onSelectEmployer()
         onSelectCutOffDate()
         populateFromHistory()
@@ -351,7 +351,7 @@ class NewPayDetailFragment :
         }
     }
 
-    private fun createMenuAction() {
+    private fun setMenuAction() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_delete, menu)
@@ -378,7 +378,7 @@ class NewPayDetailFragment :
             .setMessage(
                 "**Warning!! \n" +
                         "This action cannot be undone! " +
-                        "All the work dates will have to b re-entered."
+                        "All the work dates will have to be re-entered."
             )
             .setPositiveButton("DELETE") { _, _ ->
                 deletePayDay()
@@ -733,6 +733,17 @@ class NewPayDetailFragment :
                     for (i in 0 until spCutOff.adapter.count) {
                         if (spCutOff.getItemAtPosition(i) == curCutOff) {
                             spCutOff.setSelection(i)
+                            if (!valuesFilled) {
+                                if (curCutOff != spCutOff.selectedItem.toString()) {
+                                    curCutOff = spCutOff.selectedItem.toString()
+                                    if (valuesFilled) mainActivity.mainViewModel.setCutOffDate(
+                                        curCutOff
+                                    )
+                                    getCurrentPayPeriodObject()
+                                    populatePayDayDate()
+                                    populatePayDetails()
+                                }
+                            }
                             break
                         }
                     }

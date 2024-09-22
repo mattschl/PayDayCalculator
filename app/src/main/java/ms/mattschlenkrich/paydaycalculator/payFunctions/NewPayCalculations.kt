@@ -83,6 +83,15 @@ class NewPayCalculations(
         }
     }
 
+    //    private fun processWorkDates() {
+//        CoroutineScope(Dispatchers.IO).launch {
+//            workDates =
+//                mainActivity.payDetailViewModel.getWorkDates(
+//                    employer.employerId, currentPayPeriod.ppCutoffDate
+//                ) as ArrayList
+//        }
+//    }
+//
     private fun processWorkDates() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             mainActivity.payDayViewModel.getWorkDateList(
@@ -96,22 +105,56 @@ class NewPayCalculations(
         }
     }
 
+//    private fun processHours() {
+//        daysWorked = 0
+//        regHours = 0.0
+//        otHours = 0.0
+//        dblOtHours = 0.0
+//        statHours = 0.0
+//        for (day in workDates) {
+//            if (!day.wdIsDeleted) {
+//                daysWorked++
+//                regHours += day.wdRegHours
+//                otHours += day.wdOtHours
+//                dblOtHours += day.wdDblOtHours
+//                statHours += day.wdStatHours
+//            }
+//        }
+//    }
+
     private fun processHours() {
-        daysWorked = 0
-        regHours = 0.0
-        otHours = 0.0
-        dblOtHours = 0.0
-        statHours = 0.0
-        for (day in workDates) {
-            if (!day.wdIsDeleted) {
-                daysWorked++
-                regHours += day.wdRegHours
-                otHours += day.wdOtHours
-                dblOtHours += day.wdDblOtHours
-                statHours += day.wdStatHours
-            }
+        CoroutineScope(Dispatchers.IO).launch {
+            daysWorked =
+                mainActivity.payDetailViewModel.getDaysWorked(
+                    employer.employerId, currentPayPeriod.ppCutoffDate
+                )
+            regHours =
+                mainActivity.payDetailViewModel.getHoursReg(
+                    employer.employerId, currentPayPeriod.ppCutoffDate
+                )
+            otHours =
+                mainActivity.payDetailViewModel.getHoursOt(
+                    employer.employerId, currentPayPeriod.ppCutoffDate
+                )
+            dblOtHours =
+                mainActivity.payDetailViewModel.getHoursDblOt(
+                    employer.employerId, currentPayPeriod.ppCutoffDate
+                )
+            statHours =
+                mainActivity.payDetailViewModel.getHoursStat(
+                    employer.employerId, currentPayPeriod.ppCutoffDate
+                )
         }
     }
+
+//    private fun processPayRate() {
+//        CoroutineScope(Dispatchers.IO).launch {
+//            payRate =
+//                mainActivity.payDetailViewModel.getPayRate(
+//                    employer.employerId, currentPayPeriod.ppCutoffDate
+//                )
+//        }
+//    }
 
     private fun processPayRate() {
         mView.findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
