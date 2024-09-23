@@ -6,13 +6,13 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Entity(
-    tableName = "workSpecs"
+    tableName = "workPerformed"
 )
 @Parcelize
-data class WorkSpec(
+data class WorkPerformed(
     @PrimaryKey
-    val workSpecId: Long,
-    val wsName: String,
-    val wsIsDeleted: Boolean,
-    val wsUpdateTime: String,
+    val workPerformedId: Long,
+    val wpDescription: String,
+    val wpIsDeleted: Boolean,
+    val wpUpdateTime: String,
 ) : Parcelable

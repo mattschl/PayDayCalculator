@@ -6,9 +6,11 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.JobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWithDates
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpec
 
 @Dao
 interface WorkOrderDao {
@@ -163,4 +165,36 @@ interface WorkOrderDao {
     suspend fun deleteWorkOrderHistoryByWorkDateId(
         workDateId: Long, updateTime: String
     )
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertJobSpec(jobSpec: JobSpec)
+
+    @Query(
+        "SELECT * FROM jobSpecs " +
+                "WHERE jsIsDeleted = 0 " +
+                "ORDER BY jsName"
+    )
+    fun getJobSpecsAll(): LiveData<List<JobSpec>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertWorkOrderJobSpec(workOrderJobSpec: WorkOrderJobSpec)
+
+    @Query(
+        "UPDATE workOrderJobSpecs " +
+                "SET wojsIsDeleted = 1, " +
+                "wojsUpdateTime = :updateTime " +
+                "WHERE workOrderJobSpecId = :workOrderJobSpecId"
+    )
+    suspend fun deleteWorkOrderJobSpec(
+        workOrderJobSpecId: Long, updateTime: String
+    )
+
+    @Query(
+        "SELECT * FROM workOrderJobSpecs " +
+                "WHERE wojsIsDeleted = 0 " +
+                "AND wojsWorkOrderId = :workOrderId " +
+                "ORDER BY wojsSequence"
+    )
+    fun getWorkOrderJobSpecs(workOrderId: Long):
+            LiveData<List<WorkOrderJobSpec>>
 }

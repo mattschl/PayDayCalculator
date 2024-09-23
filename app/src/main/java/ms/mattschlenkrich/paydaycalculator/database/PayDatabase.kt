@@ -30,9 +30,9 @@ import ms.mattschlenkrich.paydaycalculator.database.model.tax.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.JobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWorkSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpec
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkPerformed
 
 
 @Database(
@@ -52,9 +52,9 @@ import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkSpec
         EmployerPayRates::class,
         WorkOrder::class,
         WorkOrderHistory::class,
-        WorkSpec::class,
+        WorkPerformed::class,
         JobSpec::class,
-        WorkOrderHistoryWorkSpec::class,
+        WorkOrderHistoryWorkPerformed::class,
         WorkOrderJobSpec::class,
     ],
     views = [ExtraDefinitionAndType::class,

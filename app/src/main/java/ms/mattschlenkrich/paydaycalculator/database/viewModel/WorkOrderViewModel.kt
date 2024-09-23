@@ -4,8 +4,10 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.JobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpec
 import ms.mattschlenkrich.paydaycalculator.database.repository.WorkOrderRepository
 
 class WorkOrderViewModel(
@@ -100,4 +102,28 @@ class WorkOrderViewModel(
             workDateId, updateTime
         )
     }
+
+    fun insertJobSpec(jobSpec: JobSpec) =
+        viewModelScope.launch {
+            workOrderRepository.insertJobSpec(jobSpec)
+        }
+
+    fun getJobSpecsAll() =
+        workOrderRepository.getJobSpecs()
+
+    fun insertWorkOrderJobSpec(workOrderJobSpec: WorkOrderJobSpec) =
+        viewModelScope.launch {
+            workOrderRepository.insertWorkOrderJobSpec(workOrderJobSpec)
+        }
+
+    fun deleteWorkOrderJobSpec(
+        workOrderJobSpecId: Long, updateTime: String
+    ) = viewModelScope.launch {
+        workOrderRepository.deleteWorkOrderJobSpec(
+            workOrderJobSpecId, updateTime
+        )
+    }
+
+    fun getWorkOrderJobSpecs(workOrderId: Long) =
+        workOrderRepository.getWorkOrderJobSpecs(workOrderId)
 }

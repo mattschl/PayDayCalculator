@@ -9,30 +9,31 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Entity(
-    tableName = "workOderHistoryWorkSpec",
+    tableName = "workOrderHistoryWorkPerformed",
     foreignKeys = [ForeignKey(
         entity = WorkOrderHistory::class,
         parentColumns = ["woHistoryId"],
-        childColumns = ["wohwsHistoryId"]
+        childColumns = ["wowpHistoryId"]
     ),
         ForeignKey(
-            entity = WorkSpec::class,
-            parentColumns = ["workSpecId"],
-            childColumns = ["wohwsWorkSpecId"]
+            entity = WorkPerformed::class,
+            parentColumns = ["workPerformedId"],
+            childColumns = ["wowpWorkPerformedId"]
         )],
     indices = [Index(
-        value = ["wohwsHistoryId", "wohwsWorkSpecId"],
+        value = ["wowpHistoryId", "wowpWorkPerformedId"],
         unique = true
     )]
 )
 @Parcelize
-data class WorkOrderHistoryWorkSpec(
+data class WorkOrderHistoryWorkPerformed(
     @PrimaryKey
-    val workOrderHistoryWorkSpecId: Long,
+    val workOrderHistoryWorkPerformedId: Long,
     @ColumnInfo(index = true)
-    val wohwsHistoryId: Long,
+    val wowpHistoryId: Long,
     @ColumnInfo(index = true)
-    val wohwsWorkSpecId: Long,
-    val wohwsIsDeleted: Boolean,
-    val wohwsUpdateTime: String,
+    val wowpWorkPerformedId: Long,
+    val wowpSequence: Int,
+    val wowpIsDeleted: Boolean,
+    val wowpUpdateTime: String,
 ) : Parcelable

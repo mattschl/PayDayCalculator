@@ -460,6 +460,9 @@
         <action
             android:id="@+id/action_workOrderAddFragment_to_workOrdersFragment"
             app:destination="@id/workOrdersFragment" />
+        <action
+            android:id="@+id/action_workOrderAddFragment_to_workOrderUpdateFragment"
+            app:destination="@id/workOrderUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/workOrderUpdateFragment"

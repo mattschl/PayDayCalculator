@@ -2,11 +2,15 @@ package ms.mattschlenkrich.paydaycalculator.database.model.workOrder
 
 import android.os.Parcelable
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Entity(
-    tableName = "jobSpecs"
+    tableName = "jobSpecs",
+    indices = [Index(
+        value = ["jsName"], unique = true
+    )]
 )
 @Parcelize
 data class JobSpec(

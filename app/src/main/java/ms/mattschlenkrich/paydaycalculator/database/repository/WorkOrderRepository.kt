@@ -1,8 +1,10 @@
 package ms.mattschlenkrich.paydaycalculator.database.repository
 
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.JobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpec
 
 class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun insertWorkOrder(workOrder: WorkOrder) =
@@ -76,4 +78,22 @@ class WorkOrderRepository(private val db: PayDatabase) {
     ) = db.getWorkOrderDao().deleteWorkOrderHistoryByWorkDateId(
         workDateId, updateTime
     )
+
+    suspend fun insertJobSpec(jobSpec: JobSpec) =
+        db.getWorkOrderDao().insertJobSpec(jobSpec)
+
+    fun getJobSpecs() =
+        db.getWorkOrderDao().getJobSpecsAll()
+
+    suspend fun insertWorkOrderJobSpec(workOrderJobSpec: WorkOrderJobSpec) =
+        db.getWorkOrderDao().insertWorkOrderJobSpec(workOrderJobSpec)
+
+    suspend fun deleteWorkOrderJobSpec(
+        workOrderJobSpecId: Long, updateTime: String
+    ) = db.getWorkOrderDao().deleteWorkOrderJobSpec(
+        workOrderJobSpecId, updateTime
+    )
+
+    fun getWorkOrderJobSpecs(workOrderId: Long) =
+        db.getWorkOrderDao().getWorkOrderJobSpecs(workOrderId)
 }

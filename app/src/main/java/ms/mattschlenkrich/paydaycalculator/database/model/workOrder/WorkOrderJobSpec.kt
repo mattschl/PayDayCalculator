@@ -14,7 +14,7 @@ import kotlinx.parcelize.Parcelize
         ForeignKey(
             entity = WorkOrder::class,
             parentColumns = ["workOrderId"],
-            childColumns = ["wojsWWorkOrderId"]
+            childColumns = ["wojsWorkOrderId"]
         ),
         ForeignKey(
             entity = JobSpec::class,
@@ -24,7 +24,7 @@ import kotlinx.parcelize.Parcelize
     ],
     indices =
     [Index(
-        value = ["wojsWWorkOrderId", "wojsJobSpecId"],
+        value = ["wojsWorkOrderId", "wojsJobSpecId"],
         unique = true
     )
     ]
@@ -34,9 +34,12 @@ data class WorkOrderJobSpec(
     @PrimaryKey
     val workOrderJobSpecId: Long,
     @ColumnInfo(index = true)
-    val wojsWWorkOrderId: Long,
+    val wojsWorkOrderId: Long,
     @ColumnInfo(index = true)
     val wojsJobSpecId: Long,
+    val wojsSequence: Int,
     val wojsIsDeleted: Boolean,
     val wojsUpdateTime: String,
 ) : Parcelable
+
+
