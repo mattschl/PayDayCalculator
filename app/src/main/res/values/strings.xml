@@ -177,7 +177,7 @@
     <string name="add_time_to_work_order">Add time to work order</string>
     <string name="add_new_work_order">Add new work order</string>
     <string name="work_order_summary">Work Order Summary</string>
-    <string name="this_work_order_has_been_used">This Work Order has been used!</string>
+    <string name="this_work_order_has_been_used">This Work Order number has been used!</string>
     <string name="please_enter_an_address">Please enter an address.</string>
     <string name="please_enter_a_description">Please enter a description.</string>
     <string name="please_enter_a_work_order_number">Please enter a Work Order Number.</string>
@@ -210,5 +210,6 @@
     <string name="enter_general_job_description">Enter general job description</string>
     <string name="general_job_description">General Job Description</string>
     <string name="enter_job_specs_to_add_to_list_below">Enter Job specs to add to list below</string>
-    <string name="job_specs">Job Specs:</string>
+    <string name="job_specs">Job Specs: </string>
+    <string name="please_enter_a_valid_work_order_number">Please enter a valid work order number</string>
 </resources>

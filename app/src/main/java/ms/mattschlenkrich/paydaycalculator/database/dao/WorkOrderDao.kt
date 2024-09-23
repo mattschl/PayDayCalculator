@@ -6,11 +6,13 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.JobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpecCombined
 
 @Dao
 interface WorkOrderDao {
@@ -169,6 +171,9 @@ interface WorkOrderDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertJobSpec(jobSpec: JobSpec)
 
+    @Update
+    suspend fun updateJobSpec(jobSpec: JobSpec)
+
     @Query(
         "SELECT * FROM jobSpecs " +
                 "WHERE jsIsDeleted = 0 " +
@@ -189,12 +194,14 @@ interface WorkOrderDao {
         workOrderJobSpecId: Long, updateTime: String
     )
 
+    @Transaction
     @Query(
         "SELECT * FROM workOrderJobSpecs " +
                 "WHERE wojsIsDeleted = 0 " +
                 "AND wojsWorkOrderId = :workOrderId " +
-                "ORDER BY wojsSequence"
+                "ORDER BY wojsSequence, " +
+                "wojsUpdateTime"
     )
     fun getWorkOrderJobSpecs(workOrderId: Long):
-            LiveData<List<WorkOrderJobSpec>>
+            LiveData<List<WorkOrderJobSpecCombined>>
 }

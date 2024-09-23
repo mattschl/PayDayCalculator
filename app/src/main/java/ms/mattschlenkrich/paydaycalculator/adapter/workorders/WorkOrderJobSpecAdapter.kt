@@ -12,8 +12,7 @@ import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 class WorkOrderJobSpecAdapter(
     val mainActivity: MainActivity,
-    val mView: View,
-    private val parentFragmentTag: String
+    val mView: View
 ) : RecyclerView.Adapter<WorkOrderJobSpecAdapter.ViewHolder>() {
 
     class ViewHolder(
