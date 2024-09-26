@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -256,8 +257,8 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
                 df.getCurrentTimeAsString()
             )
         )
-        binding.acJobSpec.text = null
         populateJobSpecsForWorkOrder()
+        binding.acJobSpec.text = null
     }
 
     private fun populateJobSpecsForWorkOrder() {
@@ -277,7 +278,10 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
                 mView
             )
         binding.rvJobSpecs.apply {
-            layoutManager = LinearLayoutManager(mView.context)
+            layoutManager = StaggeredGridLayoutManager(
+                2,
+                StaggeredGridLayoutManager.VERTICAL
+            )
             adapter = workOrderJobSpecAdapter
         }
         workOrderJobSpecAdapter.differ.submitList(jobSpecList)

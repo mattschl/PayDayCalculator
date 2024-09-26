@@ -212,4 +212,6 @@
     <string name="enter_job_specs_to_add_to_list_below">Enter Job specs to add to list below</string>
     <string name="job_specs">Job Specs: </string>
     <string name="please_enter_a_valid_work_order_number">Please enter a valid work order number</string>
+    <string name="please_note_that_this_will_affect_all_work_orders">* Please note that this will affect all work orders that use this job spec.</string>
+    <string name="edit_">Edit:</string>
 </resources>

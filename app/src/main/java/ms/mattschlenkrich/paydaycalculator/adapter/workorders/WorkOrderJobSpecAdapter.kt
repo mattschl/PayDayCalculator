@@ -1,11 +1,13 @@
 package ms.mattschlenkrich.paydaycalculator.adapter.workorders
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
@@ -14,6 +16,8 @@ class WorkOrderJobSpecAdapter(
     val mainActivity: MainActivity,
     val mView: View
 ) : RecyclerView.Adapter<WorkOrderJobSpecAdapter.ViewHolder>() {
+
+    private val df = DateFunctions()
 
     class ViewHolder(
         val itemBinding: ListSingleItemBinding
@@ -63,6 +67,34 @@ class WorkOrderJobSpecAdapter(
         holder.itemBinding.apply {
             tvDisplay.text = woJobSpec.jobSpec.jsName
         }
+        holder.itemView.setOnClickListener {
+            chooseOptions(woJobSpec)
+        }
+    }
+
+    private fun chooseOptions(woJobSpec: WorkOrderJobSpecCombined) {
+        AlertDialog.Builder(mView.context)
+            .setTitle("Choose option for ${woJobSpec.jobSpec.jsName}")
+            .setPositiveButton("Edit description") { _, _ ->
+                editJobSpec(woJobSpec)
+            }
+            .setNegativeButton("Remove") { _, _ ->
+                removeJobSpec(woJobSpec)
+            }
+            .setNeutralButton("Cancel", null)
+            .show()
+    }
+
+    private fun removeJobSpec(woJobSpec: WorkOrderJobSpecCombined) {
+        mainActivity.workOrderViewModel.deleteWorkOrderJobSpec(
+            woJobSpec.WorkOrderJobSpec.workOrderJobSpecId,
+            df.getCurrentTimeAsString()
+        )
+    }
+
+    private fun editJobSpec(woJobSpec: WorkOrderJobSpecCombined) {
+        mainActivity.mainViewModel.setJobSpec(woJobSpec.jobSpec)
+        
     }
 
 }

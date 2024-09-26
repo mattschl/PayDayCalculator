@@ -74,7 +74,7 @@ class WorkDateWorkOrderHistoryAdapter(
 
     private fun chooseOptions(history: WorkOrderHistoryWithDates) {
         AlertDialog.Builder(mView.context)
-            .setTitle("Choose option for this item")
+            .setTitle("Choose option for wo ${history.workOrder.woNumber}")
             .setPositiveButton("Edit") { _, _ ->
                 editWorkOrderHistory(history)
             }
