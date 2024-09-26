@@ -170,6 +170,11 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
 
     private fun setOnWorkOrderSelected(workOrderId: String) {
         mainActivity.mainViewModel.setWorkOrderNumber(workOrderId)
+        mainActivity.workOrderViewModel.getWorkOrder(workOrderId).observe(
+            viewLifecycleOwner
+        ) { workOrder ->
+            mainActivity.mainViewModel.setWorkOrder(workOrder)
+        }
         setTempWorkOrderInfo()
     }
 

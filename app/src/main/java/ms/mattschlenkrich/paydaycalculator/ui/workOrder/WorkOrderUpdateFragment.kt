@@ -133,7 +133,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
                 tvEmployer.visibility = View.VISIBLE
                 tvEmployer.text = curEmployer.employerName
             }
-            getWorkOrderList()
+            getWorkOrderListForValidation()
         }
         if (mainActivity.mainViewModel.getWorkOrder() != null) {
             curWorkOrder =
@@ -177,7 +177,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
         populateHistory(workOrder.workOrderId)
     }
 
-    private fun getWorkOrderList() {
+    private fun getWorkOrderListForValidation() {
         workOrderList.clear()
         mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
             curEmployer.employerId
@@ -199,17 +199,29 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
                 setCurrentJoSpec()
             }
             btnAddJobSpec.setOnClickListener {
-                if (curJobSpec != null) {
-                    addJobSpecToWorkOrder()
-                } else if (acJobSpec.text.isNotBlank()) {
-                    saveJobSpecAndAddToWorkOrder()
-                } else {
-                    Toast.makeText(
-                        mView.context,
-                        "Add a description first",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+                addSpecToWorkOrderIfValid()
+            }
+        }
+    }
+
+    private fun addSpecToWorkOrderIfValid() {
+        binding.apply {
+            if (acJobSpec.text.isNullOrBlank()) {
+                Toast.makeText(
+                    mView.context,
+                    "Add a description first",
+                    Toast.LENGTH_LONG
+                ).show()
+            } else if (curJobSpec != null) {
+                addJobSpecToWorkOrder()
+            } else if (acJobSpec.text.isNotBlank()) {
+                saveJobSpecAndAddToWorkOrder()
+            } else {
+                Toast.makeText(
+                    mView.context,
+                    "Add a description first",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -299,21 +311,25 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
 
     private fun populateJobSpecSummary(jobSpecList: List<WorkOrderJobSpecCombined>) {
         var display = getString(R.string.job_specs)
+        var seq = 1
         for (jobSpec in jobSpecList.listIterator()) {
             display +=
-                " ${jobSpec.WorkOrderJobSpec.wojsSequence}. " +
+                " ${seq}. " +
                         jobSpec.jobSpec.jsName
+            seq++
         }
         binding.tvJobSpecsCombined.text = display
     }
 
-    private fun setCurrentJoSpec() {
+    private fun setCurrentJoSpec(): Boolean {
         for (jobSpec in jobSpecList) {
             if (jobSpec.jsName == binding.acJobSpec.text.toString().trim()) {
                 curJobSpec = jobSpec
-                break
+                return true
             }
         }
+        curJobSpec = null
+        return false
     }
 
     private fun prepareToUpdate() {
@@ -409,7 +425,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
                                 spEmployers.selectedItem.toString()
                             )
                         }
-                        getWorkOrderList()
+                        getWorkOrderListForValidation()
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {

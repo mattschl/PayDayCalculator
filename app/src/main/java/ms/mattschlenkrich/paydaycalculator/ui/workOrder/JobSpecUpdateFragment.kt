@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
@@ -100,7 +101,11 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
     }
 
     private fun gotoCallingFragment() {
-        TODO("Not yet implemented")
+        mainActivity.mainViewModel.setJobSpec(null)
+        mView.findNavController().navigate(
+            JobSpecUpdateFragmentDirections
+                .actionJobSpecUpdateFragmentToWorkOrderUpdateFragment()
+        )
     }
 
     private fun fillJobSpecListForValidation() {

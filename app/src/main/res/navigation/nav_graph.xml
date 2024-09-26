@@ -463,6 +463,9 @@
         <action
             android:id="@+id/action_workOrderAddFragment_to_workOrderUpdateFragment"
             app:destination="@id/workOrderUpdateFragment" />
+        <action
+            android:id="@+id/action_workOrderAddFragment_to_jobSpecUpdateFragment"
+            app:destination="@id/jobSpecUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/workOrderUpdateFragment"
@@ -482,6 +485,9 @@
         <action
             android:id="@+id/action_workOrderUpdateFragment_to_workOrdersFragment"
             app:destination="@id/workOrdersFragment" />
+        <action
+            android:id="@+id/action_workOrderUpdateFragment_to_jobSpecUpdateFragment"
+            app:destination="@id/jobSpecUpdateFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_workOrderAddFragment"
@@ -504,5 +510,14 @@
     <action
         android:id="@+id/action_global_workOrdersFragment"
         app:destination="@id/workOrdersFragment" />
+    <fragment
+        android:id="@+id/jobSpecUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.workOrder.JobSpecUpdateFragment"
+        android:label="JobSpecUpdateFragment"
+        tools:layout="@layout/fragment_job_spec">
+        <action
+            android:id="@+id/action_jobSpecUpdateFragment_to_workOrderUpdateFragment"
+            app:destination="@id/workOrderUpdateFragment" />
+    </fragment>
 
 </navigation>

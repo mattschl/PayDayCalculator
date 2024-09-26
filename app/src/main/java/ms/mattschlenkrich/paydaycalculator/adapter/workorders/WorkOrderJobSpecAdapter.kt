@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -11,6 +12,7 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
+import ms.mattschlenkrich.paydaycalculator.ui.workOrder.WorkOrderUpdateFragmentDirections
 
 class WorkOrderJobSpecAdapter(
     val mainActivity: MainActivity,
@@ -68,11 +70,11 @@ class WorkOrderJobSpecAdapter(
             tvDisplay.text = woJobSpec.jobSpec.jsName
         }
         holder.itemView.setOnClickListener {
-            chooseOptions(woJobSpec)
+            chooseOptionsForJobSpec(woJobSpec)
         }
     }
 
-    private fun chooseOptions(woJobSpec: WorkOrderJobSpecCombined) {
+    private fun chooseOptionsForJobSpec(woJobSpec: WorkOrderJobSpecCombined) {
         AlertDialog.Builder(mView.context)
             .setTitle("Choose option for ${woJobSpec.jobSpec.jsName}")
             .setPositiveButton("Edit description") { _, _ ->
@@ -94,7 +96,10 @@ class WorkOrderJobSpecAdapter(
 
     private fun editJobSpec(woJobSpec: WorkOrderJobSpecCombined) {
         mainActivity.mainViewModel.setJobSpec(woJobSpec.jobSpec)
-        
+        mView.findNavController().navigate(
+            WorkOrderUpdateFragmentDirections
+                .actionWorkOrderUpdateFragmentToJobSpecUpdateFragment()
+        )
     }
 
 }
