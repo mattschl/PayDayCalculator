@@ -71,13 +71,13 @@ class OldWorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
             }
             populateEmployers()
         }
-        if (mainActivity.mainViewModel.getTempWorkOrderInfo() != null) {
+        if (mainActivity.mainViewModel.getTempWorkOrderHistoryInfo() != null) {
             setValuesFromHistory()
         }
     }
 
     private fun setValuesFromHistory() {
-        val tempWorkOrder = mainActivity.mainViewModel.getTempWorkOrderInfo()!!
+        val tempWorkOrder = mainActivity.mainViewModel.getTempWorkOrderHistoryInfo()!!
         binding.apply {
             etWorkOrderNumber.setText(tempWorkOrder.woHistoryWorkOrderNumber)
         }

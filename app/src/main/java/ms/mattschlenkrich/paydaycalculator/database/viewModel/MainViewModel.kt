@@ -42,7 +42,7 @@ class MainViewModel(
     private var isCredit = false
     private var payPeriodExtra: WorkPayPeriodExtras? = null
     private var payPeriodExtraList = ArrayList<WorkPayPeriodExtras>()
-    private var tempWorkOrderInfo: TempWorkOrderHistoryInfo? = null
+    private var tempWorkOrderHistoryInfo: TempWorkOrderHistoryInfo? = null
     private var workOrderHistory: WorkOrderHistory? = null
     private var workOrderNumber: String? = null
     private var workOrder: WorkOrder? = null
@@ -80,12 +80,12 @@ class MainViewModel(
         return workOrderHistory
     }
 
-    fun setTempWorkOrderInfo(newInfo: TempWorkOrderHistoryInfo?) {
-        tempWorkOrderInfo = newInfo
+    fun setTempWorkOrderHistoryInfo(newInfo: TempWorkOrderHistoryInfo?) {
+        tempWorkOrderHistoryInfo = newInfo
     }
 
-    fun getTempWorkOrderInfo(): TempWorkOrderHistoryInfo? {
-        return tempWorkOrderInfo
+    fun getTempWorkOrderHistoryInfo(): TempWorkOrderHistoryInfo? {
+        return tempWorkOrderHistoryInfo
     }
 
     fun setPayPeriodExtraList(newList: ArrayList<WorkPayPeriodExtras>) {

@@ -427,6 +427,9 @@
         <action
             android:id="@+id/action_workOrderHistoryAddFragment_to_workOrderUpdateFragment"
             app:destination="@id/workOrderUpdateFragment" />
+        <action
+            android:id="@+id/action_workOrderHistoryAddFragment_to_workOrderHistoryUpdateFragment"
+            app:destination="@id/workOrderHistoryUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/workOrderHistoryUpdateFragment"

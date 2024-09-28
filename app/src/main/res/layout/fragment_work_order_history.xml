@@ -6,7 +6,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/relativeLayout"
@@ -194,31 +194,81 @@
                 android:id="@+id/lblNote"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/work_done"
+                android:text="@string/note"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="italic"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/etDblOtHours" />
+                app:layout_constraintBaseline_toBaselineOf="@id/etNote"
+                app:layout_constraintEnd_toStartOf="@id/etNote"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <EditText
                 android:id="@+id/etNote"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/enter_work_done"
+                android:hint="@string/enter_note_optional"
                 android:importantForAutofill="no"
                 android:inputType="textMultiLine"
-                android:minHeight="48dp"
+                android:maxWidth="@dimen/text_box_extra_wide"
+                android:minHeight="@dimen/minimum_touch_height"
                 android:paddingStart="@dimen/dimen_20dp"
                 android:paddingEnd="@dimen/dimen_20dp"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lblNote" />
+                app:layout_constraintStart_toEndOf="@id/lblNote"
+                app:layout_constraintTop_toBottomOf="@id/etDblOtHours" />
 
+            <TextView
+                android:id="@+id/lblWorkPerformed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_work_performed_below"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="italic"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etNote" />
+
+            <AutoCompleteTextView
+                android:id="@+id/acWorkPerformed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/start_typing_for_matches"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine"
+                android:maxWidth="@dimen/text_box_extra_wide"
+                android:minHeight="@dimen/minimum_touch_height"
+                android:paddingStart="@dimen/dimen_20dp"
+                android:paddingEnd="@dimen/dimen_20dp"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/btnAddWorkPerformed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lblWorkPerformed" />
+
+            <Button
+                android:id="@+id/btnAddWorkPerformed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/green"
+                android:text="@string/add"
+                app:layout_constraintBaseline_toBaselineOf="@id/acWorkPerformed"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/acWorkPerformed"
+                tools:ignore="TextContrastCheck" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvWorkPerformed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/dimen_10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/acWorkPerformed" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabDone"
@@ -230,7 +280,7 @@
                 android:contentDescription="@string/done"
                 android:src="@drawable/ic_done"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/etNote" />
+                app:layout_constraintTop_toBottomOf="@id/rvWorkPerformed" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

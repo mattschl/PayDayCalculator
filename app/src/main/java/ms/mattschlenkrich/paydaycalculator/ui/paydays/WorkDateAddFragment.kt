@@ -238,7 +238,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private fun validateWorkDateToSave(fragment: String) {
         var found = false
         if (usedWorkDatesList.isEmpty()) {
-            askUserToSaveNowOrAddExtras(fragment)
+            askUserToSaveNow(fragment)
         } else {
             for (date in usedWorkDatesList) {
                 if (date.wdDate == curDateString) {
@@ -247,7 +247,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
                 }
             }
             if (!found) {
-                askUserToSaveNowOrAddExtras(fragment)
+                askUserToSaveNow(fragment)
             }
         }
     }
@@ -266,7 +266,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
             .show()
     }
 
-    private fun askUserToSaveNowOrAddExtras(fragment: String) {
+    private fun askUserToSaveNow(fragment: String) {
         AlertDialog.Builder(requireContext())
             .setTitle("Finish adding work date")
             .setMessage("Would you like to save this date now and continue?")

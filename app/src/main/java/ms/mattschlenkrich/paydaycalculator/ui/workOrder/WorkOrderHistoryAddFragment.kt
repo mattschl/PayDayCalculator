@@ -19,6 +19,7 @@ import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.TempWorkOrderHistoryInfo
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkPerformed
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderHistoryBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
@@ -32,10 +33,13 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
     private val nf = NumberFunctions()
-    private lateinit var workOrderList: ArrayList<String>
+    private lateinit var workOrderListForAutoComplete:
+            ArrayList<String>
     private lateinit var workDateObject: WorkDates
     private lateinit var curEmployer: Employers
     private var curWorkOrder: WorkOrder? = null
+    private lateinit var workPerformedListForAutoComplete:
+            ArrayList<WorkPerformed>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,7 +57,6 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         populateValues()
-        populateWorkOrderList()
         setClickActions()
     }
 
@@ -89,13 +92,40 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
     private fun populateValues() {
         populateWorkDateInfo()
         populateTempWorkOrderInfo()
+        populateWorkOrderListInAutoComplete()
+        populateWorkPerformedListInAutoComplete()
+    }
+
+    private fun populateWorkPerformedListInAutoComplete() {
+        workPerformedListForAutoComplete =
+            getWorkPerformedListForAutoComplete()
+        binding.apply {
+            val wpAdapter = ArrayAdapter(
+                mView.context,
+                R.layout.spinner_item_normal,
+                workPerformedListForAutoComplete
+            )
+            acWorkPerformed.setAdapter(wpAdapter)
+        }
+    }
+
+    private fun getWorkPerformedListForAutoComplete():
+            ArrayList<WorkPerformed> {
+        val newList = ArrayList<WorkPerformed>()
+        mainActivity.workOrderViewModel.getWorkPerformedAll()
+            .observe(viewLifecycleOwner) { list ->
+                list.listIterator().forEach {
+                    newList.add(it)
+                }
+            }
+        return newList
     }
 
     private fun populateTempWorkOrderInfo() {
-        if (mainActivity.mainViewModel.getTempWorkOrderInfo() != null) {
+        if (mainActivity.mainViewModel.getTempWorkOrderHistoryInfo() != null) {
             binding.apply {
                 val tempWorkOrderHistory =
-                    mainActivity.mainViewModel.getTempWorkOrderInfo()!!
+                    mainActivity.mainViewModel.getTempWorkOrderHistoryInfo()!!
                 if (mainActivity.mainViewModel.getWorkOrderNumber() != null) {
                     acWorkOrder.setText(mainActivity.mainViewModel.getWorkOrderNumber()!!)
                 } else {
@@ -129,11 +159,11 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         }
     }
 
-    private fun populateWorkOrderList() {
-        workOrderList = getWorkOrderList()
+    private fun populateWorkOrderListInAutoComplete() {
+        workOrderListForAutoComplete = getWorkOrderList()
         binding.apply {
             val woAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_normal, workOrderList
+                mView.context, R.layout.spinner_item_normal, workOrderListForAutoComplete
             )
             acWorkOrder.setAdapter(woAdapter)
         }
@@ -162,6 +192,26 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
             acWorkOrder.setOnItemClickListener { _, _, _, _ ->
                 setCurWorkOrder()
             }
+            acWorkPerformed.setOnClickListener {
+                saveCurrentHistoryIfValidAndGotoUpdateFragment()
+            }
+            btnAddWorkPerformed.setOnClickListener {
+                saveCurrentHistoryIfValidAndGotoUpdateFragment()
+            }
+        }
+    }
+
+    private fun saveCurrentHistoryIfValidAndGotoUpdateFragment() {
+        binding.apply {
+            if (acWorkOrder.text.isNullOrBlank()) {
+                Toast.makeText(
+                    mView.context,
+                    "Please enter a valid work order number before adding work performed",
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                saveHistoryIfValid(true)
+            }
         }
     }
 
@@ -169,7 +219,7 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         mainActivity.mainViewModel.setWorkOrderNumber(
             binding.acWorkOrder.text.toString()
         )
-        setTempWorkOderHistory()
+        setTempWorkOrderHistory()
         mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
             WorkOrderHistoryAddFragmentDirections
@@ -179,7 +229,7 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
 
     private fun validateWorkOrderNumber() {
         if (checkIfWorOrderExists()) {
-            prepareToSave()
+            saveHistoryIfValid(false)
         } else {
             AlertDialog.Builder(mView.context)
                 .setTitle(
@@ -199,7 +249,7 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
     }
 
     private fun checkIfWorOrderExists(): Boolean {
-        for (workOrder in workOrderList) {
+        for (workOrder in workOrderListForAutoComplete) {
             if (binding.acWorkOrder.text.toString() == workOrder) {
                 return true
             }
@@ -208,7 +258,7 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
     }
 
     private fun gotoWorkOrderAddFragment() {
-        setTempWorkOderHistory()
+        setTempWorkOrderHistory()
         mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
             WorkOrderHistoryAddFragmentDirections
@@ -216,9 +266,9 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         )
     }
 
-    private fun setTempWorkOderHistory() {
+    private fun setTempWorkOrderHistory() {
         binding.apply {
-            mainActivity.mainViewModel.setTempWorkOrderInfo(
+            mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(
                 TempWorkOrderHistoryInfo(
                     if (acWorkOrder.text.isNullOrBlank())
                         "00" else acWorkOrder.text.toString(),
@@ -236,10 +286,10 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         }
     }
 
-    private fun prepareToSave() {
+    private fun saveHistoryIfValid(gotoUpdate: Boolean) {
         val answer = validateEntry()
         if (answer == ANSWER_OK) {
-            saveEntry()
+            saveHistory(gotoUpdate)
         } else {
             Toast.makeText(
                 mView.context,
@@ -248,13 +298,27 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         }
     }
 
-    private fun saveEntry() {
-        mainActivity.mainViewModel.setTempWorkOrderInfo(null)
+    private fun saveHistory(gotoUpdate: Boolean) {
+        val workOrderHistory = getCurHistory()
         mainActivity.workOrderViewModel.insertWorkOrderHistory(
-            getCurHistory()
+            workOrderHistory
         )
-        mainActivity.mainViewModel.setTempWorkOrderInfo(null)
-        gotoCallingFragment()
+        if (gotoUpdate) {
+            mainActivity.mainViewModel.setWorkOrderHistory(
+                workOrderHistory
+            )
+            gotoWorkOrderHistoryUpdateFragment()
+        } else {
+            mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
+            gotoCallingFragment()
+        }
+    }
+
+    private fun gotoWorkOrderHistoryUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkOrderHistoryAddFragmentDirections
+                .actionWorkOrderHistoryAddFragmentToWorkOrderHistoryUpdateFragment()
+        )
     }
 
     private fun getCurHistory(): WorkOrderHistory {

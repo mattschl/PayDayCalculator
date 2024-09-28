@@ -13,6 +13,7 @@ import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHis
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpecCombined
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkPerformed
 
 @Dao
 interface WorkOrderDao {
@@ -204,4 +205,22 @@ interface WorkOrderDao {
     )
     fun getWorkOrderJobSpecs(workOrderId: Long):
             LiveData<List<WorkOrderJobSpecCombined>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertWorkPerformed(workPerformed: WorkPerformed)
+
+    @Query(
+        "UPDATE workPerformed " +
+                "SET wpIsDeleted = 1," +
+                "wpUpdateTime = :updateTime " +
+                "WHERE workPerformedId = :workPerformedId"
+    )
+    suspend fun deleteWorkPerformed(workPerformedId: Long, updateTime: String)
+
+    @Query(
+        "SELECT * FROM workPerformed " +
+                "WHERE wpIsDeleted = 0 " +
+                "ORDER BY wpDescription"
+    )
+    fun getWorkPerformedAll(): LiveData<List<WorkPerformed>>
 }

@@ -8,6 +8,7 @@ import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.JobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkPerformed
 import ms.mattschlenkrich.paydaycalculator.database.repository.WorkOrderRepository
 
 class WorkOrderViewModel(
@@ -131,4 +132,19 @@ class WorkOrderViewModel(
 
     fun getWorkOrderJobSpecs(workOrderId: Long) =
         workOrderRepository.getWorkOrderJobSpecs(workOrderId)
+
+    fun insertWorkPerformed(workPerformed: WorkPerformed) =
+        viewModelScope.launch {
+            workOrderRepository.insertWorkPerformed(workPerformed)
+        }
+
+    fun deleteWorkPerformed(workPerformedId: Long, updateTime: String) =
+        viewModelScope.launch {
+            workOrderRepository.deleteWorkPerformed(
+                workPerformedId, updateTime
+            )
+        }
+
+    fun getWorkPerformedAll() =
+        workOrderRepository.getWorkPerformedAll()
 }
