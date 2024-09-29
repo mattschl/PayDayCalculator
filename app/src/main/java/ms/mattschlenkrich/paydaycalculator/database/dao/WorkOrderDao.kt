@@ -11,6 +11,8 @@ import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.JobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWithDates
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWorkPerformed
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWorkPerformedCombined
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkPerformed
@@ -223,4 +225,29 @@ interface WorkOrderDao {
                 "ORDER BY wpDescription"
     )
     fun getWorkPerformedAll(): LiveData<List<WorkPerformed>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertWorkOrderHistoryWorkPerformed(
+        workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
+    )
+
+    @Query(
+        "UPDATE workOrderHistoryWorkPerformed SET " +
+                "wowpIsDeleted = 1, " +
+                "wowpUpdateTime = :updateTime " +
+                "WHERE workOrderHistoryWorkPerformedId = :workPerformedHistoryId"
+    )
+    suspend fun removeWorkPerformedFromWorkOderHistory(
+        workPerformedHistoryId: Long, updateTime: String
+    )
+
+    @Query(
+        "SELECT * FROM workOrderHistoryWorkPerformed " +
+                "WHERE wowpIsDeleted = 0 " +
+                "AND wowpHistoryId = :historyId " +
+                "ORDER BY wowpSequence, " +
+                "wowpUpdateTime"
+    )
+    fun getWorkPerformedByWorkOrderHistory(historyId: Long):
+            LiveData<List<WorkOrderHistoryWorkPerformedCombined>>
 }

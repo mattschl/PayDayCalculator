@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.JobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkPerformed
 import ms.mattschlenkrich.paydaycalculator.database.repository.WorkOrderRepository
@@ -147,4 +148,23 @@ class WorkOrderViewModel(
 
     fun getWorkPerformedAll() =
         workOrderRepository.getWorkPerformedAll()
+
+    fun insertWorkOrderHistoryWorkPerformed(
+        workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
+    ) = viewModelScope.launch {
+        workOrderRepository.insertWorkOrderHistoryWorkPerformed(
+            workOrderHistoryWorkPerformed
+        )
+    }
+
+    fun removeWorkPerformedFromWorkOderHistory(
+        workPerformedHistoryId: Long, updateTime: String
+    ) = viewModelScope.launch {
+        workOrderRepository.removeWorkPerformedFromWorkOderHistory(
+            workPerformedHistoryId, updateTime
+        )
+    }
+
+    fun getWorkPerformedCombinedByWorkOrderHistory(historyId: Long) =
+        workOrderRepository.getWorkPerformedCombinedByWorkOrderHistory(historyId)
 }

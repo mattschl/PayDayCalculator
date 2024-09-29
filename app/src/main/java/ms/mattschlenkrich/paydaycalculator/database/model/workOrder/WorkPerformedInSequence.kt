@@ -1,20 +1,14 @@
 package ms.mattschlenkrich.paydaycalculator.database.model.workOrder
 
 import android.os.Parcelable
-import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
-@Entity(
-    tableName = "workPerformed"
-)
 @Parcelize
-data class WorkPerformed(
+data class WorkPerformedInSequence(
     @PrimaryKey
-    val workPerformedId: Long,
+    val workPerformedHistoryId: Long,
+    val wpWorkPerformedId: Long,
     val wpDescription: String,
-    val wpIsDeleted: Boolean,
-    val wpUpdateTime: String,
+    val wpSequence: Int,
 ) : Parcelable
-
-

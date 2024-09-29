@@ -193,10 +193,18 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
                 setCurWorkOrder()
             }
             acWorkPerformed.setOnClickListener {
-                saveCurrentHistoryIfValidAndGotoUpdateFragment()
+                if (doesWorOrderExist()) {
+                    saveCurrentHistoryIfValidAndGotoUpdateFragment()
+                } else {
+                    validateWorkOrderNumber()
+                }
             }
             btnAddWorkPerformed.setOnClickListener {
-                saveCurrentHistoryIfValidAndGotoUpdateFragment()
+                if (doesWorOrderExist()) {
+                    saveCurrentHistoryIfValidAndGotoUpdateFragment()
+                } else {
+                    validateWorkOrderNumber()
+                }
             }
         }
     }
@@ -215,20 +223,8 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         }
     }
 
-    private fun gotoWorkOrderUpdateFragment() {
-        mainActivity.mainViewModel.setWorkOrderNumber(
-            binding.acWorkOrder.text.toString()
-        )
-        setTempWorkOrderHistory()
-        mainActivity.mainViewModel.setCallingFragment(TAG)
-        mView.findNavController().navigate(
-            WorkOrderHistoryAddFragmentDirections
-                .actionWorkOrderHistoryAddFragmentToWorkOrderUpdateFragment()
-        )
-    }
-
     private fun validateWorkOrderNumber() {
-        if (checkIfWorOrderExists()) {
+        if (doesWorOrderExist()) {
             saveHistoryIfValid(false)
         } else {
             AlertDialog.Builder(mView.context)
@@ -237,8 +233,9 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
                             "${binding.acWorkOrder.text}?"
                 )
                 .setMessage(
-                    "This Work Order does not exist." +
-                            "Would you like to create a new one?"
+                    "This Work Order does not exist. " +
+                            "It must be created before continuing. " +
+                            "Would you like to create it now?"
                 )
                 .setPositiveButton("Yes") { _, _ ->
                     gotoWorkOrderAddFragment()
@@ -248,7 +245,7 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         }
     }
 
-    private fun checkIfWorOrderExists(): Boolean {
+    private fun doesWorOrderExist(): Boolean {
         for (workOrder in workOrderListForAutoComplete) {
             if (binding.acWorkOrder.text.toString() == workOrder) {
                 return true
@@ -314,13 +311,6 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         }
     }
 
-    private fun gotoWorkOrderHistoryUpdateFragment() {
-        mView.findNavController().navigate(
-            WorkOrderHistoryAddFragmentDirections
-                .actionWorkOrderHistoryAddFragmentToWorkOrderHistoryUpdateFragment()
-        )
-    }
-
     private fun getCurHistory(): WorkOrderHistory {
         binding.apply {
             val workOrderId = curWorkOrder!!.workOrderId
@@ -344,6 +334,11 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
 
     private fun validateEntry(): String {
         binding.apply {
+            if (curWorkOrder == null &&
+                acWorkOrder.text.isNullOrBlank()
+            ) {
+                return "There is no work order selected"
+            }
             etRegHours.setText(
                 if (etRegHours.text.isNullOrBlank()) {
                     "0.0"
@@ -365,9 +360,6 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
                     etDblOtHours.text.toString().trim().toDouble().toString()
                 }
             )
-            if (curWorkOrder == null) {
-                return "There is no work order selected"
-            }
             if (etRegHours.text.toString().toDouble() == 0.0
                 && etOtHours.text.toString().toDouble() == 0.0
                 && etDblOtHours.text.toString().toDouble() == 0.0
@@ -382,6 +374,25 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         mView.findNavController().navigate(
             WorkOrderHistoryAddFragmentDirections
                 .actionWorkOrderHistoryAddFragmentToWorkDateUpdateFragment()
+        )
+    }
+
+    private fun gotoWorkOrderHistoryUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkOrderHistoryAddFragmentDirections
+                .actionWorkOrderHistoryAddFragmentToWorkOrderHistoryUpdateFragment()
+        )
+    }
+
+    private fun gotoWorkOrderUpdateFragment() {
+        mainActivity.mainViewModel.setWorkOrderNumber(
+            binding.acWorkOrder.text.toString()
+        )
+        setTempWorkOrderHistory()
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mView.findNavController().navigate(
+            WorkOrderHistoryAddFragmentDirections
+                .actionWorkOrderHistoryAddFragmentToWorkOrderUpdateFragment()
         )
     }
 

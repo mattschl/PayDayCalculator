@@ -50,7 +50,6 @@ class WorkOrderJobSpecAdapter(
 
     val differ = AsyncListDiffer(this, differCallBack)
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             ListSingleItemBinding.inflate(
