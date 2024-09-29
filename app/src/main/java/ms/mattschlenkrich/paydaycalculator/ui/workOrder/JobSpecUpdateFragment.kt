@@ -29,7 +29,7 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentJobSpecBinding.inflate(
             inflater, container, false
         )
@@ -86,14 +86,14 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
         binding.apply {
             if (etJobSpec.text.isNullOrBlank()) {
                 return "    ERROR!!/n" +
-                        "Please enter a valid Job Spec"
+                        "Please enter a valid Job Spec!"
             }
             for (jobSpec in jobSpecList) {
                 if (jobSpec.jsName ==
                     binding.etJobSpec.text.toString().trim()
                 ) {
                     return "   ERROR!/n" +
-                            "This job spec already exists"
+                            "This job spec already exists!"
                 }
             }
             return ANSWER_OK

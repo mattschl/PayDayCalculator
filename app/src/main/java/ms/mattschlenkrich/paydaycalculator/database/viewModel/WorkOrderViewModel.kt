@@ -149,6 +149,17 @@ class WorkOrderViewModel(
     fun getWorkPerformedAll() =
         workOrderRepository.getWorkPerformedAll()
 
+    fun getWorkPerformed(description: String) =
+        workOrderRepository.getWorkPerformed(description)
+
+    fun getWorkPerformed(workPerformedId: Long) =
+        workOrderRepository.getWorkPerformed(workPerformedId)
+
+    fun updateWorkPerformed(workPerformed: WorkPerformed) =
+        viewModelScope.launch {
+            workOrderRepository.updateWorkPerformed(workPerformed)
+        }
+
     fun insertWorkOrderHistoryWorkPerformed(
         workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
     ) = viewModelScope.launch {

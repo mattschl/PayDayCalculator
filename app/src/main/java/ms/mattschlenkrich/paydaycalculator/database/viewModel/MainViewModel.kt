@@ -16,6 +16,7 @@ import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.JobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.TempWorkOrderHistoryInfo
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkPerformed
 
 class MainViewModel(
     app: Application,
@@ -47,6 +48,15 @@ class MainViewModel(
     private var workOrderNumber: String? = null
     private var workOrder: WorkOrder? = null
     private var jobSpec: JobSpec? = null
+    private var workPerformed: WorkPerformed? = null
+
+    fun setWorkPerformed(newWorkPerformed: WorkPerformed?) {
+        workPerformed = newWorkPerformed
+    }
+
+    fun getWorkPerformed(): WorkPerformed? {
+        return workPerformed
+    }
 
     fun getJobSpec(): JobSpec? {
         return jobSpec

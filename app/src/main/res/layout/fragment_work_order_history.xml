@@ -17,7 +17,7 @@
                 android:id="@+id/lblDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/minimum_touch_height"
+                android:layout_marginTop="@dimen/dimen_8dp"
                 android:text="@string/work_date"
                 android:textColor="@color/black"
                 android:textSize="20sp"

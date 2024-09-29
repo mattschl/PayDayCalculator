@@ -226,6 +226,21 @@ interface WorkOrderDao {
     )
     fun getWorkPerformedAll(): LiveData<List<WorkPerformed>>
 
+    @Query(
+        "SELECT * FROM workPerformed " +
+                "WHERE wpDescription = :description"
+    )
+    fun getWorkPerformed(description: String): LiveData<WorkPerformed>
+
+    @Query(
+        "SELECT * FROM workPerformed " +
+                "WHERE workPerformedId = :workPerformedId"
+    )
+    fun getWorkPerformed(workPerformedId: Long): LiveData<WorkPerformed>
+
+    @Update
+    suspend fun updateWorkPerformed(workPerformed: WorkPerformed)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkOrderHistoryWorkPerformed(
         workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed

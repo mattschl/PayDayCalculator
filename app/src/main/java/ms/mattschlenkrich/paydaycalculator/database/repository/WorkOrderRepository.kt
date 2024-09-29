@@ -111,6 +111,15 @@ class WorkOrderRepository(private val db: PayDatabase) {
     fun getWorkPerformedAll() =
         db.getWorkOrderDao().getWorkPerformedAll()
 
+    fun getWorkPerformed(description: String) =
+        db.getWorkOrderDao().getWorkPerformed(description)
+
+    fun getWorkPerformed(workPerformedId: Long) =
+        db.getWorkOrderDao().getWorkPerformed(workPerformedId)
+
+    suspend fun updateWorkPerformed(workPerformed: WorkPerformed) =
+        db.getWorkOrderDao().updateWorkPerformed(workPerformed)
+
     suspend fun insertWorkOrderHistoryWorkPerformed(
         workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
     ) = db.getWorkOrderDao().insertWorkOrderHistoryWorkPerformed(

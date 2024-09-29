@@ -4,6 +4,8 @@ import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -11,6 +13,7 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkPerformedInSequence
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
+import ms.mattschlenkrich.paydaycalculator.ui.workOrder.WorkOrderHistoryUpdateFragmentDirections
 
 class WorKOrderHistoryWorkPerformedAdapter(
     val mainActivity: MainActivity,
@@ -91,7 +94,16 @@ class WorKOrderHistoryWorkPerformedAdapter(
     }
 
     private fun editWorkPerformed(workPerformedId: Long) {
-        //
+        mainActivity.workOrderViewModel.getWorkPerformed(
+            workPerformedId
+        ).observe(mView.findViewTreeLifecycleOwner()!!) { workPerformed ->
+            mainActivity.mainViewModel.setWorkPerformed(workPerformed)
+
+        }
+        mView.findNavController().navigate(
+            WorkOrderHistoryUpdateFragmentDirections
+                .actionWorkOrderHistoryUpdateFragmentToWorkPerformedUpdateFragment()
+        )
     }
 
     private fun removeWorkPerformedFromWorkOrder(workOrderHistoryWorkPerformedId: Long) {
