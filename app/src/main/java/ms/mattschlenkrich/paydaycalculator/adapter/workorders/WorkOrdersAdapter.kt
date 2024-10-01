@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkOrderItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
-import ms.mattschlenkrich.paydaycalculator.ui.workOrder.WorkOrdersFragmentDirections
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.WorkOrdersFragmentDirections
 
 class WorkOrdersAdapter(
     val mainActivity: MainActivity,

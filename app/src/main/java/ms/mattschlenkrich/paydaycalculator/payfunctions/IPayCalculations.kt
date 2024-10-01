@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.payFunctions
+package ms.mattschlenkrich.paydaycalculator.payfunctions
 
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraAndTotal
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxAndAmount

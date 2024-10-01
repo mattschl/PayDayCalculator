@@ -13,7 +13,7 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkPerformedInSequence
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
-import ms.mattschlenkrich.paydaycalculator.ui.workOrder.WorkOrderHistoryUpdateFragmentDirections
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.WorkOrderHistoryUpdateFragmentDirections
 
 class WorKOrderHistoryWorkPerformedAdapter(
     val mainActivity: MainActivity,

@@ -157,18 +157,12 @@ class MainActivity : AppCompatActivity() {
         findNavController(R.id.nav_host_fragment_container).navigate(
             NavGraphDirections.actionGlobalNewPayDetailFragment()
         )
-//        findNavController(R.id.nav_host_fragment_container).navigate(
-//            NavGraphDirections.actionGlobalPayDetailsFragment2()
-//        )
     }
 
     private fun gotoTimeSheet() {
         findNavController(R.id.nav_host_fragment_container).navigate(
             NavGraphDirections.actionGlobalNewTimeSheetFragment()
         )
-//        findNavController(R.id.nav_host_fragment_container).navigate(
-//            NavGraphDirections.actionGlobalTimeSheetFragment2()
-//        )
     }
 
     private fun gotoExtras() {
@@ -256,7 +250,6 @@ class MainActivity : AppCompatActivity() {
             this, workOrderViewModelFactory
         )[WorkOrderViewModel::class.java]
     }
-
 
     private fun setupPayDetailViewModel() {
         val payDetailRepository =

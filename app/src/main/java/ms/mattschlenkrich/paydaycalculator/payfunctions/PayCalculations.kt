@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.payFunctions
+package ms.mattschlenkrich.paydaycalculator.payfunctions
 
 import android.view.View
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraAndTotal
@@ -6,9 +6,9 @@ import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriodHou
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxAndAmount
-import ms.mattschlenkrich.paydaycalculator.payFunctions.payCalculations.CreditCalculationsFinal
-import ms.mattschlenkrich.paydaycalculator.payFunctions.payCalculations.CreditCalculationsInitial
-import ms.mattschlenkrich.paydaycalculator.payFunctions.payCalculations.WorkDateCalculations
+import ms.mattschlenkrich.paydaycalculator.payfunctions.paycalculations.CreditCalculationsFinal
+import ms.mattschlenkrich.paydaycalculator.payfunctions.paycalculations.CreditCalculationsInitial
+import ms.mattschlenkrich.paydaycalculator.payfunctions.paycalculations.WorkDateCalculations
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import kotlin.math.round
 

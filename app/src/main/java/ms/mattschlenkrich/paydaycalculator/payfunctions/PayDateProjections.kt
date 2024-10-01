@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.payFunctions
+package ms.mattschlenkrich.paydaycalculator.payfunctions
 
 import ms.mattschlenkrich.paydaycalculator.common.DAY_FRIDAY
 import ms.mattschlenkrich.paydaycalculator.common.DAY_MONDAY

@@ -38,8 +38,8 @@ import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkDateExtrasA
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayDetailsBinding
-import ms.mattschlenkrich.paydaycalculator.payFunctions.IPayCalculations
-import ms.mattschlenkrich.paydaycalculator.payFunctions.NewPayCalculations
+import ms.mattschlenkrich.paydaycalculator.payfunctions.IPayCalculations
+import ms.mattschlenkrich.paydaycalculator.payfunctions.NewPayCalculations
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import java.time.LocalDate
 

@@ -12,7 +12,7 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
-import ms.mattschlenkrich.paydaycalculator.ui.workOrder.WorkOrderUpdateFragmentDirections
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.WorkOrderUpdateFragmentDirections
 
 class WorkOrderJobSpecAdapter(
     val mainActivity: MainActivity,

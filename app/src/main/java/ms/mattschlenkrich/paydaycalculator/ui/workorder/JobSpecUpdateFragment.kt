@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.ui.workOrder
+package ms.mattschlenkrich.paydaycalculator.ui.workorder
 
 import android.os.Bundle
 import android.view.LayoutInflater
