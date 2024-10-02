@@ -1,12 +1,12 @@
 package ms.mattschlenkrich.paydaycalculator.database.repository
 
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.JobSpec
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWorkPerformed
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpec
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkPerformed
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.JobSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrder
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderJobSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerformed
 
 class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun insertWorkOrder(workOrder: WorkOrder) =

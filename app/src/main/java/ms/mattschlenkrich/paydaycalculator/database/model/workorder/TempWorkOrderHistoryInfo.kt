@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.database.model.workOrder
+package ms.mattschlenkrich.paydaycalculator.database.model.workorder
 
 data class TempWorkOrderHistoryInfo(
     val woHistoryWorkOrderNumber: String,
@@ -7,4 +7,5 @@ data class TempWorkOrderHistoryInfo(
     val woHistoryOtHours: Double,
     val woHistoryDblOtHours: Double,
     val woHistoryNote: String?,
+    val woWorkPerformed: String?,
 )

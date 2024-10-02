@@ -10,7 +10,7 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkPerformed
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerformed
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkPerformedUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
@@ -42,8 +42,8 @@ class WorkPerformedUpdateFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillWorkPerformedListForValidation()
         setView()
+        fillWorkPerformedListForValidation()
         setClickActions()
     }
 

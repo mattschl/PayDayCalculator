@@ -12,11 +12,11 @@ import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkPayPeriodExtras
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.WorkTaxRules
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.JobSpec
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.TempWorkOrderHistoryInfo
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkPerformed
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.JobSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.TempWorkOrderHistoryInfo
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrder
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerformed
 
 class MainViewModel(
     app: Application,

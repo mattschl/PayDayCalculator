@@ -23,14 +23,14 @@ import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.TempWorkOrderHistoryInfo
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWithDates
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWorkPerformed
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWorkPerformedCombined
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkPerformed
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkPerformedInSequence
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.TempWorkOrderHistoryInfo
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrder
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWithDates
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWorkPerformedCombined
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerformed
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerformedInSequence
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderHistoryBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
@@ -434,7 +434,9 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
                     if (etDblOtHours.text.isNullOrBlank())
                         0.0 else etDblOtHours.text.toString().toDouble(),
                     if (etNote.text.isNullOrBlank())
-                        null else etNote.text.toString()
+                        null else etNote.text.toString(),
+                    if (acWorkPerformed.text.isNullOrBlank())
+                        null else acWorkPerformed.text.toString().trim()
                 )
             )
         }

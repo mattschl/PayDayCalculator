@@ -27,12 +27,12 @@ import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkPayPerio
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.WorkTaxRules
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.JobSpec
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistory
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWorkPerformed
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpec
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkPerformed
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.JobSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrder
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderJobSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerformed
 
 
 @Database(

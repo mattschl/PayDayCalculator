@@ -26,11 +26,11 @@ import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.JobSpec
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrder
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderHistoryWithDates
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpec
-import ms.mattschlenkrich.paydaycalculator.database.model.workOrder.WorkOrderJobSpecCombined
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.JobSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrder
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWithDates
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderJobSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderAddBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
@@ -199,12 +199,12 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
                 setCurrentJoSpec()
             }
             btnAddJobSpec.setOnClickListener {
-                addSpecToWorkOrderIfValid()
+                addJobSpecToWorkOrderIfValid()
             }
         }
     }
 
-    private fun addSpecToWorkOrderIfValid() {
+    private fun addJobSpecToWorkOrderIfValid() {
         binding.apply {
             if (acJobSpec.text.isNullOrBlank()) {
                 Toast.makeText(
@@ -227,19 +227,23 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
     }
 
     private fun saveJobSpecAndAddToWorkOrder() {
+        var jobSpecFound = false
         for (jobSpec in jobSpecList) {
             if (jobSpec.jsName ==
                 binding.acJobSpec.text.toString().trim()
             ) {
                 curJobSpec = jobSpec
                 addJobSpecToWorkOrder()
+                jobSpecFound = true
                 break
             }
         }
-        CoroutineScope(Dispatchers.Main).launch {
-            curJobSpec = saveJobSpec()
-            delay(WAIT_100)
-            addJobSpecToWorkOrder()
+        if (!jobSpecFound) {
+            CoroutineScope(Dispatchers.Main).launch {
+                curJobSpec = saveJobSpec()
+                delay(WAIT_100)
+                addJobSpecToWorkOrder()
+            }
         }
     }
 
@@ -314,7 +318,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
         var seq = 1
         for (jobSpec in jobSpecList.listIterator()) {
             display +=
-                " ${seq}. " +
+                " ${seq}) " +
                         jobSpec.jobSpec.jsName
             seq++
         }
@@ -442,7 +446,9 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
             }
             for (workOrder in workOrderList) {
                 if (workOrder.woNumber ==
-                    etWorkOrderNumber.text.toString()
+                    etWorkOrderNumber.text.toString() &&
+                    etWorkOrderNumber.text.toString() !=
+                    curWorkOrder.woNumber
                 ) {
                     return getString(R.string.this_work_order_has_been_used)
                 }

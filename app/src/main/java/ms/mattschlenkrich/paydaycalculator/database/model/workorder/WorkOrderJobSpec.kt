@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.database.model.workOrder
+package ms.mattschlenkrich.paydaycalculator.database.model.workorder
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
