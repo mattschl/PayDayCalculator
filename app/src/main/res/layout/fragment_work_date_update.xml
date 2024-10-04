@@ -45,7 +45,7 @@
                 android:elevation="10dp"
                 app:cardCornerRadius="10dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvWorkDate">
+                app:layout_constraintTop_toBottomOf="@+id/crdExtras">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="403dp"
@@ -132,7 +132,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@id/lblOt"
                 app:layout_constraintStart_toEndOf="@id/lblHours"
-                app:layout_constraintTop_toBottomOf="@id/crdWorkOrder"
+                app:layout_constraintTop_toBottomOf="@+id/tvWorkDate"
                 tools:ignore="LabelFor,DuplicateSpeakableTextCheck" />
 
             <TextView
@@ -251,7 +251,7 @@
                         app:layout_constraintEnd_toStartOf="@id/lblExtras"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        tools:ignore="ImageContrastCheck" />
+                        tools:ignore="ImageContrastCheck,DuplicateSpeakableTextCheck" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvExtras"
@@ -281,8 +281,8 @@
                 android:backgroundTint="@color/dark_green"
                 android:contentDescription="@string/done"
                 android:src="@drawable/ic_done"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/crdExtras" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

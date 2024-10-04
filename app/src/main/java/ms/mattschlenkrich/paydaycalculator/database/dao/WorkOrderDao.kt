@@ -171,7 +171,7 @@ interface WorkOrderDao {
         workDateId: Long, updateTime: String
     )
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert
     suspend fun insertJobSpec(jobSpec: JobSpec)
 
     @Update

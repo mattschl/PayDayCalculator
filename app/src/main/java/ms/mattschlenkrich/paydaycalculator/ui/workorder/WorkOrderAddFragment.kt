@@ -268,6 +268,11 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
     }
 
     private fun gotoWorkOrderUpdateFragment() {
+        Toast.makeText(
+            mView.context,
+            "Work order has been added automatically before adding work specs.",
+            Toast.LENGTH_LONG
+        ).show()
         mView.findNavController().navigate(
             WorkOrderAddFragmentDirections
                 .actionWorkOrderAddFragmentToWorkOrderUpdateFragment()

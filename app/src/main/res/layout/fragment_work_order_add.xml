@@ -61,10 +61,11 @@
             <EditText
                 android:id="@+id/etWorkOrderNumber"
                 android:layout_width="@dimen/text_box_wide"
-                android:layout_height="@dimen/minimum_touch_height"
+                android:layout_height="wrap_content"
                 android:hint="@string/text_zeros"
                 android:importantForAutofill="no"
                 android:inputType="text"
+                android:minHeight="@dimen/minimum_touch_height"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"

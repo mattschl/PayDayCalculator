@@ -65,9 +65,10 @@
 
             <AutoCompleteTextView
                 android:id="@+id/acWorkOrder"
-                android:layout_width="@dimen/text_box_medium"
-                android:layout_height="@dimen/minimum_touch_height"
+                android:layout_width="@dimen/text_box_wide"
+                android:layout_height="wrap_content"
                 android:hint="@string/type_numbers"
+                android:minHeight="@dimen/minimum_touch_height"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@id/btnEditWorkOrder"

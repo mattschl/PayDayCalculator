@@ -196,7 +196,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
                 prepareToUpdate()
             }
             acJobSpec.setOnItemClickListener { _, _, _, _ ->
-                setCurrentJoSpec()
+                setCurrentJobSpec()
             }
             btnAddJobSpec.setOnClickListener {
                 addJobSpecToWorkOrderIfValid()
@@ -215,18 +215,12 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
             } else if (curJobSpec != null) {
                 addJobSpecToWorkOrder()
             } else if (acJobSpec.text.isNotBlank()) {
-                saveJobSpecAndAddToWorkOrder()
-            } else {
-                Toast.makeText(
-                    mView.context,
-                    "Add a description first",
-                    Toast.LENGTH_LONG
-                ).show()
+                findOrSaveJobSpecAndAddToWorkOrder()
             }
         }
     }
 
-    private fun saveJobSpecAndAddToWorkOrder() {
+    private fun findOrSaveJobSpecAndAddToWorkOrder() {
         var jobSpecFound = false
         for (jobSpec in jobSpecList) {
             if (jobSpec.jsName ==
@@ -274,6 +268,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
             )
         )
         populateJobSpecsForWorkOrder()
+        curJobSpec = null
         binding.acJobSpec.text = null
     }
 
@@ -325,7 +320,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
         binding.tvJobSpecsCombined.text = display
     }
 
-    private fun setCurrentJoSpec(): Boolean {
+    private fun setCurrentJobSpec(): Boolean {
         for (jobSpec in jobSpecList) {
             if (jobSpec.jsName == binding.acJobSpec.text.toString().trim()) {
                 curJobSpec = jobSpec
