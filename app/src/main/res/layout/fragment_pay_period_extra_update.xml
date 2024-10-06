@@ -29,14 +29,16 @@
 
         <EditText
             android:id="@+id/etExtraName"
-            android:layout_width="@dimen/text_box_wide"
-            android:layout_height="@dimen/minimum_touch_height"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:hint="@string/enter_extra_name"
             android:importantForAutofill="no"
-            android:inputType="text"
+            android:inputType="text|textCapWords"
+            android:maxWidth="@dimen/text_box_wide"
+            android:minHeight="@dimen/minimum_touch_height"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lblExtra"
-            app:layout_constraintTop_toBottomOf="@id/lblPayInfo" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/lblAppliesTo"
@@ -99,7 +101,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/etValue"
-            tools:ignore="TextSizeCheck" />
+            tools:ignore="TextSizeCheck,VisualLintButtonSize" />
 
         <CheckBox
             android:id="@+id/chkIsCredit"

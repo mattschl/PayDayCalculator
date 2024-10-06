@@ -114,7 +114,7 @@
 
             <EditText
                 android:id="@+id/etRegHours"
-                android:layout_width="@dimen/text_box_wide"
+                android:layout_width="@dimen/text_box_small"
                 android:layout_height="@dimen/minimum_touch_height"
                 android:hint="@string/zero_double"
                 android:importantForAutofill="no"
@@ -125,7 +125,7 @@
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/lblOtHours"
                 app:layout_constraintStart_toEndOf="@id/lblRegHours"
                 app:layout_constraintTop_toBottomOf="@id/tvDescription"
                 tools:ignore="DuplicateSpeakableTextCheck" />
@@ -140,11 +140,11 @@
                 android:textStyle="italic"
                 app:layout_constraintBaseline_toBaselineOf="@id/etOtHours"
                 app:layout_constraintEnd_toStartOf="@id/etOtHours"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toEndOf="@id/etRegHours" />
 
             <EditText
                 android:id="@+id/etOtHours"
-                android:layout_width="@dimen/text_box_wide"
+                android:layout_width="@dimen/text_box_small"
                 android:layout_height="@dimen/minimum_touch_height"
                 android:hint="@string/zero_double"
                 android:importantForAutofill="no"
@@ -155,9 +155,9 @@
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
+                app:layout_constraintBaseline_toBaselineOf="@id/etRegHours"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblOtHours"
-                app:layout_constraintTop_toBottomOf="@id/etRegHours"
                 tools:ignore="DuplicateSpeakableTextCheck" />
 
 
@@ -175,7 +175,7 @@
 
             <EditText
                 android:id="@+id/etDblOtHours"
-                android:layout_width="@dimen/text_box_wide"
+                android:layout_width="@dimen/text_box_small"
                 android:layout_height="@dimen/minimum_touch_height"
                 android:hint="@string/zero_double"
                 android:importantForAutofill="no"
@@ -209,8 +209,8 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/enter_note_optional"
                 android:importantForAutofill="no"
-                android:inputType="textMultiLine"
-                android:maxWidth="@dimen/text_box_extra_wide"
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxWidth="@dimen/tex_box_super_wide"
                 android:minHeight="@dimen/minimum_touch_height"
                 android:paddingStart="@dimen/dimen_20dp"
                 android:paddingEnd="@dimen/dimen_20dp"
@@ -239,7 +239,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/start_typing_for_matches"
                 android:importantForAutofill="no"
-                android:inputType="textMultiLine"
+                android:inputType="textMultiLine|textCapSentences"
                 android:maxWidth="@dimen/text_box_extra_wide"
                 android:minHeight="@dimen/minimum_touch_height"
                 android:paddingStart="@dimen/dimen_20dp"

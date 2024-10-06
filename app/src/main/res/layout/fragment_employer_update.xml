@@ -34,11 +34,12 @@
 
                 <EditText
                     android:id="@+id/etName"
-                    android:layout_width="@dimen/text_box_wide"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="@string/enter_employer_name"
                     android:importantForAutofill="no"
-                    android:inputType="text"
+                    android:inputType="textMultiLine|textCapWords"
+                    android:maxWidth="@dimen/text_box_wide"
                     android:minHeight="@dimen/minimum_touch_height"
                     android:selectAllOnFocus="true"
                     android:textColor="@color/black"

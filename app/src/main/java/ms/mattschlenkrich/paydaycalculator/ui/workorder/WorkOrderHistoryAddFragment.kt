@@ -89,9 +89,9 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
                         curWorkOrder = workOrder
                         populateWorkOrderInfo()
                     }
-                } else {
-                    validateWorkOrderNumber()
-                }
+                }// else {
+//                    validateWorkOrderNumber()
+//                }
             }
         }
     }

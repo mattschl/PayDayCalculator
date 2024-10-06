@@ -27,7 +27,7 @@
             android:layout_marginEnd="@dimen/dimen_20dp"
             android:hint="@string/job_specs"
             android:importantForAutofill="no"
-            android:inputType="text"
+            android:inputType="textMultiLine|textCapSentences"
             android:minHeight="@dimen/minimum_touch_height"
             android:paddingStart="@dimen/dimen_50dp"
             android:paddingEnd="@dimen/dimen_50dp"

@@ -19,4 +19,5 @@
     <dimen name="text_box_small">75dp</dimen>
     <dimen name="dimen_15dp">15dp</dimen>
     <dimen name="dimen_50dp">50dp</dimen>
+    <dimen name="tex_box_super_wide">300dp</dimen>
 </resources>
