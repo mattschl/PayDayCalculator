@@ -2,8 +2,10 @@ package ms.mattschlenkrich.paydaycalculator.database.repository
 
 import ms.mattschlenkrich.paydaycalculator.database.PayDatabase
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.JobSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.Material
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerformed
@@ -134,4 +136,41 @@ class WorkOrderRepository(private val db: PayDatabase) {
 
     fun getWorkPerformedCombinedByWorkOrderHistory(historyId: Long) =
         db.getWorkOrderDao().getWorkPerformedByWorkOrderHistory(historyId)
+
+    suspend fun insertMaterial(material: Material) =
+        db.getWorkOrderDao().insertMaterial(material)
+
+    suspend fun updateMaterial(material: Material) =
+        db.getWorkOrderDao().updateMaterial(material)
+
+    fun getMaterialsList() =
+        db.getWorkOrderDao().getMaterialsList()
+
+    suspend fun deleteMaterial(materialId: Long, updateTime: String) =
+        db.getWorkOrderDao().deleteMaterial(
+            materialId, updateTime
+        )
+
+    suspend fun insertWorkOrderHistoryMaterial(
+        workOrderHistoryMaterial: WorkOrderHistoryMaterial
+    ) = db.getWorkOrderDao().insertWorkOrderHistoryMaterial(
+        workOrderHistoryMaterial
+    )
+
+    suspend fun updateWorkOrderHistoryMaterial(
+        workOrderHistoryMaterial: WorkOrderHistoryMaterial
+    ) = db.getWorkOrderDao().updateWorkOrderHistoryMaterial(
+        workOrderHistoryMaterial
+    )
+
+    suspend fun deleteWorkOrderHistoryMaterial(
+        historyMaterialId: Long, updateTime: String
+    ) = db.getWorkOrderDao().deleteWorkOrderHistoryMaterial(
+        historyMaterialId, updateTime
+    )
+
+    fun getMaterialsByHistory(historyId: Long) =
+        db.getWorkOrderDao().getMaterialsByHistory(
+            historyId
+        )
 }

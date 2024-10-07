@@ -5,8 +5,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.JobSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.Material
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerformed
@@ -177,5 +179,56 @@ class WorkOrderViewModel(
     }
 
     fun getWorkPerformedCombinedByWorkOrderHistory(historyId: Long) =
-        workOrderRepository.getWorkPerformedCombinedByWorkOrderHistory(historyId)
+        workOrderRepository.getWorkPerformedCombinedByWorkOrderHistory(
+            historyId
+        )
+
+    fun insertMaterial(material: Material) =
+        viewModelScope.launch {
+            workOrderRepository.insertMaterial(material)
+        }
+
+    fun updateMaterial(material: Material) =
+        viewModelScope.launch {
+            workOrderRepository.updateMaterial(material)
+        }
+
+    fun getMaterialsList() =
+        workOrderRepository.getMaterialsList()
+
+    fun deleteMaterial(materialId: Long, updateTime: String) =
+        viewModelScope.launch {
+            workOrderRepository.deleteMaterial(
+                materialId, updateTime
+            )
+        }
+
+    fun insertWorkOrderHistoryMaterial(
+        workOrderHistoryMaterial: WorkOrderHistoryMaterial
+    ) = viewModelScope.launch {
+        workOrderRepository.insertWorkOrderHistoryMaterial(
+            workOrderHistoryMaterial
+        )
+    }
+
+    fun updateWorkOrderHistoryMaterial(
+        workOrderHistoryMaterial: WorkOrderHistoryMaterial
+    ) = viewModelScope.launch {
+        workOrderRepository.updateWorkOrderHistoryMaterial(
+            workOrderHistoryMaterial
+        )
+    }
+
+    fun deleteWorkOrderHistoryMaterial(
+        historyMaterialId: Long, updateTime: String
+    ) = viewModelScope.launch {
+        workOrderRepository.deleteWorkOrderHistoryMaterial(
+            historyMaterialId, updateTime
+        )
+    }
+
+    fun getMaterialsByHistory(historyId: Long) =
+        workOrderRepository.getMaterialsByHistory(
+            historyId
+        )
 }

@@ -28,8 +28,10 @@ import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.JobSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.Material
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerformed
@@ -56,6 +58,8 @@ import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerforme
         JobSpec::class,
         WorkOrderHistoryWorkPerformed::class,
         WorkOrderJobSpec::class,
+        Material::class,
+        WorkOrderHistoryMaterial::class,
     ],
     views = [ExtraDefinitionAndType::class,
         ExtraTypeAndDefByDay::class],

@@ -8,8 +8,11 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.JobSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.Material
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryMaterial
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryMaterialCombined
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWorkPerformedCombined
@@ -256,6 +259,7 @@ interface WorkOrderDao {
         workPerformedHistoryId: Long, updateTime: String
     )
 
+    @Transaction
     @Query(
         "SELECT * FROM workOrderHistoryWorkPerformed " +
                 "WHERE wowpIsDeleted = 0 " +
@@ -265,4 +269,54 @@ interface WorkOrderDao {
     )
     fun getWorkPerformedByWorkOrderHistory(historyId: Long):
             LiveData<List<WorkOrderHistoryWorkPerformedCombined>>
+
+    @Insert
+    suspend fun insertMaterial(material: Material)
+
+    @Update
+    suspend fun updateMaterial(material: Material)
+
+    @Query(
+        "SELECT * FROM materials " +
+                "WHERE mIsDeleted = 0 " +
+                "ORDER BY mName"
+    )
+    fun getMaterialsList(): LiveData<List<Material>>
+
+    @Query(
+        "UPDATE materials " +
+                "SET mIsDeleted = 1, " +
+                "mUpdateTime = :updateTime " +
+                "WHERE materialId = :materialId"
+    )
+    suspend fun deleteMaterial(materialId: Long, updateTime: String)
+
+    @Insert
+    suspend fun insertWorkOrderHistoryMaterial(
+        workOrderHistoryMaterial: WorkOrderHistoryMaterial
+    )
+
+    @Update
+    suspend fun updateWorkOrderHistoryMaterial(
+        workOrderHistoryMaterial: WorkOrderHistoryMaterial
+    )
+
+    @Query(
+        "UPDATE workOrderHistoryMaterials " +
+                "SET wohmIsDeleted = 1," +
+                "wohmUpdateTime = :updateTime " +
+                "WHERE workOrderHistoryMaterialId = :historyMaterialId"
+    )
+    suspend fun deleteWorkOrderHistoryMaterial(
+        historyMaterialId: Long, updateTime: String
+    )
+
+    @Query(
+        "SELECT * FROM workOrderHistoryMaterials " +
+                "WHERE wohmHistoryId = :historyId " +
+                "AND wohmIsDeleted = 0 " +
+                "ORDER BY wohmUpdateTime"
+    )
+    fun getMaterialsByHistory(historyId: Long):
+            LiveData<List<WorkOrderHistoryMaterialCombined>>
 }
