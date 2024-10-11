@@ -249,7 +249,8 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@id/btnAddWorkPerformed"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lblWorkPerformed" />
+                app:layout_constraintTop_toBottomOf="@id/lblWorkPerformed"
+                tools:ignore="DuplicateSpeakableTextCheck" />
 
             <Button
                 android:id="@+id/btnAddWorkPerformed"
@@ -260,7 +261,7 @@
                 app:layout_constraintBaseline_toBaselineOf="@id/acWorkPerformed"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/acWorkPerformed"
-                tools:ignore="TextContrastCheck" />
+                tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvWorkPerformed"
@@ -270,6 +271,73 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/acWorkPerformed" />
+
+            <TextView
+                android:id="@+id/lblMaterials"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_materials_used_below"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="italic"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rvWorkPerformed" />
+
+            <EditText
+                android:id="@+id/etMaterialQty"
+                android:layout_width="@dimen/text_box_small"
+                android:layout_height="@dimen/minimum_touch_height"
+                android:hint="@string/zero_double"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal"
+                android:minHeight="48dp"
+                android:selectAllOnFocus="true"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBaseline_toBaselineOf="@id/acMaterials"
+                app:layout_constraintEnd_toStartOf="@id/acMaterials"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <AutoCompleteTextView
+                android:id="@+id/acMaterials"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/start_typing_for_matches"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxWidth="@dimen/text_box_wide"
+                android:minHeight="@dimen/minimum_touch_height"
+                android:paddingStart="@dimen/dimen_20dp"
+                android:paddingEnd="@dimen/dimen_20dp"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/btnAddMaterial"
+                app:layout_constraintStart_toEndOf="@id/etMaterialQty"
+                app:layout_constraintTop_toBottomOf="@id/lblMaterials" />
+
+            <Button
+                android:id="@+id/btnAddMaterial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/green"
+                android:text="@string/add"
+                app:layout_constraintBaseline_toBaselineOf="@id/acMaterials"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/acMaterials"
+                tools:ignore="TextContrastCheck" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvMaterials"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/dimen_10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/acMaterials" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabDone"
@@ -281,7 +349,7 @@
                 android:contentDescription="@string/done"
                 android:src="@drawable/ic_done"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rvWorkPerformed" />
+                app:layout_constraintTop_toBottomOf="@id/rvMaterials" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

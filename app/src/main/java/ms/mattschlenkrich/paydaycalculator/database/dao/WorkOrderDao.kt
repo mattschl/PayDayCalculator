@@ -311,6 +311,7 @@ interface WorkOrderDao {
         historyMaterialId: Long, updateTime: String
     )
 
+    @Transaction
     @Query(
         "SELECT * FROM workOrderHistoryMaterials " +
                 "WHERE wohmHistoryId = :historyId " +

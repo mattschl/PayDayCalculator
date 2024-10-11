@@ -36,7 +36,8 @@ import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 private const val TAG = FRAG_WORK_ODER_HISTORY_UPDATE
 
-class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_history) {
+class WorkOrderHistoryUpdateFragment :
+    Fragment(R.layout.fragment_work_order_history) {
 
     private var _binding: FragmentWorkOrderHistoryBinding? = null
     private val binding get() = _binding!!
@@ -49,7 +50,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
     private var workDateObject: WorkDates? = null
     private lateinit var curEmployer: Employers
     private lateinit var curHistoryDetailed: WorkOrderHistoryWithDates
-    private lateinit var curWorkOrder: WorkOrder
+    private var curWorkOrder: WorkOrder? = null
     private var workPerformedListForAutoComplete =
         ArrayList<WorkPerformed>()
     private var curWorkPerformed: WorkPerformed? = null
@@ -115,8 +116,8 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
     }
 
     private fun populateWorkOrderInfo() {
-        val display = curWorkOrder.woAddress +
-                " | " + curWorkOrder.woDescription
+        val display = curWorkOrder!!.woAddress +
+                " | " + curWorkOrder!!.woDescription
         binding.apply {
             tvDescription.text = display
             tvDescription.visibility = View.VISIBLE
@@ -478,7 +479,11 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
                     if (etNote.text.isNullOrBlank())
                         null else etNote.text.toString(),
                     if (acWorkPerformed.text.isNullOrBlank())
-                        null else acWorkPerformed.text.toString().trim()
+                        null else acWorkPerformed.text.toString().trim(),
+                    if (etMaterialQty.text.isNullOrBlank())
+                        null else etMaterialQty.text.toString().trim().toDouble(),
+                    if (acMaterials.text.isNullOrBlank())
+                        null else acMaterials.text.toString().trim()
                 )
             )
         }
@@ -501,7 +506,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         val history = getCurHistory()
         mainActivity.workOrderViewModel.updateWorkOrderHistory(
             history.woHistoryId,
-            curWorkOrder.workOrderId,
+            curWorkOrder!!.workOrderId,
             history.woHistoryWorkDateId,
             history.woHistoryRegHours,
             history.woHistoryOtHours,
@@ -517,7 +522,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         binding.apply {
             return WorkOrderHistory(
                 curHistoryDetailed.history.woHistoryId,
-                curWorkOrder.workOrderId,
+                curWorkOrder!!.workOrderId,
                 workDateObject!!.workDateId,
                 if (etRegHours.text.isNullOrBlank())
                     0.0 else etRegHours.text.toString().toDouble(),

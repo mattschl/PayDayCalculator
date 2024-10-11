@@ -218,4 +218,5 @@
     <string name="note">Note</string>
     <string name="enter_note_optional">Enter note (optional)</string>
     <string name="work_performed">Work Performed:</string>
+    <string name="add_materials_used_below">Add Materials Used below</string>
 </resources>

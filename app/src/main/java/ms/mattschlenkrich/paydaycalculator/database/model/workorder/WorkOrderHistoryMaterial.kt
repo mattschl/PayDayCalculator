@@ -34,6 +34,7 @@ data class WorkOrderHistoryMaterial(
     @ColumnInfo(index = true)
     val wohmMaterialId: Long,
     val wohmQuantity: Double,
+    val wohmSequence: Int,
     val wohmIsDeleted: Boolean,
     val wohmUpdateTime: String
 ) : Parcelable
