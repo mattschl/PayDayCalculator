@@ -21,6 +21,7 @@ import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.Material
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.TempWorkOrderHistoryInfo
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistory
@@ -31,7 +32,8 @@ import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 
 private const val TAG = FRAG_WORK_ORDER_HISTORY_ADD
 
-class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_history) {
+class WorkOrderHistoryAddFragment :
+    Fragment(R.layout.fragment_work_order_history) {
 
     private var _binding: FragmentWorkOrderHistoryBinding? = null
     private val binding get() = _binding!!
@@ -39,8 +41,10 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
     private val nf = NumberFunctions()
-    private val workOrderList = ArrayList<WorkOrder>()
-    private val workOrderListForAutocomplete = ArrayList<String>()
+    private val workOrderList =
+        ArrayList<WorkOrder>()
+    private val workOrderListForAutocomplete =
+        ArrayList<String>()
     private var workDateObject: WorkDates? = null
     private var curEmployer: Employers? = null
     private var curWorkOrder: WorkOrder? = null
@@ -48,6 +52,10 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
             ArrayList<WorkPerformed>
     private var curWorkPerformed: WorkPerformed? = null
     private var workPerformedSequence = 0
+    private lateinit var materialListForAutoComplete:
+            ArrayList<String>
+    private var curMaterial: Material? = null
+    private var materialSequence = 0
     private lateinit var curHistory: WorkOrderHistory
     private lateinit var commonFunctions:
             WorkOrderCommonFunctions
@@ -117,6 +125,31 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         populateTempWorkOrderInfo()
         populateWorkOrderListInAutoComplete()
         populateWorkPerformedListInAutoComplete()
+        populateMaterialListForAutocomplete()
+    }
+
+    private fun populateMaterialListForAutocomplete() {
+        materialListForAutoComplete =
+            getMaterialListForAutoComplete()
+        val mAdapter = ArrayAdapter(
+            mView.context,
+            R.layout.spinner_item_normal,
+            materialListForAutoComplete
+        )
+        binding.acMaterials.setAdapter(mAdapter)
+    }
+
+    private fun getMaterialListForAutoComplete(): ArrayList<String> {
+
+        val materialNameList = ArrayList<String>()
+        mainActivity.workOrderViewModel.getMaterialsList()
+            .observe(viewLifecycleOwner) { list ->
+                materialNameList.clear()
+                list.listIterator().forEach {
+                    materialNameList.add(it.mName)
+                }
+            }
+        return materialNameList
     }
 
     private fun populateWorkPerformedListInAutoComplete() {
@@ -398,7 +431,11 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
                     if (etNote.text.isNullOrBlank())
                         null else etNote.text.toString(),
                     if (acWorkPerformed.text.isNullOrBlank())
-                        null else acWorkPerformed.text.toString().trim()
+                        null else acWorkPerformed.text.toString().trim(),
+                    if (etMaterialQty.text.isNullOrBlank())
+                        null else etMaterialQty.text.toString().trim().toDouble(),
+                    if (acMaterials.text.isNullOrBlank())
+                        null else acMaterials.text.toString().trim()
                 )
             )
         }
