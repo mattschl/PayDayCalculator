@@ -19,7 +19,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.paydays.WorkDateExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_TIME_SHEET
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_DATE_EXTRA_ADD
@@ -35,6 +34,7 @@ import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtr
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateAddBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
+import ms.mattschlenkrich.paydaycalculator.ui.paydays.adapter.WorkDateExtraAdapter
 import java.time.LocalDate
 
 private const val TAG = "WorkDateAdd"

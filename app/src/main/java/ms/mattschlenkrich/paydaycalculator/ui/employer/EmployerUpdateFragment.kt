@@ -21,8 +21,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.employer.EmployerExtraDefinitionsShortAdapter
-import ms.mattschlenkrich.paydaycalculator.adapter.employer.EmployerTaxTypeAdapter
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_EMPLOYER_UPDATE
@@ -33,6 +31,8 @@ import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.database.viewModel.EmployerViewModel
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
+import ms.mattschlenkrich.paydaycalculator.ui.employer.adapter.EmployerExtraDefinitionsShortAdapter
+import ms.mattschlenkrich.paydaycalculator.ui.employer.adapter.EmployerTaxTypeAdapter
 
 private const val TAG = FRAG_EMPLOYER_UPDATE
 

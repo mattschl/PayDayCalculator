@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.adapter.paydays
+package ms.mattschlenkrich.paydaycalculator.ui.paydays.adapter
 
 import android.view.LayoutInflater
 import android.view.View

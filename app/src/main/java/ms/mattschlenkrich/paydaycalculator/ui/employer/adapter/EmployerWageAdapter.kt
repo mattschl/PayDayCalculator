@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.adapter.employer
+package ms.mattschlenkrich.paydaycalculator.ui.employer.adapter
 
 import android.graphics.Color
 import android.graphics.Paint

@@ -14,8 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.paydays.WorkDateUpdateCustomExtraAdapter
-import ms.mattschlenkrich.paydaycalculator.adapter.workorders.WorkDateWorkOrderHistoryAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_TIME_SHEET
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
@@ -25,6 +23,8 @@ import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtr
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
+import ms.mattschlenkrich.paydaycalculator.ui.paydays.adapter.WorkDateUpdateCustomExtraAdapter
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.WorkDateWorkOrderHistoryAdapter
 
 private const val TAG = "WorkDateUpdate"
 

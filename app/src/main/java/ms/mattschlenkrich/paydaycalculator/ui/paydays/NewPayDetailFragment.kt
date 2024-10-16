@@ -21,8 +21,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.extras.PayDetailExtraAdapter
-import ms.mattschlenkrich.paydaycalculator.adapter.tax.PayDetailTaxAdapter
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_DETAILS
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
@@ -41,6 +39,8 @@ import ms.mattschlenkrich.paydaycalculator.databinding.FragmentPayDetailsBinding
 import ms.mattschlenkrich.paydaycalculator.payfunctions.IPayCalculations
 import ms.mattschlenkrich.paydaycalculator.payfunctions.NewPayCalculations
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
+import ms.mattschlenkrich.paydaycalculator.ui.extras.adapter.PayDetailExtraAdapter
+import ms.mattschlenkrich.paydaycalculator.ui.tax.adapter.PayDetailTaxAdapter
 import java.time.LocalDate
 
 private const val TAG = FRAG_PAY_DETAILS

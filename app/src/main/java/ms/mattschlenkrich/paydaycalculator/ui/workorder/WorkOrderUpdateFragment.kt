@@ -16,8 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.workorders.WorkOrderHistoryAdapter
-import ms.mattschlenkrich.paydaycalculator.adapter.workorders.WorkOrderJobSpecAdapter
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ODER_HISTORY_UPDATE
@@ -33,6 +31,8 @@ import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderJob
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderAddBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.WorkOrderHistoryAdapter
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.WorkOrderJobSpecAdapter
 
 class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
 

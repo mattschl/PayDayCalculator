@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.adapter.tax
+package ms.mattschlenkrich.paydaycalculator.ui.tax.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater

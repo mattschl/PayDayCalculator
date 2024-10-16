@@ -15,8 +15,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.adapter.workorders.WorKOrderHistoryWorkPerformedAdapter
-import ms.mattschlenkrich.paydaycalculator.adapter.workorders.WorkOrderHistoryMaterialAdapter
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ODER_HISTORY_UPDATE
@@ -38,6 +36,8 @@ import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerforme
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerformedInSequence
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderHistoryBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.WorKOrderHistoryWorkPerformedAdapter
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.WorkOrderHistoryMaterialAdapter
 
 private const val TAG = FRAG_WORK_ODER_HISTORY_UPDATE
 
