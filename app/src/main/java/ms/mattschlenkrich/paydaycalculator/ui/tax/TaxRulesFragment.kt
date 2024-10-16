@@ -21,6 +21,7 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_TAX_RULES
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxEffectiveDates
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxRulesBinding
@@ -216,38 +217,41 @@ class TaxRulesFragment :
 
     @SuppressLint("NotifyDataSetChanged")
     private fun populateTaxRuleList() {
-        binding.apply {
-            if (spTaxType.adapter.count > 1 &&
-                spEffectiveDate.adapter.count > 1
-            ) {
-                val taxRuleAdapter = TaxRuleAdapter(
-                    mainActivity, mView
-                )
-                rvTaxRules.apply {
-                    layoutManager = GridLayoutManager(
-                        mView.context,
-                        2,
-                        GridLayoutManager.VERTICAL,
-                        false
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            binding.apply {
+                if (spTaxType.adapter.count > 1 &&
+                    spEffectiveDate.adapter.count > 1
+                ) {
+                    val taxRuleAdapter = TaxRuleAdapter(
+                        mainActivity, mView
                     )
-                    setHasFixedSize(true)
-                    adapter = taxRuleAdapter
-                }
-                activity.let {
-                    mainActivity.workTaxViewModel.getTaxRules(
-                        spTaxType.selectedItem.toString(),
-                        spEffectiveDate.selectedItem.toString()
-                    ).observe(
-                        viewLifecycleOwner
-                    ) { taxRules ->
-                        rvTaxRules.adapter!!.notifyDataSetChanged()
-                        taxRuleAdapter.differ.submitList(taxRules)
-                        updateUI(taxRules)
+                    rvTaxRules.apply {
+                        layoutManager = GridLayoutManager(
+                            mView.context,
+                            2,
+                            GridLayoutManager.VERTICAL,
+                            false
+                        )
+                        setHasFixedSize(true)
+                        adapter = taxRuleAdapter
                     }
+                    activity.let {
+                        mainActivity.workTaxViewModel.getTaxRules(
+                            spTaxType.selectedItem.toString(),
+                            spEffectiveDate.selectedItem.toString()
+                        ).observe(
+                            viewLifecycleOwner
+                        ) { taxRules ->
+                            rvTaxRules.adapter!!.notifyDataSetChanged()
+                            taxRuleAdapter.differ.submitList(taxRules)
+                            updateUI(taxRules)
+                        }
+                    }
+                } else {
+                    rvTaxRules.adapter = null
+                    updateUI(null)
                 }
-            } else {
-                rvTaxRules.adapter = null
-                updateUI(null)
             }
         }
     }

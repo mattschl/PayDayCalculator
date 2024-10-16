@@ -54,17 +54,20 @@ class EmployerFragment :
     private fun setClickActions() {
         binding.apply {
             fabNew.setOnClickListener {
-                mView.findNavController().navigate(
-                    EmployerFragmentDirections
-                        .actionEmployerFragmentToEmployerAddFragment()
-                )
+                gotoEmployerAdd()
             }
         }
     }
 
+    private fun gotoEmployerAdd() {
+        mView.findNavController().navigate(
+            EmployerFragmentDirections
+                .actionEmployerFragmentToEmployerAddFragment()
+        )
+    }
+
     private fun populateEmployers() {
-        employerAdapter = null
-        employerAdapter = EmployerAdapter(
+        val employerAdapter = EmployerAdapter(
             mainActivity, mView
         )
         binding.rvEmployers.apply {
@@ -79,7 +82,7 @@ class EmployerFragment :
             mainActivity.employerViewModel.getEmployers().observe(
                 viewLifecycleOwner
             ) { employer ->
-                employerAdapter!!.differ.submitList(employer)
+                employerAdapter.differ.submitList(employer)
                 updateUI(employer)
             }
         }

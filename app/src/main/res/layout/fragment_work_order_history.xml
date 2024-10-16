@@ -104,7 +104,7 @@
                 android:id="@+id/lblRegHours"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/reg_hours"
+                android:text="@string/hr"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="italic"
@@ -134,7 +134,7 @@
                 android:id="@+id/lblOtHours"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/overtime_hours"
+                android:text="@string/ot"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="italic"
@@ -156,7 +156,7 @@
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintBaseline_toBaselineOf="@id/etRegHours"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/lblDblOtHours"
                 app:layout_constraintStart_toEndOf="@id/lblOtHours"
                 tools:ignore="DuplicateSpeakableTextCheck" />
 
@@ -165,13 +165,13 @@
                 android:id="@+id/lblDblOtHours"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/double_overtime"
+                android:text="@string/dbl_ot"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="italic"
                 app:layout_constraintBaseline_toBaselineOf="@id/etDblOtHours"
                 app:layout_constraintEnd_toStartOf="@id/etDblOtHours"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toEndOf="@id/etOtHours" />
 
             <EditText
                 android:id="@+id/etDblOtHours"
@@ -186,9 +186,9 @@
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
+                app:layout_constraintBaseline_toBaselineOf="@+id/etOtHours"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblDblOtHours"
-                app:layout_constraintTop_toBottomOf="@id/etOtHours"
                 tools:ignore="DuplicateSpeakableTextCheck" />
 
             <TextView

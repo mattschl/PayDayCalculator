@@ -47,12 +47,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var payDetailViewModel: PayDetailViewModel
 //    private val df = DateFunctions()
 
-    private fun gotoEmployer() {
-        findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalEmployerFragment()
-        )
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -145,6 +139,12 @@ class MainActivity : AppCompatActivity() {
 
             }
         })
+    }
+
+    private fun gotoEmployer() {
+        findNavController(R.id.nav_host_fragment_container).navigate(
+            NavGraphDirections.actionGlobalEmployerFragment()
+        )
     }
 
     private fun gotoWorkOrders() {

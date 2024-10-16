@@ -1,0 +1,13 @@
+package ms.mattschlenkrich.paydaycalculator.database.model.workorder
+
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class MaterialInSequence(
+    val materialHistoryId: Long,
+    val materialId: Long,
+    val mName: String,
+    val mQty: Double,
+    val mSequence: Int
+) : Parcelable

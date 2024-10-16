@@ -272,22 +272,25 @@ class WorkOrderHistoryAddFragment :
                 setCurWorkOrder()
             }
             acWorkPerformed.setOnClickListener {
-                if (curWorkOrder == null) {
-                    if (doesWorkOrderExist()) {
-                        saveCurrentHistoryIfValidAndGotoUpdateFragment(false)
-                    } else {
-                        validateWorkOrderNumber()
-                    }
-                }
+                gotoWorkOrderAddOrUpdateFragment()
             }
             btnAddWorkPerformed.setOnClickListener {
-                if (doesWorkOrderExist()) {
-                    saveCurrentHistoryIfValidAndGotoUpdateFragment(true)
-                } else {
-                    validateWorkOrderNumber()
-                }
-
+                gotoWorkOrderAddOrUpdateFragment()
             }
+            acMaterials.setOnClickListener {
+                gotoWorkOrderAddOrUpdateFragment()
+            }
+            btnAddMaterial.setOnClickListener {
+                gotoWorkOrderAddOrUpdateFragment()
+            }
+        }
+    }
+
+    private fun gotoWorkOrderAddOrUpdateFragment() {
+        if (doesWorkOrderExist()) {
+            saveCurrentHistoryIfValidAndGotoUpdateFragment(false)
+        } else {
+            validateWorkOrderNumber()
         }
     }
 
@@ -429,13 +432,13 @@ class WorkOrderHistoryAddFragment :
                     if (etDblOtHours.text.isNullOrBlank())
                         0.0 else etDblOtHours.text.toString().trim().toDouble(),
                     if (etNote.text.isNullOrBlank())
-                        null else etNote.text.toString(),
+                        "" else etNote.text.toString(),
                     if (acWorkPerformed.text.isNullOrBlank())
-                        null else acWorkPerformed.text.toString().trim(),
+                        "" else acWorkPerformed.text.toString().trim(),
                     if (etMaterialQty.text.isNullOrBlank())
-                        null else etMaterialQty.text.toString().trim().toDouble(),
+                        0.0 else etMaterialQty.text.toString().trim().toDouble(),
                     if (acMaterials.text.isNullOrBlank())
-                        null else acMaterials.text.toString().trim()
+                        "" else acMaterials.text.toString().trim()
                 )
             )
         }
