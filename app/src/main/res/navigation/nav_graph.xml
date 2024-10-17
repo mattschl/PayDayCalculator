@@ -449,6 +449,9 @@
         <action
             android:id="@+id/action_workOrderHistoryUpdateFragment_to_workPerformedUpdateFragment"
             app:destination="@id/workPerformedUpdateFragment" />
+        <action
+            android:id="@+id/action_workOrderHistoryUpdateFragment_to_materialUpdateFragment"
+            app:destination="@id/materialUpdateFragment" />
     </fragment>
 
     <fragment
@@ -532,6 +535,15 @@
         tools:layout="@layout/fragment_work_performed_update">
         <action
             android:id="@+id/action_workPerformedUpdateFragment_to_workOrderHistoryUpdateFragment"
+            app:destination="@id/workOrderHistoryUpdateFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/materialUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.MaterialUpdateFragment"
+        android:label="MaterialUpdateFragment"
+        tools:layout="@layout/fragment_material_update">
+        <action
+            android:id="@+id/action_materialUpdateFragment_to_workOrderHistoryUpdateFragment"
             app:destination="@id/workOrderHistoryUpdateFragment" />
     </fragment>
 

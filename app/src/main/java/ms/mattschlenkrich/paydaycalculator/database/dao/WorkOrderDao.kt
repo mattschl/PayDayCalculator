@@ -250,13 +250,11 @@ interface WorkOrderDao {
     )
 
     @Query(
-        "UPDATE workOrderHistoryWorkPerformed SET " +
-                "wowpIsDeleted = 1, " +
-                "wowpUpdateTime = :updateTime " +
+        "DELETE FROM workOrderHistoryWorkPerformed  " +
                 "WHERE workOrderHistoryWorkPerformedId = :workPerformedHistoryId"
     )
-    suspend fun removeWorkPerformedFromWorkOderHistory(
-        workPerformedHistoryId: Long, updateTime: String
+    suspend fun removeWorkPerformedFromWorkOrderHistory(
+        workPerformedHistoryId: Long
     )
 
     @Transaction
@@ -284,6 +282,12 @@ interface WorkOrderDao {
     fun getMaterialsList(): LiveData<List<Material>>
 
     @Query(
+        "SELECT * FROM materials " +
+                "WHERE materialId = :materialId"
+    )
+    fun getMaterial(materialId: Long): LiveData<Material>
+
+    @Query(
         "UPDATE materials " +
                 "SET mIsDeleted = 1, " +
                 "mUpdateTime = :updateTime " +
@@ -291,9 +295,18 @@ interface WorkOrderDao {
     )
     suspend fun deleteMaterial(materialId: Long, updateTime: String)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkOrderHistoryMaterial(
         workOrderHistoryMaterial: WorkOrderHistoryMaterial
+    )
+
+    @Query(
+        "DELETE FROM workOrderHistoryMaterials " +
+                "WHERE workOrderHistoryMaterialId = " +
+                ":workOrderHistoryMaterialId"
+    )
+    suspend fun removeWorkOrderHistoryMaterial(
+        workOrderHistoryMaterialId: Long
     )
 
     @Update

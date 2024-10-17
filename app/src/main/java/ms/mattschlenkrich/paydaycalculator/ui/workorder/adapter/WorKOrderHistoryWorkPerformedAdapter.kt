@@ -98,18 +98,16 @@ class WorKOrderHistoryWorkPerformedAdapter(
             workPerformedId
         ).observe(mView.findViewTreeLifecycleOwner()!!) { workPerformed ->
             mainActivity.mainViewModel.setWorkPerformed(workPerformed)
-
+            mView.findNavController().navigate(
+                WorkOrderHistoryUpdateFragmentDirections
+                    .actionWorkOrderHistoryUpdateFragmentToWorkPerformedUpdateFragment()
+            )
         }
-
-        mView.findNavController().navigate(
-            WorkOrderHistoryUpdateFragmentDirections
-                .actionWorkOrderHistoryUpdateFragmentToWorkPerformedUpdateFragment()
-        )
     }
 
     private fun removeWorkPerformedFromWorkOrder(workOrderHistoryWorkPerformedId: Long) {
         mainActivity.workOrderViewModel.removeWorkPerformedFromWorkOderHistory(
-            workOrderHistoryWorkPerformedId, df.getCurrentTimeAsString()
+            workOrderHistoryWorkPerformedId
         )
     }
 

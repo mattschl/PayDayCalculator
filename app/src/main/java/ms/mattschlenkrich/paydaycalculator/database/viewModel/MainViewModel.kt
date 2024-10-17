@@ -13,6 +13,7 @@ import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkPayPerio
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.JobSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.Material
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.TempWorkOrderHistoryInfo
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistory
@@ -49,6 +50,15 @@ class MainViewModel(
     private var workOrder: WorkOrder? = null
     private var jobSpec: JobSpec? = null
     private var workPerformed: WorkPerformed? = null
+    private var material: Material? = null
+
+    fun setMaterial(newMaterial: Material?) {
+        material = newMaterial
+    }
+
+    fun getMaterial(): Material? {
+        return material
+    }
 
     fun setWorkPerformed(newWorkPerformed: WorkPerformed?) {
         workPerformed = newWorkPerformed

@@ -1,0 +1,157 @@
+package ms.mattschlenkrich.paydaycalculator.ui.workorder
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
+import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
+import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.Material
+import ms.mattschlenkrich.paydaycalculator.databinding.FragmentMaterialUpdateBinding
+import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
+
+class MaterialUpdateFragment
+    : Fragment(R.layout.fragment_material_update) {
+
+    private var _binding: FragmentMaterialUpdateBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var mView: View
+    private lateinit var mainActivity: MainActivity
+
+    private val materialList = ArrayList<Material>()
+    private lateinit var oldMaterial: Material
+    private val df = DateFunctions()
+    private val nf = NumberFunctions()
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentMaterialUpdateBinding.inflate(
+            inflater, container, false
+        )
+        mView = binding.root
+        mainActivity = (activity as MainActivity)
+        mainActivity.title = getString(R.string.update_material_description)
+        return mView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setView()
+        fillMaterialListForValidation()
+        setClickActions()
+    }
+
+    private fun setClickActions() {
+        binding.apply {
+            btnUpdate.setOnClickListener {
+                updateIfValid()
+            }
+            btnCancel.setOnClickListener {
+                gotoCallingFragment()
+            }
+        }
+    }
+
+    private fun gotoCallingFragment() {
+        mainActivity.mainViewModel.setMaterial(null)
+        mView.findNavController().navigate(
+            MaterialUpdateFragmentDirections
+                .actionMaterialUpdateFragmentToWorkOrderHistoryUpdateFragment()
+        )
+    }
+
+    private fun updateIfValid() {
+        val answer = validateMaterial()
+        if (answer == ANSWER_OK) {
+            updateMaterial()
+            gotoCallingFragment()
+        } else {
+            Toast.makeText(
+                mView.context,
+                answer,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun updateMaterial() {
+        mainActivity.workOrderViewModel.updateMaterial(
+            getCurMaterial()
+        )
+    }
+
+    private fun getCurMaterial(): Material {
+        binding.apply {
+            return Material(
+                oldMaterial.materialId,
+                etMaterial.text.toString().trim(),
+                nf.getDoubleFromDollars(etCost.text.toString().trim()),
+                nf.getDoubleFromDollars(etPrice.text.toString().trim()),
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
+    private fun validateMaterial(): String {
+        binding.apply {
+            if (etMaterial.text.isNullOrBlank()) {
+                return "    ERROR!!\n" +
+                        "Please enter a valid name for this material"
+            }
+            for (material in materialList) {
+                if (material.mName ==
+                    etMaterial.text.toString().trim() &&
+                    etMaterial.text.toString().trim() !=
+                    oldMaterial.mName
+                ) {
+                    return "    ERROR!!\n" +
+                            "This material already exists!"
+                }
+            }
+            if (nf.getDoubleFromDollars(etCost.text.toString()) >
+                nf.getDoubleFromDollars(etPrice.text.toString())
+            ) {
+                return "    ERROR!!\n" +
+                        "The cost is greater than the price."
+            }
+        }
+        return ANSWER_OK
+    }
+
+    private fun fillMaterialListForValidation() {
+        mainActivity.workOrderViewModel.getMaterialsList()
+            .observe(viewLifecycleOwner) { list ->
+                materialList.clear()
+                for (material in list.listIterator()) {
+                    materialList.add(material)
+                }
+            }
+    }
+
+    private fun setView() {
+        if (mainActivity.mainViewModel.getMaterial() != null) {
+            oldMaterial = mainActivity.mainViewModel.getMaterial()!!
+            binding.apply {
+                val display =
+                    "Update: ${oldMaterial.mName}"
+                tvTitle.text = display
+                etMaterial.setText(oldMaterial.mName)
+                etPrice.setText(nf.displayDollars(oldMaterial.mPrice))
+                etCost.setText(nf.displayDollars(oldMaterial.mCost))
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+}

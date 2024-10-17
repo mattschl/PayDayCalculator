@@ -4,6 +4,8 @@ import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +14,7 @@ import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.MaterialInSequence
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.WorkOrderHistoryUpdateFragmentDirections
 
 class WorkOrderHistoryMaterialAdapter(
     val mainActivity: MainActivity,
@@ -99,7 +102,7 @@ class WorkOrderHistoryMaterialAdapter(
                     }
 
                     else -> {
-                        //null
+                        //No action
                     }
                 }
             }.show()
@@ -107,10 +110,21 @@ class WorkOrderHistoryMaterialAdapter(
     }
 
     private fun editMaterial(material: MaterialInSequence) {
-        //TODO:
+        mainActivity.workOrderViewModel.getMaterial(
+            material.materialId
+        ).observe(mView.findViewTreeLifecycleOwner()!!) { mMaterial ->
+            mainActivity.mainViewModel.setMaterial(mMaterial)
+            mView.findNavController().navigate(
+                WorkOrderHistoryUpdateFragmentDirections
+                    .actionWorkOrderHistoryUpdateFragmentToMaterialUpdateFragment()
+            )
+        }
+
     }
 
     private fun removeMaterial(material: MaterialInSequence) {
-        //TODO:
+        mainActivity.workOrderViewModel.removeWorkOrderHistoryMaterial(
+            material.materialHistoryId
+        )
     }
 }

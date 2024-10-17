@@ -84,7 +84,8 @@
     <string name="no_employers_add_an_employer_through_the_employer_tab">No Employers - Add an Employer through the Employer Tab</string>
     <string name="add_new_extra">* Add New Extra *</string>
     <string name="update_employer">"Update Employer: "</string>
-    <string name="update">"Update: "</string>
+    <string name="update">"Update"</string>
+    <string name="update_">"Update: "</string>
     <string name="applies_to">Applies To</string>
     <string name="attach_to">Attach To</string>
     <string name="value">Value</string>
@@ -222,4 +223,8 @@
     <string name="hr">Hr</string>
     <string name="ot">Ot</string>
     <string name="dbl_ot">Dbl Ot</string>
+    <string name="price">Price</string>
+    <string name="cost">Cost</string>
+    <string name="update_work_performed_description">Update Work Performed description</string>
+    <string name="update_material_description">Update Material description</string>
 </resources>

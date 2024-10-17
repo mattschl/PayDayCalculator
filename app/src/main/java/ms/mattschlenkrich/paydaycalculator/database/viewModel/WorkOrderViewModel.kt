@@ -171,10 +171,10 @@ class WorkOrderViewModel(
     }
 
     fun removeWorkPerformedFromWorkOderHistory(
-        workPerformedHistoryId: Long, updateTime: String
+        workPerformedHistoryId: Long
     ) = viewModelScope.launch {
         workOrderRepository.removeWorkPerformedFromWorkOderHistory(
-            workPerformedHistoryId, updateTime
+            workPerformedHistoryId
         )
     }
 
@@ -196,6 +196,9 @@ class WorkOrderViewModel(
     fun getMaterialsList() =
         workOrderRepository.getMaterialsList()
 
+    fun getMaterial(materialId: Long) =
+        workOrderRepository.getMaterial(materialId)
+
     fun deleteMaterial(materialId: Long, updateTime: String) =
         viewModelScope.launch {
             workOrderRepository.deleteMaterial(
@@ -208,6 +211,14 @@ class WorkOrderViewModel(
     ) = viewModelScope.launch {
         workOrderRepository.insertWorkOrderHistoryMaterial(
             workOrderHistoryMaterial
+        )
+    }
+
+    fun removeWorkOrderHistoryMaterial(
+        workOrderHistoryMaterialId: Long
+    ) = viewModelScope.launch {
+        workOrderRepository.removeWorkOrderHistoryMaterial(
+            workOrderHistoryMaterialId
         )
     }
 

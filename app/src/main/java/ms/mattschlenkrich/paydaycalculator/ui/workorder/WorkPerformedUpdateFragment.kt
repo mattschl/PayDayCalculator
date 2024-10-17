@@ -36,7 +36,7 @@ class WorkPerformedUpdateFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "Update Work Performed description"
+        mainActivity.title = getString(R.string.update_work_performed_description)
         return mView
     }
 
@@ -98,7 +98,9 @@ class WorkPerformedUpdateFragment :
             }
             for (workPerformed in workPerformedList) {
                 if (workPerformed.wpDescription ==
-                    etWorkPerformed.text.toString().trim()
+                    etWorkPerformed.text.toString().trim() &&
+                    etWorkPerformed.text.toString().trim() !=
+                    oldWorkPerformed.wpDescription
                 ) {
                     return "   ERROR!/n" +
                             "This Work Performed description already exists!"
