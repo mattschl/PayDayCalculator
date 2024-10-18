@@ -498,7 +498,8 @@ class WorkOrderHistoryUpdateFragment :
                     if (etMaterialQty.text.isNullOrBlank()) 1.0 else
                         etMaterialQty.text.toString().trim().toDouble(),
                     materialSequence,
-                    false, df.getCurrentTimeAsString()
+                    false,
+                    df.getCurrentTimeAsString()
                 )
             )
             curMaterial = null

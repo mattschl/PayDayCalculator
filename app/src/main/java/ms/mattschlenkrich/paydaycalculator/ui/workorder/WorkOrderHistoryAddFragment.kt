@@ -25,6 +25,7 @@ import ms.mattschlenkrich.paydaycalculator.database.model.workorder.Material
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.TempWorkOrderHistoryInfo
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistory
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerformed
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderHistoryBinding
@@ -52,8 +53,8 @@ class WorkOrderHistoryAddFragment :
             ArrayList<WorkPerformed>
     private var curWorkPerformed: WorkPerformed? = null
     private var workPerformedSequence = 0
-    private lateinit var materialListForAutoComplete:
-            ArrayList<String>
+    private var materialListForAutoComplete =
+        ArrayList<Material>()
     private var curMaterial: Material? = null
     private var materialSequence = 0
     private lateinit var curHistory: WorkOrderHistory
@@ -129,24 +130,25 @@ class WorkOrderHistoryAddFragment :
     }
 
     private fun populateMaterialListForAutocomplete() {
-        materialListForAutoComplete =
+        val materialList =
             getMaterialListForAutoComplete()
         val mAdapter = ArrayAdapter(
             mView.context,
             R.layout.spinner_item_normal,
-            materialListForAutoComplete
+            materialList
         )
         binding.acMaterials.setAdapter(mAdapter)
     }
 
     private fun getMaterialListForAutoComplete(): ArrayList<String> {
-
         val materialNameList = ArrayList<String>()
         mainActivity.workOrderViewModel.getMaterialsList()
             .observe(viewLifecycleOwner) { list ->
+                materialListForAutoComplete.clear()
                 materialNameList.clear()
                 list.listIterator().forEach {
                     materialNameList.add(it.mName)
+                    materialListForAutoComplete.add(it)
                 }
             }
         return materialNameList
@@ -272,30 +274,31 @@ class WorkOrderHistoryAddFragment :
                 setCurWorkOrder()
             }
             acWorkPerformed.setOnClickListener {
-                gotoWorkOrderAddOrUpdateFragment()
+                gotoWorkOrderAddOrUpdateFragment(addWorkPerformed = false, addMaterial = false)
             }
             btnAddWorkPerformed.setOnClickListener {
-                gotoWorkOrderAddOrUpdateFragment()
+                gotoWorkOrderAddOrUpdateFragment(addWorkPerformed = true, addMaterial = false)
             }
             acMaterials.setOnClickListener {
-                gotoWorkOrderAddOrUpdateFragment()
+                gotoWorkOrderAddOrUpdateFragment(addWorkPerformed = false, addMaterial = false)
             }
             btnAddMaterial.setOnClickListener {
-                gotoWorkOrderAddOrUpdateFragment()
+                gotoWorkOrderAddOrUpdateFragment(addWorkPerformed = false, addMaterial = true)
             }
         }
     }
 
-    private fun gotoWorkOrderAddOrUpdateFragment() {
+    private fun gotoWorkOrderAddOrUpdateFragment(addWorkPerformed: Boolean, addMaterial: Boolean) {
         if (doesWorkOrderExist()) {
-            saveCurrentHistoryIfValidAndGotoUpdateFragment(false)
+            saveCurrentHistoryIfValidAndGotoUpdateFragment(addWorkPerformed, addMaterial)
         } else {
             validateWorkOrderNumber()
         }
     }
 
     private fun saveCurrentHistoryIfValidAndGotoUpdateFragment(
-        addWorkPerformed: Boolean
+        addWorkPerformed: Boolean,
+        addMaterial: Boolean
     ) {
         binding.apply {
             if (acWorkOrder.text.isNullOrBlank()) {
@@ -309,8 +312,73 @@ class WorkOrderHistoryAddFragment :
                 if (addWorkPerformed) {
                     saveWorkPerformedIfValidAndAddToWorkOrder()
                 }
+                if (addMaterial) {
+                    saveMaterialIfValidAndAddToWorkOrder()
+                }
             }
         }
+    }
+
+    private fun saveMaterialIfValidAndAddToWorkOrder() {
+        if (binding.acMaterials.text.isNullOrBlank()) {
+            Toast.makeText(
+                mView.context,
+                "Please add a valid material to add it.",
+                Toast.LENGTH_LONG
+            ).show()
+        } else if (setCurMaterial()) {
+            addMaterialToWorkOrder(curMaterial!!)
+        } else {
+            CoroutineScope(Dispatchers.IO).launch {
+                curMaterial = insertMaterial()
+                delay(WAIT_250)
+                addMaterialToWorkOrder(curMaterial!!)
+            }
+        }
+    }
+
+    private fun insertMaterial(): Material {
+        val material =
+            Material(
+                nf.generateRandomIdAsLong(),
+                binding.acMaterials.text.toString(),
+                0.0,
+                0.0,
+                false,
+                df.getCurrentTimeAsString()
+            )
+        mainActivity.workOrderViewModel.insertMaterial(
+            material
+        )
+        return material
+    }
+
+    private fun addMaterialToWorkOrder(material: Material) {
+        materialSequence++
+        mainActivity.workOrderViewModel.insertWorkOrderHistoryMaterial(
+            WorkOrderHistoryMaterial(
+                nf.generateRandomIdAsLong(),
+                curHistory.woHistoryId,
+                material.materialId,
+                if (binding.etMaterialQty.text.isNullOrBlank()) 1.0
+                else binding.acMaterials.text.toString().toDouble(),
+                materialSequence,
+                false,
+                df.getCurrentTimeAsString()
+            )
+        )
+    }
+
+    private fun setCurMaterial(): Boolean {
+        for (material in materialListForAutoComplete) {
+            if (binding.acMaterials.text.toString().trim() ==
+                material.mName
+            ) {
+                curMaterial = material
+                return true
+            }
+        }
+        return false
     }
 
     private fun saveWorkPerformedIfValidAndAddToWorkOrder() {
@@ -546,6 +614,7 @@ class WorkOrderHistoryAddFragment :
     }
 
     private fun gotoWorkOrderHistoryUpdateFragment() {
+        setTempWorkOrderHistory()
         mView.findNavController().navigate(
             WorkOrderHistoryAddFragmentDirections
                 .actionWorkOrderHistoryAddFragmentToWorkOrderHistoryUpdateFragment()

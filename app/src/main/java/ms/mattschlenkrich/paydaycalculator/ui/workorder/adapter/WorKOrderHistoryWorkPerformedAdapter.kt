@@ -9,7 +9,6 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerformedInSequence
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
@@ -20,7 +19,7 @@ class WorKOrderHistoryWorkPerformedAdapter(
     val mView: View,
 ) : RecyclerView.Adapter<WorKOrderHistoryWorkPerformedAdapter.ViewHolder>() {
 
-    private val df = DateFunctions()
+//    private val df = DateFunctions()
 
     class ViewHolder(
         val itemBinding: ListSingleItemBinding
