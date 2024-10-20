@@ -16,9 +16,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_TIME_SHEET
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
-import ms.mattschlenkrich.paydaycalculator.common.WAIT_1000
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_2000
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_500
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
@@ -30,9 +31,9 @@ import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.adapter.WorkDateAdapter
 import java.time.LocalDate
 
-private const val TAG = "OldTimeSheetFragment"
+private const val TAG = FRAG_TIME_SHEET
 
-class OldTimeSheetFragment :
+class TimeSheetFragment :
     Fragment(R.layout.fragment_time_sheet),
     ITimeSheetFragment {
 
@@ -240,7 +241,7 @@ class OldTimeSheetFragment :
         binding.apply {
             workDateAdapter = null
             workDateAdapter = WorkDateAdapter(
-                mainActivity, curCutOff, curEmployer!!, mView, this@OldTimeSheetFragment
+                mainActivity, curCutOff, curEmployer!!, mView, this@TimeSheetFragment
             )
             rvDates.apply {
                 layoutManager = LinearLayoutManager(mView.context)
@@ -265,7 +266,7 @@ class OldTimeSheetFragment :
             val payCalculations = NewPayCalculations(
                 mainActivity, curEmployer!!, mView, curPayPeriod!!
             )
-            delay(WAIT_1000)
+            delay(WAIT_2000)
             binding.apply {
                 var display = cf.displayDollars(
                     -payCalculations.getDebitTotalsByPay()
@@ -375,8 +376,8 @@ class OldTimeSheetFragment :
         mainActivity.mainViewModel.setCutOffDate(curCutOff)
         mainActivity.mainViewModel.setEmployer(curEmployer)
         mView.findNavController().navigate(
-            NewTimeSheetFragmentDirections
-                .actionNewTimeSheetFragmentToWorkDateAddFragment()
+            TimeSheetFragmentDirections
+                .actionTimeSheetFragmentToWorkDateAddFragment()
         )
     }
 
@@ -385,8 +386,8 @@ class OldTimeSheetFragment :
         mainActivity.mainViewModel.setEmployer(null)
         mainActivity.mainViewModel.setCutOffDate(null)
         mView.findNavController().navigate(
-            NewTimeSheetFragmentDirections
-                .actionNewTimeSheetFragmentToEmployerAddFragment()
+            TimeSheetFragmentDirections
+                .actionTimeSheetFragmentToEmployerAddFragment()
         )
     }
 

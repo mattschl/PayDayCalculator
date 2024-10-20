@@ -116,7 +116,7 @@ class PayPeriodExtraAddFragment :
     private fun gotoPayDetailsFragment() {
         mView.findNavController().navigate(
             PayPeriodExtraAddFragmentDirections
-                .actionPayPeriodExtraAddFragmentToNewPayDetailFragment()
+                .actionPayPeriodExtraAddFragmentToPayDetailFragment()
         )
     }
 

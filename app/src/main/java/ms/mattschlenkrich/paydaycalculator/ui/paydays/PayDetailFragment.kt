@@ -45,7 +45,7 @@ import java.time.LocalDate
 
 private const val TAG = FRAG_PAY_DETAILS
 
-class NewPayDetailFragment :
+class PayDetailFragment :
     Fragment(R.layout.fragment_pay_details),
     IPayDetailsFragment {
 
@@ -142,8 +142,8 @@ class NewPayDetailFragment :
         mainActivity.mainViewModel.setEmployer(curEmployer!!)
         mainActivity.mainViewModel.setIsCredit(isCredit)
         mView.findNavController().navigate(
-            NewPayDetailFragmentDirections
-                .actionNewPayDetailsFragmentToPayPeriodExtraAddFragment()
+            PayDetailFragmentDirections
+                .actionPayDetailsFragmentToPayPeriodExtraAddFragment()
         )
     }
 
@@ -218,8 +218,8 @@ class NewPayDetailFragment :
                 )
                 .setPositiveButton("Ok") { _, _ ->
                     mView.findNavController().navigate(
-                        NewPayDetailFragmentDirections
-                            .actionNewPayDetailFragmentToNewTimeSheetFragment()
+                        PayDetailFragmentDirections
+                            .actionPayDetailFragmentToTimeSheetFragment()
 
                     )
                 }.show()
@@ -229,8 +229,8 @@ class NewPayDetailFragment :
     private fun gotoEmployerAdd() {
         mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
-            NewPayDetailFragmentDirections
-                .actionNewPayDetailsFragmentToEmployerAddFragment()
+            PayDetailFragmentDirections
+                .actionPayDetailsFragmentToEmployerAddFragment()
         )
     }
 
@@ -648,7 +648,7 @@ class NewPayDetailFragment :
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
             val creditListAdapter = PayDetailExtraAdapter(
-                mainActivity, creditList, mView, this@NewPayDetailFragment
+                mainActivity, creditList, mView, this@PayDetailFragment
             )
             binding.apply {
                 rvCredits.layoutManager = LinearLayoutManager(mView.context)
@@ -700,7 +700,7 @@ class NewPayDetailFragment :
             binding.apply {
                 delay(WAIT_500)
                 val deductionListAdapter = PayDetailExtraAdapter(
-                    mainActivity, debitList, mView, this@NewPayDetailFragment
+                    mainActivity, debitList, mView, this@PayDetailFragment
                 )
                 rvDebits.layoutManager = LinearLayoutManager(mView.context)
                 rvDebits.adapter = deductionListAdapter

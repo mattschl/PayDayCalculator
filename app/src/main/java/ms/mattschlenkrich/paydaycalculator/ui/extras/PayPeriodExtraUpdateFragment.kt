@@ -116,7 +116,7 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
         mainActivity.mainViewModel.setPayPeriodExtra(null)
         mView.findNavController().navigate(
             PayPeriodExtraUpdateFragmentDirections
-                .actionPayPeriodExtraUpdateFragmentToNewPayDetailFragment()
+                .actionPayPeriodExtraUpdateFragmentToPayDetailFragment()
         )
     }
 

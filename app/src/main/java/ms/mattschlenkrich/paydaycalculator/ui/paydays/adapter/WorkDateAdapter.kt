@@ -17,7 +17,7 @@ import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.ITimeSheetFragment
-import ms.mattschlenkrich.paydaycalculator.ui.paydays.NewTimeSheetFragmentDirections
+import ms.mattschlenkrich.paydaycalculator.ui.paydays.TimeSheetFragmentDirections
 
 class WorkDateAdapter(
     private val mainActivity: MainActivity,
@@ -178,8 +178,8 @@ class WorkDateAdapter(
         mainActivity.mainViewModel.setCutOffDate(curCutoff)
         mainActivity.mainViewModel.setEmployer(curEmployer)
         mView.findNavController().navigate(
-            NewTimeSheetFragmentDirections
-                .actionNewTimeSheetFragmentToWorkDateUpdateFragment()
+            TimeSheetFragmentDirections
+                .actionTimeSheetFragmentToWorkDateUpdateFragment()
         )
     }
 }

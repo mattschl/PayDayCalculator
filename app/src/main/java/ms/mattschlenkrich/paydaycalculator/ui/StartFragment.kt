@@ -43,7 +43,7 @@ class StartFragment : Fragment(R.layout.fragment_start) {
 
     private fun gotoTimeSheetFragment() {
         findNavController().navigate(
-            NavGraphDirections.actionGlobalNewTimeSheetFragment()
+            NavGraphDirections.actionGlobalTimeSheetFragment()
         )
     }
 

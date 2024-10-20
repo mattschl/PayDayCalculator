@@ -231,7 +231,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     private fun gotoTimeSheet() {
         mView.findNavController().navigate(
             WorkDateAddFragmentDirections
-                .actionGlobalNewTimeSheetFragment()
+                .actionGlobalTimeSheetFragment()
         )
     }
 

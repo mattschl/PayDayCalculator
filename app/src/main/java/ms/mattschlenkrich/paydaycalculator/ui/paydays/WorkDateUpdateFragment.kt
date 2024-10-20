@@ -177,7 +177,7 @@ class WorkDateUpdateFragment : Fragment(
     private fun gotoTimeSheetFragment() {
         mView.findNavController().navigate(
             WorkDateUpdateFragmentDirections
-                .actionGlobalNewTimeSheetFragment()
+                .actionGlobalTimeSheetFragment()
         )
     }
 

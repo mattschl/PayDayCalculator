@@ -155,13 +155,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun gotoPayDetails() {
         findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalNewPayDetailFragment()
+            NavGraphDirections.actionGlobalPayDetailFragment()
         )
     }
 
     private fun gotoTimeSheet() {
         findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalNewTimeSheetFragment()
+            NavGraphDirections.actionGlobalTimeSheetFragment()
         )
     }
 

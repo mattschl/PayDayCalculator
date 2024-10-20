@@ -334,7 +334,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         mainActivity.mainViewModel.setEmployer(employer)
         mView.findNavController().navigate(
             EmployerAddFragmentDirections
-                .actionEmployerAddFragmentToNewTimeSheetFragment()
+                .actionEmployerAddFragmentToTimeSheetFragment()
         )
     }
 

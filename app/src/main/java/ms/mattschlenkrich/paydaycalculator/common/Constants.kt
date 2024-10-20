@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+//@file:Suppress("unused")
 
 package ms.mattschlenkrich.paydaycalculator.common
 
@@ -35,9 +35,9 @@ const val PAY_PERIOD_EMPLOYER_ID = "ppEmployerId"
 //const val PAY_PERIOD_IS_DELETED = "ppIsDeleted"
 
 const val TABLE_WORK_DATES = "workDates"
-const val WORK_DATES_EMPLOYER_ID = "wdEmployerId"
-const val WORK_DATES_CUTOFF_DATE = "wdCutoffDate"
-const val WORK_DATES_DATE = "wdDate"
+//const val WORK_DATES_EMPLOYER_ID = "wdEmployerId"
+//const val WORK_DATES_CUTOFF_DATE = "wdCutoffDate"
+//const val WORK_DATES_DATE = "wdDate"
 //const val WORK_DATES_REG_HOURS = "wdRegHours"
 //const val WORK_DATES_OT_HOURS = "wdOtHours"
 //const val WORK_DATES_DBL_OT_HOURS = "wdDblOtHours"
@@ -46,31 +46,32 @@ const val WORK_DATES_DATE = "wdDate"
 //const val WORK_DATES_UPDATE_TIME = "wdUpdateTime"
 
 const val TABLE_WORK_EXTRAS_DEFINITIONS = "workExtrasDefinitions"
-const val WORK_EXTRA_DEFINITIONS_ID = "workExtraId"
+
+//const val WORK_EXTRA_DEFINITIONS_ID = "workExtraId"
 const val WORK_EXTRA_DEFINITIONS_EMPLOYER_ID = "weEmployerId"
 
 const val TABLE_WORK_EXTRA_TYPES = "workExtraTypes"
 
 //const val WORK_EXTRA_DEFINITIONS_NAME = "weName"
 //const val WORK_EXTRA_DEFINITIONS_VALUE = "weValue"
-const val WORK_EXTRA_DEFINITIONS_FREQUENCY = "weFrequency"
+//const val WORK_EXTRA_DEFINITIONS_FREQUENCY = "weFrequency"
 //const val WORK_EXTRA_DEFINITIONS_IS_CREDIT = "weIsCredit"
 //const val WORK_EXTRA_IS_DEFAULT = "weIsDefault"
 //const val WORK_EXTRA_EFFECTIVE_DATE = "weEffectiveDate"
 //const val WORK_EXTRA_IS_DELETED = "wedIsDeleted"
 //const val WORK_EXTRA_UPDATE_TIME = "weUpdateTime"
 
-const val TABLE_WORK_EXTRA_FREQUENCIES = "workExtraFrequencies"
-const val WORK_EXTRA_FREQUENCY = "workExtraFrequency"
+//const val TABLE_WORK_EXTRA_FREQUENCIES = "workExtraFrequencies"
+//const val WORK_EXTRA_FREQUENCY = "workExtraFrequency"
 
 const val TABLE_EMPLOYER_PAY_RATES = "employerPayRates"
 
 const val TABLE_WORK_DATE_EXTRAS = "workDateExtras"
-const val WORK_DATES_EXTRAS_EMPLOYER_ID = "wdeEmployerId"
-const val WORK_DATES_EXTRAS_DATE = "wdeDate"
+//const val WORK_DATES_EXTRAS_EMPLOYER_ID = "wdeEmployerId"
+//const val WORK_DATES_EXTRAS_DATE = "wdeDate"
 
 //const val WORK_DATES_EXTRAS_NAME = "wdeName"
-const val WORK_DATES_EXTRA_ID = "wdeId"
+//const val WORK_DATES_EXTRA_ID = "wdeId"
 //const val WORK_DATES_EXTRAS_IS_DELETED = "wdeIsDeleted"
 //const val WORK_DATES_EXTRAS_UPDATE_TIME = "wdeUpdateTime"
 
@@ -83,7 +84,7 @@ const val WORK_TAX_TYPE = "taxType"
 //const val WORK_TAX_TYPE_IS_DELETED = "wttIsDeleted"
 //const val WORK_TAX_TYPE_UPDATE_TIME = "wttUpdateTime"
 
-const val TABLE_TAX_TYPES_EFFECTIVE_DATES = "taxTypeEffectiveDates"
+//const val TABLE_TAX_TYPES_EFFECTIVE_DATES = "taxTypeEffectiveDates"
 //const val TAX_TYPE_EFFECTIVE_DATE = "tteType"
 //const val TAX_TYPE_EFFECTIVE_TYPE = "tteType"
 
@@ -102,9 +103,9 @@ const val WORK_TAX_RULE_LEVEL = "wtLevel"
 //const val WORK_TAX_RULE_UPDATE_TIME = "wtUpdateTime"
 
 const val TABLE_WORK_PAY_PERIOD_EXTRAS = "workPayPeriodExtras"
-const val WORK_PAY_PERIOD_EXTRA_EMPLOYER_ID = "ppeEmployerId"
-const val WORK_PAY_PERIOD_EXTRA_CUTOFF_DATE = "ppeCutoffDate"
-const val WORK_PAY_PERIOD_EXTRA_ID = "ppeExtraId"
+//const val WORK_PAY_PERIOD_EXTRA_EMPLOYER_ID = "ppeEmployerId"
+//const val WORK_PAY_PERIOD_EXTRA_CUTOFF_DATE = "ppeCutoffDate"
+//const val WORK_PAY_PERIOD_EXTRA_ID = "ppeExtraId"
 //const val WORK_PAY_PERIOD_EXTRA_NAME = "ppeName"
 //const val WORK_PAY_PERIOD_EXTRA_VALUE = "ppeValue"
 //const val WORK_PAY_PERIOD_EXTRA_IS_DELETED = "ppeIsDeleted"
@@ -135,32 +136,38 @@ const val INTERVAL_BI_WEEKLY = "Bi-Weekly"
 const val INTERVAL_MONTHLY = "Monthly"
 const val INTERVAL_SEMI_MONTHLY = "Semi-Monthly"
 
-const val PER_HOUR = "per hour"
-const val PER_DAY = "per day"
-const val PER_PAY = "per pay"
-const val PER_WEEK = "per week"
-const val PER_MONTH = "per month"
+//const val PER_HOUR = "per hour"
+//const val PER_DAY = "per day"
+//const val PER_PAY = "per pay"
+//const val PER_WEEK = "per week"
+//const val PER_MONTH = "per month"
 
 const val WAIT_100 = 100L
 const val WAIT_250 = 250L
 const val WAIT_500 = 500L
-const val WAIT_750 = 750L
+
+//const val WAIT_750 = 750L
 const val WAIT_1000 = 1000L
 const val WAIT_1500 = 1500L
+const val WAIT_2000 = 2000L
 
 const val FRAG_EMPLOYERS = "Employers"
 const val FRAG_EMPLOYER_UPDATE = "EmployerUpdate"
 const val FRAG_TAX_RULES = "TaxRules"
-const val FRAG_TAX_TYPE = "TaxTypes"
+
+//const val FRAG_TAX_TYPE = "TaxTypes"
 const val FRAG_WORK_DATE_EXTRA_ADD = "WorkDateExtraAdd"
-const val FRAG_WORK_DATE_EXTRA_UPDATE = "WorkDateExtraUpdate"
+
+//const val FRAG_WORK_DATE_EXTRA_UPDATE = "WorkDateExtraUpdate"
 const val FRAG_EXTRA_DEFINITIONS = "EmployerExtraDef"
 const val FRAG_PAY_RATES = "EmployerPayRates"
-const val FRAG_PAY_RATE_UPDATE = "PayRateUpdate"
-const val FRAG_EXTRA_TYPES = "ExtraTypes"
+
+//const val FRAG_PAY_RATE_UPDATE = "PayRateUpdate"
+//const val FRAG_EXTRA_TYPES = "ExtraTypes"
 const val FRAG_PAY_DETAILS = "PayDetails"
 const val FRAG_TIME_SHEET = "TimeSheet"
-const val FRAG_WORK_DATE_ADD = "WorkDateAdd"
+
+//const val FRAG_WORK_DATE_ADD = "WorkDateAdd"
 const val FRAG_WORK_DATE_UPDATE = "WorkDateUpdate"
 const val FRAG_WORK_ORDERS = "WorkOrders"
 const val FRAG_WORK_ORDER_HISTORY_ADD = "WorkOrderHistoryAdd"
