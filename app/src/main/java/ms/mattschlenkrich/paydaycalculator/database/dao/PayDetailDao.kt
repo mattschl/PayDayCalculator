@@ -43,9 +43,9 @@ interface PayDetailDao {
                 "WHERE wdEmployerId = :employerId " +
                 "AND wdCutoffDate = :cutoffDate  " +
                 "AND wdIsDeleted = 0 " +
-                "AND wdRegHours > 0 " +
-                "AND wdOtHours > 0 " +
-                "AND wdDblOtHours > 0"
+                "AND (wdRegHours > 0 " +
+                "OR wdOtHours > 0 " +
+                "OR wdDblOtHours > 0)"
     )
     fun getDaysWorked(employerId: Long, cutoffDate: String): Int
 
