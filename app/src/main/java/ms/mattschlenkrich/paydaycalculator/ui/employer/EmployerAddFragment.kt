@@ -47,7 +47,9 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentEmployerAddBinding.inflate(inflater, container, false)
+        _binding = FragmentEmployerAddBinding.inflate(
+            inflater, container, false
+        )
         mView = binding.root
         mainActivity = (activity as MainActivity)
         mainActivity.title = getString(R.string.add_an_employer)
@@ -57,12 +59,13 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getEmployerListForValidation()
+        setInitialValues()
+        setClickActions()
+    }
+
+    private fun setInitialValues() {
         populateSpinners()
         populateStartDate()
-        setMenuActions()
-        changeDate()
-        setSpinnerActions()
-        setClickActions()
     }
 
     private fun getEmployerListForValidation() {
@@ -119,28 +122,26 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun changeDate() {
-        binding.tvStartDate.setOnClickListener {
-            val curDateAll = startDate.split("-")
-            val datePickerDialog = DatePickerDialog(
-                requireContext(),
-                { _, year, monthOfYear, dayOfMonth ->
-                    val month = monthOfYear + 1
-                    val display = "$year-${
-                        month.toString()
-                            .padStart(2, '0')
-                    }-${
-                        dayOfMonth.toString().padStart(2, '0')
-                    }"
-                    startDate = display
-                    binding.tvStartDate.text = df.getDisplayDate(startDate)
-                },
-                curDateAll[0].toInt(),
-                curDateAll[1].toInt() - 1,
-                curDateAll[2].toInt()
-            )
-            datePickerDialog.setTitle("Choose the first date")
-            datePickerDialog.show()
-        }
+        val curDateAll = startDate.split("-")
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            { _, year, monthOfYear, dayOfMonth ->
+                val month = monthOfYear + 1
+                val display = "$year-${
+                    month.toString()
+                        .padStart(2, '0')
+                }-${
+                    dayOfMonth.toString().padStart(2, '0')
+                }"
+                startDate = display
+                binding.tvStartDate.text = df.getDisplayDate(startDate)
+            },
+            curDateAll[0].toInt(),
+            curDateAll[1].toInt() - 1,
+            curDateAll[2].toInt()
+        )
+        datePickerDialog.setTitle("Choose the first date")
+        datePickerDialog.show()
     }
 
     private fun setSpinnerActions() {
@@ -161,24 +162,37 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     private fun setClickActions() {
         binding.apply {
             crdTaxes.setOnClickListener {
-                AlertDialog.Builder(mView.context)
-                    .setMessage(
-                        "You cannot add taxes until the employer is saved. " +
-                                "Save the employer first and go to edit mode."
-                    )
-                    .setNegativeButton("OK", null)
-                    .show()
+                setTaxOptions()
             }
             crdExtras.setOnClickListener {
-                AlertDialog.Builder(mView.context)
-                    .setMessage(
-                        "You cannot add any extra credits or deductions until the employer is saved. " +
-                                "Save the employer first and go to edit mode."
-                    )
-                    .setNegativeButton("OK", null)
-                    .show()
+                setExtraOptions()
             }
         }
+        setMenuActions()
+        binding.tvStartDate.setOnClickListener {
+            changeDate()
+        }
+        setSpinnerActions()
+    }
+
+    private fun setExtraOptions() {
+        AlertDialog.Builder(mView.context)
+            .setMessage(
+                "You cannot add any extra credits or deductions until the employer is saved. " +
+                        "Save the employer first and go to edit mode."
+            )
+            .setNegativeButton("OK", null)
+            .show()
+    }
+
+    private fun setTaxOptions() {
+        AlertDialog.Builder(mView.context)
+            .setMessage(
+                "You cannot add taxes until the employer is saved. " +
+                        "Save the employer first and go to edit mode."
+            )
+            .setNegativeButton("OK", null)
+            .show()
     }
 
     private fun changeUiVisibilities() {
@@ -210,7 +224,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
 
     private fun saveEmployerAndContinue() {
         binding.apply {
-            val message = checkEmployerToSave()
+            val message = validateEmployer()
             if (message == ANSWER_OK) {
                 val curEmployer = getCurrentEmployer()
                 mainActivity.employerViewModel.insertEmployer(
@@ -228,35 +242,30 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         }
     }
 
-    private fun checkEmployerToSave(): String {
+    private fun validateEmployer(): String {
         binding.apply {
-            var nameFound = false
+            if (etName.text.isNullOrBlank()) {
+                return "    ERROR!!\n" +
+                        "The employer must have a name!"
+            }
             if (employerList.isNotEmpty()) {
                 for (employer in employerList) {
                     if (employer.employerName == etName.text.toString().trim()) {
-                        nameFound = true
-                        break
+                        return "    ERROR!!\n" +
+                                "This employer already exists!"
                     }
                 }
             }
-            val errorMessage = if (etName.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "The employer must have a name!"
-            } else if (nameFound) {
-                "    ERROR!!\n" +
-                        "This employer already exists!"
-            } else if (etDaysBefore.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
+            if (etDaysBefore.text.isNullOrBlank()) {
+                return "    ERROR!!\n" +
                         "The number of days before the pay day is required!"
-            } else if (etMidMonthDate.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "For semi-monthly pay days there needs to be a mid month pay day"
-            } else {
-                ANSWER_OK
             }
-            return errorMessage
+            if (etMidMonthDate.text.isNullOrBlank()) {
+                return "    ERROR!!\n" +
+                        "For semi-monthly pay days there needs to be a mid month pay day"
+            }
+            return ANSWER_OK
         }
-
     }
 
     private fun addEmployerTaxRules(employerId: Long) {
@@ -312,20 +321,17 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun gotoCallingFragment(employer: Employers) {
-        val fragment = mainActivity.mainViewModel.getCallingFragment()
-        if (fragment != null) {
-            when (fragment) {
-                FRAG_EMPLOYERS -> {
-                    gotoEmployerFragment()
-                }
+        when (mainActivity.mainViewModel.getCallingFragment()) {
+            FRAG_EMPLOYERS -> {
+                gotoEmployerFragment()
+            }
 
-                FRAG_WORK_ORDERS -> {
-                    gotoWorkOrdersFragment(employer)
-                }
+            FRAG_WORK_ORDERS -> {
+                gotoWorkOrdersFragment(employer)
+            }
 
-                FRAG_TIME_SHEET -> {
-                    gotoTimeSheetFragment(employer)
-                }
+            FRAG_TIME_SHEET -> {
+                gotoTimeSheetFragment(employer)
             }
         }
     }

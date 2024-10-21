@@ -17,16 +17,16 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDERS
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
-import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrdersBinding
+import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderViewBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.WorkOrdersAdapter
 
 private const val TAG = FRAG_WORK_ORDERS
 
-class WorkOrdersFragment :
-    Fragment(R.layout.fragment_work_orders) {
+class WorkOrderViewFragment :
+    Fragment(R.layout.fragment_work_order_view) {
 
-    private var _binding: FragmentWorkOrdersBinding? = null
+    private var _binding: FragmentWorkOrderViewBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
@@ -37,7 +37,7 @@ class WorkOrdersFragment :
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentWorkOrdersBinding.inflate(
+        _binding = FragmentWorkOrderViewBinding.inflate(
             inflater, container, false
         )
         mView = binding.root
@@ -127,8 +127,8 @@ class WorkOrdersFragment :
         mainActivity.mainViewModel.setCallingFragment(TAG)
         mainActivity.mainViewModel.setEmployer(null)
         mView.findNavController().navigate(
-            WorkOrdersFragmentDirections
-                .actionWorkOrdersFragmentToEmployerAddFragment()
+            WorkOrderViewFragmentDirections
+                .actionWorkOrderViewFragmentToEmployerAddFragment()
         )
     }
 
@@ -168,8 +168,8 @@ class WorkOrdersFragment :
     private fun addNewWorkOrder() {
         mainActivity.mainViewModel.setEmployer(curEmployer)
         mView.findNavController().navigate(
-            WorkOrdersFragmentDirections
-                .actionWorkOrdersFragmentToWorkOrderAddFragment()
+            WorkOrderViewFragmentDirections
+                .actionWorkOrderViewFragmentToWorkOrderAddFragment()
         )
     }
 

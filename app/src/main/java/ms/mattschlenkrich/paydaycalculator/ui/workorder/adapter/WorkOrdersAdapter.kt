@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkOrderItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
-import ms.mattschlenkrich.paydaycalculator.ui.workorder.WorkOrdersFragmentDirections
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.WorkOrderViewFragmentDirections
 
 class WorkOrdersAdapter(
     val mainActivity: MainActivity,
@@ -81,8 +81,8 @@ class WorkOrdersAdapter(
     private fun gotoWorkOrderUpdate() {
         mainActivity.mainViewModel.setCallingFragment(parentFragmentTag)
         mView.findNavController().navigate(
-            WorkOrdersFragmentDirections
-                .actionWorkOrdersFragmentToWorkOrderUpdateFragment()
+            WorkOrderViewFragmentDirections
+                .actionWorkOrderViewFragmentToWorkOrderUpdateFragment()
         )
     }
 

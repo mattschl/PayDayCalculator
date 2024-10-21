@@ -129,6 +129,7 @@
                 android:id="@+id/tvEffectiveDate"
                 android:layout_width="@dimen/text_box_wide"
                 android:layout_height="@dimen/minimum_touch_height"
+                android:layout_marginTop="@dimen/dimen_20dp"
                 android:text="@string/effective_date"
                 android:textAlignment="center"
                 android:textColor="@color/black"
