@@ -96,44 +96,6 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         }
     }
 
-    private fun gotoPayRateFragment(curEmployer: Employers?) {
-        if (curEmployer != null) {
-            mainActivity.mainViewModel.setEmployer(curEmployer)
-            mView.findNavController().navigate(
-                EmployerUpdateFragmentDirections
-                    .actionEmployerUpdateFragmentToEmployerPayRatesFragment()
-            )
-        }
-    }
-
-    private fun gotoExtraAddFragment(curEmployer: Employers?) {
-        if (curEmployer != null) {
-            mainActivity.mainViewModel.setEmployer(curEmployer)
-            mView.findNavController().navigate(
-                EmployerUpdateFragmentDirections
-                    .actionEmployerUpdateFragmentToEmployerExtraDefinitionsAddFragment()
-            )
-        }
-    }
-
-    private fun gotoTaxRulesFragment() {
-        mainActivity.mainViewModel.setEmployer(getCurrentEmployer())
-        mainActivity.mainViewModel.setCallingFragment(TAG)
-        mView.findNavController().navigate(
-            EmployerUpdateFragmentDirections
-                .actionEmployerUpdateFragmentToTaxRulesFragment()
-        )
-    }
-
-    private fun gotoTaxTypesAddFragment() {
-        mainActivity.mainViewModel.setEmployer(getCurrentEmployer())
-        mainActivity.mainViewModel.setCallingFragment(TAG)
-        mView.findNavController().navigate(
-            EmployerUpdateFragmentDirections
-                .actionEmployerUpdateFragmentToTaxTypeAddFragment()
-        )
-    }
-
     private fun populateValues() {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
@@ -311,7 +273,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
                 )
             )
         }
-        gotoCallingFragment()
+        gotoEmployerFragment()
     }
 
     private fun updateEmployerIfValid() {
@@ -320,7 +282,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
             employerViewModel.updateEmployer(
                 getCurrentEmployer()
             )
-            gotoCallingFragment()
+            gotoEmployerFragment()
         } else {
             Toast.makeText(
                 mView.context,
@@ -330,10 +292,48 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         }
     }
 
-    private fun gotoCallingFragment() {
+    private fun gotoEmployerFragment() {
         mView.findNavController().navigate(
             EmployerUpdateFragmentDirections
                 .actionEmployerUpdateFragmentToEmployerFragment()
+        )
+    }
+
+    private fun gotoPayRateFragment(curEmployer: Employers?) {
+        if (curEmployer != null) {
+            mainActivity.mainViewModel.setEmployer(curEmployer)
+            mView.findNavController().navigate(
+                EmployerUpdateFragmentDirections
+                    .actionEmployerUpdateFragmentToEmployerPayRatesFragment()
+            )
+        }
+    }
+
+    private fun gotoExtraAddFragment(curEmployer: Employers?) {
+        if (curEmployer != null) {
+            mainActivity.mainViewModel.setEmployer(curEmployer)
+            mView.findNavController().navigate(
+                EmployerUpdateFragmentDirections
+                    .actionEmployerUpdateFragmentToEmployerExtraDefinitionsAddFragment()
+            )
+        }
+    }
+
+    private fun gotoTaxRulesFragment() {
+        mainActivity.mainViewModel.setEmployer(getCurrentEmployer())
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mView.findNavController().navigate(
+            EmployerUpdateFragmentDirections
+                .actionEmployerUpdateFragmentToTaxRulesFragment()
+        )
+    }
+
+    private fun gotoTaxTypesAddFragment() {
+        mainActivity.mainViewModel.setEmployer(getCurrentEmployer())
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mView.findNavController().navigate(
+            EmployerUpdateFragmentDirections
+                .actionEmployerUpdateFragmentToTaxTypeAddFragment()
         )
     }
 
@@ -356,31 +356,27 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
 
     private fun validateEmployer(): String {
         binding.apply {
-            var nameFound = false
+            if (etName.text.isNullOrBlank()) {
+                return "    ERROR!!\n" +
+                        "The employer must have a name!"
+            }
             if (employerList.isNotEmpty()) {
                 for (employer in employerList) {
                     if (employer.employerName == etName.text.toString().trim()) {
-                        nameFound = true
-                        break
+                        return "    ERROR!!\n" +
+                                "This employer already exists!"
                     }
                 }
             }
-            val errorMessage = if (etName.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "The employer must have a name!"
-            } else if (nameFound && etName.text.toString() != curEmployer!!.employerName) {
-                "    ERROR!!\n" +
-                        "This employer already exists!"
-            } else if (etDaysBefore.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "A number of days before the pay day is required!"
-            } else if (etMidMonthDate.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "For semi-monthly pay days there needs to be a mid month pay day"
-            } else {
-                ANSWER_OK
+            if (etDaysBefore.text.isNullOrBlank()) {
+                return "    ERROR!!\n" +
+                        "The number of days before the pay day is required!"
             }
-            return errorMessage
+            if (etMidMonthDate.text.isNullOrBlank()) {
+                return "    ERROR!!\n" +
+                        "For semi-monthly pay days there needs to be a mid month pay day"
+            }
+            return ANSWER_OK
         }
     }
 
@@ -417,5 +413,4 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         super.onDestroy()
         _binding = null
     }
-
 }

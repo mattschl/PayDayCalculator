@@ -155,24 +155,25 @@ class WorkOrderHistoryAddFragment :
     }
 
     private fun populateWorkPerformedListInAutoComplete() {
-        workPerformedListForAutoComplete =
+        val workPerformedDescriptions =
             getWorkPerformedListForAutoComplete()
         val wpAdapter = ArrayAdapter(
             mView.context,
             R.layout.spinner_item_normal,
-            workPerformedListForAutoComplete
+            workPerformedDescriptions
         )
         binding.acWorkPerformed.setAdapter(wpAdapter)
 
     }
 
     private fun getWorkPerformedListForAutoComplete():
-            ArrayList<WorkPerformed> {
-        val newList = ArrayList<WorkPerformed>()
+            ArrayList<String> {
+        val newList = ArrayList<String>()
         mainActivity.workOrderViewModel.getWorkPerformedAll()
             .observe(viewLifecycleOwner) { list ->
                 list.listIterator().forEach {
-                    newList.add(it)
+                    workPerformedListForAutoComplete = list as ArrayList
+                    newList.add(it.wpDescription)
                 }
             }
         return newList

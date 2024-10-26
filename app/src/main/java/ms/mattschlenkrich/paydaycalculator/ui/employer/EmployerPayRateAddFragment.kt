@@ -52,8 +52,6 @@ class EmployerPayRateAddFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setMenuActions()
-        populateSpinner()
         setClickActions()
         populateValues()
     }
@@ -63,6 +61,7 @@ class EmployerPayRateAddFragment :
             tvEffectiveDate.text = LocalDate.now().toString()
             changeEffectiveDate()
         }
+        populateSpinner()
     }
 
     private fun setClickActions() {
@@ -71,6 +70,7 @@ class EmployerPayRateAddFragment :
                 changeEffectiveDate()
             }
         }
+        setMenuActions()
     }
 
     private fun changeEffectiveDate() {

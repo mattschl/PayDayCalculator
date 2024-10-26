@@ -58,12 +58,12 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getEmployerListForValidation()
         setInitialValues()
         setClickActions()
     }
 
     private fun setInitialValues() {
+        getEmployerListForValidation()
         populateSpinners()
         populateStartDate()
     }
@@ -167,11 +167,11 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
             crdExtras.setOnClickListener {
                 setExtraOptions()
             }
+            tvStartDate.setOnClickListener {
+                changeDate()
+            }
         }
         setMenuActions()
-        binding.tvStartDate.setOnClickListener {
-            changeDate()
-        }
         setSpinnerActions()
     }
 
