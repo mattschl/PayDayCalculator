@@ -142,8 +142,7 @@ interface WorkOrderDao {
     @Query(
         "SELECT * FROM workOrderHistory " +
                 "WHERE woHistoryWorkOrderId = :workOrderId " +
-                "AND woHistoryDeleted = 0 " +
-                "Order BY woHistoryUpdateTime"
+                "AND woHistoryDeleted = 0 "
     )
     fun getWorkOrderHistoriesById(workOrderId: Long): LiveData<List<WorkOrderHistoryWithDates>>
 
@@ -332,5 +331,20 @@ interface WorkOrderDao {
                 "ORDER BY wohmUpdateTime"
     )
     fun getMaterialsByHistory(historyId: Long):
+            LiveData<List<WorkOrderHistoryMaterialCombined>>
+
+    @Transaction
+    @Query(
+        "SELECT * FROM workOrderHistoryMaterials " +
+                "INNER JOIN " +
+                "(SELECT woHistoryId FROM workOrderHistory " +
+                "WHERE woHistoryWorkOrderId = :workOrderId " +
+                "AND woHistoryDeleted = 0 " +
+                "ORDER BY woHistoryUpdateTime) " +
+                "ON woHistoryId = wohmHistoryId " +
+                "WHERE wohmIsDeleted = 0 " +
+                "ORDER By wohmMaterialId"
+    )
+    fun getMaterialsHistoryByWorkOrderId(workOrderId: Long):
             LiveData<List<WorkOrderHistoryMaterialCombined>>
 }

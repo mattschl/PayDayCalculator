@@ -497,6 +497,9 @@
         <action
             android:id="@+id/action_workOrderUpdateFragment_to_jobSpecUpdateFragment"
             app:destination="@id/jobSpecUpdateFragment" />
+        <action
+            android:id="@+id/action_workOrderUpdateFragment_to_workOrderHistoryUpdateFragment2"
+            app:destination="@id/workOrderHistoryUpdateFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_workOrderAddFragment"

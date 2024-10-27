@@ -379,9 +379,8 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun populateWorkDate() {
-        workDateObject = commonFunctions.getWorkDateObject()
         if (commonFunctions.getWorkDateObject() != null) {
-            workDateObject = mainActivity.mainViewModel.getWorkDateObject()!!
+            workDateObject = commonFunctions.getWorkDateObject()!!
             binding.lblDate.text =
                 df.getDisplayDate(workDateObject!!.wdDate)
         }
@@ -585,7 +584,7 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun validateWorkOrderNumber() {
-        if (doesWorOrderExist()) {
+        if (doesWorkOrderExist()) {
             prepareToUpdate()
         } else {
             AlertDialog.Builder(mView.context)
@@ -605,7 +604,7 @@ class WorkOrderHistoryUpdateFragment :
         }
     }
 
-    private fun doesWorOrderExist(): Boolean {
+    private fun doesWorkOrderExist(): Boolean {
         for (workOrder in workOrderList) {
             if (binding.acWorkOrder.text.toString() == workOrder.woNumber) {
                 curWorkOrder = workOrder

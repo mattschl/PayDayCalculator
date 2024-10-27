@@ -3,12 +3,14 @@ package ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkOrderHistoryDetailItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.WorkOrderUpdateFragmentDirections
 
 class WorkOrderHistoryAdapter(
     val mainActivity: MainActivity,
@@ -64,9 +66,34 @@ class WorkOrderHistoryAdapter(
                         )
             }
             tvHours.text = display
-            tvSummary.text =
-                history.history.woHistoryNote
+            if (history.history.woHistoryNote.isNullOrBlank()) {
+                tvSummary.visibility = View.GONE
+            } else {
+                tvSummary.text =
+                    history.history.woHistoryNote
+                tvSummary.visibility = View.VISIBLE
+            }
         }
+        holder.itemView.setOnClickListener {
+            gotoEditWorkOrderHistory(history)
+        }
+    }
+
+    private fun gotoEditWorkOrderHistory(history: WorkOrderHistoryWithDates) {
+        mainActivity.mainViewModel.setWorkOrderHistory(
+            history.history
+        )
+        mainActivity.mainViewModel.setWorkDateObject(
+            history.workDate
+        )
+        gotoWorkOrderHistory()
+    }
+
+    private fun gotoWorkOrderHistory() {
+        mView.findNavController().navigate(
+            WorkOrderUpdateFragmentDirections
+                .actionWorkOrderUpdateFragmentToWorkOrderHistoryUpdateFragment()
+        )
     }
 
     override fun getItemCount(): Int {

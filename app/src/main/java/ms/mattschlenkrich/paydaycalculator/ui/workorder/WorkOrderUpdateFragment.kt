@@ -25,12 +25,14 @@ import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.JobSpec
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.MaterialAndQuantity
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderAddBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.MaterialCountAdapter
 import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.WorkOrderHistoryAdapter
 import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.WorkOrderJobSpecAdapter
 
@@ -71,19 +73,81 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
     }
 
     private fun populateHistory(workOrderId: Long) {
+        populateDateHistory(workOrderId)
+        populateMaterialHistory(workOrderId)
+    }
+
+    private fun populateMaterialHistory(workOrderId: Long) {
+        mainActivity.workOrderViewModel.getMaterialsHistoryByWorkOrderId(
+            workOrderId
+        ).observe(viewLifecycleOwner) { list ->
+            if (list.isNotEmpty()) {
+                val materials = ArrayList<MaterialAndQuantity>()
+                var curMaterial = ""
+                var counter = list.size
+                var curMaterialAndQuantity: MaterialAndQuantity? = null
+                list.listIterator().forEach {
+                    counter--
+                    if (curMaterial == "") {
+                        curMaterial = it.material.mName
+                        curMaterialAndQuantity =
+                            MaterialAndQuantity(
+                                curMaterial,
+                                it.workOrderHistoryMaterial.wohmQuantity
+                            )
+                        if (counter == 0) materials.add(curMaterialAndQuantity!!)
+                    } else if (curMaterial != it.material.mName) {
+                        materials.add(curMaterialAndQuantity!!)
+                        curMaterial = it.material.mName
+                        curMaterialAndQuantity =
+                            MaterialAndQuantity(
+                                curMaterial,
+                                it.workOrderHistoryMaterial.wohmQuantity
+                            )
+                    } else {
+                        curMaterialAndQuantity!!.quantity +=
+                            it.workOrderHistoryMaterial.wohmQuantity
+                        if (counter == 0) materials.add(curMaterialAndQuantity!!)
+                    }
+                }
+                val materialsAndCount = materials.sortedBy { it.name }
+                val materialAdapter =
+                    MaterialCountAdapter(
+                        materialsAndCount
+                    )
+                binding.rvMaterials.apply {
+//                    layoutManager = LinearLayoutManager(mView.context)
+                    layoutManager = StaggeredGridLayoutManager(
+                        2,
+                        StaggeredGridLayoutManager.VERTICAL
+                    )
+                    setHasFixedSize(true)
+                    adapter = materialAdapter
+                }
+            }
+        }
+    }
+
+    private fun populateDateHistory(workOrderId: Long) {
         mainActivity.workOrderViewModel.getWorkOrderHistoriesById(
             workOrderId
-        ).observe(viewLifecycleOwner) { historyList ->
-            calculateTotals(historyList)
+        ).observe(viewLifecycleOwner) { list ->
+            calculateTotals(list)
+            val histories = list.sortedBy { it.workDate.wdDate }
             val workOrderHistoryAdapter =
                 WorkOrderHistoryAdapter(
                     mainActivity,
                     mView,
-                    historyList
+                    histories
                 )
             binding.rvHistory.apply {
                 layoutManager = LinearLayoutManager(mView.context)
                 adapter = workOrderHistoryAdapter
+            }
+            if (list.isEmpty()) {
+                binding.crdHistory.visibility = View.GONE
+            } else {
+                binding.crdHistory.visibility = View.VISIBLE
             }
         }
     }
@@ -99,7 +163,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
         }
         var display = ""
         if (regHours != 0.0) {
-            display = "Reg: " +
+            display = "Reg Hrs: " +
                     nf.getNumberFromDouble(
                         regHours
                     )
@@ -108,7 +172,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
             if (display.isNotBlank()) {
                 display += " | "
             }
-            display += "Ot: " +
+            display += "Ot Hrs: " +
                     nf.getNumberFromDouble(
                         otHours
                     )
@@ -117,7 +181,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
             if (display.isNotBlank()) {
                 display += " | "
             }
-            display += "Ot: " +
+            display += "DblOt Hrs: " +
                     nf.getNumberFromDouble(
                         dblOtHours
                     )

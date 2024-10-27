@@ -242,4 +242,10 @@ class WorkOrderViewModel(
         workOrderRepository.getMaterialsByHistory(
             historyId
         )
+
+    fun getMaterialsHistoryByWorkOrderId(workOrderId: Long) =
+        workOrderRepository.getMaterialsHistoryByWorkOrderId(
+            workOrderId
+        )
+
 }

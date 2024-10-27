@@ -62,23 +62,22 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
     }
 
     private fun setDefaultValues() {
-        if (mainActivity.mainViewModel.getEmployer() != null) {
-            curEmployer = mainActivity.mainViewModel.getEmployer()!!
-            binding.apply {
+        binding.apply {
+            if (mainActivity.mainViewModel.getEmployer() != null) {
+                curEmployer = mainActivity.mainViewModel.getEmployer()!!
                 spEmployers.visibility = View.INVISIBLE
                 tvEmployer.visibility = View.VISIBLE
                 tvEmployer.text = curEmployer.employerName
-            }
-            getWorkOrderList()
-        } else {
-            binding.apply {
+                getWorkOrderList()
+            } else {
                 spEmployers.visibility = View.VISIBLE
                 tvEmployer.visibility = View.INVISIBLE
+                populateEmployers()
             }
-            populateEmployers()
-        }
-        if (mainActivity.mainViewModel.getTempWorkOrderHistoryInfo() != null) {
-            setValuesFromHistory()
+            if (mainActivity.mainViewModel.getTempWorkOrderHistoryInfo() != null) {
+                setValuesFromHistory()
+            }
+            crdHistory.visibility = View.INVISIBLE
         }
         fillJobSpecListForAutoComplete()
     }

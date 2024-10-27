@@ -206,7 +206,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/crdWorkOrder"
+                android:id="@+id/crdHistory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/dimen_8dp"
@@ -245,14 +245,6 @@
                         app:layout_constraintTop_toTopOf="parent"
                         tools:ignore="ImageContrastCheck,DuplicateSpeakableTextCheck" />
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvHistory"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/dimen_10dp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/fabAddWorkOrder" />
-
                     <TextView
                         android:id="@+id/tvWorkOrderSummary"
                         android:layout_width="wrap_content"
@@ -263,7 +255,24 @@
                         android:textStyle="bold|italic"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/fabAddWorkOrder" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvHistory"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dimen_10dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvWorkOrderSummary" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvMaterials"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dimen_10dp"
+                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/rvHistory" />
+
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>

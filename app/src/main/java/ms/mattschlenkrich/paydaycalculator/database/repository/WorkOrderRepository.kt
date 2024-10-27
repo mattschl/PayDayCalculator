@@ -182,4 +182,10 @@ class WorkOrderRepository(private val db: PayDatabase) {
         db.getWorkOrderDao().getMaterialsByHistory(
             historyId
         )
+
+    fun getMaterialsHistoryByWorkOrderId(workOrderId: Long) =
+        db.getWorkOrderDao().getMaterialsHistoryByWorkOrderId(
+            workOrderId
+        )
+
 }
