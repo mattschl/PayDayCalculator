@@ -91,7 +91,7 @@ class WorkOrderHistoryAddFragment :
                     Toast.LENGTH_LONG
                 ).show()
             } else {
-                if (curWorkOrder == null) {
+                if (curWorkOrder == null && doesWorkOrderExist()) {
                     mainActivity.workOrderViewModel.getWorkOrder(
                         acWorkOrder.text.toString()
                     ).observe(viewLifecycleOwner) { workOrder ->
@@ -219,6 +219,7 @@ class WorkOrderHistoryAddFragment :
                     isEnabled = true
                 }
                 setCurWorkOrder()
+                mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
             }
         }
     }
@@ -328,12 +329,12 @@ class WorkOrderHistoryAddFragment :
                 Toast.LENGTH_LONG
             ).show()
         } else if (setCurMaterial()) {
-            addMaterialToWorkOrder(curMaterial!!)
+            addMaterialToHistory(curMaterial!!)
         } else {
             CoroutineScope(Dispatchers.IO).launch {
                 curMaterial = insertMaterial()
                 delay(WAIT_250)
-                addMaterialToWorkOrder(curMaterial!!)
+                addMaterialToHistory(curMaterial!!)
             }
         }
     }
@@ -354,7 +355,7 @@ class WorkOrderHistoryAddFragment :
         return material
     }
 
-    private fun addMaterialToWorkOrder(material: Material) {
+    private fun addMaterialToHistory(material: Material) {
         materialSequence++
         mainActivity.workOrderViewModel.insertWorkOrderHistoryMaterial(
             WorkOrderHistoryMaterial(
@@ -391,12 +392,12 @@ class WorkOrderHistoryAddFragment :
                     Toast.LENGTH_LONG
                 ).show()
             } else if (setCurWorkPerformed()) {
-                addWorkPerformedToWorkOrder(curWorkPerformed!!)
+                addWorkPerformedToHistory(curWorkPerformed!!)
             } else {
                 CoroutineScope(Dispatchers.Main).launch {
                     val workPerformed = insertNewWorkPerformed()
                     delay(WAIT_250)
-                    addWorkPerformedToWorkOrder(workPerformed)
+                    addWorkPerformedToHistory(workPerformed)
                 }
             }
         }
@@ -416,7 +417,7 @@ class WorkOrderHistoryAddFragment :
         return workPerformed
     }
 
-    private fun addWorkPerformedToWorkOrder(workPerformed: WorkPerformed) {
+    private fun addWorkPerformedToHistory(workPerformed: WorkPerformed) {
         workPerformedSequence++
         mainActivity.workOrderViewModel.insertWorkOrderHistoryWorkPerformed(
             WorkOrderHistoryWorkPerformed(
@@ -544,6 +545,7 @@ class WorkOrderHistoryAddFragment :
 
     private fun getCurHistory(): WorkOrderHistory {
         binding.apply {
+            setCurWorkOrder()
             val workOrderId = curWorkOrder!!.workOrderId
             return WorkOrderHistory(
                 nf.generateRandomIdAsLong(),

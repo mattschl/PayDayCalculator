@@ -187,11 +187,11 @@ class WorkOrderHistoryUpdateFragment :
                 )
             }
             populateWorkPerformedRecycler(workPerFormedActualList)
-            determineWPSequence(list)
+            determineWorkPerformedSequence(list)
         }
     }
 
-    private fun determineWPSequence(list: List<WorkOrderHistoryWorkPerformedCombined>) {
+    private fun determineWorkPerformedSequence(list: List<WorkOrderHistoryWorkPerformedCombined>) {
         if (list.isNotEmpty()) {
             workPerformedSequence =
                 list.last().workOrderHistoryWorkPerformed.wowpSequence
@@ -323,6 +323,7 @@ class WorkOrderHistoryUpdateFragment :
                     }
                 }
             }
+        mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
     }
 
     private fun populateMaterials() {
@@ -403,7 +404,7 @@ class WorkOrderHistoryUpdateFragment :
             curWorkOrder = workOrder
             mainActivity.mainViewModel.setWorkOrder(curWorkOrder)
         }
-        setTempWorkOrderInfo()
+        setTempWorkOrderHistoryInfo()
     }
 
     private fun populateWorkOrderListForAutoComplete() {
@@ -476,17 +477,17 @@ class WorkOrderHistoryUpdateFragment :
                 Toast.LENGTH_LONG
             ).show()
         } else if (setCurMaterial()) {
-            addMaterialToWorkOrder(curMaterial!!)
+            addMaterialToHistory(curMaterial!!)
         } else {
             CoroutineScope(Dispatchers.Main).launch {
-                val material = insertNewMaterial()
+                val material = insertNewMaterialIntoDatabase()
                 delay(WAIT_250)
-                addMaterialToWorkOrder(material)
+                addMaterialToHistory(material)
             }
         }
     }
 
-    private fun addMaterialToWorkOrder(material: Material) {
+    private fun addMaterialToHistory(material: Material) {
         binding.apply {
             materialSequence++
             mainActivity.workOrderViewModel.insertWorkOrderHistoryMaterial(
@@ -507,7 +508,7 @@ class WorkOrderHistoryUpdateFragment :
         }
     }
 
-    private fun insertNewMaterial(): Material {
+    private fun insertNewMaterialIntoDatabase(): Material {
         val material =
             Material(
                 nf.generateRandomIdAsLong(),
@@ -531,17 +532,17 @@ class WorkOrderHistoryUpdateFragment :
                 Toast.LENGTH_LONG
             ).show()
         } else if (setCurWorkPerformed()) {
-            addWorkPerformedToWorkOrder(curWorkPerformed!!)
+            addWorkPerformedToHistory(curWorkPerformed!!)
         } else {
             CoroutineScope(Dispatchers.Main).launch {
                 val workPerformed = insertNewWorkPerformed()
                 delay(WAIT_250)
-                addWorkPerformedToWorkOrder(workPerformed)
+                addWorkPerformedToHistory(workPerformed)
             }
         }
     }
 
-    private fun addWorkPerformedToWorkOrder(workPerformed: WorkPerformed) {
+    private fun addWorkPerformedToHistory(workPerformed: WorkPerformed) {
         workPerformedSequence++
         mainActivity.workOrderViewModel.insertWorkOrderHistoryWorkPerformed(
             WorkOrderHistoryWorkPerformed(
@@ -608,14 +609,13 @@ class WorkOrderHistoryUpdateFragment :
         for (workOrder in workOrderList) {
             if (binding.acWorkOrder.text.toString() == workOrder.woNumber) {
                 curWorkOrder = workOrder
-
                 return true
             }
         }
         return false
     }
 
-    private fun setTempWorkOrderInfo() {
+    private fun setTempWorkOrderHistoryInfo() {
         binding.apply {
             mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(
                 TempWorkOrderHistoryInfo(
@@ -642,7 +642,7 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun prepareToUpdate() {
-        val answer = validateEntry()
+        val answer = validateHistory()
         if (answer == ANSWER_OK) {
             updateHistory()
         } else {
@@ -690,7 +690,7 @@ class WorkOrderHistoryUpdateFragment :
         }
     }
 
-    private fun validateEntry(): String {
+    private fun validateHistory(): String {
         binding.apply {
             etRegHours.setText(
                 if (etRegHours.text.isNullOrBlank()) {
@@ -738,7 +738,7 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun gotoWorkOrderAddFragment() {
-        setTempWorkOrderInfo()
+        setTempWorkOrderHistoryInfo()
         mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
             WorkOrderHistoryUpdateFragmentDirections

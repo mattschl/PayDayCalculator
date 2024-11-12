@@ -132,7 +132,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
         mainActivity.workOrderViewModel.getWorkOrderHistoriesById(
             workOrderId
         ).observe(viewLifecycleOwner) { list ->
-            calculateTotals(list)
+            calculateHistoryTotals(list)
             val histories = list.sortedBy { it.workDate.wdDate }
             val workOrderHistoryAdapter =
                 WorkOrderHistoryAdapter(
@@ -152,7 +152,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
         }
     }
 
-    private fun calculateTotals(historyList: List<WorkOrderHistoryWithDates>) {
+    private fun calculateHistoryTotals(historyList: List<WorkOrderHistoryWithDates>) {
         var regHours = 0.0
         var otHours = 0.0
         var dblOtHours = 0.0
@@ -205,10 +205,10 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
             setValuesFromHistory(curWorkOrder)
             populateJobSpecsForWorkOrder()
         }
-        fillJobSpecListForAutoComplete()
+        populateJobSpecListForAutoComplete()
     }
 
-    private fun fillJobSpecListForAutoComplete() {
+    private fun populateJobSpecListForAutoComplete() {
         mainActivity.workOrderViewModel.getJobSpecsAll()
             .observe(viewLifecycleOwner) { list ->
                 val jobSpecNameList = ArrayList<String>()

@@ -64,7 +64,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         employerViewModel = mainActivity.employerViewModel
-        getEmployerListForValidation()
+        populateEmployerListForValidation()
         populateSpinners()
         setMenuActions()
         setClickActions()
@@ -91,7 +91,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
                 gotoPayRateFragment(curEmployer)
             }
             binding.tvStartDate.setOnClickListener {
-                changeDate()
+                changeCheckDate()
             }
         }
     }
@@ -211,7 +211,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         }
     }
 
-    private fun changeDate() {
+    private fun changeCheckDate() {
         val curDateAll = startDate.split("-")
         val datePickerDialog = DatePickerDialog(
             requireContext(),
@@ -398,7 +398,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         }
     }
 
-    private fun getEmployerListForValidation() {
+    private fun populateEmployerListForValidation() {
         employerViewModel.getEmployers().observe(
             viewLifecycleOwner
         ) { employers ->

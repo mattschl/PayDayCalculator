@@ -63,12 +63,12 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun setInitialValues() {
-        getEmployerListForValidation()
+        populateEmployerListForValidation()
         populateSpinners()
-        populateStartDate()
+        populateCheckStartDate()
     }
 
-    private fun getEmployerListForValidation() {
+    private fun populateEmployerListForValidation() {
         mainActivity.employerViewModel.getEmployers().observe(viewLifecycleOwner) { employers ->
             employerList.clear()
             employers.listIterator().forEach {
@@ -95,7 +95,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         }
     }
 
-    private fun populateStartDate() {
+    private fun populateCheckStartDate() {
         startDate = df.getCurrentDateAsString()
         binding.tvStartDate.text = df.getDisplayDate(startDate)
     }
@@ -121,7 +121,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun changeDate() {
+    private fun changeCheckDate() {
         val curDateAll = startDate.split("-")
         val datePickerDialog = DatePickerDialog(
             requireContext(),
@@ -168,7 +168,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
                 setExtraOptions()
             }
             tvStartDate.setOnClickListener {
-                changeDate()
+                changeCheckDate()
             }
         }
         setMenuActions()

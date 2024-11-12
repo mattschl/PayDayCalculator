@@ -41,7 +41,7 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillJobSpecListForValidation()
+        populateJobSpecListForValidation()
         setView()
         setClickActions()
     }
@@ -108,7 +108,7 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
         )
     }
 
-    private fun fillJobSpecListForValidation() {
+    private fun populateJobSpecListForValidation() {
         mainActivity.workOrderViewModel.getJobSpecsAll().observe(
             viewLifecycleOwner
         ) { list ->

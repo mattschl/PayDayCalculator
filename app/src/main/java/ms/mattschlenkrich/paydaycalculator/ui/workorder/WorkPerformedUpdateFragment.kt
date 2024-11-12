@@ -43,14 +43,14 @@ class WorkPerformedUpdateFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setView()
-        fillWorkPerformedListForValidation()
+        populateWorkPerformedListForValidation()
         setClickActions()
     }
 
     private fun setClickActions() {
         binding.apply {
             btnUpdate.setOnClickListener {
-                updateIfValid()
+                updateWorkPerformedIfValid()
             }
             btnCancel.setOnClickListener {
                 gotoCallingFragment()
@@ -66,7 +66,7 @@ class WorkPerformedUpdateFragment :
         )
     }
 
-    private fun updateIfValid() {
+    private fun updateWorkPerformedIfValid() {
         val answer = validateWorkPerformed()
         if (answer == ANSWER_OK) {
             updateWorkPerformed()
@@ -122,7 +122,7 @@ class WorkPerformedUpdateFragment :
         }
     }
 
-    private fun fillWorkPerformedListForValidation() {
+    private fun populateWorkPerformedListForValidation() {
         mainActivity.workOrderViewModel.getWorkPerformedAll().observe(
             viewLifecycleOwner
         ) { list ->

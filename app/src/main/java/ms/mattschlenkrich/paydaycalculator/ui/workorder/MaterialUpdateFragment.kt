@@ -44,14 +44,14 @@ class MaterialUpdateFragment
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setView()
-        fillMaterialListForValidation()
+        populateMaterialListForValidation()
         setClickActions()
     }
 
     private fun setClickActions() {
         binding.apply {
             btnUpdate.setOnClickListener {
-                updateIfValid()
+                updateMaterialIfValid()
             }
             btnCancel.setOnClickListener {
                 gotoCallingFragment()
@@ -67,7 +67,7 @@ class MaterialUpdateFragment
         )
     }
 
-    private fun updateIfValid() {
+    private fun updateMaterialIfValid() {
         val answer = validateMaterial()
         if (answer == ANSWER_OK) {
             updateMaterial()
@@ -126,7 +126,7 @@ class MaterialUpdateFragment
         return ANSWER_OK
     }
 
-    private fun fillMaterialListForValidation() {
+    private fun populateMaterialListForValidation() {
         mainActivity.workOrderViewModel.getMaterialsList()
             .observe(viewLifecycleOwner) { list ->
                 materialList.clear()

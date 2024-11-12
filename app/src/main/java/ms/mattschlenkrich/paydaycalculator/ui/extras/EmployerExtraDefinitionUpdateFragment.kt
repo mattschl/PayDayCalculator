@@ -61,7 +61,7 @@ class EmployerExtraDefinitionUpdateFragment :
                 updateDefinitionIfValid()
             }
             tvEffectiveDate.setOnClickListener {
-                changeDate()
+                changeEffectiveDate()
             }
             chooseFixedOrPercent()
         }
@@ -147,7 +147,7 @@ class EmployerExtraDefinitionUpdateFragment :
         }
     }
 
-    private fun changeDate() {
+    private fun changeEffectiveDate() {
         binding.apply {
             val curDateAll = tvEffectiveDate.text.toString()
                 .split("-")

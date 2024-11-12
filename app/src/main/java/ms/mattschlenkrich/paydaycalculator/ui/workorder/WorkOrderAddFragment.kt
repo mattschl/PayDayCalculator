@@ -76,6 +76,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
             }
             if (mainActivity.mainViewModel.getTempWorkOrderHistoryInfo() != null) {
                 setValuesFromHistory()
+//                mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
             }
             crdHistory.visibility = View.INVISIBLE
         }
@@ -208,7 +209,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
             } else if (curJobSpec != null) {
                 addJobSpecToWorkOrder()
             } else if (acJobSpec.text.isNotBlank()) {
-                saveJobSpecAndAddToWorkOrder()
+                addJobSpecToWorkOrderOrAddToDatabaseFirst()
             } else {
                 Toast.makeText(
                     mView.context,
@@ -219,7 +220,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
         }
     }
 
-    private fun saveJobSpecAndAddToWorkOrder() {
+    private fun addJobSpecToWorkOrderOrAddToDatabaseFirst() {
         for (jobSpec in jobSpecList) {
             if (jobSpec.jsName ==
                 binding.acJobSpec.text.toString().trim()
@@ -230,13 +231,13 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
             }
         }
         CoroutineScope(Dispatchers.Main).launch {
-            curJobSpec = saveJobSpec()
+            curJobSpec = addJobSpecToDatabase()
             delay(WAIT_100)
             addJobSpecToWorkOrder()
         }
     }
 
-    private fun saveJobSpec(): JobSpec {
+    private fun addJobSpecToDatabase(): JobSpec {
         val newJobSpec =
             JobSpec(
                 nf.generateRandomIdAsLong(),
