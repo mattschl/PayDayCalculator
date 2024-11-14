@@ -98,9 +98,7 @@ class WorkOrderHistoryAddFragment :
                         curWorkOrder = workOrder
                         populateWorkOrderInfo()
                     }
-                }// else {
-//                    validateWorkOrderNumber()
-//                }
+                }
             }
         }
     }
@@ -163,7 +161,6 @@ class WorkOrderHistoryAddFragment :
             workPerformedDescriptions
         )
         binding.acWorkPerformed.setAdapter(wpAdapter)
-
     }
 
     private fun getWorkPerformedListForAutoComplete():
@@ -472,7 +469,7 @@ class WorkOrderHistoryAddFragment :
     private fun doesWorkOrderExist(): Boolean {
         for (workOrder in workOrderList) {
             if (binding.acWorkOrder.text.toString() == workOrder.woNumber) {
-                setCurWorkOrder()
+
                 return true
             }
         }
