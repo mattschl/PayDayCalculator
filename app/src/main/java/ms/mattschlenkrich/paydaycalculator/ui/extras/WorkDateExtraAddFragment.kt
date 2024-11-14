@@ -49,9 +49,12 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        populateSpinners()
-        setMenuActions()
+        setClickActions()
         populateValues()
+    }
+
+    private fun setClickActions() {
+        setMenuActions()
         chooseFixedOrPercent()
     }
 
@@ -78,6 +81,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
     }
 
     private fun populateValues() {
+        populateSpinners()
         if (mainActivity.mainViewModel.getWorkDateObject() != null) {
             curDateObject =
                 mainActivity.mainViewModel.getWorkDateObject()!!

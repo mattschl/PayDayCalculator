@@ -57,8 +57,19 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setClickActions()
+        populateValues()
+
         populateSpinner()
         getTaxTypeListForValidation()
+    }
+
+    private fun populateValues() {
+        populateSpinner()
+        getTaxTypeListForValidation()
+    }
+
+    private fun setClickActions() {
         setMenuActions()
     }
 

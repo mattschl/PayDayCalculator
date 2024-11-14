@@ -56,8 +56,16 @@ class WorkExtraTypeAddFragment : Fragment(
             curEmployer = mainActivity.mainViewModel.getEmployer()!!
         }
         mainActivity.title = "Add Extra Type for ${curEmployer.employerName}"
+        setClickActions()
+        populateValues()
+    }
+
+    private fun populateValues() {
         populateSpinners()
-        getExtraTypeList()
+        populateExtraTypeList()
+    }
+
+    private fun setClickActions() {
         setMenuActions()
         onAppliesToSpinnerSelected()
     }
@@ -101,7 +109,7 @@ class WorkExtraTypeAddFragment : Fragment(
         }
     }
 
-    private fun getExtraTypeList() {
+    private fun populateExtraTypeList() {
         mainActivity.workExtraViewModel.getExtraDefTypes(curEmployer.employerId)
             .observe(
                 viewLifecycleOwner

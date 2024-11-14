@@ -38,10 +38,10 @@ class WorkExtraTypesFragment : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fillExtraTypeList()
+        populateExtraTypeList()
     }
 
-    private fun fillExtraTypeList() {
+    private fun populateExtraTypeList() {
         extraTypeAdapter = ExtraTypeAdapter()
         binding.rvTypes.apply {
             layoutManager = StaggeredGridLayoutManager(

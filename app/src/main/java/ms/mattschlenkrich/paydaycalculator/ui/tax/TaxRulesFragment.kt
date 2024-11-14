@@ -55,14 +55,12 @@ class TaxRulesFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setClickActions()
-        populateTaxTypes()
-        populateEffectiveDates()
-        selectTaxType()
-        selectEffectiveDate()
         populateValues()
     }
 
     private fun populateValues() {
+        populateTaxTypes()
+        populateEffectiveDates()
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_1000)
             binding.apply {
@@ -177,7 +175,6 @@ class TaxRulesFragment :
                         ]
                 tvTaxSummary.text = display
             }
-
         }
     }
 
@@ -277,6 +274,8 @@ class TaxRulesFragment :
                 gotoTaxTypeUpdateFragment()
             }
         }
+        selectTaxType()
+        selectEffectiveDate()
     }
 
     private fun gotoTaxTypeUpdateFragment() {

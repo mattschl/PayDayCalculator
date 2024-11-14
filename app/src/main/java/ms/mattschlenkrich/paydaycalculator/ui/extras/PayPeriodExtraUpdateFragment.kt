@@ -51,14 +51,12 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        populateSpinners()
         setClickActions()
-        chooseFixedOrPercent()
-        setMenuActions()
         populateValues()
     }
 
     private fun populateValues() {
+        populateSpinners()
         extraList = mainActivity.mainViewModel.getPayPeriodExtraList()
         if (mainActivity.mainViewModel.getEmployer() != null) {
             curEmployer = mainActivity.mainViewModel.getEmployer()!!
@@ -88,6 +86,8 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
     }
 
     private fun setClickActions() {
+        chooseFixedOrPercent()
+        setMenuActions()
         binding.apply {
             fabDone.setOnClickListener {
                 updatePayPeriodExtra()

@@ -50,12 +50,12 @@ class EmployerExtraDefinitionUpdateFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setMenuActions()
         populateValues()
         setClickActions()
     }
 
     private fun setClickActions() {
+        setMenuActions()
         binding.apply {
             fabDone.setOnClickListener {
                 updateDefinitionIfValid()

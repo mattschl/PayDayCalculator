@@ -52,13 +52,17 @@ class PayPeriodExtraAddFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        populateSpinners()
-        chooseFixedOrPercent()
-        setMenuActions()
+        setClickActions()
         populateValues()
     }
 
+    private fun setClickActions() {
+        chooseFixedOrPercent()
+        setMenuActions()
+    }
+
     private fun populateValues() {
+        populateSpinners()
         if (mainActivity.mainViewModel.getEmployer() != null) {
             curEmployer = mainActivity.mainViewModel.getEmployer()!!
         }

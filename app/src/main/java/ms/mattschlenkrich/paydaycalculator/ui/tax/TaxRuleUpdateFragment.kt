@@ -46,9 +46,7 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setMenuActions()
         setClickActions()
-        setCheckBoxActions()
         populateValues()
     }
 
@@ -95,6 +93,8 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
         binding.fabDone.setOnClickListener {
             updateTaxRuleIfValid()
         }
+        setMenuActions()
+        setCheckBoxActions()
     }
 
     private fun updateTaxRuleIfValid() {

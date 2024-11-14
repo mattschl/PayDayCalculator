@@ -61,8 +61,6 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setMenuActions()
-        populateSpinners()
         setClickActions()
         populateValues()
     }
@@ -270,13 +268,14 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     }
 
     private fun setClickActions() {
+        setMenuActions()
         binding.apply {
             tvEffectiveDate.setOnClickListener {
                 changeDate()
             }
-            chooseExtraType()
-            chooseFixedOrPercent()
         }
+        chooseExtraType()
+        chooseFixedOrPercent()
 
     }
 
@@ -306,6 +305,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     }
 
     private fun populateValues() {
+        populateSpinners()
         binding.apply {
             tvEffectiveDate.text = df.getCurrentDateAsString()
             CoroutineScope(Dispatchers.Main).launch {

@@ -50,14 +50,13 @@ class WorkDateExtraUpdateFragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        populateSpinners()
         setClickActions()
-        chooseFixedOrPercent()
-        setMenuActions()
         populateValues()
     }
 
     private fun setClickActions() {
+        chooseFixedOrPercent()
+        setMenuActions()
         binding.apply {
             fabDone.setOnClickListener {
                 updateWorkDateExtraIfValid()
@@ -134,6 +133,7 @@ class WorkDateExtraUpdateFragment
     }
 
     private fun populateValues() {
+        populateSpinners()
         extraList = mainActivity.mainViewModel.getWorkDateExtraList()
         if (mainActivity.mainViewModel.getWorkDateObject() != null &&
             mainActivity.mainViewModel.getWorkDateExtra() != null &&

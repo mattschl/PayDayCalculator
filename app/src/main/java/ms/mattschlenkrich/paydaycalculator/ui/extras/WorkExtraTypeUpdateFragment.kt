@@ -52,18 +52,6 @@ class WorkExtraTypeUpdateFragment : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (mainActivity.mainViewModel.getEmployer() != null) {
-            currentEmployer = mainActivity.mainViewModel.getEmployer()!!
-        }
-        if (mainActivity.mainViewModel.getWorkExtraType() != null) {
-            currentExtraType = mainActivity.mainViewModel.getWorkExtraType()!!
-        }
-        mainActivity.title =
-            "Update ${currentExtraType.wetName} for ${currentEmployer.employerName}"
-        populateSpinners()
-        getExtraTypeListForValidation()
-        setMenuActions()
-        onAppliesToSpinnerSelected()
         setClickActions()
         populateValues()
     }
@@ -91,6 +79,16 @@ class WorkExtraTypeUpdateFragment : Fragment(
     }
 
     private fun populateValues() {
+        populateSpinners()
+        populateExtraTypeListForValidation()
+        if (mainActivity.mainViewModel.getEmployer() != null) {
+            currentEmployer = mainActivity.mainViewModel.getEmployer()!!
+        }
+        if (mainActivity.mainViewModel.getWorkExtraType() != null) {
+            currentExtraType = mainActivity.mainViewModel.getWorkExtraType()!!
+        }
+        mainActivity.title =
+            "Update ${currentExtraType.wetName} for ${currentEmployer.employerName}"
         binding.apply {
             binding.apply {
                 etExtraName.setText(currentExtraType.wetName)
@@ -103,6 +101,8 @@ class WorkExtraTypeUpdateFragment : Fragment(
     }
 
     private fun setClickActions() {
+        setMenuActions()
+        onAppliesToSpinnerSelected()
         binding.apply {
             fabDone.setOnClickListener {
                 updateExtraType()
@@ -248,7 +248,7 @@ class WorkExtraTypeUpdateFragment : Fragment(
         }
     }
 
-    private fun getExtraTypeListForValidation() {
+    private fun populateExtraTypeListForValidation() {
         mainActivity.workExtraViewModel.getExtraDefTypes(currentEmployer.employerId)
             .observe(
                 viewLifecycleOwner

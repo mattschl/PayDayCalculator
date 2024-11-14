@@ -44,9 +44,6 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        populateSpinner()
-        getTaxTypeListForValidation()
-        setMenuActions()
         setClickActions()
         populateValues()
     }
@@ -63,6 +60,8 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     }
 
     private fun populateValues() {
+        populateSpinner()
+        getTaxTypeListForValidation()
         if (mainActivity.mainViewModel.getTaxType() != null) {
             curTaxType = mainActivity.mainViewModel.getTaxType()!!
             binding.apply {
@@ -78,6 +77,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
                 updateWorkTaxTypeIfValid()
             }
         }
+        setMenuActions()
     }
 
     private fun gotoTaxTypesFragment() {

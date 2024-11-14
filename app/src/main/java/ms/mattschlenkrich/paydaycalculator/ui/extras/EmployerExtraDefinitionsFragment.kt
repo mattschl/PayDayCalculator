@@ -54,13 +54,11 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setClickActions()
-        populateEmployersSpinner()
-        onSelectEmployer()
-        onSelectExtraType()
-        fillValues()
+        populateValues()
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
+        populateEmployersSpinner()
         mainActivity.mainViewModel.removeCallingFragment(TAG)
         CoroutineScope(Dispatchers.Main).launch {
             binding.apply {
@@ -268,6 +266,8 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     }
 
     private fun setClickActions() {
+        onSelectEmployer()
+        onSelectExtraType()
         binding.apply {
             fabNew.setOnClickListener {
                 gotoExtraAddFragment()

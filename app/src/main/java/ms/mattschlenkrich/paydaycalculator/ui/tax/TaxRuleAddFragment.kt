@@ -46,12 +46,11 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setMenuActions()
         populateValues()
-        setCheckBoxActions()
+        setClickActions()
     }
 
-    private fun setCheckBoxActions() {
+    private fun setClickActions() {
         binding.apply {
             chkExemption.setOnClickListener {
                 if (chkExemption.isChecked) {
@@ -70,6 +69,7 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
                 }
             }
         }
+        setMenuActions()
     }
 
     private fun populateValues() {
@@ -149,7 +149,6 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
         } else {
             gotoTaxRulesFragment()
         }
-
     }
 
     private fun gotoTaxRulesFragment() {
@@ -161,23 +160,23 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
 
     private fun checkTaxRule(): String {
         binding.apply {
-            val errorMessage = if (etPercentage.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
+            if (etPercentage.text.isNullOrBlank()) {
+                return "    ERROR!!\n" +
                         "There should be a percentage here!"
-            } else if (etExemption.text.isNullOrBlank() &&
+            }
+            if (etExemption.text.isNullOrBlank() &&
                 chkExemption.isChecked
             ) {
-                "    ERROR!!\n" +
+                return "    ERROR!!\n" +
                         "An exemption is indicated but no amount was entered!"
-            } else if (etUpperLimit.text.isNullOrBlank() &&
+            }
+            if (etUpperLimit.text.isNullOrBlank() &&
                 chkUpperLimit.isChecked
             ) {
-                "    ERROR!!\n" +
+                return "    ERROR!!\n" +
                         "An upper limit is indicated but no amount was entered!"
-            } else {
-                ANSWER_OK
             }
-            return errorMessage
+            return ANSWER_OK
         }
     }
 
