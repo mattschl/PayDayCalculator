@@ -90,15 +90,13 @@ class WorkOrderHistoryAddFragment :
                     "Please enter a valid work order before adding work performed",
                     Toast.LENGTH_LONG
                 ).show()
+            }
+            if (doesWorkOrderExist()) {
+                populateWorkOrderInfo()
+                btnWorkOrder.text = getString(R.string.edit)
             } else {
-                if (curWorkOrder == null && doesWorkOrderExist()) {
-                    mainActivity.workOrderViewModel.getWorkOrder(
-                        acWorkOrder.text.toString()
-                    ).observe(viewLifecycleOwner) { workOrder ->
-                        curWorkOrder = workOrder
-                        populateWorkOrderInfo()
-                    }
-                }
+                btnWorkOrder.text = getString(R.string.create)
+                tvDescription.visibility = View.INVISIBLE
             }
         }
     }
@@ -111,7 +109,6 @@ class WorkOrderHistoryAddFragment :
                             curWorkOrder!!.woNumber
                 tvDescription.text = display
                 tvDescription.visibility = View.VISIBLE
-                btnEditWorkOrder.visibility = View.VISIBLE
             }
         }
     }
@@ -178,9 +175,9 @@ class WorkOrderHistoryAddFragment :
 
     private fun populateTempWorkOrderInfo() {
         if (mainActivity.mainViewModel.getTempWorkOrderHistoryInfo() != null) {
+            val tempWorkOrderHistory =
+                mainActivity.mainViewModel.getTempWorkOrderHistoryInfo()!!
             binding.apply {
-                val tempWorkOrderHistory =
-                    mainActivity.mainViewModel.getTempWorkOrderHistoryInfo()!!
                 if (mainActivity.mainViewModel.getWorkOrderNumber() != null) {
                     acWorkOrder.setText(
                         mainActivity.mainViewModel.getWorkOrderNumber()!!
@@ -266,11 +263,15 @@ class WorkOrderHistoryAddFragment :
             fabDone.setOnClickListener {
                 validateWorkOrderNumber()
             }
-            btnEditWorkOrder.setOnClickListener {
+            btnWorkOrder.setOnClickListener {
                 gotoWorkOrderUpdateFragment()
             }
             acWorkOrder.setOnItemClickListener { _, _, _, _ ->
                 setCurWorkOrder()
+            }
+            acWorkOrder.setOnKeyListener { _, _, _ ->
+                setCurWorkOrder()
+                false
             }
             acWorkPerformed.setOnClickListener {
                 gotoWorkOrderAddOrUpdateFragment(addWorkPerformed = false, addMaterial = false)
@@ -469,7 +470,7 @@ class WorkOrderHistoryAddFragment :
     private fun doesWorkOrderExist(): Boolean {
         for (workOrder in workOrderList) {
             if (binding.acWorkOrder.text.toString() == workOrder.woNumber) {
-
+                curWorkOrder = workOrder
                 return true
             }
         }

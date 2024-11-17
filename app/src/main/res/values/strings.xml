@@ -227,4 +227,5 @@
     <string name="cost">Cost</string>
     <string name="update_work_performed_description">Update Work Performed description</string>
     <string name="update_material_description">Update Material description</string>
+    <string name="create">Create</string>
 </resources>

@@ -88,19 +88,6 @@ class WorkOrderHistoryUpdateFragment :
         setClickActions()
     }
 
-    private fun onSelectWorkOrder() {
-        binding.apply {
-            acWorkOrder.setOnItemClickListener { _, _, _, _ ->
-                mainActivity.workOrderViewModel.getWorkOrder(
-                    acWorkOrder.text.toString()
-                ).observe(viewLifecycleOwner) { workOrder ->
-                    curWorkOrder = workOrder
-                    setCurWorkOrder()
-                }
-            }
-        }
-    }
-
     private fun setCurWorkOrder() {
         binding.apply {
             if (acWorkOrder.text.isNullOrBlank()) {
@@ -109,17 +96,13 @@ class WorkOrderHistoryUpdateFragment :
                     "Please enter a valid work order before adding work performed",
                     Toast.LENGTH_LONG
                 ).show()
+            }
+            if (doesWorkOrderExist()) {
+                populateWorkOrderInfo()
+                btnWorkOrder.text = getString(R.string.edit)
             } else {
-                if (curWorkOrder == null) {
-                    mainActivity.workOrderViewModel.getWorkOrder(
-                        acWorkOrder.text.toString()
-                    ).observe(viewLifecycleOwner) { workOrder ->
-                        curWorkOrder = workOrder
-                        populateWorkOrderInfo()
-                    }
-                } else {
-                    validateWorkOrderNumber()
-                }
+                btnWorkOrder.text = getString(R.string.create)
+                tvDescription.visibility = View.INVISIBLE
             }
         }
     }
@@ -130,7 +113,6 @@ class WorkOrderHistoryUpdateFragment :
         binding.apply {
             tvDescription.text = display
             tvDescription.visibility = View.VISIBLE
-            btnEditWorkOrder.visibility = View.VISIBLE
         }
     }
 
@@ -148,6 +130,7 @@ class WorkOrderHistoryUpdateFragment :
         populateWorkOrderListForAutoComplete()
         populateWorkPerformedListForAutoComplete()
         populateMaterialListForAutoComplete()
+        setCurWorkOrder()
     }
 
     private fun populateMaterialListForAutoComplete() {
@@ -310,7 +293,8 @@ class WorkOrderHistoryUpdateFragment :
                         nf.getNumberFromDouble(history.history.woHistoryDblOtHours)
                     )
                     etNote.setText(history.history.woHistoryNote)
-                    btnEditWorkOrder.visibility = View.VISIBLE
+//                    btnWorkOrder.visibility = View.VISIBLE
+                    btnWorkOrder.text = getString(R.string.edit)
                 }
                 if (mainActivity.mainViewModel.getWorkOrderNumber() != null) {
                     mainActivity.workOrderViewModel.getWorkOrder(
@@ -408,13 +392,16 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun populateWorkOrderListForAutoComplete() {
-        getWorkOrderListForAutoComplete()
-        binding.apply {
-            val woAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_normal,
-                workOrderListForAutocomplete
-            )
-            acWorkOrder.setAdapter(woAdapter)
+        CoroutineScope(Dispatchers.Main).launch {
+            getWorkOrderListForAutoComplete()
+            delay(WAIT_250)
+            binding.apply {
+                val woAdapter = ArrayAdapter(
+                    mView.context, R.layout.spinner_item_normal,
+                    workOrderListForAutocomplete
+                )
+                acWorkOrder.setAdapter(woAdapter)
+            }
         }
     }
 
@@ -436,12 +423,18 @@ class WorkOrderHistoryUpdateFragment :
             fabDone.setOnClickListener {
                 validateWorkOrderNumber()
             }
-            btnEditWorkOrder.setOnClickListener {
+            btnWorkOrder.setOnClickListener {
                 setOnWorkOrderSelected(acWorkOrder.text.toString())
                 mainActivity.mainViewModel.setCallingFragment(TAG)
                 gotoWorkOrderUpdateFragment()
             }
-            onSelectWorkOrder()
+            acWorkOrder.setOnItemClickListener { _, _, _, _ ->
+                setCurWorkOrder()
+            }
+            acWorkOrder.setOnKeyListener { _, _, _ ->
+                setCurWorkOrder()
+                false
+            }
             acWorkPerformed.setOnItemClickListener { _, _, _, _ ->
                 setCurWorkPerformed()
             }

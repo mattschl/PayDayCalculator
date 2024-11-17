@@ -69,18 +69,18 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/type_numbers"
                 android:minHeight="@dimen/minimum_touch_height"
+                android:selectAllOnFocus="true"
                 android:textColor="@color/black"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/btnEditWorkOrder"
+                app:layout_constraintEnd_toStartOf="@id/btnWorkOrder"
                 app:layout_constraintStart_toEndOf="@id/lblWorkOrder"
                 app:layout_constraintTop_toBottomOf="@+id/tvEmployers" />
 
             <Button
-                android:id="@+id/btnEditWorkOrder"
+                android:id="@+id/btnWorkOrder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/edit"
-                android:visibility="gone"
+                android:text="@string/create"
                 app:layout_constraintBaseline_toBaselineOf="@id/acWorkOrder"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/acWorkOrder" />
@@ -221,123 +221,162 @@
                 app:layout_constraintStart_toEndOf="@id/lblNote"
                 app:layout_constraintTop_toBottomOf="@id/etDblOtHours" />
 
-            <TextView
-                android:id="@+id/lblWorkPerformed"
-                android:layout_width="wrap_content"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/crdWorkPerformed"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/add_work_performed_below"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="italic"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_margin="@dimen/dimen_8dp"
+                android:backgroundTint="@color/white"
+                android:elevation="10dp"
+                android:visibility="gone"
+                app:cardCornerRadius="10dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/etNote" />
+                app:layout_constraintTop_toBottomOf="@id/etNote">
 
-            <AutoCompleteTextView
-                android:id="@+id/acWorkPerformed"
-                android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/lblWorkPerformed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/add_work_performed_below"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="italic"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <AutoCompleteTextView
+                        android:id="@+id/acWorkPerformed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/start_typing_for_matches"
+                        android:importantForAutofill="no"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:maxWidth="@dimen/text_box_extra_wide"
+                        android:minHeight="@dimen/minimum_touch_height"
+                        android:paddingStart="@dimen/dimen_20dp"
+                        android:paddingEnd="@dimen/dimen_20dp"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@id/btnAddWorkPerformed"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/lblWorkPerformed"
+                        tools:ignore="DuplicateSpeakableTextCheck" />
+
+                    <Button
+                        android:id="@+id/btnAddWorkPerformed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/green"
+                        android:text="@string/add"
+                        app:layout_constraintBaseline_toBaselineOf="@id/acWorkPerformed"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/acWorkPerformed"
+                        tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvWorkPerformed"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/dimen_10dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/acWorkPerformed" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/crdMaterials"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/start_typing_for_matches"
-                android:importantForAutofill="no"
-                android:inputType="textMultiLine|textCapSentences"
-                android:maxWidth="@dimen/text_box_extra_wide"
-                android:minHeight="@dimen/minimum_touch_height"
-                android:paddingStart="@dimen/dimen_20dp"
-                android:paddingEnd="@dimen/dimen_20dp"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/btnAddWorkPerformed"
+                android:layout_margin="@dimen/dimen_8dp"
+                android:backgroundTint="@color/white"
+                android:elevation="10dp"
+                android:visibility="gone"
+                app:cardCornerRadius="10dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lblWorkPerformed"
-                tools:ignore="DuplicateSpeakableTextCheck" />
+                app:layout_constraintTop_toBottomOf="@id/crdWorkPerformed">
 
-            <Button
-                android:id="@+id/btnAddWorkPerformed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/green"
-                android:text="@string/add"
-                app:layout_constraintBaseline_toBaselineOf="@id/acWorkPerformed"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/acWorkPerformed"
-                tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvWorkPerformed"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/dimen_10dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/acWorkPerformed" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/lblMaterials"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/add_materials_used_below"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="italic"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rvWorkPerformed" />
+                    <TextView
+                        android:id="@+id/lblMaterials"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/add_materials_used_below"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="italic"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-            <EditText
-                android:id="@+id/etMaterialQty"
-                android:layout_width="@dimen/text_box_small"
-                android:layout_height="@dimen/minimum_touch_height"
-                android:hint="@string/zero_double"
-                android:importantForAutofill="no"
-                android:inputType="numberDecimal"
-                android:minHeight="48dp"
-                android:selectAllOnFocus="true"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintBaseline_toBaselineOf="@id/acMaterials"
-                app:layout_constraintEnd_toStartOf="@id/acMaterials"
-                app:layout_constraintStart_toStartOf="parent" />
+                    <EditText
+                        android:id="@+id/etMaterialQty"
+                        android:layout_width="@dimen/text_box_small"
+                        android:layout_height="@dimen/minimum_touch_height"
+                        android:hint="@string/zero_double"
+                        android:importantForAutofill="no"
+                        android:inputType="numberDecimal"
+                        android:minHeight="48dp"
+                        android:selectAllOnFocus="true"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBaseline_toBaselineOf="@id/acMaterials"
+                        app:layout_constraintEnd_toStartOf="@id/acMaterials"
+                        app:layout_constraintStart_toStartOf="parent" />
 
-            <AutoCompleteTextView
-                android:id="@+id/acMaterials"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="@string/start_typing_for_matches"
-                android:importantForAutofill="no"
-                android:inputType="textMultiLine|textCapSentences"
-                android:maxWidth="@dimen/text_box_wide"
-                android:minHeight="@dimen/minimum_touch_height"
-                android:paddingStart="@dimen/dimen_20dp"
-                android:paddingEnd="@dimen/dimen_20dp"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/btnAddMaterial"
-                app:layout_constraintStart_toEndOf="@id/etMaterialQty"
-                app:layout_constraintTop_toBottomOf="@id/lblMaterials" />
+                    <AutoCompleteTextView
+                        android:id="@+id/acMaterials"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/start_typing_for_matches"
+                        android:importantForAutofill="no"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:maxWidth="@dimen/text_box_wide"
+                        android:minHeight="@dimen/minimum_touch_height"
+                        android:paddingStart="@dimen/dimen_20dp"
+                        android:paddingEnd="@dimen/dimen_20dp"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@id/btnAddMaterial"
+                        app:layout_constraintStart_toEndOf="@id/etMaterialQty"
+                        app:layout_constraintTop_toBottomOf="@id/lblMaterials" />
 
-            <Button
-                android:id="@+id/btnAddMaterial"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/green"
-                android:text="@string/add"
-                app:layout_constraintBaseline_toBaselineOf="@id/acMaterials"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/acMaterials"
-                tools:ignore="TextContrastCheck" />
+                    <Button
+                        android:id="@+id/btnAddMaterial"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/green"
+                        android:text="@string/add"
+                        app:layout_constraintBaseline_toBaselineOf="@id/acMaterials"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/acMaterials"
+                        tools:ignore="TextContrastCheck" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvMaterials"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/dimen_10dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/acMaterials" />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvMaterials"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/dimen_10dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/acMaterials" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabDone"
@@ -349,7 +388,7 @@
                 android:contentDescription="@string/done"
                 android:src="@drawable/ic_done"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rvMaterials" />
+                app:layout_constraintTop_toBottomOf="@id/crdMaterials" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
