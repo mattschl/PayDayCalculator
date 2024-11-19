@@ -42,9 +42,32 @@ class WorkPerformedUpdateFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setView()
-        populateWorkPerformedListForValidation()
+        setValues()
         setClickActions()
+    }
+
+    private fun setValues() {
+        if (mainActivity.mainViewModel.getWorkPerformed() != null) {
+            oldWorkPerformed = mainActivity.mainViewModel.getWorkPerformed()!!
+        }
+        binding.apply {
+            val display =
+                "Update: ${oldWorkPerformed.wpDescription}"
+            tvTitle.text = display
+            etWorkPerformed.setText(oldWorkPerformed.wpDescription)
+        }
+        populateWorkPerformedListForValidation()
+    }
+
+    private fun populateWorkPerformedListForValidation() {
+        mainActivity.workOrderViewModel.getWorkPerformedAll().observe(
+            viewLifecycleOwner
+        ) { list ->
+            workPerformedList.clear()
+            for (workPerformed in list.listIterator()) {
+                workPerformedList.add(workPerformed)
+            }
+        }
     }
 
     private fun setClickActions() {
@@ -55,26 +78,6 @@ class WorkPerformedUpdateFragment :
             btnCancel.setOnClickListener {
                 gotoCallingFragment()
             }
-        }
-    }
-
-    private fun gotoCallingFragment() {
-        mainActivity.mainViewModel.setWorkPerformed(null)
-        mView.findNavController().navigate(
-            WorkPerformedUpdateFragmentDirections
-                .actionWorkPerformedUpdateFragmentToWorkOrderHistoryUpdateFragment()
-        )
-    }
-
-    private fun updateWorkPerformedIfValid() {
-        val answer = validateWorkPerformed()
-        if (answer == ANSWER_OK) {
-            updateWorkPerformed()
-        } else {
-            Toast.makeText(
-                mView.context,
-                answer, Toast.LENGTH_LONG
-            ).show()
         }
     }
 
@@ -110,27 +113,24 @@ class WorkPerformedUpdateFragment :
         return ANSWER_OK
     }
 
-    private fun setView() {
-        if (mainActivity.mainViewModel.getWorkPerformed() != null) {
-            oldWorkPerformed = mainActivity.mainViewModel.getWorkPerformed()!!
-        }
-        binding.apply {
-            val display =
-                "Update: ${oldWorkPerformed.wpDescription}"
-            tvTitle.text = display
-            etWorkPerformed.setText(oldWorkPerformed.wpDescription)
+    private fun updateWorkPerformedIfValid() {
+        val answer = validateWorkPerformed()
+        if (answer == ANSWER_OK) {
+            updateWorkPerformed()
+        } else {
+            Toast.makeText(
+                mView.context,
+                answer, Toast.LENGTH_LONG
+            ).show()
         }
     }
 
-    private fun populateWorkPerformedListForValidation() {
-        mainActivity.workOrderViewModel.getWorkPerformedAll().observe(
-            viewLifecycleOwner
-        ) { list ->
-            workPerformedList.clear()
-            for (workPerformed in list.listIterator()) {
-                workPerformedList.add(workPerformed)
-            }
-        }
+    private fun gotoCallingFragment() {
+        mainActivity.mainViewModel.setWorkPerformed(null)
+        mView.findNavController().navigate(
+            WorkPerformedUpdateFragmentDirections
+                .actionWorkPerformedUpdateFragmentToWorkOrderHistoryUpdateFragment()
+        )
     }
 
     override fun onDestroy() {

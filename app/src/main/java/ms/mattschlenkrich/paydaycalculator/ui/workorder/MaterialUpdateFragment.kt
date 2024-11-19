@@ -43,9 +43,33 @@ class MaterialUpdateFragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setView()
-        populateMaterialListForValidation()
+        setInitialValues()
         setClickActions()
+    }
+
+    private fun setInitialValues() {
+        if (mainActivity.mainViewModel.getMaterial() != null) {
+            oldMaterial = mainActivity.mainViewModel.getMaterial()!!
+            binding.apply {
+                val display =
+                    "Update: ${oldMaterial.mName}"
+                tvTitle.text = display
+                etMaterial.setText(oldMaterial.mName)
+                etPrice.setText(nf.displayDollars(oldMaterial.mPrice))
+                etCost.setText(nf.displayDollars(oldMaterial.mCost))
+            }
+        }
+        populateMaterialListForValidation()
+    }
+
+    private fun populateMaterialListForValidation() {
+        mainActivity.workOrderViewModel.getMaterialsList()
+            .observe(viewLifecycleOwner) { list ->
+                materialList.clear()
+                for (material in list.listIterator()) {
+                    materialList.add(material)
+                }
+            }
     }
 
     private fun setClickActions() {
@@ -57,14 +81,6 @@ class MaterialUpdateFragment
                 gotoCallingFragment()
             }
         }
-    }
-
-    private fun gotoCallingFragment() {
-        mainActivity.mainViewModel.setMaterial(null)
-        mView.findNavController().navigate(
-            MaterialUpdateFragmentDirections
-                .actionMaterialUpdateFragmentToWorkOrderHistoryUpdateFragment()
-        )
     }
 
     private fun updateMaterialIfValid() {
@@ -126,28 +142,12 @@ class MaterialUpdateFragment
         return ANSWER_OK
     }
 
-    private fun populateMaterialListForValidation() {
-        mainActivity.workOrderViewModel.getMaterialsList()
-            .observe(viewLifecycleOwner) { list ->
-                materialList.clear()
-                for (material in list.listIterator()) {
-                    materialList.add(material)
-                }
-            }
-    }
-
-    private fun setView() {
-        if (mainActivity.mainViewModel.getMaterial() != null) {
-            oldMaterial = mainActivity.mainViewModel.getMaterial()!!
-            binding.apply {
-                val display =
-                    "Update: ${oldMaterial.mName}"
-                tvTitle.text = display
-                etMaterial.setText(oldMaterial.mName)
-                etPrice.setText(nf.displayDollars(oldMaterial.mPrice))
-                etCost.setText(nf.displayDollars(oldMaterial.mCost))
-            }
-        }
+    private fun gotoCallingFragment() {
+        mainActivity.mainViewModel.setMaterial(null)
+        mView.findNavController().navigate(
+            MaterialUpdateFragmentDirections
+                .actionMaterialUpdateFragmentToWorkOrderHistoryUpdateFragment()
+        )
     }
 
     override fun onDestroy() {

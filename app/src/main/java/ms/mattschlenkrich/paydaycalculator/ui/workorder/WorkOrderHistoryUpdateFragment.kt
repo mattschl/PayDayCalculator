@@ -428,7 +428,9 @@ class WorkOrderHistoryUpdateFragment :
         setTempWorkOrderHistoryInfo()
     }
 
-    private fun determineWorkPerformedSequence(list: List<WorkOrderHistoryWorkPerformedCombined>) {
+    private fun determineWorkPerformedSequence(
+        list: List<WorkOrderHistoryWorkPerformedCombined>
+    ) {
         if (list.isNotEmpty()) {
             workPerformedSequence =
                 list.last().workOrderHistoryWorkPerformed.wowpSequence

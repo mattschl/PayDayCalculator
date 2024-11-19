@@ -41,9 +41,33 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        populateJobSpecListForValidation()
-        setView()
+        setValues()
         setClickActions()
+    }
+
+    private fun setValues() {
+        populateJobSpecListForValidation()
+        if (mainActivity.mainViewModel.getJobSpec() != null) {
+            oldJobSpec =
+                mainActivity.mainViewModel.getJobSpec()!!
+            binding.apply {
+                val display =
+                    "Update: ${oldJobSpec.jsName}"
+                tvTitle.text = display
+                etJobSpec.setText(oldJobSpec.jsName)
+            }
+        }
+    }
+
+    private fun populateJobSpecListForValidation() {
+        mainActivity.workOrderViewModel.getJobSpecsAll().observe(
+            viewLifecycleOwner
+        ) { list ->
+            jobSpecList.clear()
+            list.listIterator().forEach {
+                jobSpecList.add(it)
+            }
+        }
     }
 
     private fun setClickActions() {
@@ -106,30 +130,6 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
             JobSpecUpdateFragmentDirections
                 .actionJobSpecUpdateFragmentToWorkOrderUpdateFragment()
         )
-    }
-
-    private fun populateJobSpecListForValidation() {
-        mainActivity.workOrderViewModel.getJobSpecsAll().observe(
-            viewLifecycleOwner
-        ) { list ->
-            jobSpecList.clear()
-            list.listIterator().forEach {
-                jobSpecList.add(it)
-            }
-        }
-    }
-
-    private fun setView() {
-        if (mainActivity.mainViewModel.getJobSpec() != null) {
-            oldJobSpec =
-                mainActivity.mainViewModel.getJobSpec()!!
-            binding.apply {
-                val display =
-                    "Update: ${oldJobSpec.jsName}"
-                tvTitle.text = display
-                etJobSpec.setText(oldJobSpec.jsName)
-            }
-        }
     }
 
     override fun onDestroy() {
