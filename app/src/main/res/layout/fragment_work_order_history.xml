@@ -378,6 +378,13 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
+            <View
+                android:id="@+id/vSpacer"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen_50dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/crdMaterials" />
+
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabDone"
                 android:layout_width="wrap_content"
@@ -387,8 +394,8 @@
                 android:backgroundTint="@color/dark_green"
                 android:contentDescription="@string/done"
                 android:src="@drawable/ic_done"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/crdMaterials" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

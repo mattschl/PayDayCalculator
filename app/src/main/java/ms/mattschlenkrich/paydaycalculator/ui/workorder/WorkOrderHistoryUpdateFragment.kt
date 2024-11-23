@@ -89,6 +89,8 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun populateInitialValues() {
+        populateWorkPerformedListForAutoComplete()
+        populateMaterialListForAutoComplete()
         unHideMaterialAndWorkPerformed()
         populateWorkDate()
         if (workDateObject != null) {
@@ -101,8 +103,6 @@ class WorkOrderHistoryUpdateFragment :
             populateFromTempValues()
         }
         populateWorkOrderListForAutoComplete()
-        populateWorkPerformedListForAutoComplete()
-        populateMaterialListForAutoComplete()
 //        setCurWorkOrder()
     }
 
@@ -264,9 +264,15 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun populateWorkOrderListForAutoComplete() {
-        CoroutineScope(Dispatchers.Main).launch {
-            getWorkOrderListForAutoComplete()
-            delay(WAIT_250)
+        mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
+            workDateObject!!.wdEmployerId
+        ).observe(viewLifecycleOwner) { list ->
+            workOrderList.clear()
+            workOrderListForAutocomplete.clear()
+            list.listIterator().forEach {
+                workOrderList.add(it)
+                workOrderListForAutocomplete.add(it.woNumber)
+            }
             binding.apply {
                 val woAdapter = ArrayAdapter(
                     mView.context, R.layout.spinner_item_normal,
@@ -506,19 +512,6 @@ class WorkOrderHistoryUpdateFragment :
         if (list.isNotEmpty()) {
             materialSequence =
                 list.last().workOrderHistoryMaterial.wohmSequence
-        }
-    }
-
-    private fun getWorkOrderListForAutoComplete() {
-        mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
-            workDateObject!!.wdEmployerId
-        ).observe(viewLifecycleOwner) { list ->
-            workOrderList.clear()
-            workOrderListForAutocomplete.clear()
-            list.listIterator().forEach {
-                workOrderList.add(it)
-                workOrderListForAutocomplete.add(it.woNumber)
-            }
         }
     }
 

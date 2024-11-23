@@ -136,12 +136,23 @@ class WorkOrderHistoryAddFragment :
     }
 
     private fun populateWorkOrderListInAutoComplete() {
-        getWorkOrderLists()
-        binding.apply {
-            val woAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_normal, workOrderListForAutocomplete
-            )
-            acWorkOrder.setAdapter(woAdapter)
+        if (workDateObject != null) {
+            mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
+                workDateObject!!.wdEmployerId
+            ).observe(viewLifecycleOwner) { list ->
+                workOrderList.clear()
+                workOrderListForAutocomplete.clear()
+                list.listIterator().forEach {
+                    workOrderList.add(it)
+                    workOrderListForAutocomplete.add(it.woNumber)
+                }
+                binding.apply {
+                    val woAdapter = ArrayAdapter(
+                        mView.context, R.layout.spinner_item_normal, workOrderListForAutocomplete
+                    )
+                    acWorkOrder.setAdapter(woAdapter)
+                }
+            }
         }
     }
 
@@ -202,7 +213,6 @@ class WorkOrderHistoryAddFragment :
     }
 
     private fun chooseToGotoUpdate() {
-
         AlertDialog.Builder(mView.context)
             .setTitle(
                 "Choose next steps after saving"
@@ -273,21 +283,6 @@ class WorkOrderHistoryAddFragment :
                         "" else acMaterials.text.toString().trim()
                 )
             )
-        }
-    }
-
-    private fun getWorkOrderLists() {
-        if (workDateObject != null) {
-            mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
-                workDateObject!!.wdEmployerId
-            ).observe(viewLifecycleOwner) { list ->
-                workOrderList.clear()
-                workOrderListForAutocomplete.clear()
-                list.listIterator().forEach {
-                    workOrderList.add(it)
-                    workOrderListForAutocomplete.add(it.woNumber)
-                }
-            }
         }
     }
 
