@@ -103,7 +103,6 @@ class WorkOrderHistoryUpdateFragment :
             populateFromTempValues()
         }
         populateWorkOrderListForAutoComplete()
-//        setCurWorkOrder()
     }
 
     private fun unHideMaterialAndWorkPerformed() {
@@ -593,7 +592,7 @@ class WorkOrderHistoryUpdateFragment :
             addWorkPerformedToHistory(curWorkPerformed!!)
         } else {
             CoroutineScope(Dispatchers.Main).launch {
-                val workPerformed = insertNewWorkPerformed()
+                val workPerformed = insertNewWorkPerformedIntoDatabase()
                 delay(WAIT_250)
                 addWorkPerformedToHistory(workPerformed)
             }
@@ -616,7 +615,7 @@ class WorkOrderHistoryUpdateFragment :
         binding.acWorkPerformed.text.clear()
     }
 
-    private fun insertNewWorkPerformed(): WorkPerformed {
+    private fun insertNewWorkPerformedIntoDatabase(): WorkPerformed {
         val workPerformed =
             WorkPerformed(
                 nf.generateRandomIdAsLong(),

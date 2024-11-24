@@ -49,7 +49,7 @@
             android:layout_height="@dimen/minimum_touch_height"
             android:hint="@string/enter_description"
             android:importantForAutofill="no"
-            android:inputType="text"
+            android:inputType="textCapSentences"
             android:minHeight="@dimen/minimum_touch_height"
             android:textAlignment="center"
             android:textColor="@color/black"

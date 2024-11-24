@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/enter_extra_name"
             android:importantForAutofill="no"
-            android:inputType="text|textCapWords"
+            android:inputType="textCapWords"
             android:maxWidth="@dimen/text_box_wide"
             android:minHeight="@dimen/minimum_touch_height"
             app:layout_constraintEnd_toEndOf="parent"
