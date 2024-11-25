@@ -47,4 +47,7 @@ class EmployerViewModel(
 
     fun getEmployerPayRates(employerId: Long) =
         employerRepository.getEmployerPayRates(employerId)
+
+    fun getCurrentEmployerRate(employerId: Long, cutoffDate: String) =
+        employerRepository.getCurrentEmployerRate(employerId, cutoffDate)
 }

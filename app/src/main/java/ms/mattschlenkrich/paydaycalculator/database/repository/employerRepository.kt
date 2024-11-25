@@ -33,4 +33,7 @@ class EmployerRepository(private val db: PayDatabase) {
 
     fun getEmployerPayRates(employerId: Long) =
         db.getEmployerDao().getEmployerPayRates(employerId)
+
+    fun getCurrentEmployerRate(employerId: Long, cutoffDate: String) =
+        db.getEmployerDao().getCurrentEmployerRate(employerId, cutoffDate)
 }

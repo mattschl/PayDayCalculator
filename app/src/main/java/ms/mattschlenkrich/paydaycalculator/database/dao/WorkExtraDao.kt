@@ -46,6 +46,7 @@ interface WorkExtraDao {
         "SELECT * FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
                 "WHERE weEmployerId = :employerId " +
                 "AND weExtraTypeId = :extraTypeId " +
+                "AND weIsDeleted = 0 " +
                 "ORDER BY weEffectiveDate DESC"
     )
     fun getWorkExtraDefinitions(employerId: Long, extraTypeId: Long):
@@ -165,12 +166,11 @@ interface WorkExtraDao {
                 "WHERE weEmployerId = :employerId " +
                 "AND weIsDeleted = 0 " +
                 "AND weEffectiveDate <= :cutoffDate " +
-                "ORDER BY weEffectiveDate DESC " +
                 ") ON workExtraTypeId = weExtraTypeId " +
                 "WHERE wetEmployerId = :employerId " +
                 "AND wetAppliesTo = :appliesTo " +
                 "AND wetIsDeleted = 0 " +
-                "ORDER BY wetName"
+                "ORDER BY wetName, weEffectiveDate DESC"
     )
     fun getExtraTypesAndDef(employerId: Long, cutoffDate: String, appliesTo: Int):
             LiveData<List<ExtraDefinitionAndType>>

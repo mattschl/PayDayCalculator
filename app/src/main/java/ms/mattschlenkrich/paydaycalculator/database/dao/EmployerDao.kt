@@ -28,6 +28,7 @@ interface EmployerDao {
 
     @Query(
         "SELECT * FROM $TABLE_EMPLOYERS " +
+                "WHERE employerIsDeleted = 0 " +
                 "ORDER BY $EMPLOYER_NAME COLLATE NOCASE"
     )
     fun getEmployers(): LiveData<List<Employers>>
@@ -57,4 +58,15 @@ interface EmployerDao {
                 "ORDER BY eprEffectiveDate DESC"
     )
     fun getEmployerPayRates(employerId: Long): LiveData<List<EmployerPayRates>>
+
+    @Query(
+        "SELECT * FROM employerPayRates " +
+                "WHERE eprEmployerId = :employerId " +
+                "AND eprEffectiveDate <= :cutoffDate " +
+                "AND eprIsDeleted = 0 " +
+                "ORDER BY eprEffectiveDate DESC " +
+                "LIMIT 1"
+    )
+    fun getCurrentEmployerRate(employerId: Long, cutoffDate: String):
+            LiveData<EmployerPayRates>
 }
