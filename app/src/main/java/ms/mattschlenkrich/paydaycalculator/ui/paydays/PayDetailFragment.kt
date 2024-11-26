@@ -81,9 +81,6 @@ class PayDetailFragment :
         super.onViewCreated(view, savedInstanceState)
         populateEmployers()
         setClickActions()
-        setMenuAction()
-        onSelectEmployer()
-        onSelectCutOffDate()
         populateFromHistory()
     }
 
@@ -115,6 +112,9 @@ class PayDetailFragment :
                 chooseToGotoExtraAdd(false)
             }
         }
+        setMenuAction()
+        onSelectEmployer()
+        onSelectCutOffDate()
     }
 
     private fun chooseToGotoExtraAdd(isCredit: Boolean) {
@@ -133,18 +133,25 @@ class PayDetailFragment :
             .show()
     }
 
-    private fun gotoExtraAddFragment(isCredit: Boolean) {
-        mainActivity.payDayViewModel.getPayPeriod(
-            curCutOff, curEmployer!!.employerId
-        ).observe(viewLifecycleOwner) { payPeriod ->
-            mainActivity.mainViewModel.setPayPeriod(payPeriod)
-        }
-        mainActivity.mainViewModel.setEmployer(curEmployer!!)
-        mainActivity.mainViewModel.setIsCredit(isCredit)
-        mView.findNavController().navigate(
-            PayDetailFragmentDirections
-                .actionPayDetailsFragmentToPayPeriodExtraAddFragment()
-        )
+    private fun setMenuAction() {
+        mainActivity.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_delete, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.menu_delete -> {
+                        chooseDeletingCutoffDate()
+                        true
+                    }
+
+                    else -> {
+                        false
+                    }
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
     private fun onSelectEmployer() {
@@ -181,57 +188,6 @@ class PayDetailFragment :
                     }
                 }
         }
-    }
-
-    private fun populateCutOffDates(employer: Employers?) {
-        if (employer != null) {
-            binding.apply {
-                val cutOffAdapter = ArrayAdapter<Any>(
-                    mView.context,
-                    R.layout.spinner_item_bold
-                )
-                mainActivity.payDayViewModel.getCutOffDates(
-                    employer.employerId
-                ).observe(
-                    viewLifecycleOwner
-                ) { dates ->
-                    cutOffs.clear()
-                    cutOffAdapter.clear()
-                    dates.listIterator().forEach {
-                        cutOffAdapter.add(it.ppCutoffDate)
-                    }
-                    nextStepsIfDateListIsEmpty(dates)
-                }
-                spCutOff.adapter = cutOffAdapter
-            }
-        }
-    }
-
-    private fun nextStepsIfDateListIsEmpty(dates: List<PayPeriods>) {
-        if (dates.isEmpty()
-        ) {
-            AlertDialog.Builder(mView.context)
-                .setTitle("No pay days to view")
-                .setMessage(
-                    "Since there are no pay periods set, you will be sent " +
-                            "to the time sheet to create a new one."
-                )
-                .setPositiveButton("Ok") { _, _ ->
-                    mView.findNavController().navigate(
-                        PayDetailFragmentDirections
-                            .actionPayDetailFragmentToTimeSheetFragment()
-
-                    )
-                }.show()
-        }
-    }
-
-    private fun gotoEmployerAdd() {
-        mainActivity.mainViewModel.setCallingFragment(TAG)
-        mView.findNavController().navigate(
-            PayDetailFragmentDirections
-                .actionPayDetailsFragmentToEmployerAddFragment()
-        )
     }
 
     private fun onSelectCutOffDate() {
@@ -351,25 +307,47 @@ class PayDetailFragment :
         }
     }
 
-    private fun setMenuAction() {
-        mainActivity.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.menu_delete, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_delete -> {
-                        chooseDeletingCutoffDate()
-                        true
+    private fun populateCutOffDates(employer: Employers?) {
+        if (employer != null) {
+            binding.apply {
+                val cutOffAdapter = ArrayAdapter<Any>(
+                    mView.context,
+                    R.layout.spinner_item_bold
+                )
+                mainActivity.payDayViewModel.getCutOffDates(
+                    employer.employerId
+                ).observe(
+                    viewLifecycleOwner
+                ) { dates ->
+                    cutOffs.clear()
+                    cutOffAdapter.clear()
+                    dates.listIterator().forEach {
+                        cutOffAdapter.add(it.ppCutoffDate)
                     }
-
-                    else -> {
-                        false
-                    }
+                    nextStepsIfDateListIsEmpty(dates)
                 }
+                spCutOff.adapter = cutOffAdapter
             }
-        }, viewLifecycleOwner, Lifecycle.State.CREATED)
+        }
+    }
+
+    private fun nextStepsIfDateListIsEmpty(dates: List<PayPeriods>) {
+        if (dates.isEmpty()
+        ) {
+            AlertDialog.Builder(mView.context)
+                .setTitle("No pay days to view")
+                .setMessage(
+                    "Since there are no pay periods set, you will be sent " +
+                            "to the time sheet to create a new one."
+                )
+                .setPositiveButton("Ok") { _, _ ->
+                    mView.findNavController().navigate(
+                        PayDetailFragmentDirections
+                            .actionPayDetailFragmentToTimeSheetFragment()
+
+                    )
+                }.show()
+        }
     }
 
     private fun chooseDeletingCutoffDate() {
@@ -727,30 +705,52 @@ class PayDetailFragment :
                         }
                     }
                 }
-                delay(WAIT_500)
-                if (mainActivity.mainViewModel.getCutOffDate() != null) {
-                    curCutOff = mainActivity.mainViewModel.getCutOffDate()!!
-                    for (i in 0 until spCutOff.adapter.count) {
-                        if (spCutOff.getItemAtPosition(i) == curCutOff) {
-                            spCutOff.setSelection(i)
-                            if (!valuesFilled) {
-                                if (curCutOff != spCutOff.selectedItem.toString()) {
-                                    curCutOff = spCutOff.selectedItem.toString()
-                                    if (valuesFilled) mainActivity.mainViewModel.setCutOffDate(
-                                        curCutOff
-                                    )
-                                    getCurrentPayPeriodObject()
-                                    populatePayDayDate()
-                                    populatePayDetails()
-                                }
-                            }
-                            break
-                        }
-                    }
-                }
+//                delay(WAIT_500)
+//                if (mainActivity.mainViewModel.getCutOffDate() != null) {
+//                    curCutOff = mainActivity.mainViewModel.getCutOffDate()!!
+//                    for (i in 0 until spCutOff.adapter.count) {
+//                        if (spCutOff.getItemAtPosition(i) == curCutOff) {
+//                            spCutOff.setSelection(i)
+//                            if (!valuesFilled) {
+//                                if (curCutOff != spCutOff.selectedItem.toString()) {
+//                                    curCutOff = spCutOff.selectedItem.toString()
+//                                    if (valuesFilled) mainActivity.mainViewModel.setCutOffDate(
+//                                        curCutOff
+//                                    )
+//                                    getCurrentPayPeriodObject()
+//                                    populatePayDayDate()
+//                                    populatePayDetails()
+//                                }
+//                            }
+//                            break
+//                        }
+//                    }
+//                }
                 valuesFilled = true
             }
         }
+    }
+
+    private fun gotoEmployerAdd() {
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mView.findNavController().navigate(
+            PayDetailFragmentDirections
+                .actionPayDetailsFragmentToEmployerAddFragment()
+        )
+    }
+
+    private fun gotoExtraAddFragment(isCredit: Boolean) {
+        mainActivity.payDayViewModel.getPayPeriod(
+            curCutOff, curEmployer!!.employerId
+        ).observe(viewLifecycleOwner) { payPeriod ->
+            mainActivity.mainViewModel.setPayPeriod(payPeriod)
+        }
+        mainActivity.mainViewModel.setEmployer(curEmployer!!)
+        mainActivity.mainViewModel.setIsCredit(isCredit)
+        mView.findNavController().navigate(
+            PayDetailFragmentDirections
+                .actionPayDetailsFragmentToPayPeriodExtraAddFragment()
+        )
     }
 
     override fun onStop() {
