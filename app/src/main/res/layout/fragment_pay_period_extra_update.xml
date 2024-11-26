@@ -38,7 +38,7 @@
             android:minHeight="@dimen/minimum_touch_height"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lblExtra"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/lblPayInfo" />
 
         <TextView
             android:id="@+id/lblAppliesTo"
