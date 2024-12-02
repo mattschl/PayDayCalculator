@@ -44,6 +44,19 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
+                    android:id="@+id/tvEmployer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/employer"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_large"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintBaseline_toBaselineOf="@id/lblEmployer"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/lblEmployer" />
+
+                <TextView
                     android:id="@+id/lblWorkOrder"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

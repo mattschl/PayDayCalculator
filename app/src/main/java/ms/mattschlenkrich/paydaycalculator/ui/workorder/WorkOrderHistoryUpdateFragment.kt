@@ -2,6 +2,8 @@ package ms.mattschlenkrich.paydaycalculator.ui.workorder
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,8 +19,9 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
-import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ODER_HISTORY_UPDATE
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
@@ -39,7 +42,7 @@ import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.WorKOrderHistoryWorkPerformedAdapter
 import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.WorkOrderHistoryMaterialAdapter
 
-private const val TAG = FRAG_WORK_ODER_HISTORY_UPDATE
+private const val TAG = FRAG_WORK_ORDER_HISTORY_UPDATE
 
 class WorkOrderHistoryUpdateFragment :
     Fragment(R.layout.fragment_work_order_history) {
@@ -89,20 +92,25 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun populateInitialValues() {
-        populateWorkPerformedListForAutoComplete()
-        populateMaterialListForAutoComplete()
-        unHideMaterialAndWorkPerformed()
-        populateWorkDate()
-        if (workDateObject != null) {
-            populateCurrentEmployer()
+        CoroutineScope(Dispatchers.Main).launch {
+            populateWorkPerformedListForAutoComplete()
+            populateMaterialListForAutoComplete()
+            unHideMaterialAndWorkPerformed()
+            populateWorkDate()
+            if (workDateObject != null) {
+                populateCurrentEmployer()
+            }
+            delay(WAIT_100)
+            populateWorkOrderListForAutoComplete()
+            delay(WAIT_250)
+            if (commonFunctions.getWorkOrderHistory() != null) {
+                populateFromHistory()
+            }
+            delay(WAIT_100)
+            if (mainActivity.mainViewModel.getTempWorkOrderHistoryInfo() != null) {
+                populateFromTempValues()
+            }
         }
-        if (commonFunctions.getWorkOrderHistory() != null) {
-            populateFromHistory()
-        }
-        if (mainActivity.mainViewModel.getTempWorkOrderHistoryInfo() != null) {
-            populateFromTempValues()
-        }
-        populateWorkOrderListForAutoComplete()
     }
 
     private fun unHideMaterialAndWorkPerformed() {
@@ -209,7 +217,6 @@ class WorkOrderHistoryUpdateFragment :
                     }
                 }
             }
-        mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
     }
 
     private fun populateFromTempValues() {
@@ -352,23 +359,58 @@ class WorkOrderHistoryUpdateFragment :
             acWorkOrder.setOnItemClickListener { _, _, _, _ ->
                 setCurWorkOrder()
             }
-            acWorkOrder.setOnKeyListener { _, _, _ ->
-                setCurWorkOrder()
-                false
+            acWorkOrder.setOnLongClickListener {
+                gotoWorkOrderLookup()
+                true
             }
             acWorkPerformed.setOnItemClickListener { _, _, _, _ ->
                 setCurWorkPerformed()
             }
             btnAddWorkPerformed.setOnClickListener {
-                saveWorkPerformedIfValidAndAddToWorkOrder()
+                saveWorkPerformedIfValidAndAddToWorkOrder(true)
             }
             acMaterials.setOnItemClickListener { _, _, _, _ ->
                 setCurMaterial()
             }
             btnAddMaterial.setOnClickListener {
-                saveMaterialIfValidAndAddToWorkOrder()
+                saveMaterialIfValidAndAddToWorkOrder(true)
             }
+            acWorkOrder.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+//                    null
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                    null
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    setCurWorkOrder()
+                }
+
+            })
         }
+    }
+
+    private fun gotoWorkOrderLookup() {
+        setTempWorkOrderHistoryInfo()
+        mainActivity.mainViewModel.setCallingFragment(
+            mainActivity.mainViewModel.getCallingFragment() +
+                    ", $TAG"
+        )
+        gotoWorkOrderLookupFragment()
+    }
+
+    private fun gotoWorkOrderLookupFragment() {
+        mView.findNavController().navigate(
+            WorkOrderHistoryUpdateFragmentDirections
+                .actionWorkOrderHistoryUpdateFragmentToWorkOrderLookupFragment()
+        )
     }
 
     private fun validateWorkOrderNumberAndPrepareToUpdate() {
@@ -395,6 +437,8 @@ class WorkOrderHistoryUpdateFragment :
     private fun updateHistoryIfValid() {
         val answer = validateHistory()
         if (answer == ANSWER_OK) {
+            saveWorkPerformedIfValidAndAddToWorkOrder(false)
+            saveMaterialIfValidAndAddToWorkOrder(false)
             updateHistory()
         } else {
             Toast.makeText(
@@ -515,27 +559,32 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun setCurMaterial(): Boolean {
-        for (material in materialListForAutoComplete) {
-            if (binding.acMaterials.text.toString() ==
-                material.mName
-            ) {
-                curMaterial = material
-                return true
+        binding.apply {
+            for (material in materialListForAutoComplete) {
+                if (acMaterials.text.toString() ==
+                    material.mName && !acMaterials.text.isNullOrBlank()
+                ) {
+                    curMaterial = material
+                    return true
+                }
             }
         }
         return false
     }
 
-    private fun saveMaterialIfValidAndAddToWorkOrder() {
-        if (binding.acMaterials.text.isNullOrBlank()) {
-            Toast.makeText(
-                mView.context,
-                "Please add a valid material to add it.",
-                Toast.LENGTH_LONG
-            ).show()
+    private fun saveMaterialIfValidAndAddToWorkOrder(displayError: Boolean) {
+        if (binding.acMaterials.text.isNullOrBlank()
+        ) {
+            if (displayError) {
+                Toast.makeText(
+                    mView.context,
+                    "Please enter a valid material to add it.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         } else if (setCurMaterial()) {
             addMaterialToHistory(curMaterial!!)
-        } else {
+        } else if (!binding.acMaterials.text.isNullOrBlank()) {
             CoroutineScope(Dispatchers.Main).launch {
                 val material = insertNewMaterialIntoDatabase()
                 delay(WAIT_250)
@@ -581,16 +630,19 @@ class WorkOrderHistoryUpdateFragment :
         return material
     }
 
-    private fun saveWorkPerformedIfValidAndAddToWorkOrder() {
-        if (binding.acWorkPerformed.text.isNullOrBlank()) {
-            Toast.makeText(
-                mView.context,
-                "Please add a valid description of work performed to add it.",
-                Toast.LENGTH_LONG
-            ).show()
+    private fun saveWorkPerformedIfValidAndAddToWorkOrder(displayError: Boolean) {
+        if (binding.acWorkPerformed.text.isNullOrBlank()
+        ) {
+            if (displayError) {
+                Toast.makeText(
+                    mView.context,
+                    "Please enter a valid description of work performed to add it.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         } else if (setCurWorkPerformed()) {
             addWorkPerformedToHistory(curWorkPerformed!!)
-        } else {
+        } else if (!binding.acWorkPerformed.text.isNullOrBlank()) {
             CoroutineScope(Dispatchers.Main).launch {
                 val workPerformed = insertNewWorkPerformedIntoDatabase()
                 delay(WAIT_250)
@@ -630,12 +682,15 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun setCurWorkPerformed(): Boolean {
-        for (workPerformed in workPerformedListForAutoComplete) {
-            if (binding.acWorkPerformed.text.toString() ==
-                workPerformed.wpDescription
-            ) {
-                curWorkPerformed = workPerformed
-                return true
+        binding.apply {
+            for (workPerformed in workPerformedListForAutoComplete) {
+                if (acWorkPerformed.text.toString() ==
+                    workPerformed.wpDescription &&
+                    !acWorkPerformed.text.isNullOrBlank()
+                ) {
+                    curWorkPerformed = workPerformed
+                    return true
+                }
             }
         }
         return false

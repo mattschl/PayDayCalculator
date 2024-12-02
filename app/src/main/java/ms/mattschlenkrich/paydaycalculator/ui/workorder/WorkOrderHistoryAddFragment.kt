@@ -2,6 +2,8 @@ package ms.mattschlenkrich.paydaycalculator.ui.workorder
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,11 +11,17 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
+import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.TempWorkOrderHistoryInfo
@@ -66,13 +74,17 @@ class WorkOrderHistoryAddFragment :
     }
 
     private fun populateValues() {
-        hideMaterialAndWorkPerformed()
-        populateWorkDate()
-        if (workDateObject != null) {
-            populateCurrentEmployer()
+        CoroutineScope(Dispatchers.Main).launch {
+            hideMaterialAndWorkPerformed()
+            populateWorkDate()
+            if (workDateObject != null) {
+                populateCurrentEmployer()
+            }
+            delay(WAIT_100)
+            populateWorkOrderLists()
+            delay(WAIT_250)
+            populateTempWorkOrderInfo()
         }
-        populateTempWorkOrderInfo()
-        populateWorkOrderListInAutoComplete()
     }
 
     private fun hideMaterialAndWorkPerformed() {
@@ -106,11 +118,11 @@ class WorkOrderHistoryAddFragment :
                     acWorkOrder.setText(
                         mainActivity.mainViewModel.getWorkOrderNumber()!!
                     )
-                } else {
-                    acWorkOrder.setText(
-                        tempWorkOrderHistory.woHistoryWorkOrderNumber
-                    )
-                }
+                } // else {
+//                    acWorkOrder.setText(
+//                        tempWorkOrderHistory.woHistoryWorkOrderNumber
+//                    )
+//                }
                 etRegHours.setText(
                     nf.getNumberFromDouble(
                         tempWorkOrderHistory.woHistoryRegHours
@@ -135,7 +147,7 @@ class WorkOrderHistoryAddFragment :
         }
     }
 
-    private fun populateWorkOrderListInAutoComplete() {
+    private fun populateWorkOrderLists() {
         if (workDateObject != null) {
             mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
                 workDateObject!!.wdEmployerId
@@ -183,11 +195,46 @@ class WorkOrderHistoryAddFragment :
             acWorkOrder.setOnItemClickListener { _, _, _, _ ->
                 setCurWorkOrder()
             }
-            acWorkOrder.setOnKeyListener { _, _, _ ->
-                setCurWorkOrder()
-                false
+            acWorkOrder.setOnLongClickListener {
+                gotoWorkOrderLookup()
+                true
             }
+            acWorkOrder.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+//                    null
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                    setCurWorkOrder()
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    setCurWorkOrder()
+                }
+
+            })
         }
+    }
+
+    private fun gotoWorkOrderLookup() {
+        setTempWorkOrderHistory()
+        mainActivity.mainViewModel.setCallingFragment(
+            mainActivity.mainViewModel.getCallingFragment() +
+                    ", $TAG"
+        )
+        gotoWorkOrderLookupFragment()
+    }
+
+    private fun gotoWorkOrderLookupFragment() {
+        mView.findNavController().navigate(
+            WorkOrderHistoryAddFragmentDirections
+                .actionWorkOrderHistoryAddFragmentToWorkOrderLookupFragment()
+        )
     }
 
     private fun validateWorkOrderNumberAndSaveHistoryIfValid() {
@@ -312,7 +359,6 @@ class WorkOrderHistoryAddFragment :
         val answer = validateWorkOrderHistory()
         if (answer == ANSWER_OK) {
             curHistory = getCurHistory()
-
             saveHistory(gotoUpdate)
         } else {
             Toast.makeText(

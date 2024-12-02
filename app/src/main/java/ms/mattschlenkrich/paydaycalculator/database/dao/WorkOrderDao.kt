@@ -94,8 +94,9 @@ interface WorkOrderDao {
     fun searchWorkOrders(employerId: Long, query: String):
             LiveData<List<WorkOrder>>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkOrderHistory(history: WorkOrderHistory)
+
 
     @Query(
         "Update workOrderHistory " +

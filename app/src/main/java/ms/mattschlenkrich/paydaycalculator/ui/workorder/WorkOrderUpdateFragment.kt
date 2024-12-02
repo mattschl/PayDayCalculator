@@ -18,9 +18,9 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
-import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ODER_HISTORY_UPDATE
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDERS
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
@@ -453,7 +453,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
                 gotoWorkOrderHistoryAddFragment()
             }
 
-            FRAG_WORK_ODER_HISTORY_UPDATE -> {
+            FRAG_WORK_ORDER_HISTORY_UPDATE -> {
                 gotoWorkOrderHistoryUpdateFragment()
             }
 

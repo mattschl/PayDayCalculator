@@ -1,6 +1,8 @@
 package ms.mattschlenkrich.paydaycalculator.ui.workorder
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,7 +51,6 @@ class WorkOrderViewFragment :
         super.onViewCreated(view, savedInstanceState)
         mainActivity.title = getString(R.string.work_orders)
         populateEmployers()
-        onSelectEmployer()
         setClickActions()
     }
 
@@ -133,14 +134,29 @@ class WorkOrderViewFragment :
     }
 
     private fun setClickActions() {
+        onSelectEmployer()
         binding.apply {
             fabNew.setOnClickListener {
                 addNewWorkOrder()
             }
-            etWorkOrder.setOnKeyListener { _, _, _ ->
-                searchWorkOrders(etWorkOrder.text.toString())
-                false
-            }
+            etWorkOrder.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+//                    null
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                    null
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    searchWorkOrders(etWorkOrder.text.toString())
+                }
+            })
             btnCancel.setOnClickListener {
                 resetSearch()
             }
