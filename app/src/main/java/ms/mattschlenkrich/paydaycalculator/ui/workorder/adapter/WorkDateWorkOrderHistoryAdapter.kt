@@ -79,16 +79,23 @@ class WorkDateWorkOrderHistoryAdapter(
                 editWorkOrderHistory(history)
             }
             .setNegativeButton("Delete") { _, _ ->
-                deleteWorkOrderHistory(history)
+                confirmDeleteWorkOrderHistory(history)
             }
             .setNeutralButton("Cancel", null)
             .show()
     }
 
-    private fun deleteWorkOrderHistory(history: WorkOrderHistoryWithDates) {
-        mainActivity.workOrderViewModel.deleteWorkOrderHistory(
-            history.history.woHistoryId, df.getCurrentTimeAsString()
-        )
+    private fun confirmDeleteWorkOrderHistory(history: WorkOrderHistoryWithDates) {
+        AlertDialog.Builder(mView.context)
+            .setTitle("Are you sure you want to delete wo ${history.workOrder.woNumber}")
+            .setMessage("This cannot be undone!")
+            .setPositiveButton("DELETE") { _, _ ->
+                mainActivity.workOrderViewModel.deleteWorkOrderHistory(
+                    history.history.woHistoryId, df.getCurrentTimeAsString()
+                )
+            }
+            .setNeutralButton("Cancel", null)
+            .show()
     }
 
     private fun editWorkOrderHistory(history: WorkOrderHistoryWithDates) {

@@ -128,7 +128,7 @@ class WorkDateAdapter(
                     }
 
                     1 -> {
-                        deleteWorkDate(workDate)
+                        confirmDeleteWorkDate(workDate)
                     }
 
                     else -> {
@@ -137,6 +137,17 @@ class WorkDateAdapter(
                 }
             }
             .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun confirmDeleteWorkDate(workDate: WorkDates) {
+        android.app.AlertDialog.Builder(mView.context)
+            .setTitle("Are you sure you want to delete  ${df.getDisplayDate(workDate.wdDate)}")
+            .setMessage("This cannot be undone!")
+            .setPositiveButton("DELETE") { _, _ ->
+                deleteWorkDate(workDate)
+            }
+            .setNeutralButton("Cancel", null)
             .show()
     }
 
