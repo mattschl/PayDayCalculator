@@ -10,6 +10,7 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_MATERIAL_VIEW
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.Material
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentMaterialUpdateBinding
@@ -144,6 +145,23 @@ class MaterialUpdateFragment
 
     private fun gotoCallingFragment() {
         mainActivity.mainViewModel.setMaterial(null)
+        if (mainActivity.mainViewModel.getCallingFragment()!!
+                .contains(FRAG_MATERIAL_VIEW)
+        ) {
+            gotoMaterialUpdateFragment()
+        } else {
+            gotoWorkOrderHistoryUpdateFragment()
+        }
+    }
+
+    private fun gotoMaterialUpdateFragment() {
+        mView.findNavController().navigate(
+            MaterialUpdateFragmentDirections
+                .actionMaterialUpdateFragmentToWorkOrderHistoryUpdateFragment()
+        )
+    }
+
+    private fun gotoWorkOrderHistoryUpdateFragment() {
         mView.findNavController().navigate(
             MaterialUpdateFragmentDirections
                 .actionMaterialUpdateFragmentToWorkOrderHistoryUpdateFragment()

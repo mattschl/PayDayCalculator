@@ -232,4 +232,5 @@
     <string name="no_job_specs_to_view">No Job Specs to view</string>
     <string name="no_info_to_view">No info to view</string>
     <string name="view_job_specs">View Job Specs</string>
+    <string name="view_materials">View Materials</string>
 </resources>

@@ -149,6 +149,9 @@ class WorkOrderRepository(private val db: PayDatabase) {
     fun getMaterialsList() =
         db.getWorkOrderDao().getMaterialsList()
 
+    fun searchMaterials(query: String) =
+        db.getWorkOrderDao().searchMaterials(query)
+
     fun getMaterial(materialId: Long) =
         db.getWorkOrderDao().getMaterial(materialId)
 

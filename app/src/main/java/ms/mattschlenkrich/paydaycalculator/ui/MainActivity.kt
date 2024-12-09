@@ -113,6 +113,7 @@ class MainActivity : AppCompatActivity() {
                 //                menu.add(getString(R.string.update_future_pay_dates))
                 menu.add(getString(R.string.view_work_orders))
                 menu.add(getString(R.string.view_job_specs))
+                menu.add(getString(R.string.view_materials))
                 menu.add(resources.getString(R.string.app_name))
             }
 
@@ -138,6 +139,11 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
 
+                    getString(R.string.view_materials) -> {
+                        gotoMaterialView()
+                        true
+                    }
+
                     else -> {
                         false
                     }
@@ -145,6 +151,12 @@ class MainActivity : AppCompatActivity() {
 
             }
         })
+    }
+
+    private fun gotoMaterialView() {
+        findNavController(R.id.nav_host_fragment_container).navigate(
+            NavGraphDirections.actionGlobalMaterialViewFragment()
+        )
     }
 
     private fun gotoJobSpecs() {

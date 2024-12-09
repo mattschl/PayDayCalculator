@@ -290,6 +290,13 @@ interface WorkOrderDao {
 
     @Query(
         "SELECT * FROM materials " +
+                "WHERE mName LIKE :query " +
+                "ORDER BY mName"
+    )
+    fun searchMaterials(query: String): LiveData<List<Material>>
+
+    @Query(
+        "SELECT * FROM materials " +
                 "WHERE materialId = :materialId"
     )
     fun getMaterial(materialId: Long): LiveData<Material>

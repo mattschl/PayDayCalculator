@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.ui.workorder
+package ms.mattschlenkrich.paydaycalculator.ui.workorder.workorder
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,6 +21,7 @@ import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDERS
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_UPDATE
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_100
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
@@ -33,8 +34,10 @@ import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderJob
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderAddBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.MaterialCountAdapter
-import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.WorkOrderHistoryAdapter
-import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.WorkOrderJobSpecAdapter
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.workorder.adapter.WorkOrderJobSpecAdapter
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.workorderHistory.adpater.WorkOrderHistoryAdapter
+
+private const val TAG = FRAG_WORK_ORDER_UPDATE
 
 class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
 

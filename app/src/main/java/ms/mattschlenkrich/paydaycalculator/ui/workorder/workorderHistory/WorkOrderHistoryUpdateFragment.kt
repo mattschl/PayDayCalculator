@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.ui.workorder
+package ms.mattschlenkrich.paydaycalculator.ui.workorder.workorderHistory
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -39,8 +39,9 @@ import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerforme
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerformedInSequence
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderHistoryBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
-import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.WorKOrderHistoryWorkPerformedAdapter
-import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.WorkOrderHistoryMaterialAdapter
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.WorkOrderCommonFunctions
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.workorderHistory.adpater.WorKOrderHistoryWorkPerformedAdapter
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.workorderHistory.adpater.WorkOrderHistoryMaterialAdapter
 
 private const val TAG = FRAG_WORK_ORDER_HISTORY_UPDATE
 

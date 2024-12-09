@@ -199,6 +199,9 @@ class WorkOrderViewModel(
     fun getMaterialsList() =
         workOrderRepository.getMaterialsList()
 
+    fun searchMaterials(query: String) =
+        workOrderRepository.searchMaterials(query)
+
     fun getMaterial(materialId: Long) =
         workOrderRepository.getMaterial(materialId)
 

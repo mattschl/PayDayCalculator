@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter
+package ms.mattschlenkrich.paydaycalculator.ui.workorder.workorderHistory.adpater
 
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +10,7 @@ import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkOrderHistoryDetailItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
-import ms.mattschlenkrich.paydaycalculator.ui.workorder.WorkOrderUpdateFragmentDirections
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.workorder.WorkOrderUpdateFragmentDirections
 
 class WorkOrderHistoryAdapter(
     val mainActivity: MainActivity,

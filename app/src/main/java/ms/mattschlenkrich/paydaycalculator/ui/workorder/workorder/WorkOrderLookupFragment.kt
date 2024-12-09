@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.ui.workorder
+package ms.mattschlenkrich.paydaycalculator.ui.workorder.workorder
 
 import android.os.Bundle
 import android.text.Editable
@@ -12,7 +12,7 @@ import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderViewBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
-import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.WorkOrderLookupAdapter
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.workorder.adapter.WorkOrderLookupAdapter
 
 //private const val TAG = FRAG_WORK_ORDER_LOOKUP
 
