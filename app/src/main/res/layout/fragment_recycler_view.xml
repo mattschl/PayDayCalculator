@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.tax.TaxTypeFragment">
+<layout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:context=".ui.workorder.jobSpec.JobSpecViewFragment">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvTaxTypes"
+            android:id="@+id/rvRecycler"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dimen_5dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/dimen_5dp"
+            android:layout_marginTop="@dimen/dimen_8dp"
+            android:layout_marginEnd="@dimen/dimen_5dp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="50dp"
-                android:text="@string/no_tax_types_to_view"
+                android:text="@string/no_info_to_view"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 
@@ -52,9 +55,9 @@
             android:layout_marginBottom="@dimen/dimen_25dp"
             android:backgroundTint="@color/dark_green"
             android:contentDescription="@string/add_new"
+            android:minHeight="600dp"
             android:src="@drawable/ic_add"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

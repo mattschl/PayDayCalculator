@@ -107,28 +107,34 @@ class MainActivity : AppCompatActivity() {
     private fun fillTopMenuAndActions() {
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                //                menu.add(getString(R.string.review_tax_types))
+//                                menu.add(getString(R.string.review_tax_types))
                 //                menu.add(getString(R.string.review_extra_credits_deductions))
                 //                menu.add(getString(R.string.review_work_extra_frequencies))
                 //                menu.add(getString(R.string.update_future_pay_dates))
                 menu.add(getString(R.string.view_work_orders))
+                menu.add(getString(R.string.view_job_specs))
                 menu.add(resources.getString(R.string.app_name))
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.title) {
-                    getString(R.string.review_tax_types) -> {
-                        gotoTaxTypes()
-                        true
-                    }
+//                    getString(R.string.review_tax_types) -> {
+//                        gotoTaxTypes()
+//                        true
+//                    }
 
                     getString(R.string.view_work_orders) -> {
                         gotoWorkOrders()
                         true
                     }
+//
+//                    getString(R.string.review_extra_credits_deductions) -> {
+//                        gotoExtras()
+//                        true
+//                    }
 
-                    getString(R.string.review_extra_credits_deductions) -> {
-                        gotoExtras()
+                    getString(R.string.view_job_specs) -> {
+                        gotoJobSpecs()
                         true
                     }
 
@@ -139,6 +145,12 @@ class MainActivity : AppCompatActivity() {
 
             }
         })
+    }
+
+    private fun gotoJobSpecs() {
+        findNavController(R.id.nav_host_fragment_container).navigate(
+            NavGraphDirections.actionGlobalJobSpecViewFragment()
+        )
     }
 
     private fun gotoEmployer() {
@@ -177,11 +189,11 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun gotoTaxTypes() {
-        findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalTaxTypeFragment()
-        )
-    }
+//    private fun gotoTaxTypes() {
+//        findNavController(R.id.nav_host_fragment_container).navigate(
+//            NavGraphDirections.actionGlobalTaxTypeFragment()
+//        )
+//    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         return super.onCreateOptionsMenu(menu)

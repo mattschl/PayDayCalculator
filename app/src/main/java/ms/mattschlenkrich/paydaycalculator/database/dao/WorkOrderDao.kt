@@ -187,6 +187,13 @@ interface WorkOrderDao {
     )
     fun getJobSpecsAll(): LiveData<List<JobSpec>>
 
+    @Query(
+        "SELECT * FROM jobSpecs " +
+                "WHERE jsName LIKE :query " +
+                "ORDER BY jsName"
+    )
+    fun searchJobSpecs(query: String): LiveData<List<JobSpec>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkOrderJobSpec(workOrderJobSpec: WorkOrderJobSpec)
 

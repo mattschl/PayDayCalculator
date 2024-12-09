@@ -60,9 +60,9 @@ class EmployerAdapter(
                 tvFrequency.setTextColor(Color.BLACK)
             }
             tvFrequency.text = disp
-            holder.itemView.setOnClickListener {
-                gotoUpdateEmployer(employer)
-            }
+        }
+        holder.itemView.setOnClickListener {
+            gotoUpdateEmployer(employer)
         }
     }
 

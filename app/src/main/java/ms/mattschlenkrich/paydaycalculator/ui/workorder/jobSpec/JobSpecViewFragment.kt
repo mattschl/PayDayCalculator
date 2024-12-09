@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.ui.employer
+package ms.mattschlenkrich.paydaycalculator.ui.workorder.jobSpec
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,91 +12,85 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
-import ms.mattschlenkrich.paydaycalculator.databinding.FragmentEmployerBinding
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_JOB_SPEC_VIEW
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.JobSpec
+import ms.mattschlenkrich.paydaycalculator.databinding.FragmentRecyclerViewBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
-import ms.mattschlenkrich.paydaycalculator.ui.employer.adapter.EmployerAdapter
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.jobSpec.adapter.JobSpecAdapter
 
-//private const val TAG = FRAG_EMPLOYERS
+private val TAG = FRAG_JOB_SPEC_VIEW
 
-class EmployerFragment :
-    Fragment(R.layout.fragment_employer),
+class JobSpecViewFragment :
+    Fragment(R.layout.fragment_recycler_view),
     SearchView.OnQueryTextListener,
     MenuProvider {
 
-    private var _binding: FragmentEmployerBinding? = null
+    private var _binding: FragmentRecyclerViewBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private var employerAdapter: EmployerAdapter? = null
+    private var jobSpecAdapter: JobSpecAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentEmployerBinding.inflate(inflater, container, false)
+        _binding = FragmentRecyclerViewBinding.inflate(
+            inflater, container, false
+        )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = getString(R.string.view_employers)
+        mainActivity.title = "View Job Spec List"
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        populateEmployers()
+        populateJobSpecs()
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(
             this, viewLifecycleOwner, Lifecycle.State.RESUMED
         )
-        setClickActions()
+        setBaseView()
     }
 
-    private fun setClickActions() {
+    private fun setBaseView() {
         binding.apply {
-            fabNew.setOnClickListener {
-                gotoEmployerAdd()
-            }
+            tvNoInfo.text = getString(R.string.no_job_specs_to_view)
+            fabNew.visibility = View.GONE
         }
     }
 
-    private fun gotoEmployerAdd() {
-        mView.findNavController().navigate(
-            EmployerFragmentDirections
-                .actionEmployerFragmentToEmployerAddFragment()
+    private fun populateJobSpecs() {
+        jobSpecAdapter = JobSpecAdapter(
+            mainActivity, mView, TAG
         )
-    }
-
-    private fun populateEmployers() {
-        employerAdapter = EmployerAdapter(
-            mainActivity, mView
-        )
-        binding.rvEmployers.apply {
+        binding.rvRecycler.apply {
             layoutManager = StaggeredGridLayoutManager(
                 2,
                 StaggeredGridLayoutManager.VERTICAL
             )
             setHasFixedSize(true)
-            adapter = employerAdapter
+            adapter = jobSpecAdapter
         }
         activity?.let {
-            mainActivity.employerViewModel.getEmployers().observe(
+            mainActivity.workOrderViewModel.getJobSpecsAll().observe(
                 viewLifecycleOwner
-            ) { employer ->
-                employerAdapter!!.differ.submitList(employer)
-                updateUI(employer)
+            ) { jobSpecs ->
+                jobSpecAdapter!!.differ.submitList(jobSpecs)
+                updateUI(jobSpecs)
             }
         }
     }
 
-    private fun updateUI(employer: List<Employers>?) {
+    private fun updateUI(jobSpecs: List<JobSpec>?) {
         binding.apply {
-            if (employer!!.isEmpty()) {
-                rvEmployers.visibility = View.GONE
+            if (jobSpecs!!.isEmpty()) {
+                rvRecycler.visibility = View.GONE
                 crdNoInfo.visibility = View.VISIBLE
             } else {
-                rvEmployers.visibility = View.VISIBLE
+                rvRecycler.visibility = View.VISIBLE
                 crdNoInfo.visibility = View.GONE
             }
         }
@@ -118,27 +112,22 @@ class EmployerFragment :
         return false
     }
 
-    override fun onQueryTextChange(newText: String?): Boolean {
-        if (newText != null) {
-            searchEmployers(newText)
+    override fun onQueryTextChange(query: String?): Boolean {
+        if (query != null) {
+            searchJobSpecs(query)
         }
         return true
     }
 
-    private fun searchEmployers(query: String?) {
-        if (employerAdapter != null) {
+    private fun searchJobSpecs(query: String) {
+        if (jobSpecAdapter != null) {
             val searchQuery = "%$query%"
-            mainActivity.employerViewModel.searchEmployers(searchQuery).observe(
-                viewLifecycleOwner
-            ) { list ->
-                employerAdapter!!.differ.submitList(list)
+            mainActivity.workOrderViewModel.searchJobSpecs(
+                searchQuery
+            ).observe(viewLifecycleOwner) { list ->
+                jobSpecAdapter!!.differ.submitList(list)
                 updateUI(list)
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 }

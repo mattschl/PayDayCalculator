@@ -6,7 +6,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".ui.workorder.JobSpecUpdateFragment">
+        tools:context=".ui.workorder.jobSpec.JobSpecUpdateFragment">
 
         <TextView
             android:id="@+id/tvTitle"

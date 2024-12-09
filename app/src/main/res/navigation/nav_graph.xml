@@ -530,16 +530,19 @@
         app:destination="@id/workOrderViewFragment" />
     <fragment
         android:id="@+id/jobSpecUpdateFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.JobSpecUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.jobSpec.JobSpecUpdateFragment"
         android:label="JobSpecUpdateFragment"
         tools:layout="@layout/fragment_job_spec">
         <action
             android:id="@+id/action_jobSpecUpdateFragment_to_workOrderUpdateFragment"
             app:destination="@id/workOrderUpdateFragment" />
+        <action
+            android:id="@+id/action_jobSpecUpdateFragment_to_jobSpecViewFragment"
+            app:destination="@id/jobSpecViewFragment" />
     </fragment>
     <fragment
         android:id="@+id/workPerformedUpdateFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.WorkPerformedUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.workPerforrmed.WorkPerformedUpdateFragment"
         android:label="WorkPerformedUpdateFragment"
         tools:layout="@layout/fragment_work_performed_update">
         <action
@@ -548,7 +551,7 @@
     </fragment>
     <fragment
         android:id="@+id/materialUpdateFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.MaterialUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.materials.MaterialUpdateFragment"
         android:label="MaterialUpdateFragment"
         tools:layout="@layout/fragment_material_update">
         <action
@@ -567,5 +570,17 @@
             android:id="@+id/action_workOrderLookupFragment_to_workOrderHistoryUpdateFragment"
             app:destination="@id/workOrderHistoryUpdateFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/jobSpecViewFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.jobSpec.JobSpecViewFragment"
+        android:label="JobSpecViewFragment"
+        tools:layout="@layout/fragment_recycler_view">
+        <action
+            android:id="@+id/action_jobSpecViewFragment_to_jobSpecUpdateFragment"
+            app:destination="@id/jobSpecUpdateFragment" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_jobSpecViewFragment"
+        app:destination="@id/jobSpecViewFragment" />
 
 </navigation>

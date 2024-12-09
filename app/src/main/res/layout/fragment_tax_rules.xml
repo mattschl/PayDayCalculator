@@ -118,7 +118,7 @@
             app:layout_constraintTop_toBottomOf="@id/crdSummary">
 
             <TextView
-                android:id="@+id/tvNoAccounts"
+                android:id="@+id/tvNoInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"

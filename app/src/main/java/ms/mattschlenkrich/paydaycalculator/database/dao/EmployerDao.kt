@@ -36,7 +36,7 @@ interface EmployerDao {
     @Query(
         "SELECT * FROM $TABLE_EMPLOYERS " +
                 "WHERE employerName LIKE :query " +
-                "ORDeR BY employerName COLLATE NOCASE"
+                "ORDER BY employerName COLLATE NOCASE"
     )
     fun searchEmployers(query: String?): LiveData<List<Employers>>
 

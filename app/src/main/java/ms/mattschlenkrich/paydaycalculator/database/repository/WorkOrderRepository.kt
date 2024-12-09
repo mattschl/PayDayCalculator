@@ -92,6 +92,9 @@ class WorkOrderRepository(private val db: PayDatabase) {
     fun getJobSpecs() =
         db.getWorkOrderDao().getJobSpecsAll()
 
+    fun searchJobSpecs(query: String) =
+        db.getWorkOrderDao().searchJobSpecs(query)
+
     suspend fun insertWorkOrderJobSpec(workOrderJobSpec: WorkOrderJobSpec) =
         db.getWorkOrderDao().insertWorkOrderJobSpec(workOrderJobSpec)
 

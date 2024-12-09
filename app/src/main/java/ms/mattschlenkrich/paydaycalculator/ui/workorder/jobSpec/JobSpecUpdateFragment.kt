@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.ui.workorder
+package ms.mattschlenkrich.paydaycalculator.ui.workorder.jobSpec
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,6 +10,7 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_JOB_SPEC_VIEW
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.JobSpec
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentJobSpecBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
@@ -126,6 +127,24 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
 
     private fun gotoCallingFragment() {
         mainActivity.mainViewModel.setJobSpec(null)
+        if (mainActivity.mainViewModel.getCallingFragment()!!.contains(
+                FRAG_JOB_SPEC_VIEW
+            )
+        ) {
+            gotoJobSpecViewFragment()
+        } else {
+            gotoWorkOrderUpdateFragment()
+        }
+    }
+
+    private fun gotoJobSpecViewFragment() {
+        mView.findNavController().navigate(
+            JobSpecUpdateFragmentDirections
+                .actionJobSpecUpdateFragmentToJobSpecViewFragment()
+        )
+    }
+
+    private fun gotoWorkOrderUpdateFragment() {
         mView.findNavController().navigate(
             JobSpecUpdateFragmentDirections
                 .actionJobSpecUpdateFragmentToWorkOrderUpdateFragment()

@@ -120,6 +120,9 @@ class WorkOrderViewModel(
     fun getJobSpecsAll() =
         workOrderRepository.getJobSpecs()
 
+    fun searchJobSpecs(query: String) =
+        workOrderRepository.searchJobSpecs(query)
+
     fun insertWorkOrderJobSpec(workOrderJobSpec: WorkOrderJobSpec) =
         viewModelScope.launch {
             workOrderRepository.insertWorkOrderJobSpec(workOrderJobSpec)
