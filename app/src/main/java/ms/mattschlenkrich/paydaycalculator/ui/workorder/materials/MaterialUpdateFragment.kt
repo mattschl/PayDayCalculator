@@ -148,16 +148,16 @@ class MaterialUpdateFragment
         if (mainActivity.mainViewModel.getCallingFragment()!!
                 .contains(FRAG_MATERIAL_VIEW)
         ) {
-            gotoMaterialUpdateFragment()
+            gotoMaterialViewFragment()
         } else {
             gotoWorkOrderHistoryUpdateFragment()
         }
     }
 
-    private fun gotoMaterialUpdateFragment() {
+    private fun gotoMaterialViewFragment() {
         mView.findNavController().navigate(
             MaterialUpdateFragmentDirections
-                .actionMaterialUpdateFragmentToWorkOrderHistoryUpdateFragment()
+                .actionMaterialUpdateFragmentToMaterialViewFragment()
         )
     }
 

@@ -111,9 +111,10 @@ class MainActivity : AppCompatActivity() {
                 //                menu.add(getString(R.string.review_extra_credits_deductions))
                 //                menu.add(getString(R.string.review_work_extra_frequencies))
                 //                menu.add(getString(R.string.update_future_pay_dates))
-                menu.add(getString(R.string.view_work_orders))
-                menu.add(getString(R.string.view_job_specs))
-                menu.add(getString(R.string.view_materials))
+                menu.add(getString(R.string.view_work_order_list))
+                menu.add(getString(R.string.view_job_spec_list))
+                menu.add(getString(R.string.view_work_performed_list))
+                menu.add(getString(R.string.view_material_list))
                 menu.add(resources.getString(R.string.app_name))
             }
 
@@ -124,7 +125,7 @@ class MainActivity : AppCompatActivity() {
 //                        true
 //                    }
 
-                    getString(R.string.view_work_orders) -> {
+                    getString(R.string.view_work_order_list) -> {
                         gotoWorkOrders()
                         true
                     }
@@ -134,12 +135,17 @@ class MainActivity : AppCompatActivity() {
 //                        true
 //                    }
 
-                    getString(R.string.view_job_specs) -> {
+                    getString(R.string.view_work_performed_list) -> {
+                        gotoWorkPerformedView()
+                        true
+                    }
+
+                    getString(R.string.view_job_spec_list) -> {
                         gotoJobSpecs()
                         true
                     }
 
-                    getString(R.string.view_materials) -> {
+                    getString(R.string.view_material_list) -> {
                         gotoMaterialView()
                         true
                     }
@@ -151,6 +157,12 @@ class MainActivity : AppCompatActivity() {
 
             }
         })
+    }
+
+    private fun gotoWorkPerformedView() {
+        findNavController(R.id.nav_host_fragment_container).navigate(
+            NavGraphDirections.actionGlobalWorkPerformedViewFragment()
+        )
     }
 
     private fun gotoMaterialView() {

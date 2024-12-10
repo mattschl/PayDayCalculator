@@ -238,6 +238,13 @@ interface WorkOrderDao {
 
     @Query(
         "SELECT * FROM workPerformed " +
+                "WHERE wpDescription LIKE :query " +
+                "ORDER BY wpDescription"
+    )
+    fun searchFromWorkPerformed(query: String): LiveData<List<WorkPerformed>>
+
+    @Query(
+        "SELECT * FROM workPerformed " +
                 "WHERE wpDescription = :description"
     )
     fun getWorkPerformed(description: String): LiveData<WorkPerformed>

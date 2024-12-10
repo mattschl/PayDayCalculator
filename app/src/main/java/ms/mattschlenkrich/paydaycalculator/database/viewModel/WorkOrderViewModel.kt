@@ -154,6 +154,9 @@ class WorkOrderViewModel(
     fun getWorkPerformedAll() =
         workOrderRepository.getWorkPerformedAll()
 
+    fun searchFromWorkPerformed(query: String) =
+        workOrderRepository.searchFromWorkPerformed(query)
+
     fun getWorkPerformed(description: String) =
         workOrderRepository.getWorkPerformed(description)
 

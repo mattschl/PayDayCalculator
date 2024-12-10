@@ -42,7 +42,7 @@ class JobSpecViewFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "View Job Spec List"
+        mainActivity.title = getString(R.string.view_job_spec_list)
         return mView
     }
 

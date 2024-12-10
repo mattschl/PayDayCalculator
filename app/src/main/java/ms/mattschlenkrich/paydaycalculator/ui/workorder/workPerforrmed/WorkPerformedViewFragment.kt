@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paydaycalculator.ui.workorder.materials
+package ms.mattschlenkrich.paydaycalculator.ui.workorder.workPerforrmed
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,15 +14,15 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paydaycalculator.R
-import ms.mattschlenkrich.paydaycalculator.common.FRAG_MATERIAL_VIEW
-import ms.mattschlenkrich.paydaycalculator.database.model.workorder.Material
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_PERFORMED_VIEW
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerformed
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentRecyclerViewBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
-import ms.mattschlenkrich.paydaycalculator.ui.workorder.materials.adapter.MaterialViewAdapter
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.workPerforrmed.adapter.WorkPerformedAdapter
 
-private const val TAG = FRAG_MATERIAL_VIEW
+private const val TAG = FRAG_WORK_PERFORMED_VIEW
 
-class MaterialViewFragment :
+class WorkPerformedViewFragment :
     Fragment(R.layout.fragment_recycler_view),
     SearchView.OnQueryTextListener,
     MenuProvider {
@@ -31,10 +31,11 @@ class MaterialViewFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private var materialViewAdapter: MaterialViewAdapter? = null
+    private var workPerformedAdapter: WorkPerformedAdapter? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentRecyclerViewBinding.inflate(
@@ -42,12 +43,12 @@ class MaterialViewFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = getString(R.string.view_material_list)
+        mainActivity.title = getString(R.string.view_work_performed_list)
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        populateMaterials()
+        populateWorkPerformedList()
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(
             this, viewLifecycleOwner, Lifecycle.State.RESUMED
@@ -57,13 +58,13 @@ class MaterialViewFragment :
 
     private fun setBaseView() {
         binding.apply {
-            tvNoInfo.text = getString(R.string.no_materials_to_view)
+            tvNoInfo.text = getString(R.string.no_job_specs_to_view)
             fabNew.visibility = View.GONE
         }
     }
 
-    private fun populateMaterials() {
-        materialViewAdapter = MaterialViewAdapter(
+    private fun populateWorkPerformedList() {
+        workPerformedAdapter = WorkPerformedAdapter(
             mainActivity, mView, TAG
         )
         binding.rvRecycler.apply {
@@ -72,51 +73,30 @@ class MaterialViewFragment :
                 StaggeredGridLayoutManager.VERTICAL
             )
             setHasFixedSize(true)
-            adapter = materialViewAdapter
+            adapter = workPerformedAdapter
         }
-        activity.let {
-            mainActivity.workOrderViewModel.getMaterialsList().observe(
+        activity?.let {
+            mainActivity.workOrderViewModel.getWorkPerformedAll().observe(
                 viewLifecycleOwner
-            ) { materialList ->
-                materialViewAdapter!!.differ.submitList(materialList)
-                updateUI(materialList)
+            ) { workPerformedList ->
+                workPerformedAdapter!!.differ.submitList(workPerformedList)
+                updateUI(workPerformedList)
             }
         }
     }
 
-    private fun updateUI(materialList: List<Material>?) {
+    private fun updateUI(workPerformedList: List<WorkPerformed>?) {
         binding.apply {
-            if (materialList!!.isEmpty()) {
+            if (workPerformedList!!.isEmpty()) {
                 rvRecycler.visibility = View.GONE
                 crdNoInfo.visibility = View.VISIBLE
             } else {
                 rvRecycler.visibility = View.VISIBLE
                 crdNoInfo.visibility = View.GONE
             }
-        }
-    }
 
-    override fun onQueryTextSubmit(query: String?): Boolean {
-        return false
-    }
-
-    override fun onQueryTextChange(query: String?): Boolean {
-        if (query != null) {
-            searchMaterial(query)
         }
-        return true
-    }
 
-    private fun searchMaterial(query: String) {
-        if (materialViewAdapter != null) {
-            val searchQuery = "%$query%"
-            mainActivity.workOrderViewModel.searchMaterials(
-                searchQuery
-            ).observe(viewLifecycleOwner) { list ->
-                materialViewAdapter!!.differ.submitList(list)
-                updateUI(list)
-            }
-        }
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -129,5 +109,29 @@ class MaterialViewFragment :
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         return false
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return false
+    }
+
+    override fun onQueryTextChange(query: String?): Boolean {
+        if (query != null) {
+            searchForWorkPerformed(query)
+        }
+        return true
+    }
+
+    private fun searchForWorkPerformed(query: String) {
+        if (workPerformedAdapter != null) {
+            val searchQuery = "%$query%"
+            mainActivity.workOrderViewModel.searchFromWorkPerformed(
+                searchQuery
+            ).observe(viewLifecycleOwner) { list ->
+                workPerformedAdapter!!.differ.submitList(list)
+                updateUI(list)
+
+            }
+        }
     }
 }

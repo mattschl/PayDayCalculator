@@ -193,7 +193,7 @@
     <string name="transfer_totals">Transfer Totals</string>
     <string name="wo_totals">WO Totals</string>
     <string name="no_work_orders_to_view">No work orders to view</string>
-    <string name="view_work_orders">View Work Orders</string>
+    <string name="view_work_order_list">View Work Order List</string>
     <string name="search">Search</string>
     <string name="type_number_or_address_search">Type number or address search</string>
     <string name="reset">RESET</string>
@@ -231,6 +231,8 @@
     <string name="choose_a_work_order">Choose a work order</string>
     <string name="no_job_specs_to_view">No Job Specs to view</string>
     <string name="no_info_to_view">No info to view</string>
-    <string name="view_job_specs">View Job Specs</string>
-    <string name="view_materials">View Materials</string>
+    <string name="view_job_spec_list">View Job Spec list</string>
+    <string name="view_material_list">View Material list</string>
+    <string name="view_work_performed_list">View Work Performed List</string>
+    <string name="no_materials_to_view">No Materials to view</string>
 </resources>
