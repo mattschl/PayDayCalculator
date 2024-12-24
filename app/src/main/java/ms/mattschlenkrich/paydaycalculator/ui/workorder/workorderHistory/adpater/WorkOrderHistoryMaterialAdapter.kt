@@ -17,7 +17,7 @@ import ms.mattschlenkrich.paydaycalculator.ui.workorder.workorderHistory.WorkOrd
 
 class WorkOrderHistoryMaterialAdapter(
     val mainActivity: MainActivity,
-    val mView: View
+    val mView: View,
 ) : RecyclerView.Adapter<WorkOrderHistoryMaterialAdapter.ViewHolder>() {
 
     //    private val df = DateFunctions()
@@ -40,8 +40,10 @@ class WorkOrderHistoryMaterialAdapter(
                 oldItem: MaterialInSequence,
                 newItem: MaterialInSequence
             ): Boolean {
-                return oldItem.materialHistoryId ==
-                        newItem.materialHistoryId &&
+                return oldItem.workOrderHistoryMaterialId ==
+                        newItem.workOrderHistoryMaterialId &&
+                        oldItem.workOrderHistoryId ==
+                        newItem.workOrderHistoryId &&
                         oldItem.materialId ==
                         newItem.materialId &&
                         oldItem.mName ==
@@ -72,7 +74,7 @@ class WorkOrderHistoryMaterialAdapter(
         val material = differ.currentList[position]
         holder.itemBinding.apply {
             val display =
-                "${nf.getNumberFromDouble(material.mQty)} " +
+                "${nf.getNumberFromDouble(material.mQty)} -  " +
                         material.mName
             tvDisplay.text = display
         }
@@ -87,7 +89,8 @@ class WorkOrderHistoryMaterialAdapter(
             .setItems(
                 arrayOf(
                     "Remove this item",
-                    "Edit the material in the material list",
+                    "Change the quantity",
+                    "Edit the material in the database",
                     "Cancel"
                 )
             ) { _, pos ->
@@ -96,7 +99,12 @@ class WorkOrderHistoryMaterialAdapter(
                         removeMaterial(material)
                     }
 
+
                     1 -> {
+                        changeQuantity(material)
+                    }
+
+                    2 -> {
                         editMaterial(material)
                     }
 
@@ -106,6 +114,14 @@ class WorkOrderHistoryMaterialAdapter(
                 }
             }.show()
 
+    }
+
+    private fun changeQuantity(material: MaterialInSequence) {
+        mainActivity.mainViewModel.setMaterialInSequence(material)
+        mView.findNavController().navigate(
+            WorkOrderHistoryUpdateFragmentDirections
+                .actionWorkOrderHistoryUpdateFragmentToMaterialQuantityUpdateFragment()
+        )
     }
 
     private fun editMaterial(material: MaterialInSequence) {
@@ -123,7 +139,7 @@ class WorkOrderHistoryMaterialAdapter(
 
     private fun removeMaterial(material: MaterialInSequence) {
         mainActivity.workOrderViewModel.removeWorkOrderHistoryMaterial(
-            material.materialHistoryId
+            material.workOrderHistoryMaterialId
         )
     }
 }

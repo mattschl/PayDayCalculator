@@ -235,4 +235,6 @@
     <string name="view_material_list">View Material list</string>
     <string name="view_work_performed_list">View Work Performed List</string>
     <string name="no_materials_to_view">No Materials to view</string>
+    <string name="enter_new_quantity">Enter new quantity</string>
+    <string name="update_quantity">Update Quantity</string>
 </resources>

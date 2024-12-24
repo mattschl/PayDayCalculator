@@ -5,7 +5,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class MaterialInSequence(
-    val materialHistoryId: Long,
+    val workOrderHistoryMaterialId: Long,
+    val workOrderHistoryId: Long,
     val materialId: Long,
     val mName: String,
     val mQty: Double,

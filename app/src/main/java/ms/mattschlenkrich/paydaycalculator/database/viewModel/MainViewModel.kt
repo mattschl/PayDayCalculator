@@ -14,6 +14,7 @@ import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.JobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.Material
+import ms.mattschlenkrich.paydaycalculator.database.model.workorder.MaterialInSequence
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.TempWorkOrderHistoryInfo
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistory
@@ -51,6 +52,15 @@ class MainViewModel(
     private var jobSpec: JobSpec? = null
     private var workPerformed: WorkPerformed? = null
     private var material: Material? = null
+    private var materialInSequence: MaterialInSequence? = null
+
+    fun setMaterialInSequence(newMaterial: MaterialInSequence?) {
+        materialInSequence = newMaterial
+    }
+
+    fun getMaterialInSequence(): MaterialInSequence? {
+        return materialInSequence
+    }
 
     fun setMaterial(newMaterial: Material?) {
         material = newMaterial

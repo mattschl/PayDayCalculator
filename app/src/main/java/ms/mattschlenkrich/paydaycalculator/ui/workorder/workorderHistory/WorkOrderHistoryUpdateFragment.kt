@@ -518,6 +518,7 @@ class WorkOrderHistoryUpdateFragment :
                 materialActualList.add(
                     MaterialInSequence(
                         it.workOrderHistoryMaterial.workOrderHistoryMaterialId,
+                        getCurHistory().woHistoryId,
                         it.material.materialId,
                         it.material.mName,
                         it.workOrderHistoryMaterial.wohmQuantity,
@@ -537,7 +538,7 @@ class WorkOrderHistoryUpdateFragment :
         val materialAdapter =
             WorkOrderHistoryMaterialAdapter(
                 mainActivity,
-                mView
+                mView,
             )
         binding.rvMaterials.apply {
             layoutManager = LinearLayoutManager(
