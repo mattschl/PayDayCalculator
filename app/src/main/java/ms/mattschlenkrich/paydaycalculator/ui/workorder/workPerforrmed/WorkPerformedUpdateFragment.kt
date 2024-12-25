@@ -48,16 +48,16 @@ class WorkPerformedUpdateFragment :
     }
 
     private fun setValues() {
+        populateWorkPerformedListForValidation()
         if (mainActivity.mainViewModel.getWorkPerformed() != null) {
             oldWorkPerformed = mainActivity.mainViewModel.getWorkPerformed()!!
         }
         binding.apply {
             val display =
-                "Update: ${oldWorkPerformed.wpDescription}"
+                "Update work Description: ${oldWorkPerformed.wpDescription}"
             tvTitle.text = display
             etWorkPerformed.setText(oldWorkPerformed.wpDescription)
         }
-        populateWorkPerformedListForValidation()
     }
 
     private fun populateWorkPerformedListForValidation() {

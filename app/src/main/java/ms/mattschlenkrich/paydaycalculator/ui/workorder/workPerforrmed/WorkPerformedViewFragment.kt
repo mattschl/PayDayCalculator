@@ -117,12 +117,12 @@ class WorkPerformedViewFragment :
 
     override fun onQueryTextChange(query: String?): Boolean {
         if (query != null) {
-            searchForWorkPerformed(query)
+            searchWorkPerformed(query)
         }
         return true
     }
 
-    private fun searchForWorkPerformed(query: String) {
+    private fun searchWorkPerformed(query: String) {
         if (workPerformedAdapter != null) {
             val searchQuery = "%$query%"
             mainActivity.workOrderViewModel.searchFromWorkPerformed(
