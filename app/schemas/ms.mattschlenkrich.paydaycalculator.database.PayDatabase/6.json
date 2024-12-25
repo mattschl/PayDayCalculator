@@ -1,0 +1,1964 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 6,
+    "identityHash": "45f5e05db30821932dfd06d76728aba3",
+    "entities": [
+      {
+        "tableName": "employers",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`employerId` INTEGER NOT NULL, `employerName` TEXT NOT NULL, `payFrequency` TEXT NOT NULL, `startDate` TEXT NOT NULL, `dayOfWeek` TEXT NOT NULL, `cutoffDaysBefore` INTEGER NOT NULL, `midMonthlyDate` INTEGER NOT NULL, `mainMonthlyDate` INTEGER NOT NULL, `employerIsDeleted` INTEGER NOT NULL, `employerUpdateTime` TEXT NOT NULL, PRIMARY KEY(`employerId`))",
+        "fields": [
+          {
+            "fieldPath": "employerId",
+            "columnName": "employerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "employerName",
+            "columnName": "employerName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "payFrequency",
+            "columnName": "payFrequency",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startDate",
+            "columnName": "startDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dayOfWeek",
+            "columnName": "dayOfWeek",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cutoffDaysBefore",
+            "columnName": "cutoffDaysBefore",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "midMonthlyDate",
+            "columnName": "midMonthlyDate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mainMonthlyDate",
+            "columnName": "mainMonthlyDate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "employerIsDeleted",
+            "columnName": "employerIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "employerUpdateTime",
+            "columnName": "employerUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "employerId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_employers_employerName",
+            "unique": true,
+            "columnNames": [
+              "employerName"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_employers_employerName` ON `${TABLE_NAME}` (`employerName`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "employerTaxTypes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`etrEmployerId` INTEGER NOT NULL, `etrTaxType` TEXT NOT NULL, `etrInclude` INTEGER NOT NULL, `etrIsDeleted` INTEGER NOT NULL, `etrUpdateTime` TEXT NOT NULL, PRIMARY KEY(`etrEmployerId`, `etrTaxType`), FOREIGN KEY(`etrEmployerId`) REFERENCES `employers`(`employerId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`etrTaxType`) REFERENCES `taxTypes`(`taxType`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "etrEmployerId",
+            "columnName": "etrEmployerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "etrTaxType",
+            "columnName": "etrTaxType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "etrInclude",
+            "columnName": "etrInclude",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "etrIsDeleted",
+            "columnName": "etrIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "etrUpdateTime",
+            "columnName": "etrUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "etrEmployerId",
+            "etrTaxType"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_employerTaxTypes_etrTaxType",
+            "unique": false,
+            "columnNames": [
+              "etrTaxType"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_employerTaxTypes_etrTaxType` ON `${TABLE_NAME}` (`etrTaxType`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "employers",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "etrEmployerId"
+            ],
+            "referencedColumns": [
+              "employerId"
+            ]
+          },
+          {
+            "table": "taxTypes",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "etrTaxType"
+            ],
+            "referencedColumns": [
+              "taxType"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "employerPayRates",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`employerPayRateId` INTEGER NOT NULL, `eprEmployerId` INTEGER NOT NULL, `eprEffectiveDate` TEXT NOT NULL, `eprPerPeriod` INTEGER NOT NULL, `eprPayRate` REAL NOT NULL, `eprIsDeleted` INTEGER NOT NULL, `eprUpdateTime` TEXT NOT NULL, PRIMARY KEY(`employerPayRateId`), FOREIGN KEY(`eprEmployerId`) REFERENCES `employers`(`employerId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "employerPayRateId",
+            "columnName": "employerPayRateId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eprEmployerId",
+            "columnName": "eprEmployerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eprEffectiveDate",
+            "columnName": "eprEffectiveDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eprPerPeriod",
+            "columnName": "eprPerPeriod",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eprPayRate",
+            "columnName": "eprPayRate",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eprIsDeleted",
+            "columnName": "eprIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eprUpdateTime",
+            "columnName": "eprUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "employerPayRateId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_employerPayRates_eprEmployerId_eprEffectiveDate",
+            "unique": true,
+            "columnNames": [
+              "eprEmployerId",
+              "eprEffectiveDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_employerPayRates_eprEmployerId_eprEffectiveDate` ON `${TABLE_NAME}` (`eprEmployerId`, `eprEffectiveDate`)"
+          },
+          {
+            "name": "index_employerPayRates_eprEmployerId",
+            "unique": false,
+            "columnNames": [
+              "eprEmployerId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_employerPayRates_eprEmployerId` ON `${TABLE_NAME}` (`eprEmployerId`)"
+          },
+          {
+            "name": "index_employerPayRates_eprEffectiveDate",
+            "unique": false,
+            "columnNames": [
+              "eprEffectiveDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_employerPayRates_eprEffectiveDate` ON `${TABLE_NAME}` (`eprEffectiveDate`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "employers",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "eprEmployerId"
+            ],
+            "referencedColumns": [
+              "employerId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "workDateExtras",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workDateExtraId` INTEGER NOT NULL, `wdeWorkDateId` INTEGER NOT NULL, `wdeExtraTypeId` INTEGER, `wdeName` TEXT NOT NULL, `wdeAppliesTo` INTEGER NOT NULL, `wdeAttachTo` INTEGER NOT NULL, `wdeValue` REAL NOT NULL, `wdeIsFixed` INTEGER NOT NULL, `wdeIsCredit` INTEGER NOT NULL, `wdeIsDeleted` INTEGER NOT NULL, `wdeUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workDateExtraId`), FOREIGN KEY(`wdeWorkDateId`) REFERENCES `workDates`(`workDateId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "workDateExtraId",
+            "columnName": "workDateExtraId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdeWorkDateId",
+            "columnName": "wdeWorkDateId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdeExtraTypeId",
+            "columnName": "wdeExtraTypeId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "wdeName",
+            "columnName": "wdeName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdeAppliesTo",
+            "columnName": "wdeAppliesTo",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdeAttachTo",
+            "columnName": "wdeAttachTo",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdeValue",
+            "columnName": "wdeValue",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdeIsFixed",
+            "columnName": "wdeIsFixed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdeIsCredit",
+            "columnName": "wdeIsCredit",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdeIsDeleted",
+            "columnName": "wdeIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdeUpdateTime",
+            "columnName": "wdeUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workDateExtraId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_workDateExtras_wdeWorkDateId_wdeName",
+            "unique": true,
+            "columnNames": [
+              "wdeWorkDateId",
+              "wdeName"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_workDateExtras_wdeWorkDateId_wdeName` ON `${TABLE_NAME}` (`wdeWorkDateId`, `wdeName`)"
+          },
+          {
+            "name": "index_workDateExtras_wdeWorkDateId",
+            "unique": false,
+            "columnNames": [
+              "wdeWorkDateId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workDateExtras_wdeWorkDateId` ON `${TABLE_NAME}` (`wdeWorkDateId`)"
+          },
+          {
+            "name": "index_workDateExtras_wdeExtraTypeId",
+            "unique": false,
+            "columnNames": [
+              "wdeExtraTypeId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workDateExtras_wdeExtraTypeId` ON `${TABLE_NAME}` (`wdeExtraTypeId`)"
+          },
+          {
+            "name": "index_workDateExtras_wdeName",
+            "unique": false,
+            "columnNames": [
+              "wdeName"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workDateExtras_wdeName` ON `${TABLE_NAME}` (`wdeName`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "workDates",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wdeWorkDateId"
+            ],
+            "referencedColumns": [
+              "workDateId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "workPayPeriodExtras",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workPayPeriodExtraId` INTEGER NOT NULL, `ppePayPeriodId` INTEGER NOT NULL, `ppeExtraTypeId` INTEGER, `ppeName` TEXT NOT NULL, `ppeAppliesTo` INTEGER NOT NULL, `ppeAttachTo` INTEGER NOT NULL, `ppeValue` REAL NOT NULL, `ppeIsFixed` INTEGER NOT NULL, `ppeIsCredit` INTEGER NOT NULL, `ppeIsDeleted` INTEGER NOT NULL, `ppeUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workPayPeriodExtraId`), FOREIGN KEY(`ppeExtraTypeId`) REFERENCES `workExtraTypes`(`workExtraTypeId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`ppePayPeriodId`) REFERENCES `payPeriods`(`payPeriodId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "workPayPeriodExtraId",
+            "columnName": "workPayPeriodExtraId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppePayPeriodId",
+            "columnName": "ppePayPeriodId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppeExtraTypeId",
+            "columnName": "ppeExtraTypeId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "ppeName",
+            "columnName": "ppeName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppeAppliesTo",
+            "columnName": "ppeAppliesTo",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppeAttachTo",
+            "columnName": "ppeAttachTo",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppeValue",
+            "columnName": "ppeValue",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppeIsFixed",
+            "columnName": "ppeIsFixed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppeIsCredit",
+            "columnName": "ppeIsCredit",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppeIsDeleted",
+            "columnName": "ppeIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppeUpdateTime",
+            "columnName": "ppeUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workPayPeriodExtraId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_workPayPeriodExtras_ppePayPeriodId_ppeName",
+            "unique": true,
+            "columnNames": [
+              "ppePayPeriodId",
+              "ppeName"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_workPayPeriodExtras_ppePayPeriodId_ppeName` ON `${TABLE_NAME}` (`ppePayPeriodId`, `ppeName`)"
+          },
+          {
+            "name": "index_workPayPeriodExtras_ppePayPeriodId",
+            "unique": false,
+            "columnNames": [
+              "ppePayPeriodId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workPayPeriodExtras_ppePayPeriodId` ON `${TABLE_NAME}` (`ppePayPeriodId`)"
+          },
+          {
+            "name": "index_workPayPeriodExtras_ppeExtraTypeId",
+            "unique": false,
+            "columnNames": [
+              "ppeExtraTypeId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workPayPeriodExtras_ppeExtraTypeId` ON `${TABLE_NAME}` (`ppeExtraTypeId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "workExtraTypes",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "ppeExtraTypeId"
+            ],
+            "referencedColumns": [
+              "workExtraTypeId"
+            ]
+          },
+          {
+            "table": "payPeriods",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "ppePayPeriodId"
+            ],
+            "referencedColumns": [
+              "payPeriodId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "workExtraTypes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workExtraTypeId` INTEGER NOT NULL, `wetName` TEXT NOT NULL, `wetEmployerId` INTEGER NOT NULL, `wetAppliesTo` INTEGER NOT NULL, `wetAttachTo` INTEGER NOT NULL, `wetIsCredit` INTEGER NOT NULL, `wetIsDefault` INTEGER NOT NULL, `wetIsDeleted` INTEGER NOT NULL, `wetUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workExtraTypeId`), FOREIGN KEY(`wetEmployerId`) REFERENCES `employers`(`employerId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "workExtraTypeId",
+            "columnName": "workExtraTypeId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wetName",
+            "columnName": "wetName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wetEmployerId",
+            "columnName": "wetEmployerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wetAppliesTo",
+            "columnName": "wetAppliesTo",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wetAttachTo",
+            "columnName": "wetAttachTo",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wetIsCredit",
+            "columnName": "wetIsCredit",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wetIsDefault",
+            "columnName": "wetIsDefault",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wetIsDeleted",
+            "columnName": "wetIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wetUpdateTime",
+            "columnName": "wetUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workExtraTypeId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_workExtraTypes_wetEmployerId",
+            "unique": false,
+            "columnNames": [
+              "wetEmployerId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workExtraTypes_wetEmployerId` ON `${TABLE_NAME}` (`wetEmployerId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "employers",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wetEmployerId"
+            ],
+            "referencedColumns": [
+              "employerId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "workDates",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workDateId` INTEGER NOT NULL, `wdPayPeriodId` INTEGER NOT NULL, `wdEmployerId` INTEGER NOT NULL, `wdCutoffDate` TEXT NOT NULL, `wdDate` TEXT NOT NULL, `wdRegHours` REAL NOT NULL, `wdOtHours` REAL NOT NULL, `wdDblOtHours` REAL NOT NULL, `wdStatHours` REAL NOT NULL, `wdIsDeleted` INTEGER NOT NULL, `wdUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workDateId`), FOREIGN KEY(`wdEmployerId`, `wdCutoffDate`) REFERENCES `payPeriods`(`ppEmployerId`, `ppCutoffDate`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "workDateId",
+            "columnName": "workDateId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdPayPeriodId",
+            "columnName": "wdPayPeriodId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdEmployerId",
+            "columnName": "wdEmployerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdCutoffDate",
+            "columnName": "wdCutoffDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdDate",
+            "columnName": "wdDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdRegHours",
+            "columnName": "wdRegHours",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdOtHours",
+            "columnName": "wdOtHours",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdDblOtHours",
+            "columnName": "wdDblOtHours",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdStatHours",
+            "columnName": "wdStatHours",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdIsDeleted",
+            "columnName": "wdIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdUpdateTime",
+            "columnName": "wdUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workDateId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_workDates_wdEmployerId_wdDate_wdCutoffDate",
+            "unique": true,
+            "columnNames": [
+              "wdEmployerId",
+              "wdDate",
+              "wdCutoffDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_workDates_wdEmployerId_wdDate_wdCutoffDate` ON `${TABLE_NAME}` (`wdEmployerId`, `wdDate`, `wdCutoffDate`)"
+          },
+          {
+            "name": "index_workDates_wdEmployerId_wdCutoffDate",
+            "unique": false,
+            "columnNames": [
+              "wdEmployerId",
+              "wdCutoffDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workDates_wdEmployerId_wdCutoffDate` ON `${TABLE_NAME}` (`wdEmployerId`, `wdCutoffDate`)"
+          },
+          {
+            "name": "index_workDates_wdPayPeriodId",
+            "unique": false,
+            "columnNames": [
+              "wdPayPeriodId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workDates_wdPayPeriodId` ON `${TABLE_NAME}` (`wdPayPeriodId`)"
+          },
+          {
+            "name": "index_workDates_wdEmployerId",
+            "unique": false,
+            "columnNames": [
+              "wdEmployerId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workDates_wdEmployerId` ON `${TABLE_NAME}` (`wdEmployerId`)"
+          },
+          {
+            "name": "index_workDates_wdCutoffDate",
+            "unique": false,
+            "columnNames": [
+              "wdCutoffDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workDates_wdCutoffDate` ON `${TABLE_NAME}` (`wdCutoffDate`)"
+          },
+          {
+            "name": "index_workDates_wdDate",
+            "unique": false,
+            "columnNames": [
+              "wdDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workDates_wdDate` ON `${TABLE_NAME}` (`wdDate`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "payPeriods",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wdEmployerId",
+              "wdCutoffDate"
+            ],
+            "referencedColumns": [
+              "ppEmployerId",
+              "ppCutoffDate"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "workPayPeriodTax",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workPayPeriodTaxId` INTEGER NOT NULL, `wppCutoffDate` TEXT NOT NULL, `wppEmployerId` INTEGER NOT NULL, `wppTaxType` TEXT NOT NULL, `wppIsDeleted` INTEGER NOT NULL, `wppUpdateTime` TEXT NOT NULL, PRIMARY KEY(`wppCutoffDate`, `wppEmployerId`, `wppTaxType`), FOREIGN KEY(`wppCutoffDate`, `wppEmployerId`) REFERENCES `payPeriods`(`ppCutoffDate`, `ppEmployerId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`wppTaxType`) REFERENCES `taxTypes`(`taxType`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "workPayPeriodTaxId",
+            "columnName": "workPayPeriodTaxId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wppCutoffDate",
+            "columnName": "wppCutoffDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wppEmployerId",
+            "columnName": "wppEmployerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wppTaxType",
+            "columnName": "wppTaxType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wppIsDeleted",
+            "columnName": "wppIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wppUpdateTime",
+            "columnName": "wppUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "wppCutoffDate",
+            "wppEmployerId",
+            "wppTaxType"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_workPayPeriodTax_wppTaxType",
+            "unique": false,
+            "columnNames": [
+              "wppTaxType"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workPayPeriodTax_wppTaxType` ON `${TABLE_NAME}` (`wppTaxType`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "payPeriods",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wppCutoffDate",
+              "wppEmployerId"
+            ],
+            "referencedColumns": [
+              "ppCutoffDate",
+              "ppEmployerId"
+            ]
+          },
+          {
+            "table": "taxTypes",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wppTaxType"
+            ],
+            "referencedColumns": [
+              "taxType"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "workExtrasDefinitions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workExtraDefId` INTEGER NOT NULL, `weEmployerId` INTEGER NOT NULL, `weExtraTypeId` INTEGER NOT NULL, `weValue` REAL NOT NULL, `weIsFixed` INTEGER NOT NULL, `weEffectiveDate` TEXT, `weIsDeleted` INTEGER NOT NULL, `weUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workExtraDefId`), FOREIGN KEY(`weEmployerId`) REFERENCES `employers`(`employerId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`weExtraTypeId`) REFERENCES `workExtraTypes`(`workExtraTypeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "workExtraDefId",
+            "columnName": "workExtraDefId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weEmployerId",
+            "columnName": "weEmployerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weExtraTypeId",
+            "columnName": "weExtraTypeId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weValue",
+            "columnName": "weValue",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weIsFixed",
+            "columnName": "weIsFixed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weEffectiveDate",
+            "columnName": "weEffectiveDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "weIsDeleted",
+            "columnName": "weIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weUpdateTime",
+            "columnName": "weUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workExtraDefId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_workExtrasDefinitions_weEmployerId",
+            "unique": false,
+            "columnNames": [
+              "weEmployerId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workExtrasDefinitions_weEmployerId` ON `${TABLE_NAME}` (`weEmployerId`)"
+          },
+          {
+            "name": "index_workExtrasDefinitions_weExtraTypeId",
+            "unique": false,
+            "columnNames": [
+              "weExtraTypeId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workExtrasDefinitions_weExtraTypeId` ON `${TABLE_NAME}` (`weExtraTypeId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "employers",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "weEmployerId"
+            ],
+            "referencedColumns": [
+              "employerId"
+            ]
+          },
+          {
+            "table": "workExtraTypes",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "weExtraTypeId"
+            ],
+            "referencedColumns": [
+              "workExtraTypeId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "workTaxRules",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workTaxRuleId` INTEGER NOT NULL, `wtType` TEXT NOT NULL, `wtLevel` INTEGER NOT NULL, `wtEffectiveDate` TEXT NOT NULL, `wtPercent` REAL NOT NULL, `wtHasExemption` INTEGER NOT NULL, `wtExemptionAmount` REAL NOT NULL, `wtHasBracket` INTEGER NOT NULL, `wtBracketAmount` REAL NOT NULL, `wtIsDeleted` INTEGER NOT NULL, `wtUpdateTime` TEXT NOT NULL, PRIMARY KEY(`wtType`, `wtLevel`, `wtEffectiveDate`), FOREIGN KEY(`wtType`) REFERENCES `taxTypes`(`taxType`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`wtEffectiveDate`) REFERENCES `taxEffectiveDates`(`tdEffectiveDate`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "workTaxRuleId",
+            "columnName": "workTaxRuleId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtType",
+            "columnName": "wtType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtLevel",
+            "columnName": "wtLevel",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtEffectiveDate",
+            "columnName": "wtEffectiveDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtPercent",
+            "columnName": "wtPercent",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtHasExemption",
+            "columnName": "wtHasExemption",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtExemptionAmount",
+            "columnName": "wtExemptionAmount",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtHasBracket",
+            "columnName": "wtHasBracket",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtBracketAmount",
+            "columnName": "wtBracketAmount",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtIsDeleted",
+            "columnName": "wtIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtUpdateTime",
+            "columnName": "wtUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "wtType",
+            "wtLevel",
+            "wtEffectiveDate"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_workTaxRules_wtEffectiveDate",
+            "unique": false,
+            "columnNames": [
+              "wtEffectiveDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workTaxRules_wtEffectiveDate` ON `${TABLE_NAME}` (`wtEffectiveDate`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "taxTypes",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wtType"
+            ],
+            "referencedColumns": [
+              "taxType"
+            ]
+          },
+          {
+            "table": "taxEffectiveDates",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wtEffectiveDate"
+            ],
+            "referencedColumns": [
+              "tdEffectiveDate"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "taxTypes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`taxTypeId` INTEGER NOT NULL, `taxType` TEXT NOT NULL, `ttBasedOn` INTEGER NOT NULL, `ttIsDeleted` INTEGER NOT NULL, `ttUpdateTime` TEXT NOT NULL, PRIMARY KEY(`taxTypeId`))",
+        "fields": [
+          {
+            "fieldPath": "taxTypeId",
+            "columnName": "taxTypeId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taxType",
+            "columnName": "taxType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ttBasedOn",
+            "columnName": "ttBasedOn",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ttIsDeleted",
+            "columnName": "ttIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ttUpdateTime",
+            "columnName": "ttUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "taxTypeId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_taxTypes_taxType",
+            "unique": true,
+            "columnNames": [
+              "taxType"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_taxTypes_taxType` ON `${TABLE_NAME}` (`taxType`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "taxEffectiveDates",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tdEffectiveDate` TEXT NOT NULL, `tdEffectiveDateId` INTEGER NOT NULL, `tdIsDeleted` INTEGER NOT NULL, `tdUpdateTime` TEXT NOT NULL, PRIMARY KEY(`tdEffectiveDate`))",
+        "fields": [
+          {
+            "fieldPath": "tdEffectiveDate",
+            "columnName": "tdEffectiveDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tdEffectiveDateId",
+            "columnName": "tdEffectiveDateId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tdIsDeleted",
+            "columnName": "tdIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tdUpdateTime",
+            "columnName": "tdUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "tdEffectiveDate"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_taxEffectiveDates_tdEffectiveDateId",
+            "unique": true,
+            "columnNames": [
+              "tdEffectiveDateId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_taxEffectiveDates_tdEffectiveDateId` ON `${TABLE_NAME}` (`tdEffectiveDateId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "workOrders",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workOrderId` INTEGER NOT NULL, `woNumber` TEXT NOT NULL, `woEmployerId` INTEGER NOT NULL, `woAddress` TEXT NOT NULL, `woDescription` TEXT NOT NULL, `woDeleted` INTEGER NOT NULL, `woUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workOrderId`), FOREIGN KEY(`woEmployerId`) REFERENCES `employers`(`employerId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "workOrderId",
+            "columnName": "workOrderId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woNumber",
+            "columnName": "woNumber",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woEmployerId",
+            "columnName": "woEmployerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woAddress",
+            "columnName": "woAddress",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woDescription",
+            "columnName": "woDescription",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woDeleted",
+            "columnName": "woDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woUpdateTime",
+            "columnName": "woUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workOrderId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_workOrders_woNumber_woEmployerId",
+            "unique": true,
+            "columnNames": [
+              "woNumber",
+              "woEmployerId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_workOrders_woNumber_woEmployerId` ON `${TABLE_NAME}` (`woNumber`, `woEmployerId`)"
+          },
+          {
+            "name": "index_workOrders_woNumber",
+            "unique": false,
+            "columnNames": [
+              "woNumber"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workOrders_woNumber` ON `${TABLE_NAME}` (`woNumber`)"
+          },
+          {
+            "name": "index_workOrders_woEmployerId",
+            "unique": false,
+            "columnNames": [
+              "woEmployerId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workOrders_woEmployerId` ON `${TABLE_NAME}` (`woEmployerId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "employers",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "woEmployerId"
+            ],
+            "referencedColumns": [
+              "employerId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "payPeriods",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`payPeriodId` INTEGER NOT NULL, `ppCutoffDate` TEXT NOT NULL, `ppEmployerId` INTEGER NOT NULL, `ppIsDeleted` INTEGER NOT NULL, `ppUpdateTime` TEXT NOT NULL, PRIMARY KEY(`ppCutoffDate`, `ppEmployerId`), FOREIGN KEY(`ppEmployerId`) REFERENCES `employers`(`employerId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "payPeriodId",
+            "columnName": "payPeriodId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppCutoffDate",
+            "columnName": "ppCutoffDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppEmployerId",
+            "columnName": "ppEmployerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppIsDeleted",
+            "columnName": "ppIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppUpdateTime",
+            "columnName": "ppUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "ppCutoffDate",
+            "ppEmployerId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_payPeriods_ppEmployerId_ppCutoffDate",
+            "unique": true,
+            "columnNames": [
+              "ppEmployerId",
+              "ppCutoffDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_payPeriods_ppEmployerId_ppCutoffDate` ON `${TABLE_NAME}` (`ppEmployerId`, `ppCutoffDate`)"
+          },
+          {
+            "name": "index_payPeriods_payPeriodId",
+            "unique": true,
+            "columnNames": [
+              "payPeriodId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_payPeriods_payPeriodId` ON `${TABLE_NAME}` (`payPeriodId`)"
+          },
+          {
+            "name": "index_payPeriods_ppCutoffDate",
+            "unique": false,
+            "columnNames": [
+              "ppCutoffDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_payPeriods_ppCutoffDate` ON `${TABLE_NAME}` (`ppCutoffDate`)"
+          },
+          {
+            "name": "index_payPeriods_ppEmployerId",
+            "unique": false,
+            "columnNames": [
+              "ppEmployerId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_payPeriods_ppEmployerId` ON `${TABLE_NAME}` (`ppEmployerId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "employers",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "ppEmployerId"
+            ],
+            "referencedColumns": [
+              "employerId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "workOrderHistory",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`woHistoryId` INTEGER NOT NULL, `woHistoryWorkOrderId` INTEGER NOT NULL, `woHistoryWorkDateId` INTEGER NOT NULL, `woHistoryRegHours` REAL NOT NULL, `woHistoryOtHours` REAL NOT NULL, `woHistoryDblOtHours` REAL NOT NULL, `woHistoryNote` TEXT, `woHistoryDeleted` INTEGER NOT NULL, `woHistoryUpdateTime` TEXT NOT NULL, PRIMARY KEY(`woHistoryId`), FOREIGN KEY(`woHistoryWorkOrderId`) REFERENCES `workOrders`(`workOrderId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`woHistoryWorkDateId`) REFERENCES `workDates`(`workDateId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "woHistoryId",
+            "columnName": "woHistoryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woHistoryWorkOrderId",
+            "columnName": "woHistoryWorkOrderId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woHistoryWorkDateId",
+            "columnName": "woHistoryWorkDateId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woHistoryRegHours",
+            "columnName": "woHistoryRegHours",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woHistoryOtHours",
+            "columnName": "woHistoryOtHours",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woHistoryDblOtHours",
+            "columnName": "woHistoryDblOtHours",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woHistoryNote",
+            "columnName": "woHistoryNote",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "woHistoryDeleted",
+            "columnName": "woHistoryDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "woHistoryUpdateTime",
+            "columnName": "woHistoryUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "woHistoryId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_workOrderHistory_woHistoryWorkOrderId_woHistoryWorkDateId",
+            "unique": true,
+            "columnNames": [
+              "woHistoryWorkOrderId",
+              "woHistoryWorkDateId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_workOrderHistory_woHistoryWorkOrderId_woHistoryWorkDateId` ON `${TABLE_NAME}` (`woHistoryWorkOrderId`, `woHistoryWorkDateId`)"
+          },
+          {
+            "name": "index_workOrderHistory_woHistoryWorkOrderId",
+            "unique": false,
+            "columnNames": [
+              "woHistoryWorkOrderId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workOrderHistory_woHistoryWorkOrderId` ON `${TABLE_NAME}` (`woHistoryWorkOrderId`)"
+          },
+          {
+            "name": "index_workOrderHistory_woHistoryWorkDateId",
+            "unique": false,
+            "columnNames": [
+              "woHistoryWorkDateId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workOrderHistory_woHistoryWorkDateId` ON `${TABLE_NAME}` (`woHistoryWorkDateId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "workOrders",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "woHistoryWorkOrderId"
+            ],
+            "referencedColumns": [
+              "workOrderId"
+            ]
+          },
+          {
+            "table": "workDates",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "woHistoryWorkDateId"
+            ],
+            "referencedColumns": [
+              "workDateId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "workPerformed",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workPerformedId` INTEGER NOT NULL, `wpDescription` TEXT NOT NULL, `wpIsDeleted` INTEGER NOT NULL, `wpUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workPerformedId`))",
+        "fields": [
+          {
+            "fieldPath": "workPerformedId",
+            "columnName": "workPerformedId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wpDescription",
+            "columnName": "wpDescription",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wpIsDeleted",
+            "columnName": "wpIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wpUpdateTime",
+            "columnName": "wpUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workPerformedId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "jobSpecs",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`jobSpecId` INTEGER NOT NULL, `jsName` TEXT NOT NULL, `jsIsDeleted` INTEGER NOT NULL, `jsUpdateTime` TEXT NOT NULL, PRIMARY KEY(`jobSpecId`))",
+        "fields": [
+          {
+            "fieldPath": "jobSpecId",
+            "columnName": "jobSpecId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jsName",
+            "columnName": "jsName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jsIsDeleted",
+            "columnName": "jsIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jsUpdateTime",
+            "columnName": "jsUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "jobSpecId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_jobSpecs_jsName",
+            "unique": true,
+            "columnNames": [
+              "jsName"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_jobSpecs_jsName` ON `${TABLE_NAME}` (`jsName`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "workOrderHistoryWorkPerformed",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workOrderHistoryWorkPerformedId` INTEGER NOT NULL, `wowpHistoryId` INTEGER NOT NULL, `wowpWorkPerformedId` INTEGER NOT NULL, `wowpSequence` INTEGER NOT NULL, `wowpIsDeleted` INTEGER NOT NULL, `wowpUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workOrderHistoryWorkPerformedId`), FOREIGN KEY(`wowpHistoryId`) REFERENCES `workOrderHistory`(`woHistoryId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`wowpWorkPerformedId`) REFERENCES `workPerformed`(`workPerformedId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "workOrderHistoryWorkPerformedId",
+            "columnName": "workOrderHistoryWorkPerformedId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wowpHistoryId",
+            "columnName": "wowpHistoryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wowpWorkPerformedId",
+            "columnName": "wowpWorkPerformedId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wowpSequence",
+            "columnName": "wowpSequence",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wowpIsDeleted",
+            "columnName": "wowpIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wowpUpdateTime",
+            "columnName": "wowpUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workOrderHistoryWorkPerformedId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_workOrderHistoryWorkPerformed_wowpHistoryId_wowpWorkPerformedId",
+            "unique": true,
+            "columnNames": [
+              "wowpHistoryId",
+              "wowpWorkPerformedId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_workOrderHistoryWorkPerformed_wowpHistoryId_wowpWorkPerformedId` ON `${TABLE_NAME}` (`wowpHistoryId`, `wowpWorkPerformedId`)"
+          },
+          {
+            "name": "index_workOrderHistoryWorkPerformed_wowpHistoryId",
+            "unique": false,
+            "columnNames": [
+              "wowpHistoryId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workOrderHistoryWorkPerformed_wowpHistoryId` ON `${TABLE_NAME}` (`wowpHistoryId`)"
+          },
+          {
+            "name": "index_workOrderHistoryWorkPerformed_wowpWorkPerformedId",
+            "unique": false,
+            "columnNames": [
+              "wowpWorkPerformedId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workOrderHistoryWorkPerformed_wowpWorkPerformedId` ON `${TABLE_NAME}` (`wowpWorkPerformedId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "workOrderHistory",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wowpHistoryId"
+            ],
+            "referencedColumns": [
+              "woHistoryId"
+            ]
+          },
+          {
+            "table": "workPerformed",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wowpWorkPerformedId"
+            ],
+            "referencedColumns": [
+              "workPerformedId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "workOrderJobSpecs",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workOrderJobSpecId` INTEGER NOT NULL, `wojsWorkOrderId` INTEGER NOT NULL, `wojsJobSpecId` INTEGER NOT NULL, `wojsSequence` INTEGER NOT NULL, `wojsIsDeleted` INTEGER NOT NULL, `wojsUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workOrderJobSpecId`), FOREIGN KEY(`wojsWorkOrderId`) REFERENCES `workOrders`(`workOrderId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`wojsJobSpecId`) REFERENCES `jobSpecs`(`jobSpecId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "workOrderJobSpecId",
+            "columnName": "workOrderJobSpecId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wojsWorkOrderId",
+            "columnName": "wojsWorkOrderId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wojsJobSpecId",
+            "columnName": "wojsJobSpecId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wojsSequence",
+            "columnName": "wojsSequence",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wojsIsDeleted",
+            "columnName": "wojsIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wojsUpdateTime",
+            "columnName": "wojsUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workOrderJobSpecId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_workOrderJobSpecs_wojsWorkOrderId_wojsJobSpecId",
+            "unique": true,
+            "columnNames": [
+              "wojsWorkOrderId",
+              "wojsJobSpecId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_workOrderJobSpecs_wojsWorkOrderId_wojsJobSpecId` ON `${TABLE_NAME}` (`wojsWorkOrderId`, `wojsJobSpecId`)"
+          },
+          {
+            "name": "index_workOrderJobSpecs_wojsWorkOrderId",
+            "unique": false,
+            "columnNames": [
+              "wojsWorkOrderId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workOrderJobSpecs_wojsWorkOrderId` ON `${TABLE_NAME}` (`wojsWorkOrderId`)"
+          },
+          {
+            "name": "index_workOrderJobSpecs_wojsJobSpecId",
+            "unique": false,
+            "columnNames": [
+              "wojsJobSpecId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workOrderJobSpecs_wojsJobSpecId` ON `${TABLE_NAME}` (`wojsJobSpecId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "workOrders",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wojsWorkOrderId"
+            ],
+            "referencedColumns": [
+              "workOrderId"
+            ]
+          },
+          {
+            "table": "jobSpecs",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wojsJobSpecId"
+            ],
+            "referencedColumns": [
+              "jobSpecId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "materials",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`materialId` INTEGER NOT NULL, `mName` TEXT NOT NULL, `mCost` REAL NOT NULL, `mPrice` REAL NOT NULL, `mIsDeleted` INTEGER NOT NULL, `mUpdateTime` TEXT NOT NULL, PRIMARY KEY(`materialId`))",
+        "fields": [
+          {
+            "fieldPath": "materialId",
+            "columnName": "materialId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mName",
+            "columnName": "mName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mCost",
+            "columnName": "mCost",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mPrice",
+            "columnName": "mPrice",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mIsDeleted",
+            "columnName": "mIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mUpdateTime",
+            "columnName": "mUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "materialId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_materials_mName",
+            "unique": true,
+            "columnNames": [
+              "mName"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_materials_mName` ON `${TABLE_NAME}` (`mName`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "workOrderHistoryMaterials",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workOrderHistoryMaterialId` INTEGER NOT NULL, `wohmHistoryId` INTEGER NOT NULL, `wohmMaterialId` INTEGER NOT NULL, `wohmQuantity` REAL NOT NULL, `wohmSequence` INTEGER NOT NULL, `wohmIsDeleted` INTEGER NOT NULL, `wohmUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workOrderHistoryMaterialId`), FOREIGN KEY(`wohmHistoryId`) REFERENCES `workOrderHistory`(`woHistoryId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`wohmMaterialId`) REFERENCES `materials`(`materialId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "workOrderHistoryMaterialId",
+            "columnName": "workOrderHistoryMaterialId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wohmHistoryId",
+            "columnName": "wohmHistoryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wohmMaterialId",
+            "columnName": "wohmMaterialId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wohmQuantity",
+            "columnName": "wohmQuantity",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wohmSequence",
+            "columnName": "wohmSequence",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wohmIsDeleted",
+            "columnName": "wohmIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wohmUpdateTime",
+            "columnName": "wohmUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workOrderHistoryMaterialId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_workOrderHistoryMaterials_wohmHistoryId_wohmMaterialId",
+            "unique": true,
+            "columnNames": [
+              "wohmHistoryId",
+              "wohmMaterialId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_workOrderHistoryMaterials_wohmHistoryId_wohmMaterialId` ON `${TABLE_NAME}` (`wohmHistoryId`, `wohmMaterialId`)"
+          },
+          {
+            "name": "index_workOrderHistoryMaterials_wohmHistoryId",
+            "unique": false,
+            "columnNames": [
+              "wohmHistoryId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workOrderHistoryMaterials_wohmHistoryId` ON `${TABLE_NAME}` (`wohmHistoryId`)"
+          },
+          {
+            "name": "index_workOrderHistoryMaterials_wohmMaterialId",
+            "unique": false,
+            "columnNames": [
+              "wohmMaterialId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workOrderHistoryMaterials_wohmMaterialId` ON `${TABLE_NAME}` (`wohmMaterialId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "workOrderHistory",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wohmHistoryId"
+            ],
+            "referencedColumns": [
+              "woHistoryId"
+            ]
+          },
+          {
+            "table": "materials",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wohmMaterialId"
+            ],
+            "referencedColumns": [
+              "materialId"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [
+      {
+        "viewName": "ExtraDefinitionAndType",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT extraDef.*, extraType.* FROM workExtrasDefinitions as extraDef LEFT JOIN workExtraTypes as extraType ON extraDef.weExtraTypeId = extraType.workExtraTypeId"
+      },
+      {
+        "viewName": "ExtraTypeAndDefByDay",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT extraType.*, extraDef.* FROM workExtraTypes as extraType LEFT JOIN workExtrasDefinitions as extraDef ON (workExtraTypeId = weExtraTypeId) WHERE wetAttachTo = 1 AND wetIsDeleted = 0 ORDER BY wetName COLLATE NOCASE"
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '45f5e05db30821932dfd06d76728aba3')"
+    ]
+  }
+}

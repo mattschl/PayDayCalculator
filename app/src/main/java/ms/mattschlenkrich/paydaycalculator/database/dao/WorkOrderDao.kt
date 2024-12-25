@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.JobSpec
@@ -367,6 +368,8 @@ interface WorkOrderDao {
                 "WHERE wohmIsDeleted = 0 " +
                 "ORDER By wohmMaterialId"
     )
+
+    @RewriteQueriesToDropUnusedColumns
     fun getMaterialsHistoryByWorkOrderId(workOrderId: Long):
             LiveData<List<WorkOrderHistoryMaterialCombined>>
 }

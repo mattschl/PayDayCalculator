@@ -36,23 +36,22 @@ import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHis
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerformed
 
-
 @Database(
     entities = [
         Employers::class,
-        PayPeriods::class,
-        WorkDates::class,
+        EmployerTaxTypes::class,
+        EmployerPayRates::class,
         WorkDateExtras::class,
         WorkPayPeriodExtras::class,
+        WorkExtraTypes::class,
+        WorkDates::class,
         WorkPayPeriodTax::class,
         WorkExtrasDefinitions::class,
-        WorkExtraTypes::class,
         WorkTaxRules::class,
         TaxTypes::class,
         TaxEffectiveDates::class,
-        EmployerTaxTypes::class,
-        EmployerPayRates::class,
         WorkOrder::class,
+        PayPeriods::class,
         WorkOrderHistory::class,
         WorkPerformed::class,
         JobSpec::class,
@@ -93,7 +92,7 @@ abstract class PayDatabase : RoomDatabase() {
                 PAY_DB_NAME
             )
 //                .createFromAsset("pay.db")
-                .fallbackToDestructiveMigration()
+//                .fallbackToDestructiveMigration()
                 .build()
         }
     }

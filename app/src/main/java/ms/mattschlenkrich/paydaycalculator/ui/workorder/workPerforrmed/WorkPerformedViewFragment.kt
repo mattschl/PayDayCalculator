@@ -94,7 +94,6 @@ class WorkPerformedViewFragment :
                 rvRecycler.visibility = View.VISIBLE
                 crdNoInfo.visibility = View.GONE
             }
-
         }
 
     }
