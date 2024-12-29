@@ -18,11 +18,8 @@ class EmployerExtraDefinitionsShortAdapter(
     private val employer: Employers,
     private val mainActivity: MainActivity,
     private val mView: View,
-//    private val parentFragment: EmployerUpdateFragment,
 ) : RecyclerView.Adapter<EmployerExtraDefinitionsShortAdapter.DefinitionViewHolder>() {
 
-
-    //    private val cf = NumberFunctions()
     private val df = DateFunctions()
 
     class DefinitionViewHolder(val itemBinding: ListEmployerExtraItemBinding) :
@@ -99,6 +96,10 @@ class EmployerExtraDefinitionsShortAdapter(
         mainActivity.mainViewModel.setEmployerString(employer.employerName)
         mainActivity.mainViewModel.setEmployer(employer)
         mainActivity.mainViewModel.setWorkExtraType(extra)
+        gotoEmployerExtraDefinitionsFragment()
+    }
+
+    private fun gotoEmployerExtraDefinitionsFragment() {
         mView.findNavController().navigate(
             EmployerUpdateFragmentDirections
                 .actionEmployerUpdateFragmentToEmployerExtraDefinitionsFragment()

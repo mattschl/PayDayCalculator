@@ -69,12 +69,13 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun populateEmployerListForValidation() {
-        mainActivity.employerViewModel.getEmployers().observe(viewLifecycleOwner) { employers ->
-            employerList.clear()
-            employers.listIterator().forEach {
-                employerList.add(it)
+        mainActivity.employerViewModel.getEmployers()
+            .observe(viewLifecycleOwner) { employers ->
+                employerList.clear()
+                employers.listIterator().forEach {
+                    employerList.add(it)
+                }
             }
-        }
     }
 
     private fun populateSpinners() {
@@ -140,7 +141,9 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
             curDateAll[1].toInt() - 1,
             curDateAll[2].toInt()
         )
-        datePickerDialog.setTitle("Choose the first date")
+        datePickerDialog.setTitle(
+            getString(R.string.choose_the_first_date)
+        )
         datePickerDialog.show()
     }
 
@@ -178,20 +181,18 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     private fun setExtraOptions() {
         AlertDialog.Builder(mView.context)
             .setMessage(
-                "You cannot add any extra credits or deductions until the employer is saved. " +
-                        "Save the employer first and go to edit mode."
+                getString(R.string.you_cannot_add_any_extra_credits_or_deductions_until_the_employer_is_saved)
             )
-            .setNegativeButton("OK", null)
+            .setNegativeButton(getString(R.string.ok), null)
             .show()
     }
 
     private fun setTaxOptions() {
         AlertDialog.Builder(mView.context)
             .setMessage(
-                "You cannot add taxes until the employer is saved. " +
-                        "Save the employer first and go to edit mode."
+                getString(R.string.you_cannot_add_taxes_until_the_employer_is_saved)
             )
-            .setNegativeButton("OK", null)
+            .setNegativeButton(getString(R.string.ok), null)
             .show()
     }
 
@@ -245,24 +246,24 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     private fun validateEmployer(): String {
         binding.apply {
             if (etName.text.isNullOrBlank()) {
-                return "    ERROR!!\n" +
-                        "The employer must have a name!"
+                return getString(R.string.error_) +
+                        getString(R.string.the_employer_must_have_a_name)
             }
             if (employerList.isNotEmpty()) {
                 for (employer in employerList) {
                     if (employer.employerName == etName.text.toString().trim()) {
-                        return "    ERROR!!\n" +
-                                "This employer already exists!"
+                        return getString(R.string.error_) +
+                                getString(R.string.this_employer_already_exists)
                     }
                 }
             }
             if (etDaysBefore.text.isNullOrBlank()) {
-                return "    ERROR!!\n" +
-                        "The number of days before the pay day is required!"
+                return getString(R.string.error_) +
+                        getString(R.string.the_number_of_days_before_the_pay_day_is_required)
             }
             if (etMidMonthDate.text.isNullOrBlank()) {
-                return "    ERROR!!\n" +
-                        "For semi-monthly pay days there needs to be a mid month pay day"
+                return getString(R.string.error_) +
+                        getString(R.string.for_semi_monthly_pay_days_there_needs_to_be_a_mid_month_pay_day)
             }
             return ANSWER_OK
         }
@@ -305,16 +306,17 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
 
     private fun chooseNextStepsAfterSaving(curEmployer: Employers) {
         AlertDialog.Builder(mView.context)
-            .setTitle("Choose next steps for ${curEmployer.employerName}")
-            .setMessage(
-                "The taxes have been set up automatically. \n" +
-                        "Would you like to open this employer in EDIT mode to edit taxes, " +
-                        "create extra deductions or extra items added to paychecks?"
+            .setTitle(
+                getString(R.string.choose_next_steps_for) +
+                        curEmployer.employerName
             )
-            .setPositiveButton("Yes") { _, _ ->
+            .setMessage(
+                getString(R.string.the_taxes_have_been_set_up_automatically)
+            )
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
                 gotoEmployerExtrasFragment(curEmployer)
             }
-            .setNegativeButton("No") { _, _ ->
+            .setNegativeButton(getString(R.string.no)) { _, _ ->
                 gotoCallingFragment(curEmployer)
             }
             .show()

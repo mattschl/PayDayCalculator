@@ -101,6 +101,10 @@ class EmployerWageAdapter(
         mainActivity.mainViewModel.setPayRate(wage)
         mainActivity.mainViewModel.setEmployer(curEmployer)
         mainActivity.mainViewModel.addCallingFragment(parentTag)
+        gotoEmployerWageUpdateFragment()
+    }
+
+    private fun gotoEmployerWageUpdateFragment() {
         mView.findNavController().navigate(
             EmployerPayRatesFragmentDirections
                 .actionEmployerPayRatesFragmentToEmployerWageUpdateFragment()

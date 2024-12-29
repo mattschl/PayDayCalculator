@@ -75,6 +75,10 @@ class EmployerTaxTypeAdapter(
 
     private fun gotoTaxRules(employerTaxType: EmployerTaxTypes) {
         mainActivity.mainViewModel.setTaxTypeString(employerTaxType.etrTaxType)
+        gotoaRulesFragment()
+    }
+
+    private fun gotoaRulesFragment() {
         mView.findNavController().navigate(
             EmployerUpdateFragmentDirections
                 .actionEmployerUpdateFragmentToTaxRulesFragment()

@@ -204,7 +204,7 @@
     <string name="deduction">deduction</string>
     <string name="by_default">by default</string>
     <string name="manually">manually</string>
-    <string name="add">Add</string>
+    <string name="add">Add </string>
     <string name="enter_descriptions_below">Enter Job descriptions to add to list</string>
     <string name="start_typing_for_matches">Start typing for matches</string>
     <string name="job_description">Job Description</string>
@@ -237,4 +237,25 @@
     <string name="no_materials_to_view">No Materials to view</string>
     <string name="enter_new_quantity">Enter new quantity</string>
     <string name="update_quantity">Update Quantity</string>
+    <string name="_deleted_">  *Deleted*</string>
+    <string name="__current">" - CURRENT"</string>
+    <string name="deduct">"Deduct "</string>
+    <string name="_for_">" for "</string>
+    <string name="choose_the_first_date">Choose the first date</string>
+    <string name="you_cannot_add_any_extra_credits_or_deductions_until_the_employer_is_saved">"You cannot add any extra credits or deductions until the employer is saved.\nSave the employer first and go to edit mode. "</string>
+    <string name="ok">OK</string>
+    <string name="you_cannot_add_taxes_until_the_employer_is_saved">You cannot add taxes until the employer is saved. \nSave the employer first and go to edit mode.</string>
+    <string name="error">"    ERROR!!"</string>
+    <string name="the_employer_must_have_a_name">The employer must have a name!</string>
+    <string name="this_employer_already_exists">This employer already exists!</string>
+    <string name="the_number_of_days_before_the_pay_day_is_required">The number of days before the pay day is required!</string>
+    <string name="error_">"    ERROR!!\n"</string>
+    <string name="for_semi_monthly_pay_days_there_needs_to_be_a_mid_month_pay_day">For semi-monthly pay days there needs to be a mid month pay day</string>
+    <string name="choose_next_steps_for">"Choose next steps for "</string>
+    <string name="the_taxes_have_been_set_up_automatically">The taxes have been set up automatically. \nWould you like to open this employer in EDIT mode to edit taxes, create extra deductions or extra items added to paychecks?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="add_a_pay_rate">Add a pay rate</string>
+    <string name="there_has_to_be_a_wage_to_save">There has to be a wage to save</string>
+    <string name="edit_pay_rate_for">"Edit pay rate for "</string>
 </resources>

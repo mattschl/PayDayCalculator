@@ -61,13 +61,6 @@ class EmployerFragment :
         }
     }
 
-    private fun gotoEmployerAdd() {
-        mView.findNavController().navigate(
-            EmployerFragmentDirections
-                .actionEmployerFragmentToEmployerAddFragment()
-        )
-    }
-
     private fun populateEmployers() {
         employerAdapter = EmployerAdapter(
             mainActivity, mView
@@ -135,6 +128,13 @@ class EmployerFragment :
                 updateUI(list)
             }
         }
+    }
+
+    private fun gotoEmployerAdd() {
+        mView.findNavController().navigate(
+            EmployerFragmentDirections
+                .actionEmployerFragmentToEmployerAddFragment()
+        )
     }
 
     override fun onDestroy() {

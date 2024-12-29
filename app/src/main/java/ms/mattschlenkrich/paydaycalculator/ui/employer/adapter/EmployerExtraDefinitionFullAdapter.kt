@@ -76,18 +76,19 @@ class EmployerExtraDefinitionFullAdapter(
 
             if (definition.definition.weIsDeleted) {
                 tvEffectiveDate.setTextColor(Color.RED)
-                display = "* $display * Deleted"
+                display = "* $display" +
+                        mView.context.getString(R.string._deleted_)
             } else if (position == 0) {
-                display += " - CURRENT"
+                display += mView.context.getString(R.string.__current)
                 tvEffectiveDate.setTextColor(Color.BLACK)
             } else {
                 tvEffectiveDate.setTextColor(Color.BLACK)
             }
             tvEffectiveDate.text = display
             display = if (definition.extraType.wetIsCredit) {
-                "Add "
+                mView.context.getString(R.string.add)
             } else {
-                "Deduct "
+                mView.context.getString(R.string.deduct)
             }
             if (definition.extraType.wetIsCredit) {
                 tvValue.setTextColor(Color.BLACK)
@@ -120,7 +121,8 @@ class EmployerExtraDefinitionFullAdapter(
         AlertDialog.Builder(mView.context)
             .setTitle(
                 mView.resources.getString(R.string.choose_an_action) +
-                        " for " + definition.extraType.wetName
+                        mView.context.getString(R.string._for_)
+                        + definition.extraType.wetName
             )
             .setItems(
                 arrayOf(
@@ -150,16 +152,24 @@ class EmployerExtraDefinitionFullAdapter(
         mainActivity.mainViewModel.setEmployer(definition.employer)
         mainActivity.mainViewModel.setExtraDefinitionFull(definition)
         if (employerExtraDefinitionsFragment != null) {
-            mView.findNavController().navigate(
-                EmployerExtraDefinitionsFragmentDirections
-                    .actionEmployerExtraDefinitionsFragmentToEmployerExtraDefinitionUpdateFragment()
-            )
+            gotoEmployerExtraDefinitionUpdateFragmentFromExtraDefinition()
         } else if (employerUpdateFragment != null) {
-            mView.findNavController().navigate(
-                EmployerUpdateFragmentDirections
-                    .actionEmployerUpdateFragmentToEmployerExtraDefinitionUpdateFragment()
-            )
+            gotoEmployerExtraDefinitionUpdateFragmentFromEmployerUpdate()
         }
+    }
+
+    private fun gotoEmployerExtraDefinitionUpdateFragmentFromExtraDefinition() {
+        mView.findNavController().navigate(
+            EmployerExtraDefinitionsFragmentDirections
+                .actionEmployerExtraDefinitionsFragmentToEmployerExtraDefinitionUpdateFragment()
+        )
+    }
+
+    private fun gotoEmployerExtraDefinitionUpdateFragmentFromEmployerUpdate() {
+        mView.findNavController().navigate(
+            EmployerUpdateFragmentDirections
+                .actionEmployerUpdateFragmentToEmployerExtraDefinitionUpdateFragment()
+        )
     }
 
     private fun deleteExtra(definition: WorkExtrasDefinitions) {

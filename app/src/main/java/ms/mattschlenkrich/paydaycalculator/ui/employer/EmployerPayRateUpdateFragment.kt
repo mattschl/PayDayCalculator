@@ -45,20 +45,39 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         mView = binding.root
         mainActivity = (activity as MainActivity)
         val display =
-            "Edit pay rate for ${mainActivity.mainViewModel.getEmployer()!!.employerName}"
+            getString(R.string.edit_pay_rate_for) +
+                    mainActivity.mainViewModel.getEmployer()!!.employerName
         mainActivity.title = display
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        populateSpinner()
-        setMenuActions()
-        setClickActions()
         populateValues()
+        setClickActions()
+    }
+
+    private fun populateValues() {
+        populateSpinner()
+        binding.apply {
+            curPayRate = mainActivity.mainViewModel.getPayRate()!!
+            tvEffectiveDate.text = curPayRate.eprEffectiveDate
+            etWage.setText(cf.displayDollars(curPayRate.eprPayRate))
+            spPerFrequency.setSelection(curPayRate.eprPerPeriod)
+        }
+    }
+
+    private fun populateSpinner() {
+        val frequencyAdapter = ArrayAdapter(
+            mView.context, R.layout.spinner_item_bold,
+            resources.getStringArray(R.array.pay_per_frequencies)
+        )
+        frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
+        binding.spPerFrequency.adapter = frequencyAdapter
     }
 
     private fun setClickActions() {
+        setMenuActions()
         binding.apply {
             fabDone.setOnClickListener {
                 updatePayRate()
@@ -68,6 +87,27 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
                 changeDate()
             }
         }
+    }
+
+    private fun setMenuActions() {
+        mainActivity.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_delete, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.menu_delete -> {
+                        deletePayRate()
+                        true
+                    }
+
+                    else -> {
+                        false
+                    }
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
     private fun updatePayRate() {
@@ -96,19 +136,6 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         }
     }
 
-    private fun gotoCallingFragment() {
-        if (mainActivity.mainViewModel.getCallingFragment()!!.contains(FRAG_PAY_RATES)) {
-            gotoPayRateFragment()
-        }
-    }
-
-    private fun gotoPayRateFragment() {
-        mView.findNavController().navigate(
-            EmployerPayRateUpdateFragmentDirections
-                .actionEmployerWageUpdateFragmentToEmployerPayRatesFragment()
-        )
-    }
-
     private fun validatePayRate(): String {
         binding.apply {
             return if (etWage.text.isNullOrBlank()) {
@@ -120,22 +147,19 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         }
     }
 
-    private fun populateSpinner() {
-        val frequencyAdapter = ArrayAdapter(
-            mView.context, R.layout.spinner_item_bold,
-            resources.getStringArray(R.array.pay_per_frequencies)
+    private fun deletePayRate() {
+        mainActivity.employerViewModel.updatePayRate(
+            EmployerPayRates(
+                curPayRate.employerPayRateId,
+                curPayRate.eprEmployerId,
+                curPayRate.eprEffectiveDate,
+                curPayRate.eprPerPeriod,
+                curPayRate.eprPayRate,
+                true,
+                df.getCurrentTimeAsString()
+            )
         )
-        frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
-        binding.spPerFrequency.adapter = frequencyAdapter
-    }
-
-    private fun populateValues() {
-        binding.apply {
-            curPayRate = mainActivity.mainViewModel.getPayRate()!!
-            tvEffectiveDate.text = curPayRate.eprEffectiveDate
-            etWage.setText(cf.displayDollars(curPayRate.eprPayRate))
-            spPerFrequency.setSelection(curPayRate.eprPerPeriod)
-        }
+        gotoCallingFragment()
     }
 
     private fun changeDate() {
@@ -164,40 +188,17 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         }
     }
 
-    private fun setMenuActions() {
-        mainActivity.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.menu_delete, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_delete -> {
-                        deletePayRate()
-                        true
-                    }
-
-                    else -> {
-                        false
-                    }
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.CREATED)
+    private fun gotoCallingFragment() {
+        if (mainActivity.mainViewModel.getCallingFragment()!!.contains(FRAG_PAY_RATES)) {
+            gotoPayRateFragment()
+        }
     }
 
-    private fun deletePayRate() {
-        mainActivity.employerViewModel.updatePayRate(
-            EmployerPayRates(
-                curPayRate.employerPayRateId,
-                curPayRate.eprEmployerId,
-                curPayRate.eprEffectiveDate,
-                curPayRate.eprPerPeriod,
-                curPayRate.eprPayRate,
-                true,
-                df.getCurrentTimeAsString()
-            )
+    private fun gotoPayRateFragment() {
+        mView.findNavController().navigate(
+            EmployerPayRateUpdateFragmentDirections
+                .actionEmployerWageUpdateFragmentToEmployerPayRatesFragment()
         )
-        gotoCallingFragment()
     }
 
     override fun onDestroy() {

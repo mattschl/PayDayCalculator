@@ -64,39 +64,13 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         employerViewModel = mainActivity.employerViewModel
-        populateEmployerListForValidation()
-        populateSpinners()
-        setMenuActions()
-        setClickActions()
-        setSpinnerActions()
         populateValues()
-    }
-
-    private fun setClickActions() {
-        binding.apply {
-            fabDone.setOnClickListener {
-                updateEmployerIfValid()
-            }
-            fabAddTax.setOnClickListener {
-                gotoTaxTypesAddFragment()
-            }
-            lblTaxes.setOnLongClickListener {
-                gotoTaxRulesFragment()
-                false
-            }
-            fabAddExtra.setOnClickListener {
-                gotoExtraAddFragment(curEmployer)
-            }
-            btnWage.setOnClickListener {
-                gotoPayRateFragment(curEmployer)
-            }
-            binding.tvStartDate.setOnClickListener {
-                changeCheckDate()
-            }
-        }
+        setClickActions()
     }
 
     private fun populateValues() {
+        populateEmployerListForValidation()
+        populateSpinners()
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
             if (mainActivity.mainViewModel.getEmployer() != null) {
@@ -119,12 +93,66 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
                             break
                         }
                     }
-                    etDaysBefore.setText(curEmployer!!.cutoffDaysBefore.toString())
-                    etMidMonthDate.setText(curEmployer!!.midMonthlyDate.toString())
-                    etMainMonthDate.setText(curEmployer!!.mainMonthlyDate.toString())
+                    etDaysBefore.setText(
+                        String.format(curEmployer!!.cutoffDaysBefore.toString())
+                    )
+                    etMidMonthDate.setText(
+                        String.format(curEmployer!!.midMonthlyDate.toString())
+                    )
+                    etMainMonthDate.setText(
+                        String.format(curEmployer!!.mainMonthlyDate.toString())
+                    )
                 }
                 populateTaxes(curEmployer!!.employerId)
                 populateExtras(curEmployer!!.employerId)
+            }
+        }
+    }
+
+    private fun populateEmployerListForValidation() {
+        employerViewModel.getEmployers().observe(
+            viewLifecycleOwner
+        ) { employers ->
+            employerList.clear()
+            employers.listIterator().forEach {
+                employerList.add(it)
+            }
+        }
+    }
+
+    private fun populateSpinners() {
+        binding.apply {
+            val frequencyAdapter = ArrayAdapter(
+                mView.context, R.layout.spinner_item_bold,
+                resources.getStringArray(R.array.pay_day_frequencies)
+            )
+            frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
+            spFrequency.adapter = frequencyAdapter
+
+            val dayOfWeekAdapter = ArrayAdapter(
+                mView.context, R.layout.spinner_item_bold,
+                resources.getStringArray(R.array.pay_days)
+            )
+            dayOfWeekAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
+            spDayOfWeek.adapter = dayOfWeekAdapter
+        }
+    }
+
+    fun populateTaxes(employerId: Long) {
+        binding.apply {
+            val employerTaxTypeAdapter = EmployerTaxTypeAdapter(
+                mainActivity, mView, this@EmployerUpdateFragment
+            )
+            rvTaxes.apply {
+                layoutManager = LinearLayoutManager(mView.context)
+                adapter = employerTaxTypeAdapter
+            }
+            activity.let {
+                mainActivity.workTaxViewModel.getEmployerTaxTypes(
+                    employerId
+                ).observe(viewLifecycleOwner) { employerTaxType ->
+                    employerTaxTypeAdapter.differ.submitList(employerTaxType)
+                }
             }
         }
     }
@@ -155,24 +183,114 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         }
     }
 
-
-    fun populateTaxes(employerId: Long) {
+    private fun setClickActions() {
+        setMenuActions()
         binding.apply {
-            val employerTaxTypeAdapter = EmployerTaxTypeAdapter(
-                mainActivity, mView, this@EmployerUpdateFragment
-            )
-            rvTaxes.apply {
-                layoutManager = LinearLayoutManager(mView.context)
-                adapter = employerTaxTypeAdapter
+            fabDone.setOnClickListener {
+                updateEmployerIfValid()
             }
-            activity.let {
-                mainActivity.workTaxViewModel.getEmployerTaxTypes(
-                    employerId
-                ).observe(viewLifecycleOwner) { employerTaxType ->
-                    employerTaxTypeAdapter.differ.submitList(employerTaxType)
+            fabAddTax.setOnClickListener {
+                gotoTaxTypesAddFragment()
+            }
+            lblTaxes.setOnLongClickListener {
+                gotoTaxRulesFragment()
+                false
+            }
+            fabAddExtra.setOnClickListener {
+                gotoExtraAdd(curEmployer)
+            }
+            btnWage.setOnClickListener {
+                gotoPayRate(curEmployer)
+            }
+            binding.tvStartDate.setOnClickListener {
+                changeCheckDate()
+            }
+            setSpinnerActions()
+        }
+    }
+
+    private fun setMenuActions() {
+        mainActivity.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_delete, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.menu_delete -> {
+                        deleteEmployer()
+                        true
+                    }
+
+                    else -> {
+                        false
+                    }
                 }
             }
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
+    }
+
+    private fun updateEmployerIfValid() {
+        val message = validateEmployer()
+        if (message == ANSWER_OK) {
+            updateEmployer()
+            gotoEmployerFragment()
+        } else {
+            Toast.makeText(
+                mView.context,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
         }
+    }
+
+    private fun getCurrentEmployer(): Employers {
+        binding.apply {
+            return Employers(
+                curEmployer!!.employerId,
+                etName.text.toString(),
+                spFrequency.selectedItem.toString(),
+                startDate,
+                spDayOfWeek.selectedItem.toString(),
+                etDaysBefore.text.toString().toInt(),
+                etMidMonthDate.text.toString().toInt(),
+                etMainMonthDate.text.toString().toInt(),
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
+    private fun validateEmployer(): String {
+        binding.apply {
+            if (etName.text.isNullOrBlank()) {
+                return "    ERROR!!\n" +
+                        "The employer must have a name!"
+            }
+            if (employerList.isNotEmpty()) {
+                for (employer in employerList) {
+                    if (employer.employerName == etName.text.toString().trim()) {
+                        return "    ERROR!!\n" +
+                                "This employer already exists!"
+                    }
+                }
+            }
+            if (etDaysBefore.text.isNullOrBlank()) {
+                return "    ERROR!!\n" +
+                        "The number of days before the pay day is required!"
+            }
+            if (etMidMonthDate.text.isNullOrBlank()) {
+                return "    ERROR!!\n" +
+                        "For semi-monthly pay days there needs to be a mid month pay day"
+            }
+            return ANSWER_OK
+        }
+    }
+
+    private fun updateEmployer() {
+        employerViewModel.updateEmployer(
+            getCurrentEmployer()
+        )
     }
 
     private fun setSpinnerActions() {
@@ -235,27 +353,6 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
 
     }
 
-    private fun setMenuActions() {
-        mainActivity.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.menu_delete, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_delete -> {
-                        deleteEmployer()
-                        true
-                    }
-
-                    else -> {
-                        false
-                    }
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.CREATED)
-    }
-
     private fun deleteEmployer() {
         binding.apply {
             employerViewModel.updateEmployer(
@@ -276,47 +373,11 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         gotoEmployerFragment()
     }
 
-    private fun updateEmployerIfValid() {
-        val message = validateEmployer()
-        if (message == ANSWER_OK) {
-            employerViewModel.updateEmployer(
-                getCurrentEmployer()
-            )
-            gotoEmployerFragment()
-        } else {
-            Toast.makeText(
-                mView.context,
-                message,
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
-
     private fun gotoEmployerFragment() {
         mView.findNavController().navigate(
             EmployerUpdateFragmentDirections
                 .actionEmployerUpdateFragmentToEmployerFragment()
         )
-    }
-
-    private fun gotoPayRateFragment(curEmployer: Employers?) {
-        if (curEmployer != null) {
-            mainActivity.mainViewModel.setEmployer(curEmployer)
-            mView.findNavController().navigate(
-                EmployerUpdateFragmentDirections
-                    .actionEmployerUpdateFragmentToEmployerPayRatesFragment()
-            )
-        }
-    }
-
-    private fun gotoExtraAddFragment(curEmployer: Employers?) {
-        if (curEmployer != null) {
-            mainActivity.mainViewModel.setEmployer(curEmployer)
-            mView.findNavController().navigate(
-                EmployerUpdateFragmentDirections
-                    .actionEmployerUpdateFragmentToEmployerExtraDefinitionsAddFragment()
-            )
-        }
     }
 
     private fun gotoTaxRulesFragment() {
@@ -337,76 +398,32 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         )
     }
 
-    private fun getCurrentEmployer(): Employers {
-        binding.apply {
-            return Employers(
-                curEmployer!!.employerId,
-                etName.text.toString(),
-                spFrequency.selectedItem.toString(),
-                startDate,
-                spDayOfWeek.selectedItem.toString(),
-                etDaysBefore.text.toString().toInt(),
-                etMidMonthDate.text.toString().toInt(),
-                etMainMonthDate.text.toString().toInt(),
-                false,
-                df.getCurrentTimeAsString()
-            )
+    private fun gotoPayRate(curEmployer: Employers?) {
+        if (curEmployer != null) {
+            mainActivity.mainViewModel.setEmployer(curEmployer)
+            gotoEmployerPayRatesFragment()
         }
     }
 
-    private fun validateEmployer(): String {
-        binding.apply {
-            if (etName.text.isNullOrBlank()) {
-                return "    ERROR!!\n" +
-                        "The employer must have a name!"
-            }
-            if (employerList.isNotEmpty()) {
-                for (employer in employerList) {
-                    if (employer.employerName == etName.text.toString().trim()) {
-                        return "    ERROR!!\n" +
-                                "This employer already exists!"
-                    }
-                }
-            }
-            if (etDaysBefore.text.isNullOrBlank()) {
-                return "    ERROR!!\n" +
-                        "The number of days before the pay day is required!"
-            }
-            if (etMidMonthDate.text.isNullOrBlank()) {
-                return "    ERROR!!\n" +
-                        "For semi-monthly pay days there needs to be a mid month pay day"
-            }
-            return ANSWER_OK
+    private fun gotoEmployerPayRatesFragment() {
+        mView.findNavController().navigate(
+            EmployerUpdateFragmentDirections
+                .actionEmployerUpdateFragmentToEmployerPayRatesFragment()
+        )
+    }
+
+    private fun gotoExtraAdd(curEmployer: Employers?) {
+        if (curEmployer != null) {
+            mainActivity.mainViewModel.setEmployer(curEmployer)
+            gotoEmployerExtraDefinitionsAddFragment()
         }
     }
 
-    private fun populateSpinners() {
-        binding.apply {
-            val frequencyAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.pay_day_frequencies)
-            )
-            frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
-            spFrequency.adapter = frequencyAdapter
-
-            val dayOfWeekAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.pay_days)
-            )
-            dayOfWeekAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
-            spDayOfWeek.adapter = dayOfWeekAdapter
-        }
-    }
-
-    private fun populateEmployerListForValidation() {
-        employerViewModel.getEmployers().observe(
-            viewLifecycleOwner
-        ) { employers ->
-            employerList.clear()
-            employers.listIterator().forEach {
-                employerList.add(it)
-            }
-        }
+    private fun gotoEmployerExtraDefinitionsAddFragment() {
+        mView.findNavController().navigate(
+            EmployerUpdateFragmentDirections
+                .actionEmployerUpdateFragmentToEmployerExtraDefinitionsAddFragment()
+        )
     }
 
     override fun onDestroy() {

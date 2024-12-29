@@ -51,94 +51,6 @@ class EmployerPayRatesFragment :
         super.onViewCreated(view, savedInstanceState)
         populateEmployers()
         setClickActions()
-        onSelectEmployer()
-    }
-
-    private fun onSelectEmployer() {
-        binding.apply {
-            spEmployers.onItemSelectedListener =
-                object : OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        if (spEmployers.selectedItem.toString() == getString(R.string.add_new_employer)) {
-                            gotoAddEmployer()
-                        } else {
-                            curEmployer = employerList[spEmployers.selectedItemPosition]
-                            fillPayRates()
-                        }
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        //not needed
-                    }
-                }
-        }
-    }
-
-    private fun fillPayRates() {
-        if (curEmployer != null) {
-            binding.apply {
-                val payRateAdapter = EmployerWageAdapter(
-                    mainActivity, mView, curEmployer!!, TAG
-                )
-                rvWage.apply {
-                    layoutManager = LinearLayoutManager(
-                        mView.context
-                    )
-                    adapter = payRateAdapter
-                }
-                activity.let {
-                    mainActivity.employerViewModel.getEmployerPayRates(curEmployer!!.employerId)
-                        .observe(viewLifecycleOwner) { payRates ->
-                            payRateAdapter.differ.submitList(payRates)
-                            updateUI(payRates)
-                        }
-                }
-            }
-        }
-    }
-
-    private fun updateUI(payRates: List<Any>) {
-        binding.apply {
-            if (payRates.isNotEmpty()) {
-                rvWage.visibility = View.VISIBLE
-                crdNoInfo.visibility = View.GONE
-            } else {
-                rvWage.visibility = View.GONE
-                crdNoInfo.visibility = View.VISIBLE
-            }
-        }
-    }
-
-    private fun gotoAddEmployer() {
-        mainActivity.mainViewModel.addCallingFragment(TAG)
-        mainActivity.mainViewModel.setPayRate(null)
-        mView.findNavController().navigate(
-            EmployerPayRatesFragmentDirections
-                .actionEmployerPayRatesFragmentToEmployerAddFragment()
-        )
-    }
-
-    private fun setClickActions() {
-        binding.apply {
-            fabNew.setOnClickListener {
-                gotoPayRateFragment()
-            }
-        }
-    }
-
-    private fun gotoPayRateFragment() {
-        mainActivity.mainViewModel.setEmployer(curEmployer)
-        mainActivity.mainViewModel.setPayRate(null)
-        mainActivity.mainViewModel.setCallingFragment(TAG)
-        mView.findNavController().navigate(
-            EmployerPayRatesFragmentDirections
-                .actionEmployerPayRatesFragmentToEmployerPayRateAddFragment()
-        )
     }
 
     private fun populateEmployers() {
@@ -176,6 +88,102 @@ class EmployerPayRatesFragment :
                 }
             }
         }
+    }
+
+    private fun populatePayRates() {
+        if (curEmployer != null) {
+            binding.apply {
+                val payRateAdapter = EmployerWageAdapter(
+                    mainActivity, mView, curEmployer!!, TAG
+                )
+                rvWage.apply {
+                    layoutManager = LinearLayoutManager(
+                        mView.context
+                    )
+                    adapter = payRateAdapter
+                }
+                activity.let {
+                    mainActivity.employerViewModel.getEmployerPayRates(curEmployer!!.employerId)
+                        .observe(viewLifecycleOwner) { payRates ->
+                            payRateAdapter.differ.submitList(payRates)
+                            updateUI(payRates)
+                        }
+                }
+            }
+        }
+    }
+
+    private fun setClickActions() {
+        binding.apply {
+            fabNew.setOnClickListener {
+                gotoPayRates()
+            }
+        }
+        onSelectEmployer()
+    }
+
+    private fun onSelectEmployer() {
+        binding.apply {
+            spEmployers.onItemSelectedListener =
+                object : OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        if (spEmployers.selectedItem.toString() == getString(R.string.add_new_employer)) {
+                            gotoAddEmployer()
+                        } else {
+                            curEmployer = employerList[spEmployers.selectedItemPosition]
+                            populatePayRates()
+                        }
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                        //not needed
+                    }
+                }
+        }
+    }
+
+    private fun updateUI(payRates: List<Any>) {
+        binding.apply {
+            if (payRates.isNotEmpty()) {
+                rvWage.visibility = View.VISIBLE
+                crdNoInfo.visibility = View.GONE
+            } else {
+                rvWage.visibility = View.GONE
+                crdNoInfo.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun gotoAddEmployer() {
+        mainActivity.mainViewModel.addCallingFragment(TAG)
+        mainActivity.mainViewModel.setPayRate(null)
+        gotoEmployerAddFragment()
+    }
+
+    private fun gotoPayRates() {
+        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainActivity.mainViewModel.setPayRate(null)
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        gotoEmployerPayRateAddFragment()
+    }
+
+    private fun gotoEmployerAddFragment() {
+        mView.findNavController().navigate(
+            EmployerPayRatesFragmentDirections
+                .actionEmployerPayRatesFragmentToEmployerAddFragment()
+        )
+    }
+
+    private fun gotoEmployerPayRateAddFragment() {
+        mView.findNavController().navigate(
+            EmployerPayRatesFragmentDirections
+                .actionEmployerPayRatesFragmentToEmployerPayRateAddFragment()
+        )
     }
 
     override fun onDestroy() {

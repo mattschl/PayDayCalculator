@@ -45,7 +45,7 @@ class EmployerPayRateAddFragment :
         mView = binding.root
         mainActivity = (activity as MainActivity)
         val display =
-            "Add a pay rate"
+            getString(R.string.add_a_pay_rate)
         mainActivity.title = display
         return mView
     }
@@ -145,6 +145,17 @@ class EmployerPayRateAddFragment :
         }
     }
 
+    private fun validatePayRate(): String {
+        binding.apply {
+            return if (etWage.text.isNullOrBlank()) {
+                getString(R.string.error_) +
+                        getString(R.string.there_has_to_be_a_wage_to_save)
+            } else {
+                ANSWER_OK
+            }
+        }
+    }
+
     private fun getCurrentPayRates(
         curEmployer: Employers
     ): EmployerPayRates {
@@ -172,17 +183,6 @@ class EmployerPayRateAddFragment :
             EmployerPayRateAddFragmentDirections
                 .actionEmployerPayRateAddFragmentToEmployerPayRatesFragment()
         )
-    }
-
-    private fun validatePayRate(): String {
-        binding.apply {
-            return if (etWage.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "There has to be a wage to save"
-            } else {
-                ANSWER_OK
-            }
-        }
     }
 
     override fun onDestroy() {

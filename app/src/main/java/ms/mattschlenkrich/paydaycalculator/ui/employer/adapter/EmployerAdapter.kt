@@ -8,6 +8,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
@@ -52,14 +53,14 @@ class EmployerAdapter(
         val employer = differ.currentList[position]
         holder.itemBinding.apply {
             employerName.text = employer.employerName
-            var disp = employer.payFrequency
+            var display = employer.payFrequency
             if (employer.employerIsDeleted) {
-                disp = "*Deleted*"
+                display = mView.context.getString(R.string._deleted_)
                 tvFrequency.setTextColor(Color.RED)
             } else {
                 tvFrequency.setTextColor(Color.BLACK)
             }
-            tvFrequency.text = disp
+            tvFrequency.text = display
         }
         holder.itemView.setOnClickListener {
             gotoUpdateEmployer(employer)
