@@ -1,6 +1,6 @@
 <resources>
-    <string name="__calculated">" - Calculated "</string>
     <string name="__current">" - CURRENT"</string>
+    <string name="__for">"\n for "</string>
     <string name="_attaches_to_">"\nAttaches to "</string>
     <string name="_default">Default</string>
     <string name="_deleted_">  *Deleted*</string>
@@ -13,9 +13,11 @@
     <string name="add_a_new_extra_type">* Add a new Extra Type *</string>
     <string name="add_a_new_tax_type">* Add a New tax Type *</string>
     <string name="add_a_new_work_date">Add a new work date</string>
+    <string name="add_a_one_time_extra">Add a one time extra</string>
     <string name="add_a_pay_rate">Add a pay rate</string>
     <string name="add_an_employer">* Add an employer *</string>
     <string name="add_an_extra_to_this_pay_period">Add an extra to this pay period</string>
+    <string name="add_extra_type">Add Extra Type</string>
     <string name="add_materials_used_below">Add Materials Used below</string>
     <string name="add_new_credit">Add new Credit</string>
     <string name="add_new_deductions">Add new Deductions</string>
@@ -31,6 +33,7 @@
     <string name="added_manually">Added Manually</string>
     <string name="address">Address</string>
     <string name="amount">Amount</string>
+    <string name="app_name">Pay Day Calculator</string>
     <string name="applied">"Applied "</string>
     <string name="applies_to">Applies To</string>
     <string name="apply_this_to">Apply this to:</string>
@@ -66,6 +69,7 @@
     <string name="current_wage">Current Wage</string>
     <string name="cut_off_date">Cut off date</string>
     <string name="cutoff_date_">"Cutoff Date: "</string>
+    <string name="date_">" Date: "</string>
     <string name="date_and_employer_info">Date and Employer Info</string>
     <string name="day_of_week">Day of Week</string>
     <string name="days">Days</string>
@@ -87,6 +91,7 @@
     <string name="edit_this_item">Edit this Item</string>
     <string name="edit">EDIT</string>
     <string name="effective_date">Effective Date</string>
+    <string name="employer_">" Employer: "</string>
     <string name="employer_name">Employer Name</string>
     <string name="employer">Employer</string>
     <string name="employers">Employers</string>
@@ -169,6 +174,7 @@
     <string name="overtime_hours">Overtime Hours</string>
     <string name="overtime">Overtime</string>
     <string name="pay_amount">Pay Amount</string>
+    <string name="pay_cutoff_">" Pay Cutoff: "</string>
     <string name="pay_day_calculator">Pay Day Calculator</string>
     <string name="pay_day_frequency">Pay Day Frequency</string>
     <string name="pay_day">Pay Day</string>
@@ -216,6 +222,7 @@
     <string name="the_extra_must_have_a_name">The Extra must have a name</string>
     <string name="the_number_of_days_before_the_pay_day_is_required">The number of days before the pay day is required!</string>
     <string name="the_taxes_have_been_set_up_automatically">The taxes have been set up automatically. \nWould you like to open this employer in EDIT mode to edit taxes, create extra deductions or extra items added to paychecks?</string>
+    <string name="there_can_only_be_one_extra_that_uses_the_sum_that_includes_other_extras">There can only be one extra that uses the sum that includes other extras.</string>
     <string name="there_has_to_be_a_wage_to_save">There has to be a wage to save</string>
     <string name="there_needs_to_be_a_description">There needs to be a description!</string>
     <string name="thirty_one">31</string>
@@ -223,6 +230,7 @@
     <string name="this_extra_item_already_exists">This extra item already exists!</string>
     <string name="this_extra_must_have_a_value">This Extra must have a value</string>
     <string name="this_extra_name_has_already_been_used">This Extra name has already been used. \nChoose a different name,</string>
+    <string name="this_extra_type_already_exists">This Extra Type already exists</string>
     <string name="this_feature_is_not_available">This feature is not available.</string>
     <string name="this_is_a_credit">This is a credit</string>
     <string name="this_is_a_deduction">This is a deduction</string>
@@ -240,12 +248,16 @@
     <string name="type_numbers">Type Numbers</string>
     <string name="update_">"Update: "</string>
     <string name="update_employer">"Update Employer: "</string>
+    <string name="update_extra_">" Update extra: "</string>
     <string name="update_extra_for_this_pay_period">Update extra for this pay period</string>
+    <string name="update_extra_type_">" Update Extra Type: "</string>
+    <string name="update_extra_type">Update Extra Type</string>
     <string name="update_future_pay_dates">Update future pay dates</string>
     <string name="update_material_description">Update Material description</string>
     <string name="update_quantity">Update Quantity</string>
     <string name="update_tax_type">Update Tax Type</string>
     <string name="update_this_employer">Update this Employer</string>
+    <string name="update_this_extra">Update this Extra</string>
     <string name="update_work_order">Update Work Order</string>
     <string name="update_work_performed_description">Update Work Performed description</string>
     <string name="update">"Update"</string>
@@ -282,18 +294,6 @@
     <string name="zero_double">0.0</string>
     <string name="zero_percent">0.0%</string>
     <string name="zero">0</string>
+    <string name="__calculated">" - Calculated "</string>
 
-    <string name="app_name">Pay Day Calculator</string>
-    <string name="update_extra_">" Update extra: "</string>
-    <string name="pay_cutoff_">" Pay Cutoff: "</string>
-    <string name="employer_">" Employer: "</string>
-    <string name="add_a_one_time_extra">Add a one time extra</string>
-    <string name="date_">" Date: "</string>
-    <string name="update_this_extra">Update this Extra</string>
-    <string name="add_extra_type">Add Extra Type</string>
-    <string name="there_can_only_be_one_extra_that_uses_the_sum_that_includes_other_extras">There can only be one extra that uses the sum that includes other extras.</string>
-    <string name="this_extra_type_already_exists">This Extra Type already exists</string>
-    <string name="update_extra_type">Update Extra Type</string>
-    <string name="update_extra_type_">" Update Extra Type: "</string>
-    <string name="__for">"\n for "</string>
 </resources>
