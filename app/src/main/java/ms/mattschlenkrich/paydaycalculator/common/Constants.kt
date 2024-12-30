@@ -167,7 +167,7 @@ const val FRAG_PAY_RATES = "EmployerPayRates"
 const val FRAG_PAY_DETAILS = "PayDetails"
 const val FRAG_TIME_SHEET = "TimeSheet"
 
-//const val FRAG_WORK_DATE_ADD = "WorkDateAdd"
+const val FRAG_WORK_DATE_ADD = "WorkDateAdd"
 const val FRAG_WORK_DATE_UPDATE = "WorkDateUpdate"
 const val FRAG_WORK_ORDERS = "WorkOrders"
 const val FRAG_WORK_ORDER_HISTORY_ADD = "WorkOrderHistoryAdd"

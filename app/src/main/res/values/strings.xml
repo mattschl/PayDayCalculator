@@ -1,11 +1,13 @@
 <resources>
-    <string name="__current">" - CURRENT"</string>
+    <string name="__calculated">" - Calculated "</string>
     <string name="__for">"\n for "</string>
+    <string name="__pay_summary">" - Pay Summary"</string>
     <string name="_attaches_to_">"\nAttaches to "</string>
     <string name="_default">Default</string>
     <string name="_deleted_">  *Deleted*</string>
     <string name="_for_">" for : "</string>
     <string name="_for">" for "</string>
+    <string name="add_">" add "</string>
     <string name="add_a_definition">Add a definition</string>
     <string name="add_a_new_cut_off_date">* Add a new Cut Off date *</string>
     <string name="add_a_new_employer">* Add a New Employer *</string>
@@ -32,12 +34,14 @@
     <string name="add">Add </string>
     <string name="added_manually">Added Manually</string>
     <string name="address">Address</string>
+    <string name="all_the_work_dates_will_have_to_be_re_entered">All the work dates will have to be re-entered.</string>
     <string name="amount">Amount</string>
     <string name="app_name">Pay Day Calculator</string>
     <string name="applied">"Applied "</string>
     <string name="applies_to">Applies To</string>
     <string name="apply_this_to">Apply this to:</string>
     <string name="apply_to">Apply to:</string>
+    <string name="are_you_sure_you_want_to_delete">"Are you sure you want to delete  "</string>
     <string name="attach_this_to">Attach this to:</string>
     <string name="attach_to">Attach To</string>
     <string name="attaches_to">"Attaches to "</string>
@@ -54,13 +58,17 @@
     <string name="choose_a_universal_effective_date">Choose a Universal Effective Date</string>
     <string name="choose_a_work_date">Choose a work date</string>
     <string name="choose_a_work_order">Choose a work order</string>
+    <string name="choose_an_action_for">"Choose an action for: "</string>
     <string name="choose_an_action">Choose an Action</string>
     <string name="choose_date">Choose Date</string>
     <string name="choose_extra_frequency_types">Choose Extra Frequency Types</string>
     <string name="choose_next_steps_for">"Choose next steps for "</string>
     <string name="choose_the_first_date">Choose the first date</string>
+    <string name="choose_the_next_step">Choose the next step</string>
     <string name="choose_when_this_wage_goes_into_effect">Choose when this wage goes into effect</string>
     <string name="choose_when_this_will_take_effect">Choose when this will take effect</string>
+    <string name="confirm_delete_pay_period">Confirm Delete Pay Period</string>
+    <string name="continue_">Continue</string>
     <string name="continue_to_update">Continue to update?</string>
     <string name="cost">Cost</string>
     <string name="create">Create</string>
@@ -73,6 +81,8 @@
     <string name="date_and_employer_info">Date and Employer Info</string>
     <string name="day_of_week">Day of Week</string>
     <string name="days">Days</string>
+    <string name="dbl_ot_">"Dbl Ot: "</string>
+    <string name="dbl_ot_hrs">" Dbl Ot hrs"</string>
     <string name="dbl_ot">Dbl Ot</string>
     <string name="debit">Debit</string>
     <string name="deduct">"Deduct "</string>
@@ -80,7 +90,9 @@
     <string name="deductions">Deductions</string>
     <string name="defaults_to_fixed">Defaults to fixed amount</string>
     <string name="defaults_to_percentage">Defaults to percentage</string>
+    <string name="delete_this_date">Delete this date</string>
     <string name="delete_this_item">Delete this Item</string>
+    <string name="delete">DELETE</string>
     <string name="deleted">* DELETED *</string>
     <string name="description">Description</string>
     <string name="details">Details</string>
@@ -88,6 +100,7 @@
     <string name="double_overtime">Double Overtime</string>
     <string name="edit_">Edit:</string>
     <string name="edit_pay_rate_for">"Edit pay rate for "</string>
+    <string name="edit_this_date">Edit this date</string>
     <string name="edit_this_item">Edit this Item</string>
     <string name="edit">EDIT</string>
     <string name="effective_date">Effective Date</string>
@@ -130,19 +143,25 @@
     <string name="for_semi_monthly_pay_days_there_needs_to_be_a_mid_month_pay_day">For semi-monthly pay days there needs to be a mid month pay day</string>
     <string name="general_job_description">General Job Description</string>
     <string name="generate_a_new_cut_off">* Generate a new Cut Off</string>
+    <string name="go_back">Go Back</string>
+    <string name="gross_">"Gross "</string>
     <string name="gross_pay">Gross Pay</string>
     <string name="has_exemption_amount">Has Exemption Amount</string>
     <string name="has_upper_limit">Has Upper Limit</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="history">History</string>
     <string name="hour_summary">Hour Summary</string>
+    <string name="hours_">"Hours: "</string>
     <string name="hours">Hours</string>
     <string name="how_many_days_before_is_cutoff">How many days before is cutoff</string>
     <string name="hr">Hr</string>
+    <string name="hrs">" Hrs"</string>
     <string name="if_this_is_edited_any_custom_calculations_will_be_overwritten">If this is edited, any custom calculations will be overwritten. \nWould you like to edit anyway?</string>
+    <string name="in_order_to_add_extras_this_work_date_must_be_saved">In order to add extras, this work date must be saved.</string>
     <string name="is_a_credit">Is a Credit</string>
     <string name="is_automatic">Is automatic</string>
     <string name="is_default">Is Default</string>
+    <string name="it_is_best_to_add_custom_extras_only_after_all_the_work_hours_have_been_entered">It is best to add custom extras only after all the work hours have been entered.\nIf it is based on the number of hours, days, percebtage, the results could be improperly calculated.</string>
     <string name="job_description">Job Description</string>
     <string name="job_specs">Job Specs:\n </string>
     <string name="level_bracket">Level/Bracket</string>
@@ -151,6 +170,7 @@
     <string name="manually_added">Manually added</string>
     <string name="manually">manually</string>
     <string name="mid_month_pay_day">Mid month pay day</string>
+    <string name="net_">"NET: "</string>
     <string name="new_extra">New Extra</string>
     <string name="no_cutoff_dates">No CutOff Dates</string>
     <string name="no_employers_add_an_employer_through_the_employer_tab">No Employers - Add an Employer through the Employer Tab</string>
@@ -159,6 +179,7 @@
     <string name="no_info_to_view">No info to view</string>
     <string name="no_job_specs_to_view">No Job Specs to view</string>
     <string name="no_materials_to_view">No Materials to view</string>
+    <string name="no_pay_days_to_view">No pay days to view</string>
     <string name="no_tax_rules_to_view">No Tax Rules to View</string>
     <string name="no_tax_types_to_view">No Tax Types to view</string>
     <string name="no_time">No time</string>
@@ -169,6 +190,8 @@
     <string name="no">No</string>
     <string name="note">Note</string>
     <string name="ok">OK</string>
+    <string name="ot_">"Ot: "</string>
+    <string name="ot_hrs">" Ot hrs"</string>
     <string name="ot">Ot</string>
     <string name="other_info">Other info</string>
     <string name="overtime_hours">Overtime Hours</string>
@@ -177,6 +200,7 @@
     <string name="pay_cutoff_">" Pay Cutoff: "</string>
     <string name="pay_day_calculator">Pay Day Calculator</string>
     <string name="pay_day_frequency">Pay Day Frequency</string>
+    <string name="pay_day_is_">"Pay Day is "</string>
     <string name="pay_day">Pay Day</string>
     <string name="pay_details">Pay Details</string>
     <string name="pay_extras">Pay Extras</string>
@@ -186,6 +210,7 @@
     <string name="percentage">Percentage</string>
     <string name="period_hyphen">". - "</string>
     <string name="period_space">". "</string>
+    <string name="pipe">" | "</string>
     <string name="please_enter_a_description">Please enter a description.</string>
     <string name="please_enter_a_valid_work_order_number">Please enter a valid work order number</string>
     <string name="please_enter_a_work_order_number">Please enter a Work Order Number.</string>
@@ -197,6 +222,7 @@
     <string name="rate_or_value">Rate or Value</string>
     <string name="rate">Rate</string>
     <string name="rates">Rates</string>
+    <string name="reg_">"Reg: "</string>
     <string name="reg_hours">Reg Hours</string>
     <string name="reset">RESET</string>
     <string name="review_extra_credits_deductions">Review Extra Credits/Deductions</string>
@@ -205,10 +231,14 @@
     <string name="review_work_extra_frequencies">Review Work Extra Frequencies</string>
     <string name="save">SAVE</string>
     <string name="search">Search</string>
+    <string name="since_there_are_no_pay_periods_set_you_will_be_sent_to_the_time_sheet_to_create_a_new_one">Since there are no pay periods set, you will be sent to the time sheet to create a new one.</string>
     <string name="start_typing_for_matches">Start typing for matches</string>
     <string name="start">start</string>
+    <string name="stat_hours_">"Stat Hours: "</string>
     <string name="stat_hours">Stat Hours</string>
+    <string name="stat_vacation_hrs">" Stat/Vacation hrs"</string>
     <string name="subtotal">Subtotal</string>
+    <string name="subtract_">" subtract "</string>
     <string name="summary">Summary</string>
     <string name="tax_level">Tax Level</string>
     <string name="tax_levels">Tax Levels</string>
@@ -226,6 +256,9 @@
     <string name="there_has_to_be_a_wage_to_save">There has to be a wage to save</string>
     <string name="there_needs_to_be_a_description">There needs to be a description!</string>
     <string name="thirty_one">31</string>
+    <string name="this_action_cannot_be_undone">"This action cannot be undone! "</string>
+    <string name="this_cannot_be_undone">This cannot be undone!</string>
+    <string name="this_date_is_already_used">This date is already used</string>
     <string name="this_employer_already_exists">This employer already exists!</string>
     <string name="this_extra_item_already_exists">This extra item already exists!</string>
     <string name="this_extra_must_have_a_value">This Extra must have a value</string>
@@ -258,6 +291,7 @@
     <string name="update_tax_type">Update Tax Type</string>
     <string name="update_this_employer">Update this Employer</string>
     <string name="update_this_extra">Update this Extra</string>
+    <string name="update_this_work_date">Update this work date</string>
     <string name="update_work_order">Update Work Order</string>
     <string name="update_work_performed_description">Update Work Performed description</string>
     <string name="update">"Update"</string>
@@ -274,6 +308,7 @@
     <string name="view_work_order_list">View Work Order List</string>
     <string name="view_work_performed_list">View Work Performed List</string>
     <string name="wage">wage</string>
+    <string name="warning_">Warning!</string>
     <string name="week_1">Week 1</string>
     <string name="week_2">Week 2</string>
     <string name="wo_totals">WO Totals</string>
@@ -287,6 +322,7 @@
     <string name="work_orders">Work Orders</string>
     <string name="work_performed">Work Performed:</string>
     <string name="work_summary">Work Summary</string>
+    <string name="would_you_like_to_replace_the_old_information_for_this_work_date">Would you like to REPLACE the old information for this work date?</string>
     <string name="yes">Yes</string>
     <string name="you_cannot_add_any_extra_credits_or_deductions_until_the_employer_is_saved">"You cannot add any extra credits or deductions until the employer is saved.\nSave the employer first and go to edit mode. "</string>
     <string name="you_cannot_add_taxes_until_the_employer_is_saved">You cannot add taxes until the employer is saved. \nSave the employer first and go to edit mode.</string>
@@ -294,6 +330,6 @@
     <string name="zero_double">0.0</string>
     <string name="zero_percent">0.0%</string>
     <string name="zero">0</string>
-    <string name="__calculated">" - Calculated "</string>
+    <string name="__current">" - CURRENT"</string>
 
 </resources>

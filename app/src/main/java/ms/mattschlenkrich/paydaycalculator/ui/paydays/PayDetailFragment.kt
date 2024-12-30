@@ -60,7 +60,7 @@ class PayDetailFragment :
     private var debitTotal = 0.0
     private var creditTotal = 0.0
     private var curCutOff = ""
-    private val cf = NumberFunctions()
+    private val nf = NumberFunctions()
     private val df = DateFunctions()
     private var valuesFilled = false
 
@@ -119,17 +119,16 @@ class PayDetailFragment :
 
     private fun chooseToGotoExtraAdd(isCredit: Boolean) {
         AlertDialog.Builder(mView.context)
-            .setTitle("Warning!")
+            .setTitle(getString(R.string.warning_))
             .setMessage(
-                "It is best to add custom extras only after all the " +
-                        "work hours have been entered. " +
-                        "If it is based on the number of hours, days or a percentage, " +
-                        "the results could be improperly calculated. "
+                getString(
+                    R.string.it_is_best_to_add_custom_extras_only_after_all_the_work_hours_have_been_entered
+                )
             )
-            .setPositiveButton("Continue") { _, _ ->
+            .setPositiveButton(getString(R.string.continue_)) { _, _ ->
                 gotoExtraAddFragment(isCredit)
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
@@ -142,7 +141,7 @@ class PayDetailFragment :
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.menu_delete -> {
-                        chooseDeletingCutoffDate()
+                        confirmDeletingCutoffDate()
                         true
                     }
 
@@ -152,6 +151,34 @@ class PayDetailFragment :
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
+    }
+
+    private fun confirmDeletingCutoffDate() {
+        android.app.AlertDialog.Builder(mView.context)
+            .setTitle(getString(R.string.confirm_delete_pay_period))
+            .setMessage(
+                getString(R.string.warning_) + "\n" +
+                        getString(R.string.this_action_cannot_be_undone) +
+                        getString(R.string.all_the_work_dates_will_have_to_be_re_entered)
+            )
+            .setPositiveButton(getString(R.string.delete)) { _, _ ->
+                deletePayDay()
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .create().show()
+    }
+
+    private fun deletePayDay() {
+        mainActivity.payDayViewModel.updatePayPeriod(
+            PayPeriods(
+                curPayPeriod!!.payPeriodId,
+                curPayPeriod!!.ppCutoffDate,
+                curPayPeriod!!.ppEmployerId,
+                true,
+                df.getCurrentTimeAsString()
+            )
+        )
+        populateCutOffDates(curEmployer)
     }
 
     private fun onSelectEmployer() {
@@ -176,7 +203,8 @@ class PayDetailFragment :
                                 delay(WAIT_100)
                                 if (valuesFilled) mainActivity.mainViewModel.setEmployer(curEmployer)
                                 mainActivity.title = getString(R.string.pay_details) +
-                                        " for ${spEmployers.selectedItem}"
+                                        getString(R.string._for_) +
+                                        spEmployers.selectedItem
                                 populateCutOffDates(curEmployer)
                             }
                         } else {
@@ -187,6 +215,30 @@ class PayDetailFragment :
                     override fun onNothingSelected(parent: AdapterView<*>?) {
                     }
                 }
+        }
+    }
+
+    private fun populateCutOffDates(employer: Employers?) {
+        if (employer != null) {
+            binding.apply {
+                val cutOffAdapter = ArrayAdapter<Any>(
+                    mView.context,
+                    R.layout.spinner_item_bold
+                )
+                mainActivity.payDayViewModel.getCutOffDates(
+                    employer.employerId
+                ).observe(
+                    viewLifecycleOwner
+                ) { dates ->
+                    cutOffs.clear()
+                    cutOffAdapter.clear()
+                    dates.listIterator().forEach {
+                        cutOffAdapter.add(it.ppCutoffDate)
+                    }
+                    nextStepsIfDateListIsEmpty(dates)
+                }
+                spCutOff.adapter = cutOffAdapter
+            }
         }
     }
 
@@ -229,7 +281,7 @@ class PayDetailFragment :
     private fun populatePayDayDate() {
         if (curCutOff != "" && curEmployer != null) {
             binding.apply {
-                val display = "Pay Day is " +
+                val display = getString(R.string.pay_day_is_) +
                         df.getDisplayDate(
                             LocalDate.parse(curCutOff)
                                 .plusDays(curEmployer!!.cutoffDaysBefore.toLong()).toString()
@@ -252,81 +304,53 @@ class PayDetailFragment :
             binding.apply {
                 if (payCalculations.getPayReg() > 0.0) {
                     llRegPay.visibility = View.VISIBLE
-                    tvRegHours.text = payCalculations.getHoursReg().toString()
-                    tvRegRate.text = cf.displayDollars(payCalculations.getPayRate())
-                    tvRegPay.text = cf.displayDollars(payCalculations.getPayReg())
+                    tvRegHours.text = nf.getNumberFromDouble(payCalculations.getHoursReg())
+                    tvRegRate.text = nf.displayDollars(payCalculations.getPayRate())
+                    tvRegPay.text = nf.displayDollars(payCalculations.getPayReg())
                 } else {
                     llRegPay.visibility = View.GONE
                 }
                 if (payCalculations.getPayOt() > 0.0) {
                     llOtPay.visibility = View.VISIBLE
-                    tvOtHours.text = payCalculations.getHoursOt().toString()
-                    tvOtRate.text = cf.displayDollars(payCalculations.getPayRate() * 1.5)
-                    tvOTPay.text = cf.displayDollars(payCalculations.getPayOt())
+                    tvOtHours.text = nf.getNumberFromDouble(payCalculations.getHoursOt())
+                    tvOtRate.text = nf.displayDollars(payCalculations.getPayRate() * 1.5)
+                    tvOTPay.text = nf.displayDollars(payCalculations.getPayOt())
                 } else {
                     llOtPay.visibility = View.GONE
                 }
                 if (payCalculations.getPayDblOt() > 0.0) {
                     llDblOtPay.visibility = View.VISIBLE
-                    tvDblOtHours.text = payCalculations.getHoursDblOt().toString()
-                    tvDblOtRate.text = cf.displayDollars(payCalculations.getPayRate() * 2)
-                    tvDblOtPay.text = cf.displayDollars(payCalculations.getPayDblOt())
+                    tvDblOtHours.text = nf.getNumberFromDouble(payCalculations.getHoursDblOt())
+                    tvDblOtRate.text = nf.displayDollars(payCalculations.getPayRate() * 2)
+                    tvDblOtPay.text = nf.displayDollars(payCalculations.getPayDblOt())
                 } else {
                     llDblOtPay.visibility = View.GONE
                 }
                 if (payCalculations.getPayStat() > 0.0) {
                     llStatPay.visibility = View.VISIBLE
-                    tvStatHours.text = payCalculations.getHoursStat().toString()
-                    tvStatRate.text = cf.displayDollars(payCalculations.getPayRate())
-                    tvStatPay.text = cf.displayDollars(payCalculations.getPayStat())
+                    tvStatHours.text = nf.getNumberFromDouble(payCalculations.getHoursStat())
+                    tvStatRate.text = nf.displayDollars(payCalculations.getPayRate())
+                    tvStatPay.text = nf.displayDollars(payCalculations.getPayStat())
                 } else {
                     llStatPay.visibility = View.GONE
                 }
-                tvHourlyTotal.text = cf.displayDollars(payCalculations.getPayAllHourly())
-                var display = "Gross ${
-                    cf.displayDollars(
-                        payCalculations.getPayGross()
-                    )
-                }"
+                tvHourlyTotal.text = nf.displayDollars(payCalculations.getPayAllHourly())
+                var display = getString(R.string.gross_) +
+                        nf.displayDollars(payCalculations.getPayGross())
                 tvGrossPay.text = display
-                display = cf.displayDollars(
+                display = nf.displayDollars(
                     -payCalculations.getDebitTotalsByPay()
                             - payCalculations.getAllTaxDeductions()
                 )
                 tvDeductions.text = display
                 tvDeductions.setTextColor(Color.RED)
-                display = "NET: ${
-                    cf.displayDollars(
-                        payCalculations.getPayGross()
-                                - payCalculations.getDebitTotalsByPay()
-                                - payCalculations.getAllTaxDeductions()
-                    )
-                }"
+                display = getString(R.string.net_) +
+                        nf.displayDollars(
+                            payCalculations.getPayGross()
+                                    - payCalculations.getDebitTotalsByPay()
+                                    - payCalculations.getAllTaxDeductions()
+                        )
                 tvNetPay.text = display
-            }
-        }
-    }
-
-    private fun populateCutOffDates(employer: Employers?) {
-        if (employer != null) {
-            binding.apply {
-                val cutOffAdapter = ArrayAdapter<Any>(
-                    mView.context,
-                    R.layout.spinner_item_bold
-                )
-                mainActivity.payDayViewModel.getCutOffDates(
-                    employer.employerId
-                ).observe(
-                    viewLifecycleOwner
-                ) { dates ->
-                    cutOffs.clear()
-                    cutOffAdapter.clear()
-                    dates.listIterator().forEach {
-                        cutOffAdapter.add(it.ppCutoffDate)
-                    }
-                    nextStepsIfDateListIsEmpty(dates)
-                }
-                spCutOff.adapter = cutOffAdapter
             }
         }
     }
@@ -335,47 +359,22 @@ class PayDetailFragment :
         if (dates.isEmpty()
         ) {
             AlertDialog.Builder(mView.context)
-                .setTitle("No pay days to view")
+                .setTitle(getString(R.string.no_pay_days_to_view))
                 .setMessage(
-                    "Since there are no pay periods set, you will be sent " +
-                            "to the time sheet to create a new one."
+                    getString(R.string.since_there_are_no_pay_periods_set_you_will_be_sent_to_the_time_sheet_to_create_a_new_one)
                 )
-                .setPositiveButton("Ok") { _, _ ->
-                    mView.findNavController().navigate(
-                        PayDetailFragmentDirections
-                            .actionPayDetailFragmentToTimeSheetFragment()
-
-                    )
+                .setPositiveButton(getString(R.string.ok)) { _, _ ->
+                    gotoTimeSheetFragment()
                 }.show()
         }
     }
 
-    private fun chooseDeletingCutoffDate() {
-        android.app.AlertDialog.Builder(mView.context)
-            .setTitle("Confirm Delete Pay Period")
-            .setMessage(
-                "**Warning!! \n" +
-                        "This action cannot be undone! " +
-                        "All the work dates will have to be re-entered."
-            )
-            .setPositiveButton("DELETE") { _, _ ->
-                deletePayDay()
-            }
-            .setNegativeButton("CANCEL", null)
-            .create().show()
-    }
+    private fun gotoTimeSheetFragment() {
+        mView.findNavController().navigate(
+            PayDetailFragmentDirections
+                .actionPayDetailFragmentToTimeSheetFragment()
 
-    private fun deletePayDay() {
-        mainActivity.payDayViewModel.updatePayPeriod(
-            PayPeriods(
-                curPayPeriod!!.payPeriodId,
-                curPayPeriod!!.ppCutoffDate,
-                curPayPeriod!!.ppEmployerId,
-                true,
-                df.getCurrentTimeAsString()
-            )
         )
-        populateCutOffDates(curEmployer)
     }
 
     private fun populateExtras(payCalculations: IPayCalculations) {
@@ -389,7 +388,8 @@ class PayDetailFragment :
         }
     }
 
-    private fun processExtras(payCalculations: IPayCalculations): ArrayList<WorkPayPeriodExtras> {
+    private fun processExtras(payCalculations: IPayCalculations)
+            : ArrayList<WorkPayPeriodExtras> {
         val extraList = mutableListOf<WorkPayPeriodExtras>()
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
@@ -421,6 +421,46 @@ class PayDetailFragment :
             delay(WAIT_100)
         }
         return extraList as ArrayList<WorkPayPeriodExtras>
+    }
+
+    private fun populateCredits(extraList: ArrayList<WorkPayPeriodExtras>) {
+        val creditList = getCreditList(extraList)
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            val creditListAdapter = PayDetailExtraAdapter(
+                mainActivity, creditList, mView, this@PayDetailFragment
+            )
+            binding.apply {
+                rvCredits.layoutManager = LinearLayoutManager(mView.context)
+                rvCredits.adapter = creditListAdapter
+                tvCreditTotal.text = nf.displayDollars(creditTotal)
+            }
+        }
+    }
+
+    private fun populateDeductions(
+        payCalculations: IPayCalculations,
+        extraList: ArrayList<WorkPayPeriodExtras>,
+    ) {
+        val debitList = getDeductions(
+            payCalculations, extraList
+        )
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.apply {
+                delay(WAIT_500)
+                val deductionListAdapter = PayDetailExtraAdapter(
+                    mainActivity, debitList, mView, this@PayDetailFragment
+                )
+                rvDebits.layoutManager = LinearLayoutManager(mView.context)
+                rvDebits.adapter = deductionListAdapter
+                delay(WAIT_250)
+                val taxListAdapter = PayDetailTaxAdapter(taxList)
+                rvTax.layoutManager = LinearLayoutManager(mView.context)
+                rvTax.adapter = taxListAdapter
+                delay(WAIT_250)
+                tvDebitTotal.text = nf.displayDollars(debitTotal)
+            }
+        }
     }
 
     private fun processExtrasByManuallyAdded(
@@ -496,35 +536,19 @@ class PayDetailFragment :
                         != workDateExtrasAndDates[i + 1].workDateExtra.wdeName
                     ) {
                         extraList.add(
-                            createExtraByManuallyAdded(subTotal)
+                            addExtraManually(subTotal)
                         )
                         subTotal = 0.0
                     }
                 } else {
                     extraList.add(
-                        createExtraByManuallyAdded(subTotal)
+                        addExtraManually(subTotal)
                     )
                     subTotal = 0.0
                 }
             }
         }
     }
-
-    private fun WorkDateExtrasAndDates.createExtraByManuallyAdded(
-        subTotal: Double
-    ) = WorkPayPeriodExtras(
-        cf.generateRandomIdAsLong(),
-        curPayPeriod!!.payPeriodId,
-        null,
-        workDateExtra.wdeName,
-        workDateExtra.wdeAppliesTo,
-        1,
-        subTotal,
-        true,
-        workDateExtra.wdeIsCredit,
-        false,
-        df.getCurrentTimeAsString()
-    )
 
     private fun processExtraByPayPeriod(
         extraList: MutableList<WorkPayPeriodExtras>,
@@ -546,7 +570,7 @@ class PayDetailFragment :
                         payCalculations.getPayTimeWorked() * it.definition.weValue / 100
                     }
                     extraList.add(
-                        createWorkPayPeriodExtra(it, sum)
+                        addWorkPayPeriodExtra(it, sum)
                     )
                 }
 
@@ -558,20 +582,20 @@ class PayDetailFragment :
                             payCalculations.getPayTimeWorked() * it.definition.weValue / 100
                         }
                     extraList.add(
-                        createWorkPayPeriodExtra(it, sum)
+                        addWorkPayPeriodExtra(it, sum)
                     )
                 }
 
                 3 -> {
                     if (it.definition.weIsFixed) {
                         extraList.add(
-                            createWorkPayPeriodExtra(it, it.definition.weValue)
+                            addWorkPayPeriodExtra(it, it.definition.weValue)
                         )
                     } else {
                         val sum =
                             payCalculations.getPayAllHourly() * it.definition.weValue / 100
                         extraList.add(
-                            createWorkPayPeriodExtra(it, sum)
+                            addWorkPayPeriodExtra(it, sum)
                         )
                     }
                 }
@@ -580,18 +604,52 @@ class PayDetailFragment :
                     val sum =
                         payCalculations.getPayGross() * it.definition.weValue / 100
                     extraList.add(
-                        createWorkPayPeriodExtra(it, sum)
+                        addWorkPayPeriodExtra(it, sum)
                     )
                 }
             }
         }
     }
 
-    private fun createWorkPayPeriodExtra(
+    private fun populateFromHistory() {
+        binding.apply {
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(WAIT_500)
+                if (mainActivity.mainViewModel.getEmployer() != null) {
+                    curEmployer = mainActivity.mainViewModel.getEmployer()!!
+                    for (i in 0 until spEmployers.adapter.count) {
+                        if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
+                            spEmployers.setSelection(i)
+                            break
+                        }
+                    }
+                }
+                valuesFilled = true
+            }
+        }
+    }
+
+    private fun WorkDateExtrasAndDates.addExtraManually(
+        subTotal: Double
+    ) = WorkPayPeriodExtras(
+        nf.generateRandomIdAsLong(),
+        curPayPeriod!!.payPeriodId,
+        null,
+        workDateExtra.wdeName,
+        workDateExtra.wdeAppliesTo,
+        1,
+        subTotal,
+        true,
+        workDateExtra.wdeIsCredit,
+        false,
+        df.getCurrentTimeAsString()
+    )
+
+    private fun addWorkPayPeriodExtra(
         it: ExtraDefinitionAndType,
         sum: Double
     ) = WorkPayPeriodExtras(
-        cf.generateRandomIdAsLong(),
+        nf.generateRandomIdAsLong(),
         curPayPeriod!!.payPeriodId,
         it.extraType.workExtraTypeId,
         it.extraType.wetName,
@@ -617,23 +675,6 @@ class PayDetailFragment :
             }
         }
         return creditList
-    }
-
-    private fun populateCredits(
-        extraList: ArrayList<WorkPayPeriodExtras>,
-    ) {
-        val creditList = getCreditList(extraList)
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_250)
-            val creditListAdapter = PayDetailExtraAdapter(
-                mainActivity, creditList, mView, this@PayDetailFragment
-            )
-            binding.apply {
-                rvCredits.layoutManager = LinearLayoutManager(mView.context)
-                rvCredits.adapter = creditListAdapter
-                tvCreditTotal.text = cf.displayDollars(creditTotal)
-            }
-        }
     }
 
     private fun getDeductions(
@@ -667,70 +708,6 @@ class PayDetailFragment :
         return debitList
     }
 
-    private fun populateDeductions(
-        payCalculations: IPayCalculations,
-        extraList: ArrayList<WorkPayPeriodExtras>,
-    ) {
-        val debitList = getDeductions(
-            payCalculations, extraList
-        )
-        CoroutineScope(Dispatchers.Main).launch {
-            binding.apply {
-                delay(WAIT_500)
-                val deductionListAdapter = PayDetailExtraAdapter(
-                    mainActivity, debitList, mView, this@PayDetailFragment
-                )
-                rvDebits.layoutManager = LinearLayoutManager(mView.context)
-                rvDebits.adapter = deductionListAdapter
-                delay(WAIT_250)
-                val taxListAdapter = PayDetailTaxAdapter(taxList)
-                rvTax.layoutManager = LinearLayoutManager(mView.context)
-                rvTax.adapter = taxListAdapter
-                delay(WAIT_250)
-                tvDebitTotal.text = cf.displayDollars(debitTotal)
-            }
-        }
-    }
-
-    private fun populateFromHistory() {
-        binding.apply {
-            CoroutineScope(Dispatchers.Main).launch {
-                delay(WAIT_500)
-                if (mainActivity.mainViewModel.getEmployer() != null) {
-                    curEmployer = mainActivity.mainViewModel.getEmployer()!!
-                    for (i in 0 until spEmployers.adapter.count) {
-                        if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
-                            spEmployers.setSelection(i)
-                            break
-                        }
-                    }
-                }
-//                delay(WAIT_500)
-//                if (mainActivity.mainViewModel.getCutOffDate() != null) {
-//                    curCutOff = mainActivity.mainViewModel.getCutOffDate()!!
-//                    for (i in 0 until spCutOff.adapter.count) {
-//                        if (spCutOff.getItemAtPosition(i) == curCutOff) {
-//                            spCutOff.setSelection(i)
-//                            if (!valuesFilled) {
-//                                if (curCutOff != spCutOff.selectedItem.toString()) {
-//                                    curCutOff = spCutOff.selectedItem.toString()
-//                                    if (valuesFilled) mainActivity.mainViewModel.setCutOffDate(
-//                                        curCutOff
-//                                    )
-//                                    getCurrentPayPeriodObject()
-//                                    populatePayDayDate()
-//                                    populatePayDetails()
-//                                }
-//                            }
-//                            break
-//                        }
-//                    }
-//                }
-                valuesFilled = true
-            }
-        }
-    }
-
     private fun gotoEmployerAdd() {
         mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
@@ -747,6 +724,10 @@ class PayDetailFragment :
         }
         mainActivity.mainViewModel.setEmployer(curEmployer!!)
         mainActivity.mainViewModel.setIsCredit(isCredit)
+        gotoPayPeriodExtraAddFragment()
+    }
+
+    private fun gotoPayPeriodExtraAddFragment() {
         mView.findNavController().navigate(
             PayDetailFragmentDirections
                 .actionPayDetailsFragmentToPayPeriodExtraAddFragment()

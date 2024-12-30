@@ -46,7 +46,7 @@ class TimeSheetFragment :
     private var curPayPeriod: PayPeriods? = null
     private var curCutOff = ""
     private val projections = PayDateProjections()
-    private val cf = NumberFunctions()
+    private val nf = NumberFunctions()
     private val df = DateFunctions()
     private var workDateAdapter: WorkDateAdapter? = null
     private var valuesFilled = false
@@ -67,8 +67,6 @@ class TimeSheetFragment :
         super.onViewCreated(view, savedInstanceState)
         populateEmployers()
         setClickActions()
-        onSelectEmployer()
-        onSelectCutOffDate()
         populateFromHistory()
     }
 
@@ -97,12 +95,11 @@ class TimeSheetFragment :
 
     private fun setClickActions() {
         binding.apply {
+            onSelectEmployer()
+            onSelectCutOffDate()
             fabAddDate.setOnClickListener {
-                addNewWorkDate()
+                gotoNewWorkDate()
             }
-//            crdPayDetails.setOnClickListener {
-//                gotoPayDetails()
-//            }
         }
     }
 
@@ -150,7 +147,7 @@ class TimeSheetFragment :
         )
         mainActivity.payDayViewModel.insertPayPeriod(
             PayPeriods(
-                cf.generateRandomIdAsLong(),
+                nf.generateRandomIdAsLong(),
                 nextCutOff,
                 curEmployer!!.employerId,
                 false,
@@ -207,7 +204,7 @@ class TimeSheetFragment :
                             ) {
                                 curCutOff = spCutOff.selectedItem.toString()
                                 if (valuesFilled) mainActivity.mainViewModel.setCutOffDate(curCutOff)
-                                fillPayDayDate()
+                                populatePayDayDate()
                                 populateExistingWorkDates()
                                 populatePayDetails()
                             } else {
@@ -225,13 +222,13 @@ class TimeSheetFragment :
         }
     }
 
-    private fun fillPayDayDate() {
+    private fun populatePayDayDate() {
         if (curCutOff != "" && curEmployer != null) {
             binding.apply {
                 val display = df.getDisplayDate(
                     LocalDate.parse(curCutOff)
                         .plusDays(curEmployer!!.cutoffDaysBefore.toLong()).toString()
-                ) + " - Pay Summary"
+                ) + getString(R.string.__pay_summary)
                 tvPaySummary.text = display
             }
         }
@@ -268,78 +265,46 @@ class TimeSheetFragment :
             )
             delay(WAIT_2000)
             binding.apply {
-                var display = cf.displayDollars(
+                var display = nf.displayDollars(
                     -payCalculations.getDebitTotalsByPay()
                             - payCalculations.getAllTaxDeductions()
                 )
                 tvDeductions.text = display
                 tvDeductions.setTextColor(Color.RED)
-                display = "NET: ${
-                    cf.displayDollars(
-                        payCalculations.getPayGross()
-                                - payCalculations.getDebitTotalsByPay()
-                                - payCalculations.getAllTaxDeductions()
-                    )
-                }"
+                display = getString(R.string.net_) +
+                        nf.displayDollars(
+                            payCalculations.getPayGross()
+                                    - payCalculations.getDebitTotalsByPay()
+                                    - payCalculations.getAllTaxDeductions()
+                        )
                 tvNetPay.text = display
-                display = "Gross ${
-                    cf.displayDollars(
-                        payCalculations.getPayGross()
-                    )
-                }"
+                display = getString(R.string.gross_) +
+                        nf.displayDollars(
+                            payCalculations.getPayGross()
+                        )
                 tvGrossPay.text = display
                 display = ""
                 if (payCalculations.getHoursReg() != 0.0) {
-                    display = "Hours: ${payCalculations.getHoursReg()}"
+                    display = getString(R.string.hours_) +
+                            nf.getNumberFromDouble(payCalculations.getHoursReg())
                 }
                 if (payCalculations.getPayOt() != 0.0) {
-                    if (display.isNotBlank()) display += " | "
-                    display += "Ot: ${payCalculations.getHoursOt()}"
+                    if (display.isNotBlank()) display += getString(R.string.pipe)
+                    display += getString(R.string.ot_) +
+                            nf.getNumberFromDouble(payCalculations.getHoursOt())
                 }
                 if (payCalculations.getHoursDblOt() != 0.0) {
-                    if (display.isNotBlank()) display += " | "
-                    display += "Dbl Ot: ${payCalculations.getHoursDblOt()}"
+                    if (display.isNotBlank()) display += getString(R.string.pipe)
+                    display += getString(R.string.dbl_ot_) +
+                            nf.getNumberFromDouble((payCalculations.getHoursDblOt()))
                 }
                 if (payCalculations.getHoursStat() != 0.0) {
-                    if (display.isNotBlank()) display += " | "
-                    display += "Stat Hours: ${payCalculations.getHoursStat()}"
+                    if (display.isNotBlank()) display += getString(R.string.pipe)
+                    display += getString(R.string.stat_hours_) +
+                            nf.getNumberFromDouble(payCalculations.getHoursStat())
                 }
                 tvHours.text = display
             }
-        }
-    }
-
-    private fun updateUI(workDates: List<Any>) {
-        binding.apply {
-            if (workDates.isEmpty()) {
-                rvDates.visibility = View.GONE
-            } else {
-                rvDates.visibility = View.VISIBLE
-            }
-        }
-    }
-
-    private fun getSelectedPayPeriod(): PayPeriods {
-        binding.apply {
-            return PayPeriods(
-                cf.generateRandomIdAsLong(),
-                spCutOff.selectedItem.toString(),
-                curEmployer!!.employerId,
-                false,
-                df.getCurrentTimeAsString()
-            )
-        }
-    }
-
-    private fun getSelectedPayPeriodObject() {
-        mainActivity.payDayViewModel.getPayPeriod(
-            binding.spCutOff.selectedItem.toString(),
-            curEmployer!!.employerId
-        ).observe(
-            viewLifecycleOwner
-        ) { payPeriod ->
-            curPayPeriod = payPeriod
-            mainActivity.mainViewModel.setPayPeriod(payPeriod)
         }
     }
 
@@ -371,10 +336,48 @@ class TimeSheetFragment :
         }
     }
 
-    private fun addNewWorkDate() {
+    private fun updateUI(workDates: List<Any>) {
+        binding.apply {
+            if (workDates.isEmpty()) {
+                rvDates.visibility = View.GONE
+            } else {
+                rvDates.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun getSelectedPayPeriod(): PayPeriods {
+        binding.apply {
+            return PayPeriods(
+                nf.generateRandomIdAsLong(),
+                spCutOff.selectedItem.toString(),
+                curEmployer!!.employerId,
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
+    private fun getSelectedPayPeriodObject() {
+        mainActivity.payDayViewModel.getPayPeriod(
+            binding.spCutOff.selectedItem.toString(),
+            curEmployer!!.employerId
+        ).observe(
+            viewLifecycleOwner
+        ) { payPeriod ->
+            curPayPeriod = payPeriod
+            mainActivity.mainViewModel.setPayPeriod(payPeriod)
+        }
+    }
+
+    private fun gotoNewWorkDate() {
         mainActivity.mainViewModel.setPayPeriod(getSelectedPayPeriod())
         mainActivity.mainViewModel.setCutOffDate(curCutOff)
         mainActivity.mainViewModel.setEmployer(curEmployer)
+        gotoWorkDateAddFragment()
+    }
+
+    private fun gotoWorkDateAddFragment() {
         mView.findNavController().navigate(
             TimeSheetFragmentDirections
                 .actionTimeSheetFragmentToWorkDateAddFragment()
@@ -385,25 +388,15 @@ class TimeSheetFragment :
         mainActivity.mainViewModel.setCallingFragment(TAG)
         mainActivity.mainViewModel.setEmployer(null)
         mainActivity.mainViewModel.setCutOffDate(null)
+        gotoEmployerAddFragment()
+    }
+
+    private fun gotoEmployerAddFragment() {
         mView.findNavController().navigate(
             TimeSheetFragmentDirections
                 .actionTimeSheetFragmentToEmployerAddFragment()
         )
     }
-
-//    private fun gotoPayDetails() {
-//        mainActivity.mainViewModel.setCutOffDate(curCutOff)
-//        mainActivity.mainViewModel.setEmployer(curEmployer)
-//        mainActivity.mainViewModel.setCallingFragment(TAG)
-////        mView.findNavController().navigate(
-////            TimeSheetFragmentDirections
-////                .actionTimeSheetFragmentToPayDetailsFragment()
-////        )
-//        mView.findNavController().navigate(
-//            NewTimeSheetFragmentDirections
-//                .actionNewTimeSheetFragmentToNewPayDetailFragment()
-//        )
-//    }
 
     override fun onStop() {
         mainActivity.mainViewModel.setEmployer(curEmployer)

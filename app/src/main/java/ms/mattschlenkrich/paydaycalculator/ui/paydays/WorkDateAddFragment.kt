@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_TIME_SHEET
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_DATE_ADD
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_DATE_EXTRA_ADD
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_DATE_UPDATE
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
@@ -34,10 +35,10 @@ import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtr
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkDateAddBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
-import ms.mattschlenkrich.paydaycalculator.ui.paydays.adapter.WorkDateExtraAdapter
+import ms.mattschlenkrich.paydaycalculator.ui.paydays.adapter.WorkDateDefaultExtraAdapter
 import java.time.LocalDate
 
-private const val TAG = "WorkDateAdd"
+private const val TAG = FRAG_WORK_DATE_ADD
 
 class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
 
@@ -70,7 +71,6 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         populateValues()
-        setMenuActions()
         setClickActions()
     }
 
@@ -112,30 +112,9 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         binding.tvWorkDate.text = df.getDisplayDate(curDateString)
     }
 
-    private fun setMenuActions() {
-        mainActivity.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.save_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        validateWorkDateToSave(FRAG_TIME_SHEET)
-                        true
-                    }
-
-                    else -> {
-                        false
-                    }
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.CREATED)
-    }
-
     private fun populateExtras() {
         binding.apply {
-            val extraAdapter = WorkDateExtraAdapter(
+            val extraAdapter = WorkDateDefaultExtraAdapter(
                 mainActivity, mView, this@WorkDateAddFragment
             )
             rvExtras.apply {
@@ -203,6 +182,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
     }
 
     private fun setClickActions() {
+        setMenuActions()
         binding.apply {
             fabAddExtra.setOnClickListener {
                 validateWorkDateToSave(FRAG_WORK_DATE_EXTRA_ADD)
@@ -216,43 +196,97 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         }
     }
 
-    private fun gotoTimeSheetAddWorkOrder(workDate: WorkDates) {
-        mainActivity.mainViewModel.setCallingFragment(TAG)
-        mainActivity.mainViewModel.setWorkDateObject(workDate)
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_100)
-        }
-        mView.findNavController().navigate(
-            WorkDateAddFragmentDirections
-                .actionWorkDateAddFragmentToWorkOrderHistoryAddFragment()
-        )
+    private fun setMenuActions() {
+        mainActivity.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.save_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.menu_save -> {
+                        validateWorkDateToSave(FRAG_TIME_SHEET)
+                        true
+                    }
+
+                    else -> {
+                        false
+                    }
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun gotoTimeSheet() {
-        mView.findNavController().navigate(
-            WorkDateAddFragmentDirections
-                .actionGlobalTimeSheetFragment()
-        )
+    private fun confirmSaveNow(fragment: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Finish adding work date")
+            .setMessage("Would you like to save this date now and continue?")
+            .setPositiveButton("Save Now") { _, _ ->
+                saveWorkDate(fragment)
+            }
+            .setNegativeButton("Go back", null)
+            .show()
     }
 
     private fun validateWorkDateToSave(fragment: String) {
         var found = false
         if (usedWorkDatesList.isEmpty()) {
-            askUserToSaveNow(fragment)
+            confirmSaveNow(fragment)
         } else {
             for (date in usedWorkDatesList) {
                 if (date.wdDate == curDateString) {
                     found = true
-                    askUserToOverwriteUsedDate(date, fragment)
+                    confirmOverwriteUsedDate(date, fragment)
                 }
             }
             if (!found) {
-                askUserToSaveNow(fragment)
+                confirmSaveNow(fragment)
             }
         }
     }
 
-    private fun askUserToOverwriteUsedDate(date: WorkDates, fragment: String) {
+    private fun getCurWorkDate(): WorkDates {
+        binding.apply {
+            return WorkDates(
+                nf.generateRandomIdAsLong(),
+                payPeriod!!.payPeriodId,
+                payPeriod!!.ppEmployerId,
+                payPeriod!!.ppCutoffDate,
+                curDateString,
+                if (etHours.text.isNullOrBlank()) 0.0 else etHours.text.toString().trim()
+                    .toDouble(),
+                if (etOt.text.isNullOrBlank()) 0.0 else etOt.text.toString().trim()
+                    .toDouble(),
+                if (etDblOt.text.isNullOrBlank()) 0.0 else etDblOt.text.toString().trim()
+                    .toDouble(),
+                if (etStat.text.isNullOrBlank()) 0.0 else etStat.text.toString().trim()
+                    .toDouble(),
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
+    fun saveWorkDate(goBackTo: String) {
+        val workDate = getCurWorkDate()
+        mainActivity.payDayViewModel.insertWorkDate(workDate)
+        mainActivity.mainViewModel.setWorkDateObject(workDate)
+        saveExtras(workDate)
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_500)
+            if (goBackTo == FRAG_TIME_SHEET) {
+                gotoTimeSheetFragment()
+            }
+            if (goBackTo == FRAG_WORK_DATE_UPDATE) {
+                gotoWorkDateUpdate(workDate)
+            }
+            if (goBackTo == FRAG_WORK_ORDER_HISTORY_ADD) {
+                gotoTimeSheetAddWorkOrder(workDate)
+            }
+        }
+    }
+
+    private fun confirmOverwriteUsedDate(date: WorkDates, fragment: String) {
         AlertDialog.Builder(mView.context)
             .setTitle("This date is already used")
             .setMessage(
@@ -266,36 +300,6 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
             .show()
     }
 
-    private fun askUserToSaveNow(fragment: String) {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Finish adding work date")
-            .setMessage("Would you like to save this date now and continue?")
-            .setPositiveButton("Save Now") { _, _ ->
-                saveWorkDate(fragment)
-            }
-            .setNegativeButton("Go back", null)
-            .show()
-    }
-
-    fun saveWorkDate(goBackTo: String) {
-        val workDate = getCurWorkDate()
-        mainActivity.payDayViewModel.insertWorkDate(workDate)
-        mainActivity.mainViewModel.setWorkDateObject(workDate)
-        saveExtras(workDate)
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_500)
-            if (goBackTo == FRAG_TIME_SHEET) {
-                gotoTimeSheet()
-            }
-            if (goBackTo == FRAG_WORK_DATE_UPDATE) {
-                gotoWorkDateUpdate(workDate)
-            }
-            if (goBackTo == FRAG_WORK_ORDER_HISTORY_ADD) {
-                gotoTimeSheetAddWorkOrder(workDate)
-            }
-        }
-    }
-
     private fun overWriteWorkDate(date: WorkDates, goBackTo: String) {
         val workDate = getUpdatedWorkDate(date)
         mainActivity.payDayViewModel.updateWorkDate(workDate)
@@ -304,7 +308,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
             if (goBackTo == FRAG_TIME_SHEET) {
-                gotoTimeSheet()
+                gotoTimeSheetFragment()
             }
             if (goBackTo == FRAG_WORK_DATE_UPDATE) {
                 gotoWorkDateUpdate(workDate)
@@ -356,34 +360,39 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         }
     }
 
+    private fun gotoTimeSheetAddWorkOrder(workDate: WorkDates) {
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mainActivity.mainViewModel.setWorkDateObject(workDate)
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_100)
+        }
+        gotoWorkOrderHistoryAddFragment()
+    }
+
+    private fun gotoWorkOrderHistoryAddFragment() {
+        mView.findNavController().navigate(
+            WorkDateAddFragmentDirections
+                .actionWorkDateAddFragmentToWorkOrderHistoryAddFragment()
+        )
+    }
+
     private fun gotoWorkDateUpdate(workDate: WorkDates) {
         mainActivity.mainViewModel.setWorkDateObject(workDate)
+        gotoWorkDateUpdateFragment()
+    }
+
+    private fun gotoWorkDateUpdateFragment() {
         mView.findNavController().navigate(
             WorkDateAddFragmentDirections
                 .actionWorkDateAddFragmentToWorkDateUpdateFragment()
         )
     }
 
-    private fun getCurWorkDate(): WorkDates {
-        binding.apply {
-            return WorkDates(
-                nf.generateRandomIdAsLong(),
-                payPeriod!!.payPeriodId,
-                payPeriod!!.ppEmployerId,
-                payPeriod!!.ppCutoffDate,
-                curDateString,
-                if (etHours.text.isNullOrBlank()) 0.0 else etHours.text.toString().trim()
-                    .toDouble(),
-                if (etOt.text.isNullOrBlank()) 0.0 else etOt.text.toString().trim()
-                    .toDouble(),
-                if (etDblOt.text.isNullOrBlank()) 0.0 else etDblOt.text.toString().trim()
-                    .toDouble(),
-                if (etStat.text.isNullOrBlank()) 0.0 else etStat.text.toString().trim()
-                    .toDouble(),
-                false,
-                df.getCurrentTimeAsString()
-            )
-        }
+    private fun gotoTimeSheetFragment() {
+        mView.findNavController().navigate(
+            WorkDateAddFragmentDirections
+                .actionGlobalTimeSheetFragment()
+        )
     }
 
     override fun onDestroy() {

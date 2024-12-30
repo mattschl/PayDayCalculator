@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_TIME_SHEET
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_DATE_UPDATE
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
@@ -26,7 +27,7 @@ import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.adapter.WorkDateUpdateCustomExtraAdapter
 import ms.mattschlenkrich.paydaycalculator.ui.workorder.adapter.WorkDateWorkOrderHistoryAdapter
 
-private const val TAG = "WorkDateUpdate"
+private const val TAG = FRAG_WORK_DATE_UPDATE
 
 class WorkDateUpdateFragment : Fragment(
     R.layout.fragment_work_date_update
@@ -56,7 +57,7 @@ class WorkDateUpdateFragment : Fragment(
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "Update this work date"
+        mainActivity.title = getString(R.string.update_this_work_date)
         return mView
     }
 
@@ -66,119 +67,8 @@ class WorkDateUpdateFragment : Fragment(
         setClickActions()
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
-            updateHourlyTotals()
+            updateWorkDateTotals()
         }
-    }
-
-    private fun updateHourlyTotals() {
-        if (regHours > currentWorkDateObject.wdRegHours ||
-            otHours > currentWorkDateObject.wdOtHours ||
-            dblOtHours > currentWorkDateObject.wdDblOtHours
-        ) {
-            transferWorkOrderTotals()
-        }
-    }
-
-    private fun changeDate() {
-        binding.apply {
-            val curDateAll = curDateString.split("-")
-            val datePickerDialog = DatePickerDialog(
-                requireContext(),
-                { _, year, monthOfYear, dayOfMonth ->
-                    val month = monthOfYear + 1
-                    val display = "$year-${
-                        month.toString()
-                            .padStart(2, '0')
-                    }-${
-                        dayOfMonth.toString().padStart(2, '0')
-                    }"
-                    curDateString = display
-                    tvWorkDate.text = df.getDisplayDate(display)
-
-                },
-                curDateAll[0].toInt(),
-                curDateAll[1].toInt() - 1,
-                curDateAll[2].toInt()
-            )
-            datePickerDialog.setTitle(getString(R.string.choose_a_work_date))
-            datePickerDialog.show()
-        }
-    }
-
-    private fun setClickActions() {
-        binding.apply {
-            fabDone.setOnClickListener {
-                validateWorkDateToSave(FRAG_TIME_SHEET)
-            }
-            fabAddExtra.setOnClickListener {
-                gotoWorkDateExtraAddFragment()
-            }
-            tvWorkDate.setOnClickListener {
-                changeDate()
-            }
-            fabAddWorkOrder.setOnClickListener {
-                validateWorkDateToSave(FRAG_WORK_ORDER_HISTORY_ADD)
-            }
-            btnTransfer.setOnClickListener {
-                transferWorkOrderTotals()
-            }
-        }
-    }
-
-    private fun transferWorkOrderTotals() {
-        binding.apply {
-            etHours.setText(
-                nf.getNumberFromDouble(regHours)
-            )
-            etOt.setText(
-                nf.getNumberFromDouble(otHours)
-            )
-            etDblOt.setText(
-                nf.getNumberFromDouble(dblOtHours)
-            )
-        }
-    }
-
-    private fun gotoWorkOrderHistoryAddFragment() {
-        mainActivity.mainViewModel.setWorkDateObject(
-            getCurrentWorkDate()
-        )
-        mainActivity.mainViewModel.setCallingFragment(TAG)
-        mView.findNavController().navigate(
-            WorkDateUpdateFragmentDirections
-                .actionWorkDateUpdateFragmentToWorkOrderHistoryAddFragment()
-        )
-    }
-
-    private fun gotoWorkDateExtraAddFragment() {
-        mainActivity.mainViewModel.setWorkDateObject(getCurrentWorkDate())
-        mainActivity.mainViewModel.setWorkDateExtraList(workDateExtras)
-        mView.findNavController().navigate(
-            WorkDateUpdateFragmentDirections
-                .actionWorkDateUpdateFragmentToWorkDateExtraAddFragment()
-        )
-    }
-
-    private fun updateWorkDate(fragment: String) {
-        mainActivity.payDayViewModel.updateWorkDate(
-            getCurrentWorkDate()
-        )
-        gotoFragment(fragment)
-    }
-
-    private fun gotoFragment(fragment: String) {
-        if (fragment == FRAG_WORK_ORDER_HISTORY_ADD) {
-            gotoWorkOrderHistoryAddFragment()
-        } else if (fragment == FRAG_TIME_SHEET) {
-            gotoTimeSheetFragment()
-        }
-    }
-
-    private fun gotoTimeSheetFragment() {
-        mView.findNavController().navigate(
-            WorkDateUpdateFragmentDirections
-                .actionGlobalTimeSheetFragment()
-        )
     }
 
     private fun populateValues() {
@@ -191,10 +81,18 @@ class WorkDateUpdateFragment : Fragment(
             populateUsedWorkDateList()
             binding.apply {
                 tvWorkDate.text = df.getDisplayDate(currentWorkDateObject.wdDate)
-                etHours.setText(currentWorkDateObject.wdRegHours.toString())
-                etOt.setText(currentWorkDateObject.wdOtHours.toString())
-                etDblOt.setText(currentWorkDateObject.wdDblOtHours.toString())
-                etStat.setText(currentWorkDateObject.wdStatHours.toString())
+                etHours.setText(
+                    nf.getNumberFromDouble(currentWorkDateObject.wdRegHours)
+                )
+                etOt.setText(
+                    nf.getNumberFromDouble(currentWorkDateObject.wdOtHours)
+                )
+                etDblOt.setText(
+                    nf.getNumberFromDouble(currentWorkDateObject.wdDblOtHours)
+                )
+                etStat.setText(
+                    nf.getNumberFromDouble(currentWorkDateObject.wdStatHours)
+                )
             }
             populateExtras()
             populateWorkOrderHistory()
@@ -238,88 +136,35 @@ class WorkDateUpdateFragment : Fragment(
                 regHours = 0.0
                 otHours = 0.0
                 dblOtHours = 0.0
+
                 list.listIterator().forEach {
                     regHours += it.history.woHistoryRegHours
                     otHours += it.history.woHistoryOtHours
                     dblOtHours += it.history.woHistoryDblOtHours
                 }
-                var display = getString(R.string.wo_totals) +
-                        " - "
+                var display = ""
                 if (regHours != 0.0) {
-                    display += "Reg: " +
+                    display += getString(R.string.reg_) +
                             nf.getNumberFromDouble(regHours)
                 }
                 if (otHours != 0.0) {
-                    if (display != getString(R.string.wo_totals) +
-                        " - "
+                    if (display != ""
                     ) {
-                        display += " | "
+                        display += getString(R.string.pipe)
                     }
-                    display += "Ot: " +
+                    display += getString(R.string.ot_) +
                             nf.getNumberFromDouble(otHours)
                 }
                 if (dblOtHours != 0.0) {
-                    if (display != getString(R.string.wo_totals) +
-                        " - "
+                    if (display != ""
                     ) {
-                        display += " | "
+                        display += getString(R.string.pipe)
                     }
-                    display += "Ot: " +
+                    display += getString(R.string.dbl_ot_) +
                             nf.getNumberFromDouble(dblOtHours)
                 }
                 tvWorkOrderSummary.text = display
             }
-        }
-    }
-
-    private fun validateWorkDateToSave(fragment: String) {
-        var found = false
-        if (curDateString != currentWorkDateObject.wdDate) {
-            for (date in usedWorkDatesList) {
-                if (date == curDateString) {
-                    found = true
-                    askUserToOverwriteUsedDate(fragment)
-                }
-            }
-        }
-        if (!found) {
-            updateWorkDate(fragment)
-        }
-    }
-
-    private fun askUserToOverwriteUsedDate(fragment: String) {
-        AlertDialog.Builder(mView.context)
-            .setTitle("This date is already used")
-            .setMessage(
-                "Would you like to REPLACE the old information for " +
-                        "this work date?"
-            )
-            .setPositiveButton("Yes") { _, _ ->
-                updateWorkDate(fragment)
-            }
-            .setNegativeButton("No", null)
-            .show()
-    }
-
-    private fun getCurrentWorkDate(): WorkDates {
-        binding.apply {
-            return WorkDates(
-                currentWorkDateObject.workDateId,
-                currentWorkDateObject.wdPayPeriodId,
-                currentWorkDateObject.wdEmployerId,
-                currentWorkDateObject.wdCutoffDate,
-                curDateString,
-                if (etHours.text.isNullOrBlank()) 0.0 else etHours.text.toString().trim()
-                    .toDouble(),
-                if (etOt.text.isNullOrBlank()) 0.0 else etOt.text.toString().trim()
-                    .toDouble(),
-                if (etDblOt.text.isNullOrBlank()) 0.0 else etDblOt.text.toString().trim()
-                    .toDouble(),
-                if (etStat.text.isNullOrBlank()) 0.0 else etStat.text.toString().trim()
-                    .toDouble(),
-                false,
-                df.getCurrentTimeAsString()
-            )
         }
     }
 
@@ -389,6 +234,175 @@ class WorkDateUpdateFragment : Fragment(
                 }
             }
         }
+    }
+
+    private fun setClickActions() {
+        binding.apply {
+            fabDone.setOnClickListener {
+                validateWorkDateToSave(FRAG_TIME_SHEET)
+            }
+            fabAddExtra.setOnClickListener {
+                gotoWorkDateExtraAdd()
+            }
+            tvWorkDate.setOnClickListener {
+                changeDate()
+            }
+            fabAddWorkOrder.setOnClickListener {
+                validateWorkDateToSave(FRAG_WORK_ORDER_HISTORY_ADD)
+            }
+            btnTransfer.setOnClickListener {
+                transferWorkOrderTotals()
+            }
+        }
+    }
+
+    private fun updateWorkDateTotals() {
+        if (regHours > currentWorkDateObject.wdRegHours ||
+            otHours > currentWorkDateObject.wdOtHours ||
+            dblOtHours > currentWorkDateObject.wdDblOtHours
+        ) {
+            transferWorkOrderTotals()
+        }
+    }
+
+    private fun transferWorkOrderTotals() {
+        binding.apply {
+            etHours.setText(
+                nf.getNumberFromDouble(regHours)
+            )
+            etOt.setText(
+                nf.getNumberFromDouble(otHours)
+            )
+            etDblOt.setText(
+                nf.getNumberFromDouble(dblOtHours)
+            )
+        }
+    }
+
+    private fun changeDate() {
+        binding.apply {
+            val curDateAll = curDateString.split("-")
+            val datePickerDialog = DatePickerDialog(
+                requireContext(),
+                { _, year, monthOfYear, dayOfMonth ->
+                    val month = monthOfYear + 1
+                    val display = "$year-${
+                        month.toString()
+                            .padStart(2, '0')
+                    }-${
+                        dayOfMonth.toString().padStart(2, '0')
+                    }"
+                    curDateString = display
+                    tvWorkDate.text = df.getDisplayDate(display)
+
+                },
+                curDateAll[0].toInt(),
+                curDateAll[1].toInt() - 1,
+                curDateAll[2].toInt()
+            )
+            datePickerDialog.setTitle(getString(R.string.choose_a_work_date))
+            datePickerDialog.show()
+        }
+    }
+
+    private fun updateWorkDate(fragment: String) {
+        mainActivity.payDayViewModel.updateWorkDate(
+            getCurrentWorkDate()
+        )
+        gotoFragment(fragment)
+    }
+
+    private fun gotoTimeSheetFragment() {
+        mView.findNavController().navigate(
+            WorkDateUpdateFragmentDirections
+                .actionGlobalTimeSheetFragment()
+        )
+    }
+
+    private fun validateWorkDateToSave(fragment: String) {
+        var found = false
+        if (curDateString != currentWorkDateObject.wdDate) {
+            for (date in usedWorkDatesList) {
+                if (date == curDateString) {
+                    found = true
+                    confirmOverwriteUsedDate(fragment)
+                }
+            }
+        }
+        if (!found) {
+            updateWorkDate(fragment)
+        }
+    }
+
+    private fun confirmOverwriteUsedDate(fragment: String) {
+        AlertDialog.Builder(mView.context)
+            .setTitle(getString(R.string.this_date_is_already_used))
+            .setMessage(
+                getString(R.string.would_you_like_to_replace_the_old_information_for_this_work_date)
+            )
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                updateWorkDate(fragment)
+            }
+            .setNegativeButton(getString(R.string.no), null)
+            .show()
+    }
+
+    private fun getCurrentWorkDate(): WorkDates {
+        binding.apply {
+            return WorkDates(
+                currentWorkDateObject.workDateId,
+                currentWorkDateObject.wdPayPeriodId,
+                currentWorkDateObject.wdEmployerId,
+                currentWorkDateObject.wdCutoffDate,
+                curDateString,
+                if (etHours.text.isNullOrBlank()) 0.0 else etHours.text.toString().trim()
+                    .toDouble(),
+                if (etOt.text.isNullOrBlank()) 0.0 else etOt.text.toString().trim()
+                    .toDouble(),
+                if (etDblOt.text.isNullOrBlank()) 0.0 else etDblOt.text.toString().trim()
+                    .toDouble(),
+                if (etStat.text.isNullOrBlank()) 0.0 else etStat.text.toString().trim()
+                    .toDouble(),
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
+    private fun gotoFragment(fragment: String) {
+        if (fragment == FRAG_WORK_ORDER_HISTORY_ADD) {
+            gotoWorkOrderHistoryAdd()
+        } else if (fragment == FRAG_TIME_SHEET) {
+            gotoTimeSheetFragment()
+        }
+    }
+
+    private fun gotoWorkOrderHistoryAdd() {
+        mainActivity.mainViewModel.setWorkDateObject(
+            getCurrentWorkDate()
+        )
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        gotoWorkOrderHistoryAddFragment()
+    }
+
+    private fun gotoWorkOrderHistoryAddFragment() {
+        mView.findNavController().navigate(
+            WorkDateUpdateFragmentDirections
+                .actionWorkDateUpdateFragmentToWorkOrderHistoryAddFragment()
+        )
+    }
+
+    private fun gotoWorkDateExtraAdd() {
+        mainActivity.mainViewModel.setWorkDateObject(getCurrentWorkDate())
+        mainActivity.mainViewModel.setWorkDateExtraList(workDateExtras)
+        gotoWorkDateExtraAddFragment()
+    }
+
+    private fun gotoWorkDateExtraAddFragment() {
+        mView.findNavController().navigate(
+            WorkDateUpdateFragmentDirections
+                .actionWorkDateUpdateFragmentToWorkDateExtraAddFragment()
+        )
     }
 
     override fun onDestroy() {

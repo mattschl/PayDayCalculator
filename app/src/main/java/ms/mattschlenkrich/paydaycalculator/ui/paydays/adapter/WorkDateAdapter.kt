@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateBinding
@@ -24,10 +26,11 @@ class WorkDateAdapter(
     private val curCutoff: String,
     private val curEmployer: Employers,
     private val mView: View,
-    private val parentFragment: ITimeSheetFragment
+    private val timeSheetFragment: ITimeSheetFragment
 ) : RecyclerView.Adapter<WorkDateAdapter.WorkDateViewHolder>() {
 
     private val df = DateFunctions()
+    private val nf = NumberFunctions()
 
     class WorkDateViewHolder(val itemBinding: ListWorkDateBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -61,7 +64,7 @@ class WorkDateAdapter(
         var display = df.getDisplayDate(workDate.wdDate)
         holder.itemBinding.apply {
             if (workDate.wdIsDeleted) {
-                display += " *Deleted*"
+                display += mView.context.getString(R.string._deleted_)
                 tvWorkDate.setTextColor(Color.RED)
             } else {
                 tvWorkDate.setTextColor(Color.BLACK)
@@ -69,22 +72,28 @@ class WorkDateAdapter(
             tvWorkDate.text = display
             display = ""
             if (workDate.wdRegHours > 0) {
-                display = "${workDate.wdRegHours} Hrs"
+                display = nf.getNumberFromDouble(workDate.wdRegHours) +
+                        mView.context.getString(R.string.hrs)
             }
             if (workDate.wdOtHours > 0) {
-                if (display.isNotBlank()) display += " | "
-                display += "${workDate.wdOtHours} Ot hrs"
+                if (display.isNotBlank()) display +=
+                    mView.context.getString(R.string.pipe)
+                display += nf.getNumberFromDouble(workDate.wdOtHours) +
+                        mView.context.getString(R.string.ot_hrs)
             }
             if (workDate.wdDblOtHours > 0) {
-                if (display.isNotBlank()) display += " | "
-                display += "${workDate.wdDblOtHours} Dbl Ot hrs"
+                if (display.isNotBlank()) display +=
+                    mView.context.getString(R.string.pipe)
+                display += nf.getNumberFromDouble(workDate.wdDblOtHours) +
+                        mView.context.getString(R.string.dbl_ot_hrs)
             }
             if (workDate.wdStatHours > 0) {
                 if (display.isNotBlank()) display += " | "
-                display += "${workDate.wdStatHours} Stat/Vacation hrs"
+                display += nf.getNumberFromDouble(workDate.wdStatHours) +
+                        mView.context.getString(R.string.stat_vacation_hrs)
             }
             tvHours.text = display
-            val extrasAdapter = TimeSheetWorkDateExtraAdapter()
+            val extrasAdapter = TimeSheetWorkDateExtraAdapter(mView)
             rvExtras.apply {
                 layoutManager = LinearLayoutManager(
                     mView.context, RecyclerView.HORIZONTAL, false
@@ -113,13 +122,13 @@ class WorkDateAdapter(
     private fun chooseOptionsForDate(workDate: WorkDates) {
         AlertDialog.Builder(mView.context)
             .setTitle(
-                "Choose an action for: " +
+                mView.context.getString(R.string.choose_an_action_for) +
                         df.getDisplayDate(workDate.wdDate)
             )
             .setItems(
                 arrayOf(
-                    "Edit this date",
-                    "Delete this date"
+                    mView.context.getString(R.string.edit_this_date),
+                    mView.context.getString(R.string.delete_this_date)
                 )
             ) { _, pos ->
                 when (pos) {
@@ -136,18 +145,23 @@ class WorkDateAdapter(
                     }
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(
+                mView.context.getString(R.string.cancel), null
+            )
             .show()
     }
 
     private fun confirmDeleteWorkDate(workDate: WorkDates) {
         android.app.AlertDialog.Builder(mView.context)
-            .setTitle("Are you sure you want to delete  ${df.getDisplayDate(workDate.wdDate)}")
-            .setMessage("This cannot be undone!")
-            .setPositiveButton("DELETE") { _, _ ->
+            .setTitle(
+                mView.context.getString(R.string.are_you_sure_you_want_to_delete) +
+                        df.getDisplayDate(workDate.wdDate)
+            )
+            .setMessage(mView.context.getString(R.string.this_cannot_be_undone))
+            .setPositiveButton(mView.context.getString(R.string.delete)) { _, _ ->
                 deleteWorkDate(workDate)
             }
-            .setNeutralButton("Cancel", null)
+            .setNeutralButton(mView.context.getString(R.string.cancel), null)
             .show()
     }
 
@@ -169,7 +183,7 @@ class WorkDateAdapter(
         )
         deleteExtras(workDate)
         deleteWorkOrders(workDate)
-        parentFragment.populatePayDetails()
+        timeSheetFragment.populatePayDetails()
     }
 
     private fun deleteWorkOrders(workDate: WorkDates) {
@@ -188,6 +202,10 @@ class WorkDateAdapter(
         mainActivity.mainViewModel.setWorkDateObject(workDate)
         mainActivity.mainViewModel.setCutOffDate(curCutoff)
         mainActivity.mainViewModel.setEmployer(curEmployer)
+        gotoWorkDateUpdateFragment()
+    }
+
+    private fun gotoWorkDateUpdateFragment() {
         mView.findNavController().navigate(
             TimeSheetFragmentDirections
                 .actionTimeSheetFragmentToWorkDateUpdateFragment()

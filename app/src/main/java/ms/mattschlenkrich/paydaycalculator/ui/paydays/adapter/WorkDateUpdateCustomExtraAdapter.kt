@@ -1,10 +1,12 @@
 package ms.mattschlenkrich.paydaycalculator.ui.paydays.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtras
@@ -16,7 +18,7 @@ import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragmentDire
 class WorkDateUpdateCustomExtraAdapter(
     val mainActivity: MainActivity,
     val mView: View,
-    private val parentFragment: WorkDateUpdateFragment,
+    private val workDateUpdateFragment: WorkDateUpdateFragment,
     private val workDateExtras: ArrayList<WorkDateExtras>,
 ) : RecyclerView.Adapter<WorkDateUpdateCustomExtraAdapter.ViewHolder>() {
 
@@ -43,11 +45,13 @@ class WorkDateUpdateCustomExtraAdapter(
         val extra = workDateExtras[position]
         holder.itemBinding.apply {
             var display =
-                "${extra.wdeName} "
-            display += if (extra.wdeIsCredit) {
-                "add "
+                extra.wdeName
+            if (extra.wdeIsCredit) {
+                display += mView.context.getString(R.string.add_)
+                chkExtra.setTextColor(Color.BLACK)
             } else {
-                "subtract "
+                display += mView.context.getString(R.string.subtract_)
+                chkExtra.setTextColor(Color.RED)
             }
             display += if (extra.wdeIsFixed) {
                 nf.displayDollars(extra.wdeValue)
@@ -72,21 +76,11 @@ class WorkDateUpdateCustomExtraAdapter(
         }
     }
 
-    private fun gotoUpdateWorkDateExtra(extra: WorkDateExtras) {
-        mainActivity.mainViewModel.setWorkDateExtra(extra)
-        mainActivity.mainViewModel.setWorkDateExtraList(workDateExtras)
-        mView.findNavController().navigate(
-            WorkDateUpdateFragmentDirections
-                .actionWorkDateUpdateFragmentToWorkDateExtraUpdateFragment()
-
-        )
-    }
-
     private fun deleteExtra(extra: WorkDateExtras) {
         mainActivity.payDayViewModel.deleteWorkDateExtra(
             extra.wdeName, extra.wdeWorkDateId, extra.wdeUpdateTime
         )
-        parentFragment.populateExtras()
+        workDateUpdateFragment.populateExtras()
     }
 
     private fun activateExtra(extra: WorkDateExtras) {
@@ -123,7 +117,20 @@ class WorkDateUpdateCustomExtraAdapter(
                 )
             )
         }
-        parentFragment.populateExtras()
+        workDateUpdateFragment.populateExtras()
     }
 
+    private fun gotoUpdateWorkDateExtra(extra: WorkDateExtras) {
+        mainActivity.mainViewModel.setWorkDateExtra(extra)
+        mainActivity.mainViewModel.setWorkDateExtraList(workDateExtras)
+        gotoWorkDateExtraUpdateFragment()
+    }
+
+    private fun gotoWorkDateExtraUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkDateUpdateFragmentDirections
+                .actionWorkDateUpdateFragmentToWorkDateExtraUpdateFragment()
+
+        )
+    }
 }

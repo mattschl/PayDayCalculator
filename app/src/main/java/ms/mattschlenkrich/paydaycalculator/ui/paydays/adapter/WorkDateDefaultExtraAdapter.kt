@@ -7,17 +7,18 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_DATE_UPDATE
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateExtraItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateAddFragment
 
-class WorkDateExtraAdapter(
+class WorkDateDefaultExtraAdapter(
     val mainActivity: MainActivity,
     val mView: View,
-    private val parentFragment: WorkDateAddFragment,
-) : RecyclerView.Adapter<WorkDateExtraAdapter.ExtraViewHolder>() {
+    private val workDateAddFragment: WorkDateAddFragment,
+) : RecyclerView.Adapter<WorkDateDefaultExtraAdapter.ExtraViewHolder>() {
 
     class ExtraViewHolder(
         val itemBinding: ListWorkDateExtraItemBinding
@@ -61,21 +62,25 @@ class WorkDateExtraAdapter(
             chkExtra.text = extra.wetName
             chkExtra.isChecked = extra.wetIsDefault
             chkExtra.setOnClickListener {
-                chooseSaveOrNot()
-                parentFragment.addToExtraList(chkExtra.isChecked, extra)
+                confirmSaveWorkDate(chkExtra.isChecked, extra)
             }
             btnEdit.visibility = View.GONE
         }
     }
 
-    private fun chooseSaveOrNot() {
+    private fun confirmSaveWorkDate(isChecked: Boolean, extra: WorkExtraTypes) {
         AlertDialog.Builder(mView.context)
-            .setTitle("Choose the next step")
-            .setMessage("In order to add extras, this work date must be saved.")
-            .setPositiveButton("Save") { _, _ ->
-                parentFragment.saveWorkDate(FRAG_WORK_DATE_UPDATE)
+            .setTitle(mView.context.getString(R.string.choose_the_next_step))
+            .setMessage(
+                mView.context.getString(R.string.in_order_to_add_extras_this_work_date_must_be_saved)
+            )
+            .setPositiveButton(
+                mView.context.getString(R.string.save)
+            ) { _, _ ->
+                workDateAddFragment.saveWorkDate(FRAG_WORK_DATE_UPDATE)
+                workDateAddFragment.addToExtraList(isChecked, extra)
             }
-            .setNegativeButton("Not yet", null)
+            .setNegativeButton(mView.context.getString(R.string.go_back), null)
             .show()
 
     }

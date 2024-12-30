@@ -2,15 +2,19 @@ package ms.mattschlenkrich.paydaycalculator.ui.paydays.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateExtraTimeSheetBinding
 
-class TimeSheetWorkDateExtraAdapter :
+class TimeSheetWorkDateExtraAdapter(
+    private val mView: View,
+) :
     RecyclerView.Adapter<TimeSheetWorkDateExtraAdapter.DateExtrasHolder>() {
 
     private val cf = NumberFunctions()
@@ -54,8 +58,10 @@ class TimeSheetWorkDateExtraAdapter :
     override fun onBindViewHolder(holder: DateExtrasHolder, position: Int) {
         val extra = differ.currentList[position]
         holder.itemBinding.apply {
-            var display = if (position > 0) "| " else ""
-            display += extra.wdeName + " - " +
+            var display = if (position > 0)
+                mView.context.getString(R.string.pipe)
+            else ""
+            display += extra.wdeName + " " +
                     cf.displayDollars(extra.wdeValue)
             tvExtra.text = display
             if (extra.wdeIsCredit) {
