@@ -47,48 +47,32 @@ class WorkExtraTypeAddFragment : Fragment(
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainActivity.title = getString(R.string.add_extra_type)
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (mainActivity.mainViewModel.getEmployer() != null) {
-            curEmployer = mainActivity.mainViewModel.getEmployer()!!
-        }
-        mainActivity.title = "Add Extra Type for ${curEmployer.employerName}"
         setClickActions()
         populateValues()
     }
 
     private fun populateValues() {
+        if (mainActivity.mainViewModel.getEmployer() != null) {
+            curEmployer = mainActivity.mainViewModel.getEmployer()!!
+        }
+        populateEmployerInfo()
         populateSpinners()
         populateExtraTypeList()
     }
 
-    private fun setClickActions() {
-        setMenuActions()
-        onAppliesToSpinnerSelected()
-    }
-
-    private fun onAppliesToSpinnerSelected() {
+    private fun populateEmployerInfo() {
         binding.apply {
-            spAppliesTo.onItemSelectedListener =
-                object : OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        if (position == 4) {
-                            spAttachTo.setSelection(3)
-                        }
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        //not needed
-                    }
-                }
+            tvInfo.maxLines = 4
+            val display = getString(R.string.add_a_new_extra_type) +
+                    getString(R.string._for_) +
+                    curEmployer.employerName
+            tvInfo.text = display
         }
     }
 
@@ -121,6 +105,11 @@ class WorkExtraTypeAddFragment : Fragment(
             }
     }
 
+    private fun setClickActions() {
+        setMenuActions()
+        onAppliesToSpinnerSelected()
+    }
+
     private fun setMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
@@ -131,7 +120,7 @@ class WorkExtraTypeAddFragment : Fragment(
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
-                        saveExtraType()
+                        saveExtraTypeIfValid()
                         true
                     }
 
@@ -143,12 +132,32 @@ class WorkExtraTypeAddFragment : Fragment(
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun saveExtraType() {
+    private fun onAppliesToSpinnerSelected() {
+        binding.apply {
+            spAppliesTo.onItemSelectedListener =
+                object : OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        if (position == 4) {
+                            spAttachTo.setSelection(3)
+                        }
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                        //not needed
+                    }
+                }
+        }
+    }
+
+    private fun saveExtraTypeIfValid() {
         val message = validateExtraType()
         if (message == ANSWER_OK) {
-            val newWorkExtraType = getNewWorkExtraType()
-            mainActivity.workExtraViewModel.insertWorkExtraType(newWorkExtraType)
-            gotoNextStep(newWorkExtraType)
+            saveExtraTypeAndGotoDefinition()
         } else {
             Toast.makeText(
                 mView.context,
@@ -156,31 +165,6 @@ class WorkExtraTypeAddFragment : Fragment(
                 Toast.LENGTH_LONG
             ).show()
         }
-    }
-
-    private fun getNewWorkExtraType(): WorkExtraTypes {
-        binding.apply {
-            return WorkExtraTypes(
-                cf.generateRandomIdAsLong(),
-                etExtraName.text.toString(),
-                curEmployer.employerId,
-                spAppliesTo.selectedItemPosition,
-                spAttachTo.selectedItemPosition,
-                chkIsCredit.isChecked,
-                chkIsDefault.isChecked,
-                false,
-                df.getCurrentTimeAsString()
-            )
-        }
-    }
-
-    private fun gotoNextStep(extraType: WorkExtraTypes) {
-        mainActivity.mainViewModel.setEmployer(curEmployer)
-        mainActivity.mainViewModel.setWorkExtraType(extraType)
-        mView.findNavController().navigate(
-            WorkExtraTypeAddFragmentDirections
-                .actionWorkExtraTypeAddFragmentToEmployerExtraDefinitionsFragment()
-        )
     }
 
     private fun validateExtraType(): String {
@@ -201,22 +185,55 @@ class WorkExtraTypeAddFragment : Fragment(
                     }
                 }
             }
+            if (etExtraName.text.isNullOrBlank()) {
+                return getString(R.string.error_) +
+                        getString(R.string.the_extra_must_have_a_name)
+            }
             if (appliesToAllFound) {
-                return "    ERROR!!\n" +
-                        "There can only be one extra that " +
-                        "uses the sum that includes other extras."
+                return getString(R.string.error_) +
+                        getString(R.string.there_can_only_be_one_extra_that_uses_the_sum_that_includes_other_extras)
             }
-            val errorMessage = if (etExtraName.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "THe Extra type must have a name"
-            } else if (nameFound) {
-                "   ERROR!!\n" +
-                        "This Extra Type already exists"
-            } else {
-                ANSWER_OK
+            if (nameFound) {
+                return getString(R.string.error_) +
+                        getString(R.string.this_extra_type_already_exists)
             }
-            return errorMessage
+            return ANSWER_OK
         }
+    }
+
+    private fun getCurrentWorkExtraType(): WorkExtraTypes {
+        binding.apply {
+            return WorkExtraTypes(
+                cf.generateRandomIdAsLong(),
+                etExtraName.text.toString(),
+                curEmployer.employerId,
+                spAppliesTo.selectedItemPosition,
+                spAttachTo.selectedItemPosition,
+                chkIsCredit.isChecked,
+                chkIsDefault.isChecked,
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
+    private fun saveExtraTypeAndGotoDefinition() {
+        val newWorkExtraType = getCurrentWorkExtraType()
+        mainActivity.workExtraViewModel.insertWorkExtraType(newWorkExtraType)
+        gotoEmployerExtraDefinitions(newWorkExtraType)
+    }
+
+    private fun gotoEmployerExtraDefinitions(extraType: WorkExtraTypes) {
+        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainActivity.mainViewModel.setWorkExtraType(extraType)
+        gotoEmployerExtraDefinitionsFragment()
+    }
+
+    private fun gotoEmployerExtraDefinitionsFragment() {
+        mView.findNavController().navigate(
+            WorkExtraTypeAddFragmentDirections
+                .actionWorkExtraTypeAddFragmentToEmployerExtraDefinitionsFragment()
+        )
     }
 
     override fun onDestroy() {

@@ -8,6 +8,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
+        <TextView
+            android:id="@+id/tvInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxHeight="@dimen/dimen_100dp"
+            android:minHeight="@dimen/dimen_50dp"
+            android:paddingBottom="@dimen/dimen_8dp"
+            android:text="@string/employer"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/lblExtra"
             android:layout_width="wrap_content"
@@ -28,7 +43,7 @@
             android:minHeight="@dimen/minimum_touch_height"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lblExtra"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/tvInfo" />
 
         <TextView
             android:id="@+id/lblAppliesTo"

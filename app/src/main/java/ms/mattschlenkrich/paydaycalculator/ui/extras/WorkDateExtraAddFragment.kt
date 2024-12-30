@@ -43,19 +43,74 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "Add a one time extra"
+        mainActivity.title = getString(R.string.add_a_one_time_extra)
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setClickActions()
         populateValues()
+        setClickActions()
+    }
+
+    private fun populateValues() {
+        populateSpinners()
+        if (mainActivity.mainViewModel.getWorkDateObject() != null) {
+            curDateObject =
+                mainActivity.mainViewModel.getWorkDateObject()!!
+            mainActivity.employerViewModel.getEmployer(curDateObject.wdEmployerId)
+                .observe(viewLifecycleOwner) { employer ->
+                    val display = getString(R.string.date_) +
+                            df.getDisplayDate(curDateObject.wdDate) +
+                            getString(R.string.employer_) +
+                            employer.employerName
+                    binding.lblDateInfo.text = display
+                }
+            getExtraListForDate()
+        }
+    }
+
+    private fun populateSpinners() {
+        binding.apply {
+            val frequencies = ArrayList<String>()
+            for (i in 0..1) {
+                frequencies.add(
+                    resources.getStringArray(R.array.pay_per_frequencies)[i]
+                )
+            }
+            val frequencyAdapter = ArrayAdapter(
+                mView.context, R.layout.spinner_item_bold,
+                frequencies
+            )
+            frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
+            spAppliesTo.adapter = frequencyAdapter
+        }
     }
 
     private fun setClickActions() {
         setMenuActions()
         chooseFixedOrPercent()
+    }
+
+    private fun setMenuActions() {
+        mainActivity.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.save_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.menu_save -> {
+                        saveWorkDateExtraIfValid()
+                        true
+                    }
+
+                    else -> {
+                        false
+                    }
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
     private fun chooseFixedOrPercent() {
@@ -80,77 +135,16 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         }
     }
 
-    private fun populateValues() {
-        populateSpinners()
-        if (mainActivity.mainViewModel.getWorkDateObject() != null) {
-            curDateObject =
-                mainActivity.mainViewModel.getWorkDateObject()!!
-            var curEmployerString = ""
-            mainActivity.employerViewModel.getEmployer(curDateObject.wdEmployerId)
-                .observe(viewLifecycleOwner) { employer ->
-                    curEmployerString = employer.employerName
-                    val display = "Date: " +
-                            "${df.getDisplayDate(curDateObject.wdDate)} " +
-                            "Employer: $curEmployerString"
-                    binding.lblDateInfo.text = display
-                }
-            val display = "Date: ${df.getDisplayDate(curDateObject.wdDate)} " +
-                    "Employer: $curEmployerString"
-            binding.lblDateInfo.text = display
-            getDateExtraList()
-        }
-    }
-
-    private fun populateSpinners() {
-        binding.apply {
-            val frequencies = ArrayList<String>()
-            for (i in 0..1) {
-                frequencies.add(
-                    resources.getStringArray(R.array.pay_per_frequencies)[i]
-                )
-            }
-            val frequencyAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
-                frequencies
-            )
-            frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
-            spAppliesTo.adapter = frequencyAdapter
-        }
-    }
-
-    private fun getDateExtraList() {
+    private fun getExtraListForDate() {
         if (mainActivity.mainViewModel.getWorkDateExtraList().isNotEmpty()) {
             extraList = mainActivity.mainViewModel.getWorkDateExtraList()
         }
     }
 
-    private fun setMenuActions() {
-        mainActivity.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.save_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        saveWorkDateExtraIfValid()
-                        true
-                    }
-
-                    else -> {
-                        false
-                    }
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.CREATED)
-    }
-
     private fun saveWorkDateExtraIfValid() {
         val message = validateExtra()
         if (message == ANSWER_OK) {
-            mainActivity.payDayViewModel.insertWorkDateExtra(
-                getNewWorkDateExtra()
-            )
+            saveWorkDateExtra()
             gotoCallingFragment()
         } else {
             Toast.makeText(
@@ -161,15 +155,29 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         }
     }
 
-    private fun gotoCallingFragment() {
-        mainActivity.mainViewModel.eraseWorkDateExtraList()
-        mView.findNavController().navigate(
-            WorkDateExtraAddFragmentDirections
-                .actionWorkDateExtraAddFragmentToWorkDateUpdateFragment()
-        )
+    private fun validateExtra(): String {
+        binding.apply {
+            if (etExtraName.text.isNullOrBlank()) {
+                return getString(R.string.error_) +
+                        getString(R.string.the_extra_must_have_a_name)
+            }
+            if (extraList.isNotEmpty()) {
+                for (extra in extraList) {
+                    if (extra.wdeName == etExtraName.text.toString().trim()) {
+                        getString(R.string.error_) +
+                                getString(R.string.this_extra_name_has_already_been_used)
+                    }
+                }
+            }
+            if (cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0) {
+                getString(R.string.error_) +
+                        getString(R.string.this_extra_must_have_a_value)
+            }
+            return ANSWER_OK
+        }
     }
 
-    private fun getNewWorkDateExtra(): WorkDateExtras {
+    private fun getCurrentWorkDateExtra(): WorkDateExtras {
         binding.apply {
             return WorkDateExtras(
                 cf.generateRandomIdAsLong(),
@@ -187,32 +195,22 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         }
     }
 
-    private fun validateExtra(): String {
-        binding.apply {
-            var nameFound = false
-            if (extraList.isNotEmpty()) {
-                for (extra in extraList) {
-                    if (extra.wdeName == etExtraName.text.toString().trim()) {
-                        nameFound = true
-                        break
-                    }
-                }
-            }
-            val errorMessage = if (etExtraName.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "The Extra must have a name"
-            } else if (nameFound) {
-                "   ERROR!!\n" +
-                        "This Extra name has already been used. \n" +
-                        "Choose a different name."
-            } else if (cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0) {
-                "   ERROR!!\n" +
-                        "This Extra must have a value"
-            } else {
-                ANSWER_OK
-            }
-            return errorMessage
-        }
+    private fun saveWorkDateExtra() {
+        mainActivity.payDayViewModel.insertWorkDateExtra(
+            getCurrentWorkDateExtra()
+        )
+    }
+
+    private fun gotoCallingFragment() {
+        mainActivity.mainViewModel.eraseWorkDateExtraList()
+        gotoorkDateUpdateFragment()
+    }
+
+    private fun gotoorkDateUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkDateExtraAddFragmentDirections
+                .actionWorkDateExtraAddFragmentToWorkDateUpdateFragment()
+        )
     }
 
     override fun onDestroy() {

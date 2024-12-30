@@ -121,7 +121,7 @@ class EmployerExtraDefinitionFullAdapter(
         AlertDialog.Builder(mView.context)
             .setTitle(
                 mView.resources.getString(R.string.choose_an_action) +
-                        mView.context.getString(R.string._for_)
+                        mView.context.getString(R.string._for)
                         + definition.extraType.wetName
             )
             .setItems(

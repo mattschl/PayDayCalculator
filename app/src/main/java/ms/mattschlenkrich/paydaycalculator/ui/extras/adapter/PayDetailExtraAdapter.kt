@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_PAY_DETAILS
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
@@ -72,7 +73,7 @@ class PayDetailExtraAdapter(
                 chActive.visibility = View.VISIBLE
             }
             btnEdit.setOnClickListener {
-                gotoUpdateExtra(extra, !chActive.isChecked)
+                confirmUpdateExtra(extra, !chActive.isChecked)
             }
             chActive.setOnClickListener {
                 insertOrUpdateExtra(extra, !chActive.isChecked)
@@ -85,18 +86,17 @@ class PayDetailExtraAdapter(
     }
 
 
-    private fun gotoUpdateExtra(extra: WorkPayPeriodExtras, delete: Boolean) {
+    private fun confirmUpdateExtra(extra: WorkPayPeriodExtras, delete: Boolean) {
         AlertDialog.Builder(mView.context)
-            .setTitle("Continue to update?")
+            .setTitle(mView.context.getString(R.string.continue_to_update))
             .setMessage(
-                "If this is edited, any custom calculations will be overwritten. " +
-                        "Would you like to edit it anyways?"
+                mView.context.getString(R.string.if_this_is_edited_any_custom_calculations_will_be_overwritten)
             )
-            .setPositiveButton("Yes") { _, _ ->
+            .setPositiveButton(mView.context.getString(R.string.yes)) { _, _ ->
                 val newExtra = insertOrUpdateExtra(extra, delete)
                 updateExtra(newExtra)
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()
 
     }
@@ -104,10 +104,7 @@ class PayDetailExtraAdapter(
     private fun updateExtra(newExtra: WorkPayPeriodExtras) {
         mainActivity.mainViewModel.setPayPeriodExtra(newExtra)
         mainActivity.mainViewModel.addCallingFragment(FRAG_PAY_DETAILS)
-        mView.findNavController().navigate(
-            PayDetailFragmentDirections
-                .actionPayDetailsFragmentToPayPeriodExtraUpdateFragment()
-        )
+        gotoPeriodExtraUpdateFragment()
     }
 
     private fun insertOrUpdateExtra(
@@ -146,4 +143,12 @@ class PayDetailExtraAdapter(
         }
         return newExtra
     }
+
+    private fun gotoPeriodExtraUpdateFragment() {
+        mView.findNavController().navigate(
+            PayDetailFragmentDirections
+                .actionPayDetailsFragmentToPayPeriodExtraUpdateFragment()
+        )
+    }
+
 }

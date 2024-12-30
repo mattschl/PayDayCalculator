@@ -54,6 +54,74 @@ class EmployerExtraDefinitionUpdateFragment :
         setClickActions()
     }
 
+    private fun populateValues() {
+        curEmployer = mainActivity.mainViewModel.getEmployer()!!
+        binding.apply {
+            if (mainActivity.mainViewModel.getExtraDefinitionFull() != null) {
+                curExtraDefinitionFull =
+                    mainActivity.mainViewModel.getExtraDefinitionFull()!!
+                tvEmployer.text = curExtraDefinitionFull.employer.employerName
+                etName.setText(curExtraDefinitionFull.extraType.wetName)
+                etValue.setText(
+                    if (curExtraDefinitionFull.definition.weIsFixed) {
+                        nf.displayDollars(curExtraDefinitionFull.definition.weValue)
+                    } else {
+                        nf.getPercentStringFromDouble(curExtraDefinitionFull.definition.weValue)
+                    }
+                )
+                chkIsFixed.isChecked = curExtraDefinitionFull.definition.weIsFixed
+                populateFromExtraList()
+                tvEffectiveDate.text = curExtraDefinitionFull.definition.weEffectiveDate
+            }
+        }
+    }
+
+    private fun populateFromExtraList() {
+        binding.apply {
+            var display = if (curExtraDefinitionFull.extraType.wetIsCredit) {
+                getString(R.string.credit)
+            } else {
+                getString(R.string.debit)
+            }
+            display += getString(R.string.calculated) +
+                    resources.getStringArray(
+                        R.array.extra_based_on
+                    )[curExtraDefinitionFull.extraType.wetAppliesTo] +
+                    getString(R.string.period_space) +
+                    getString(R.string._attaches_to_) +
+                    resources.getStringArray(
+                        R.array.pay_per_frequencies
+                    )[curExtraDefinitionFull.extraType.wetAttachTo] +
+                    getString(R.string.period_hyphen)
+            display += if (curExtraDefinitionFull.extraType.wetIsDefault) {
+                getString(R.string.is_automatic)
+            } else {
+                getString(R.string.added_manually)
+            }
+            tvDescription.text = display
+            when (curExtraDefinitionFull.extraType.wetAppliesTo) {
+                4 -> {
+                    chkIsFixed.isChecked = false
+                    chkIsFixed.text = getString(R.string.defaults_to_percentage)
+                    chkIsFixed.isEnabled = false
+                    etValue.setText(getString(R.string.zero_percent))
+                }
+
+                1 -> {
+                    chkIsFixed.isChecked = true
+                    chkIsFixed.text = getString(R.string.defaults_to_fixed)
+                    chkIsFixed.isEnabled = false
+                    etValue.setText(getString(R.string.zero_dollars))
+                }
+
+                else -> {
+                    chkIsFixed.text = getString(R.string.check_if_this_is_a_fixed_amount)
+                    chkIsFixed.isEnabled = true
+                }
+            }
+        }
+    }
+
     private fun setClickActions() {
         setMenuActions()
         binding.apply {
@@ -67,62 +135,25 @@ class EmployerExtraDefinitionUpdateFragment :
         }
     }
 
-    private fun updateDefinitionIfValid() {
-        val message = validateExtraDefinition()
-        if (message == ANSWER_OK) {
-            mainActivity.workExtraViewModel.updateWorkExtraDefinition(
-                getNewDefinition()
-            )
-            gotoEmployerExtraDefinitionsFragment()
-        } else {
-            Toast.makeText(
-                mView.context,
-                message,
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
+    private fun setMenuActions() {
+        mainActivity.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_delete, menu)
+            }
 
-    private fun getNewDefinition(): WorkExtrasDefinitions {
-        binding.apply {
-            val curDef = curExtraDefinitionFull.definition
-            return WorkExtrasDefinitions(
-                curDef.workExtraDefId,
-                curDef.weEmployerId,
-                curDef.weExtraTypeId,
-                nf.getDoubleFromDollarOrPercentString(etValue.text.toString()),
-                chkIsFixed.isChecked,
-                tvEffectiveDate.text.toString(),
-                false,
-                df.getCurrentTimeAsString()
-            )
-        }
-    }
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.menu_delete -> {
+                        deleteExtra()
+                        true
+                    }
 
-    private fun validateExtraDefinition(): String {
-        binding.apply {
-            var nameFound = false
-            if (definitionList.isNotEmpty()) {
-                for (name in definitionList) {
-                    if (name == etName.text.toString().trim()) {
-                        nameFound = true
-                        break
+                    else -> {
+                        false
                     }
                 }
             }
-            val errorMessage = if (etName.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "There needs to be a description!"
-            } else if (nameFound && etName.text.toString() !=
-                curExtraDefinitionFull.extraType.wetName
-            ) {
-                "    ERROR!!\n" +
-                        "This extra item already exists!"
-            } else {
-                ANSWER_OK
-            }
-            return errorMessage
-        }
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
     private fun chooseFixedOrPercent() {
@@ -167,96 +198,63 @@ class EmployerExtraDefinitionUpdateFragment :
                 curDateAll[1].toInt() - 1,
                 curDateAll[2].toInt()
             )
-            datePickerDialog.setTitle("Choose when this will take effect")
+            datePickerDialog.setTitle(getString(R.string.choose_when_this_will_take_effect))
             datePickerDialog.show()
         }
     }
 
-    private fun populateValues() {
-        curEmployer = mainActivity.mainViewModel.getEmployer()!!
-        binding.apply {
-            if (mainActivity.mainViewModel.getExtraDefinitionFull() != null) {
-                curExtraDefinitionFull =
-                    mainActivity.mainViewModel.getExtraDefinitionFull()!!
-                tvEmployer.text = curExtraDefinitionFull.employer.employerName
-                etName.setText(curExtraDefinitionFull.extraType.wetName)
-                etValue.setText(
-                    if (curExtraDefinitionFull.definition.weIsFixed) {
-                        nf.displayDollars(curExtraDefinitionFull.definition.weValue)
-                    } else {
-                        nf.getPercentStringFromDouble(curExtraDefinitionFull.definition.weValue)
-                    }
-                )
-                chkIsFixed.isChecked = curExtraDefinitionFull.definition.weIsFixed
-                populateFromExtraList()
-                tvEffectiveDate.text = curExtraDefinitionFull.definition.weEffectiveDate
-            }
+    private fun updateDefinitionIfValid() {
+        val message = validateExtraDefinition()
+        if (message == ANSWER_OK) {
+            updateDefinition()
+            gotoEmployerExtraDefinitionsFragment()
+        } else {
+            Toast.makeText(
+                mView.context,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
-    private fun populateFromExtraList() {
+    private fun getCurrentDefinition(): WorkExtrasDefinitions {
         binding.apply {
-            var display = if (curExtraDefinitionFull.extraType.wetIsCredit) {
-                "Credit"
-            } else {
-                "Debit"
-            }
-            display += " - Calculated " +
-                    "${
-                        resources.getStringArray(
-                            R.array.extra_based_on
-                        )[curExtraDefinitionFull.extraType.wetAppliesTo]
-                    }. " +
-                    "\nAttaches to ${
-                        resources.getStringArray(
-                            R.array.pay_per_frequencies
-                        )[curExtraDefinitionFull.extraType.wetAttachTo]
-                    }. - "
-            display += if (curExtraDefinitionFull.extraType.wetIsDefault) "Is automatic"
-            else "Added Manually"
-            tvDescription.text = display
-            when (curExtraDefinitionFull.extraType.wetAppliesTo) {
-                4 -> {
-                    chkIsFixed.isChecked = false
-                    chkIsFixed.text = getString(R.string.defaults_to_percentage)
-                    chkIsFixed.isEnabled = false
-                    etValue.setText(getString(R.string.zero_percent))
-                }
-
-                1 -> {
-                    chkIsFixed.isChecked = true
-                    chkIsFixed.text = getString(R.string.defaults_to_fixed)
-                    chkIsFixed.isEnabled = false
-                    etValue.setText(getString(R.string.zero_dollars))
-                }
-
-                else -> {
-                    chkIsFixed.text = getString(R.string.check_if_this_is_a_fixed_amount)
-                    chkIsFixed.isEnabled = true
-                }
-            }
+            val curDef = curExtraDefinitionFull.definition
+            return WorkExtrasDefinitions(
+                curDef.workExtraDefId,
+                curDef.weEmployerId,
+                curDef.weExtraTypeId,
+                nf.getDoubleFromDollarOrPercentString(etValue.text.toString()),
+                chkIsFixed.isChecked,
+                tvEffectiveDate.text.toString(),
+                false,
+                df.getCurrentTimeAsString()
+            )
         }
     }
 
-    private fun setMenuActions() {
-        mainActivity.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.menu_delete, menu)
+    private fun validateExtraDefinition(): String {
+        binding.apply {
+            if (etName.text.isNullOrBlank()) {
+                return getString(R.string.error_) +
+                        getString(R.string.there_needs_to_be_a_description)
             }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_delete -> {
-                        deleteExtra()
-                        true
-                    }
-
-                    else -> {
-                        false
+            if (definitionList.isNotEmpty()) {
+                for (name in definitionList) {
+                    if (name == etName.text.toString().trim()) {
+                        return getString(R.string.error_) +
+                                getString(R.string.this_extra_item_already_exists)
                     }
                 }
             }
-        }, viewLifecycleOwner, Lifecycle.State.CREATED)
+            return ANSWER_OK
+        }
+    }
+
+    private fun updateDefinition() {
+        mainActivity.workExtraViewModel.updateWorkExtraDefinition(
+            getCurrentDefinition()
+        )
     }
 
     private fun deleteExtra() {

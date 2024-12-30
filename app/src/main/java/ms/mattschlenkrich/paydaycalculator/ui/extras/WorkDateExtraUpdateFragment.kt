@@ -44,70 +44,101 @@ class WorkDateExtraUpdateFragment
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "Update this Extra"
+        mainActivity.title = getString(R.string.update_this_extra)
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setClickActions()
         populateValues()
+        setClickActions()
+    }
+
+    private fun populateValues() {
+        populateSpinners()
+        extraList = mainActivity.mainViewModel.getWorkDateExtraList()
+        populateInfoDisplay()
+    }
+
+    private fun populateInfoDisplay() {
+        if (mainActivity.mainViewModel.getWorkDateObject() != null &&
+            mainActivity.mainViewModel.getWorkDateExtra() != null &&
+            mainActivity.mainViewModel.getWorkDateString() != null
+        ) {
+            curDateObject =
+                mainActivity.mainViewModel.getWorkDateObject()!!
+            oldWorkDateExtra =
+                mainActivity.mainViewModel.getWorkDateExtra()!!
+            mainActivity.title = getString(R.string.update_extra_) +
+                    oldWorkDateExtra.wdeName
+            binding.apply {
+                var display = getString(R.string.date_) +
+                        df.getDisplayDate(
+                            mainActivity.mainViewModel.getWorkDateString()!!
+                        ) +
+                        getString(R.string.employer_) +
+                        mainActivity.mainViewModel.getEmployerString()
+                lblDateInfo.text = display
+                etExtraName.setText(oldWorkDateExtra.wdeName)
+                spAppliesTo.setSelection(oldWorkDateExtra.wdeAppliesTo)
+                display = if (oldWorkDateExtra.wdeIsFixed) {
+                    cf.displayDollars(oldWorkDateExtra.wdeValue)
+                } else {
+                    cf.getPercentStringFromDouble(oldWorkDateExtra.wdeValue)
+                }
+                etValue.setText(display)
+                chkIsFixed.isChecked = oldWorkDateExtra.wdeIsFixed
+                chkIsCredit.isChecked = oldWorkDateExtra.wdeIsCredit
+            }
+        }
+    }
+
+    private fun populateSpinners() {
+        binding.apply {
+            val frequencies = ArrayList<String>()
+            for (i in 0..1) {
+                frequencies.add(
+                    resources.getStringArray(R.array.pay_per_frequencies)[i]
+                )
+            }
+            val frequencyAdapter = ArrayAdapter(
+                mView.context, R.layout.spinner_item_bold,
+                frequencies
+            )
+            frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
+            spAppliesTo.adapter = frequencyAdapter
+        }
     }
 
     private fun setClickActions() {
-        chooseFixedOrPercent()
         setMenuActions()
         binding.apply {
             fabDone.setOnClickListener {
                 updateWorkDateExtraIfValid()
             }
         }
+        chooseFixedOrPercent()
     }
 
-    private fun updateWorkDateExtraIfValid() {
-        val message = validateExtra()
-        if (message == ANSWER_OK) {
-            mainActivity.payDayViewModel.updateWorkDateExtra(
-                getUpdatedWorkDateExtra()
-            )
-            gotoWorkDateUpdateFragment()
-        } else {
-            Toast.makeText(
-                mView.context,
-                message,
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
+    private fun setMenuActions() {
+        mainActivity.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_delete, menu)
+            }
 
-    private fun validateExtra(): String {
-        binding.apply {
-            var nameFound = false
-            if (extraList.isNotEmpty()) {
-                for (extra in extraList) {
-                    if (extra.wdeName == etExtraName.text.toString().trim() &&
-                        etExtraName.text.toString().trim() != oldWorkDateExtra.wdeName
-                    ) {
-                        nameFound = true
-                        break
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.menu_delete -> {
+                        deleteExtra()
+                        true
+                    }
+
+                    else -> {
+                        false
                     }
                 }
             }
-            val errorMessage = if (etExtraName.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "The Extra must have a name"
-            } else if (nameFound) {
-                "   ERROR!!\n" +
-                        "This Extra name has already been used. \n" +
-                        "Choose a different name."
-            } else if (cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0) {
-                "   ERROR!!\n" +
-                        "This Extra must have a value"
-            } else {
-                ANSWER_OK
-            }
-            return errorMessage
-        }
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
     private fun chooseFixedOrPercent() {
@@ -132,64 +163,9 @@ class WorkDateExtraUpdateFragment
         }
     }
 
-    private fun populateValues() {
-        populateSpinners()
-        extraList = mainActivity.mainViewModel.getWorkDateExtraList()
-        if (mainActivity.mainViewModel.getWorkDateObject() != null &&
-            mainActivity.mainViewModel.getWorkDateExtra() != null &&
-            mainActivity.mainViewModel.getWorkDateString() != null
-        ) {
-            curDateObject =
-                mainActivity.mainViewModel.getWorkDateObject()!!
-            oldWorkDateExtra =
-                mainActivity.mainViewModel.getWorkDateExtra()!!
-            mainActivity.title = "Update Extra: ${oldWorkDateExtra.wdeName}"
-            binding.apply {
-                var display = "Date: ${
-                    df.getDisplayDate(
-                        mainActivity.mainViewModel.getWorkDateString()!!
-                    )
-                } " +
-                        "Employer: ${mainActivity.mainViewModel.getEmployerString()}"
-                lblDateInfo.text = display
-                etExtraName.setText(oldWorkDateExtra.wdeName)
-                spAppliesTo.setSelection(oldWorkDateExtra.wdeAppliesTo)
-                display = if (oldWorkDateExtra.wdeIsFixed) {
-                    cf.displayDollars(oldWorkDateExtra.wdeValue)
-                } else {
-                    cf.getPercentStringFromDouble(oldWorkDateExtra.wdeValue)
-                }
-                etValue.setText(display)
-                chkIsFixed.isChecked = oldWorkDateExtra.wdeIsFixed
-                chkIsCredit.isChecked = oldWorkDateExtra.wdeIsCredit
-            }
-        }
-    }
-
-    private fun setMenuActions() {
-        mainActivity.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.menu_delete, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_delete -> {
-                        deleteExtra()
-                        true
-                    }
-
-                    else -> {
-                        false
-                    }
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.CREATED)
-    }
-
     private fun deleteExtra() {
         binding.apply {
-            val extra = getUpdatedWorkDateExtra()
+            val extra = getCurrentWorkDateExtra()
             mainActivity.payDayViewModel.updateWorkDateExtra(
                 WorkDateExtras(
                     extra.workDateExtraId,
@@ -206,18 +182,48 @@ class WorkDateExtraUpdateFragment
                 )
             )
         }
-        gotoWorkDateUpdateFragment()
+        gotoWorkDateUpdate()
     }
 
-    private fun gotoWorkDateUpdateFragment() {
-        mainActivity.mainViewModel.setWorkDateExtra(null)
-        mView.findNavController().navigate(
-            WorkDateExtraUpdateFragmentDirections
-                .actionWorkDateExtraUpdateFragmentToWorkDateUpdateFragment()
-        )
+    private fun updateWorkDateExtraIfValid() {
+        val message = validateExtra()
+        if (message == ANSWER_OK) {
+            updateWorkDateExtra()
+            gotoWorkDateUpdate()
+        } else {
+            Toast.makeText(
+                mView.context,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 
-    private fun getUpdatedWorkDateExtra(): WorkDateExtras {
+    private fun validateExtra(): String {
+        binding.apply {
+            if (etExtraName.text.isNullOrBlank()) {
+                return getString(R.string.error_) +
+                        getString(R.string.the_extra_must_have_a_name)
+            }
+            if (extraList.isNotEmpty()) {
+                for (extra in extraList) {
+                    if (extra.wdeName == etExtraName.text.toString().trim() &&
+                        etExtraName.text.toString().trim() != oldWorkDateExtra.wdeName
+                    ) {
+                        return getString(R.string.error_) +
+                                getString(R.string.this_extra_name_has_already_been_used)
+                    }
+                }
+            }
+            if (cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0) {
+                return getString(R.string.error_) +
+                        getString(R.string.this_extra_must_have_a_value)
+            }
+            return ANSWER_OK
+        }
+    }
+
+    private fun getCurrentWorkDateExtra(): WorkDateExtras {
         binding.apply {
             val value = if (
                 cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) >= 1.0 &&
@@ -243,21 +249,22 @@ class WorkDateExtraUpdateFragment
         }
     }
 
-    private fun populateSpinners() {
-        binding.apply {
-            val frequencies = ArrayList<String>()
-            for (i in 0..1) {
-                frequencies.add(
-                    resources.getStringArray(R.array.pay_per_frequencies)[i]
-                )
-            }
-            val frequencyAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
-                frequencies
-            )
-            frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
-            spAppliesTo.adapter = frequencyAdapter
-        }
+    private fun updateWorkDateExtra() {
+        mainActivity.payDayViewModel.updateWorkDateExtra(
+            getCurrentWorkDateExtra()
+        )
+    }
+
+    private fun gotoWorkDateUpdate() {
+        mainActivity.mainViewModel.setWorkDateExtra(null)
+        gotoWorkDateUpdateFragment()
+    }
+
+    private fun gotoWorkDateUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkDateExtraUpdateFragmentDirections
+                .actionWorkDateExtraUpdateFragmentToWorkDateUpdateFragment()
+        )
     }
 
     override fun onDestroy() {

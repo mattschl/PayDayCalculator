@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
 
@@ -52,7 +53,7 @@ class ExtraTypeAdapter
         holder.itemBinding.apply {
             var display = extraType.wetName
             if (extraType.wetIsDeleted) {
-                display += " *DELETED*"
+                display += root.context.getString(R.string._deleted_)
                 tvDisplay.setTextColor(Color.RED)
             } else {
                 tvDisplay.setTextColor(Color.BLACK)
@@ -60,6 +61,7 @@ class ExtraTypeAdapter
             tvDisplay.text = display
             holder.itemView.setOnLongClickListener {
                 //set up to go to item
+                //TODO: add the functionality
                 false
             }
         }

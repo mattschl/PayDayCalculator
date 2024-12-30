@@ -46,19 +46,14 @@ class PayPeriodExtraAddFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "Add an extra to this pay period"
+        mainActivity.title = getString(R.string.add_an_extra_to_this_pay_period)
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setClickActions()
         populateValues()
-    }
-
-    private fun setClickActions() {
-        chooseFixedOrPercent()
-        setMenuActions()
+        setClickActions()
     }
 
     private fun populateValues() {
@@ -69,12 +64,30 @@ class PayPeriodExtraAddFragment :
         if (mainActivity.mainViewModel.getPayPeriod() != null) {
             curPayPeriod = mainActivity.mainViewModel.getPayPeriod()!!
         }
-        val display = "Cutoff Date: ${curPayPeriod.ppCutoffDate} for : " +
+        val display = getString(R.string.cutoff_date_) +
+                curPayPeriod.ppCutoffDate +
+                getString(R.string._for_) +
                 curEmployer.employerName
         binding.apply {
             lblPayInfo.text = display
             chkIsCredit.isChecked = mainActivity.mainViewModel.getIsCredit()
         }
+    }
+
+    private fun populateSpinners() {
+        binding.apply {
+            val frequencyAdapter = ArrayAdapter(
+                mView.context, R.layout.spinner_item_bold,
+                resources.getStringArray(R.array.pay_per_frequencies)
+            )
+            frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
+            spAppliesTo.adapter = frequencyAdapter
+        }
+    }
+
+    private fun setClickActions() {
+        setMenuActions()
+        chooseFixedOrPercent()
     }
 
     private fun setMenuActions() {
@@ -99,79 +112,6 @@ class PayPeriodExtraAddFragment :
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun saveExtraIfValid() {
-        val message = validateExtra()
-        if (message == ANSWER_OK) {
-            binding.apply {
-                mainActivity.payDayViewModel.insertPayPeriodExtra(
-                    getNewPayPeriodExtra()
-                )
-            }
-            gotoPayDetailsFragment()
-        } else {
-            Toast.makeText(
-                mView.context,
-                message,
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
-
-    private fun gotoPayDetailsFragment() {
-        mView.findNavController().navigate(
-            PayPeriodExtraAddFragmentDirections
-                .actionPayPeriodExtraAddFragmentToPayDetailFragment()
-        )
-    }
-
-    private fun getNewPayPeriodExtra(): WorkPayPeriodExtras {
-        binding.apply {
-            return WorkPayPeriodExtras(
-                cf.generateRandomIdAsLong(),
-                curPayPeriod.payPeriodId,
-                null,
-                etExtraName.text.toString().trim(),
-                spAppliesTo.selectedItemPosition,
-                3,
-                cf.getDoubleFromDollarOrPercentString(
-                    etValue.text.toString()
-                ),
-                chkIsFixed.isChecked,
-                chkIsCredit.isChecked,
-                false,
-                df.getCurrentTimeAsString(),
-            )
-        }
-    }
-
-    private fun validateExtra(): String {
-        binding.apply {
-            var nameFound = false
-            if (extraList.isNotEmpty()) {
-                for (extra in extraList) {
-                    if (extra.ppeName == etExtraName.text.toString().trim()) {
-                        nameFound = true
-                        break
-                    }
-                }
-            }
-            val errorMessage = if (etExtraName.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "The Extra must have a name"
-            } else if (nameFound) {
-                "   ERROR!!\n" +
-                        "This Extra name has already been used. \n" +
-                        "Choose a different name."
-            } else if (cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0) {
-                "   ERROR!!\n" +
-                        "This Extra must have a value"
-            } else {
-                ANSWER_OK
-            }
-            return errorMessage
-        }
-    }
-
     private fun chooseFixedOrPercent() {
         binding.apply {
             chkIsFixed.setOnClickListener {
@@ -194,15 +134,75 @@ class PayPeriodExtraAddFragment :
         }
     }
 
-    private fun populateSpinners() {
-        binding.apply {
-            val frequencyAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.pay_per_frequencies)
-            )
-            frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
-            spAppliesTo.adapter = frequencyAdapter
+    private fun saveExtraIfValid() {
+        val message = validateExtra()
+        if (message == ANSWER_OK) {
+            saveExtra()
+            gotoPayDetailsFragment()
+        } else {
+            Toast.makeText(
+                mView.context,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
         }
+    }
+
+    private fun validateExtra(): String {
+        binding.apply {
+            if (etExtraName.text.isNullOrBlank()) {
+                return getString(R.string.error_) +
+                        getString(R.string.the_extra_must_have_a_name)
+            }
+            if (extraList.isNotEmpty()) {
+                for (extra in extraList) {
+                    if (extra.ppeName == etExtraName.text.toString().trim()) {
+                        return getString(R.string.error_) +
+                                getString(R.string.this_extra_name_has_already_been_used)
+                    }
+                }
+            }
+            if (cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0) {
+                getString(R.string.error_) +
+                        getString(R.string.this_extra_must_have_a_value)
+            }
+            return ANSWER_OK
+        }
+    }
+
+    private fun getCurrentPayPeriodExtra(): WorkPayPeriodExtras {
+        binding.apply {
+            return WorkPayPeriodExtras(
+                cf.generateRandomIdAsLong(),
+                curPayPeriod.payPeriodId,
+                null,
+                etExtraName.text.toString().trim(),
+                spAppliesTo.selectedItemPosition,
+                3,
+                cf.getDoubleFromDollarOrPercentString(
+                    etValue.text.toString()
+                ),
+                chkIsFixed.isChecked,
+                chkIsCredit.isChecked,
+                false,
+                df.getCurrentTimeAsString(),
+            )
+        }
+    }
+
+    private fun saveExtra() {
+        binding.apply {
+            mainActivity.payDayViewModel.insertPayPeriodExtra(
+                getCurrentPayPeriodExtra()
+            )
+        }
+    }
+
+    private fun gotoPayDetailsFragment() {
+        mView.findNavController().navigate(
+            PayPeriodExtraAddFragmentDirections
+                .actionPayPeriodExtraAddFragmentToPayDetailFragment()
+        )
     }
 
     override fun onDestroy() {

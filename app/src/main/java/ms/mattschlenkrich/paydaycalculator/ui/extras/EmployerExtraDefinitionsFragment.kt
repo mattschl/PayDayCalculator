@@ -47,42 +47,75 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "View Extra Pay Items"
+        mainActivity.title = getString(R.string.view_extra_pay_items)
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setClickActions()
         populateValues()
+        setClickActions()
     }
 
-    private fun populateValues() {
-        populateEmployersSpinner()
-        mainActivity.mainViewModel.removeCallingFragment(TAG)
-        CoroutineScope(Dispatchers.Main).launch {
-            binding.apply {
-                delay(WAIT_250)
-                if (mainActivity.mainViewModel.getEmployer() != null) {
-                    val employerName =
-                        mainActivity.mainViewModel.getEmployer()!!.employerName
-                    for (i in 0 until spEmployers.adapter.count) {
-                        if (spEmployers.getItemAtPosition(i) == employerName) {
-                            spEmployers.setSelection(i)
-                            break
-                        }
+    private fun setClickActions() {
+        onSelectEmployer()
+        onSelectExtraType()
+        binding.apply {
+            fabNew.setOnClickListener {
+                gotoExtraAddFragment()
+            }
+            crdExtraInfo.setOnClickListener {
+                gotoExtraTypeUpdateFragment()
+            }
+        }
+    }
+
+    private fun onSelectEmployer() {
+        binding.apply {
+            spEmployers.onItemSelectedListener =
+                object : OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        findEmployerInListAndPopulateExtraTypes()
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                        //not needed
                     }
                 }
-                delay(WAIT_250)
-                if (mainActivity.mainViewModel.getWorkExtraType() != null) {
-                    val extraType =
-                        mainActivity.mainViewModel.getWorkExtraType()!!.wetName
-                    for (i in 0 until spExtraType.adapter.count) {
-                        if (spExtraType.getItemAtPosition(i) == extraType) {
-                            spExtraType.setSelection(i)
-                            break
-                        }
+        }
+    }
+
+    private fun setSelectionToEmployerFoundInList() {
+        binding.apply {
+            if (mainActivity.mainViewModel.getEmployer() != null) {
+                val employerName =
+                    mainActivity.mainViewModel.getEmployer()!!.employerName
+                for (i in 0 until spEmployers.adapter.count) {
+                    if (spEmployers.getItemAtPosition(i) == employerName) {
+                        spEmployers.setSelection(i)
+                        break
                     }
+                }
+            }
+        }
+    }
+
+    private fun findEmployerInListAndPopulateExtraTypes() {
+        binding.apply {
+            for (employer in employerList) {
+                if (employer.employerName == spEmployers.selectedItem.toString()) {
+                    curEmployer = employer
+                    populateExtraTypeSpinner()
+                    break
+                } else if (spEmployers.selectedItem.toString() ==
+                    getString(R.string.add_new_employer)
+                ) {
+                    gotoEmployerAddFragment()
                 }
             }
         }
@@ -102,13 +135,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     ) {
                         gotoExtraTypeAdd()
                     } else {
-                        for (extra in extraTypeList) {
-                            if (extra.wetName == spExtraType.selectedItem.toString()) {
-                                curExtraType = extra
-                                fillExtraTypeInfo()
-                                populateExtrasList()
-                            }
-                        }
+                        findExtraTypeInListAndPopulateDetails()
                     }
                 }
 
@@ -119,7 +146,46 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         }
     }
 
-    private fun fillExtraTypeInfo() {
+    private fun setSelectionToExtraTypeFoundInList() {
+        binding.apply {
+            if (mainActivity.mainViewModel.getWorkExtraType() != null) {
+                val extraType =
+                    mainActivity.mainViewModel.getWorkExtraType()!!.wetName
+                for (i in 0 until spExtraType.adapter.count) {
+                    if (spExtraType.getItemAtPosition(i) == extraType) {
+                        spExtraType.setSelection(i)
+                        break
+                    }
+                }
+            }
+        }
+    }
+
+    private fun findExtraTypeInListAndPopulateDetails() {
+        for (extra in extraTypeList) {
+            if (extra.wetName == binding.spExtraType.selectedItem.toString()) {
+                curExtraType = extra
+                populateExtraTypeInfo()
+                populateExtrasList()
+                break
+            }
+        }
+    }
+
+    private fun populateValues() {
+        populateEmployersSpinner()
+        mainActivity.mainViewModel.removeCallingFragment(TAG)
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.apply {
+                delay(WAIT_250)
+                setSelectionToEmployerFoundInList()
+                delay(WAIT_250)
+                setSelectionToExtraTypeFoundInList()
+            }
+        }
+    }
+
+    private fun populateExtraTypeInfo() {
         if (curExtraType != null) {
             binding.apply {
                 if (curExtraType!!.wetIsDeleted) {
@@ -133,26 +199,24 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     tvAttachTo.visibility = View.VISIBLE
                     tvDefault.visibility = View.VISIBLE
                     tvCredit.visibility = View.VISIBLE
-                    var display = "Calculated ${
-                        resources.getStringArray(
-                            R.array.extra_based_on
-                        )[curExtraType!!.wetAppliesTo]
-                    }"
+                    var display = getString(R.string.calculated) +
+                            resources.getStringArray(
+                                R.array.extra_based_on
+                            )[curExtraType!!.wetAppliesTo]
                     tvAppliesTo.text = display
-                    display = "Attaches to ${
-                        resources.getStringArray(
-                            R.array.pay_per_frequencies
-                        )[curExtraType!!.wetAttachTo]
-                    }"
+                    display = getString(R.string.attaches_to) +
+                            resources.getStringArray(
+                                R.array.pay_per_frequencies
+                            )[curExtraType!!.wetAttachTo]
                     tvAttachTo.text = display
-                    display = "This is a " +
+                    display = getString(R.string.this_is_a) +
                             if (curExtraType!!.wetIsCredit) {
                                 getString(R.string.credit)
                             } else {
                                 getString(R.string.deduction)
                             }
                     tvCredit.text = display
-                    display = "Applied " +
+                    display = getString(R.string.applied) +
                             if (curExtraType!!.wetIsDefault) {
                                 getString(R.string.by_default)
                             } else {
@@ -161,45 +225,6 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     tvDefault.text = display
                 }
             }
-        }
-    }
-
-    private fun gotoExtraTypeAdd() {
-        mainActivity.mainViewModel.addCallingFragment(TAG)
-        mainActivity.mainViewModel.setEmployer(curEmployer)
-        mView.findNavController().navigate(
-            EmployerExtraDefinitionsFragmentDirections
-                .actionEmployerExtraDefinitionsFragmentToWorkExtraTypeAddFragment()
-        )
-    }
-
-    private fun onSelectEmployer() {
-        binding.apply {
-            spEmployers.onItemSelectedListener =
-                object : OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        for (employer in employerList) {
-                            if (employer.employerName == spEmployers.selectedItem.toString()) {
-                                curEmployer = employer
-                                populateExtraTypeSpinner()
-                                break
-                            } else if (spEmployers.selectedItem.toString() ==
-                                getString(R.string.add_new_employer)
-                            ) {
-                                gotoEmployerAddFragment()
-                            }
-                        }
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        //not needed
-                    }
-                }
         }
     }
 
@@ -222,13 +247,6 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                 spExtraType.adapter = extraAdapter
             }
         }
-    }
-
-    private fun gotoEmployerAddFragment() {
-        mView.findNavController().navigate(
-            EmployerExtraDefinitionsFragmentDirections
-                .actionEmployerExtraDefinitionsFragmentToEmployerAddFragment()
-        )
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -263,41 +281,6 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                 }
             }
         }
-    }
-
-    private fun setClickActions() {
-        onSelectEmployer()
-        onSelectExtraType()
-        binding.apply {
-            fabNew.setOnClickListener {
-                gotoExtraAddFragment()
-            }
-            crdExtraInfo.setOnClickListener {
-                gotoExtraTypeUpdateFragment()
-            }
-        }
-    }
-
-    private fun gotoExtraTypeUpdateFragment() {
-        if (curExtraType != null) {
-            mainActivity.mainViewModel.setEmployer(curEmployer)
-            mainActivity.mainViewModel.setWorkExtraType(curExtraType)
-            mainActivity.mainViewModel.addCallingFragment(TAG)
-            mView.findNavController().navigate(
-                EmployerExtraDefinitionsFragmentDirections
-                    .actionEmployerExtraDefinitionsFragmentToWorkExtraTypeUpdateFragment()
-            )
-        }
-    }
-
-    private fun gotoExtraAddFragment() {
-        mainActivity.mainViewModel.setEmployer(curEmployer)
-        mainActivity.mainViewModel.setWorkExtraType(curExtraType)
-        mainActivity.mainViewModel.addCallingFragment(TAG)
-        mView.findNavController().navigate(
-            EmployerExtraDefinitionsFragmentDirections
-                .actionEmployerExtraDefinitionsFragmentToEmployerExtraDefinitionsAddFragment()
-        )
     }
 
     private fun populateEmployersSpinner() {
@@ -336,7 +319,6 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         }
     }
 
-
     private fun updateExtrasUI(extras: List<Any>) {
         binding.apply {
             if (extras.isEmpty()) {
@@ -347,6 +329,56 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                 crdNoInfo.visibility = View.GONE
             }
         }
+    }
+
+    private fun gotoExtraTypeUpdateFragment() {
+        if (curExtraType != null) {
+            mainActivity.mainViewModel.setEmployer(curEmployer)
+            mainActivity.mainViewModel.setWorkExtraType(curExtraType)
+            mainActivity.mainViewModel.addCallingFragment(TAG)
+            gotoFragmentToWorkExtraTypeUpdateFragment()
+        }
+    }
+
+    private fun gotoFragmentToWorkExtraTypeUpdateFragment() {
+        mView.findNavController().navigate(
+            EmployerExtraDefinitionsFragmentDirections
+                .actionEmployerExtraDefinitionsFragmentToWorkExtraTypeUpdateFragment()
+        )
+    }
+
+    private fun gotoExtraAddFragment() {
+        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainActivity.mainViewModel.setWorkExtraType(curExtraType)
+        mainActivity.mainViewModel.addCallingFragment(TAG)
+        gotoEmployerExtraDefinitionsAddFragment()
+    }
+
+    private fun gotoEmployerExtraDefinitionsAddFragment() {
+        mView.findNavController().navigate(
+            EmployerExtraDefinitionsFragmentDirections
+                .actionEmployerExtraDefinitionsFragmentToEmployerExtraDefinitionsAddFragment()
+        )
+    }
+
+    private fun gotoEmployerAddFragment() {
+        mView.findNavController().navigate(
+            EmployerExtraDefinitionsFragmentDirections
+                .actionEmployerExtraDefinitionsFragmentToEmployerAddFragment()
+        )
+    }
+
+    private fun gotoExtraTypeAdd() {
+        mainActivity.mainViewModel.addCallingFragment(TAG)
+        mainActivity.mainViewModel.setEmployer(curEmployer)
+        gotoWorkExtraTypeAddFragment()
+    }
+
+    private fun gotoWorkExtraTypeAddFragment() {
+        mView.findNavController().navigate(
+            EmployerExtraDefinitionsFragmentDirections
+                .actionEmployerExtraDefinitionsFragmentToWorkExtraTypeAddFragment()
+        )
     }
 
     override fun onDestroy() {

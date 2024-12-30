@@ -55,253 +55,14 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "Add a definition"
+        mainActivity.title = getString(R.string.add_a_definition)
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setClickActions()
         populateValues()
-    }
-
-    private fun chooseExtraType() {
-        binding.apply {
-            spExtraTypes.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        if (spExtraTypes.adapter.count > 0 &&
-                            spExtraTypes.selectedItem.toString() ==
-                            getString(R.string.add_a_new_extra_type)
-                        ) {
-                            gotoExtraTypeAddFragment()
-                        } else {
-                            populateFromExtraList()
-                        }
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        //not needed
-                    }
-                }
-        }
-    }
-
-    private fun populateFromExtraList() {
-        binding.apply {
-            for (extra in extraList) {
-                if (extra.wetName == spExtraTypes.selectedItem.toString()) {
-                    var display = if (extra.wetIsCredit) {
-                        "Credit"
-                    } else {
-                        "Debit"
-                    }
-                    display += " - Calculated " +
-                            "${
-                                resources.getStringArray(
-                                    R.array.pay_per_frequencies
-                                )[extra.wetAppliesTo]
-                            }. " +
-                            "\nAttaches to ${
-                                resources.getStringArray(
-                                    R.array.pay_per_frequencies
-                                )[extra.wetAttachTo]
-                            }. - "
-                    display += if (extra.wetIsDefault) "Is automatic"
-                    else "Added Manually"
-                    tvDescription.text = display
-                    when (extra.wetAppliesTo) {
-                        4 -> {
-                            chkIsFixed.isChecked = false
-                            chkIsFixed.text = getString(R.string.defaults_to_percentage)
-                            chkIsFixed.isEnabled = false
-                            etValue.setText(getString(R.string.zero_percent))
-                        }
-
-                        1 -> {
-                            chkIsFixed.isChecked = true
-                            chkIsFixed.text = getString(R.string.defaults_to_fixed)
-                            chkIsFixed.isEnabled = false
-                            etValue.setText(getString(R.string.zero_dollars))
-                        }
-
-                        else -> {
-                            chkIsFixed.text = getString(R.string.check_if_this_is_a_fixed_amount)
-                            chkIsFixed.isEnabled = true
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun gotoExtraTypeAddFragment() {
-        mainActivity.mainViewModel.setEmployer(curEmployer)
-        mView.findNavController().navigate(
-            EmployerExtraDefinitionsAddFragmentDirections
-                .actionEmployerExtraDefinitionsAddFragmentToWorkExtraTypeAddFragment()
-        )
-    }
-
-    private fun setMenuActions() {
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.save_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        saveExtraIfValid()
-                        true
-                    }
-
-                    else -> {
-                        false
-                    }
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.CREATED)
-    }
-
-    private fun getCurrentExtraDefinition(): WorkExtrasDefinitions {
-        binding.apply {
-            var extraId = 0L
-            for (extra in extraList) {
-                if (extra.wetName == spExtraTypes.selectedItem.toString()) {
-                    extraId = extra.workExtraTypeId
-                    break
-                }
-            }
-            return WorkExtrasDefinitions(
-                cf.generateRandomIdAsLong(),
-                curEmployer.employerId,
-                extraId,
-                cf.getDoubleFromDollarOrPercentString(etValue.text.toString()),
-                chkIsFixed.isChecked,
-                tvEffectiveDate.text.toString(),
-                false,
-                df.getCurrentTimeAsString()
-            )
-        }
-    }
-
-    private fun saveExtraIfValid() {
-        binding.apply {
-            val message = validateExtra()
-            if (message == ANSWER_OK) {
-                val currentExtraDefinition =
-                    getCurrentExtraDefinition()
-                mainActivity.workExtraViewModel.insertWorkExtraDefinition(
-                    currentExtraDefinition
-                )
-                gotoCallingFragment()
-            } else {
-                Toast.makeText(
-                    mView.context,
-                    message,
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-    }
-
-    private fun gotoCallingFragment() {
-        if (mainActivity.mainViewModel.getCallingFragment() != null) {
-            if (mainActivity.mainViewModel.getCallingFragment()!!.contains(
-                    FRAG_EXTRA_DEFINITIONS
-                )
-            ) {
-                gotoExtraDefinitionsFragment()
-            }
-        } else {
-            gotoEmployerUpdateFragment()
-        }
-    }
-
-    private fun gotoExtraDefinitionsFragment() {
-        mView.findNavController().navigate(
-            EmployerExtraDefinitionsAddFragmentDirections
-                .actionEmployerExtraDefinitionsAddFragmentToEmployerExtraDefinitionsFragment()
-        )
-    }
-
-    private fun gotoEmployerUpdateFragment() {
-        mView.findNavController().navigate(
-            EmployerExtraDefinitionsAddFragmentDirections
-                .actionEmployerExtraDefinitionsAddFragmentToEmployerUpdateFragment()
-        )
-    }
-
-    private fun validateExtra(): String {
-        binding.apply {
-            return ANSWER_OK
-        }
-    }
-
-    private fun chooseFixedOrPercent() {
-        binding.apply {
-            chkIsFixed.setOnClickListener {
-                etValue.setText(
-                    if (chkIsFixed.isChecked) {
-                        cf.displayDollars(
-                            cf.getDoubleFromDollarOrPercentString(
-                                etValue.text.toString()
-                            )
-                        )
-                    } else {
-                        cf.getPercentStringFromDouble(
-                            cf.getDoubleFromDollarOrPercentString(
-                                etValue.text.toString()
-                            ) / 100
-                        )
-                    }
-                )
-            }
-        }
-    }
-
-    private fun setClickActions() {
-        setMenuActions()
-        binding.apply {
-            tvEffectiveDate.setOnClickListener {
-                changeDate()
-            }
-        }
-        chooseExtraType()
-        chooseFixedOrPercent()
-
-    }
-
-    private fun changeDate() {
-        binding.apply {
-            val curDateAll = tvEffectiveDate.text.toString()
-                .split("-")
-            val datePickerDialog = DatePickerDialog(
-                mView.context,
-                { _, year, monthOfYear, dayOfMonth ->
-                    val month = monthOfYear + 1
-                    val display = "$year-${
-                        month.toString()
-                            .padStart(2, '0')
-                    }-${
-                        dayOfMonth.toString().padStart(2, '0')
-                    }"
-                    tvEffectiveDate.text = display
-                },
-                curDateAll[0].toInt(),
-                curDateAll[1].toInt() - 1,
-                curDateAll[2].toInt()
-            )
-            datePickerDialog.setTitle("Choose when this will take effect")
-            datePickerDialog.show()
-        }
+        setClickActions()
     }
 
     private fun populateValues() {
@@ -345,6 +106,253 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                 }
             spExtraTypes.adapter = extraTypeAdapter
         }
+    }
+
+    private fun setClickActions() {
+        setMenuActions()
+        binding.apply {
+            tvEffectiveDate.setOnClickListener {
+                changeDate()
+            }
+        }
+        chooseExtraType()
+        chooseFixedOrPercent()
+
+    }
+
+    private fun setMenuActions() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.save_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.menu_save -> {
+                        saveExtraIfValid()
+                        true
+                    }
+
+                    else -> {
+                        false
+                    }
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
+    }
+
+    private fun changeDate() {
+        binding.apply {
+            val curDateAll = tvEffectiveDate.text.toString()
+                .split("-")
+            val datePickerDialog = DatePickerDialog(
+                mView.context,
+                { _, year, monthOfYear, dayOfMonth ->
+                    val month = monthOfYear + 1
+                    val display = "$year-${
+                        month.toString()
+                            .padStart(2, '0')
+                    }-${
+                        dayOfMonth.toString().padStart(2, '0')
+                    }"
+                    tvEffectiveDate.text = display
+                },
+                curDateAll[0].toInt(),
+                curDateAll[1].toInt() - 1,
+                curDateAll[2].toInt()
+            )
+            datePickerDialog.setTitle("Choose when this will take effect")
+            datePickerDialog.show()
+        }
+    }
+
+    private fun chooseExtraType() {
+        binding.apply {
+            spExtraTypes.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        if (spExtraTypes.adapter.count > 0 &&
+                            spExtraTypes.selectedItem.toString() ==
+                            getString(R.string.add_a_new_extra_type)
+                        ) {
+                            gotoExtraTypeAdd()
+                        } else {
+                            populateFromExtraList()
+                        }
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                        //not needed
+                    }
+                }
+        }
+    }
+
+    private fun chooseFixedOrPercent() {
+        binding.apply {
+            chkIsFixed.setOnClickListener {
+                etValue.setText(
+                    if (chkIsFixed.isChecked) {
+                        cf.displayDollars(
+                            cf.getDoubleFromDollarOrPercentString(
+                                etValue.text.toString()
+                            )
+                        )
+                    } else {
+                        cf.getPercentStringFromDouble(
+                            cf.getDoubleFromDollarOrPercentString(
+                                etValue.text.toString()
+                            ) / 100
+                        )
+                    }
+                )
+            }
+        }
+    }
+
+    private fun populateFromExtraList() {
+        binding.apply {
+            for (extra in extraList) {
+                if (extra.wetName == spExtraTypes.selectedItem.toString()) {
+                    var display = if (extra.wetIsCredit) {
+                        getString(R.string.credit)
+                    } else {
+                        getString(R.string.debit)
+                    }
+                    display += getString(R.string.__calculated) +
+                            resources.getStringArray(
+                                R.array.pay_per_frequencies
+                            )[extra.wetAppliesTo] +
+                            getString(R.string.period_space) +
+                            getString(R.string._attaches_to_) +
+                            resources.getStringArray(
+                                R.array.pay_per_frequencies
+                            )[extra.wetAttachTo] +
+                            getString(R.string.period_hyphen)
+                    display += if (extra.wetIsDefault) getString(R.string.is_automatic)
+                    else getString(R.string.added_manually)
+                    tvDescription.text = display
+                    when (extra.wetAppliesTo) {
+                        4 -> {
+                            chkIsFixed.isChecked = false
+                            chkIsFixed.text = getString(R.string.defaults_to_percentage)
+                            chkIsFixed.isEnabled = false
+                            etValue.setText(getString(R.string.zero_percent))
+                        }
+
+                        1 -> {
+                            chkIsFixed.isChecked = true
+                            chkIsFixed.text = getString(R.string.defaults_to_fixed)
+                            chkIsFixed.isEnabled = false
+                            etValue.setText(getString(R.string.zero_dollars))
+                        }
+
+                        else -> {
+                            chkIsFixed.text = getString(R.string.check_if_this_is_a_fixed_amount)
+                            chkIsFixed.isEnabled = true
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getCurrentExtraDefinition(): WorkExtrasDefinitions {
+        binding.apply {
+            var extraId = 0L
+            for (extra in extraList) {
+                if (extra.wetName == spExtraTypes.selectedItem.toString()) {
+                    extraId = extra.workExtraTypeId
+                    break
+                }
+            }
+            return WorkExtrasDefinitions(
+                cf.generateRandomIdAsLong(),
+                curEmployer.employerId,
+                extraId,
+                cf.getDoubleFromDollarOrPercentString(etValue.text.toString()),
+                chkIsFixed.isChecked,
+                tvEffectiveDate.text.toString(),
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
+    private fun saveExtraIfValid() {
+        binding.apply {
+            val message = validateExtra()
+            if (message == ANSWER_OK) {
+                saveExtra()
+                gotoCallingFragment()
+            } else {
+                Toast.makeText(
+                    mView.context,
+                    message,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    private fun validateExtra(): String {
+        binding.apply {
+            //TODO: create validation rules
+            return ANSWER_OK
+        }
+    }
+
+    private fun saveExtra() {
+        val currentExtraDefinition =
+            getCurrentExtraDefinition()
+        mainActivity.workExtraViewModel.insertWorkExtraDefinition(
+            currentExtraDefinition
+        )
+    }
+
+    private fun gotoCallingFragment() {
+        if (mainActivity.mainViewModel.getCallingFragment() != null) {
+            if (mainActivity.mainViewModel.getCallingFragment()!!.contains(
+                    FRAG_EXTRA_DEFINITIONS
+                )
+            ) {
+                gotoExtraDefinitionsFragment()
+            }
+        } else {
+            gotoEmployerUpdateFragment()
+        }
+    }
+
+    private fun gotoEmployerUpdateFragment() {
+        mView.findNavController().navigate(
+            EmployerExtraDefinitionsAddFragmentDirections
+                .actionEmployerExtraDefinitionsAddFragmentToEmployerUpdateFragment()
+        )
+    }
+
+    private fun gotoExtraTypeAdd() {
+        mainActivity.mainViewModel.setEmployer(curEmployer)
+        gotoWorkExtraTypeAddFragment()
+    }
+
+    private fun gotoExtraDefinitionsFragment() {
+        mView.findNavController().navigate(
+            EmployerExtraDefinitionsAddFragmentDirections
+                .actionEmployerExtraDefinitionsAddFragmentToEmployerExtraDefinitionsFragment()
+        )
+    }
+
+    private fun gotoWorkExtraTypeAddFragment() {
+        mView.findNavController().navigate(
+            EmployerExtraDefinitionsAddFragmentDirections
+                .actionEmployerExtraDefinitionsAddFragmentToWorkExtraTypeAddFragment()
+        )
     }
 
     override fun onDestroy() {
