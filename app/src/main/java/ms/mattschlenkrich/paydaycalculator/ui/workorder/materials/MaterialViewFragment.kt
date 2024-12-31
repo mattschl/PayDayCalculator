@@ -52,10 +52,10 @@ class MaterialViewFragment :
         menuHost.addMenuProvider(
             this, viewLifecycleOwner, Lifecycle.State.RESUMED
         )
-        setBaseView()
+        populateBaseView()
     }
 
-    private fun setBaseView() {
+    private fun populateBaseView() {
         binding.apply {
             tvNoInfo.text = getString(R.string.no_materials_to_view)
             fabNew.visibility = View.GONE
@@ -100,6 +100,18 @@ class MaterialViewFragment :
         return false
     }
 
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.search_menu, menu)
+        val mMenuSearch = menu.findItem(R.id.menu_search)
+            .actionView as SearchView
+        mMenuSearch.isSubmitButtonEnabled = false
+        mMenuSearch.setOnQueryTextListener(this)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        return false
+    }
+
     override fun onQueryTextChange(query: String?): Boolean {
         if (query != null) {
             searchMaterial(query)
@@ -117,17 +129,5 @@ class MaterialViewFragment :
                 updateUI(list)
             }
         }
-    }
-
-    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.search_menu, menu)
-        val mMenuSearch = menu.findItem(R.id.menu_search)
-            .actionView as SearchView
-        mMenuSearch.isSubmitButtonEnabled = false
-        mMenuSearch.setOnQueryTextListener(this)
-    }
-
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        return false
     }
 }

@@ -41,11 +41,11 @@ class WorkOrderLookupFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainActivity.title = getString(R.string.choose_a_work_order)
-        setInitialView()
+        populateInitialView()
         setClickActions()
     }
 
-    private fun setInitialView() {
+    private fun populateInitialView() {
         binding.apply {
             tvEmployer.visibility = View.VISIBLE
             spEmployers.visibility = View.INVISIBLE

@@ -21,7 +21,7 @@ import ms.mattschlenkrich.paydaycalculator.common.WAIT_250
 import ms.mattschlenkrich.paydaycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentWorkOrderViewBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
-import ms.mattschlenkrich.paydaycalculator.ui.workorder.workorder.adapter.WorkOrdersAdapter
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.workorder.adapter.WorkOrderViewAdapter
 
 private const val TAG = FRAG_WORK_ORDERS
 
@@ -33,7 +33,7 @@ class WorkOrderViewFragment :
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private var curEmployer: Employers? = null
-    private var workOrderAdapter: WorkOrdersAdapter? = null
+    private var workOrderAdapter: WorkOrderViewAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -109,7 +109,7 @@ class WorkOrderViewFragment :
     }
 
     private fun populateWorkOrders(employerId: Long) {
-        workOrderAdapter = WorkOrdersAdapter(
+        workOrderAdapter = WorkOrderViewAdapter(
             mainActivity, mView, TAG
         )
         mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
@@ -127,6 +127,10 @@ class WorkOrderViewFragment :
     private fun gotoEmployerAdd() {
         mainActivity.mainViewModel.setCallingFragment(TAG)
         mainActivity.mainViewModel.setEmployer(null)
+        gotoEmployerAddFragment()
+    }
+
+    private fun gotoEmployerAddFragment() {
         mView.findNavController().navigate(
             WorkOrderViewFragmentDirections
                 .actionWorkOrderViewFragmentToEmployerAddFragment()
@@ -183,6 +187,10 @@ class WorkOrderViewFragment :
 
     private fun addNewWorkOrder() {
         mainActivity.mainViewModel.setEmployer(curEmployer)
+        gotoWorkOrderAddFragment()
+    }
+
+    private fun gotoWorkOrderAddFragment() {
         mView.findNavController().navigate(
             WorkOrderViewFragmentDirections
                 .actionWorkOrderViewFragmentToWorkOrderAddFragment()

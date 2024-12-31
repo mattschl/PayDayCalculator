@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.MaterialInSequence
@@ -48,8 +49,12 @@ class MaterialQuantityUpdateFragment : Fragment(R.layout.fragment_material_quant
             mainActivity.mainViewModel.getWorkDateObject()!!.wdDate
         )
         material = mainActivity.mainViewModel.getMaterialInSequence()!!
-        val display = "Update quantity of ${nf.getNumberFromDouble(material.mQty)} " +
-                "for ${material.mName} on $date"
+        val display = getString(R.string.update_quantity_of) +
+                nf.getNumberFromDouble(material.mQty) +
+                getString(R.string._for_) +
+                material.mName +
+                getString(R.string._on_) +
+                date
         binding.apply {
             tvDetails.text = display
             etNewQuantity.setText(nf.getNumberFromDouble(material.mQty))
@@ -59,31 +64,45 @@ class MaterialQuantityUpdateFragment : Fragment(R.layout.fragment_material_quant
     private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener {
-                updateMaterialQuantity()
+                updateMaterialQuantityIfValid()
             }
         }
     }
 
-    private fun updateMaterialQuantity() {
-        val newQty = binding.etNewQuantity.text.toString().trim().toDouble()
-        if (newQty != material.mQty) {
-            mainActivity.workOrderViewModel.updateWorkOrderHistoryMaterial(
-                WorkOrderHistoryMaterial(
-                    material.workOrderHistoryMaterialId,
-                    material.workOrderHistoryId,
-                    material.materialId,
-                    binding.etNewQuantity.text.toString().trim().toDouble(),
-                    material.mSequence,
-                    false,
-                    df.getCurrentTimeAsString()
+    private fun updateMaterialQuantityIfValid() {
+        if (validateQuantity() == ANSWER_OK) {
+            val newQty = binding.etNewQuantity.text.toString().trim().toDouble()
+            if (newQty != material.mQty) {
+                mainActivity.workOrderViewModel.updateWorkOrderHistoryMaterial(
+                    WorkOrderHistoryMaterial(
+                        material.workOrderHistoryMaterialId,
+                        material.workOrderHistoryId,
+                        material.materialId,
+                        newQty,
+                        material.mSequence,
+                        false,
+                        df.getCurrentTimeAsString()
+                    )
                 )
-            )
+            }
+            gotoWorkOrderHistoryUpdate()
         }
-        gotoWorkOrderHistoryUpdate()
+    }
+
+    private fun validateQuantity(): String {
+        if (binding.etNewQuantity.text.isNullOrBlank()) {
+            return getString(R.string.error_) +
+                    getString(R.string.please_enter_a_new_quantity)
+        }
+        return ANSWER_OK
     }
 
     private fun gotoWorkOrderHistoryUpdate() {
         mainActivity.mainViewModel.setMaterialInSequence(null)
+        gotoWorkOrderHistoryUpdateFragment()
+    }
+
+    private fun gotoWorkOrderHistoryUpdateFragment() {
         mView.findNavController().navigate(
             MaterialQuantityUpdateFragmentDirections
                 .actionMaterialQuantityUpdateFragmentToWorkOrderHistoryUpdateFragment()

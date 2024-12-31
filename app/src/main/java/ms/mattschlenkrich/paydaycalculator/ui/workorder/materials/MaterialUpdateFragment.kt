@@ -49,18 +49,18 @@ class MaterialUpdateFragment
     }
 
     private fun setInitialValues() {
+        populateMaterialListForValidation()
         if (mainActivity.mainViewModel.getMaterial() != null) {
             oldMaterial = mainActivity.mainViewModel.getMaterial()!!
             binding.apply {
-                val display =
-                    "Update: ${oldMaterial.mName}"
+                val display = getString(R.string.update_) +
+                        oldMaterial.mName
                 tvTitle.text = display
                 etMaterial.setText(oldMaterial.mName)
                 etPrice.setText(nf.displayDollars(oldMaterial.mPrice))
                 etCost.setText(nf.displayDollars(oldMaterial.mCost))
             }
         }
-        populateMaterialListForValidation()
     }
 
     private fun populateMaterialListForValidation() {
@@ -98,10 +98,36 @@ class MaterialUpdateFragment
         }
     }
 
-    private fun updateMaterial() {
-        mainActivity.workOrderViewModel.updateMaterial(
-            getCurMaterial()
-        )
+    private fun validateMaterial(): String {
+        binding.apply {
+            if (etMaterial.text.isNullOrBlank()) {
+                return getString(R.string.error_) +
+                        getString(R.string.please_enter_a_new_name_for_this_material)
+            }
+            if (etCost.text.isNullOrBlank()) {
+                return getString(R.string.error_) +
+                        getString(R.string.there_needs_to_be_a_cost_including_zero)
+            }
+            if (etPrice.text.isNullOrBlank()) {
+                return getString(R.string.error_) +
+                        getString(R.string.there_needs_to_be_a_price_including_zero)
+            }
+            for (material in materialList) {
+                if (material.mName == etMaterial.text.toString().trim() &&
+                    etMaterial.text.toString().trim() != oldMaterial.mName
+                ) {
+                    return getString(R.string.error_) +
+                            getString(R.string.this_material_already_exists)
+                }
+            }
+            if (nf.getDoubleFromDollars(etCost.text.toString()) >
+                nf.getDoubleFromDollars(etPrice.text.toString())
+            ) {
+                return getString(R.string.error_) +
+                        getString(R.string.the_cost_is_greater_than_the_price)
+            }
+        }
+        return ANSWER_OK
     }
 
     private fun getCurMaterial(): Material {
@@ -117,30 +143,10 @@ class MaterialUpdateFragment
         }
     }
 
-    private fun validateMaterial(): String {
-        binding.apply {
-            if (etMaterial.text.isNullOrBlank()) {
-                return "    ERROR!!\n" +
-                        "Please enter a valid name for this material"
-            }
-            for (material in materialList) {
-                if (material.mName ==
-                    etMaterial.text.toString().trim() &&
-                    etMaterial.text.toString().trim() !=
-                    oldMaterial.mName
-                ) {
-                    return "    ERROR!!\n" +
-                            "This material already exists!"
-                }
-            }
-            if (nf.getDoubleFromDollars(etCost.text.toString()) >
-                nf.getDoubleFromDollars(etPrice.text.toString())
-            ) {
-                return "    ERROR!!\n" +
-                        "The cost is greater than the price."
-            }
-        }
-        return ANSWER_OK
+    private fun updateMaterial() {
+        mainActivity.workOrderViewModel.updateMaterial(
+            getCurMaterial()
+        )
     }
 
     private fun gotoCallingFragment() {

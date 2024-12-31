@@ -205,7 +205,8 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
                 val materialsAndCount = materials.sortedBy { it.name }
                 val materialAdapter =
                     MaterialCountAdapter(
-                        materialsAndCount
+                        materialsAndCount,
+                        mView
                     )
                 binding.rvMaterials.apply {
 //                    layoutManager = LinearLayoutManager(mView.context)

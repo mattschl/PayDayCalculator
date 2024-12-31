@@ -8,6 +8,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
@@ -75,14 +76,18 @@ class WorkOrderJobSpecAdapter(
 
     private fun chooseOptionsForJobSpec(woJobSpec: WorkOrderJobSpecCombined) {
         AlertDialog.Builder(mView.context)
-            .setTitle("Choose option for ${woJobSpec.jobSpec.jsName}")
-            .setPositiveButton("Edit description") { _, _ ->
+            .setTitle(
+                mView.context.getString(R.string.choose_option_for) +
+                        "\"${woJobSpec.jobSpec.jsName}\"" +
+                        mView.context.getString(R.string._in_the_database)
+            )
+            .setPositiveButton(mView.context.getString(R.string.edit_description)) { _, _ ->
                 editJobSpec(woJobSpec)
             }
-            .setNegativeButton("Remove") { _, _ ->
+            .setNegativeButton(mView.context.getString(R.string.remove)) { _, _ ->
                 removeJobSpec(woJobSpec)
             }
-            .setNeutralButton("Cancel", null)
+            .setNeutralButton(mView.context.getString(R.string.cancel), null)
             .show()
     }
 
@@ -95,6 +100,10 @@ class WorkOrderJobSpecAdapter(
 
     private fun editJobSpec(woJobSpec: WorkOrderJobSpecCombined) {
         mainActivity.mainViewModel.setJobSpec(woJobSpec.jobSpec)
+        gotoJobSpecUpdateFragment()
+    }
+
+    private fun gotoJobSpecUpdateFragment() {
         mView.findNavController().navigate(
             WorkOrderUpdateFragmentDirections
                 .actionWorkOrderUpdateFragmentToJobSpecUpdateFragment()

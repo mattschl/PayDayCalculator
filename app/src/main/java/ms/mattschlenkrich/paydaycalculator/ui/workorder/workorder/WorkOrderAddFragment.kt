@@ -57,11 +57,11 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setInitialValues()
+        populateInitialValues()
         setClickActions()
     }
 
-    private fun setInitialValues() {
+    private fun populateInitialValues() {
         binding.apply {
             if (mainActivity.mainViewModel.getEmployer() != null) {
                 curEmployer = mainActivity.mainViewModel.getEmployer()!!
@@ -128,11 +128,11 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
                     jobSpecNameList.add(it.jsName)
                     jobSpecList.add(it)
                 }
-                populateJobSpecsForAutoComplete(jobSpecNameList)
+                populateJobSpecsNamesForAutoComplete(jobSpecNameList)
             }
     }
 
-    private fun populateJobSpecsForAutoComplete(
+    private fun populateJobSpecsNamesForAutoComplete(
         jobSpecNameList: ArrayList<String>
     ) {
         binding.apply {
@@ -148,14 +148,14 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
     private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener {
-                prepareToSave(gotoUpdate = false, addJobSpecToWorkOrder = false)
+                saveWorkOrderAndAddJobSpecIfValid(gotoUpdate = false, addJobSpecToWorkOrder = false)
             }
             onSelectEmployer()
             acJobSpec.setOnItemClickListener { _, _, _, _ ->
                 setCurrentJoSpec()
             }
             btnAddJobSpec.setOnClickListener {
-                prepareToSave(gotoUpdate = true, addJobSpecToWorkOrder = true)
+                saveWorkOrderAndAddJobSpecIfValid(gotoUpdate = true, addJobSpecToWorkOrder = true)
             }
         }
     }
@@ -171,12 +171,12 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
         return false
     }
 
-    private fun prepareToSave(
+    private fun saveWorkOrderAndAddJobSpecIfValid(
         gotoUpdate: Boolean, addJobSpecToWorkOrder: Boolean
     ) {
         val answer = validateWorkOrder()
         if (answer == ANSWER_OK) {
-            saveWorkOrder(gotoUpdate, addJobSpecToWorkOrder)
+            saveWorkOrderAndAddJobSpecs(gotoUpdate, addJobSpecToWorkOrder)
         } else {
             Toast.makeText(
                 mView.context,
@@ -185,7 +185,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
         }
     }
 
-    private fun saveWorkOrder(
+    private fun saveWorkOrderAndAddJobSpecs(
         gotoUpdate: Boolean, addJobSpecToWorkOrder: Boolean
     ) {
         curWorkOrder = getCurrentWorkOrder()
@@ -198,7 +198,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
             addJobSpecToWorkOrderIfValid()
         }
         if (gotoUpdate) {
-            gotoWorkOrderUpdateFragment()
+            gotoWorkOrderUpdate()
         } else {
             gotoCallingFragment()
         }
@@ -229,28 +229,6 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
         }
     }
 
-    private fun addJobSpecToWorkOrderIfValid() {
-        binding.apply {
-            if (acJobSpec.text.isNullOrBlank()) {
-                Toast.makeText(
-                    mView.context,
-                    "Add a description first",
-                    Toast.LENGTH_LONG
-                ).show()
-            } else if (curJobSpec != null) {
-                addJobSpecToWorkOrder()
-            } else if (acJobSpec.text.isNotBlank()) {
-                addJobSpecToWorkOrderOrAddToDatabaseFirst()
-            } else {
-                Toast.makeText(
-                    mView.context,
-                    "Add a description first",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-    }
-
     private fun addJobSpecToWorkOrderOrAddToDatabaseFirst() {
         for (jobSpec in jobSpecList) {
             if (jobSpec.jsName ==
@@ -265,6 +243,50 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
             curJobSpec = addJobSpecToDatabase()
             delay(WAIT_100)
             addJobSpecToWorkOrder()
+        }
+    }
+
+    private fun validateWorkOrder(): String {
+        binding.apply {
+            if (etWorkOrderNumber.text.isEmpty()) {
+                return getString(R.string.please_enter_a_work_order_number)
+            }
+            for (workOrder in workOrderList) {
+                if (workOrder.woNumber ==
+                    etWorkOrderNumber.text.toString()
+                ) {
+                    return getString(R.string.this_work_order_has_been_used)
+                }
+            }
+            if (etAddress.text.isEmpty()) {
+                return getString(R.string.please_enter_an_address)
+            }
+            if (etDescription.text.isEmpty()) {
+                return getString(R.string.please_enter_a_description)
+            }
+        }
+        return ANSWER_OK
+    }
+
+    private fun addJobSpecToWorkOrderIfValid() {
+        binding.apply {
+            if (acJobSpec.text.isNullOrBlank()) {
+                Toast.makeText(
+                    mView.context,
+                    getString(R.string.add_a_description_first),
+                    Toast.LENGTH_LONG
+                ).show()
+            } else if (curJobSpec != null) {
+                addJobSpecToWorkOrder()
+            } else if (acJobSpec.text.isNotBlank()) {
+                addJobSpecToWorkOrderOrAddToDatabaseFirst()
+            } else {
+                Toast.makeText(
+                    mView.context,
+                    getString(R.string.add_a_description_first),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
     }
 
@@ -298,42 +320,25 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
 //        binding.acJobSpec.text = null
     }
 
-    private fun validateWorkOrder(): String {
-        binding.apply {
-            if (etWorkOrderNumber.text.isEmpty()) {
-                return getString(R.string.please_enter_a_work_order_number)
-            }
-            for (workOrder in workOrderList) {
-                if (workOrder.woNumber ==
-                    etWorkOrderNumber.text.toString()
-                ) {
-                    return getString(R.string.this_work_order_has_been_used)
-                }
-            }
-            if (etAddress.text.isEmpty()) {
-                return getString(R.string.please_enter_an_address)
-            }
-            if (etDescription.text.isEmpty()) {
-                return getString(R.string.please_enter_a_description)
-            }
-        }
-        return ANSWER_OK
+    private fun gotoWorkOrderUpdate() {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.work_order_has_been_added_automatically_before_adding_work_specs),
+            Toast.LENGTH_LONG
+        ).show()
+        gotoWorkOrderUpdateFragment()
+    }
+
+    private fun gotoCallingFragment() {
+        //TODO: Check for originating fragment and goto
+        gotoTimeSheetAddWorkOrderFragment()
     }
 
     private fun gotoWorkOrderUpdateFragment() {
-        Toast.makeText(
-            mView.context,
-            "Work order has been added automatically before adding work specs.",
-            Toast.LENGTH_LONG
-        ).show()
         mView.findNavController().navigate(
             WorkOrderAddFragmentDirections
                 .actionWorkOrderAddFragmentToWorkOrderUpdateFragment()
         )
-    }
-
-    private fun gotoCallingFragment() {
-        gotoTimeSheetAddWorkOrderFragment()
     }
 
     private fun gotoTimeSheetAddWorkOrderFragment() {

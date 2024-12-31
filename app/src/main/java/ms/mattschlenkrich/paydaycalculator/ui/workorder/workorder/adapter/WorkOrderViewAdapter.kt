@@ -8,16 +8,17 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkOrderItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.workorder.workorder.WorkOrderViewFragmentDirections
 
-class WorkOrdersAdapter(
+class WorkOrderViewAdapter(
     val mainActivity: MainActivity,
     val mView: View,
     private val parentFragmentTag: String
-) : RecyclerView.Adapter<WorkOrdersAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<WorkOrderViewAdapter.ViewHolder>() {
 
 //    private val df = DateFunctions()
 //    private val nf = NumberFunctions()
@@ -63,23 +64,30 @@ class WorkOrdersAdapter(
 
     private fun chooseOptions(workOrder: WorkOrder) {
         AlertDialog.Builder(mView.context)
-            .setTitle("Choose options for ${workOrder.woNumber}")
-            .setMessage(
-                "Would you like to open this Work Order to view or edit it?"
+            .setTitle(
+                mView.context.getString(R.string.choose_option_for_wo) +
+                        workOrder.woNumber
             )
-            .setPositiveButton("Open") { _, _ ->
+            .setMessage(
+                mView.context.getString(R.string.would_you_like_to_open_this_work_order_to_view_or_edit_it)
+            )
+            .setPositiveButton(mView.context.getString(R.string.open)) { _, _ ->
                 mainActivity.mainViewModel.setWorkOrder(workOrder)
                 mainActivity.mainViewModel.setWorkOrderNumber(
                     workOrder.woNumber
                 )
                 gotoWorkOrderUpdate()
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()
     }
 
     private fun gotoWorkOrderUpdate() {
         mainActivity.mainViewModel.setCallingFragment(parentFragmentTag)
+        gotoWorkOrderUpdateFragment()
+    }
+
+    private fun gotoWorkOrderUpdateFragment() {
         mView.findNavController().navigate(
             WorkOrderViewFragmentDirections
                 .actionWorkOrderViewFragmentToWorkOrderUpdateFragment()

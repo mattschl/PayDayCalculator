@@ -8,6 +8,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.TempWorkOrderHistoryInfo
@@ -65,18 +66,23 @@ class WorkOrderLookupAdapter(
 
     private fun chooseOptions(workOrder: WorkOrder) {
         AlertDialog.Builder(mView.context)
-            .setTitle("Choose ${workOrder.woNumber}?")
-            .setMessage(
-                "Would you like to use this Work Order?"
+            .setTitle(
+                mView.context.getString(R.string.choose) +
+                        workOrder.woNumber
             )
-            .setPositiveButton("Yes") { _, _ ->
+            .setMessage(
+                mView.context.getString(R.string.would_you_like_to_use_this_work_order) +
+                        mView.context.getString(R.string.line_break) +
+                        workOrder.woDescription
+            )
+            .setPositiveButton(mView.context.getString(R.string.yes)) { _, _ ->
                 mainActivity.mainViewModel.setWorkOrder(workOrder)
                 mainActivity.mainViewModel.setWorkOrderNumber(
                     workOrder.woNumber
                 )
                 gotoCallingFragment(workOrder)
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()
     }
 
@@ -92,7 +98,7 @@ class WorkOrderLookupAdapter(
                 FRAG_WORK_ORDER_HISTORY_ADD
             )
         ) {
-            gotoWorkOrderAddFragment()
+            gotoWorkOrderAdd()
         }
     }
 
@@ -124,21 +130,29 @@ class WorkOrderLookupAdapter(
                 ", $FRAG_WORK_ORDER_HISTORY_UPDATE", ""
             )
         )
-        mView.findNavController().navigate(
-            WorkOrderLookupFragmentDirections
-                .actionWorkOrderLookupFragmentToWorkOrderHistoryUpdateFragment()
-        )
+        gotoWorkOrderHistoryUpdateFragment()
     }
 
-    private fun gotoWorkOrderAddFragment() {
+    private fun gotoWorkOrderAdd() {
         mainActivity.mainViewModel.setCallingFragment(
             mainActivity.mainViewModel.getCallingFragment()!!.replace(
                 ", $FRAG_WORK_ORDER_HISTORY_ADD", ""
             )
         )
+        gotoWorkOrderHistoryAddFragment()
+    }
+
+    private fun gotoWorkOrderHistoryAddFragment() {
         mView.findNavController().navigate(
             WorkOrderLookupFragmentDirections
                 .actionWorkOrderLookupFragmentToWorkOrderHistoryAddFragment()
+        )
+    }
+
+    private fun gotoWorkOrderHistoryUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkOrderLookupFragmentDirections
+                .actionWorkOrderLookupFragmentToWorkOrderHistoryUpdateFragment()
         )
     }
 

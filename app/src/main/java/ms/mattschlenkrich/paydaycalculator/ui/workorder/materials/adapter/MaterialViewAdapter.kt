@@ -8,6 +8,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.Material
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
@@ -54,7 +55,7 @@ class MaterialViewAdapter(
         holder.itemBinding.apply {
             var display = material.mName
             if (material.mIsDeleted) {
-                display += " *DELETED*"
+                display += mView.context.getString(R.string.deleted)
                 tvDisplay.setTextColor(Color.RED)
             } else {
                 tvDisplay.setTextColor(Color.BLACK)
@@ -69,6 +70,10 @@ class MaterialViewAdapter(
     private fun gotoUpdateMaterial(material: Material) {
         mainActivity.mainViewModel.setCallingFragment(parentTag)
         mainActivity.mainViewModel.setMaterial(material)
+        gotoMaterialUpdateFragment()
+    }
+
+    private fun gotoMaterialUpdateFragment() {
         mView.findNavController().navigate(
             MaterialViewFragmentDirections
                 .actionMaterialViewFragmentToMaterialUpdateFragment()

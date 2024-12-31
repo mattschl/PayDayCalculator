@@ -36,7 +36,7 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "Update Job Spec"
+        mainActivity.title = getString(R.string.update_job_spec)
         return mView
     }
 
@@ -53,7 +53,8 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
                 mainActivity.mainViewModel.getJobSpec()!!
             binding.apply {
                 val display =
-                    "Update: ${oldJobSpec.jsName}"
+                    getString(R.string.update_) +
+                            oldJobSpec.jsName
                 tvTitle.text = display
                 etJobSpec.setText(oldJobSpec.jsName)
             }
@@ -74,7 +75,7 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
     private fun setClickActions() {
         binding.apply {
             btnUpdate.setOnClickListener {
-                updateIfValid()
+                updateJobSpecIfValid()
             }
             btnCancel.setOnClickListener {
                 gotoCallingFragment()
@@ -82,10 +83,10 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
         }
     }
 
-    private fun updateIfValid() {
+    private fun updateJobSpecIfValid() {
         val answer = validateJobSpec()
         if (answer == ANSWER_OK) {
-            updateJobSpec()
+            updateJobSpecAndContinue()
         } else {
             Toast.makeText(
                 mView.context,
@@ -95,7 +96,25 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
 
     }
 
-    private fun updateJobSpec() {
+    private fun validateJobSpec(): String {
+        binding.apply {
+            if (etJobSpec.text.isNullOrBlank()) {
+                return getString(R.string.error_) +
+                        getString(R.string.please_enter_a_valid_job_spec)
+            }
+            for (jobSpec in jobSpecList) {
+                if (jobSpec.jsName == binding.etJobSpec.text.toString().trim() &&
+                    jobSpec.jsName != oldJobSpec.jsName
+                ) {
+                    return getString(R.string.error_) +
+                            getString(R.string.this_job_spec_already_exists)
+                }
+            }
+            return ANSWER_OK
+        }
+    }
+
+    private fun updateJobSpecAndContinue() {
         mainActivity.workOrderViewModel.updateJobSpec(
             JobSpec(
                 oldJobSpec.jobSpecId,
@@ -105,24 +124,6 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
             )
         )
         gotoCallingFragment()
-    }
-
-    private fun validateJobSpec(): String {
-        binding.apply {
-            if (etJobSpec.text.isNullOrBlank()) {
-                return "    ERROR!!/n" +
-                        "Please enter a valid Job Spec!"
-            }
-            for (jobSpec in jobSpecList) {
-                if (jobSpec.jsName ==
-                    binding.etJobSpec.text.toString().trim()
-                ) {
-                    return "   ERROR!/n" +
-                            "This job spec already exists!"
-                }
-            }
-            return ANSWER_OK
-        }
     }
 
     private fun gotoCallingFragment() {

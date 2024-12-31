@@ -339,5 +339,30 @@
     <string name="the_tax_type_has_been_added_but_there_are_no_rules_yet_">The tax type has been added but there are no rules yet. Would you like to edit those rules now?</string>
     <string name="the_tax_type_must_have_a_name">The tax type must have a Name!</string>
     <string name="this_tax_type_already_exists">This tax type already exists!</string>
+    <string name="hyphen">" - "</string>
+    <string name="choose_option_for_wo">"Choose option for wo "</string>
+    <string name="are_you_sure_you_want_to_delete_wo">"Are you sure you want to delete wo "</string>
+    <string name="update_job_spec">Update Job Spec</string>
+    <string name="please_enter_a_valid_job_spec">Please enter a valid Job Spec!</string>
+    <string name="this_job_spec_already_exists">This job spec already exists!</string>
+    <string name="update_quantity_of">"Update quantity of "</string>
+    <string name="_on_">" on "</string>
+    <string name="please_enter_a_new_quantity">Please enter a new quantity!</string>
+    <string name="please_enter_a_new_name_for_this_material">Please enter a new name for this material!</string>
+    <string name="this_material_already_exists">This material already exists!</string>
+    <string name="the_cost_is_greater_than_the_price">The cost is greater than the price.</string>
+    <string name="there_needs_to_be_a_cost_including_zero">There needs to be a cost including zero!</string>
+    <string name="there_needs_to_be_a_price_including_zero">THere needs to be a price including zero!</string>
+    <string name="choose">"Choose "</string>
+    <string name="would_you_like_to_use_this_work_order">Would you like to use this Work Order?</string>
+    <string name="line_break">\n</string>
+    <string name="choose_option_for">"Choose option for "</string>
+    <string name="edit_description">Edit description</string>
+    <string name="_in_the_database">" in the database"</string>
+    <string name="remove">Remove</string>
+    <string name="would_you_like_to_open_this_work_order_to_view_or_edit_it">Would you like to open this Work Order to view or edit it?</string>
+    <string name="open">Open</string>
+    <string name="add_a_description_first">Add a description first</string>
+    <string name="work_order_has_been_added_automatically_before_adding_work_specs">Work order has been added automatically before adding work specs.</string>
 
 </resources>

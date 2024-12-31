@@ -8,6 +8,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.JobSpec
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
@@ -54,7 +55,7 @@ class JobSpecAdapter(
         holder.itemBinding.apply {
             var display = jobSpec.jsName
             if (jobSpec.jsIsDeleted) {
-                display += " *DELETED*"
+                display += mView.context.getString(R.string.deleted)
                 tvDisplay.setTextColor(Color.RED)
             } else {
                 tvDisplay.setTextColor(Color.BLACK)
@@ -69,6 +70,10 @@ class JobSpecAdapter(
     private fun gotoUpdateJobSpec(jobSpec: JobSpec?) {
         mainActivity.mainViewModel.setCallingFragment(parentTag)
         mainActivity.mainViewModel.setJobSpec(jobSpec)
+        gotoJobSpecUpdateFragment()
+    }
+
+    private fun gotoJobSpecUpdateFragment() {
         mView.findNavController().navigate(
             JobSpecViewFragmentDirections
                 .actionJobSpecViewFragmentToJobSpecUpdateFragment()

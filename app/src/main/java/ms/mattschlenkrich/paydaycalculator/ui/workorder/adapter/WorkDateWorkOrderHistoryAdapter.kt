@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWithDates
@@ -42,25 +43,25 @@ class WorkDateWorkOrderHistoryAdapter(
             tvWorkOrder.text = history.workOrder.woNumber
             var display = ""
             if (history.history.woHistoryRegHours != 0.0) {
-                display = "Reg: " +
+                display = mView.context.getString(R.string.reg_) +
                         nf.getNumberFromDouble(
                             history.history.woHistoryRegHours
                         )
             }
             if (history.history.woHistoryOtHours != 0.0) {
                 if (display.isNotBlank()) {
-                    display += " | "
+                    display += mView.context.getString(R.string.pipe)
                 }
-                display += "Ot: " +
+                display += mView.context.getString(R.string.ot_) +
                         nf.getNumberFromDouble(
                             history.history.woHistoryOtHours
                         )
             }
             if (history.history.woHistoryDblOtHours != 0.0) {
                 if (display.isNotBlank()) {
-                    display += " | "
+                    display += mView.context.getString(R.string.pipe)
                 }
-                display += "Ot: " +
+                display += mView.context.getString(R.string.dbl_ot_) +
                         nf.getNumberFromDouble(
                             history.history.woHistoryDblOtHours
                         )
@@ -74,40 +75,49 @@ class WorkDateWorkOrderHistoryAdapter(
 
     private fun chooseOptions(history: WorkOrderHistoryWithDates) {
         AlertDialog.Builder(mView.context)
-            .setTitle("Choose option for wo ${history.workOrder.woNumber}")
-            .setPositiveButton("Edit") { _, _ ->
-                editWorkOrderHistory(history)
+            .setTitle(
+                mView.context.getString(R.string.choose_option_for_wo) +
+                        history.workOrder.woNumber
+            )
+            .setPositiveButton(mView.context.getString(R.string.edit)) { _, _ ->
+                gotoWorkOrderHistoryUpdate(history)
             }
-            .setNegativeButton("Delete") { _, _ ->
+            .setNegativeButton(mView.context.getString(R.string.delete)) { _, _ ->
                 confirmDeleteWorkOrderHistory(history)
             }
-            .setNeutralButton("Cancel", null)
+            .setNeutralButton(mView.context.getString(R.string.cancel), null)
             .show()
     }
 
     private fun confirmDeleteWorkOrderHistory(history: WorkOrderHistoryWithDates) {
         AlertDialog.Builder(mView.context)
-            .setTitle("Are you sure you want to delete wo ${history.workOrder.woNumber}")
-            .setMessage("This cannot be undone!")
-            .setPositiveButton("DELETE") { _, _ ->
+            .setTitle(
+                mView.context.getString(R.string.are_you_sure_you_want_to_delete_wo) +
+                        history.workOrder.woNumber
+            )
+            .setMessage(mView.context.getString(R.string.this_cannot_be_undone))
+            .setPositiveButton(mView.context.getString(R.string.delete)) { _, _ ->
                 mainActivity.workOrderViewModel.deleteWorkOrderHistory(
                     history.history.woHistoryId, df.getCurrentTimeAsString()
                 )
             }
-            .setNeutralButton("Cancel", null)
+            .setNeutralButton(mView.context.getString(R.string.cancel), null)
             .show()
-    }
-
-    private fun editWorkOrderHistory(history: WorkOrderHistoryWithDates) {
-        mainActivity.mainViewModel.setWorkOrderHistory(history.history)
-        mView.findNavController().navigate(
-            WorkDateUpdateFragmentDirections
-                .actionWorkDateUpdateFragmentToWorkOrderHistoryUpdateFragment()
-        )
-
     }
 
     override fun getItemCount(): Int {
         return workOrderHistory.size
+    }
+
+    private fun gotoWorkOrderHistoryUpdate(history: WorkOrderHistoryWithDates) {
+        mainActivity.mainViewModel.setWorkOrderHistory(history.history)
+        gotoWorkOrderHistoryUpdateFragment()
+    }
+
+    private fun gotoWorkOrderHistoryUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkDateUpdateFragmentDirections
+                .actionWorkDateUpdateFragmentToWorkOrderHistoryUpdateFragment()
+        )
     }
 }

@@ -47,19 +47,12 @@ class JobSpecViewFragment :
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        populateJobSpecs()
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(
             this, viewLifecycleOwner, Lifecycle.State.RESUMED
         )
+        populateJobSpecs()
         setBaseView()
-    }
-
-    private fun setBaseView() {
-        binding.apply {
-            tvNoInfo.text = getString(R.string.no_job_specs_to_view)
-            fabNew.visibility = View.GONE
-        }
     }
 
     private fun populateJobSpecs() {
@@ -81,6 +74,13 @@ class JobSpecViewFragment :
                 jobSpecAdapter!!.differ.submitList(jobSpecs)
                 updateUI(jobSpecs)
             }
+        }
+    }
+
+    private fun setBaseView() {
+        binding.apply {
+            tvNoInfo.text = getString(R.string.no_job_specs_to_view)
+            fabNew.visibility = View.GONE
         }
     }
 
