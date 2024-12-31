@@ -28,7 +28,7 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
-    private val cf = NumberFunctions()
+    private val nf = NumberFunctions()
     private var curTaxRule: WorkTaxRules? = null
 
     override fun onCreateView(
@@ -46,29 +46,8 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setClickActions()
         populateValues()
-    }
-
-    private fun setCheckBoxActions() {
-        binding.apply {
-            chkExemption.setOnClickListener {
-                if (chkExemption.isChecked) {
-                    etExemption.visibility = View.VISIBLE
-                } else {
-                    etExemption.visibility = View.INVISIBLE
-                    etExemption.setText("0.0")
-                }
-            }
-            chkUpperLimit.setOnClickListener {
-                if (chkUpperLimit.isChecked) {
-                    etUpperLimit.visibility = View.VISIBLE
-                } else {
-                    etUpperLimit.visibility = View.INVISIBLE
-                    etUpperLimit.setText("0.0")
-                }
-            }
-        }
+        setClickActions()
     }
 
     private fun populateValues() {
@@ -76,87 +55,24 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
             if (mainActivity.mainViewModel.getTaxRule() != null) {
                 curTaxRule = mainActivity.mainViewModel.getTaxRule()
                 tvTaxRuleType.text = curTaxRule!!.wtType
-                tvTaxRuleLevel.text = curTaxRule!!.wtLevel.toString()
+                tvTaxRuleLevel.text = String.format(curTaxRule!!.wtLevel.toString())
                 tvEffectiveDate.text = curTaxRule!!.wtEffectiveDate
-                etPercentage.setText(cf.getPercentStringFromDouble(curTaxRule!!.wtPercent))
+                etPercentage.setText(nf.getPercentStringFromDouble(curTaxRule!!.wtPercent))
                 chkExemption.isChecked = curTaxRule!!.wtHasExemption
                 if (chkExemption.isChecked) etExemption.visibility = View.VISIBLE
-                etExemption.setText(cf.displayDollars(curTaxRule!!.wtExemptionAmount))
+                etExemption.setText(nf.displayDollars(curTaxRule!!.wtExemptionAmount))
                 chkUpperLimit.isChecked = curTaxRule!!.wtHasBracket
                 if (chkUpperLimit.isChecked) etUpperLimit.visibility = View.VISIBLE
-                etUpperLimit.setText(cf.displayDollars(curTaxRule!!.wtBracketAmount))
+                etUpperLimit.setText(nf.displayDollars(curTaxRule!!.wtBracketAmount))
             }
         }
     }
 
     private fun setClickActions() {
-        binding.fabDone.setOnClickListener {
-            updateTaxRuleIfValid()
-        }
         setMenuActions()
         setCheckBoxActions()
-    }
-
-    private fun updateTaxRuleIfValid() {
-        val message = checkTaxRule()
-        if (message == ANSWER_OK) {
-            mainActivity.workTaxViewModel.updateTaxRule(
-                getUpdatedTaxRule()
-            )
-            gotoCallingFragment()
-        } else {
-            Toast.makeText(
-                mView.context,
-                message,
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
-
-    private fun getUpdatedTaxRule(): WorkTaxRules {
-        binding.apply {
-            return WorkTaxRules(
-                curTaxRule!!.workTaxRuleId,
-                curTaxRule!!.wtType,
-                curTaxRule!!.wtLevel,
-                curTaxRule!!.wtEffectiveDate,
-                cf.getDoubleFromPercentString(etPercentage.text.toString()),
-                chkExemption.isChecked,
-                cf.getDoubleFromDollars(etExemption.text.toString()),
-                chkUpperLimit.isChecked,
-                cf.getDoubleFromDollars(etUpperLimit.text.toString()),
-                false,
-                df.getCurrentTimeAsString()
-            )
-        }
-    }
-
-    private fun gotoCallingFragment() {
-        mView.findNavController().navigate(
-            TaxRuleUpdateFragmentDirections
-                .actionTaxRuleUpdateFragmentToTaxRulesFragment()
-        )
-    }
-
-    private fun checkTaxRule(): String {
-        binding.apply {
-            val errorMessage = if (etPercentage.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "There should be a percentage here!"
-            } else if (etExemption.text.isNullOrBlank() &&
-                chkExemption.isChecked
-            ) {
-                "    ERROR!!\n" +
-                        "An exemption is indicated but no amount was entered!"
-            } else if (etUpperLimit.text.isNullOrBlank() &&
-                chkUpperLimit.isChecked
-            ) {
-                "    ERROR!!\n" +
-                        "An upper limit is indicated but no amount was entered!"
-            } else {
-                ANSWER_OK
-            }
-            return errorMessage
+        binding.fabDone.setOnClickListener {
+            updateTaxRuleIfValid()
         }
     }
 
@@ -181,12 +97,100 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
+    private fun setCheckBoxActions() {
+        binding.apply {
+            chkExemption.setOnClickListener {
+                if (chkExemption.isChecked) {
+                    etExemption.visibility = View.VISIBLE
+                } else {
+                    etExemption.visibility = View.INVISIBLE
+                    etExemption.setText("0.0")
+                }
+            }
+            chkUpperLimit.setOnClickListener {
+                if (chkUpperLimit.isChecked) {
+                    etUpperLimit.visibility = View.VISIBLE
+                } else {
+                    etUpperLimit.visibility = View.INVISIBLE
+                    etUpperLimit.setText("0.0")
+                }
+            }
+        }
+    }
+
+    private fun updateTaxRuleIfValid() {
+        val message = validateTaxRule()
+        if (message == ANSWER_OK) {
+            updateTaxRule()
+            gotoTaxRulesFragment()
+        } else {
+            Toast.makeText(
+                mView.context,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun validateTaxRule(): String {
+        binding.apply {
+            val errorMessage = if (etPercentage.text.isNullOrBlank()) {
+                "    ERROR!!\n" +
+                        "There should be a percentage here!"
+            } else if (etExemption.text.isNullOrBlank() &&
+                chkExemption.isChecked
+            ) {
+                "    ERROR!!\n" +
+                        "An exemption is indicated but no amount was entered!"
+            } else if (etUpperLimit.text.isNullOrBlank() &&
+                chkUpperLimit.isChecked
+            ) {
+                "    ERROR!!\n" +
+                        "An upper limit is indicated but no amount was entered!"
+            } else {
+                ANSWER_OK
+            }
+            return errorMessage
+        }
+    }
+
+    private fun getCurrentTaxRule(): WorkTaxRules {
+        binding.apply {
+            return WorkTaxRules(
+                curTaxRule!!.workTaxRuleId,
+                curTaxRule!!.wtType,
+                curTaxRule!!.wtLevel,
+                curTaxRule!!.wtEffectiveDate,
+                nf.getDoubleFromPercentString(etPercentage.text.toString()),
+                chkExemption.isChecked,
+                nf.getDoubleFromDollars(etExemption.text.toString()),
+                chkUpperLimit.isChecked,
+                nf.getDoubleFromDollars(etUpperLimit.text.toString()),
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
+    private fun updateTaxRule() {
+        mainActivity.workTaxViewModel.updateTaxRule(
+            getCurrentTaxRule()
+        )
+    }
+
     private fun deleteTaxRule() {
         Toast.makeText(
             mView.context,
             "This cannot be deleted!",
             Toast.LENGTH_LONG
         ).show()
+    }
+
+    private fun gotoTaxRulesFragment() {
+        mView.findNavController().navigate(
+            TaxRuleUpdateFragmentDirections
+                .actionTaxRuleUpdateFragmentToTaxRulesFragment()
+        )
     }
 
     override fun onDestroy() {

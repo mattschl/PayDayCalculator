@@ -27,7 +27,7 @@ import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxRulesBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.tax.adapter.TaxRuleAdapter
 
-const val TAG = FRAG_TAX_RULES
+private const val TAG = FRAG_TAX_RULES
 
 class TaxRulesFragment :
     Fragment(R.layout.fragment_tax_rules) {
@@ -54,8 +54,8 @@ class TaxRulesFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setClickActions()
         populateValues()
+        setClickActions()
     }
 
     private fun populateValues() {
@@ -95,64 +95,6 @@ class TaxRulesFragment :
                         ) {
                             chooseNewEffectiveDate()
                         } else {
-                            populateTaxRuleList()
-                        }
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        //not needed
-                    }
-                }
-        }
-    }
-
-    private fun chooseNewEffectiveDate() {
-        val curDateAll = df.getCurrentDateAsString()
-            .split("-")
-        val datePickerDialog = DatePickerDialog(
-            requireContext(),
-            { _, year, monthOfYear, dayOfMonth ->
-                val month = monthOfYear + 1
-                val display = "$year-${
-                    month.toString()
-                        .padStart(2, '0')
-                }-${
-                    dayOfMonth.toString().padStart(2, '0')
-                }"
-                mainActivity.workTaxViewModel.insertEffectiveDate(
-                    TaxEffectiveDates(
-                        display,
-                        cf.generateRandomIdAsLong(),
-                        false,
-                        df.getCurrentTimeAsString()
-                    )
-                )
-                populateTaxRuleList()
-            },
-            curDateAll[0].toInt(),
-            curDateAll[1].toInt() - 1,
-            curDateAll[2].toInt()
-        )
-        datePickerDialog.setTitle(getString(R.string.choose_a_universal_effective_date))
-        datePickerDialog.show()
-    }
-
-    private fun selectTaxType() {
-        binding.apply {
-            spTaxType.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        if (spTaxType.selectedItem.toString() ==
-                            getString(R.string.add_a_new_tax_type)
-                        ) {
-                            gotoTaxTypeAddFragment()
-                        } else {
-                            populateSummary()
                             populateTaxRuleList()
                         }
                     }
@@ -268,17 +210,75 @@ class TaxRulesFragment :
     private fun setClickActions() {
         binding.apply {
             fabNew.setOnClickListener {
-                gotoTaxRuleAddFragment()
+                gotoTaxRuleAdd()
             }
             crdSummary.setOnClickListener {
-                gotoTaxTypeUpdateFragment()
+                gotoTaxTypeUpdate()
             }
         }
         selectTaxType()
         selectEffectiveDate()
     }
 
-    private fun gotoTaxTypeUpdateFragment() {
+    private fun chooseNewEffectiveDate() {
+        val curDateAll = df.getCurrentDateAsString()
+            .split("-")
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            { _, year, monthOfYear, dayOfMonth ->
+                val month = monthOfYear + 1
+                val display = "$year-${
+                    month.toString()
+                        .padStart(2, '0')
+                }-${
+                    dayOfMonth.toString().padStart(2, '0')
+                }"
+                mainActivity.workTaxViewModel.insertEffectiveDate(
+                    TaxEffectiveDates(
+                        display,
+                        cf.generateRandomIdAsLong(),
+                        false,
+                        df.getCurrentTimeAsString()
+                    )
+                )
+                populateTaxRuleList()
+            },
+            curDateAll[0].toInt(),
+            curDateAll[1].toInt() - 1,
+            curDateAll[2].toInt()
+        )
+        datePickerDialog.setTitle(getString(R.string.choose_a_universal_effective_date))
+        datePickerDialog.show()
+    }
+
+    private fun selectTaxType() {
+        binding.apply {
+            spTaxType.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        if (spTaxType.selectedItem.toString() ==
+                            getString(R.string.add_a_new_tax_type)
+                        ) {
+                            gotoTaxTypeAdd()
+                        } else {
+                            populateSummary()
+                            populateTaxRuleList()
+                        }
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                        //not needed
+                    }
+                }
+        }
+    }
+
+    private fun gotoTaxTypeUpdate() {
         binding.apply {
             mainActivity.workTaxViewModel.findTaxType(
                 spTaxType.selectedItem.toString()
@@ -289,13 +289,17 @@ class TaxRulesFragment :
             }
         }
         mainActivity.mainViewModel.setCallingFragment(TAG)
+        gotoTaxTypeUpdateFragment()
+    }
+
+    private fun gotoTaxTypeUpdateFragment() {
         mView.findNavController().navigate(
             TaxRulesFragmentDirections
                 .actionTaxRulesFragmentToTaxTypeUpdateFragment()
         )
     }
 
-    private fun gotoTaxRuleAddFragment() {
+    private fun gotoTaxRuleAdd() {
         binding.apply {
             mainActivity.mainViewModel.setTaxTypeString(
                 spTaxType.selectedItem.toString()
@@ -312,14 +316,22 @@ class TaxRulesFragment :
             }
             mainActivity.mainViewModel.addCallingFragment(TAG)
         }
+        gotoTaxRuleAddFragment()
+    }
+
+    private fun gotoTaxRuleAddFragment() {
         mView.findNavController().navigate(
             TaxRulesFragmentDirections
                 .actionTaxRulesFragmentToTaxRuleAddFragment()
         )
     }
 
-    private fun gotoTaxTypeAddFragment() {
+    private fun gotoTaxTypeAdd() {
         mainActivity.mainViewModel.addCallingFragment(TAG)
+        gotoTaxTypeAddFragment()
+    }
+
+    private fun gotoTaxTypeAddFragment() {
         mView.findNavController().navigate(
             TaxRulesFragmentDirections
                 .actionTaxRulesFragmentToTaxTypeAddFragment()

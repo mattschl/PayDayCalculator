@@ -39,7 +39,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     private lateinit var mainActivity: MainActivity
 
     private val df = DateFunctions()
-    private val cf = NumberFunctions()
+    private val nf = NumberFunctions()
     private val taxTypeList = ArrayList<TaxTypes>()
 
     override fun onCreateView(
@@ -57,20 +57,24 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setClickActions()
         populateValues()
-
-        populateSpinner()
-        getTaxTypeListForValidation()
+        setClickActions()
     }
 
     private fun populateValues() {
+        populateTaxTypeListForValidation()
         populateSpinner()
-        getTaxTypeListForValidation()
     }
 
-    private fun setClickActions() {
-        setMenuActions()
+    private fun populateTaxTypeListForValidation() {
+        mainActivity.workTaxViewModel.getTaxTypes().observe(
+            viewLifecycleOwner
+        ) { list ->
+            taxTypeList.clear()
+            list.listIterator().forEach {
+                taxTypeList.add(it)
+            }
+        }
     }
 
     private fun populateSpinner() {
@@ -84,15 +88,8 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         }
     }
 
-    private fun getTaxTypeListForValidation() {
-        mainActivity.workTaxViewModel.getTaxTypes().observe(
-            viewLifecycleOwner
-        ) { list ->
-            taxTypeList.clear()
-            list.listIterator().forEach {
-                taxTypeList.add(it)
-            }
-        }
+    private fun setClickActions() {
+        setMenuActions()
     }
 
     private fun setMenuActions() {
@@ -118,12 +115,10 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     }
 
     private fun saveTaxTypeIfValidAndAttachToEmployers() {
-        val message = checkTaxType()
+        val message = validateTaxType()
         if (message == ANSWER_OK) {
             val taxType = getCurrentTaxType()
-            mainActivity.workTaxViewModel.insertTaxType(
-                taxType
-            )
+            saveTaxType(taxType)
             CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_500)
                 attachTaxTypeToEmployers(taxType)
@@ -139,10 +134,29 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         }
     }
 
+    private fun validateTaxType(): String {
+        binding.apply {
+            if (etTaxType.text.isNullOrBlank()) {
+                return getString(R.string.error_) +
+                        getString(R.string.the_tax_type_must_have_a_name)
+            }
+            if (taxTypeList.isNotEmpty()) {
+                for (taxType in taxTypeList) {
+                    if (taxType.taxType == etTaxType.text.toString()) {
+                        return getString(R.string.error_) +
+                                getString(R.string.this_tax_type_already_exists)
+                    }
+
+                }
+            }
+            return ANSWER_OK
+        }
+    }
+
     private fun getCurrentTaxType(): TaxTypes {
         binding.apply {
             return TaxTypes(
-                cf.generateRandomIdAsLong(),
+                nf.generateRandomIdAsLong(),
                 etTaxType.text.toString(),
                 spBasedOn.selectedItemPosition,
                 false,
@@ -151,19 +165,27 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         }
     }
 
+    private fun saveTaxType(taxType: TaxTypes) {
+        mainActivity.workTaxViewModel.insertTaxType(
+            taxType
+        )
+    }
+
     private fun chooseNextStep(taxType: TaxTypes) {
         AlertDialog.Builder(mView.context)
-            .setTitle("Choose next steps for ${taxType.taxType}")
-            .setMessage(
-                "The tax type has been added but there are no rules yet. " +
-                        "Would you like to edit those rules now?"
+            .setTitle(
+                getString(R.string.choose_next_steps_for) +
+                        taxType.taxType
             )
-            .setPositiveButton("Yes") { _, _ ->
+            .setMessage(
+                getString(R.string.the_tax_type_has_been_added_but_there_are_no_rules_yet_)
+            )
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
                 mainActivity.mainViewModel.setTaxType(taxType)
                 mainActivity.mainViewModel.setTaxTypeString(taxType.taxType)
                 gotoTaxRulesFragment()
             }
-            .setNegativeButton("No") { _, _ ->
+            .setNegativeButton(getString(R.string.no)) { _, _ ->
                 mainActivity.mainViewModel.setTaxType(taxType)
                 mainActivity.mainViewModel.setTaxTypeString(taxType.taxType)
                 gotoCallingFragment()
@@ -189,13 +211,19 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         }
     }
 
+    private fun gotoTaxRulesFragment() {
+        mView.findNavController().navigate(
+            TaxTypeAddFragmentDirections
+                .actionTaxTypeAddFragmentToTaxRulesFragment()
+        )
+    }
+
     private fun gotoCallingFragment() {
         val callingFragment = mainActivity.mainViewModel.getCallingFragment()
         if (callingFragment != null) {
             if (callingFragment.contains(FRAG_EMPLOYER_UPDATE)) {
                 gotoEmployerUpdateFragment()
             } else if (callingFragment.contains(FRAG_TAX_RULES)) {
-
                 gotoTaxRulesFragment()
             } else {
                 gotoTaxTypeFragment()
@@ -215,38 +243,6 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
             TaxTypeAddFragmentDirections
                 .actionTaxTypeAddFragmentToTaxTypeFragment()
         )
-    }
-
-    private fun gotoTaxRulesFragment() {
-        mView.findNavController().navigate(
-            TaxTypeAddFragmentDirections
-                .actionTaxTypeAddFragmentToTaxRulesFragment()
-        )
-    }
-
-    private fun checkTaxType(): String {
-        binding.apply {
-            var nameFound = false
-            if (taxTypeList.isNotEmpty()) {
-                for (taxType in taxTypeList) {
-                    if (taxType.taxType == etTaxType.text.toString()) {
-                        nameFound = true
-                        break
-                    }
-
-                }
-            }
-            val errorMessage = if (etTaxType.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "The tax type must have a description"
-            } else if (nameFound) {
-                "    ERROR!!\n" +
-                        "This tax type already exists!"
-            } else {
-                ANSWER_OK
-            }
-            return errorMessage
-        }
     }
 
     override fun onDestroy() {

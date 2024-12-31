@@ -50,14 +50,23 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
         setClickActions()
     }
 
+    private fun populateValues() {
+        binding.apply {
+            tvTaxRuleType.text = mainActivity.mainViewModel.getTaxTypeString()
+            tvEffectiveDate.text = mainActivity.mainViewModel.getEffectiveDateString()
+            tvTaxRuleLevel.text = mainActivity.mainViewModel.getTaxLevel().toString()
+        }
+    }
+
     private fun setClickActions() {
+        setMenuActions()
         binding.apply {
             chkExemption.setOnClickListener {
                 if (chkExemption.isChecked) {
                     etExemption.visibility = View.VISIBLE
                 } else {
                     etExemption.visibility = View.INVISIBLE
-                    etExemption.setText("0.0")
+                    etExemption.setText(getString(R.string.zero_double))
                 }
             }
             chkUpperLimit.setOnClickListener {
@@ -65,18 +74,9 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
                     etUpperLimit.visibility = View.VISIBLE
                 } else {
                     etUpperLimit.visibility = View.INVISIBLE
-                    etUpperLimit.setText("0.0")
+                    etUpperLimit.setText(getString(R.string.zero_double))
                 }
             }
-        }
-        setMenuActions()
-    }
-
-    private fun populateValues() {
-        binding.apply {
-            tvTaxRuleType.text = mainActivity.mainViewModel.getTaxTypeString()
-            tvEffectiveDate.text = mainActivity.mainViewModel.getEffectiveDateString()
-            tvTaxRuleLevel.text = mainActivity.mainViewModel.getTaxLevel().toString()
         }
     }
 
@@ -104,11 +104,9 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
 
     private fun saveTaxRuleIfValid() {
         binding.apply {
-            val message = checkTaxRule()
+            val message = validateTaxRule()
             if (message == ANSWER_OK) {
-                mainActivity.workTaxViewModel.insertTaxRule(
-                    getCurrentTaxRule()
-                )
+                saveTaxRule()
                 gotoCallingFragment()
             } else {
                 Toast.makeText(
@@ -117,6 +115,28 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
                     Toast.LENGTH_LONG
                 ).show()
             }
+        }
+    }
+
+    private fun validateTaxRule(): String {
+        binding.apply {
+            if (etPercentage.text.isNullOrBlank()) {
+                return getString(R.string.error_) +
+                        getString(R.string.there_should_be_a_percentage_here)
+            }
+            if (etExemption.text.isNullOrBlank() &&
+                chkExemption.isChecked
+            ) {
+                return getString(R.string.error_) +
+                        getString(R.string.an_exemption_is_indicated_but_no_amount_was_entered)
+            }
+            if (etUpperLimit.text.isNullOrBlank() &&
+                chkUpperLimit.isChecked
+            ) {
+                return getString(R.string.error_) +
+                        getString(R.string.an_upper_limit_is_indicated_but_no_amount_was_entered)
+            }
+            return ANSWER_OK
         }
     }
 
@@ -140,6 +160,12 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
         }
     }
 
+    private fun saveTaxRule() {
+        mainActivity.workTaxViewModel.insertTaxRule(
+            getCurrentTaxRule()
+        )
+    }
+
     private fun gotoCallingFragment() {
         val callingFragment = mainActivity.mainViewModel.getCallingFragment()
         if (!callingFragment.isNullOrBlank()) {
@@ -156,28 +182,6 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
             TaxRuleAddFragmentDirections
                 .actionTaxRuleAddFragmentToTaxRulesFragment()
         )
-    }
-
-    private fun checkTaxRule(): String {
-        binding.apply {
-            if (etPercentage.text.isNullOrBlank()) {
-                return "    ERROR!!\n" +
-                        "There should be a percentage here!"
-            }
-            if (etExemption.text.isNullOrBlank() &&
-                chkExemption.isChecked
-            ) {
-                return "    ERROR!!\n" +
-                        "An exemption is indicated but no amount was entered!"
-            }
-            if (etUpperLimit.text.isNullOrBlank() &&
-                chkUpperLimit.isChecked
-            ) {
-                return "    ERROR!!\n" +
-                        "An upper limit is indicated but no amount was entered!"
-            }
-            return ANSWER_OK
-        }
     }
 
     override fun onDestroy() {

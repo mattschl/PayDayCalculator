@@ -15,12 +15,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paydaycalculator.R
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_TAX_TYPE
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.tax.adapter.TaxTypeAdapter
 
-//const val TAG = FRAG_TAX_RULES
+private const val TAG = FRAG_TAX_TYPE
 
 class TaxTypeFragment :
     Fragment(R.layout.fragment_tax_type),
@@ -53,19 +54,6 @@ class TaxTypeFragment :
         populateTaxTypeList()
     }
 
-    private fun setClickActions() {
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-        binding.apply {
-            fabNew.setOnClickListener {
-                mView.findNavController().navigate(
-                    TaxTypeFragmentDirections
-                        .actionTaxTypeFragmentToTaxTypeAddFragment()
-                )
-            }
-        }
-    }
-
     private fun populateTaxTypeList() {
         taxTypeAdapter = TaxTypeAdapter(
             mainActivity, mView
@@ -88,14 +76,12 @@ class TaxTypeFragment :
         }
     }
 
-    private fun updateUI(taxTypes: List<TaxTypes>) {
+    private fun setClickActions() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         binding.apply {
-            if (taxTypes.isEmpty()) {
-                crdNoInfo.visibility = View.VISIBLE
-                rvTaxTypes.visibility = View.GONE
-            } else {
-                crdNoInfo.visibility = View.GONE
-                rvTaxTypes.visibility = View.VISIBLE
+            fabNew.setOnClickListener {
+                gotoTaxTypeAdd()
             }
         }
     }
@@ -130,6 +116,30 @@ class TaxTypeFragment :
         ) { list ->
             taxTypeAdapter.differ.submitList(list)
         }
+    }
+
+    private fun updateUI(taxTypes: List<TaxTypes>) {
+        binding.apply {
+            if (taxTypes.isEmpty()) {
+                crdNoInfo.visibility = View.VISIBLE
+                rvTaxTypes.visibility = View.GONE
+            } else {
+                crdNoInfo.visibility = View.GONE
+                rvTaxTypes.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun gotoTaxTypeAdd() {
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        gotoTaxTypeAddFragment()
+    }
+
+    private fun gotoTaxTypeAddFragment() {
+        mView.findNavController().navigate(
+            TaxTypeFragmentDirections
+                .actionTaxTypeFragmentToTaxTypeAddFragment()
+        )
     }
 
     override fun onDestroy() {

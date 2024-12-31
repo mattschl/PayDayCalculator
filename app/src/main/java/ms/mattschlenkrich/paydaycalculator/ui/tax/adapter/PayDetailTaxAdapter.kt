@@ -11,7 +11,7 @@ class PayDetailTaxAdapter(
     private val creditList: ArrayList<ExtraAndTotal>
 ) : RecyclerView.Adapter<PayDetailTaxAdapter.CreditViewHolder>() {
 
-    private val cf = NumberFunctions()
+    private val nf = NumberFunctions()
 
     class CreditViewHolder(val itemBinding: ListPayDetailTaxItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -32,7 +32,7 @@ class PayDetailTaxAdapter(
         val tax = creditList[position]
         holder.itemBinding.apply {
             tvTaxName.text = tax.extraName
-            tvTaxTotal.text = cf.displayDollars(tax.amount)
+            tvTaxTotal.text = nf.displayDollars(tax.amount)
         }
     }
 }

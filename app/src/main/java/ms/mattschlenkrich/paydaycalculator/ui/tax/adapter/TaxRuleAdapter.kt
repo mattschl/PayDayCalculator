@@ -7,6 +7,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.WorkTaxRules
 import ms.mattschlenkrich.paydaycalculator.databinding.ListTaxRuleItemBinding
@@ -42,7 +43,9 @@ class TaxRuleAdapter(
                 return oldItem == newItem
             }
         }
+
     val differ = AsyncListDiffer(this, differCallBack)
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaxRuleViewHolder {
         return TaxRuleViewHolder(
             ListTaxRuleItemBinding.inflate(
@@ -58,21 +61,24 @@ class TaxRuleAdapter(
     override fun onBindViewHolder(holder: TaxRuleViewHolder, position: Int) {
         val taxRule = differ.currentList[position]
         holder.itemBinding.apply {
-            var disp = "Level " + taxRule.wtLevel
-            tvTaxLevel.text = disp
-            disp = cf.getPercentStringFromDouble(taxRule.wtPercent)
-            tvPercent.text = disp
+            var display = mView.context.getString(R.string.level) + " " +
+                    taxRule.wtLevel
+            tvTaxLevel.text = display
+            display = cf.getPercentStringFromDouble(taxRule.wtPercent)
+            tvPercent.text = display
             if (taxRule.wtHasExemption) {
                 tvExemption.visibility = View.VISIBLE
-                disp = "Exemption: " + cf.displayDollars(taxRule.wtExemptionAmount)
-                tvExemption.text = disp
+                display = mView.context.getString(R.string.exemption_) + " " +
+                        cf.displayDollarsWithoutZeros(taxRule.wtExemptionAmount)
+                tvExemption.text = display
             } else {
                 tvExemption.visibility = View.GONE
             }
             if (taxRule.wtHasBracket) {
                 tvLimit.visibility = View.VISIBLE
-                disp = "Upper Limit: " + cf.displayDollars(taxRule.wtBracketAmount)
-                tvLimit.text = disp
+                display = mView.context.getString(R.string.upper_limit_) + " " +
+                        cf.displayDollarsWithoutZeros(taxRule.wtBracketAmount)
+                tvLimit.text = display
             } else {
                 tvLimit.visibility = View.GONE
             }
@@ -84,6 +90,10 @@ class TaxRuleAdapter(
 
     private fun chooseOptions(taxRule: WorkTaxRules) {
         mainActivity.mainViewModel.setTaxRule(taxRule)
+        gotoTaxRuleUpdateFragment()
+    }
+
+    private fun gotoTaxRuleUpdateFragment() {
         mView.findNavController().navigate(
             TaxRulesFragmentDirections
                 .actionTaxRulesFragmentToTaxRuleUpdateFragment()

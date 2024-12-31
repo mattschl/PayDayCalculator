@@ -8,6 +8,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
@@ -50,7 +51,7 @@ class TaxTypeAdapter(
         holder.itemBinding.apply {
             var display = taxType.taxType
             if (taxType.ttIsDeleted) {
-                display += " *DELETED*"
+                display += mView.context.getString(R.string.deleted)
                 tvDisplay.setTextColor(Color.RED)
             } else {
                 tvDisplay.setTextColor(Color.BLACK)
@@ -65,6 +66,10 @@ class TaxTypeAdapter(
 
     private fun gotoTaxTypeUpdate(taxType: TaxTypes?) {
         mainActivity.mainViewModel.setTaxType(taxType)
+        gotoTaxTypeUpdateFragment()
+    }
+
+    private fun gotoTaxTypeUpdateFragment() {
         mView.findNavController().navigate(
             TaxTypeFragmentDirections
                 .actionTaxTypeFragmentToTaxTypeUpdateFragment()

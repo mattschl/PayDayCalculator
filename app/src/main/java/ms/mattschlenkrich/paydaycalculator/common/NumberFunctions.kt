@@ -27,6 +27,10 @@ class NumberFunctions {
         return dollarFormat.format(num)
     }
 
+    fun displayDollarsWithoutZeros(num: Double): String {
+        return "$" + getNumberFromDouble(num)
+    }
+
 
     fun getNumberFromDouble(num: Double): String {
         return numberDisplay.format(num)

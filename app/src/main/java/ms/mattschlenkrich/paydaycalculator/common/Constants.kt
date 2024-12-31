@@ -155,7 +155,7 @@ const val FRAG_EMPLOYERS = "Employers"
 const val FRAG_EMPLOYER_UPDATE = "EmployerUpdate"
 const val FRAG_TAX_RULES = "TaxRules"
 
-//const val FRAG_TAX_TYPE = "TaxTypes"
+const val FRAG_TAX_TYPE = "TaxTypes"
 const val FRAG_WORK_DATE_EXTRA_ADD = "WorkDateExtraAdd"
 
 //const val FRAG_WORK_DATE_EXTRA_UPDATE = "WorkDateExtraUpdate"

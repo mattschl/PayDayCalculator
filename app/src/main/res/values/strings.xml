@@ -13,7 +13,7 @@
     <string name="add_a_new_employer">* Add a New Employer *</string>
     <string name="add_a_new_extra_frequency">* Add a new Extra Frequency *</string>
     <string name="add_a_new_extra_type">* Add a new Extra Type *</string>
-    <string name="add_a_new_tax_type">* Add a New tax Type *</string>
+    <string name="add_a_new_tax_type">Add a New tax Type</string>
     <string name="add_a_new_work_date">Add a new work date</string>
     <string name="add_a_one_time_extra">Add a one time extra</string>
     <string name="add_a_pay_rate">Add a pay rate</string>
@@ -130,7 +130,8 @@
     <string name="enter_work_done">Enter work done</string>
     <string name="error_">"    ERROR!!\n"</string>
     <string name="error">"    ERROR!!"</string>
-    <string name="exemption">Exemption</string>
+    <string name="exemption">Exemption </string>
+    <string name="exemption_">Exemption: </string>
     <string name="extra_frequency">Extra Frequency</string>
     <string name="extra_items">Extra Items</string>
     <string name="extra_name_description">Extra Name/Description</string>
@@ -165,7 +166,7 @@
     <string name="job_description">Job Description</string>
     <string name="job_specs">Job Specs:\n </string>
     <string name="level_bracket">Level/Bracket</string>
-    <string name="level">Level</string>
+    <string name="level">Level </string>
     <string name="main_monthly_pay_date">Main monthly pay date</string>
     <string name="manually_added">Manually added</string>
     <string name="manually">manually</string>
@@ -295,7 +296,8 @@
     <string name="update_work_order">Update Work Order</string>
     <string name="update_work_performed_description">Update Work Performed description</string>
     <string name="update">"Update"</string>
-    <string name="upper_limit">Upper Limit</string>
+    <string name="upper_limit">Upper Limit </string>
+    <string name="upper_limit_">Upper Limit: </string>
     <string name="value">Value</string>
     <string name="view_employers">View Employers</string>
     <string name="view_extra_pay_items">View Extra Pay Items</string>
@@ -303,7 +305,7 @@
     <string name="view_job_spec_list">View Job Spec list</string>
     <string name="view_material_list">View Material list</string>
     <string name="view_or_edit_wages">View or Edit Wages</string>
-    <string name="view_or_update_tax_rule">View or Update Tax Rule</string>
+    <string name="view_or_update_tax_rule">View or Update Tax Rules</string>
     <string name="view_universal_tax_rules">View Universal Tax Rules</string>
     <string name="view_work_order_list">View Work Order List</string>
     <string name="view_work_performed_list">View Work Performed List</string>
@@ -331,5 +333,11 @@
     <string name="zero_percent">0.0%</string>
     <string name="zero">0</string>
     <string name="__current">" - CURRENT"</string>
+    <string name="there_should_be_a_percentage_here">There should be a percentage here!</string>
+    <string name="an_exemption_is_indicated_but_no_amount_was_entered">An exemption is indicated but no amount was entered!</string>
+    <string name="an_upper_limit_is_indicated_but_no_amount_was_entered">An upper limit is indicated but no amount was entered!</string>
+    <string name="the_tax_type_has_been_added_but_there_are_no_rules_yet_">The tax type has been added but there are no rules yet. Would you like to edit those rules now?</string>
+    <string name="the_tax_type_must_have_a_name">The tax type must have a Name!</string>
+    <string name="this_tax_type_already_exists">This tax type already exists!</string>
 
 </resources>

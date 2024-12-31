@@ -16,6 +16,8 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_TAX_RULES
+import ms.mattschlenkrich.paydaycalculator.common.FRAG_TAX_TYPE
 import ms.mattschlenkrich.paydaycalculator.database.model.tax.TaxTypes
 import ms.mattschlenkrich.paydaycalculator.databinding.FragmentTaxTypeUpdateBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
@@ -44,8 +46,20 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setClickActions()
         populateValues()
+        setClickActions()
+    }
+
+    private fun populateValues() {
+        populateSpinner()
+        populateTaxTypeListForValidation()
+        if (mainActivity.mainViewModel.getTaxType() != null) {
+            curTaxType = mainActivity.mainViewModel.getTaxType()!!
+            binding.apply {
+                etTaxType.setText(curTaxType.taxType)
+                spBasedOn.setSelection(curTaxType.ttBasedOn)
+            }
+        }
     }
 
     private fun populateSpinner() {
@@ -59,33 +73,24 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
         }
     }
 
-    private fun populateValues() {
-        populateSpinner()
-        getTaxTypeListForValidation()
-        if (mainActivity.mainViewModel.getTaxType() != null) {
-            curTaxType = mainActivity.mainViewModel.getTaxType()!!
-            binding.apply {
-                etTaxType.setText(curTaxType.taxType)
-                spBasedOn.setSelection(curTaxType.ttBasedOn)
+    private fun populateTaxTypeListForValidation() {
+        mainActivity.workTaxViewModel.getTaxTypes().observe(
+            viewLifecycleOwner
+        ) { taxTypes ->
+            taxTypeList.clear()
+            taxTypes.listIterator().forEach {
+                taxTypeList.add(it)
             }
         }
     }
 
     private fun setClickActions() {
+        setMenuActions()
         binding.apply {
             fabDone.setOnClickListener {
                 updateWorkTaxTypeIfValid()
             }
         }
-        setMenuActions()
-    }
-
-    private fun gotoTaxTypesFragment() {
-        mainActivity.mainViewModel.setTaxType(null)
-        mView.findNavController().navigate(
-            TaxTypeUpdateFragmentDirections
-                .actionTaxTypeUpdateFragmentToTaxTypeFragment()
-        )
     }
 
     private fun setMenuActions() {
@@ -119,22 +124,41 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
                 df.getCurrentTimeAsString()
             )
         )
-        gotoTaxTypesFragment()
+        gotoTaxTypes()
     }
 
     private fun updateWorkTaxTypeIfValid() {
         val message = validateTaxType()
         if (message == ANSWER_OK) {
-            mainActivity.workTaxViewModel.updateWorkTaxType(
-                getCurrentTaxType()
-            )
-            gotoTaxTypesFragment()
+            updateWorkTaxType()
+            gotoTaxTypes()
         } else {
             Toast.makeText(
                 mView.context,
                 message,
                 Toast.LENGTH_LONG
             ).show()
+        }
+    }
+
+    private fun validateTaxType(): String {
+        binding.apply {
+            if (etTaxType.text.isNullOrBlank()) {
+                getString(R.string.error_) +
+                        getString(R.string.the_tax_type_must_have_a_name)
+            }
+            if (taxTypeList.isNotEmpty()) {
+                for (taxType in taxTypeList) {
+                    if (taxType.taxType == etTaxType.text.toString() &&
+                        taxType.taxType != curTaxType.taxType
+                    ) {
+                        return getString(R.string.error_) +
+                                getString(R.string.this_tax_type_already_exists)
+                    }
+
+                }
+            }
+            return ANSWER_OK
         }
     }
 
@@ -149,40 +173,38 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
         }
     }
 
-    private fun validateTaxType(): String {
-        binding.apply {
-            var nameFound = false
-            if (taxTypeList.isNotEmpty()) {
-                for (taxType in taxTypeList) {
-                    if (taxType.taxType == etTaxType.text.toString()) {
-                        nameFound = true
-                        break
-                    }
+    private fun updateWorkTaxType() {
+        mainActivity.workTaxViewModel.updateWorkTaxType(
+            getCurrentTaxType()
+        )
+    }
 
-                }
-            }
-            val errorMessage = if (etTaxType.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "The tax type must have a description"
-            } else if (nameFound && etTaxType.text.toString() != curTaxType.taxType) {
-                "    ERROR!!\n" +
-                        "This tax type already exists!"
-            } else {
-                ANSWER_OK
-            }
-            return errorMessage
+    private fun gotoTaxTypes() {
+        mainActivity.mainViewModel.setTaxType(null)
+        gotoCallingFragment()
+    }
+
+    private fun gotoCallingFragment() {
+        if (mainActivity.mainViewModel.getCallingFragment()!!.contains(FRAG_TAX_TYPE)) {
+            gotoTaxTypesFragment()
+        }
+        if (mainActivity.mainViewModel.getCallingFragment()!!.contains(FRAG_TAX_RULES)) {
+            gotoTaxRulesFragment()
         }
     }
 
-    private fun getTaxTypeListForValidation() {
-        mainActivity.workTaxViewModel.getTaxTypes().observe(
-            viewLifecycleOwner
-        ) { taxTypes ->
-            taxTypeList.clear()
-            taxTypes.listIterator().forEach {
-                taxTypeList.add(it)
-            }
-        }
+    private fun gotoTaxRulesFragment() {
+        mView.findNavController().navigate(
+            TaxTypeUpdateFragmentDirections
+                .actionTaxTypeUpdateFragmentToTaxRulesFragment()
+        )
+    }
+
+    private fun gotoTaxTypesFragment() {
+        mView.findNavController().navigate(
+            TaxTypeUpdateFragmentDirections
+                .actionTaxTypeUpdateFragmentToTaxTypeFragment()
+        )
     }
 
     override fun onDestroy() {

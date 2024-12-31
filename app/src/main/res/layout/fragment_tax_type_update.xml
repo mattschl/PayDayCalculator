@@ -6,7 +6,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/lblTaxType"
@@ -49,6 +49,13 @@
             app:layout_constraintStart_toEndOf="@id/lblBasedOn"
             app:layout_constraintTop_toBottomOf="@id/etTaxType" />
 
+
+        <View
+            android:id="@+id/vSpacer"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_100dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spBasedOn" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabDone"

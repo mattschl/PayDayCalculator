@@ -31,6 +31,6 @@
     <string-array name="tax_based_on">
         <item>Time Worked Only</item>
         <item>Time Worked and Stat</item>
-        <item>All Hourly and Extras</item>
+        <item>Time Worked, Stats and Extras</item>
     </string-array>
 </resources>
