@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.DateFunctions
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkOrderHistoryWithDates
@@ -42,25 +43,25 @@ class WorkOrderHistoryAdapter(
             var display = ""
             val regHours = history.history.woHistoryRegHours
             if (regHours != 0.0) {
-                display = "Reg: " +
+                display = mView.context.getString(R.string.reg_) +
                         nf.getNumberFromDouble(
                             regHours
                         )
             }
             if (history.history.woHistoryOtHours != 0.0) {
                 if (display.isNotBlank()) {
-                    display += " | "
+                    display += mView.context.getString(R.string.pipe)
                 }
-                display += "Ot: " +
+                display += mView.context.getString(R.string.ot_) +
                         nf.getNumberFromDouble(
                             history.history.woHistoryOtHours
                         )
             }
             if (history.history.woHistoryDblOtHours != 0.0) {
                 if (display.isNotBlank()) {
-                    display += " | "
+                    display += mView.context.getString(R.string.pipe)
                 }
-                display += "Ot: " +
+                display += mView.context.getString(R.string.dbl_ot_) +
                         nf.getNumberFromDouble(
                             history.history.woHistoryDblOtHours
                         )
@@ -86,10 +87,10 @@ class WorkOrderHistoryAdapter(
         mainActivity.mainViewModel.setWorkDateObject(
             history.workDate
         )
-        gotoWorkOrderHistory()
+        gotoWorkOrderHistoryFragment()
     }
 
-    private fun gotoWorkOrderHistory() {
+    private fun gotoWorkOrderHistoryFragment() {
         mView.findNavController().navigate(
             WorkOrderUpdateFragmentDirections
                 .actionWorkOrderUpdateFragmentToWorkOrderHistoryUpdateFragment()

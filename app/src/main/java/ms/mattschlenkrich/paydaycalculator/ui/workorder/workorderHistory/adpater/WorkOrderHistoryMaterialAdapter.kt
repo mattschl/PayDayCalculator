@@ -9,6 +9,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.MaterialInSequence
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
@@ -85,13 +86,16 @@ class WorkOrderHistoryMaterialAdapter(
 
     private fun chooseOptions(material: MaterialInSequence) {
         AlertDialog.Builder(mView.context)
-            .setTitle("Choose an option for ${material.mName}")
+            .setTitle(
+                mView.context.getString(R.string.choose_option_for) +
+                        material.mName
+            )
             .setItems(
                 arrayOf(
-                    "Remove this item",
-                    "Change the quantity",
-                    "Edit the material in the database",
-                    "Cancel"
+                    mView.context.getString(R.string.remove_this_item),
+                    mView.context.getString(R.string.change_the_quantity),
+                    mView.context.getString(R.string.edit_the_material_in_the_database),
+                    mView.context.getString(R.string.cancel)
                 )
             ) { _, pos ->
                 when (pos) {
@@ -116,8 +120,18 @@ class WorkOrderHistoryMaterialAdapter(
 
     }
 
+    private fun removeMaterial(material: MaterialInSequence) {
+        mainActivity.workOrderViewModel.removeWorkOrderHistoryMaterial(
+            material.workOrderHistoryMaterialId
+        )
+    }
+
     private fun changeQuantity(material: MaterialInSequence) {
         mainActivity.mainViewModel.setMaterialInSequence(material)
+        gotoMaterialQuantityUpdateFragment()
+    }
+
+    private fun gotoMaterialQuantityUpdateFragment() {
         mView.findNavController().navigate(
             WorkOrderHistoryUpdateFragmentDirections
                 .actionWorkOrderHistoryUpdateFragmentToMaterialQuantityUpdateFragment()
@@ -129,17 +143,15 @@ class WorkOrderHistoryMaterialAdapter(
             material.materialId
         ).observe(mView.findViewTreeLifecycleOwner()!!) { mMaterial ->
             mainActivity.mainViewModel.setMaterial(mMaterial)
-            mView.findNavController().navigate(
-                WorkOrderHistoryUpdateFragmentDirections
-                    .actionWorkOrderHistoryUpdateFragmentToMaterialUpdateFragment()
-            )
+            gotoMaterialUpdateFragment()
         }
 
     }
 
-    private fun removeMaterial(material: MaterialInSequence) {
-        mainActivity.workOrderViewModel.removeWorkOrderHistoryMaterial(
-            material.workOrderHistoryMaterialId
+    private fun gotoMaterialUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkOrderHistoryUpdateFragmentDirections
+                .actionWorkOrderHistoryUpdateFragmentToMaterialUpdateFragment()
         )
     }
 }

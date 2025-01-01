@@ -9,6 +9,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paydaycalculator.R
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.WorkPerformedInSequence
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
@@ -79,16 +80,19 @@ class WorKOrderHistoryWorkPerformedAdapter(
 
     private fun chooseOptions(woWorkPerformed: WorkPerformedInSequence) {
         AlertDialog.Builder(mView.context)
-            .setTitle("Choose option for ${woWorkPerformed.wpDescription}")
-            .setPositiveButton("Edit description") { _, _ ->
+            .setTitle(
+                mView.context.getString(R.string.choose_option_for) +
+                        woWorkPerformed.wpDescription
+            )
+            .setPositiveButton(mView.context.getString(R.string.edit_description)) { _, _ ->
                 editWorkPerformed(woWorkPerformed.wpWorkPerformedId)
             }
-            .setNegativeButton("Remove") { _, _ ->
+            .setNegativeButton(mView.context.getString(R.string.remove)) { _, _ ->
                 removeWorkPerformedFromWorkOrder(
                     woWorkPerformed.workPerformedHistoryId
                 )
             }
-            .setNeutralButton("Cancel", null)
+            .setNeutralButton(mView.context.getString(R.string.cancel), null)
             .show()
     }
 
@@ -97,16 +101,20 @@ class WorKOrderHistoryWorkPerformedAdapter(
             workPerformedId
         ).observe(mView.findViewTreeLifecycleOwner()!!) { workPerformed ->
             mainActivity.mainViewModel.setWorkPerformed(workPerformed)
-            mView.findNavController().navigate(
-                WorkOrderHistoryUpdateFragmentDirections
-                    .actionWorkOrderHistoryUpdateFragmentToWorkPerformedUpdateFragment()
-            )
+            gotoWorkPerformedUpdateFragment()
         }
     }
 
     private fun removeWorkPerformedFromWorkOrder(workOrderHistoryWorkPerformedId: Long) {
         mainActivity.workOrderViewModel.removeWorkPerformedFromWorkOderHistory(
             workOrderHistoryWorkPerformedId
+        )
+    }
+
+    private fun gotoWorkPerformedUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkOrderHistoryUpdateFragmentDirections
+                .actionWorkOrderHistoryUpdateFragmentToWorkPerformedUpdateFragment()
         )
     }
 

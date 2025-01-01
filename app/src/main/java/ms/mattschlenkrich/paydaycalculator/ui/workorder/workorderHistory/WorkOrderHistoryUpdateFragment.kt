@@ -313,7 +313,7 @@ class WorkOrderHistoryUpdateFragment :
             if (acWorkOrder.text.isNullOrBlank()) {
                 Toast.makeText(
                     mView.context,
-                    "Please enter a valid work order before adding work performed",
+                    getString(R.string.please_enter_a_valid_work_order_before_adding_work_performed),
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -344,146 +344,6 @@ class WorkOrderHistoryUpdateFragment :
         binding.apply {
             tvDescription.text = display
             tvDescription.visibility = View.VISIBLE
-        }
-    }
-
-    private fun setClickActions() {
-        binding.apply {
-            fabDone.setOnClickListener {
-                validateWorkOrderNumberAndPrepareToUpdate()
-            }
-            btnWorkOrder.setOnClickListener {
-                setOnWorkOrderSelected(acWorkOrder.text.toString())
-                mainActivity.mainViewModel.setCallingFragment(TAG)
-                gotoWorkOrderUpdateFragment()
-            }
-            acWorkOrder.setOnItemClickListener { _, _, _, _ ->
-                setCurWorkOrder()
-            }
-            acWorkOrder.setOnLongClickListener {
-                gotoWorkOrderLookup()
-                true
-            }
-            acWorkPerformed.setOnItemClickListener { _, _, _, _ ->
-                setCurWorkPerformed()
-            }
-            btnAddWorkPerformed.setOnClickListener {
-                saveWorkPerformedIfValidAndAddToWorkOrder(true)
-            }
-            acMaterials.setOnItemClickListener { _, _, _, _ ->
-                setCurMaterial()
-            }
-            btnAddMaterial.setOnClickListener {
-                saveMaterialIfValidAndAddToWorkOrder(true)
-            }
-            acWorkOrder.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-//                    null
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                    null
-                }
-
-                override fun afterTextChanged(s: Editable?) {
-                    setCurWorkOrder()
-                }
-
-            })
-        }
-    }
-
-    private fun gotoWorkOrderLookup() {
-        setTempWorkOrderHistoryInfo()
-        mainActivity.mainViewModel.setCallingFragment(
-            mainActivity.mainViewModel.getCallingFragment() +
-                    ", $TAG"
-        )
-        gotoWorkOrderLookupFragment()
-    }
-
-    private fun gotoWorkOrderLookupFragment() {
-        mView.findNavController().navigate(
-            WorkOrderHistoryUpdateFragmentDirections
-                .actionWorkOrderHistoryUpdateFragmentToWorkOrderLookupFragment()
-        )
-    }
-
-    private fun validateWorkOrderNumberAndPrepareToUpdate() {
-        if (doesWorkOrderExist()) {
-            updateHistoryIfValid()
-        } else {
-            AlertDialog.Builder(mView.context)
-                .setTitle(
-                    "Create Work Order: " +
-                            "${binding.acWorkOrder.text}?"
-                )
-                .setMessage(
-                    "This Work Order does not exist." +
-                            "Would you like to create a new one?"
-                )
-                .setPositiveButton("Yes") { _, _ ->
-                    gotoWorkOrderAddFragment()
-                }
-                .setNegativeButton("No", null)
-                .show()
-        }
-    }
-
-    private fun updateHistoryIfValid() {
-        val answer = validateHistory()
-        if (answer == ANSWER_OK) {
-            saveWorkPerformedIfValidAndAddToWorkOrder(false)
-            saveMaterialIfValidAndAddToWorkOrder(false)
-            updateHistory()
-        } else {
-            Toast.makeText(
-                mView.context,
-                answer, Toast.LENGTH_LONG
-            ).show()
-        }
-    }
-
-    private fun updateHistory() {
-        mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
-        val history = getCurHistory()
-        mainActivity.workOrderViewModel.updateWorkOrderHistory(
-            history.woHistoryId,
-            curWorkOrder!!.workOrderId,
-            history.woHistoryWorkDateId,
-            history.woHistoryRegHours,
-            history.woHistoryOtHours,
-            history.woHistoryDblOtHours,
-            history.woHistoryNote,
-            false,
-            history.woHistoryUpdateTime
-        )
-        gotoCallingFragment()
-    }
-
-    private fun setOnWorkOrderSelected(woNumber: String) {
-        mainActivity.mainViewModel.setWorkOrderNumber(woNumber)
-        mainActivity.workOrderViewModel.getWorkOrder(woNumber).observe(
-            viewLifecycleOwner
-        ) { workOrder ->
-            curWorkOrder = workOrder
-            mainActivity.mainViewModel.setWorkOrder(curWorkOrder)
-            setCurWorkOrder()
-        }
-        setTempWorkOrderHistoryInfo()
-    }
-
-    private fun determineWorkPerformedSequence(
-        list: List<WorkOrderHistoryWorkPerformedCombined>
-    ) {
-        if (list.isNotEmpty()) {
-            workPerformedSequence =
-                list.last().workOrderHistoryWorkPerformed.wowpSequence
         }
     }
 
@@ -551,6 +411,145 @@ class WorkOrderHistoryUpdateFragment :
         )
     }
 
+    private fun setClickActions() {
+        binding.apply {
+            fabDone.setOnClickListener {
+                validateWorkOrderNumberAndPrepareToUpdate()
+            }
+            btnWorkOrder.setOnClickListener {
+                setOnWorkOrderSelected(acWorkOrder.text.toString())
+                mainActivity.mainViewModel.setCallingFragment(TAG)
+                gotoWorkOrderUpdateFragment()
+            }
+            acWorkOrder.setOnItemClickListener { _, _, _, _ ->
+                setCurWorkOrder()
+            }
+            acWorkOrder.setOnLongClickListener {
+                gotoWorkOrderLookup()
+                true
+            }
+            acWorkPerformed.setOnItemClickListener { _, _, _, _ ->
+                setCurWorkPerformed()
+            }
+            btnAddWorkPerformed.setOnClickListener {
+                saveWorkPerformedIfValidAndAddToWorkOrder(true)
+            }
+            acMaterials.setOnItemClickListener { _, _, _, _ ->
+                setCurMaterial()
+            }
+            btnAddMaterial.setOnClickListener {
+                saveMaterialIfValidAndAddToWorkOrder(true)
+            }
+            acWorkOrder.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+//                    null
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                    null
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    setCurWorkOrder()
+                }
+
+            })
+        }
+    }
+
+    private fun validateWorkOrderNumberAndPrepareToUpdate() {
+        if (doesWorkOrderExist()) {
+            updateHistoryIfValid()
+        } else {
+            AlertDialog.Builder(mView.context)
+                .setTitle(
+                    getString(R.string.create_work_order_) +
+                            "${binding.acWorkOrder.text}?"
+                )
+                .setMessage(
+                    getString(R.string.this_work_order_does_not_exist)
+                )
+                .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                    gotoWorkOrderAdd()
+                }
+                .setNegativeButton(getString(R.string.no), null)
+                .show()
+        }
+    }
+
+    private fun gotoWorkOrderLookup() {
+        setTempWorkOrderHistoryInfo()
+        mainActivity.mainViewModel.setCallingFragment(
+            mainActivity.mainViewModel.getCallingFragment() +
+                    ", $TAG"
+        )
+        gotoWorkOrderLookupFragment()
+    }
+
+    private fun gotoWorkOrderLookupFragment() {
+        mView.findNavController().navigate(
+            WorkOrderHistoryUpdateFragmentDirections
+                .actionWorkOrderHistoryUpdateFragmentToWorkOrderLookupFragment()
+        )
+    }
+
+    private fun updateHistoryIfValid() {
+        val answer = validateHistory()
+        if (answer == ANSWER_OK) {
+            saveWorkPerformedIfValidAndAddToWorkOrder(false)
+            saveMaterialIfValidAndAddToWorkOrder(false)
+            updateHistory()
+        } else {
+            Toast.makeText(
+                mView.context,
+                answer, Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun updateHistory() {
+        mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
+        val history = getCurHistory()
+        mainActivity.workOrderViewModel.updateWorkOrderHistory(
+            history.woHistoryId,
+            curWorkOrder!!.workOrderId,
+            history.woHistoryWorkDateId,
+            history.woHistoryRegHours,
+            history.woHistoryOtHours,
+            history.woHistoryDblOtHours,
+            history.woHistoryNote,
+            false,
+            history.woHistoryUpdateTime
+        )
+        gotoCallingFragment()
+    }
+
+    private fun setOnWorkOrderSelected(woNumber: String) {
+        mainActivity.mainViewModel.setWorkOrderNumber(woNumber)
+        mainActivity.workOrderViewModel.getWorkOrder(woNumber).observe(
+            viewLifecycleOwner
+        ) { workOrder ->
+            curWorkOrder = workOrder
+            mainActivity.mainViewModel.setWorkOrder(curWorkOrder)
+            setCurWorkOrder()
+        }
+        setTempWorkOrderHistoryInfo()
+    }
+
+    private fun determineWorkPerformedSequence(
+        list: List<WorkOrderHistoryWorkPerformedCombined>
+    ) {
+        if (list.isNotEmpty()) {
+            workPerformedSequence =
+                list.last().workOrderHistoryWorkPerformed.wowpSequence
+        }
+    }
+
     private fun determineMaterialSequence(
         list: List<WorkOrderHistoryMaterialCombined>
     ) {
@@ -580,7 +579,7 @@ class WorkOrderHistoryUpdateFragment :
             if (displayError) {
                 Toast.makeText(
                     mView.context,
-                    "Please enter a valid material to add it.",
+                    getString(R.string.please_enter_a_valid_material_description_to_add_it),
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -638,7 +637,7 @@ class WorkOrderHistoryUpdateFragment :
             if (displayError) {
                 Toast.makeText(
                     mView.context,
-                    "Please enter a valid description of work performed to add it.",
+                    getString(R.string.please_enter_a_valid_description_of_work_performed_to_add_it),
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -746,38 +745,49 @@ class WorkOrderHistoryUpdateFragment :
 
     private fun validateHistory(): String {
         binding.apply {
+            convertNumberStringsToDoubles()
+            if (etRegHours.text.toString().toDouble() == 0.0
+                && etOtHours.text.toString().toDouble() == 0.0
+                && etDblOtHours.text.toString().toDouble() == 0.0
+            ) {
+                return getString(R.string.there_was_no_time_entered_please_enter_some_time)
+            }
+        }
+        return ANSWER_OK
+    }
+
+    private fun convertNumberStringsToDoubles() {
+        binding.apply {
             etRegHours.setText(
                 if (etRegHours.text.isNullOrBlank()) {
-                    "0.0"
+                    getString(R.string.zero_double)
                 } else {
                     etRegHours.text.toString().toDouble().toString()
                 }
             )
             etOtHours.setText(
                 if (etOtHours.text.isNullOrBlank()) {
-                    "0.0"
+                    getString(R.string.zero_double)
                 } else {
                     etOtHours.text.toString().toDouble().toString()
                 }
             )
             etDblOtHours.setText(
                 if (etDblOtHours.text.isNullOrBlank()) {
-                    "0.0"
+                    getString(R.string.zero_double)
                 } else {
                     etDblOtHours.text.toString().toDouble().toString()
                 }
             )
-            if (etRegHours.text.toString().toDouble() == 0.0
-                && etOtHours.text.toString().toDouble() == 0.0
-                && etDblOtHours.text.toString().toDouble() == 0.0
-            ) {
-                return "There was no time entered. Please enter some time."
-            }
+
         }
-        return ANSWER_OK
     }
 
     private fun gotoCallingFragment() {
+        gotoWorkDateUpdateFragment()
+    }
+
+    private fun gotoWorkDateUpdateFragment() {
         mView.findNavController().navigate(
             WorkOrderHistoryUpdateFragmentDirections
                 .actionWorkOrderHistoryUpdateFragmentToWorkDateUpdateFragment()
@@ -791,9 +801,13 @@ class WorkOrderHistoryUpdateFragment :
         )
     }
 
-    private fun gotoWorkOrderAddFragment() {
+    private fun gotoWorkOrderAdd() {
         setTempWorkOrderHistoryInfo()
         mainActivity.mainViewModel.setCallingFragment(TAG)
+        gotoWorkOrderAddFragment()
+    }
+
+    private fun gotoWorkOrderAddFragment() {
         mView.findNavController().navigate(
             WorkOrderHistoryUpdateFragmentDirections
                 .actionWorkOrderHistoryUpdateFragmentToWorkOrderAddFragment()

@@ -188,7 +188,7 @@ class WorkOrderHistoryAddFragment :
             }
             btnWorkOrder.setOnClickListener {
                 if (btnWorkOrder.text.toString() == getString(R.string.update)) {
-                    gotoWorkOrderUpdateFragment()
+                    gotoWorkOrderUpdate()
                 } else {
                     gotoWorkOrderAddFragment()
                 }
@@ -222,59 +222,24 @@ class WorkOrderHistoryAddFragment :
         }
     }
 
-    private fun gotoWorkOrderLookup() {
-        setTempWorkOrderHistory()
-        mainActivity.mainViewModel.setCallingFragment(
-            mainActivity.mainViewModel.getCallingFragment() +
-                    ", $TAG"
-        )
-        gotoWorkOrderLookupFragment()
-    }
-
-    private fun gotoWorkOrderLookupFragment() {
-        mView.findNavController().navigate(
-            WorkOrderHistoryAddFragmentDirections
-                .actionWorkOrderHistoryAddFragmentToWorkOrderLookupFragment()
-        )
-    }
-
     private fun validateWorkOrderNumberAndSaveHistoryIfValid() {
         if (doesWorkOrderExist()) {
             chooseToGotoUpdate()
         } else {
             AlertDialog.Builder(mView.context)
                 .setTitle(
-                    "Create Work Order: " +
+                    getString(R.string.create_work_order_) +
                             "${binding.acWorkOrder.text}?"
                 )
                 .setMessage(
-                    "This Work Order does not exist. " +
-                            "It must be created before continuing. " +
-                            "Would you like to create it now?"
+                    getString(R.string.this_work_order_does_not_exist)
                 )
-                .setPositiveButton("Yes") { _, _ ->
-                    gotoWorkOrderAddFragment()
+                .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                    gotoWorkOrderAdd()
                 }
-                .setNegativeButton("No", null)
+                .setNegativeButton(getString(R.string.no), null)
                 .show()
         }
-    }
-
-    private fun chooseToGotoUpdate() {
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                "Choose next steps after saving"
-            )
-            .setMessage(
-                "Would you like to add work performed or materials to this history?"
-            )
-            .setPositiveButton("Yes") { _, _ ->
-                saveHistoryIfValid(true)
-            }
-            .setNegativeButton("No") { _, _ ->
-                saveHistoryIfValid(false)
-            }
-            .show()
     }
 
     private fun validateWorkOrderHistory(): String {
@@ -282,11 +247,105 @@ class WorkOrderHistoryAddFragment :
             if (curWorkOrder == null &&
                 acWorkOrder.text.isNullOrBlank()
             ) {
-                return "There is no work order selected"
+                return getString(R.string.there_is_no_work_order_selected)
             }
-            convertNumbersToDoubles()
+            convertNumberStringsToDoubles()
         }
         return ANSWER_OK
+    }
+
+    private fun convertNumberStringsToDoubles() {
+        binding.apply {
+            etRegHours.setText(
+                if (etRegHours.text.isNullOrBlank()) {
+                    getString(R.string.zero_double)
+                } else {
+                    etRegHours.text.toString().trim().toDouble().toString()
+                }
+            )
+            etOtHours.setText(
+                if (etOtHours.text.isNullOrBlank()) {
+                    getString(R.string.zero_double)
+                } else {
+                    etOtHours.text.toString().trim().toDouble().toString()
+                }
+            )
+            etDblOtHours.setText(
+                if (etDblOtHours.text.isNullOrBlank()) {
+                    getString(R.string.zero_double)
+                } else {
+                    etDblOtHours.text.toString().trim().toDouble().toString()
+                }
+            )
+        }
+    }
+
+    private fun saveHistoryIfValid(gotoUpdate: Boolean) {
+        val answer = validateWorkOrderHistory()
+        if (answer == ANSWER_OK) {
+            curHistory = getCurHistory()
+            saveHistory(gotoUpdate)
+        } else {
+            Toast.makeText(
+                mView.context,
+                answer, Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun saveHistory(gotoUpdate: Boolean) {
+        mainActivity.workOrderViewModel.insertWorkOrderHistory(
+            curHistory
+        )
+        if (gotoUpdate) {
+            mainActivity.mainViewModel.setWorkOrderHistory(
+                curHistory
+            )
+
+            gotoWorkOrderHistoryUpdate()
+        } else {
+            mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
+            gotoCallingFragment()
+        }
+    }
+
+    private fun getCurHistory(): WorkOrderHistory {
+        binding.apply {
+            setCurWorkOrder()
+            val workOrderId = curWorkOrder!!.workOrderId
+            return WorkOrderHistory(
+                nf.generateRandomIdAsLong(),
+                workOrderId,
+                workDateObject!!.workDateId,
+                if (etRegHours.text.isNullOrBlank())
+                    0.0 else etRegHours.text.toString().toDouble(),
+                if (etOtHours.text.isNullOrBlank())
+                    0.0 else etOtHours.text.toString().toDouble(),
+                if (etDblOtHours.text.isNullOrBlank())
+                    0.0 else etDblOtHours.text.toString().toDouble(),
+                if (etNote.text.isNullOrBlank())
+                    null else etNote.text.toString(),
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
+    private fun chooseToGotoUpdate() {
+        AlertDialog.Builder(mView.context)
+            .setTitle(
+                getString(R.string.choose_the_next_step)
+            )
+            .setMessage(
+                getString(R.string.would_you_like_to_add_work_performed_or_materials_to_this_history_)
+            )
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                saveHistoryIfValid(true)
+            }
+            .setNegativeButton(getString(R.string.no)) { _, _ ->
+                saveHistoryIfValid(false)
+            }
+            .show()
     }
 
     private fun setCurWorkOrder() {
@@ -294,7 +353,7 @@ class WorkOrderHistoryAddFragment :
             if (acWorkOrder.text.isNullOrBlank()) {
                 Toast.makeText(
                     mView.context,
-                    "Please enter a valid work order before adding work performed",
+                    getString(R.string.please_enter_a_valid_work_order_before_adding_work_performed),
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -334,55 +393,13 @@ class WorkOrderHistoryAddFragment :
         }
     }
 
-    private fun getCurHistory(): WorkOrderHistory {
-        binding.apply {
-            setCurWorkOrder()
-            val workOrderId = curWorkOrder!!.workOrderId
-            return WorkOrderHistory(
-                nf.generateRandomIdAsLong(),
-                workOrderId,
-                workDateObject!!.workDateId,
-                if (etRegHours.text.isNullOrBlank())
-                    0.0 else etRegHours.text.toString().toDouble(),
-                if (etOtHours.text.isNullOrBlank())
-                    0.0 else etOtHours.text.toString().toDouble(),
-                if (etDblOtHours.text.isNullOrBlank())
-                    0.0 else etDblOtHours.text.toString().toDouble(),
-                if (etNote.text.isNullOrBlank())
-                    null else etNote.text.toString(),
-                false,
-                df.getCurrentTimeAsString()
-            )
-        }
-    }
-
-    private fun saveHistoryIfValid(gotoUpdate: Boolean) {
-        val answer = validateWorkOrderHistory()
-        if (answer == ANSWER_OK) {
-            curHistory = getCurHistory()
-            saveHistory(gotoUpdate)
-        } else {
-            Toast.makeText(
-                mView.context,
-                answer, Toast.LENGTH_LONG
-            ).show()
-        }
-    }
-
-    private fun saveHistory(gotoUpdate: Boolean) {
-        mainActivity.workOrderViewModel.insertWorkOrderHistory(
-            curHistory
+    private fun gotoWorkOrderLookup() {
+        setTempWorkOrderHistory()
+        mainActivity.mainViewModel.setCallingFragment(
+            mainActivity.mainViewModel.getCallingFragment() +
+                    ", $TAG"
         )
-        if (gotoUpdate) {
-            mainActivity.mainViewModel.setWorkOrderHistory(
-                curHistory
-            )
-
-            gotoWorkOrderHistoryUpdateFragment()
-        } else {
-            mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
-            gotoCallingFragment()
-        }
+        gotoWorkOrderLookupFragment()
     }
 
     private fun doesWorkOrderExist(): Boolean {
@@ -395,35 +412,20 @@ class WorkOrderHistoryAddFragment :
         return false
     }
 
-    private fun convertNumbersToDoubles() {
-        binding.apply {
-            etRegHours.setText(
-                if (etRegHours.text.isNullOrBlank()) {
-                    "0.0"
-                } else {
-                    etRegHours.text.toString().trim().toDouble().toString()
-                }
-            )
-            etOtHours.setText(
-                if (etOtHours.text.isNullOrBlank()) {
-                    "0.0"
-                } else {
-                    etOtHours.text.toString().trim().toDouble().toString()
-                }
-            )
-            etDblOtHours.setText(
-                if (etDblOtHours.text.isNullOrBlank()) {
-                    "0.0"
-                } else {
-                    etDblOtHours.text.toString().trim().toDouble().toString()
-                }
-            )
-        }
+    private fun gotoWorkOrderLookupFragment() {
+        mView.findNavController().navigate(
+            WorkOrderHistoryAddFragmentDirections
+                .actionWorkOrderHistoryAddFragmentToWorkOrderLookupFragment()
+        )
+    }
+
+    private fun gotoWorkOrderAdd() {
+        setTempWorkOrderHistory()
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        gotoWorkOrderAddFragment()
     }
 
     private fun gotoWorkOrderAddFragment() {
-        setTempWorkOrderHistory()
-        mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
             WorkOrderHistoryAddFragmentDirections
                 .actionWorkOrderHistoryAddFragmentToWorkOrderAddFragment()
@@ -431,26 +433,38 @@ class WorkOrderHistoryAddFragment :
     }
 
     private fun gotoCallingFragment() {
+        gotoWorkDateUpdateFragment()
+    }
+
+    private fun gotoWorkDateUpdateFragment() {
         mView.findNavController().navigate(
             WorkOrderHistoryAddFragmentDirections
                 .actionWorkOrderHistoryAddFragmentToWorkDateUpdateFragment()
         )
     }
 
-    private fun gotoWorkOrderHistoryUpdateFragment() {
+    private fun gotoWorkOrderHistoryUpdate() {
         setTempWorkOrderHistory()
+        gotoWorkOrderHistoryUpdateFragment()
+    }
+
+    private fun gotoWorkOrderHistoryUpdateFragment() {
         mView.findNavController().navigate(
             WorkOrderHistoryAddFragmentDirections
                 .actionWorkOrderHistoryAddFragmentToWorkOrderHistoryUpdateFragment()
         )
     }
 
-    private fun gotoWorkOrderUpdateFragment() {
+    private fun gotoWorkOrderUpdate() {
         mainActivity.mainViewModel.setWorkOrderNumber(
             binding.acWorkOrder.text.toString()
         )
         setTempWorkOrderHistory()
         mainActivity.mainViewModel.setCallingFragment(TAG)
+        gotoWorkOrderUpdateFragment()
+    }
+
+    private fun gotoWorkOrderUpdateFragment() {
         mView.findNavController().navigate(
             WorkOrderHistoryAddFragmentDirections
                 .actionWorkOrderHistoryAddFragmentToWorkOrderUpdateFragment()

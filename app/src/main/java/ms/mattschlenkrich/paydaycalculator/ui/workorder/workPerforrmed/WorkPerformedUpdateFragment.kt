@@ -54,7 +54,8 @@ class WorkPerformedUpdateFragment :
         }
         binding.apply {
             val display =
-                "Update work Description: ${oldWorkPerformed.wpDescription}"
+                getString(R.string.update_work_description_) +
+                        oldWorkPerformed.wpDescription
             tvTitle.text = display
             etWorkPerformed.setText(oldWorkPerformed.wpDescription)
         }
@@ -82,38 +83,6 @@ class WorkPerformedUpdateFragment :
         }
     }
 
-    private fun updateWorkPerformed() {
-        mainActivity.workOrderViewModel.updateWorkPerformed(
-            WorkPerformed(
-                oldWorkPerformed.workPerformedId,
-                binding.etWorkPerformed.text.toString().trim(),
-                false,
-                df.getCurrentTimeAsString()
-            )
-        )
-        gotoCallingFragment()
-    }
-
-    private fun validateWorkPerformed(): String {
-        binding.apply {
-            if (etWorkPerformed.text.isNullOrBlank()) {
-                return "    ERROR!!/n" +
-                        "Please enter a valid Work Performed Description!"
-            }
-            for (workPerformed in workPerformedList) {
-                if (workPerformed.wpDescription ==
-                    etWorkPerformed.text.toString().trim() &&
-                    etWorkPerformed.text.toString().trim() !=
-                    oldWorkPerformed.wpDescription
-                ) {
-                    return "   ERROR!/n" +
-                            "This Work Performed description already exists!"
-                }
-            }
-        }
-        return ANSWER_OK
-    }
-
     private fun updateWorkPerformedIfValid() {
         val answer = validateWorkPerformed()
         if (answer == ANSWER_OK) {
@@ -124,6 +93,38 @@ class WorkPerformedUpdateFragment :
                 answer, Toast.LENGTH_LONG
             ).show()
         }
+    }
+
+    private fun validateWorkPerformed(): String {
+        binding.apply {
+            if (etWorkPerformed.text.isNullOrBlank()) {
+                return getString(R.string.error_) +
+                        getString(R.string.please_enter_a_valid_work_performed_description)
+            }
+            for (workPerformed in workPerformedList) {
+                if (workPerformed.wpDescription ==
+                    etWorkPerformed.text.toString().trim() &&
+                    etWorkPerformed.text.toString().trim() !=
+                    oldWorkPerformed.wpDescription
+                ) {
+                    return getString(R.string.error_) +
+                            getString(R.string.this_work_performed_description_already_exists)
+                }
+            }
+        }
+        return ANSWER_OK
+    }
+
+    private fun updateWorkPerformed() {
+        mainActivity.workOrderViewModel.updateWorkPerformed(
+            WorkPerformed(
+                oldWorkPerformed.workPerformedId,
+                binding.etWorkPerformed.text.toString().trim(),
+                false,
+                df.getCurrentTimeAsString()
+            )
+        )
+        gotoCallingFragment()
     }
 
     private fun gotoCallingFragment() {
