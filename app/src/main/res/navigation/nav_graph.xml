@@ -5,11 +5,159 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/startFragment">
 
+    <!--    startFragment-->
     <fragment
         android:id="@+id/startFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.StartFragment"
         android:label="fragment_start"
         tools:layout="@layout/fragment_start" />
+
+    <!--    action_global_employerFragment-->
+    <action
+        android:id="@+id/action_global_employerFragment"
+        app:destination="@id/employerFragment" />
+
+    <!--    action_global_timeSheetFragment-->
+    <action
+        android:id="@+id/action_global_timeSheetFragment"
+        app:destination="@id/timeSheetFragment" />
+
+    <!--    timeSheetFragment-->
+    <fragment
+        android:id="@+id/timeSheetFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.TimeSheetFragment"
+        android:label="TimeSheetFragment"
+        tools:layout="@layout/fragment_time_sheet">
+        <action
+            android:id="@+id/action_timeSheetFragment_to_employerAddFragment"
+            app:destination="@id/employerAddFragment" />
+        <action
+            android:id="@+id/action_timeSheetFragment_to_payDetailFragment"
+            app:destination="@id/payDetailFragment" />
+        <action
+            android:id="@+id/action_timeSheetFragment_to_workDateAddFragment"
+            app:destination="@id/workDateAddFragment" />
+        <action
+            android:id="@+id/action_timeSheetFragment_to_workDateUpdateFragment"
+            app:destination="@id/workDateUpdateFragment" />
+    </fragment>
+
+    <!--    workDateAddFragment-->
+    <fragment
+        android:id="@+id/workDateAddFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateAddFragment"
+        android:label="fragment_work_date_add"
+        tools:layout="@layout/fragment_work_date_add">
+        <action
+            android:id="@+id/action_workDateAddFragment_to_workDateUpdateFragment"
+            app:destination="@id/workDateUpdateFragment"
+            app:popUpTo="@id/workDateUpdateFragment" />
+        <action
+            android:id="@+id/action_workDateAddFragment_to_workOrderHistoryAddFragment"
+            app:destination="@id/workOrderHistoryAddFragment"
+            app:popUpTo="@id/workOrderHistoryAddFragment" />
+
+    </fragment>
+
+    <!--    workDateUpdateFragment-->
+    <fragment
+        android:id="@+id/workDateUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragment"
+        android:label="WorkDateUpdateFragment"
+        tools:layout="@layout/fragment_work_date_update">
+        <action
+            android:id="@+id/action_workDateUpdateFragment_to_employerExtraDefinitionsFragment"
+            app:destination="@id/employerExtraDefinitionsFragment" />
+        <action
+            android:id="@+id/action_workDateUpdateFragment_to_workDateExtraAddFragment"
+            app:destination="@id/workDateExtraAddFragment" />
+        <action
+            android:id="@+id/action_workDateUpdateFragment_to_workDateExtraUpdateFragment"
+            app:destination="@id/workDateExtraUpdateFragment" />
+        <action
+            android:id="@+id/action_workDateUpdateFragment_to_workOrderUpdateFragment"
+            app:destination="@id/workOrderUpdateFragment"
+            app:popUpTo="@id/workOrderUpdateFragment" />
+        <action
+            android:id="@+id/action_workDateUpdateFragment_to_workOrderHistoryAddFragment"
+            app:destination="@id/workOrderHistoryAddFragment"
+            app:popUpTo="@id/workOrderHistoryAddFragment" />
+        <action
+            android:id="@+id/action_workDateUpdateFragment_to_workOrderHistoryUpdateFragment"
+            app:destination="@id/workOrderHistoryUpdateFragment"
+            app:popUpTo="@id/workOrderHistoryUpdateFragment" />
+    </fragment>
+
+    <!--    action_global_taxRulesFragment-->
+    <action
+        android:id="@+id/action_global_taxRulesFragment"
+        app:destination="@id/taxRulesFragment" />
+
+    <!--    action_global_taxTypeFragment-->
+    <action
+        android:id="@+id/action_global_taxTypeFragment"
+        app:destination="@id/taxTypeFragment" />
+
+    <!--    action_global_employerExtraDefinitionsFragment-->
+    <action
+        android:id="@+id/action_global_employerExtraDefinitionsFragment"
+        app:destination="@id/employerExtraDefinitionsFragment" />
+
+    <!--    action_global_workExtraTypesFragment-->
+    <action
+        android:id="@+id/action_global_workExtraTypesFragment"
+        app:destination="@id/workExtraTypesFragment" />
+
+    <!--    taxTypeFragment-->
+    <fragment
+        android:id="@+id/taxTypeFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.tax.TaxTypeFragment"
+        android:label="fragment_tax_type"
+        tools:layout="@layout/fragment_tax_type">
+        <action
+            android:id="@+id/action_taxTypeFragment_to_taxTypeAddFragment"
+            app:destination="@id/taxTypeAddFragment" />
+        <action
+            android:id="@+id/action_taxTypeFragment_to_taxTypeUpdateFragment"
+            app:destination="@id/taxTypeUpdateFragment" />
+    </fragment>
+
+    <!--    taxTypeAddFragment-->
+    <fragment
+        android:id="@+id/taxTypeAddFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.tax.TaxTypeAddFragment"
+        android:label="fragment_tax_type_add"
+        tools:layout="@layout/fragment_tax_type_add">
+        <action
+            android:id="@+id/action_taxTypeAddFragment_to_taxTypeFragment"
+            app:destination="@id/taxTypeFragment" />
+        <action
+            android:id="@+id/action_taxTypeAddFragment_to_taxRulesFragment"
+            app:destination="@id/taxRulesFragment" />
+        <action
+            android:id="@+id/action_taxTypeAddFragment_to_employerUpdateFragment"
+            app:destination="@id/employerUpdateFragment"
+            app:popUpTo="@id/employerUpdateFragment" />
+
+
+    </fragment>
+
+    <!--    taxTypeUpdateFragment-->
+    <fragment
+        android:id="@+id/taxTypeUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.tax.TaxTypeUpdateFragment"
+        android:label="fragment_tax_type_update"
+        tools:layout="@layout/fragment_tax_type_update">
+        <action
+            android:id="@+id/action_taxTypeUpdateFragment_to_taxTypeFragment"
+            app:destination="@id/taxTypeFragment" />
+        <action
+            android:id="@+id/action_taxTypeUpdateFragment_to_taxRulesFragment"
+            app:destination="@id/taxRulesFragment"
+            app:popUpTo="@id/taxRulesFragment" />
+    </fragment>
+
+    <!--    employerFragment-->
     <fragment
         android:id="@+id/employerFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerFragment"
@@ -25,9 +173,8 @@
             android:id="@+id/action_employerFragment_to_workExtraTypeAddFragment"
             app:destination="@id/workExtraTypeAddFragment" />
     </fragment>
-    <action
-        android:id="@+id/action_global_employerFragment"
-        app:destination="@id/employerFragment" />
+
+    <!--    employerAddFragment-->
     <fragment
         android:id="@+id/employerAddFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerAddFragment"
@@ -35,10 +182,12 @@
         tools:layout="@layout/fragment_employer_add">
         <action
             android:id="@+id/action_employerAddFragment_to_employerFragment"
-            app:destination="@id/employerFragment" />
+            app:destination="@id/employerFragment"
+            app:popUpTo="@id/employerFragment" />
         <action
             android:id="@+id/action_employerAddFragment_to_employerUpdateFragment"
-            app:destination="@id/employerUpdateFragment" />
+            app:destination="@id/employerUpdateFragment"
+            app:popUpTo="@id/employerWageUpdateFragment" />
         <action
             android:id="@+id/action_employerAddFragment_to_employerExtraDefinitionsFragment"
             app:destination="@id/employerExtraDefinitionsFragment" />
@@ -50,8 +199,11 @@
             app:destination="@id/workOrderViewFragment" />
         <action
             android:id="@+id/action_employerAddFragment_to_timeSheetFragment"
-            app:destination="@id/timeSheetFragment" />
+            app:destination="@id/timeSheetFragment"
+            app:popUpTo="@id/timeSheetFragment" />
     </fragment>
+
+    <!--    employerUpdateFragment-->
     <fragment
         android:id="@+id/employerUpdateFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragment"
@@ -59,7 +211,8 @@
         tools:layout="@layout/fragment_employer_update">
         <action
             android:id="@+id/action_employerUpdateFragment_to_employerFragment"
-            app:destination="@id/employerFragment" />
+            app:destination="@id/employerFragment"
+            app:popUpTo="@id/employerFragment" />
         <action
             android:id="@+id/action_employerUpdateFragment_to_taxTypeAddFragment"
             app:destination="@id/taxTypeAddFragment" />
@@ -85,49 +238,8 @@
             android:id="@+id/action_employerUpdateFragment_to_employerPayRatesFragment"
             app:destination="@id/employerPayRatesFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/taxTypeFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.tax.TaxTypeFragment"
-        android:label="fragment_tax_type"
-        tools:layout="@layout/fragment_tax_type">
-        <action
-            android:id="@+id/action_taxTypeFragment_to_taxTypeAddFragment"
-            app:destination="@id/taxTypeAddFragment" />
-        <action
-            android:id="@+id/action_taxTypeFragment_to_taxTypeUpdateFragment"
-            app:destination="@id/taxTypeUpdateFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/taxTypeAddFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.tax.TaxTypeAddFragment"
-        android:label="fragment_tax_type_add"
-        tools:layout="@layout/fragment_tax_type_add">
-        <action
-            android:id="@+id/action_taxTypeAddFragment_to_taxTypeFragment"
-            app:destination="@id/taxTypeFragment" />
-        <action
-            android:id="@+id/action_taxTypeAddFragment_to_taxRulesFragment"
-            app:destination="@id/taxRulesFragment" />
-        <action
-            android:id="@+id/action_taxTypeAddFragment_to_employerUpdateFragment"
-            app:destination="@id/employerUpdateFragment" />
-    </fragment>
-    <action
-        android:id="@+id/action_global_taxTypeFragment"
-        app:destination="@id/taxTypeFragment" />
-    <fragment
-        android:id="@+id/taxTypeUpdateFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.tax.TaxTypeUpdateFragment"
-        android:label="fragment_tax_type_update"
-        tools:layout="@layout/fragment_tax_type_update">
-        <action
-            android:id="@+id/action_taxTypeUpdateFragment_to_taxTypeFragment"
-            app:destination="@id/taxTypeFragment" />
-        <action
-            android:id="@+id/action_taxTypeUpdateFragment_to_taxRulesFragment"
-            app:destination="@id/taxRulesFragment" />
-    </fragment>
 
+    <!--    taxRulesFragment-->
     <fragment
         android:id="@+id/taxRulesFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.tax.TaxRulesFragment"
@@ -144,17 +256,18 @@
             app:destination="@id/taxTypeAddFragment" />
         <action
             android:id="@+id/action_taxRulesFragment_to_employerUpdateFragment"
-            app:destination="@id/employerUpdateFragment" />
+            app:destination="@id/employerUpdateFragment"
+            app:popUpTo="@id/employerUpdateFragment" />
         <action
             android:id="@+id/action_taxRulesFragment_to_employerUpdateFragment2"
-            app:destination="@id/employerUpdateFragment" />
+            app:destination="@id/employerUpdateFragment"
+            app:popUpTo="@id/employerUpdateFragment" />
         <action
             android:id="@+id/action_taxRulesFragment_to_taxTypeUpdateFragment"
             app:destination="@id/taxTypeUpdateFragment" />
     </fragment>
-    <action
-        android:id="@+id/action_global_taxRulesFragment"
-        app:destination="@id/taxRulesFragment" />
+
+    <!--    taxRuleAddFragment-->
     <fragment
         android:id="@+id/taxRuleAddFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.tax.TaxRuleAddFragment"
@@ -162,8 +275,11 @@
         tools:layout="@layout/fragment_tax_rule_add">
         <action
             android:id="@+id/action_taxRuleAddFragment_to_taxRulesFragment"
-            app:destination="@id/taxRulesFragment" />
+            app:destination="@id/taxRulesFragment"
+            app:popUpTo="@id/taxRulesFragment" />
     </fragment>
+
+    <!--    taxRuleUpdateFragment-->
     <fragment
         android:id="@+id/taxRuleUpdateFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.tax.TaxRuleUpdateFragment"
@@ -171,12 +287,11 @@
         tools:layout="@layout/fragment_tax_rule_update">
         <action
             android:id="@+id/action_taxRuleUpdateFragment_to_taxRulesFragment"
-            app:destination="@id/taxRulesFragment" />
+            app:destination="@id/taxRulesFragment"
+            app:popUpTo="@id/taxRulesFragment" />
     </fragment>
 
-    <action
-        android:id="@+id/action_global_employerExtraDefinitionsFragment"
-        app:destination="@id/employerExtraDefinitionsFragment" />
+    <!--    employerExtraDefinitionsAddFragment-->
     <fragment
         android:id="@+id/employerExtraDefinitionsAddFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.EmployerExtraDefinitionsAddFragment"
@@ -184,14 +299,19 @@
         tools:layout="@layout/fragment_employer_extra_definitions_add">
         <action
             android:id="@+id/action_employerExtraDefinitionsAddFragment_to_employerExtraDefinitionsFragment"
-            app:destination="@id/employerExtraDefinitionsFragment" />
+            app:destination="@id/employerExtraDefinitionsFragment"
+            app:popUpTo="@id/employerExtraDefinitionsFragment" />
         <action
             android:id="@+id/action_employerExtraDefinitionsAddFragment_to_employerUpdateFragment"
-            app:destination="@id/employerUpdateFragment" />
+            app:destination="@id/employerUpdateFragment"
+            app:popUpTo="@id/employerUpdateFragment" />
         <action
             android:id="@+id/action_employerExtraDefinitionsAddFragment_to_workExtraTypeAddFragment"
-            app:destination="@id/workExtraTypeAddFragment" />
+            app:destination="@id/workExtraTypeAddFragment"
+            app:popUpTo="@id/workExtraTypeAddFragment" />
     </fragment>
+
+    <!--    employerExtraDefinitionUpdateFragment-->
     <fragment
         android:id="@+id/employerExtraDefinitionUpdateFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.EmployerExtraDefinitionUpdateFragment"
@@ -199,24 +319,15 @@
         tools:layout="@layout/fragment_employer_extra_definition_update">
         <action
             android:id="@+id/action_employerExtraDefinitionUpdateFragment_to_employerExtraDefinitionsFragment"
-            app:destination="@id/employerExtraDefinitionsFragment" />
+            app:destination="@id/employerExtraDefinitionsFragment"
+            app:popUpTo="@id/employerExtraDefinitionsFragment" />
         <action
             android:id="@+id/action_employerExtraDefinitionUpdateFragment_to_employerUpdateFragment"
-            app:destination="@id/employerUpdateFragment" />
+            app:destination="@id/employerUpdateFragment"
+            app:popUpTo="@id/employerUpdateFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/workDateAddFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateAddFragment"
-        android:label="fragment_work_date_add"
-        tools:layout="@layout/fragment_work_date_add">
-        <action
-            android:id="@+id/action_workDateAddFragment_to_workDateUpdateFragment"
-            app:destination="@id/workDateUpdateFragment" />
-        <action
-            android:id="@+id/action_workDateAddFragment_to_workOrderHistoryAddFragment"
-            app:destination="@id/workOrderHistoryAddFragment" />
 
-    </fragment>
+    <!--    workExtraTypeAddFragment-->
     <fragment
         android:id="@+id/workExtraTypeAddFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.WorkExtraTypeAddFragment"
@@ -224,11 +335,14 @@
         tools:layout="@layout/fragment_work_extra_type_add">
         <action
             android:id="@+id/action_workExtraTypeAddFragment_to_employerUpdateFragment"
-            app:destination="@id/employerUpdateFragment" />
+            app:destination="@id/employerUpdateFragment"
+            app:popUpTo="@id/employerUpdateFragment" />
         <action
             android:id="@+id/action_workExtraTypeAddFragment_to_employerExtraDefinitionsFragment"
             app:destination="@id/employerExtraDefinitionsFragment" />
     </fragment>
+
+    <!--    employerExtraDefinitionsFragment-->
     <fragment
         android:id="@+id/employerExtraDefinitionsFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.EmployerExtraDefinitionsFragment"
@@ -239,48 +353,30 @@
             app:destination="@id/workExtraTypeAddFragment" />
         <action
             android:id="@+id/action_employerExtraDefinitionsFragment_to_employerAddFragment"
-            app:destination="@id/employerAddFragment" />
+            app:destination="@id/employerAddFragment"
+            app:popUpTo="@id/employerAddFragment" />
         <action
             android:id="@+id/action_employerExtraDefinitionsFragment_to_employerExtraDefinitionUpdateFragment"
-            app:destination="@id/employerExtraDefinitionUpdateFragment" />
+            app:destination="@id/employerExtraDefinitionUpdateFragment"
+            app:popUpTo="@id/employerExtraDefinitionUpdateFragment" />
         <action
             android:id="@+id/action_employerExtraDefinitionsFragment_to_employerUpdateFragment"
-            app:destination="@id/employerUpdateFragment" />
+            app:destination="@id/employerUpdateFragment"
+            app:popUpTo="@id/employerUpdateFragment" />
         <action
             android:id="@+id/action_employerExtraDefinitionsFragment_to_employerExtraDefinitionsAddFragment"
             app:destination="@id/employerExtraDefinitionsAddFragment" />
         <action
             android:id="@+id/action_employerExtraDefinitionsFragment_to_workDateUpdateFragment"
-            app:destination="@id/workDateUpdateFragment" />
+            app:destination="@id/workDateUpdateFragment"
+            app:popUpTo="@id/workDateUpdateFragment" />
         <action
             android:id="@+id/action_employerExtraDefinitionsFragment_to_workExtraTypeUpdateFragment"
-            app:destination="@id/workExtraTypeUpdateFragment" />
+            app:destination="@id/workExtraTypeUpdateFragment"
+            app:popUpTo="@id/workExtraTypeUpdateFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/workDateUpdateFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragment"
-        android:label="WorkDateUpdateFragment"
-        tools:layout="@layout/fragment_work_date_update">
-        <action
-            android:id="@+id/action_workDateUpdateFragment_to_employerExtraDefinitionsFragment"
-            app:destination="@id/employerExtraDefinitionsFragment" />
-        <action
-            android:id="@+id/action_workDateUpdateFragment_to_workDateExtraAddFragment"
-            app:destination="@id/workDateExtraAddFragment" />
-        <action
-            android:id="@+id/action_workDateUpdateFragment_to_workDateExtraUpdateFragment"
-            app:destination="@id/workDateExtraUpdateFragment" />
 
-        <action
-            android:id="@+id/action_workDateUpdateFragment_to_workOrderUpdateFragment"
-            app:destination="@id/workOrderUpdateFragment" />
-        <action
-            android:id="@+id/action_workDateUpdateFragment_to_workOrderHistoryAddFragment"
-            app:destination="@id/workOrderHistoryAddFragment" />
-        <action
-            android:id="@+id/action_workDateUpdateFragment_to_workOrderHistoryUpdateFragment"
-            app:destination="@id/workOrderHistoryUpdateFragment" />
-    </fragment>
+    <!--    employerPayRatesFragment-->
     <fragment
         android:id="@+id/employerPayRatesFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerPayRatesFragment"
@@ -288,10 +384,12 @@
         tools:layout="@layout/fragment_employer_pay_rates">
         <action
             android:id="@+id/action_employerPayRatesFragment_to_employerUpdateFragment"
-            app:destination="@id/employerUpdateFragment" />
+            app:destination="@id/employerUpdateFragment"
+            app:popUpTo="@id/employerUpdateFragment" />
         <action
             android:id="@+id/action_employerPayRatesFragment_to_employerAddFragment"
-            app:destination="@id/employerAddFragment" />
+            app:destination="@id/employerAddFragment"
+            app:popUpTo="@id/employerAddFragment" />
         <action
             android:id="@+id/action_employerPayRatesFragment_to_employerPayRateAddFragment"
             app:destination="@id/employerPayRateAddFragment" />
@@ -299,6 +397,8 @@
             android:id="@+id/action_employerPayRatesFragment_to_employerWageUpdateFragment"
             app:destination="@id/employerWageUpdateFragment" />
     </fragment>
+
+    <!--    workExtraTypeUpdateFragment-->
     <fragment
         android:id="@+id/workExtraTypeUpdateFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.WorkExtraTypeUpdateFragment"
@@ -306,8 +406,11 @@
         tools:layout="@layout/fragment_work_extra_type_update">
         <action
             android:id="@+id/action_workExtraTypeUpdateFragment_to_employerExtraDefinitionsFragment"
-            app:destination="@id/employerExtraDefinitionsFragment" />
+            app:destination="@id/employerExtraDefinitionsFragment"
+            app:popUpTo="@id/employerExtraDefinitionsFragment" />
     </fragment>
+
+    <!--    employerPayRateAddFragment-->
     <fragment
         android:id="@+id/employerPayRateAddFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerPayRateAddFragment"
@@ -315,8 +418,11 @@
         tools:layout="@layout/fragment_employer_wage_update">
         <action
             android:id="@+id/action_employerPayRateAddFragment_to_employerPayRatesFragment"
-            app:destination="@id/employerPayRatesFragment" />
+            app:destination="@id/employerPayRatesFragment"
+            app:popUpTo="@id/employerPayRatesFragment" />
     </fragment>
+
+    <!--    employerWageUpdateFragment-->
     <fragment
         android:id="@+id/employerWageUpdateFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerPayRateUpdateFragment"
@@ -324,16 +430,18 @@
         tools:layout="@layout/fragment_employer_wage_update">
         <action
             android:id="@+id/action_employerWageUpdateFragment_to_employerPayRatesFragment"
-            app:destination="@id/employerPayRatesFragment" />
+            app:destination="@id/employerPayRatesFragment"
+            app:popUpTo="@id/employerPayRatesFragment" />
     </fragment>
+
+    <!--    workExtraTypesFragment-->
     <fragment
         android:id="@+id/workExtraTypesFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.WorkExtraTypesFragment"
         android:label="WorkExtraTypesFragment"
         tools:layout="@layout/fragment_work_extra_types" />
-    <action
-        android:id="@+id/action_global_workExtraTypesFragment"
-        app:destination="@id/workExtraTypesFragment" />
+
+    <!--    workDateExtraAddFragment-->
     <fragment
         android:id="@+id/workDateExtraAddFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.WorkDateExtraAddFragment"
@@ -341,8 +449,11 @@
         tools:layout="@layout/fragment_work_date_extra_add">
         <action
             android:id="@+id/action_workDateExtraAddFragment_to_workDateUpdateFragment"
-            app:destination="@id/workDateUpdateFragment" />
+            app:destination="@id/workDateUpdateFragment"
+            app:popUpTo="@id/workDateUpdateFragment" />
     </fragment>
+
+    <!--    workDateExtraUpdateFragment-->
     <fragment
         android:id="@+id/workDateExtraUpdateFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.WorkDateExtraUpdateFragment"
@@ -350,26 +461,16 @@
         tools:layout="@layout/fragment_work_date_extra_update">
         <action
             android:id="@+id/action_workDateExtraUpdateFragment_to_workDateUpdateFragment"
-            app:destination="@id/workDateUpdateFragment" />
+            app:destination="@id/workDateUpdateFragment"
+            app:popUpTo="@id/workDateUpdateFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/payPeriodExtraAddFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.PayPeriodExtraAddFragment"
-        android:label="PayPeriodExtraAddFragment"
-        tools:layout="@layout/fragment_pay_period_extra_add">
-        <action
-            android:id="@+id/action_payPeriodExtraAddFragment_to_payDetailFragment"
-            app:destination="@id/payDetailFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/payPeriodExtraUpdateFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.PayPeriodExtraUpdateFragment"
-        android:label="PayPeriodExtraUpdateFragment"
-        tools:layout="@layout/fragment_pay_period_extra_update">
-        <action
-            android:id="@+id/action_payPeriodExtraUpdateFragment_to_payDetailFragment"
-            app:destination="@id/payDetailFragment" />
-    </fragment>
+
+    <!--    action_global_payDetailFragment-->
+    <action
+        android:id="@+id/action_global_payDetailFragment"
+        app:destination="@id/payDetailFragment" />
+
+    <!--    payDetailFragment-->
     <fragment
         android:id="@+id/payDetailFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.PayDetailFragment"
@@ -383,69 +484,77 @@
             app:destination="@id/payPeriodExtraUpdateFragment" />
         <action
             android:id="@+id/action_payDetailFragment_to_timeSheetFragment"
-            app:destination="@id/timeSheetFragment" />
+            app:destination="@id/timeSheetFragment"
+            app:popUpTo="@id/timeSheetFragment" />
         <action
             android:id="@+id/action_payDetailsFragment_to_employerAddFragment"
             app:destination="@id/employerAddFragment" />
     </fragment>
-    <action
-        android:id="@+id/action_global_payDetailFragment"
-        app:destination="@id/payDetailFragment" />
+
+    <!--    payPeriodExtraAddFragment-->
     <fragment
-        android:id="@+id/timeSheetFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.paydays.TimeSheetFragment"
-        android:label="TimeSheetFragment"
-        tools:layout="@layout/fragment_time_sheet">
+        android:id="@+id/payPeriodExtraAddFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.PayPeriodExtraAddFragment"
+        android:label="PayPeriodExtraAddFragment"
+        tools:layout="@layout/fragment_pay_period_extra_add">
         <action
-            android:id="@+id/action_timeSheetFragment_to_employerAddFragment"
-            app:destination="@id/employerAddFragment" />
-        <action
-            android:id="@+id/action_timeSheetFragment_to_payDetailFragment"
-            app:destination="@id/payDetailFragment" />
-        <action
-            android:id="@+id/action_timeSheetFragment_to_workDateAddFragment"
-            app:destination="@id/workDateAddFragment" />
-        <action
-            android:id="@+id/action_timeSheetFragment_to_workDateUpdateFragment"
-            app:destination="@id/workDateUpdateFragment" />
+            android:id="@+id/action_payPeriodExtraAddFragment_to_payDetailFragment"
+            app:destination="@id/payDetailFragment"
+            app:popUpTo="@id/payDetailFragment" />
     </fragment>
-    <action
-        android:id="@+id/action_global_timeSheetFragment"
-        app:destination="@id/timeSheetFragment" />
+
+    <!--    payPeriodExtraUpdateFragment-->
+    <fragment
+        android:id="@+id/payPeriodExtraUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.extras.PayPeriodExtraUpdateFragment"
+        android:label="PayPeriodExtraUpdateFragment"
+        tools:layout="@layout/fragment_pay_period_extra_update">
+        <action
+            android:id="@+id/action_payPeriodExtraUpdateFragment_to_payDetailFragment"
+            app:destination="@id/payDetailFragment"
+            app:popUpTo="@id/payDetailFragment" />
+    </fragment>
+
+    <!--    workOrderHistoryAddFragment-->
     <fragment
         android:id="@+id/workOrderHistoryAddFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.workorderHistory.WorkOrderHistoryAddFragment"
         android:label="fragment_time_sheet_add_work_order"
         tools:layout="@layout/fragment_work_order_history">
-
         <action
             android:id="@+id/action_workOrderHistoryAddFragment_to_workDateUpdateFragment"
-            app:destination="@id/workDateUpdateFragment" />
+            app:destination="@id/workDateUpdateFragment"
+            app:popUpTo="@id/workDateUpdateFragment" />
         <action
             android:id="@+id/action_workOrderHistoryAddFragment_to_workOrderAddFragment"
             app:destination="@id/workOrderAddFragment" />
         <action
             android:id="@+id/action_workOrderHistoryAddFragment_to_workOrderUpdateFragment"
-            app:destination="@id/workOrderUpdateFragment" />
+            app:destination="@id/workOrderUpdateFragment"
+            app:popUpTo="@id/workOrderUpdateFragment" />
         <action
             android:id="@+id/action_workOrderHistoryAddFragment_to_workOrderHistoryUpdateFragment"
-            app:destination="@id/workOrderHistoryUpdateFragment" />
+            app:destination="@id/workOrderHistoryUpdateFragment"
+            app:popUpTo="@id/workOrderHistoryUpdateFragment" />
         <action
             android:id="@+id/action_workOrderHistoryAddFragment_to_workOrderLookupFragment"
             app:destination="@id/workOrderLookupFragment" />
     </fragment>
+
+    <!--    workOrderHistoryUpdateFragment-->
     <fragment
         android:id="@+id/workOrderHistoryUpdateFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.workorderHistory.WorkOrderHistoryUpdateFragment"
         android:label="fragment_time_sheet_add_work_order"
         tools:layout="@layout/fragment_work_order_history">
-
         <action
             android:id="@+id/action_workOrderHistoryUpdateFragment_to_workDateUpdateFragment"
-            app:destination="@id/workDateUpdateFragment" />
+            app:destination="@id/workDateUpdateFragment"
+            app:popUpTo="@id/workDateUpdateFragment" />
         <action
             android:id="@+id/action_workOrderHistoryUpdateFragment_to_workOrderUpdateFragment"
-            app:destination="@id/workOrderUpdateFragment" />
+            app:destination="@id/workOrderUpdateFragment"
+            app:popUpTo="@id/workOrderUpdateFragment" />
         <action
             android:id="@+id/action_workOrderHistoryUpdateFragment_to_workOrderAddFragment"
             app:destination="@id/workOrderAddFragment" />
@@ -463,21 +572,34 @@
             app:destination="@id/materialQuantityUpdateFragment" />
     </fragment>
 
+    <!--    action_global_workOrdersFragment-->
+    <action
+        android:id="@+id/action_global_workOrdersFragment"
+        app:destination="@id/workOrderViewFragment" />
+
+    <!--    action_global_workOrderAddFragment-->
+    <action
+        android:id="@+id/action_global_workOrderAddFragment"
+        app:destination="@id/workOrderAddFragment" />
+
+    <!--    workOrderAddFragment-->
     <fragment
         android:id="@+id/workOrderAddFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.workorder.WorkOrderAddFragment"
         android:label="fragment_work_order_add"
         tools:layout="@layout/fragment_work_order_add">
-
         <action
             android:id="@+id/action_workOrderAddFragment_to_workOrderHistoryAddFragment"
-            app:destination="@id/workOrderHistoryAddFragment" />
+            app:destination="@id/workOrderHistoryAddFragment"
+            app:popUpTo="@id/workOrderHistoryAddFragment" />
         <action
             android:id="@+id/action_workOrderAddFragment_to_workOrderHistoryUpdateFragment"
-            app:destination="@id/workOrderHistoryUpdateFragment" />
+            app:destination="@id/workOrderHistoryUpdateFragment"
+            app:popUpTo="@id/workOrderHistoryUpdateFragment" />
         <action
             android:id="@+id/action_workOrderAddFragment_to_workOrdersFragment"
-            app:destination="@id/workOrderViewFragment" />
+            app:destination="@id/workOrderViewFragment"
+            app:popUpTo="@id/workOrderViewFragment" />
         <action
             android:id="@+id/action_workOrderAddFragment_to_workOrderUpdateFragment"
             app:destination="@id/workOrderUpdateFragment" />
@@ -485,34 +607,39 @@
             android:id="@+id/action_workOrderAddFragment_to_jobSpecUpdateFragment"
             app:destination="@id/jobSpecUpdateFragment" />
     </fragment>
+
+    <!--    workOrderUpdateFragment-->
     <fragment
         android:id="@+id/workOrderUpdateFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.workorder.WorkOrderUpdateFragment"
         android:label="fragment_work_order_add"
         tools:layout="@layout/fragment_work_order_add">
-
         <action
             android:id="@+id/action_workOrderUpdateFragment_to_workDateUpdateFragment"
-            app:destination="@id/workDateUpdateFragment" />
+            app:destination="@id/workDateUpdateFragment"
+            app:popUpTo="@id/workDateUpdateFragment" />
         <action
             android:id="@+id/action_workOrderUpdateFragment_to_workOrderHistoryUpdateFragment"
-            app:destination="@id/workOrderHistoryUpdateFragment" />
+            app:destination="@id/workOrderHistoryUpdateFragment"
+            app:popUpTo="@id/workOrderHistoryUpdateFragment" />
         <action
             android:id="@+id/action_workOrderUpdateFragment_to_workOrderHistoryAddFragment"
-            app:destination="@id/workOrderHistoryAddFragment" />
+            app:destination="@id/workOrderHistoryAddFragment"
+            app:popUpTo="@id/workOrderHistoryAddFragment" />
         <action
             android:id="@+id/action_workOrderUpdateFragment_to_workOrdersFragment"
-            app:destination="@id/workOrderViewFragment" />
+            app:destination="@id/workOrderViewFragment"
+            app:popUpTo="@id/workOrderViewFragment" />
         <action
             android:id="@+id/action_workOrderUpdateFragment_to_jobSpecUpdateFragment"
             app:destination="@id/jobSpecUpdateFragment" />
         <action
             android:id="@+id/action_workOrderUpdateFragment_to_workOrderHistoryUpdateFragment2"
-            app:destination="@id/workOrderHistoryUpdateFragment" />
+            app:destination="@id/workOrderHistoryUpdateFragment"
+            app:popUpTo="@id/workOrderHistoryUpdateFragment" />
     </fragment>
-    <action
-        android:id="@+id/action_global_workOrderAddFragment"
-        app:destination="@id/workOrderAddFragment" />
+
+    <!--    workOrderViewFragment-->
     <fragment
         android:id="@+id/workOrderViewFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.workorder.WorkOrderViewFragment"
@@ -528,45 +655,8 @@
             android:id="@+id/action_workOrderViewFragment_to_workOrderUpdateFragment"
             app:destination="@id/workOrderUpdateFragment" />
     </fragment>
-    <action
-        android:id="@+id/action_global_workOrdersFragment"
-        app:destination="@id/workOrderViewFragment" />
-    <fragment
-        android:id="@+id/jobSpecUpdateFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.jobSpec.JobSpecUpdateFragment"
-        android:label="JobSpecUpdateFragment"
-        tools:layout="@layout/fragment_job_spec">
-        <action
-            android:id="@+id/action_jobSpecUpdateFragment_to_workOrderUpdateFragment"
-            app:destination="@id/workOrderUpdateFragment" />
-        <action
-            android:id="@+id/action_jobSpecUpdateFragment_to_jobSpecViewFragment"
-            app:destination="@id/jobSpecViewFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/workPerformedUpdateFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.workPerforrmed.WorkPerformedUpdateFragment"
-        android:label="WorkPerformedUpdateFragment"
-        tools:layout="@layout/fragment_work_performed_update">
-        <action
-            android:id="@+id/action_workPerformedUpdateFragment_to_workOrderHistoryUpdateFragment"
-            app:destination="@id/workOrderHistoryUpdateFragment" />
-        <action
-            android:id="@+id/action_workPerformedUpdateFragment_to_workPerformedViewFragment"
-            app:destination="@id/workPerformedViewFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/materialUpdateFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.materials.MaterialUpdateFragment"
-        android:label="MaterialUpdateFragment"
-        tools:layout="@layout/fragment_material_update">
-        <action
-            android:id="@+id/action_materialUpdateFragment_to_workOrderHistoryUpdateFragment"
-            app:destination="@id/workOrderHistoryUpdateFragment" />
-        <action
-            android:id="@+id/action_materialUpdateFragment_to_materialViewFragment"
-            app:destination="@id/materialViewFragment" />
-    </fragment>
+
+    <!--    workOrderLookupFragment-->
     <fragment
         android:id="@+id/workOrderLookupFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.workorder.WorkOrderLookupFragment"
@@ -574,11 +664,36 @@
         tools:layout="@layout/fragment_work_order_view">
         <action
             android:id="@+id/action_workOrderLookupFragment_to_workOrderHistoryAddFragment"
-            app:destination="@id/workOrderHistoryAddFragment" />
+            app:destination="@id/workOrderHistoryAddFragment"
+            app:popUpTo="@id/workOrderHistoryAddFragment" />
         <action
             android:id="@+id/action_workOrderLookupFragment_to_workOrderHistoryUpdateFragment"
-            app:destination="@id/workOrderHistoryUpdateFragment" />
+            app:destination="@id/workOrderHistoryUpdateFragment"
+            app:popUpTo="@id/workOrderHistoryUpdateFragment" />
     </fragment>
+
+    <!--    materialUpdateFragment-->
+    <fragment
+        android:id="@+id/materialUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.materials.MaterialUpdateFragment"
+        android:label="MaterialUpdateFragment"
+        tools:layout="@layout/fragment_material_update">
+        <action
+            android:id="@+id/action_materialUpdateFragment_to_workOrderHistoryUpdateFragment"
+            app:destination="@id/workOrderHistoryUpdateFragment"
+            app:popUpTo="@id/workOrderHistoryUpdateFragment" />
+        <action
+            android:id="@+id/action_materialUpdateFragment_to_materialViewFragment"
+            app:destination="@id/materialViewFragment"
+            app:popUpTo="@id/materialViewFragment" />
+    </fragment>
+
+    <!--    action_global_jobSpecViewFragment-->
+    <action
+        android:id="@+id/action_global_jobSpecViewFragment"
+        app:destination="@id/jobSpecViewFragment" />
+
+    <!--    jobSpecViewFragment-->
     <fragment
         android:id="@+id/jobSpecViewFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.jobSpec.JobSpecViewFragment"
@@ -588,9 +703,29 @@
             android:id="@+id/action_jobSpecViewFragment_to_jobSpecUpdateFragment"
             app:destination="@id/jobSpecUpdateFragment" />
     </fragment>
+
+    <!--    jobSpecUpdateFragment-->
+    <fragment
+        android:id="@+id/jobSpecUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.jobSpec.JobSpecUpdateFragment"
+        android:label="JobSpecUpdateFragment"
+        tools:layout="@layout/fragment_job_spec">
+        <action
+            android:id="@+id/action_jobSpecUpdateFragment_to_workOrderUpdateFragment"
+            app:destination="@id/workOrderUpdateFragment"
+            app:popUpTo="@id/workOrderUpdateFragment" />
+        <action
+            android:id="@+id/action_jobSpecUpdateFragment_to_jobSpecViewFragment"
+            app:destination="@id/jobSpecViewFragment"
+            app:popUpTo="@id/jobSpecViewFragment" />
+    </fragment>
+
+    <!--    action_global_materialViewFragment-->
     <action
-        android:id="@+id/action_global_jobSpecViewFragment"
-        app:destination="@id/jobSpecViewFragment" />
+        android:id="@+id/action_global_materialViewFragment"
+        app:destination="@id/materialViewFragment" />
+
+    <!--    materialViewFragment-->
     <fragment
         android:id="@+id/materialViewFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.materials.MaterialViewFragment"
@@ -600,9 +735,41 @@
             android:id="@+id/action_materialViewFragment_to_materialUpdateFragment"
             app:destination="@id/materialUpdateFragment" />
     </fragment>
+
+    <!--    materialQuantityUpdateFragment-->
+    <fragment
+        android:id="@+id/materialQuantityUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.materials.MaterialQuantityUpdateFragment"
+        android:label="MaterialQuantityUpdateFragment"
+        tools:layout="@layout/fragment_material_quantity_update">
+        <action
+            android:id="@+id/action_materialQuantityUpdateFragment_to_workOrderHistoryUpdateFragment"
+            app:destination="@id/workOrderHistoryUpdateFragment"
+            app:popUpTo="@id/workOrderHistoryUpdateFragment" />
+    </fragment>
+
+    <!--    action_global_workPerformedViewFragment-->
     <action
-        android:id="@+id/action_global_materialViewFragment"
-        app:destination="@id/materialViewFragment" />
+        android:id="@+id/action_global_workPerformedViewFragment"
+        app:destination="@id/workPerformedViewFragment" />
+
+    <!--    workPerformedUpdateFragment-->
+    <fragment
+        android:id="@+id/workPerformedUpdateFragment"
+        android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.workPerforrmed.WorkPerformedUpdateFragment"
+        android:label="WorkPerformedUpdateFragment"
+        tools:layout="@layout/fragment_work_performed_update">
+        <action
+            android:id="@+id/action_workPerformedUpdateFragment_to_workOrderHistoryUpdateFragment"
+            app:destination="@id/workOrderHistoryUpdateFragment"
+            app:popUpTo="@id/workOrderHistoryUpdateFragment" />
+        <action
+            android:id="@+id/action_workPerformedUpdateFragment_to_workPerformedViewFragment"
+            app:destination="@id/workPerformedViewFragment"
+            app:popUpTo="@id/workPerformedViewFragment" />
+    </fragment>
+
+    <!--    workPerformedViewFragment-->
     <fragment
         android:id="@+id/workPerformedViewFragment"
         android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.workPerforrmed.WorkPerformedViewFragment"
@@ -611,18 +778,6 @@
         <action
             android:id="@+id/action_workPerformedViewFragment_to_workPerformedUpdateFragment"
             app:destination="@id/workPerformedUpdateFragment" />
-    </fragment>
-    <action
-        android:id="@+id/action_global_workPerformedViewFragment"
-        app:destination="@id/workPerformedViewFragment" />
-    <fragment
-        android:id="@+id/materialQuantityUpdateFragment"
-        android:name="ms.mattschlenkrich.paydaycalculator.ui.workorder.materials.MaterialQuantityUpdateFragment"
-        android:label="MaterialQuantityUpdateFragment"
-        tools:layout="@layout/fragment_material_quantity_update">
-        <action
-            android:id="@+id/action_materialQuantityUpdateFragment_to_workOrderHistoryUpdateFragment"
-            app:destination="@id/workOrderHistoryUpdateFragment" />
     </fragment>
 
 </navigation>
