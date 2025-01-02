@@ -80,7 +80,7 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         setMenuActions()
         binding.apply {
             fabDone.setOnClickListener {
-                updatePayRate()
+                updatePayRateIfValid()
             }
 
             tvEffectiveDate.setOnClickListener {
@@ -110,21 +110,11 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun updatePayRate() {
+    private fun updatePayRateIfValid() {
         binding.apply {
             val message = validatePayRate()
             if (message == ANSWER_OK) {
-                mainActivity.employerViewModel.updatePayRate(
-                    EmployerPayRates(
-                        curPayRate.employerPayRateId,
-                        curPayRate.eprEmployerId,
-                        tvEffectiveDate.text.toString(),
-                        spPerFrequency.selectedItemPosition,
-                        cf.getDoubleFromDollars(etWage.text.toString()),
-                        false,
-                        df.getCurrentTimeAsString()
-                    )
-                )
+                updatePayRate()
                 gotoCallingFragment()
             } else {
                 Toast.makeText(
@@ -144,6 +134,22 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
             } else {
                 ANSWER_OK
             }
+        }
+    }
+
+    private fun updatePayRate() {
+        binding.apply {
+            mainActivity.employerViewModel.updatePayRate(
+                EmployerPayRates(
+                    curPayRate.employerPayRateId,
+                    curPayRate.eprEmployerId,
+                    tvEffectiveDate.text.toString(),
+                    spPerFrequency.selectedItemPosition,
+                    cf.getDoubleFromDollars(etWage.text.toString()),
+                    false,
+                    df.getCurrentTimeAsString()
+                )
+            )
         }
     }
 

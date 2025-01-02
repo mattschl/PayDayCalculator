@@ -69,6 +69,10 @@ class EmployerAdapter(
 
     private fun gotoUpdateEmployer(employer: Employers) {
         mainActivity.mainViewModel.setEmployer(employer)
+        gotoEmployerUpdateFragment()
+    }
+
+    private fun gotoEmployerUpdateFragment() {
         mView.findNavController().navigate(
             EmployerFragmentDirections
                 .actionEmployerFragmentToEmployerUpdateFragment()

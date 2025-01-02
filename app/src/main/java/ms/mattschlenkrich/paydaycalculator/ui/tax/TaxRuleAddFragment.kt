@@ -29,7 +29,7 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
-    private val cf = NumberFunctions()
+    private val nf = NumberFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -120,7 +120,10 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
 
     private fun validateTaxRule(): String {
         binding.apply {
-            if (etPercentage.text.isNullOrBlank()) {
+            if (etPercentage.text.isNullOrBlank() ||
+                etPercentage.text.toString() == getString(R.string.zero_percent) ||
+                etPercentage.text.toString().toDouble() == 0.0
+            ) {
                 return getString(R.string.error_) +
                         getString(R.string.there_should_be_a_percentage_here)
             }
@@ -143,17 +146,17 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
     private fun getCurrentTaxRule(): WorkTaxRules {
         binding.apply {
             return WorkTaxRules(
-                cf.generateRandomIdAsLong(),
+                nf.generateRandomIdAsLong(),
                 tvTaxRuleType.text.toString(),
                 tvTaxRuleLevel.text.toString().toInt(),
                 wtEffectiveDate = tvEffectiveDate.text.toString(),
-                cf.getDoubleFromPercentString(etPercentage.text.toString()),
+                nf.getDoubleFromPercentString(etPercentage.text.toString()),
                 chkExemption.isChecked,
                 if (chkExemption.isChecked)
-                    cf.getDoubleFromDollars(etExemption.text.toString()) else 0.0,
+                    nf.getDoubleFromDollars(etExemption.text.toString()) else 0.0,
                 chkUpperLimit.isChecked,
                 if (chkUpperLimit.isChecked)
-                    cf.getDoubleFromDollars(etUpperLimit.text.toString()) else 0.0,
+                    nf.getDoubleFromDollars(etUpperLimit.text.toString()) else 0.0,
                 false,
                 df.getCurrentTimeAsString()
             )

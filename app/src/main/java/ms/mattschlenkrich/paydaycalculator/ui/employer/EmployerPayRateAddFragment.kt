@@ -52,8 +52,8 @@ class EmployerPayRateAddFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setClickActions()
         populateValues()
+        setClickActions()
     }
 
     private fun populateValues() {

@@ -190,10 +190,10 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
                 updateEmployerIfValid()
             }
             fabAddTax.setOnClickListener {
-                gotoTaxTypesAddFragment()
+                gotoTaxTypesAdd()
             }
             lblTaxes.setOnLongClickListener {
-                gotoTaxRulesFragment()
+                gotoTaxRules()
                 false
             }
             fabAddExtra.setOnClickListener {
@@ -244,6 +244,34 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         }
     }
 
+    private fun validateEmployer(): String {
+        binding.apply {
+            if (etName.text.isNullOrBlank()) {
+                return getString(R.string.error_) +
+                        getString(R.string.the_employer_must_have_a_name)
+            }
+            if (employerList.isNotEmpty()) {
+                for (employer in employerList) {
+                    if (employer.employerName == etName.text.toString().trim() &&
+                        employer.employerName != curEmployer!!.employerName
+                    ) {
+                        return getString(R.string.error_) +
+                                getString(R.string.this_employer_already_exists)
+                    }
+                }
+            }
+            if (etDaysBefore.text.isNullOrBlank()) {
+                return getString(R.string.error_) +
+                        getString(R.string.the_number_of_days_before_the_pay_day_is_required)
+            }
+            if (etMidMonthDate.text.isNullOrBlank()) {
+                return getString(R.string.error_) +
+                        getString(R.string.for_semi_monthly_pay_days_there_needs_to_be_a_mid_month_pay_day)
+            }
+            return ANSWER_OK
+        }
+    }
+
     private fun getCurrentEmployer(): Employers {
         binding.apply {
             return Employers(
@@ -258,32 +286,6 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
                 false,
                 df.getCurrentTimeAsString()
             )
-        }
-    }
-
-    private fun validateEmployer(): String {
-        binding.apply {
-            if (etName.text.isNullOrBlank()) {
-                return "    ERROR!!\n" +
-                        "The employer must have a name!"
-            }
-            if (employerList.isNotEmpty()) {
-                for (employer in employerList) {
-                    if (employer.employerName == etName.text.toString().trim()) {
-                        return "    ERROR!!\n" +
-                                "This employer already exists!"
-                    }
-                }
-            }
-            if (etDaysBefore.text.isNullOrBlank()) {
-                return "    ERROR!!\n" +
-                        "The number of days before the pay day is required!"
-            }
-            if (etMidMonthDate.text.isNullOrBlank()) {
-                return "    ERROR!!\n" +
-                        "For semi-monthly pay days there needs to be a mid month pay day"
-            }
-            return ANSWER_OK
         }
     }
 
@@ -348,7 +350,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
             curDateAll[1].toInt() - 1,
             curDateAll[2].toInt()
         )
-        datePickerDialog.setTitle("Choose the first date")
+        datePickerDialog.setTitle(getString(R.string.choose_the_first_date))
         datePickerDialog.show()
 
     }
@@ -380,18 +382,26 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         )
     }
 
-    private fun gotoTaxRulesFragment() {
+    private fun gotoTaxRules() {
         mainActivity.mainViewModel.setEmployer(getCurrentEmployer())
         mainActivity.mainViewModel.setCallingFragment(TAG)
+        gotoTaxRulesFragment()
+    }
+
+    private fun gotoTaxRulesFragment() {
         mView.findNavController().navigate(
             EmployerUpdateFragmentDirections
                 .actionEmployerUpdateFragmentToTaxRulesFragment()
         )
     }
 
-    private fun gotoTaxTypesAddFragment() {
+    private fun gotoTaxTypesAdd() {
         mainActivity.mainViewModel.setEmployer(getCurrentEmployer())
         mainActivity.mainViewModel.setCallingFragment(TAG)
+        gotoTaxTypesAddFragment()
+    }
+
+    private fun gotoTaxTypesAddFragment() {
         mView.findNavController().navigate(
             EmployerUpdateFragmentDirections
                 .actionEmployerUpdateFragmentToTaxTypeAddFragment()

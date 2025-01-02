@@ -147,6 +147,14 @@ class EmployerExtraDefinitionFullAdapter(
             }.show()
     }
 
+    private fun deleteExtra(definition: WorkExtrasDefinitions) {
+        mainActivity.workExtraViewModel.deleteWorkExtraDefinition(
+            definition.workExtraDefId, df.getCurrentTimeAsString()
+        )
+        employerExtraDefinitionsFragment?.populateExtrasList()
+        employerUpdateFragment?.populateExtras(definition.weEmployerId)
+    }
+
     private fun gotoExtraUpdate(definition: ExtraDefTypeAndEmployer) {
         mainActivity.mainViewModel.setEmployerString(definition.employer.employerName)
         mainActivity.mainViewModel.setEmployer(definition.employer)
@@ -170,13 +178,5 @@ class EmployerExtraDefinitionFullAdapter(
             EmployerUpdateFragmentDirections
                 .actionEmployerUpdateFragmentToEmployerExtraDefinitionUpdateFragment()
         )
-    }
-
-    private fun deleteExtra(definition: WorkExtrasDefinitions) {
-        mainActivity.workExtraViewModel.deleteWorkExtraDefinition(
-            definition.workExtraDefId, df.getCurrentTimeAsString()
-        )
-        employerExtraDefinitionsFragment?.populateExtrasList()
-        employerUpdateFragment?.populateExtras(definition.weEmployerId)
     }
 }

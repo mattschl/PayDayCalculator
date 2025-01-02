@@ -314,7 +314,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
                 getString(R.string.the_taxes_have_been_set_up_automatically)
             )
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                gotoEmployerExtrasFragment(curEmployer)
+                gotoEmployerUpdate(curEmployer)
             }
             .setNegativeButton(getString(R.string.no)) { _, _ ->
                 gotoCallingFragment(curEmployer)
@@ -325,7 +325,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     private fun gotoCallingFragment(employer: Employers) {
         when (mainActivity.mainViewModel.getCallingFragment()) {
             FRAG_EMPLOYERS -> {
-                gotoEmployerFragment()
+                gotoEmployers()
             }
 
             FRAG_WORK_ORDERS -> {
@@ -333,13 +333,17 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
             }
 
             FRAG_TIME_SHEET -> {
-                gotoTimeSheetFragment(employer)
+                gotoTimeSheet(employer)
             }
         }
     }
 
-    private fun gotoTimeSheetFragment(employer: Employers) {
+    private fun gotoTimeSheet(employer: Employers) {
         mainActivity.mainViewModel.setEmployer(employer)
+        gotoTimeSheetFragment()
+    }
+
+    private fun gotoTimeSheetFragment() {
         mView.findNavController().navigate(
             EmployerAddFragmentDirections
                 .actionEmployerAddFragmentToTimeSheetFragment()
@@ -348,22 +352,34 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
 
     private fun gotoWorkOrdersFragment(employer: Employers) {
         mainActivity.mainViewModel.setEmployer(employer)
+        gotoWorkOrdersFragment()
+    }
+
+    private fun gotoWorkOrdersFragment() {
         mView.findNavController().navigate(
             EmployerAddFragmentDirections
                 .actionEmployerAddFragmentToWorkOrdersFragment()
         )
     }
 
-    private fun gotoEmployerExtrasFragment(curEmployer: Employers) {
+    private fun gotoEmployerUpdate(curEmployer: Employers) {
         mainActivity.mainViewModel.setEmployer(curEmployer)
+        gotoEmployerUpdateFragment()
+    }
+
+    private fun gotoEmployerUpdateFragment() {
         mView.findNavController().navigate(
             EmployerAddFragmentDirections
                 .actionEmployerAddFragmentToEmployerUpdateFragment()
         )
     }
 
-    private fun gotoEmployerFragment() {
+    private fun gotoEmployers() {
         mainActivity.mainViewModel.setEmployer(null)
+        gotoEmployerFragment()
+    }
+
+    private fun gotoEmployerFragment() {
         mView.findNavController().navigate(
             EmployerAddFragmentDirections
                 .actionEmployerAddFragmentToEmployerFragment()

@@ -114,12 +114,12 @@ class EmployerPayRatesFragment :
     }
 
     private fun setClickActions() {
+        onSelectEmployer()
         binding.apply {
             fabNew.setOnClickListener {
                 gotoPayRates()
             }
         }
-        onSelectEmployer()
     }
 
     private fun onSelectEmployer() {

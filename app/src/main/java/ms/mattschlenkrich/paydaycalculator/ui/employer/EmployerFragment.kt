@@ -53,14 +53,6 @@ class EmployerFragment :
         setClickActions()
     }
 
-    private fun setClickActions() {
-        binding.apply {
-            fabNew.setOnClickListener {
-                gotoEmployerAdd()
-            }
-        }
-    }
-
     private fun populateEmployers() {
         employerAdapter = EmployerAdapter(
             mainActivity, mView
@@ -91,6 +83,14 @@ class EmployerFragment :
             } else {
                 rvEmployers.visibility = View.VISIBLE
                 crdNoInfo.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun setClickActions() {
+        binding.apply {
+            fabNew.setOnClickListener {
+                gotoEmployerAdd()
             }
         }
     }
