@@ -16,16 +16,16 @@ import ms.mattschlenkrich.paydaycalculator.database.model.extras.ExtraDefTypeAnd
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtrasDefinitions
 import ms.mattschlenkrich.paydaycalculator.databinding.ListEmployerExtraDefinitonBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
-import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragment
 import ms.mattschlenkrich.paydaycalculator.ui.employer.EmployerUpdateFragmentDirections
-import ms.mattschlenkrich.paydaycalculator.ui.extras.EmployerExtraDefinitionsFragment
+import ms.mattschlenkrich.paydaycalculator.ui.employer.IEmployerUpdateFragment
 import ms.mattschlenkrich.paydaycalculator.ui.extras.EmployerExtraDefinitionsFragmentDirections
+import ms.mattschlenkrich.paydaycalculator.ui.extras.IEmployerExtraDefinitionsFragment
 
 class EmployerExtraDefinitionFullAdapter(
     private val mainActivity: MainActivity,
     private val mView: View,
-    private val employerExtraDefinitionsFragment: EmployerExtraDefinitionsFragment?,
-    private val employerUpdateFragment: EmployerUpdateFragment?,
+    private val employerExtraDefinitionsFragment: IEmployerExtraDefinitionsFragment?,
+    private val employerUpdateFragment: IEmployerUpdateFragment?,
 ) : RecyclerView.Adapter<
         EmployerExtraDefinitionFullAdapter.DefinitionViewHolder>() {
 

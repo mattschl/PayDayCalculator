@@ -16,8 +16,8 @@ import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragment
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragmentDirections
 
 class WorkDateUpdateCustomExtraAdapter(
-    val mainActivity: MainActivity,
-    val mView: View,
+    private val mainActivity: MainActivity,
+    private val mView: View,
     private val workDateUpdateFragment: WorkDateUpdateFragment,
     private val workDateExtras: ArrayList<WorkDateExtras>,
 ) : RecyclerView.Adapter<WorkDateUpdateCustomExtraAdapter.ViewHolder>() {

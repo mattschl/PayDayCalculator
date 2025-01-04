@@ -17,7 +17,7 @@ import ms.mattschlenkrich.paydaycalculator.ui.workorder.workorder.WorkOrderViewF
 class WorkOrderViewAdapter(
     val mainActivity: MainActivity,
     val mView: View,
-    private val parentFragmentTag: String
+    private val parentTag: String
 ) : RecyclerView.Adapter<WorkOrderViewAdapter.ViewHolder>() {
 
 //    private val df = DateFunctions()
@@ -83,7 +83,7 @@ class WorkOrderViewAdapter(
     }
 
     private fun gotoWorkOrderUpdate() {
-        mainActivity.mainViewModel.setCallingFragment(parentFragmentTag)
+        mainActivity.mainViewModel.setCallingFragment(parentTag)
         gotoWorkOrderUpdateFragment()
     }
 

@@ -36,7 +36,8 @@ import ms.mattschlenkrich.paydaycalculator.ui.employer.adapter.EmployerTaxTypeAd
 
 private const val TAG = FRAG_EMPLOYER_UPDATE
 
-class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
+class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
+    IEmployerUpdateFragment {
 
     private var _binding: FragmentEmployerUpdateBinding? = null
     private val binding get() = _binding!!
@@ -138,7 +139,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         }
     }
 
-    fun populateTaxes(employerId: Long) {
+    override fun populateTaxes(employerId: Long) {
         binding.apply {
             val employerTaxTypeAdapter = EmployerTaxTypeAdapter(
                 mainActivity, mView, this@EmployerUpdateFragment
@@ -157,7 +158,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update) {
         }
     }
 
-    fun populateExtras(employerId: Long) {
+    override fun populateExtras(employerId: Long) {
         binding.apply {
             val extraTypeAdapter =
                 EmployerExtraDefinitionsShortAdapter(

@@ -27,7 +27,8 @@ import ms.mattschlenkrich.paydaycalculator.ui.employer.adapter.EmployerExtraDefi
 
 private const val TAG = FRAG_EXTRA_DEFINITIONS
 
-class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_extra_definitions) {
+class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_extra_definitions),
+    IEmployerExtraDefinitionsFragment {
 
     private var _binding: FragmentEmployerExtraDefinitionsBinding? = null
     private val binding get() = _binding!!
@@ -250,7 +251,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun populateExtrasList() {
+    override fun populateExtrasList() {
         if (curEmployer != null && curExtraType != null) {
             binding.apply {
                 val extraDefinitionAdapter = EmployerExtraDefinitionFullAdapter(

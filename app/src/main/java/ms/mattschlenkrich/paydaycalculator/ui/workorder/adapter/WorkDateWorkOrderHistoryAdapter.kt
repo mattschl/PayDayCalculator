@@ -15,8 +15,8 @@ import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
 import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateUpdateFragmentDirections
 
 class WorkDateWorkOrderHistoryAdapter(
-    val mainActivity: MainActivity,
-    val mView: View,
+    private val mainActivity: MainActivity,
+    private val mView: View,
     private val workOrderHistory: ArrayList<WorkOrderHistoryWithDates>
 ) : RecyclerView.Adapter<WorkDateWorkOrderHistoryAdapter.ViewHolder>() {
 

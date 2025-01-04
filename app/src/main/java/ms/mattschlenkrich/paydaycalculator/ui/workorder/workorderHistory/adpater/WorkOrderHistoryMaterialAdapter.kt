@@ -14,11 +14,13 @@ import ms.mattschlenkrich.paydaycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paydaycalculator.database.model.workorder.MaterialInSequence
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
+import ms.mattschlenkrich.paydaycalculator.ui.workorder.workorderHistory.IWorkOrderHistoryUpdateFragment
 import ms.mattschlenkrich.paydaycalculator.ui.workorder.workorderHistory.WorkOrderHistoryUpdateFragmentDirections
 
 class WorkOrderHistoryMaterialAdapter(
     val mainActivity: MainActivity,
     val mView: View,
+    private val workOrderHistoryUpdateFragment: IWorkOrderHistoryUpdateFragment,
 ) : RecyclerView.Adapter<WorkOrderHistoryMaterialAdapter.ViewHolder>() {
 
     //    private val df = DateFunctions()
@@ -127,6 +129,7 @@ class WorkOrderHistoryMaterialAdapter(
     }
 
     private fun changeQuantity(material: MaterialInSequence) {
+        workOrderHistoryUpdateFragment.setTempWorkOrderHistoryInfo()
         mainActivity.mainViewModel.setMaterialInSequence(material)
         gotoMaterialQuantityUpdateFragment()
     }
@@ -139,6 +142,7 @@ class WorkOrderHistoryMaterialAdapter(
     }
 
     private fun editMaterial(material: MaterialInSequence) {
+        workOrderHistoryUpdateFragment.setTempWorkOrderHistoryInfo()
         mainActivity.workOrderViewModel.getMaterial(
             material.materialId
         ).observe(mView.findViewTreeLifecycleOwner()!!) { mMaterial ->

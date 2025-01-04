@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Pay Day Calculator</string>
-    
+
     <string name="__calculated">" - Calculated "</string>
     <string name="__current">" - CURRENT"</string>
     <string name="__for">"\n for "</string>
@@ -379,5 +379,8 @@
     <string name="zero_double">0.0</string>
     <string name="zero_percent">0.0%</string>
     <string name="zero">0</string>
+    <string name="finish_adding_work_date">Finish adding work date</string>
+    <string name="would_you_like_to_save_this_date_now_and_continue">Would you like to save this date now and continue?</string>
+    <string name="save_now">Save Now</string>
 
 </resources>

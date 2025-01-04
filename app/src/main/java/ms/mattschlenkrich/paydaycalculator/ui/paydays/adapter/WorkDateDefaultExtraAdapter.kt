@@ -12,12 +12,12 @@ import ms.mattschlenkrich.paydaycalculator.common.FRAG_WORK_DATE_UPDATE
 import ms.mattschlenkrich.paydaycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paydaycalculator.databinding.ListWorkDateExtraItemBinding
 import ms.mattschlenkrich.paydaycalculator.ui.MainActivity
-import ms.mattschlenkrich.paydaycalculator.ui.paydays.WorkDateAddFragment
+import ms.mattschlenkrich.paydaycalculator.ui.paydays.IWorkDateAddFragment
 
 class WorkDateDefaultExtraAdapter(
     val mainActivity: MainActivity,
     val mView: View,
-    private val workDateAddFragment: WorkDateAddFragment,
+    private val workDateAddFragment: IWorkDateAddFragment,
 ) : RecyclerView.Adapter<WorkDateDefaultExtraAdapter.ExtraViewHolder>() {
 
     class ExtraViewHolder(

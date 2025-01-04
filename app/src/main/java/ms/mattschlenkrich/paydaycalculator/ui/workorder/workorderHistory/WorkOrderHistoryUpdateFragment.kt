@@ -46,7 +46,7 @@ import ms.mattschlenkrich.paydaycalculator.ui.workorder.workorderHistory.adpater
 private const val TAG = FRAG_WORK_ORDER_HISTORY_UPDATE
 
 class WorkOrderHistoryUpdateFragment :
-    Fragment(R.layout.fragment_work_order_history) {
+    Fragment(R.layout.fragment_work_order_history), IWorkOrderHistoryUpdateFragment {
 
     private var _binding: FragmentWorkOrderHistoryBinding? = null
     private val binding get() = _binding!!
@@ -399,6 +399,7 @@ class WorkOrderHistoryUpdateFragment :
             WorkOrderHistoryMaterialAdapter(
                 mainActivity,
                 mView,
+                this@WorkOrderHistoryUpdateFragment
             )
         binding.rvMaterials.apply {
             layoutManager = LinearLayoutManager(
@@ -697,7 +698,7 @@ class WorkOrderHistoryUpdateFragment :
         return false
     }
 
-    private fun setTempWorkOrderHistoryInfo() {
+    override fun setTempWorkOrderHistoryInfo() {
         binding.apply {
             mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(
                 TempWorkOrderHistoryInfo(

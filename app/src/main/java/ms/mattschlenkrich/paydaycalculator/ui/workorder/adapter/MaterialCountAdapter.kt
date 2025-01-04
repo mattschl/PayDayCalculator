@@ -10,7 +10,7 @@ import ms.mattschlenkrich.paydaycalculator.database.model.workorder.MaterialAndQ
 import ms.mattschlenkrich.paydaycalculator.databinding.ListSingleItemBinding
 
 class MaterialCountAdapter(
-    val materialCount: List<MaterialAndQuantity>,
+    private val materialCount: List<MaterialAndQuantity>,
     private val mView: View,
 ) : RecyclerView.Adapter<MaterialCountAdapter.ViewHolder>() {
 

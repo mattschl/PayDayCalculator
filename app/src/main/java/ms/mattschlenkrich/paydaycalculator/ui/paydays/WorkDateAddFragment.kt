@@ -40,7 +40,7 @@ import java.time.LocalDate
 
 private const val TAG = FRAG_WORK_DATE_ADD
 
-class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
+class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDateAddFragment {
 
     private var _binding: FragmentWorkDateAddBinding? = null
     private val binding get() = _binding!!
@@ -147,7 +147,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         }
     }
 
-    fun addToExtraList(include: Boolean, extraType: WorkExtraTypes) {
+    override fun addToExtraList(include: Boolean, extraType: WorkExtraTypes) {
         if (include) {
             workExtrasDefaultList.add(extraType)
         } else {
@@ -219,12 +219,12 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
 
     private fun confirmSaveNow(fragment: String) {
         AlertDialog.Builder(requireContext())
-            .setTitle("Finish adding work date")
-            .setMessage("Would you like to save this date now and continue?")
-            .setPositiveButton("Save Now") { _, _ ->
+            .setTitle(getString(R.string.finish_adding_work_date))
+            .setMessage(getString(R.string.would_you_like_to_save_this_date_now_and_continue))
+            .setPositiveButton(getString(R.string.save_now)) { _, _ ->
                 saveWorkDate(fragment)
             }
-            .setNegativeButton("Go back", null)
+            .setNegativeButton(getString(R.string.go_back), null)
             .show()
     }
 
@@ -267,7 +267,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
         }
     }
 
-    fun saveWorkDate(goBackTo: String) {
+    override fun saveWorkDate(goBackTo: String) {
         val workDate = getCurWorkDate()
         mainActivity.payDayViewModel.insertWorkDate(workDate)
         mainActivity.mainViewModel.setWorkDateObject(workDate)
@@ -288,15 +288,14 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add) {
 
     private fun confirmOverwriteUsedDate(date: WorkDates, fragment: String) {
         AlertDialog.Builder(mView.context)
-            .setTitle("This date is already used")
+            .setTitle(getString(R.string.this_date_is_already_used))
             .setMessage(
-                "Would you like to REPLACE the old information for " +
-                        "this work date?"
+                getString(R.string.would_you_like_to_replace_the_old_information_for_this_work_date)
             )
-            .setPositiveButton("Yes") { _, _ ->
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
                 overWriteWorkDate(date, fragment)
             }
-            .setNegativeButton("No", null)
+            .setNegativeButton(getString(R.string.no), null)
             .show()
     }
 
