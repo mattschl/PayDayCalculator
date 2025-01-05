@@ -1,0 +1,7 @@
+package ms.mattschlenkrich.paycalculator.database.model.tax
+
+
+data class TaxAndAmount(
+    var taxType: String,
+    var amount: Double,
+)

@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Pay Day Calculator"
+rootProject.name = "Pay Calculator"
 include(":app")
  

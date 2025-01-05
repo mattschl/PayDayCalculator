@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "ms.mattschlenkrich.paydaycalculator"
+    namespace = "ms.mattschlenkrich.paycalculator"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "ms.mattschlenkrich.paydaycalculator"
+        applicationId = "ms.mattschlenkrich.paycalculator"
         minSdk = 26
         targetSdk = 35
         versionCode = 2

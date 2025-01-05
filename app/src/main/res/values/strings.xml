@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Pay Day Calculator</string>
+    <string name="app_name">Pay Calculator</string>
 
     <string name="__calculated">" - Calculated "</string>
     <string name="__current">" - CURRENT"</string>
@@ -164,7 +164,6 @@
     <string name="gross_pay">Gross Pay</string>
     <string name="has_exemption_amount">Has Exemption Amount</string>
     <string name="has_upper_limit">Has Upper Limit</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="history">History</string>
     <string name="hour_summary">Hour Summary</string>
     <string name="hours_">"Hours: "</string>
@@ -217,7 +216,6 @@
     <string name="overtime">Overtime</string>
     <string name="pay_amount">Pay Amount</string>
     <string name="pay_cutoff_">" Pay Cutoff: "</string>
-    <string name="pay_day_calculator">Pay Day Calculator</string>
     <string name="pay_day_frequency">Pay Day Frequency</string>
     <string name="pay_day_is_">"Pay Day is "</string>
     <string name="pay_day">Pay Day</string>
@@ -352,22 +350,22 @@
     <string name="view_universal_tax_rules">View Universal Tax Rules</string>
     <string name="view_work_order_list">View Work Order List</string>
     <string name="view_work_performed_list">View Work Performed List</string>
-    <string name="wage">wage</string>
-    <string name="warning_">Warning!</string>
+    <string name="wage">wage </string>
+    <string name="warning_">Warning! </string>
     <string name="week_1">Week 1</string>
     <string name="week_2">Week 2</string>
-    <string name="wo_totals">WO Totals</string>
-    <string name="work_date">Work Date</string>
-    <string name="work_dates">Work Dates</string>
-    <string name="work_done">Work Done</string>
+    <string name="wo_totals">WO Totals </string>
+    <string name="work_date">Work Date </string>
+    <string name="work_dates">Work Dates </string>
+    <string name="work_done">Work Done </string>
     <string name="work_order_has_been_added_automatically_before_adding_work_specs">Work order has been added automatically before adding work specs.</string>
     <string name="work_order_history">Work Order History</string>
     <string name="work_order_number">Work Order Number</string>
     <string name="work_order_summary">Work Order Summary</string>
-    <string name="work_order">Work Order</string>
-    <string name="work_orders">Work Orders</string>
-    <string name="work_performed">Work Performed:</string>
-    <string name="work_summary">Work Summary</string>
+    <string name="work_order">Work Order </string>
+    <string name="work_orders">Work Orders </string>
+    <string name="work_performed">Work Performed: </string>
+    <string name="work_summary">Work Summary </string>
     <string name="would_you_like_to_add_work_performed_or_materials_to_this_history_">Would you like to add work performed or materials to this history?</string>
     <string name="would_you_like_to_open_this_work_order_to_view_or_edit_it">Would you like to open this Work Order to view or edit it?</string>
     <string name="would_you_like_to_replace_the_old_information_for_this_work_date">Would you like to REPLACE the old information for this work date?</string>
