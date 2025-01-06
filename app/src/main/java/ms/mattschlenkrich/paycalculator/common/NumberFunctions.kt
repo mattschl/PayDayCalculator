@@ -6,9 +6,7 @@ import java.util.Random
 import kotlin.math.round
 import kotlin.math.roundToInt
 
-@Suppress("unused")
 class NumberFunctions {
-    private val currencyFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
     private val dollarFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
     private val numberDisplay: NumberFormat = NumberFormat.getNumberInstance(Locale.CANADA)
 
@@ -34,10 +32,6 @@ class NumberFunctions {
 
     fun getNumberFromDouble(num: Double): String {
         return numberDisplay.format(num)
-    }
-
-    fun getDollarsFromDouble(num: Double): String {
-        return currencyFormat.format(num)
     }
 
     fun generateRandomIdAsLong(): Long {
