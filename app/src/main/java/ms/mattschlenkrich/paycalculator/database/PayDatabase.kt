@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_VERSION
 import ms.mattschlenkrich.paycalculator.database.dao.EmployerDao
+import ms.mattschlenkrich.paycalculator.database.dao.PayCalculationsDao
 import ms.mattschlenkrich.paycalculator.database.dao.PayDayDao
 import ms.mattschlenkrich.paycalculator.database.dao.PayDetailDao
 import ms.mattschlenkrich.paycalculator.database.dao.WorkExtraDao
@@ -72,6 +74,7 @@ abstract class PayDatabase : RoomDatabase() {
     abstract fun getPayDayDao(): PayDayDao
     abstract fun getWorkOrderDao(): WorkOrderDao
     abstract fun getPayDetailDao(): PayDetailDao
+    abstract fun getPayCalculationsDao(): PayCalculationsDao
 
     companion object {
         @Volatile
@@ -92,7 +95,7 @@ abstract class PayDatabase : RoomDatabase() {
                 PAY_DB_NAME
             )
 //                .fallbackToDestructiveMigration()
-                .createFromAsset("pay.db")
+                .createFromAsset(context.getString(R.string.db_name))
                 .build()
         }
     }

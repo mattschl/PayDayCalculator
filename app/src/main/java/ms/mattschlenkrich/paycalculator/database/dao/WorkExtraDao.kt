@@ -160,7 +160,7 @@ interface WorkExtraDao {
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
-        "SELECT * FROM workExtraTypes " +
+        "SELECT *, MAX(weEffectiveDate) FROM workExtraTypes " +
                 "JOIN ( " +
                 "SELECT * FROM workExtrasDefinitions " +
                 "WHERE weEmployerId = :employerId " +
@@ -170,6 +170,7 @@ interface WorkExtraDao {
                 "WHERE wetEmployerId = :employerId " +
                 "AND wetAppliesTo = :appliesTo " +
                 "AND wetIsDeleted = 0 " +
+                "GROUP BY wetName " +
                 "ORDER BY wetName, weEffectiveDate DESC"
     )
     fun getExtraTypesAndDef(employerId: Long, cutoffDate: String, appliesTo: Int):

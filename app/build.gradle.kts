@@ -7,6 +7,22 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        getByName("debug") {
+            storeFile =
+                file("/mnt/02D83355D83345E7/project/AndroidProject/keystore/matt__new_signing.jks")
+            storePassword = "!935Gr8t"
+            keyPassword = "!935Gr8t"
+            keyAlias = "key0"
+        }
+        create("release") {
+            storeFile =
+                file("/mnt/02D83355D83345E7/project/AndroidProject/keystore/matt__new_signing.jks")
+            storePassword = "!935Gr8t"
+            keyAlias = "key0"
+            keyPassword = "!935Gr8t"
+        }
+    }
     namespace = "ms.mattschlenkrich.paycalculator"
     compileSdk = 35
 
@@ -15,12 +31,13 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 2
-        versionName = "v1.2"
+        versionName = "v1.0"
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig = signingConfigs.getByName("release")
     }
 
     buildTypes {
@@ -39,6 +56,11 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    packaging {
+        resources {
+            excludes.add("META-INF/*")
+        }
+    }
     buildFeatures {
         //noinspection DataBindingWithoutKapt
         dataBinding = true
@@ -51,6 +73,9 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0")
+    implementation("org.mockito:mockito-core:5.15.2")
+    implementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
+    implementation("io.mockk:mockk:1.13.14")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")

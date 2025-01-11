@@ -33,6 +33,9 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModelFac
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkTaxViewModelFactory
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.database.repository.PayCalculationsRepository
+import ms.mattschlenkrich.paycalculator.database.viewModel.PayCalculationsViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.PayCalculationsViewModelFactory
 import ms.mattschlenkrich.paycalculator.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -45,6 +48,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var payDayViewModel: PayDayViewModel
     lateinit var workOrderViewModel: WorkOrderViewModel
     lateinit var payDetailViewModel: PayDetailViewModel
+    lateinit var payCalculationsViewModel: PayCalculationsViewModel
 //    private val df = DateFunctions()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +64,7 @@ class MainActivity : AppCompatActivity() {
         setupPayDayViewModel()
         setupWorkOrderViewModel()
         setupPayDetailViewModel()
+        setupPayCalculationsViewModel()
         fillMenus()
     }
 
@@ -295,5 +300,15 @@ class MainActivity : AppCompatActivity() {
         payDetailViewModel = ViewModelProvider(
             this, payDetailViewModelFactory
         )[PayDetailViewModel::class.java]
+    }
+
+    private fun setupPayCalculationsViewModel() {
+        val payCalculationsRepository   =
+            PayCalculationsRepository(PayDatabase(this))
+        val payCalculationsViewModelFactory =
+            PayCalculationsViewModelFactory(application, payCalculationsRepository)
+        payCalculationsViewModel = ViewModelProvider(
+            this, payCalculationsViewModelFactory
+        )[PayCalculationsViewModel::class.java]
     }
 }

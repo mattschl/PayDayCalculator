@@ -52,8 +52,9 @@ interface PayDetailDao {
     @Query(
         "SELECT eprPayRate FROM employerPayRates " +
                 "WHERE eprEmployerId = :employerId " +
-                "AND eprEffectiveDate > :cutoffDate " +
-                "ORDER BY eprEffectiveDate " +
+                "AND eprEffectiveDate < :cutoffDate " +
+                "AND eprIsDeleted = 0  " +
+                "ORDER BY eprEffectiveDate DESC " +
                 "LIMIT 1"
     )
     fun getPayRate(employerId: Long, cutoffDate: String): Double

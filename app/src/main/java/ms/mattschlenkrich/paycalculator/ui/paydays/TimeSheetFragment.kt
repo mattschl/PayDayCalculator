@@ -26,6 +26,7 @@ import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paycalculator.payfunctions.NewPayCalculations
+import ms.mattschlenkrich.paycalculator.payfunctions.PayCalculationsAsync
 import ms.mattschlenkrich.paycalculator.payfunctions.PayDateProjections
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.paydays.adapter.WorkDateAdapter
@@ -262,6 +263,9 @@ class TimeSheetFragment :
             delay(WAIT_250)
             val payCalculations = NewPayCalculations(
                 mainActivity, curEmployer!!, mView, curPayPeriod!!
+            )
+            val payCalculationsAsync = PayCalculationsAsync(
+                mainActivity, curEmployer!!, curPayPeriod!!
             )
             delay(WAIT_2000)
             binding.apply {
