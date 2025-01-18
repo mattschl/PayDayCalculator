@@ -215,13 +215,13 @@ class PayCalculationsAsync(
                     val currentExtra = workExtrasByPercentage[i]
                     if (currentExtra.extraType.wetName != workingExtra) {
                         if (workExtrasByPercentage[i - 1].extraType.wetIsCredit) {
-                            creditExtraAndTotalByPercentage.add(
+                            creditExtraAndTotalByPay.add(
                                 ExtraAndTotal(
                                     workingExtra, subTotal
                                 )
                             )
                         } else {
-                            debitExtraAndTotalsByPercentage.add(
+                            debitExtraAndTotalByPay.add(
                                 ExtraAndTotal(
                                     workingExtra, subTotal
                                 )

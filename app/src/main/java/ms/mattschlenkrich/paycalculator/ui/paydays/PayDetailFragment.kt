@@ -302,7 +302,10 @@ class PayDetailFragment :
             val payCalculations = NewPayCalculations(
                 mainActivity, curEmployer!!, mView, curPayPeriod!!
             )
-            delay(WAIT_500)
+//            val payCalculations = PayCalculationsAsync(
+//                mainActivity, curEmployer!!, curPayPeriod!!
+//            )
+            delay(WAIT_1000)
             populateExtras(payCalculations)
             delay(WAIT_1500)
             binding.apply {
@@ -491,7 +494,11 @@ class PayDetailFragment :
             }
 
             3 -> {
-                sum = it.ppeValue
+                sum = if (it.ppeIsFixed) {
+                    payCalculations.getDaysWorked() * it.ppeValue
+                } else {
+                    payCalculations.getPayAllHourly() * it.ppeValue / 100
+                }
             }
         }
         extraList.add(
