@@ -119,11 +119,11 @@ class WorkOrderHistoryAddFragment :
                     acWorkOrder.setText(
                         mainActivity.mainViewModel.getWorkOrderNumber()!!
                     )
-                } // else {
-//                    acWorkOrder.setText(
-//                        tempWorkOrderHistory.woHistoryWorkOrderNumber
-//                    )
-//                }
+                } else {
+                    acWorkOrder.setText(
+                        tempWorkOrderHistory.woHistoryWorkOrderNumber
+                    )
+                }
                 etRegHours.setText(
                     nf.getNumberFromDouble(
                         tempWorkOrderHistory.woHistoryRegHours
@@ -190,7 +190,7 @@ class WorkOrderHistoryAddFragment :
                 if (btnWorkOrder.text.toString() == getString(R.string.update)) {
                     gotoWorkOrderUpdate()
                 } else {
-                    gotoWorkOrderAddFragment()
+                    gotoWorkOrderAdd()
                 }
             }
             acWorkOrder.setOnItemClickListener { _, _, _, _ ->
@@ -372,7 +372,7 @@ class WorkOrderHistoryAddFragment :
             mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(
                 TempWorkOrderHistoryInfo(
                     if (acWorkOrder.text.isNullOrBlank())
-                        "00" else acWorkOrder.text.toString(),
+                        "000" else acWorkOrder.text.toString(),
                     lblDate.text.toString(),
                     if (etRegHours.text.isNullOrBlank())
                         0.0 else etRegHours.text.toString().trim().toDouble(),

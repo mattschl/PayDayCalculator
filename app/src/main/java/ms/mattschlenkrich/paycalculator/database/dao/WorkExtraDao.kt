@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
-import androidx.room.RoomWarnings
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paycalculator.common.TABLE_EMPLOYERS
@@ -52,8 +51,8 @@ interface WorkExtraDao {
     fun getWorkExtraDefinitions(employerId: Long, extraTypeId: Long):
             LiveData<List<WorkExtrasDefinitions>>
 
-    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-//    @RewriteQueriesToDropUnusedColumns
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_WORK_EXTRAS_DEFINITIONS.*, " +

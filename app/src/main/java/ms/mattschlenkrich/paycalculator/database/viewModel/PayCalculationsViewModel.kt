@@ -16,8 +16,23 @@ class PayCalculationsViewModel(
     fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String) =
         payCalculationsRepository.getWorkDateExtrasPerPay(employerId, cutOff)
 
-    fun getExtraTypesAndCurrentDef(employerId: Long, cutoffDate: String, appliesTo: Int) =
-        payCalculationsRepository.getExtraTypesAndCurrentDef(
+    fun getDefaultExtraTypesAndCurrentDef(employerId: Long, cutoffDate: String, appliesTo: Int) =
+        payCalculationsRepository.getDefaultExtraTypesAndCurrentDef(
             employerId, cutoffDate, appliesTo
         )
+
+    fun getCustomPayPeriodExtras(payPeriodId: Long) =
+        payCalculationsRepository.getCustomPayPeriodExtras(payPeriodId)
+
+    fun getExtraTypes(employerId: Long) =
+        payCalculationsRepository.getExtraTypes(employerId)
+
+    fun getCurrentEffectiveDate(cutoffDate: String) =
+        payCalculationsRepository.getCurrentEffectiveDate(cutoffDate)
+
+    fun getTaxTypes(employerId: Long) =
+        payCalculationsRepository.getTaxTypes(employerId)
+
+    fun getTaxRules(effectiveDate: String) =
+        payCalculationsRepository.getTaxRules(effectiveDate)
 }

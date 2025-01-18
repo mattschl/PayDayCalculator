@@ -38,6 +38,7 @@ import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkPayPeriodEx
 import ms.mattschlenkrich.paycalculator.databinding.FragmentPayDetailsBinding
 import ms.mattschlenkrich.paycalculator.payfunctions.IPayCalculations
 import ms.mattschlenkrich.paycalculator.payfunctions.NewPayCalculations
+import ms.mattschlenkrich.paycalculator.payfunctions.PayCalculationsAsync
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.extras.adapter.PayDetailExtraAdapter
 import ms.mattschlenkrich.paycalculator.ui.tax.adapter.PayDetailTaxAdapter
@@ -295,6 +296,9 @@ class PayDetailFragment :
         CoroutineScope(Dispatchers.Main).launch {
             getCurrentPayPeriodObject()
             delay(WAIT_250)
+            val payCalculationsAsync = PayCalculationsAsync(
+                mainActivity, curEmployer!!, curPayPeriod!!
+            )
             val payCalculations = NewPayCalculations(
                 mainActivity, curEmployer!!, mView, curPayPeriod!!
             )
