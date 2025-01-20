@@ -80,6 +80,7 @@ interface PayCalculationsDao {
         "SELECT * FROM workPayPeriodExtras " +
                 "WHERE ppePayPeriodId = :payPeriodId " +
                 "AND ppeAttachTo = 3 " +
+                "AND ppeIsDeleted = 0 " +
                 "ORDER BY ppeName"
     )
     fun getCustomPayPeriodExtras(payPeriodId: Long): List<WorkPayPeriodExtras>
@@ -87,6 +88,7 @@ interface PayCalculationsDao {
     @Query(
         "SELECT * FROM $TABLE_WORK_EXTRA_TYPES " +
                 "WHERE wetEmployerId = :employerId " +
+                "AND wetIsDeleted = 0 " +
                 "ORDER BY wetName COLLATE NOCASE"
     )
     fun getExtraTypes(employerId: Long): List<WorkExtraTypes>

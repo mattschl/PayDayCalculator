@@ -4,7 +4,6 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -12,10 +11,11 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.databinding.ListEmployerItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.employer.EmployerFragmentDirections
+import ms.mattschlenkrich.paycalculator.ui.employer.EmployerFragment
 
 class EmployerAdapter(
     private val mainActivity: MainActivity,
+    private val employerFragment: EmployerFragment,
     private val mView: View,
 ) :
     RecyclerView.Adapter<EmployerAdapter.EmployerViewHolder>() {
@@ -69,13 +69,6 @@ class EmployerAdapter(
 
     private fun gotoUpdateEmployer(employer: Employers) {
         mainActivity.mainViewModel.setEmployer(employer)
-        gotoEmployerUpdateFragment()
-    }
-
-    private fun gotoEmployerUpdateFragment() {
-        mView.findNavController().navigate(
-            EmployerFragmentDirections
-                .actionEmployerFragmentToEmployerUpdateFragment()
-        )
+        employerFragment.gotoEmployerUpdateFragment()
     }
 }

@@ -55,7 +55,9 @@ class EmployerFragment :
 
     private fun populateEmployers() {
         employerAdapter = EmployerAdapter(
-            mainActivity, mView
+            mainActivity,
+            this@EmployerFragment,
+            mView
         )
         binding.rvEmployers.apply {
             layoutManager = StaggeredGridLayoutManager(
@@ -90,7 +92,7 @@ class EmployerFragment :
     private fun setClickActions() {
         binding.apply {
             fabNew.setOnClickListener {
-                gotoEmployerAdd()
+                gotoEmployerAddFragment()
             }
         }
     }
@@ -130,7 +132,14 @@ class EmployerFragment :
         }
     }
 
-    private fun gotoEmployerAdd() {
+    fun gotoEmployerUpdateFragment() {
+        mView.findNavController().navigate(
+            EmployerFragmentDirections
+                .actionEmployerFragmentToEmployerUpdateFragment()
+        )
+    }
+
+    private fun gotoEmployerAddFragment() {
         mView.findNavController().navigate(
             EmployerFragmentDirections
                 .actionEmployerFragmentToEmployerAddFragment()

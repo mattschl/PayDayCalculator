@@ -63,27 +63,26 @@ class PayCalculationsAsync(
             processListsFromDb()
             processPayTotals()
             var credits = 0.0
-            for (credit in creditExtraAndTotalByDate) {
+            for (credit in getCredits()) {
                 credits += credit.amount
                 Log.d(TAG, "credit is ${credit.amount} for ${credit.extraName}")
-            }
-            for (credit in creditExtraAndTotalByPay) {
-                credits += credit.amount
-                Log.d(TAG, "credit is ${credit.amount} for ${credit.extraName}")
-            }
-            Log.d(TAG, "Total hourly is ${getPayAllHourly()}")
-            Log.d(TAG, "Total before percentage adjustment is $totalBeforePercentageAdjustment")
-            for (credit in creditExtraAndTotalByPercentage) {
-                credits += credit.amount
-                Log.d(TAG, "Credit is ${credit.amount} for ${credit.extraName}")
             }
             Log.d(
                 TAG, "Total credits is $credits + Total Hourly is ${getPayAllHourly()} for a " +
                         "total gross pay of ${credits + getPayAllHourly()}"
             )
+            var debits = 0.0
             for (debit in debitExtraAndTotalByPay) {
                 Log.d(TAG, "debit is ${debit.amount} for ${debit.extraName}")
+                debits += debit.amount
             }
+            Log.d(TAG, "Total debits is $debits")
+            var taxes = 0.0
+            for (tax in taxAndAmountList) {
+                Log.d(TAG, "Tas of ${tax.amount} for ${tax.taxType}")
+                taxes += tax.amount
+            }
+            Log.d(TAG, "NET pay is ${credits + getPayAllHourly() - debits - taxes}")
             Log.d(TAG, "***************************************")
             //TODO: Find out how to use live data to signal the end
         }
@@ -579,25 +578,27 @@ class PayCalculationsAsync(
         }
 
     private fun getTaxFactor(amount: Double): Double {
-        when (employer.payFrequency) {
-            "Bi-Weekly" -> {
-                taxFactor = amount / 26
-            }
+        if (taxFactor == 0.0) {
+            when (employer.payFrequency) {
+                "Bi-Weekly" -> {
+                    taxFactor = amount / 26
+                }
 
-            "Weekly" -> {
-                taxFactor = amount / 52
-            }
+                "Weekly" -> {
+                    taxFactor = amount / 52
+                }
 
-            "Semi-Monthly" -> {
-                taxFactor = amount / 24
-            }
+                "Semi-Monthly" -> {
+                    taxFactor = amount / 24
+                }
 
-            "Monthly" -> {
-                taxFactor = amount / 12
-            }
+                "Monthly" -> {
+                    taxFactor = amount / 12
+                }
 
-            else -> {
-                taxFactor = 0.0
+                else -> {
+                    taxFactor = 0.0
+                }
             }
         }
         return taxFactor
@@ -692,8 +693,8 @@ class PayCalculationsAsync(
         return taxDeductions
     }
 
-    override fun getCredits(): List<ExtraAndTotal>? {
-        TODO("Not yet implemented")
+    override fun getCredits(): List<ExtraAndTotal> {
+        return creditExtraAndTotalByDate + creditExtraAndTotalByPay + creditExtraAndTotalByPercentage
     }
 
     override fun getTaxList(): List<TaxAndAmount> {
