@@ -1,6 +1,6 @@
 package ms.mattschlenkrich.paycalculator.payfunctions
 
-import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraAndTotal
+import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraContainer
 import ms.mattschlenkrich.paycalculator.database.model.tax.TaxAndAmount
 
 
@@ -21,12 +21,12 @@ interface IPayCalculations {
     fun getPayStat(): Double
     fun getPayGross(): Double
     fun getPayTimeWorked(): Double
-    fun getCreditExtrasListByDate(): List<ExtraAndTotal>?
-    fun getCreditExtrasListByPay(): List<ExtraAndTotal>?
-    fun getCreditExtrasListByPercentageOfAll(): List<ExtraAndTotal>?
-    fun getDebitExtrasListByPay(): List<ExtraAndTotal>?
+    fun getCreditExtrasListByDate(): List<ExtraContainer>?
+    fun getCreditExtrasListByPay(): List<ExtraContainer>?
+    fun getCreditExtrasListByPercentageOfAll(): List<ExtraContainer>?
+    fun getDebitExtrasListByPay(): List<ExtraContainer>?
     fun getDebitTotalsByPay(): Double
     fun getTaxList(): List<TaxAndAmount>?
     fun getAllTaxDeductions(): Double
-    fun getCredits(): List<ExtraAndTotal>?
+    fun getCredits(): List<ExtraContainer>
 }

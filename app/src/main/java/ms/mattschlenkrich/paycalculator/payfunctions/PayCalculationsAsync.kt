@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
-import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraAndTotal
+import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraContainer
 import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraDefinitionAndType
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.PayPeriods
@@ -38,11 +38,11 @@ class PayCalculationsAsync(
     private lateinit var taxRules: List<WorkTaxRules>
     private lateinit var taxTypes: List<TaxTypes>
     private var taxAndAmountList = ArrayList<TaxAndAmount>()
-    private var debitExtraAndTotalByPay = ArrayList<ExtraAndTotal>()
-    private var creditExtraAndTotalByDate = ArrayList<ExtraAndTotal>()
-    private var creditExtraAndTotalByPay = ArrayList<ExtraAndTotal>()
-    private var creditExtraAndTotalByPercentage = ArrayList<ExtraAndTotal>()
-    private var debitExtraAndTotalsByPercentage = ArrayList<ExtraAndTotal>()
+    private var debitExtraAndTotalByPay = ArrayList<ExtraContainer>()
+    private var creditExtraAndTotalByDate = ArrayList<ExtraContainer>()
+    private var creditExtraAndTotalByPay = ArrayList<ExtraContainer>()
+    private var creditExtraAndTotalByPercentage = ArrayList<ExtraContainer>()
+    private var debitExtraAndTotalsByPercentage = ArrayList<ExtraContainer>()
     private var creditTotalByDate = 0.0
     private var creditTotalsByPay = 0.0
     private var creditTotalsByPercentage = 0.0
@@ -126,14 +126,21 @@ class PayCalculationsAsync(
                 }
                 if (extra.ppeIsCredit) {
                     creditExtraAndTotalByPay.add(
-                        ExtraAndTotal(
-                            extra.ppeName, total
+                        ExtraContainer(
+                            extra.ppeName,
+                            total,
+                            null,
+                            null,
+                            extra,
                         )
                     )
                 } else {
                     debitExtraAndTotalByPay.add(
-                        ExtraAndTotal(
-                            extra.ppeName, total
+                        ExtraContainer(
+                            extra.ppeName, total,
+                            null,
+                            null,
+                            extra,
                         )
                     )
                 }
@@ -215,14 +222,21 @@ class PayCalculationsAsync(
                     if (currentExtra.extraType.wetName != workingExtra) {
                         if (workExtrasByPercentage[i - 1].extraType.wetIsCredit) {
                             creditExtraAndTotalByPay.add(
-                                ExtraAndTotal(
-                                    workingExtra, subTotal
+                                ExtraContainer(
+                                    workingExtra, subTotal,
+                                    currentExtra,
+                                    null,
+                                    null
+
                                 )
                             )
                         } else {
                             debitExtraAndTotalByPay.add(
-                                ExtraAndTotal(
-                                    workingExtra, subTotal
+                                ExtraContainer(
+                                    workingExtra, subTotal,
+                                    currentExtra,
+                                    null,
+                                    null
                                 )
                             )
                         }
@@ -234,14 +248,20 @@ class PayCalculationsAsync(
                     if (i == workExtrasByPercentage.size - 1) {
                         if (currentExtra.extraType.wetIsCredit) {
                             creditExtraAndTotalByPercentage.add(
-                                ExtraAndTotal(
-                                    workingExtra, subTotal
+                                ExtraContainer(
+                                    workingExtra, subTotal,
+                                    currentExtra,
+                                    null,
+                                    null
                                 )
                             )
                         } else {
                             debitExtraAndTotalsByPercentage.add(
-                                ExtraAndTotal(
-                                    workingExtra, subTotal
+                                ExtraContainer(
+                                    workingExtra, subTotal,
+                                    currentExtra,
+                                    null,
+                                    null
                                 )
                             )
                         }
@@ -276,14 +296,20 @@ class PayCalculationsAsync(
                     if (currentExtra.extraType.wetName != workingExtra) {
                         if (defaultExtrasByPay[i - 1].extraType.wetIsCredit) {
                             creditExtraAndTotalByPay.add(
-                                ExtraAndTotal(
-                                    workingExtra, subTotal
+                                ExtraContainer(
+                                    workingExtra, subTotal,
+                                    currentExtra,
+                                    null,
+                                    null
                                 )
                             )
                         } else {
                             debitExtraAndTotalByPay.add(
-                                ExtraAndTotal(
-                                    workingExtra, subTotal
+                                ExtraContainer(
+                                    workingExtra, subTotal,
+                                    currentExtra,
+                                    null,
+                                    null
                                 )
                             )
                         }
@@ -309,14 +335,20 @@ class PayCalculationsAsync(
                     if (i == defaultExtrasByPay.size - 1) {
                         if (currentExtra.extraType.wetIsCredit) {
                             creditExtraAndTotalByPay.add(
-                                ExtraAndTotal(
-                                    workingExtra, subTotal
+                                ExtraContainer(
+                                    workingExtra, subTotal,
+                                    currentExtra,
+                                    null,
+                                    null
                                 )
                             )
                         } else {
                             debitExtraAndTotalByPay.add(
-                                ExtraAndTotal(
-                                    workingExtra, subTotal
+                                ExtraContainer(
+                                    workingExtra, subTotal,
+                                    currentExtra,
+                                    null,
+                                    null
                                 )
                             )
                         }
@@ -335,14 +367,20 @@ class PayCalculationsAsync(
                     if (currentExtra.wdeName != workingExtra) {
                         if (customWorkDateExtras[i - 1].wdeIsCredit) {
                             creditExtraAndTotalByDate.add(
-                                ExtraAndTotal(
-                                    workingExtra, subTotal
+                                ExtraContainer(
+                                    workingExtra, subTotal,
+                                    null,
+                                    currentExtra,
+                                    null
                                 )
                             )
                         } else {
                             debitExtraAndTotalByPay.add(
-                                ExtraAndTotal(
-                                    workingExtra, subTotal
+                                ExtraContainer(
+                                    workingExtra, subTotal,
+                                    null,
+                                    currentExtra,
+                                    null
                                 )
                             )
                         }
@@ -375,14 +413,20 @@ class PayCalculationsAsync(
                     if (i == customWorkDateExtras.size - 1) {
                         if (currentExtra.wdeIsCredit) {
                             creditExtraAndTotalByDate.add(
-                                ExtraAndTotal(
-                                    workingExtra, subTotal
+                                ExtraContainer(
+                                    workingExtra, subTotal,
+                                    null,
+                                    currentExtra,
+                                    null
                                 )
                             )
                         } else {
                             debitExtraAndTotalByPay.add(
-                                ExtraAndTotal(
-                                    workingExtra, subTotal
+                                ExtraContainer(
+                                    workingExtra, subTotal,
+                                    null,
+                                    currentExtra,
+                                    null
                                 )
                             )
                         }
@@ -604,19 +648,19 @@ class PayCalculationsAsync(
         return taxFactor
     }
 
-    override fun getDebitExtrasListByPay(): List<ExtraAndTotal> {
+    override fun getDebitExtrasListByPay(): List<ExtraContainer> {
         return debitExtraAndTotalByPay
     }
 
-    override fun getCreditExtrasListByDate(): List<ExtraAndTotal> {
+    override fun getCreditExtrasListByDate(): List<ExtraContainer> {
         return creditExtraAndTotalByDate
     }
 
-    override fun getCreditExtrasListByPay(): List<ExtraAndTotal> {
+    override fun getCreditExtrasListByPay(): List<ExtraContainer> {
         return creditExtraAndTotalByPay
     }
 
-    override fun getCreditExtrasListByPercentageOfAll(): List<ExtraAndTotal> {
+    override fun getCreditExtrasListByPercentageOfAll(): List<ExtraContainer> {
         return creditExtraAndTotalByPercentage
     }
 
@@ -693,7 +737,7 @@ class PayCalculationsAsync(
         return taxDeductions
     }
 
-    override fun getCredits(): List<ExtraAndTotal> {
+    override fun getCredits(): List<ExtraContainer> {
         return creditExtraAndTotalByDate + creditExtraAndTotalByPay + creditExtraAndTotalByPercentage
     }
 
