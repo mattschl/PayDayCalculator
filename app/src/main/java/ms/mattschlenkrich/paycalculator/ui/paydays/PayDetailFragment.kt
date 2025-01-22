@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paycalculator.ui.paydays
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -37,7 +38,6 @@ import ms.mattschlenkrich.paycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkPayPeriodExtras
 import ms.mattschlenkrich.paycalculator.databinding.FragmentPayDetailsBinding
 import ms.mattschlenkrich.paycalculator.payfunctions.IPayCalculations
-import ms.mattschlenkrich.paycalculator.payfunctions.NewPayCalculations
 import ms.mattschlenkrich.paycalculator.payfunctions.PayCalculationsAsync
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.extras.adapter.PayDetailExtraAdapter
@@ -61,9 +61,9 @@ class PayDetailFragment :
     private var debitTotal = 0.0
     private var creditTotal = 0.0
     private var curCutOff = ""
+    private var valuesFilled = false
     private val nf = NumberFunctions()
     private val df = DateFunctions()
-    private var valuesFilled = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -202,7 +202,7 @@ class PayDetailFragment :
                             }
                             CoroutineScope(Dispatchers.Main).launch {
                                 delay(WAIT_100)
-                                if (valuesFilled) mainActivity.mainViewModel.setEmployer(curEmployer)
+                                mainActivity.mainViewModel.setEmployer(curEmployer)
                                 mainActivity.title = getString(R.string.pay_details) +
                                         getString(R.string._for_) +
                                         spEmployers.selectedItem
@@ -296,11 +296,11 @@ class PayDetailFragment :
         CoroutineScope(Dispatchers.Main).launch {
             getCurrentPayPeriodObject()
             delay(WAIT_250)
-            val payCalculationsAsync = PayCalculationsAsync(
+//            val payCalculationsAsync = PayCalculationsAsync(
+//                mainActivity, curEmployer!!, curPayPeriod!!
+//            )
+            val payCalculations = PayCalculationsAsync(
                 mainActivity, curEmployer!!, curPayPeriod!!
-            )
-            val payCalculations = NewPayCalculations(
-                mainActivity, curEmployer!!, mView, curPayPeriod!!
             )
 //            val payCalculations = PayCalculationsAsync(
 //                mainActivity, curEmployer!!, curPayPeriod!!
@@ -623,22 +623,37 @@ class PayDetailFragment :
     }
 
     private fun populateFromHistory() {
-        binding.apply {
-            CoroutineScope(Dispatchers.Main).launch {
-                delay(WAIT_500)
-                if (mainActivity.mainViewModel.getEmployer() != null) {
-                    curEmployer = mainActivity.mainViewModel.getEmployer()!!
-                    for (i in 0 until spEmployers.adapter.count) {
-                        if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
-                            spEmployers.setSelection(i)
-                            break
+        if (!valuesFilled) {
+            binding.apply {
+                CoroutineScope(Dispatchers.Main).launch {
+                    delay(WAIT_500)
+                    if (mainActivity.mainViewModel.getEmployer() != null) {
+                        curEmployer = mainActivity.mainViewModel.getEmployer()!!
+                        for (i in 0 until spEmployers.adapter.count) {
+                            if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
+                                spEmployers.setSelection(i)
+                                populatePayDetails()
+                                break
+                            }
                         }
                     }
+                    if (mainActivity.mainViewModel.getCutOffDate() != null) {
+                        curCutOff = mainActivity.mainViewModel.getCutOffDate()!!
+                        Log.d(TAG, "current cutoff is $curCutOff")
+                        for (i in 0 until spCutOff.adapter.count) {
+                            if (spCutOff.getItemAtPosition(i).toString() == curCutOff) {
+                                spCutOff.setSelection(i)
+                                populatePayDetails()
+                                break
+                            }
+                        }
+                    }
+                    valuesFilled = true
                 }
-                valuesFilled = true
             }
         }
     }
+
 
     private fun WorkDateExtrasAndDates.addExtraManually(
         subTotal: Double

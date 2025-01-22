@@ -19,13 +19,12 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_TIME_SHEET
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_100
-import ms.mattschlenkrich.paycalculator.common.WAIT_2000
+import ms.mattschlenkrich.paycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paycalculator.databinding.FragmentTimeSheetBinding
-import ms.mattschlenkrich.paycalculator.payfunctions.NewPayCalculations
 import ms.mattschlenkrich.paycalculator.payfunctions.PayCalculationsAsync
 import ms.mattschlenkrich.paycalculator.payfunctions.PayDateProjections
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
@@ -101,6 +100,9 @@ class TimeSheetFragment :
             fabAddDate.setOnClickListener {
                 gotoNewWorkDate()
             }
+            crdPayDetails.setOnClickListener {
+                gotoTimeSheet()
+            }
         }
     }
 
@@ -124,7 +126,7 @@ class TimeSheetFragment :
                             }
                             CoroutineScope(Dispatchers.Main).launch {
                                 delay(WAIT_100)
-                                if (valuesFilled) mainActivity.mainViewModel.setEmployer(curEmployer)
+                                mainActivity.mainViewModel.setEmployer(curEmployer)
                                 mainActivity.title = getString(R.string.time_sheet) +
                                         " for ${spEmployers.selectedItem}"
                                 populateCutOffDates()
@@ -261,13 +263,13 @@ class TimeSheetFragment :
         getSelectedPayPeriodObject()
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
-            val payCalculations = NewPayCalculations(
-                mainActivity, curEmployer!!, mView, curPayPeriod!!
-            )
-            val payCalculationsAsync = PayCalculationsAsync(
+            val payCalculations = PayCalculationsAsync(
                 mainActivity, curEmployer!!, curPayPeriod!!
             )
-            delay(WAIT_2000)
+//            val payCalculationsAsync = PayCalculationsAsync(
+//                mainActivity, curEmployer!!, curPayPeriod!!
+//            )
+            delay(WAIT_1000)
             binding.apply {
                 var display = nf.displayDollars(
                     -payCalculations.getDebitTotalsByPay()
@@ -313,30 +315,33 @@ class TimeSheetFragment :
     }
 
     private fun populateFromHistory() {
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_500)
+        if (!valuesFilled) {
             binding.apply {
-                if (mainActivity.mainViewModel.getEmployer() != null) {
-                    curEmployer = mainActivity.mainViewModel.getEmployer()!!
-                    for (i in 0 until spEmployers.adapter.count) {
-                        if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
-                            spEmployers.setSelection(i)
-                            break
-                        }
-                    }
+                CoroutineScope(Dispatchers.Main).launch {
                     delay(WAIT_500)
-                    if (mainActivity.mainViewModel.getCutOffDate() != null) {
-                        curCutOff = mainActivity.mainViewModel.getCutOffDate()!!
-                        for (i in 0 until spCutOff.adapter.count) {
-                            if (spCutOff.getItemAtPosition(i).toString() == curCutOff) {
-                                spCutOff.setSelection(i)
+                    if (mainActivity.mainViewModel.getEmployer() != null) {
+                        curEmployer = mainActivity.mainViewModel.getEmployer()!!
+                        for (i in 0 until spEmployers.adapter.count) {
+                            if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
+                                spEmployers.setSelection(i)
                                 break
                             }
                         }
+                        delay(WAIT_500)
+                        if (mainActivity.mainViewModel.getCutOffDate() != null) {
+                            curCutOff = mainActivity.mainViewModel.getCutOffDate()!!
+                            for (i in 0 until spCutOff.adapter.count) {
+                                if (spCutOff.getItemAtPosition(i).toString() == curCutOff) {
+                                    spCutOff.setSelection(i)
+                                    populatePayDetails()
+                                    break
+                                }
+                            }
+                        }
+                        valuesFilled = true
                     }
                 }
             }
-            valuesFilled = true
         }
     }
 
@@ -399,6 +404,20 @@ class TimeSheetFragment :
         mView.findNavController().navigate(
             TimeSheetFragmentDirections
                 .actionTimeSheetFragmentToEmployerAddFragment()
+        )
+    }
+
+    private fun gotoTimeSheet() {
+        mainActivity.mainViewModel.setPayPeriod(getSelectedPayPeriod())
+        mainActivity.mainViewModel.setCutOffDate(curCutOff)
+        mainActivity.mainViewModel.setEmployer(curEmployer)
+        gotoTimeSheetFragment()
+    }
+
+    private fun gotoTimeSheetFragment() {
+        mView.findNavController().navigate(
+            TimeSheetFragmentDirections
+                .actionTimeSheetFragmentToPayDetailFragment()
         )
     }
 
