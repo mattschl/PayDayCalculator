@@ -202,12 +202,12 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     tvCredit.visibility = View.VISIBLE
                     var display = getString(R.string.calculated) +
                             resources.getStringArray(
-                                R.array.extra_based_on
+                                R.array.applies_to_frequencies
                             )[curExtraType!!.wetAppliesTo]
                     tvAppliesTo.text = display
                     display = getString(R.string.attaches_to) +
                             resources.getStringArray(
-                                R.array.pay_per_frequencies
+                                R.array.attach_to_frequencies
                             )[curExtraType!!.wetAttachTo]
                     tvAttachTo.text = display
                     display = getString(R.string.this_is_a) +

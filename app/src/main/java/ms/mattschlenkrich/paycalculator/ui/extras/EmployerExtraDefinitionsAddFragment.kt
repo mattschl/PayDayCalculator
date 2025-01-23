@@ -227,12 +227,12 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                     }
                     display += getString(R.string.__calculated) +
                             resources.getStringArray(
-                                R.array.pay_per_frequencies
+                                R.array.attach_to_frequencies
                             )[extra.wetAppliesTo] +
                             getString(R.string.period_space) +
                             getString(R.string._attaches_to_) +
                             resources.getStringArray(
-                                R.array.pay_per_frequencies
+                                R.array.attach_to_frequencies
                             )[extra.wetAttachTo] +
                             getString(R.string.period_hyphen)
                     display += if (extra.wetIsDefault) getString(R.string.is_automatic)

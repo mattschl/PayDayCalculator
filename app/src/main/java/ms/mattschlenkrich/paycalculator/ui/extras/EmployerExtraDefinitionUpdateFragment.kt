@@ -85,12 +85,12 @@ class EmployerExtraDefinitionUpdateFragment :
             }
             display += getString(R.string.calculated) +
                     resources.getStringArray(
-                        R.array.extra_based_on
+                        R.array.applies_to_frequencies
                     )[curExtraDefinitionFull.extraType.wetAppliesTo] +
                     getString(R.string.period_space) +
                     getString(R.string._attaches_to_) +
                     resources.getStringArray(
-                        R.array.pay_per_frequencies
+                        R.array.attach_to_frequencies
                     )[curExtraDefinitionFull.extraType.wetAttachTo] +
                     getString(R.string.period_hyphen)
             display += if (curExtraDefinitionFull.extraType.wetIsDefault) {

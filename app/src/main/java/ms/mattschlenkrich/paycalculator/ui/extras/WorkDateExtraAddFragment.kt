@@ -75,7 +75,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
             val frequencies = ArrayList<String>()
             for (i in 0..1) {
                 frequencies.add(
-                    resources.getStringArray(R.array.pay_per_frequencies)[i]
+                    resources.getStringArray(R.array.attach_to_frequencies)[i]
                 )
             }
             val frequencyAdapter = ArrayAdapter(

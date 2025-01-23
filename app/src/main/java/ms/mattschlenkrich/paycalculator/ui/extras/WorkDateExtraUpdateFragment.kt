@@ -98,7 +98,7 @@ class WorkDateExtraUpdateFragment
             val frequencies = ArrayList<String>()
             for (i in 0..1) {
                 frequencies.add(
-                    resources.getStringArray(R.array.pay_per_frequencies)[i]
+                    resources.getStringArray(R.array.attach_to_frequencies)[i]
                 )
             }
             val frequencyAdapter = ArrayAdapter(
