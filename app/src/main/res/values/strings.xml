@@ -172,12 +172,12 @@
     <string name="hr">Hr</string>
     <string name="hrs">" Hrs"</string>
     <string name="hyphen">" - "</string>
-    <string name="if_this_is_edited_any_custom_calculations_will_be_overwritten">If this is edited, any custom calculations will be overwritten. \nWould you like to edit anyway?</string>
+    <string name="if_this_is_edited_any_default_calculations_will_be_overwritten">If this is edited, any default calculations will be overwritten. \nWould you like to edit anyway? If not go to the extra tab on the bottom menu.</string>
     <string name="in_order_to_add_extras_this_work_date_must_be_saved">In order to add extras, this work date must be saved.</string>
     <string name="is_a_credit">Is a Credit</string>
     <string name="is_automatic">Is automatic</string>
     <string name="is_default">Is Default</string>
-    <string name="it_is_best_to_add_custom_extras_only_after_all_the_work_hours_have_been_entered">It is best to add custom extras only after all the work hours have been entered.\nIf it is based on the number of hours, days, percebtage, the results could be improperly calculated.</string>
+    <string name="it_is_best_to_add_custom_extras_only_after_all_the_work_hours_have_been_entered">It is best to add custom extras only after all the work hours have been entered.\nIf it is based on the number of hours, days, percentage, the results could be improperly calculated.</string>
     <string name="job_description">Job Description</string>
     <string name="job_specs">Job Specs:\n </string>
     <string name="level_bracket">Level/Bracket</string>

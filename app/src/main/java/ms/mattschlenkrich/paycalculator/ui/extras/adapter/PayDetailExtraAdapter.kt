@@ -90,7 +90,7 @@ class PayDetailExtraAdapter(
         AlertDialog.Builder(mView.context)
             .setTitle(mView.context.getString(R.string.continue_to_update))
             .setMessage(
-                mView.context.getString(R.string.if_this_is_edited_any_custom_calculations_will_be_overwritten)
+                mView.context.getString(R.string.if_this_is_edited_any_default_calculations_will_be_overwritten)
             )
             .setPositiveButton(mView.context.getString(R.string.yes)) { _, _ ->
                 val newExtra = insertOrUpdateExtra(extra, delete)

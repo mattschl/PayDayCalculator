@@ -2,7 +2,6 @@ package ms.mattschlenkrich.paycalculator.ui.paydays
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -47,7 +46,7 @@ import java.time.LocalDate
 
 private const val TAG = FRAG_PAY_DETAILS
 
-class PayDetailFragment :
+class PayDetailFragmentNew :
     Fragment(R.layout.fragment_pay_details),
     IPayDetailsFragment {
 
@@ -436,7 +435,7 @@ class PayDetailFragment :
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
             val creditListAdapter = PayDetailExtraAdapter(
-                mainActivity, creditList, mView, this@PayDetailFragment
+                mainActivity, creditList, mView, this@PayDetailFragmentNew
             )
             binding.apply {
                 rvCredits.layoutManager = LinearLayoutManager(mView.context)
@@ -457,7 +456,7 @@ class PayDetailFragment :
             binding.apply {
                 delay(WAIT_500)
                 val deductionListAdapter = PayDetailExtraAdapter(
-                    mainActivity, debitList, mView, this@PayDetailFragment
+                    mainActivity, debitList, mView, this@PayDetailFragmentNew
                 )
                 rvDebits.layoutManager = LinearLayoutManager(mView.context)
                 rvDebits.adapter = deductionListAdapter
@@ -640,7 +639,6 @@ class PayDetailFragment :
                     }
                     if (mainActivity.mainViewModel.getCutOffDate() != null) {
                         curCutOff = mainActivity.mainViewModel.getCutOffDate()!!
-                        Log.d(TAG, "current cutoff is $curCutOff")
                         for (i in 0 until spCutOff.adapter.count) {
                             if (spCutOff.getItemAtPosition(i).toString() == curCutOff) {
                                 spCutOff.setSelection(i)

@@ -5,7 +5,7 @@ import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkPayPeriodEx
 
 data class ExtraContainer(
     var extraName: String,
-    var value: Double,
+    var amount: Double,
     var extraDefinitionAndType: ExtraDefinitionAndType?,
     var workDateExtra: WorkDateExtras?,
     var payPeriodExtra: WorkPayPeriodExtras?,

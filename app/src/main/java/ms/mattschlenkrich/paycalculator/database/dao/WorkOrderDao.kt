@@ -131,6 +131,7 @@ interface WorkOrderDao {
     )
     suspend fun deleteWorkOrderHistory(historyID: Long, updateTime: String)
 
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistory " +
@@ -140,6 +141,7 @@ interface WorkOrderDao {
     )
     fun getWorkOrderHistoriesByDate(workDateId: Long): LiveData<List<WorkOrderHistoryWithDates>>
 
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistory " +
@@ -148,7 +150,7 @@ interface WorkOrderDao {
     )
     fun getWorkOrderHistoriesById(workOrderId: Long): LiveData<List<WorkOrderHistoryWithDates>>
 
-
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistory " +
@@ -158,6 +160,7 @@ interface WorkOrderDao {
     )
     fun getWorkOrderHistoriesByNumber(workOrderNumber: String): LiveData<List<WorkOrderHistoryWithDates>>
 
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistory " +
@@ -208,6 +211,7 @@ interface WorkOrderDao {
         workOrderJobSpecId: Long, updateTime: String
     )
 
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM workOrderJobSpecs " +
@@ -272,6 +276,7 @@ interface WorkOrderDao {
         workPerformedHistoryId: Long
     )
 
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistoryWorkPerformed " +
@@ -346,6 +351,7 @@ interface WorkOrderDao {
         historyMaterialId: Long, updateTime: String
     )
 
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistoryMaterials " +
@@ -356,6 +362,7 @@ interface WorkOrderDao {
     fun getMaterialsByHistory(historyId: Long):
             LiveData<List<WorkOrderHistoryMaterialCombined>>
 
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistoryMaterials " +
@@ -368,8 +375,6 @@ interface WorkOrderDao {
                 "WHERE wohmIsDeleted = 0 " +
                 "ORDER By wohmMaterialId"
     )
-
-    @RewriteQueriesToDropUnusedColumns
     fun getMaterialsHistoryByWorkOrderId(workOrderId: Long):
             LiveData<List<WorkOrderHistoryMaterialCombined>>
 }

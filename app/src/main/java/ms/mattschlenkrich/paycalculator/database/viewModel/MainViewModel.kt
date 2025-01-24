@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
+import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraContainer
 import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraDefTypeAndEmployer
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.PayPeriods
@@ -53,6 +54,15 @@ class MainViewModel(
     private var workPerformed: WorkPerformed? = null
     private var material: Material? = null
     private var materialInSequence: MaterialInSequence? = null
+    private var extraContainer: ExtraContainer? = null
+
+    fun setExtraContainer(newExtraContainer: ExtraContainer?) {
+        extraContainer = newExtraContainer
+    }
+
+    fun getExtraContainer(): ExtraContainer? {
+        return extraContainer
+    }
 
     fun setMaterialInSequence(newMaterial: MaterialInSequence?) {
         materialInSequence = newMaterial

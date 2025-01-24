@@ -7,6 +7,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import ms.mattschlenkrich.paycalculator.common.AppliesToFrequencies
+import ms.mattschlenkrich.paycalculator.common.AttachToFrequencies
+import ms.mattschlenkrich.paycalculator.common.TaxBasedOn
 import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraContainer
@@ -118,9 +121,9 @@ class PayCalculationsAsync(
                     extra.ppeValue
                 } else {
                     when (extra.ppeAppliesTo) {
-                        0 -> getPayTimeWorked() * extra.ppeValue / 100
-                        1 -> getPayTimeWorked() * extra.ppeValue / 100
-                        3 -> getPayAllHourly() * extra.ppeValue / 100
+                        AppliesToFrequencies.Hourly.value -> getPayTimeWorked() * extra.ppeValue / 100
+                        AppliesToFrequencies.Daily.value -> getPayTimeWorked() * extra.ppeValue / 100
+                        AppliesToFrequencies.PerPayForHourlyWages.value -> getPayAllHourly() * extra.ppeValue / 100
                         else -> extra.ppeValue
                     }
                 }
@@ -162,9 +165,9 @@ class PayCalculationsAsync(
                 var taxTotal = 0.0
                 var runningRemainder =
                     when (type.ttBasedOn) {
-                        0 -> getPayTimeWorked()
-                        1 -> getPayAllHourly()
-                        2 -> getPayGross()
+                        TaxBasedOn.TimeWorkedOnly.value -> getPayTimeWorked()
+                        TaxBasedOn.TimeWorkedAndStat.value -> getPayAllHourly()
+                        TaxBasedOn.TimeWorkedStatsAndExtras.value -> getPayGross()
                         else -> 0.0
                     }
                 for (rule in taxRules) {
@@ -387,7 +390,7 @@ class PayCalculationsAsync(
                         workingExtra = currentExtra.wdeName
                         subTotal = 0.0
                     }
-                    if (currentExtra.wdeAppliesTo == 0 &&
+                    if (currentExtra.wdeAppliesTo == AppliesToFrequencies.Hourly.value &&
                         currentExtra.wdeIsFixed
                     ) {
                         for (date in workDates) {
@@ -396,8 +399,8 @@ class PayCalculationsAsync(
                                         (date.wdRegHours + date.wdOtHours + date.wdDblOtHours)
                             }
                         }
-                    } else if ((currentExtra.wdeAppliesTo == 0 ||
-                                currentExtra.wdeAppliesTo == 1) &&
+                    } else if ((currentExtra.wdeAppliesTo == AppliesToFrequencies.Hourly.value ||
+                                currentExtra.wdeAppliesTo == AppliesToFrequencies.Daily.value) &&
                         !currentExtra.wdeIsFixed
                     ) {
                         for (date in workDates) {
@@ -406,7 +409,7 @@ class PayCalculationsAsync(
                                         (date.wdRegHours + date.wdOtHours + date.wdDblOtHours)
                             }
                         }
-                    } else if (currentExtra.wdeAppliesTo == 1
+                    } else if (currentExtra.wdeAppliesTo == AppliesToFrequencies.Daily.value
                     ) {
                         subTotal += currentExtra.wdeValue
                     }
@@ -502,11 +505,11 @@ class PayCalculationsAsync(
 
     private fun fixRateByInterval(rate: EmployerPayRates): Double {
         when (rate.eprPerPeriod) {
-            0 -> return rate.eprPayRate
+            AttachToFrequencies.Hourly.value -> return rate.eprPayRate
 
-            1 -> return rate.eprPayRate / 8
+            AttachToFrequencies.Daily.value -> return rate.eprPayRate / 8
 
-            2 -> return rate.eprPayRate / 40
+            AttachToFrequencies.Weekly.value -> return rate.eprPayRate / 40
         }
         return 0.0
     }
@@ -564,7 +567,9 @@ class PayCalculationsAsync(
     private suspend fun getPerPayExtrasList(): List<ExtraDefinitionAndType> =
         withContext(defaultScope) {
             mainActivity.payCalculationsViewModel.getDefaultExtraTypesAndCurrentDef(
-                employer.employerId, currentPayPeriod.ppCutoffDate, 3
+                employer.employerId,
+                currentPayPeriod.ppCutoffDate,
+                AppliesToFrequencies.PerPayForHourlyWages.value
             )
         }
 

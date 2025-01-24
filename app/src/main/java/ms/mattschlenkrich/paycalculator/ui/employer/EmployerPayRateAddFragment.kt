@@ -102,7 +102,7 @@ class EmployerPayRateAddFragment :
     private fun populateSpinner() {
         val frequencyAdapter = ArrayAdapter(
             mView.context, R.layout.spinner_item_bold,
-            resources.getStringArray(R.array.pay_per_frequencies)
+            resources.getStringArray(R.array.pay_day_frequencies)
         )
         frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
         binding.spPerFrequency.adapter = frequencyAdapter
