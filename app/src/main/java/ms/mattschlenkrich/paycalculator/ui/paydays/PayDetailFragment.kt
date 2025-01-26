@@ -32,11 +32,11 @@ import ms.mattschlenkrich.paycalculator.common.WAIT_1500
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
-import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraAndTotal
 import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraDefinitionAndType
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkDateExtrasAndDates
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkPayPeriodExtras
+import ms.mattschlenkrich.paycalculator.database.model.tax.TaxAndAmount
 import ms.mattschlenkrich.paycalculator.databinding.FragmentPayDetailsBinding
 import ms.mattschlenkrich.paycalculator.payfunctions.IPayCalculations
 import ms.mattschlenkrich.paycalculator.payfunctions.PayCalculationsAsync
@@ -58,7 +58,7 @@ class PayDetailFragment :
     private var curEmployer: Employers? = null
     private var curPayPeriod: PayPeriods? = null
     private val cutOffs = ArrayList<String>()
-    private lateinit var taxList: ArrayList<ExtraAndTotal>
+    private lateinit var taxList: List<TaxAndAmount>
     private var debitTotal = 0.0
     private var creditTotal = 0.0
     private var curCutOff = ""
@@ -718,13 +718,13 @@ class PayDetailFragment :
                 }
             }
         }
-        val tempTaxList = ArrayList<ExtraAndTotal>()
+        val tempTaxList = ArrayList<TaxAndAmount>()
         val newTaxList = payCalculations.getTaxList()
         if (!newTaxList.isNullOrEmpty()) {
             for (tax in newTaxList
             ) {
                 tempTaxList.add(
-                    ExtraAndTotal(
+                    TaxAndAmount(
                         tax.taxType, tax.amount
                     )
                 )

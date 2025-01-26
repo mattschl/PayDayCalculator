@@ -21,12 +21,9 @@ interface IPayCalculations {
     fun getPayStat(): Double
     fun getPayGross(): Double
     fun getPayTimeWorked(): Double
-    fun getCreditExtrasListByDate(): List<ExtraContainer>?
-    fun getCreditExtrasListByPay(): List<ExtraContainer>?
-    fun getCreditExtrasListByPercentageOfAll(): List<ExtraContainer>?
-    fun getDebitExtrasListByPay(): List<ExtraContainer>?
     fun getDebitTotalsByPay(): Double
     fun getTaxList(): List<TaxAndAmount>?
     fun getAllTaxDeductions(): Double
     fun getCredits(): List<ExtraContainer>
+    fun getDebits(): List<ExtraContainer>
 }

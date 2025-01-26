@@ -16,9 +16,9 @@ class PayCalculationsViewModel(
     fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String) =
         payCalculationsRepository.getWorkDateExtrasPerPay(employerId, cutOff)
 
-    fun getDefaultExtraTypesAndCurrentDef(employerId: Long, cutoffDate: String, appliesTo: Int) =
+    fun getDefaultExtraTypesAndCurrentDef(employerId: Long, cutoffDate: String) =
         payCalculationsRepository.getDefaultExtraTypesAndCurrentDef(
-            employerId, cutoffDate, appliesTo
+            employerId, cutoffDate
         )
 
     fun getCustomPayPeriodExtras(payPeriodId: Long) =

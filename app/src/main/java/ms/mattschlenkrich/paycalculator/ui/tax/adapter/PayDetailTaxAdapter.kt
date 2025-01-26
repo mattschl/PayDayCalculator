@@ -4,11 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraAndTotal
+import ms.mattschlenkrich.paycalculator.database.model.tax.TaxAndAmount
 import ms.mattschlenkrich.paycalculator.databinding.ListPayDetailTaxItemBinding
 
 class PayDetailTaxAdapter(
-    private val creditList: ArrayList<ExtraAndTotal>
+    private val taxList: List<TaxAndAmount>
 ) : RecyclerView.Adapter<PayDetailTaxAdapter.CreditViewHolder>() {
 
     private val nf = NumberFunctions()
@@ -25,13 +25,13 @@ class PayDetailTaxAdapter(
     }
 
     override fun getItemCount(): Int {
-        return creditList.size
+        return taxList.size
     }
 
     override fun onBindViewHolder(holder: CreditViewHolder, position: Int) {
-        val tax = creditList[position]
+        val tax = taxList[position]
         holder.itemBinding.apply {
-            tvTaxName.text = tax.extraName
+            tvTaxName.text = tax.taxType
             tvTaxTotal.text = nf.displayDollars(tax.amount)
         }
     }

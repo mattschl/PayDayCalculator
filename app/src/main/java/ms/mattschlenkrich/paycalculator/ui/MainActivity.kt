@@ -11,8 +11,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import ms.mattschlenkrich.paycalculator.NavGraphDirections
+import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.database.PayDatabase
 import ms.mattschlenkrich.paycalculator.database.repository.EmployerRepository
+import ms.mattschlenkrich.paycalculator.database.repository.PayCalculationsRepository
 import ms.mattschlenkrich.paycalculator.database.repository.PayDayRepository
 import ms.mattschlenkrich.paycalculator.database.repository.PayDetailRepository
 import ms.mattschlenkrich.paycalculator.database.repository.WorkExtraRepository
@@ -22,6 +24,8 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModelFactory
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModelFactory
+import ms.mattschlenkrich.paycalculator.database.viewModel.PayCalculationsViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.PayCalculationsViewModelFactory
 import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModelFactory
 import ms.mattschlenkrich.paycalculator.database.viewModel.PayDetailViewModel
@@ -32,10 +36,6 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModelFactory
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkTaxViewModelFactory
-import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.database.repository.PayCalculationsRepository
-import ms.mattschlenkrich.paycalculator.database.viewModel.PayCalculationsViewModel
-import ms.mattschlenkrich.paycalculator.database.viewModel.PayCalculationsViewModelFactory
 import ms.mattschlenkrich.paycalculator.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -196,8 +196,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun gotoPayDetails() {
         findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalPayDetailFragment()
+            NavGraphDirections.actionGlobalPayDetailFragmentNew()
         )
+//        findNavController(R.id.nav_host_fragment_container).navigate(
+//            NavGraphDirections.actionGlobalPayDetailFragment()
+//        )
     }
 
     private fun gotoTimeSheet() {
@@ -303,7 +306,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupPayCalculationsViewModel() {
-        val payCalculationsRepository   =
+        val payCalculationsRepository =
             PayCalculationsRepository(PayDatabase(this))
         val payCalculationsViewModelFactory =
             PayCalculationsViewModelFactory(application, payCalculationsRepository)

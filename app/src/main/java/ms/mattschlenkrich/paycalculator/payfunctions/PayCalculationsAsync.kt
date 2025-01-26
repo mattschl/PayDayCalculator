@@ -35,19 +35,18 @@ class PayCalculationsAsync(
     private lateinit var workDates: List<WorkDates>
     private lateinit var customWorkDateExtras: List<WorkDateExtras>
     private lateinit var customExtrasByPay: List<WorkPayPeriodExtras>
-    private lateinit var defaultExtrasByPay: List<ExtraDefinitionAndType>
-    private lateinit var workExtrasByPercentage: List<ExtraDefinitionAndType>
+    private val defaultExtrasByHour = ArrayList<ExtraDefinitionAndType>()
+    private val defaultExtrasByDay = ArrayList<ExtraDefinitionAndType>()
+    private val defaultExtrasByPay = ArrayList<ExtraDefinitionAndType>()
+    private val defaultExtrasByPercentageOfAll = ArrayList<ExtraDefinitionAndType>()
     private lateinit var extraTypes: List<WorkExtraTypes>
     private lateinit var taxRules: List<WorkTaxRules>
     private lateinit var taxTypes: List<TaxTypes>
     private var taxAndAmountList = ArrayList<TaxAndAmount>()
-    private var debitExtraAndTotalByPay = ArrayList<ExtraContainer>()
-    private var creditExtraAndTotalByDate = ArrayList<ExtraContainer>()
-    private var creditExtraAndTotalByPay = ArrayList<ExtraContainer>()
-    private var creditExtraAndTotalByPercentage = ArrayList<ExtraContainer>()
-    private var debitExtraAndTotalsByPercentage = ArrayList<ExtraContainer>()
-    private var creditTotalByDate = 0.0
-    private var creditTotalsByPay = 0.0
+    private val creditExtraContainers = ArrayList<ExtraContainer>()
+    private val debitExtraContainers = ArrayList<ExtraContainer>()
+    private var creditExtraContainersByPercentage = ArrayList<ExtraContainer>()
+    private var creditTotalsBeforePercentageAdjustment = 0.0
     private var creditTotalsByPercentage = 0.0
     private var debitTotalsByPay = 0.0
     private var taxDeductions = 0.0
@@ -63,7 +62,8 @@ class PayCalculationsAsync(
 
     init {
         CoroutineScope(defaultScope).launch {
-            processListsFromDb()
+            getListsFromDb()
+            processExtraContainers()
             processPayTotals()
             var credits = 0.0
             for (credit in getCredits()) {
@@ -75,7 +75,7 @@ class PayCalculationsAsync(
                         "total gross pay of ${credits + getPayAllHourly()}"
             )
             var debits = 0.0
-            for (debit in debitExtraAndTotalByPay) {
+            for (debit in debitExtraContainers) {
                 Log.d(TAG, "debit is ${debit.amount} for ${debit.extraName}")
                 debits += debit.amount
             }
@@ -91,60 +91,69 @@ class PayCalculationsAsync(
         }
     }
 
-    private suspend fun processListsFromDb() {
-        processPayRate()
-        processWorkDates()
+    private suspend fun getListsFromDb() {
+        getPayRateFromDb()
+        getWorkDatesFromDb()
         processAllHours()
-        processWorkDateExtras()
-        processDefaultWorkExtrasByPay()
-        processCustomExtrasByPay()
-        processExtrasPercentageOfAll()
-        processExtraTypes()
-        processTaxRates()
+        getCustomWorkDateExtrasFromDb()
+        getCustomExtrasByPayFromDb()
+        getDefaultWorkExtrasFromDbAndRemoveDuplicates()
+        getExtraTypesFromDb()
+        getTaxRatesFromDb()
+    }
+
+    private suspend fun processExtraContainers() {
+        processCustomExtraContainersByDates()
+        processCustomExtraContainersByPay()
+        processDefaultExtraContainersByHour()
+        processDefaultExtraContainersByDay()
+        processDefaultExtraContainersByPay()
+        calculateTotalsBeforePercentageAdjustment()
+        processDefaultExtraContainersByPercentageOfAll()
+        calculateTotalPercentageOfAll()
     }
 
     private suspend fun processPayTotals() {
-        calculateExtrasByDates()
-        calculateDefaultExtrasAndTotalsByPay()
-        calculateCustomExtrasAndTotalsByPay()
-        calculateTotalsBeforePercentageAdjustment()
-        calculateExtraByPercentageOfAll()
-        calculateTotalPercentageOfAll()
         calculateTaxAndAmounts()
         calculateTaxTotal()
     }
 
-    private suspend fun calculateCustomExtrasAndTotalsByPay() =
+
+    private suspend fun processCustomExtraContainersByPay() =
         withContext(defaultScope) {
             for (extra in customExtrasByPay) {
-                val total: Double = if (extra.ppeIsFixed) {
-                    extra.ppeValue
+                val total: Double = if (extra.ppeIsDeleted) {
+                    0.0
+                } else if (extra.ppeIsFixed) {
+                    when (extra.ppeAppliesTo) {
+                        AttachToFrequencies.Hourly.value -> getHoursWorked() * extra.ppeValue
+                        AttachToFrequencies.Daily.value -> getDaysWorked() * extra.ppeValue
+                        AttachToFrequencies.PerPay.value -> extra.ppeValue
+                        else -> extra.ppeValue
+                    }
                 } else {
                     when (extra.ppeAppliesTo) {
-                        AppliesToFrequencies.Hourly.value -> getPayTimeWorked() * extra.ppeValue / 100
-                        AppliesToFrequencies.Daily.value -> getPayTimeWorked() * extra.ppeValue / 100
-                        AppliesToFrequencies.PerPayForHourlyWages.value -> getPayAllHourly() * extra.ppeValue / 100
+                        AttachToFrequencies.Hourly.value -> getPayTimeWorked() * extra.ppeValue
+                        AttachToFrequencies.Daily.value -> getPayTimeWorked() * extra.ppeValue
+                        AttachToFrequencies.PerPay.value -> getPayAllHourly() * extra.ppeValue
                         else -> extra.ppeValue
                     }
                 }
+                Log.d(TAG, "-------- value of $total for ${extra.ppeName} ---------")
+                val newExtraContainer = ExtraContainer(
+                    extra.ppeName,
+                    total,
+                    null,
+                    null,
+                    extra,
+                )
                 if (extra.ppeIsCredit) {
-                    creditExtraAndTotalByPay.add(
-                        ExtraContainer(
-                            extra.ppeName,
-                            total,
-                            null,
-                            null,
-                            extra,
-                        )
+                    creditExtraContainers.add(
+                        newExtraContainer
                     )
                 } else {
-                    debitExtraAndTotalByPay.add(
-                        ExtraContainer(
-                            extra.ppeName, total,
-                            null,
-                            null,
-                            extra,
-                        )
+                    debitExtraContainers.add(
+                        newExtraContainer
                     )
                 }
             }
@@ -206,68 +215,47 @@ class PayCalculationsAsync(
 
     private suspend fun calculateTotalPercentageOfAll() =
         withContext(defaultScope) {
-            if (creditExtraAndTotalByPercentage.isNotEmpty()) {
+            if (creditExtraContainersByPercentage.isNotEmpty()) {
                 var subTotal = 0.0
-                for (credit in creditExtraAndTotalByPercentage) {
+                for (credit in creditExtraContainersByPercentage) {
                     subTotal += credit.amount
                 }
                 creditTotalsByPercentage = subTotal
             }
         }
 
-    private suspend fun calculateExtraByPercentageOfAll() =
+    private suspend fun processDefaultExtraContainersByPercentageOfAll() =
         withContext(defaultScope) {
-            if (workExtrasByPercentage.isNotEmpty()) {
-                var subTotal = 0.0
-                var workingExtra = workExtrasByPercentage.first().extraType.wetName
-                for (i in workExtrasByPercentage.indices) {
-                    val currentExtra = workExtrasByPercentage[i]
-                    if (currentExtra.extraType.wetName != workingExtra) {
-                        if (workExtrasByPercentage[i - 1].extraType.wetIsCredit) {
-                            creditExtraAndTotalByPay.add(
-                                ExtraContainer(
-                                    workingExtra, subTotal,
-                                    currentExtra,
-                                    null,
-                                    null
-
-                                )
-                            )
+            if (defaultExtrasByPercentageOfAll.isNotEmpty()) {
+                for (extraAndDef in defaultExtrasByPercentageOfAll) {
+                    val subTotal =
+                        if (extraAndDef.extraType.wetIsDeleted ||
+                            extraAndDef.definition.weIsDeleted
+                        ) {
+                            0.0
                         } else {
-                            debitExtraAndTotalByPay.add(
-                                ExtraContainer(
-                                    workingExtra, subTotal,
-                                    currentExtra,
-                                    null,
-                                    null
-                                )
-                            )
+                            extraAndDef.definition.weValue * totalBeforePercentageAdjustment
                         }
-                        workingExtra = currentExtra.extraType.wetName
-                        subTotal = 0.0
-                    }
-                    subTotal += totalBeforePercentageAdjustment *
-                            currentExtra.definition.weValue / 100
-                    if (i == workExtrasByPercentage.size - 1) {
-                        if (currentExtra.extraType.wetIsCredit) {
-                            creditExtraAndTotalByPercentage.add(
-                                ExtraContainer(
-                                    workingExtra, subTotal,
-                                    currentExtra,
-                                    null,
-                                    null
-                                )
+                    if (extraAndDef.extraType.wetIsCredit) {
+                        creditExtraContainers.add(
+                            ExtraContainer(
+                                extraAndDef.extraType.wetName,
+                                subTotal,
+                                extraAndDef,
+                                null,
+                                null
                             )
-                        } else {
-                            debitExtraAndTotalsByPercentage.add(
-                                ExtraContainer(
-                                    workingExtra, subTotal,
-                                    currentExtra,
-                                    null,
-                                    null
-                                )
+                        )
+                    } else {
+                        debitExtraContainers.add(
+                            ExtraContainer(
+                                extraAndDef.extraType.wetName,
+                                subTotal,
+                                extraAndDef,
+                                null,
+                                null
                             )
-                        }
+                        )
                     }
                 }
             }
@@ -277,90 +265,127 @@ class PayCalculationsAsync(
         withContext(defaultScope) {
             var subTotal = getPayAllHourly()
             var tempTotal = 0.0
-            for (credit in creditExtraAndTotalByDate) {
+            for (credit in creditExtraContainers) {
                 subTotal += credit.amount
+                tempTotal += credit.amount
             }
-            creditTotalByDate = tempTotal
-            tempTotal = 0.0
-            for (credit in creditExtraAndTotalByPay) {
-                subTotal += credit.amount
-            }
-            creditTotalsByPay = tempTotal
+            creditTotalsBeforePercentageAdjustment = tempTotal
             totalBeforePercentageAdjustment = subTotal
         }
 
-    private suspend fun calculateDefaultExtrasAndTotalsByPay() =
+    private suspend fun processDefaultExtraContainersByHour() =
         withContext(defaultScope) {
-            if (defaultExtrasByPay.isNotEmpty()) {
-                var subTotal = 0.0
-                var workingExtra = defaultExtrasByPay.first().extraType.wetName
-                for (i in defaultExtrasByPay.indices) {
-                    val currentExtra = defaultExtrasByPay[i]
-                    if (currentExtra.extraType.wetName != workingExtra) {
-                        if (defaultExtrasByPay[i - 1].extraType.wetIsCredit) {
-                            creditExtraAndTotalByPay.add(
-                                ExtraContainer(
-                                    workingExtra, subTotal,
-                                    currentExtra,
-                                    null,
-                                    null
-                                )
-                            )
+            if (defaultExtrasByHour.isNotEmpty()) {
+                for (extraAndDef in defaultExtrasByHour) {
+                    val subTotal =
+                        if (extraAndDef.extraType.wetIsDeleted ||
+                            extraAndDef.definition.weIsDeleted
+                        ) {
+                            0.0
                         } else {
-                            debitExtraAndTotalByPay.add(
-                                ExtraContainer(
-                                    workingExtra, subTotal,
-                                    currentExtra,
-                                    null,
-                                    null
-                                )
-                            )
+                            if (extraAndDef.definition.weIsFixed) {
+                                extraAndDef.definition.weValue * getHoursWorked()
+                            } else {
+                                extraAndDef.definition.weValue * getPayTimeWorked()
+                            }
                         }
-                        workingExtra = currentExtra.extraType.wetName
-                        subTotal = 0.0
-                    }
-                    if (currentExtra.extraType.wetAppliesTo == 0 &&
-                        currentExtra.definition.weIsFixed
-                    ) {
-                        subTotal += getHoursWorked() * currentExtra.definition.weValue
-                    } else if (currentExtra.extraType.wetAppliesTo == 1 &&
-                        currentExtra.definition.weIsFixed
-                    ) {
-                        subTotal += daysWorked * currentExtra.definition.weValue
-                    } else if (currentExtra.extraType.wetAppliesTo == 3 &&
-                        currentExtra.definition.weIsFixed
-                    ) {
-                        subTotal += currentExtra.definition.weValue
-                    } else if (!currentExtra.definition.weIsFixed) {
-                        subTotal += currentExtra.definition.weValue *
-                                (getHoursAll()) * payRate / 100
-                    }
-                    if (i == defaultExtrasByPay.size - 1) {
-                        if (currentExtra.extraType.wetIsCredit) {
-                            creditExtraAndTotalByPay.add(
-                                ExtraContainer(
-                                    workingExtra, subTotal,
-                                    currentExtra,
-                                    null,
-                                    null
-                                )
-                            )
-                        } else {
-                            debitExtraAndTotalByPay.add(
-                                ExtraContainer(
-                                    workingExtra, subTotal,
-                                    currentExtra,
-                                    null,
-                                    null
-                                )
-                            )
-                        }
+                    val newExtraContainer = ExtraContainer(
+                        extraAndDef.extraType.wetName,
+                        subTotal,
+                        extraAndDef,
+                        null,
+                        null
+                    )
+                    if (extraAndDef.extraType.wetIsCredit) {
+                        creditExtraContainers.add(
+                            newExtraContainer
+                        )
+                    } else {
+                        debitExtraContainers.add(
+                            newExtraContainer
+                        )
                     }
                 }
             }
         }
 
-    private suspend fun calculateExtrasByDates() =
+    private suspend fun processDefaultExtraContainersByDay() =
+        withContext(defaultScope) {
+            if (defaultExtrasByDay.isNotEmpty()) {
+                for (extraAndDef in defaultExtrasByDay) {
+                    val subTotal =
+                        if (extraAndDef.extraType.wetIsDeleted ||
+                            extraAndDef.definition.weIsDeleted
+                        ) {
+                            0.0
+                        } else {
+                            if (extraAndDef.definition.weIsFixed) {
+                                extraAndDef.definition.weValue * getDaysWorked()
+                            } else {
+                                extraAndDef.definition.weValue * getPayTimeWorked()
+                            }
+                        }
+                    val newExtraContainer = ExtraContainer(
+                        extraAndDef.extraType.wetName,
+                        subTotal,
+                        extraAndDef,
+                        null,
+                        null
+                    )
+                    if (extraAndDef.extraType.wetIsCredit) {
+                        creditExtraContainers.add(
+                            newExtraContainer
+                        )
+                    } else {
+                        debitExtraContainers.add(
+                            newExtraContainer
+                        )
+                    }
+                }
+            }
+        }
+
+    private suspend fun processDefaultExtraContainersByPay() =
+        withContext(defaultScope) {
+            if (defaultExtrasByPay.isNotEmpty()) {
+                for (extraAndDef in defaultExtrasByPay) {
+                    val subTotal =
+                        if (extraAndDef.extraType.wetIsDeleted ||
+                            extraAndDef.definition.weIsDeleted
+                        ) {
+                            0.0
+                        } else {
+                            if (extraAndDef.definition.weIsFixed) {
+                                extraAndDef.definition.weValue
+                            } else {
+                                extraAndDef.definition.weValue * getPayTimeWorked() / 100
+                            }
+                        }
+                    Log.d(
+                        TAG,
+                        "----- Value of $subTotal for ${extraAndDef.extraType.wetName} --------"
+                    )
+                    val newExtraContainer = ExtraContainer(
+                        extraAndDef.extraType.wetName,
+                        subTotal,
+                        extraAndDef,
+                        null,
+                        null
+                    )
+                    if (extraAndDef.extraType.wetIsCredit) {
+                        creditExtraContainers.add(
+                            newExtraContainer
+                        )
+                    } else {
+                        debitExtraContainers.add(
+                            newExtraContainer
+                        )
+                    }
+                }
+            }
+        }
+
+    private suspend fun processCustomExtraContainersByDates() =
         withContext(defaultScope) {
             if (customWorkDateExtras.isNotEmpty()) {
                 var subTotal = 0.0
@@ -368,23 +393,19 @@ class PayCalculationsAsync(
                 for (i in customWorkDateExtras.indices) {
                     val currentExtra = customWorkDateExtras[i]
                     if (currentExtra.wdeName != workingExtra) {
+                        val newExtraContainer = ExtraContainer(
+                            workingExtra, subTotal,
+                            null,
+                            currentExtra,
+                            null
+                        )
                         if (customWorkDateExtras[i - 1].wdeIsCredit) {
-                            creditExtraAndTotalByDate.add(
-                                ExtraContainer(
-                                    workingExtra, subTotal,
-                                    null,
-                                    currentExtra,
-                                    null
-                                )
+                            creditExtraContainers.add(
+                                newExtraContainer
                             )
                         } else {
-                            debitExtraAndTotalByPay.add(
-                                ExtraContainer(
-                                    workingExtra, subTotal,
-                                    null,
-                                    currentExtra,
-                                    null
-                                )
+                            debitExtraContainers.add(
+                                newExtraContainer
                             )
                         }
                         workingExtra = currentExtra.wdeName
@@ -414,23 +435,19 @@ class PayCalculationsAsync(
                         subTotal += currentExtra.wdeValue
                     }
                     if (i == customWorkDateExtras.size - 1) {
+                        val newExtraContainer = ExtraContainer(
+                            workingExtra, subTotal,
+                            null,
+                            currentExtra,
+                            null
+                        )
                         if (currentExtra.wdeIsCredit) {
-                            creditExtraAndTotalByDate.add(
-                                ExtraContainer(
-                                    workingExtra, subTotal,
-                                    null,
-                                    currentExtra,
-                                    null
-                                )
+                            creditExtraContainers.add(
+                                newExtraContainer
                             )
                         } else {
-                            debitExtraAndTotalByPay.add(
-                                ExtraContainer(
-                                    workingExtra, subTotal,
-                                    null,
-                                    currentExtra,
-                                    null
-                                )
+                            debitExtraContainers.add(
+                                newExtraContainer
                             )
                         }
                     }
@@ -438,50 +455,77 @@ class PayCalculationsAsync(
             }
         }
 
-    private suspend fun processDefaultWorkExtrasByPay() {
+    private suspend fun getDefaultWorkExtrasFromDbAndRemoveDuplicates() {
         coroutineScope {
-            val workExtrasByPayDeferred = async { getPerPayExtrasList() }
-            defaultExtrasByPay = workExtrasByPayDeferred.await()
+            val workExtrasByPayDeferred = async { getDefaultExtraListFromDb() }
+            val tempExtras = workExtrasByPayDeferred.await()
+            for (extra in tempExtras) {
+                var excludeAsDuplicate = false
+                for (customExtra in customWorkDateExtras) {
+                    if (extra.extraType.wetName == customExtra.wdeName) {
+                        excludeAsDuplicate = true
+                        break
+                    }
+                }
+                for (customExtra in customExtrasByPay) {
+                    if (extra.extraType.wetName == customExtra.ppeName) {
+                        excludeAsDuplicate = true
+                        break
+                    }
+                }
+                if (!excludeAsDuplicate) {
+                    when (extra.extraType.wetAppliesTo) {
+                        AppliesToFrequencies.Hourly.value -> {
+                            defaultExtrasByHour.add(extra)
+                        }
+
+                        AppliesToFrequencies.Daily.value -> {
+                            defaultExtrasByDay.add(extra)
+                        }
+
+                        AppliesToFrequencies.PerPayForHourlyWages.value -> {
+                            defaultExtrasByPay.add(extra)
+                        }
+
+                        AppliesToFrequencies.PerPayPercentageOfAll.value -> {
+                            defaultExtrasByPercentageOfAll.add(extra)
+                        }
+                    }
+                }
+            }
         }
     }
 
-    private suspend fun processWorkDateExtras() {
+    private suspend fun getCustomWorkDateExtrasFromDb() {
         coroutineScope {
-            val workDateExtraFullDeferred = async { getExtraListForDates() }
+            val workDateExtraFullDeferred = async { getExtraListForDatesFromDb() }
             customWorkDateExtras = workDateExtraFullDeferred.await()
         }
     }
 
-    private suspend fun processWorkDates() {
+    private suspend fun getWorkDatesFromDb() {
         coroutineScope {
             val workDatesDeferred = async { getWorkDatesList() }
             workDates = workDatesDeferred.await()
         }
     }
 
-    private suspend fun processPayRate() {
+    private suspend fun getPayRateFromDb() {
         coroutineScope {
             val payRateDeferred = async { calculatePayRateFromDb() }
             payRate = payRateDeferred.await()
         }
     }
 
-    private suspend fun processCustomExtrasByPay() {
+    private suspend fun getCustomExtrasByPayFromDb() {
         coroutineScope {
-            val customExtrasByPay = async { getCustomExtraByPay() }
-            this@PayCalculationsAsync.customExtrasByPay = customExtrasByPay.await()
+            val customExtras = async { getCustomExtraByPayFromDb() }
+            customExtrasByPay = customExtras.await()
         }
     }
 
-    private suspend fun processExtrasPercentageOfAll() {
-        coroutineScope {
-            val extraByPercentageOfAllDeferred =
-                async { getExtraPercentageOfAll() }
-            workExtrasByPercentage = extraByPercentageOfAllDeferred.await()
-        }
-    }
 
-    private suspend fun processExtraTypes() {
+    private suspend fun getExtraTypesFromDb() {
         coroutineScope {
             val extraTypesDeferred =
                 async { getExtraTypes() }
@@ -557,33 +601,25 @@ class PayCalculationsAsync(
         }
 
 
-    private suspend fun getExtraListForDates(): List<WorkDateExtras> =
+    private suspend fun getExtraListForDatesFromDb(): List<WorkDateExtras> =
         withContext(Dispatchers.Default) {
             mainActivity.payCalculationsViewModel.getWorkDateExtrasPerPay(
                 employer.employerId, currentPayPeriod.ppCutoffDate
             )
         }
 
-    private suspend fun getPerPayExtrasList(): List<ExtraDefinitionAndType> =
+    private suspend fun getDefaultExtraListFromDb(): List<ExtraDefinitionAndType> =
         withContext(defaultScope) {
             mainActivity.payCalculationsViewModel.getDefaultExtraTypesAndCurrentDef(
                 employer.employerId,
                 currentPayPeriod.ppCutoffDate,
-                AppliesToFrequencies.PerPayForHourlyWages.value
             )
         }
 
-    private suspend fun getCustomExtraByPay(): List<WorkPayPeriodExtras> =
+    private suspend fun getCustomExtraByPayFromDb(): List<WorkPayPeriodExtras> =
         withContext(defaultScope) {
             mainActivity.payCalculationsViewModel.getCustomPayPeriodExtras(
                 currentPayPeriod.payPeriodId
-            )
-        }
-
-    private suspend fun getExtraPercentageOfAll() =
-        withContext(defaultScope) {
-            mainActivity.payCalculationsViewModel.getDefaultExtraTypesAndCurrentDef(
-                employer.employerId, currentPayPeriod.ppCutoffDate, 4
             )
         }
 
@@ -594,7 +630,7 @@ class PayCalculationsAsync(
             )
         }
 
-    private suspend fun processTaxRates() {
+    private suspend fun getTaxRatesFromDb() {
         coroutineScope {
             val taxTypesDeferred =
                 async { getTaxTypes() }
@@ -636,14 +672,14 @@ class PayCalculationsAsync(
                 "Weekly" -> {
                     taxFactor = amount / 52
                 }
-
-                "Semi-Monthly" -> {
-                    taxFactor = amount / 24
-                }
-
-                "Monthly" -> {
-                    taxFactor = amount / 12
-                }
+//
+//                "Semi-Monthly" -> {
+//                    taxFactor = amount / 24
+//                }
+//
+//                "Monthly" -> {
+//                    taxFactor = amount / 12
+//                }
 
                 else -> {
                     taxFactor = 0.0
@@ -653,28 +689,12 @@ class PayCalculationsAsync(
         return taxFactor
     }
 
-    override fun getDebitExtrasListByPay(): List<ExtraContainer> {
-        return debitExtraAndTotalByPay
-    }
-
-    override fun getCreditExtrasListByDate(): List<ExtraContainer> {
-        return creditExtraAndTotalByDate
-    }
-
-    override fun getCreditExtrasListByPay(): List<ExtraContainer> {
-        return creditExtraAndTotalByPay
-    }
-
-    override fun getCreditExtrasListByPercentageOfAll(): List<ExtraContainer> {
-        return creditExtraAndTotalByPercentage
-    }
-
     override fun getDebitTotalsByPay(): Double {
         return debitTotalsByPay
     }
 
     override fun getCreditTotalAll(): Double {
-        return creditTotalByDate + creditTotalsByPay + creditTotalsByPercentage
+        return creditTotalsBeforePercentageAdjustment + creditTotalsByPercentage
     }
 
     override fun getHoursWorked(): Double {
@@ -730,8 +750,9 @@ class PayCalculationsAsync(
     }
 
     override fun getPayGross(): Double {
-        return getPayAllHourly() + creditTotalByDate +
-                creditTotalsByPay + creditTotalsByPercentage
+        return getPayAllHourly() +
+                creditTotalsBeforePercentageAdjustment +
+                creditTotalsByPercentage
     }
 
     override fun getPayTimeWorked(): Double {
@@ -743,10 +764,15 @@ class PayCalculationsAsync(
     }
 
     override fun getCredits(): List<ExtraContainer> {
-        return creditExtraAndTotalByDate + creditExtraAndTotalByPay + creditExtraAndTotalByPercentage
+        return creditExtraContainers
     }
 
+    override fun getDebits(): List<ExtraContainer> {
+        return debitExtraContainers
+    }
+
+
     override fun getTaxList(): List<TaxAndAmount> {
-        return taxAndAmountList.toList()
+        return taxAndAmountList
     }
 }

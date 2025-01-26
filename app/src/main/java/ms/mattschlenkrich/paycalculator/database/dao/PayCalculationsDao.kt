@@ -66,21 +66,16 @@ interface PayCalculationsDao {
                 "AND weEffectiveDate <= :cutoffDate " +
                 ") ON workExtraTypeId = weExtraTypeId " +
                 "WHERE wetEmployerId = :employerId " +
-                "AND wetAppliesTo = :appliesTo " +
                 "AND wetIsDefault = 1 " +
-                "AND wetIsDefault = 1 " +
-                "AND wetIsDeleted = 0 " +
                 "GROUP BY wetName " +
-                "ORDER BY wetName"
+                "ORDER BY wetAppliesTo, wetName"
     )
-    fun getDefaultExtraTypesAndCurrentDef(employerId: Long, cutoffDate: String, appliesTo: Int):
+    fun getDefaultExtraTypesAndCurrentDef(employerId: Long, cutoffDate: String):
             List<ExtraDefinitionAndType>
 
     @Query(
         "SELECT * FROM workPayPeriodExtras " +
                 "WHERE ppePayPeriodId = :payPeriodId " +
-                "AND ppeAttachTo = 3 " +
-                "AND ppeIsDeleted = 0 " +
                 "ORDER BY ppeName"
     )
     fun getCustomPayPeriodExtras(payPeriodId: Long): List<WorkPayPeriodExtras>

@@ -417,7 +417,7 @@ class TimeSheetFragment :
     private fun gotoTimeSheetFragment() {
         mView.findNavController().navigate(
             TimeSheetFragmentDirections
-                .actionTimeSheetFragmentToPayDetailFragment()
+                .actionTimeSheetFragmentToPayDetailFragmentNew()
         )
     }
 

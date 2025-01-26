@@ -21,7 +21,7 @@ import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkPayPeriodEx
 import ms.mattschlenkrich.paycalculator.databinding.ListPayDetailExtraItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.paydays.IPayDetailsFragment
-import ms.mattschlenkrich.paycalculator.ui.paydays.PayDetailFragmentDirections
+import ms.mattschlenkrich.paycalculator.ui.paydays.PayDetailFragmentNewDirections
 
 private const val TAG = "PayDetailExtraContainerAdapter"
 
@@ -55,29 +55,41 @@ class PayDetailExtraContainerAdapter(
         val extraContainer = extraContainerList[position]
         holder.itemBinding.apply {
             tvExtraDescription.text = extraContainer.extraName
-            chActive.isChecked = false
-            btnEdit.visibility = View.INVISIBLE
-            tvExtraTotal.visibility = View.INVISIBLE
-            if ((extraContainer.workDateExtra != null &&
-                        !extraContainer.workDateExtra!!.wdeIsDeleted) ||
-                (extraContainer.payPeriodExtra != null &&
-                        !extraContainer.payPeriodExtra!!.ppeIsDeleted) ||
-                (extraContainer.extraDefinitionAndType != null &&
-                        !extraContainer.extraDefinitionAndType!!.extraType.wetIsDeleted)
-            ) {
-                chActive.isChecked = true
-                btnEdit.visibility = View.VISIBLE
-                tvExtraTotal.text = nf.displayDollars(
-                    extraContainer.amount
-                )
+            btnEdit.visibility = View.VISIBLE
+            chActive.visibility = View.VISIBLE
+            tvExtraTotal.text = nf.displayDollars(
+                extraContainer.amount
+            )
+            if (extraContainer.payPeriodExtra != null) {
+                chActive.isChecked = !extraContainer.payPeriodExtra!!.ppeIsDeleted
+                if (extraContainer.payPeriodExtra!!.ppeIsDeleted) {
+                    btnEdit.visibility = View.INVISIBLE
+                    tvExtraTotal.visibility = View.INVISIBLE
+                }
+            }
+            if (extraContainer.workDateExtra != null) {
+                chActive.isChecked = !extraContainer.workDateExtra!!.wdeIsDeleted
+                if (extraContainer.workDateExtra!!.wdeIsDeleted) {
+                    btnEdit.visibility = View.INVISIBLE
+                    tvExtraTotal.visibility = View.INVISIBLE
+                }
+            }
+            if (extraContainer.extraDefinitionAndType != null) {
+                chActive.isChecked =
+                    !extraContainer.extraDefinitionAndType!!.extraType.wetIsDeleted &&
+                            !extraContainer.extraDefinitionAndType!!.definition.weIsDeleted
+                if (extraContainer.extraDefinitionAndType!!.extraType.wetIsDeleted ||
+                    extraContainer.extraDefinitionAndType!!.definition.weIsDeleted
+                ) {
+                    btnEdit.visibility = View.INVISIBLE
+                    tvExtraTotal.visibility = View.INVISIBLE
+                }
             }
             btnEdit.setOnClickListener {
                 confirmUpdateExtra(extraContainer, !chActive.isChecked)
             }
             chActive.setOnClickListener {
-                updateExtra(
-                    insertOrUpdateExtraIsDeleted(extraContainer, !chActive.isChecked)
-                )
+                insertOrUpdateExtraOnChange(extraContainer, !chActive.isChecked)
                 CoroutineScope(Dispatchers.Main).launch {
                     delay(WAIT_500)
                     parentFragment.populatePayDetails()
@@ -94,7 +106,8 @@ class PayDetailExtraContainerAdapter(
                 mView.context.getString(R.string.if_this_is_edited_any_default_calculations_will_be_overwritten)
             )
             .setPositiveButton(mView.context.getString(R.string.yes)) { _, _ ->
-                insertOrUpdateExtraIsDeleted(extraContainer, delete)
+                insertOrUpdateExtraOnChange(extraContainer, delete)
+                updateExtra(extraContainer)
             }
             .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()
@@ -103,13 +116,13 @@ class PayDetailExtraContainerAdapter(
 
     private fun updateExtra(extraContainer: ExtraContainer) {
         mainActivity.mainViewModel.setPayPeriodExtra(extraContainer.payPeriodExtra)
-        mainActivity.mainViewModel.setWorkDateExtra(extraContainer.workDateExtra)
+        mainActivity.mainViewModel.setWorkDateExtra(null)
         mainActivity.mainViewModel.setExtraContainer(extraContainer)
         mainActivity.mainViewModel.addCallingFragment(FRAG_PAY_DETAILS)
         gotoPeriodExtraUpdateFragment()
     }
 
-    private fun insertOrUpdateExtraIsDeleted(
+    private fun insertOrUpdateExtraOnChange(
         extraContainer: ExtraContainer, delete: Boolean
     ): ExtraContainer {
         CoroutineScope(Dispatchers.Default).launch {
@@ -154,8 +167,8 @@ class PayDetailExtraContainerAdapter(
 
     private fun gotoPeriodExtraUpdateFragment() {
         mView.findNavController().navigate(
-            PayDetailFragmentDirections
-                .actionPayDetailsFragmentToPayPeriodExtraUpdateFragment()
+            PayDetailFragmentNewDirections
+                .actionPayDetailFragmentNewToPayPeriodExtraUpdateFragment()
         )
     }
 
