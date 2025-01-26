@@ -57,9 +57,6 @@ class PayDetailFragmentNew :
     private var curEmployer: Employers? = null
     private var curPayPeriod: PayPeriods? = null
     private val cutOffs = ArrayList<String>()
-
-    //    private lateinit var taxList: ArrayList<ExtraAndTotal>
-//    private var debitTotal = 0.0
     private var creditTotal = 0.0
     private var curCutOff = ""
     private var valuesFilled = false
@@ -711,52 +708,6 @@ class PayDetailFragmentNew :
         df.getCurrentTimeAsString()
     )
 
-//    private fun getCreditList(extraList: ArrayList<WorkPayPeriodExtras>):
-//            ArrayList<WorkPayPeriodExtras> {
-//        val creditList = ArrayList<WorkPayPeriodExtras>()
-//        creditTotal = 0.0
-//        for (extra in extraList) {
-//            if (extra.ppeIsCredit) {
-//                creditList.add(extra)
-//                if (!extra.ppeIsDeleted) {
-//                    creditTotal += extra.ppeValue
-//                }
-//            }
-//        }
-//        return creditList
-//    }
-
-//    private fun getDeductions(
-//        payCalculations: IPayCalculations,
-//        extraList: ArrayList<WorkPayPeriodExtras>,
-//    ): ArrayList<WorkPayPeriodExtras> {
-//        val debitList = ArrayList<WorkPayPeriodExtras>()
-//        debitTotal = 0.0
-//        for (extra in extraList) {
-//            if (!extra.ppeIsCredit) {
-//                debitList.add(extra)
-//                if (!extra.ppeIsDeleted) {
-//                    debitTotal += extra.ppeValue
-//                }
-//            }
-//        }
-//        val tempTaxList = ArrayList<ExtraAndTotal>()
-//        val newTaxList = payCalculations.getTaxList()
-//        if (!newTaxList.isNullOrEmpty()) {
-//            for (tax in newTaxList
-//            ) {
-//                tempTaxList.add(
-//                    ExtraAndTotal(
-//                        tax.taxType, tax.amount
-//                    )
-//                )
-//                debitTotal += tax.amount
-//            }
-//        }
-//        taxList = tempTaxList
-//        return debitList
-//    }
-
     private fun gotoEmployerAdd() {
         mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
@@ -778,8 +729,8 @@ class PayDetailFragmentNew :
 
     private fun gotoPayPeriodExtraAddFragment() {
         mView.findNavController().navigate(
-            PayDetailFragmentDirections
-                .actionPayDetailsFragmentToPayPeriodExtraAddFragment()
+            PayDetailFragmentNewDirections
+                .actionPayDetailFragmentNewToPayPeriodExtraAddFragment()
         )
     }
 

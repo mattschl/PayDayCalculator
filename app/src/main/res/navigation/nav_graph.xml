@@ -504,6 +504,10 @@
             android:id="@+id/action_payPeriodExtraAddFragment_to_payDetailFragment"
             app:destination="@id/payDetailFragment"
             app:popUpTo="@id/payDetailFragment" />
+        <action
+            android:id="@+id/action_payPeriodExtraAddFragment_to_payDetailFragmentNew"
+            app:destination="@id/payDetailFragmentNew"
+            app:popUpTo="@id/payDetailFragmentNew" />
     </fragment>
 
     <!--    payPeriodExtraUpdateFragment-->
@@ -794,6 +798,9 @@
         <action
             android:id="@+id/action_payDetailFragmentNew_to_payPeriodExtraUpdateFragment"
             app:destination="@id/payPeriodExtraUpdateFragment" />
+        <action
+            android:id="@+id/action_payDetailFragmentNew_to_payPeriodExtraAddFragment"
+            app:destination="@id/payPeriodExtraAddFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_payDetailFragmentNew"

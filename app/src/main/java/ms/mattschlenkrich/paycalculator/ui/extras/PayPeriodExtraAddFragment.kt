@@ -113,24 +113,29 @@ class PayPeriodExtraAddFragment :
     }
 
     private fun chooseFixedOrPercent() {
+        binding.chkIsFixed.setOnClickListener {
+            changeTextToFixedOrPercentString()
+        }
+
+    }
+
+    private fun changeTextToFixedOrPercentString() {
         binding.apply {
-            chkIsFixed.setOnClickListener {
-                etValue.setText(
-                    if (chkIsFixed.isChecked) {
-                        cf.displayDollars(
-                            cf.getDoubleFromDollarOrPercentString(
-                                etValue.text.toString()
-                            )
+            etValue.setText(
+                if (chkIsFixed.isChecked) {
+                    cf.displayDollars(
+                        cf.getDoubleFromDollarOrPercentString(
+                            etValue.text.toString()
                         )
-                    } else {
-                        cf.getPercentStringFromDouble(
-                            cf.getDoubleFromDollarOrPercentString(
-                                etValue.text.toString()
-                            ) / 100
-                        )
-                    }
-                )
-            }
+                    )
+                } else {
+                    cf.getPercentStringFromDouble(
+                        cf.getDoubleFromDollarOrPercentString(
+                            etValue.text.toString()
+                        ) / 100
+                    )
+                }
+            )
         }
     }
 
@@ -149,6 +154,7 @@ class PayPeriodExtraAddFragment :
     }
 
     private fun validateExtra(): String {
+        changeTextToFixedOrPercentString()
         binding.apply {
             if (etExtraName.text.isNullOrBlank()) {
                 return getString(R.string.error_) +
@@ -201,7 +207,7 @@ class PayPeriodExtraAddFragment :
     private fun gotoPayDetailsFragment() {
         mView.findNavController().navigate(
             PayPeriodExtraAddFragmentDirections
-                .actionPayPeriodExtraAddFragmentToPayDetailFragment()
+                .actionPayPeriodExtraAddFragmentToPayDetailFragmentNew()
         )
     }
 
