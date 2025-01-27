@@ -142,26 +142,31 @@ class WorkDateExtraUpdateFragment
     }
 
     private fun chooseFixedOrPercent() {
-        binding.apply {
-            chkIsFixed.setOnClickListener {
-                etValue.setText(
-                    if (chkIsFixed.isChecked) {
-                        cf.displayDollars(
-                            cf.getDoubleFromDollarOrPercentString(
-                                etValue.text.toString()
-                            )
-                        )
-                    } else {
-                        cf.getPercentStringFromDouble(
-                            cf.getDoubleFromDollarOrPercentString(
-                                etValue.text.toString()
-                            ) / 100
-                        )
-                    }
-                )
-            }
+        binding.chkIsFixed.setOnClickListener {
+            changeTextToFixedOrPercentString()
         }
     }
+
+    private fun changeTextToFixedOrPercentString() {
+        binding.apply {
+            etValue.setText(
+                if (chkIsFixed.isChecked) {
+                    cf.displayDollars(
+                        cf.getDoubleFromDollarOrPercentString(
+                            etValue.text.toString()
+                        )
+                    )
+                } else {
+                    cf.getPercentStringFromDouble(
+                        cf.getDoubleFromDollarOrPercentString(
+                            etValue.text.toString()
+                        ) / 100
+                    )
+                }
+            )
+        }
+    }
+
 
     private fun deleteExtra() {
         binding.apply {

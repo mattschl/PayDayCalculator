@@ -114,24 +114,28 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
     }
 
     private fun chooseFixedOrPercent() {
+        binding.chkIsFixed.setOnClickListener {
+            changeTextToFixedOrPercentString()
+        }
+    }
+
+    private fun changeTextToFixedOrPercentString() {
         binding.apply {
-            chkIsFixed.setOnClickListener {
-                etValue.setText(
-                    if (chkIsFixed.isChecked) {
-                        cf.displayDollars(
-                            cf.getDoubleFromDollarOrPercentString(
-                                etValue.text.toString()
-                            )
+            etValue.setText(
+                if (chkIsFixed.isChecked) {
+                    cf.displayDollars(
+                        cf.getDoubleFromDollarOrPercentString(
+                            etValue.text.toString()
                         )
-                    } else {
-                        cf.getPercentStringFromDouble(
-                            cf.getDoubleFromDollarOrPercentString(
-                                etValue.text.toString()
-                            ) / 100
-                        )
-                    }
-                )
-            }
+                    )
+                } else {
+                    cf.getPercentStringFromDouble(
+                        cf.getDoubleFromDollarOrPercentString(
+                            etValue.text.toString()
+                        ) / 100
+                    )
+                }
+            )
         }
     }
 
@@ -156,6 +160,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
     }
 
     private fun validateExtra(): String {
+        changeTextToFixedOrPercentString()
         binding.apply {
             if (etExtraName.text.isNullOrBlank()) {
                 return getString(R.string.error_) +
@@ -203,10 +208,10 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
 
     private fun gotoCallingFragment() {
         mainActivity.mainViewModel.eraseWorkDateExtraList()
-        gotoorkDateUpdateFragment()
+        gotoWorkDateUpdateFragment()
     }
 
-    private fun gotoorkDateUpdateFragment() {
+    private fun gotoWorkDateUpdateFragment() {
         mView.findNavController().navigate(
             WorkDateExtraAddFragmentDirections
                 .actionWorkDateExtraAddFragmentToWorkDateUpdateFragment()
