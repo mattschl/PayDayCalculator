@@ -294,15 +294,9 @@ class PayDetailFragmentNew :
         CoroutineScope(Dispatchers.Main).launch {
             getCurrentPayPeriodObject()
             delay(WAIT_250)
-//            val payCalculationsAsync = PayCalculationsAsync(
-//                mainActivity, curEmployer!!, curPayPeriod!!
-//            )
             val payCalculations = PayCalculationsAsync(
                 mainActivity, curEmployer!!, curPayPeriod!!
             )
-//            val payCalculations = PayCalculationsAsync(
-//                mainActivity, curEmployer!!, curPayPeriod!!
-//            )
             delay(WAIT_1000)
             populateExtras(payCalculations)
             delay(WAIT_1500)

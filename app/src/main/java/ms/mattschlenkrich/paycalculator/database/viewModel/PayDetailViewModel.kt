@@ -28,4 +28,12 @@ class PayDetailViewModel(
 
     fun getWorkDates(employerId: Long, cutoffDate: String) =
         payDetailRepository.getWorkDates(employerId, cutoffDate)
+
+    fun getCustomWorkDateExtras(workDateId: Long) =
+        payDetailRepository.getCustomWorkDateExtras(workDateId)
+
+    fun getExtraTypeAndDefBy(employerId: Long, cutoffDate: String, attachTo: Int) =
+        payDetailRepository.getExtraTypeAndDefBy(
+            employerId, cutoffDate, attachTo
+        )
 }

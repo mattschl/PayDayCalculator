@@ -12,7 +12,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dimen_5dp"
             android:text="@string/extra_type"
-            android:textSize="@dimen/text_size_medium"
+            android:textSize="@dimen/label_text_size"
             android:textStyle="bold|italic"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

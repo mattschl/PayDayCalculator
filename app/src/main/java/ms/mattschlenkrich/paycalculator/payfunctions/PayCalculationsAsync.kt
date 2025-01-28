@@ -82,9 +82,10 @@ class PayCalculationsAsync(
             Log.d(TAG, "Total debits is $debits")
             var taxes = 0.0
             for (tax in taxAndAmountList) {
-                Log.d(TAG, "Tas of ${tax.amount} for ${tax.taxType}")
+                Log.d(TAG, "Tax of ${tax.amount} for ${tax.taxType}")
                 taxes += tax.amount
             }
+            Log.d(TAG, "Total taxes is $taxes")
             Log.d(TAG, "NET pay is ${credits + getPayAllHourly() - debits - taxes}")
             Log.d(TAG, "***************************************")
             //TODO: Find out how to use live data to signal the end
@@ -111,6 +112,17 @@ class PayCalculationsAsync(
         calculateTotalsBeforePercentageAdjustment()
         processDefaultExtraContainersByPercentageOfAll()
         calculateTotalPercentageOfAll()
+        calculateDeductions()
+    }
+
+    private suspend fun calculateDeductions() {
+        withContext(defaultScope) {
+            var subTotal = 0.0
+            for (debit in debitExtraContainers) {
+                subTotal += debit.amount
+            }
+            debitTotalsByPay = subTotal
+        }
     }
 
     private suspend fun processPayTotals() {
@@ -179,6 +191,7 @@ class PayCalculationsAsync(
                         TaxBasedOn.TimeWorkedStatsAndExtras.value -> getPayGross()
                         else -> 0.0
                     }
+                var currentBracket = 0.0
                 for (rule in taxRules) {
                     if (rule.wtType == type.taxType &&
                         runningRemainder > 0.0
@@ -519,8 +532,8 @@ class PayCalculationsAsync(
 
     private suspend fun getCustomExtrasByPayFromDb() {
         coroutineScope {
-            val customExtras = async { getCustomExtraByPayFromDb() }
-            customExtrasByPay = customExtras.await()
+            val customExtrasDeferred = async { getCustomExtraByPayFromDb() }
+            customExtrasByPay = customExtrasDeferred.await()
         }
     }
 

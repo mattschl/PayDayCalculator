@@ -2,6 +2,10 @@ package ms.mattschlenkrich.paycalculator.database.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.RewriteQueriesToDropUnusedColumns
+import androidx.room.Transaction
+import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraDefinitionAndType
+import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
 
 @Dao
@@ -67,4 +71,29 @@ interface PayDetailDao {
                 "ORDER BY wdDate"
     )
     fun getWorkDates(employerId: Long, cutoffDate: String): List<WorkDates>
+
+    @Query(
+        "SELECT * FROM workDateExtras " +
+                "WHERE wdeWorkDateId = :workDateId " +
+                "ORDER BY wdeName"
+    )
+    fun getCustomWorkDateExtras(workDateId: Long): List<WorkDateExtras>
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT *, MAX(weEffectiveDate) FROM workExtraTypes " +
+                "JOIN ( " +
+                "SELECT * FROM workExtrasDefinitions " +
+                "WHERE weEmployerId = :employerId " +
+                "AND weIsDeleted = 0 " +
+                "AND weEffectiveDate <= :cutoffDate " +
+                ") ON workExtraTypeId = weExtraTypeId " +
+                "WHERE wetEmployerId = :employerId " +
+                "AND wetAttachTo = :attachTo " +
+                "GROUP BY wetName " +
+                "ORDER BY wetAppliesTo, wetName"
+    )
+    fun getExtraTypeAndDefBy(employerId: Long, cutoffDate: String, attachTo: Int):
+            List<ExtraDefinitionAndType>
 }

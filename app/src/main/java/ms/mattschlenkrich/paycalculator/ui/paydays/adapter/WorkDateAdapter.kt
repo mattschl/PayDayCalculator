@@ -5,18 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkDateBinding
+import ms.mattschlenkrich.paycalculator.payfunctions.WorkDateExtraContainerCalculations
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.paydays.ITimeSheetFragment
 import ms.mattschlenkrich.paycalculator.ui.paydays.TimeSheetFragmentDirections
@@ -25,6 +30,7 @@ class WorkDateAdapter(
     private val mainActivity: MainActivity,
     private val curCutoff: String,
     private val curEmployer: Employers,
+    private val wage: Double,
     private val mView: View,
     private val timeSheetFragment: ITimeSheetFragment
 ) : RecyclerView.Adapter<WorkDateAdapter.WorkDateViewHolder>() {
@@ -63,6 +69,9 @@ class WorkDateAdapter(
         val workDate = differ.currentList[position]
         var display = df.getDisplayDate(workDate.wdDate)
         holder.itemBinding.apply {
+            val calculations = WorkDateExtraContainerCalculations(
+                mainActivity, workDate, wage, mView
+            )
             if (workDate.wdIsDeleted) {
                 display += mView.context.getString(R.string._deleted_)
                 tvWorkDate.setTextColor(Color.RED)
@@ -93,26 +102,32 @@ class WorkDateAdapter(
                         mView.context.getString(R.string.stat_vacation_hrs)
             }
             tvHours.text = display
-            val extrasAdapter = TimeSheetWorkDateExtraAdapter(mView)
-            rvExtras.apply {
-                layoutManager = LinearLayoutManager(
-                    mView.context, RecyclerView.HORIZONTAL, false
+//            val extrasAdapter = TimeSheetWorkDateExtraAdapter(mView)
+            CoroutineScope(Dispatchers.Main).launch {
+                val extrasAdapter = WorkDateExtraContainerAdapter(
+                    calculations.getExtraContainerList(), mView
                 )
-                adapter = extrasAdapter
-            }
-            mainActivity.let {
-                mainActivity.payDayViewModel.getWorkDateExtrasActive(
-                    workDate.workDateId
-                ).observe(mView.findViewTreeLifecycleOwner()!!) { list ->
-                    extrasAdapter.differ.submitList(list)
-//                    Log.d(TAG, "list for ${workDate.wdDate} has ${list.size} items")
-                    if (list.isEmpty()) {
-                        llExtras.visibility = View.GONE
-                    } else {
-                        llExtras.visibility = View.VISIBLE
-                    }
+                delay(WAIT_100)
+                rvExtras.apply {
+                    layoutManager = LinearLayoutManager(
+                        mView.context, RecyclerView.HORIZONTAL, false
+                    )
+                    adapter = extrasAdapter
                 }
             }
+//            mainActivity.let {
+//                mainActivity.payDayViewModel.getWorkDateExtrasActive(
+//                    workDate.workDateId
+//                ).observe(mView.findViewTreeLifecycleOwner()!!) { list ->
+//                    extrasAdapter.differ.submitList(list)
+////                    Log.d(TAG, "list for ${workDate.wdDate} has ${list.size} items")
+//                    if (list.isEmpty()) {
+//                        llExtras.visibility = View.GONE
+//                    } else {
+//                        llExtras.visibility = View.VISIBLE
+//                    }
+//                }
+//            }
             holder.itemView.setOnClickListener {
                 chooseOptionsForDate(workDate)
             }

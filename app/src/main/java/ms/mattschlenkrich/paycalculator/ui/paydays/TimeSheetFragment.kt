@@ -49,6 +49,7 @@ class TimeSheetFragment :
     private val nf = NumberFunctions()
     private val df = DateFunctions()
     private var workDateAdapter: WorkDateAdapter? = null
+    private lateinit var payCalculations: PayCalculationsAsync
     private var valuesFilled = false
 
     override fun onCreateView(
@@ -205,11 +206,18 @@ class TimeSheetFragment :
                             if (spCutOff.selectedItem.toString() !=
                                 getString(R.string.generate_a_new_cut_off)
                             ) {
-                                curCutOff = spCutOff.selectedItem.toString()
-                                if (valuesFilled) mainActivity.mainViewModel.setCutOffDate(curCutOff)
-                                populatePayDayDate()
-                                populateExistingWorkDates()
-                                populatePayDetails()
+                                CoroutineScope(Dispatchers.Default).launch {
+                                    curCutOff = spCutOff.selectedItem.toString()
+                                    if (valuesFilled) mainActivity.mainViewModel.setCutOffDate(
+                                        curCutOff
+                                    )
+                                    populatePayDayDate()
+                                    populatePayDetails()
+                                }
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    delay(WAIT_1000)
+                                    populateExistingWorkDates()
+                                }
                             } else {
                                 generateNewCutOff()
                             }
@@ -228,10 +236,11 @@ class TimeSheetFragment :
     private fun populatePayDayDate() {
         if (curCutOff != "" && curEmployer != null) {
             binding.apply {
-                val display = df.getDisplayDate(
-                    LocalDate.parse(curCutOff)
-                        .plusDays(curEmployer!!.cutoffDaysBefore.toLong()).toString()
-                ) + getString(R.string.__pay_summary)
+                val display = getString(R.string.pay_day_is_) +
+                        df.getDisplayDate(
+                            LocalDate.parse(curCutOff)
+                                .plusDays(curEmployer!!.cutoffDaysBefore.toLong()).toString()
+                        )
                 tvPaySummary.text = display
             }
         }
@@ -241,7 +250,12 @@ class TimeSheetFragment :
         binding.apply {
             workDateAdapter = null
             workDateAdapter = WorkDateAdapter(
-                mainActivity, curCutOff, curEmployer!!, mView, this@TimeSheetFragment
+                mainActivity,
+                curCutOff,
+                curEmployer!!,
+                payCalculations.getPayRate(),
+                mView,
+                this@TimeSheetFragment
             )
             rvDates.apply {
                 layoutManager = LinearLayoutManager(mView.context)
@@ -260,15 +274,12 @@ class TimeSheetFragment :
     }
 
     override fun populatePayDetails() {
-        getSelectedPayPeriodObject()
         CoroutineScope(Dispatchers.Main).launch {
+            getSelectedPayPeriodObject()
             delay(WAIT_250)
-            val payCalculations = PayCalculationsAsync(
+            payCalculations = PayCalculationsAsync(
                 mainActivity, curEmployer!!, curPayPeriod!!
             )
-//            val payCalculationsAsync = PayCalculationsAsync(
-//                mainActivity, curEmployer!!, curPayPeriod!!
-//            )
             delay(WAIT_1000)
             binding.apply {
                 var display = nf.displayDollars(
@@ -371,12 +382,11 @@ class TimeSheetFragment :
         mainActivity.payDayViewModel.getPayPeriod(
             binding.spCutOff.selectedItem.toString(),
             curEmployer!!.employerId
-        ).observe(
-            viewLifecycleOwner
-        ) { payPeriod ->
+        ).observe(viewLifecycleOwner) { payPeriod ->
             curPayPeriod = payPeriod
-            mainActivity.mainViewModel.setPayPeriod(payPeriod)
         }
+        mainActivity.mainViewModel.setPayPeriod(curPayPeriod)
+
     }
 
     private fun gotoNewWorkDate() {

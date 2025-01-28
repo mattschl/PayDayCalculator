@@ -23,4 +23,12 @@ class PayDetailRepository(private val db: PayDatabase) {
 
     fun getWorkDates(employerId: Long, cutoffDate: String) =
         db.getPayDetailDao().getWorkDates(employerId, cutoffDate)
+
+    fun getCustomWorkDateExtras(workDateId: Long) =
+        db.getPayDetailDao().getCustomWorkDateExtras(workDateId)
+
+    fun getExtraTypeAndDefBy(employerId: Long, cutoffDate: String, attachTo: Int) =
+        db.getPayDetailDao().getExtraTypeAndDefBy(
+            employerId, cutoffDate, attachTo
+        )
 }

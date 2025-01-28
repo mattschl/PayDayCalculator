@@ -160,7 +160,7 @@
     <string name="general_job_description">General Job Description</string>
     <string name="generate_a_new_cut_off">* Generate a new Cut Off</string>
     <string name="go_back">Go Back</string>
-    <string name="gross_">"Gross "</string>
+    <string name="gross_">"Gross: "</string>
     <string name="gross_pay">Gross Pay</string>
     <string name="has_exemption_amount">Has Exemption Amount</string>
     <string name="has_upper_limit">Has Upper Limit</string>
@@ -218,7 +218,7 @@
     <string name="pay_cutoff_">" Pay Cutoff: "</string>
     <string name="pay_day_frequency">Pay Day Frequency</string>
     <string name="pay_day_is_">"Pay Day is "</string>
-    <string name="pay_day">Pay Day</string>
+    <string name="pay_day">Pay Day </string>
     <string name="pay_details">Pay Details</string>
     <string name="pay_extras">Pay Extras</string>
     <string name="pay_rate">Pay Rate</string>
@@ -381,5 +381,7 @@
     <string name="would_you_like_to_save_this_date_now_and_continue">Would you like to save this date now and continue?</string>
     <string name="save_now">Save Now</string>
     <string name="db_name">pay.db</string>
+    <string name="__time_sheet">" - time sheet"</string>
+    <string name="__summary">" - Summary"</string>
 
 </resources>
