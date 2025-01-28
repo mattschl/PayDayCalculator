@@ -65,30 +65,30 @@ class PayCalculationsAsync(
             getListsFromDb()
             processExtraContainers()
             processPayTotals()
-            var credits = 0.0
-            for (credit in getCredits()) {
-                credits += credit.amount
-                Log.d(TAG, "credit is ${credit.amount} for ${credit.extraName}")
-            }
-            Log.d(
-                TAG, "Total credits is $credits + Total Hourly is ${getPayAllHourly()} for a " +
-                        "total gross pay of ${credits + getPayAllHourly()}"
-            )
-            var debits = 0.0
-            for (debit in debitExtraContainers) {
-                Log.d(TAG, "debit is ${debit.amount} for ${debit.extraName}")
-                debits += debit.amount
-            }
-            Log.d(TAG, "Total debits is $debits")
-            var taxes = 0.0
-            for (tax in taxAndAmountList) {
-                Log.d(TAG, "Tax of ${tax.amount} for ${tax.taxType}")
-                taxes += tax.amount
-            }
-            Log.d(TAG, "Total taxes is $taxes")
-            Log.d(TAG, "NET pay is ${credits + getPayAllHourly() - debits - taxes}")
-            Log.d(TAG, "***************************************")
-            //TODO: Find out how to use live data to signal the end
+//            var credits = 0.0
+//            for (credit in getCredits()) {
+//                credits += credit.amount
+//                Log.d(TAG, "credit is ${credit.amount} for ${credit.extraName}")
+//            }
+//            Log.d(
+//                TAG, "Total credits is $credits + Total Hourly is ${getPayAllHourly()} for a " +
+//                        "total gross pay of ${credits + getPayAllHourly()}"
+//            )
+//            var debits = 0.0
+//            for (debit in debitExtraContainers) {
+//                Log.d(TAG, "debit is ${debit.amount} for ${debit.extraName}")
+//                debits += debit.amount
+//            }
+//            Log.d(TAG, "Total debits is $debits")
+//            var taxes = 0.0
+//            for (tax in taxAndAmountList) {
+//                Log.d(TAG, "Tax of ${tax.amount} for ${tax.taxType}")
+//                taxes += tax.amount
+//            }
+//            Log.d(TAG, "Total taxes is $taxes")
+//            Log.d(TAG, "NET pay is ${credits + getPayAllHourly() - debits - taxes}")
+//            Log.d(TAG, "***************************************")
+//            //TODO: Find out how to use live data to signal the end
         }
     }
 
@@ -212,51 +212,6 @@ class PayCalculationsAsync(
                             taxable = getTotalAdjustedForTax(rule.wtBracketAmount - previousBracket)
                             runningRemainder -= getTotalAdjustedForTax(rule.wtBracketAmount - previousBracket)
                             previousBracket = rule.wtBracketAmount
-                        } else {
-                            taxable = runningRemainder
-                            runningRemainder = 0.0
-                        }
-                        taxTotal += taxable * rule.wtPercent
-                    }
-                }
-                taxAndAmountList.add(
-                    TaxAndAmount(
-                        type.taxType, taxTotal
-                    )
-                )
-            }
-        }
-
-    private suspend fun calculateTaxAndAmounts() =
-        withContext(defaultScope) {
-            for (type in taxTypes) {
-                var taxTotal = 0.0
-                var runningRemainder =
-                    when (type.ttBasedOn) {
-                        TaxBasedOn.TimeWorkedOnly.value -> getPayTimeWorked()
-                        TaxBasedOn.TimeWorkedAndStat.value -> getPayAllHourly()
-                        TaxBasedOn.TimeWorkedStatsAndExtras.value -> getPayGross()
-                        else -> 0.0
-                    }
-                for (rule in taxRules) {
-                    if (rule.wtType == type.taxType &&
-                        runningRemainder > 0.0
-                    ) {
-                        var taxable: Double
-                        runningRemainder -=
-                            if (rule.wtHasExemption) {
-                                getTotalAdjustedForTax(rule.wtExemptionAmount)
-                            } else {
-                                0.0
-                            }
-                        if (runningRemainder < 0.0) {
-                            runningRemainder = 0.0
-                        }
-                        if (rule.wtHasBracket &&
-                            runningRemainder >= getTotalAdjustedForTax(rule.wtBracketAmount)
-                        ) {
-                            taxable = getTotalAdjustedForTax(rule.wtBracketAmount)
-                            runningRemainder -= getTotalAdjustedForTax(rule.wtBracketAmount)
                         } else {
                             taxable = runningRemainder
                             runningRemainder = 0.0
