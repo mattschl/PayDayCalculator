@@ -115,6 +115,12 @@ class PayCalculationsAsync(
         calculateDeductions()
     }
 
+    private suspend fun processPayTotals() {
+//        calculateTaxAndAmounts()
+        calculateTaxesAndPopulateList()
+        calculateTaxTotal()
+    }
+
     private suspend fun calculateDeductions() {
         withContext(defaultScope) {
             var subTotal = 0.0
@@ -123,11 +129,6 @@ class PayCalculationsAsync(
             }
             debitTotalsByPay = subTotal
         }
-    }
-
-    private suspend fun processPayTotals() {
-        calculateTaxAndAmounts()
-        calculateTaxTotal()
     }
 
 
@@ -180,6 +181,52 @@ class PayCalculationsAsync(
             }
         }
 
+    private suspend fun calculateTaxesAndPopulateList() =
+        withContext(defaultScope) {
+            for (type in taxTypes) {
+                var taxTotal = 0.0
+                var runningRemainder =
+                    when (type.ttBasedOn) {
+                        TaxBasedOn.TimeWorkedOnly.value -> getPayTimeWorked()
+                        TaxBasedOn.TimeWorkedAndStat.value -> getPayAllHourly()
+                        TaxBasedOn.TimeWorkedStatsAndExtras.value -> getPayGross()
+                        else -> 0.0
+                    }
+                var previousBracket = 0.0
+                for (rule in taxRules.filter { rule -> rule.wtType == type.taxType }) {
+                    if (runningRemainder > 0.0
+                    ) {
+                        var taxable: Double
+                        runningRemainder -=
+                            if (rule.wtHasExemption) {
+                                getTotalAdjustedForTax(rule.wtExemptionAmount)
+                            } else {
+                                0.0
+                            }
+                        if (runningRemainder < 0.0) {
+                            runningRemainder = 0.0
+                        }
+                        if (rule.wtHasBracket &&
+                            runningRemainder >= getTotalAdjustedForTax(rule.wtBracketAmount - previousBracket)
+                        ) {
+                            taxable = getTotalAdjustedForTax(rule.wtBracketAmount - previousBracket)
+                            runningRemainder -= getTotalAdjustedForTax(rule.wtBracketAmount - previousBracket)
+                            previousBracket = rule.wtBracketAmount
+                        } else {
+                            taxable = runningRemainder
+                            runningRemainder = 0.0
+                        }
+                        taxTotal += taxable * rule.wtPercent
+                    }
+                }
+                taxAndAmountList.add(
+                    TaxAndAmount(
+                        type.taxType, taxTotal
+                    )
+                )
+            }
+        }
+
     private suspend fun calculateTaxAndAmounts() =
         withContext(defaultScope) {
             for (type in taxTypes) {
@@ -191,7 +238,6 @@ class PayCalculationsAsync(
                         TaxBasedOn.TimeWorkedStatsAndExtras.value -> getPayGross()
                         else -> 0.0
                     }
-                var currentBracket = 0.0
                 for (rule in taxRules) {
                     if (rule.wtType == type.taxType &&
                         runningRemainder > 0.0
@@ -199,7 +245,7 @@ class PayCalculationsAsync(
                         var taxable: Double
                         runningRemainder -=
                             if (rule.wtHasExemption) {
-                                getTaxFactor(rule.wtExemptionAmount)
+                                getTotalAdjustedForTax(rule.wtExemptionAmount)
                             } else {
                                 0.0
                             }
@@ -207,10 +253,10 @@ class PayCalculationsAsync(
                             runningRemainder = 0.0
                         }
                         if (rule.wtHasBracket &&
-                            runningRemainder >= getTaxFactor(rule.wtBracketAmount)
+                            runningRemainder >= getTotalAdjustedForTax(rule.wtBracketAmount)
                         ) {
-                            taxable = getTaxFactor(rule.wtBracketAmount)
-                            runningRemainder -= getTaxFactor(rule.wtBracketAmount)
+                            taxable = getTotalAdjustedForTax(rule.wtBracketAmount)
+                            runningRemainder -= getTotalAdjustedForTax(rule.wtBracketAmount)
                         } else {
                             taxable = runningRemainder
                             runningRemainder = 0.0
@@ -675,15 +721,15 @@ class PayCalculationsAsync(
                 .getTaxRules(effectiveDate)
         }
 
-    private fun getTaxFactor(amount: Double): Double {
+    private fun getTotalAdjustedForTax(amount: Double): Double {
         if (taxFactor == 0.0) {
             when (employer.payFrequency) {
                 "Bi-Weekly" -> {
-                    taxFactor = amount / 26
+                    taxFactor = 26.0
                 }
 
                 "Weekly" -> {
-                    taxFactor = amount / 52
+                    taxFactor = 52.0
                 }
 //
 //                "Semi-Monthly" -> {
@@ -699,7 +745,7 @@ class PayCalculationsAsync(
                 }
             }
         }
-        return taxFactor
+        return amount / taxFactor
     }
 
     override fun getDebitTotalsByPay(): Double {
