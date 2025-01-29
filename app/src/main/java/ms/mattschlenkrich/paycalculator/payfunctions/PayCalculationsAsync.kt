@@ -152,7 +152,7 @@ class PayCalculationsAsync(
                         else -> extra.ppeValue
                     }
                 }
-                Log.d(TAG, "-------- value of $total for ${extra.ppeName} ---------")
+//                Log.d(TAG, "-------- value of $total for ${extra.ppeName} ---------")
                 val newExtraContainer = ExtraContainer(
                     extra.ppeName,
                     total,
@@ -184,7 +184,7 @@ class PayCalculationsAsync(
     private suspend fun calculateTaxesAndPopulateList() =
         withContext(defaultScope) {
             for (type in taxTypes) {
-                var taxTotal = 0.0
+                var subTotal = 0.0
                 var runningRemainder =
                     when (type.ttBasedOn) {
                         TaxBasedOn.TimeWorkedOnly.value -> getPayTimeWorked()
@@ -192,36 +192,48 @@ class PayCalculationsAsync(
                         TaxBasedOn.TimeWorkedStatsAndExtras.value -> getPayGross()
                         else -> 0.0
                     }
+                Log.d(TAG, "\n------------------------------------------------------")
+                Log.d(TAG, "tax rules size is ${taxRules.size}")
                 var previousBracket = 0.0
-                for (rule in taxRules.filter { rule -> rule.wtType == type.taxType }) {
+                val tDefinitions = taxRules.filter { tRule -> tRule.wtType == type.taxType }
+                Log.d(TAG, "size of filtered list is ${tDefinitions.size}")
+                for (rule in tDefinitions) {
+                    Log.d(TAG, "calculating level ${rule.wtLevel}")
                     if (runningRemainder > 0.0
                     ) {
                         var taxable: Double
+                        Log.d(TAG, "Tax calculations for ${type.taxType}")
+                        Log.d(TAG, "Running remainder BEFORE exemption $runningRemainder")
                         runningRemainder -=
                             if (rule.wtHasExemption) {
                                 getTotalAdjustedForTax(rule.wtExemptionAmount)
                             } else {
                                 0.0
                             }
+                        Log.d(TAG, "Running remainder AFTER exemption $runningRemainder")
                         if (runningRemainder < 0.0) {
                             runningRemainder = 0.0
                         }
                         if (rule.wtHasBracket &&
                             runningRemainder >= getTotalAdjustedForTax(rule.wtBracketAmount - previousBracket)
                         ) {
+                            Log.d(TAG, "Bracket is ${rule.wtBracketAmount}")
                             taxable = getTotalAdjustedForTax(rule.wtBracketAmount - previousBracket)
-                            runningRemainder -= getTotalAdjustedForTax(rule.wtBracketAmount - previousBracket)
+                            Log.d(TAG, "taxable = $taxable")
+                            runningRemainder -= taxable
                             previousBracket = rule.wtBracketAmount
                         } else {
                             taxable = runningRemainder
                             runningRemainder = 0.0
                         }
-                        taxTotal += taxable * rule.wtPercent
+                        Log.d(TAG, "New running remainder is $runningRemainder")
+                        subTotal += taxable * rule.wtPercent
+                        Log.d(TAG, "running tax total is $subTotal")
                     }
                 }
                 taxAndAmountList.add(
                     TaxAndAmount(
-                        type.taxType, taxTotal
+                        type.taxType, subTotal
                     )
                 )
             }

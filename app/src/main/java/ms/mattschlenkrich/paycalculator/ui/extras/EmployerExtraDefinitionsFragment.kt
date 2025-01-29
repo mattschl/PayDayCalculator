@@ -23,7 +23,7 @@ import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerExtraDefinitionsBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.employer.adapter.EmployerExtraDefinitionFullAdapter
+import ms.mattschlenkrich.paycalculator.ui.extras.adapter.EmployerExtraDefinitionFullAdapter
 
 private const val TAG = FRAG_EXTRA_DEFINITIONS
 

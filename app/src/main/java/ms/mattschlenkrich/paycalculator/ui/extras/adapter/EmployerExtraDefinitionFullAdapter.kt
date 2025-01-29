@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.employer.adapter
+package ms.mattschlenkrich.paycalculator.ui.extras.adapter
 
 import android.app.AlertDialog
 import android.graphics.Color
@@ -96,11 +96,11 @@ class EmployerExtraDefinitionFullAdapter(
                 tvValue.setTextColor(Color.RED)
             }
             display += if (definition.definition.weIsFixed) {
-                cf.displayDollars(
+                " " + cf.displayDollars(
                     definition.definition.weValue
                 )
             } else {
-                cf.getPercentStringFromDouble(
+                " " + cf.getPercentStringFromDouble(
                     definition.definition.weValue / 100
                 )
             }
