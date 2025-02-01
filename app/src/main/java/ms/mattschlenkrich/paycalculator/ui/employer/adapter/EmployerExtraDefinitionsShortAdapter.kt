@@ -69,7 +69,6 @@ class EmployerExtraDefinitionsShortAdapter(
                 gotoExtraUpdate(extra)
             }
         }
-
     }
 
     private fun updateEmployerExtra(extra: WorkExtraTypes, checked: Boolean) {

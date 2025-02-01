@@ -62,6 +62,7 @@ class ExtraTypeAdapter
             holder.itemView.setOnLongClickListener {
                 //set up to go to item
                 //TODO: add the functionality
+
                 false
             }
         }

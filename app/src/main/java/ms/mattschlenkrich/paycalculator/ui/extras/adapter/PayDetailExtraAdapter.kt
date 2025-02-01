@@ -16,7 +16,6 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_PAY_DETAILS
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
-import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkPayPeriodExtras
 import ms.mattschlenkrich.paycalculator.databinding.ListPayDetailExtraItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
@@ -78,7 +77,7 @@ class PayDetailExtraAdapter(
             chActive.setOnClickListener {
                 insertOrUpdateExtra(extra, !chActive.isChecked)
                 CoroutineScope(Dispatchers.Main).launch {
-                    delay(WAIT_500)
+                    delay(WAIT_250)
                     parentFragment.populatePayDetails()
                 }
             }

@@ -45,8 +45,6 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
     private lateinit var mainActivity: MainActivity
     private lateinit var employerViewModel: EmployerViewModel
     private val df = DateFunctions()
-
-    // private val cf = NumberFunctions()
     private val employerList = ArrayList<Employers>()
     private var curEmployer: Employers? = null
     private var startDate = ""
@@ -77,7 +75,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
             if (mainActivity.mainViewModel.getEmployer() != null) {
                 curEmployer = mainActivity.mainViewModel.getEmployer()!!
                 binding.apply {
-                    mainActivity.title = getString(R.string.update) +
+                    mainActivity.title = getString(R.string.update) + " " +
                             curEmployer!!.employerName
                     etName.setText(curEmployer!!.employerName)
                     for (i in 0 until spFrequency.adapter.count) {

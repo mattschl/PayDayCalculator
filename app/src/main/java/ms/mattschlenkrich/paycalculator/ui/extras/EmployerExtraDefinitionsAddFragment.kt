@@ -162,7 +162,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                 curDateAll[1].toInt() - 1,
                 curDateAll[2].toInt()
             )
-            datePickerDialog.setTitle("Choose when this will take effect")
+            datePickerDialog.setTitle(getString(R.string.choose_when_this_will_take_effect))
             datePickerDialog.show()
         }
     }

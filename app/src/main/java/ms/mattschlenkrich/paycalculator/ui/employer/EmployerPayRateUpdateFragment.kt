@@ -129,8 +129,8 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
     private fun validatePayRate(): String {
         binding.apply {
             return if (etWage.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "There has to be a wage to save"
+                getString(R.string.error_) +
+                        getString(R.string.there_has_to_be_a_wage_to_save)
             } else {
                 ANSWER_OK
             }
@@ -211,5 +211,4 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         super.onDestroy()
         _binding = null
     }
-
 }
