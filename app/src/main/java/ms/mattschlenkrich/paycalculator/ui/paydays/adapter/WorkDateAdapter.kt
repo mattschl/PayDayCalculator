@@ -70,7 +70,7 @@ class WorkDateAdapter(
         var display = df.getDisplayDate(workDate.wdDate)
         holder.itemBinding.apply {
             val calculations = WorkDateExtraContainerCalculations(
-                mainActivity, workDate, wage, mView
+                mainActivity, workDate, wage,
             )
             if (workDate.wdIsDeleted) {
                 display += mView.context.getString(R.string._deleted_)
@@ -115,19 +115,6 @@ class WorkDateAdapter(
                     adapter = extrasAdapter
                 }
             }
-//            mainActivity.let {
-//                mainActivity.payDayViewModel.getWorkDateExtrasActive(
-//                    workDate.workDateId
-//                ).observe(mView.findViewTreeLifecycleOwner()!!) { list ->
-//                    extrasAdapter.differ.submitList(list)
-////                    Log.d(TAG, "list for ${workDate.wdDate} has ${list.size} items")
-//                    if (list.isEmpty()) {
-//                        llExtras.visibility = View.GONE
-//                    } else {
-//                        llExtras.visibility = View.VISIBLE
-//                    }
-//                }
-//            }
             holder.itemView.setOnClickListener {
                 chooseOptionsForDate(workDate)
             }

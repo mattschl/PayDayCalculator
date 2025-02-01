@@ -44,5 +44,12 @@ class WorkDateExtraContainerAdapter(
                     cf.displayDollars(extra.amount)
             tvExtra.text = display
         }
+        holder.itemView.setOnClickListener {
+            gotoEditDate(extra.workDateExtra!!.wdeWorkDateId)
+        }
+    }
+
+    private fun gotoEditDate(wdeWorkDateId: Long) {
+        //TODO: create the navigation action
     }
 }

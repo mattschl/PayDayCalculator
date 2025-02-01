@@ -3,7 +3,6 @@ package ms.mattschlenkrich.paycalculator.ui.tax.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -12,10 +11,11 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.tax.WorkTaxRules
 import ms.mattschlenkrich.paycalculator.databinding.ListTaxRuleItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.tax.TaxRulesFragmentDirections
+import ms.mattschlenkrich.paycalculator.ui.tax.TaxRulesFragment
 
 class TaxRuleAdapter(
     private val mainActivity: MainActivity,
+    private val parentFragment: TaxRulesFragment,
     private val mView: View
 ) : RecyclerView.Adapter<TaxRuleAdapter.TaxRuleViewHolder>() {
 
@@ -90,13 +90,7 @@ class TaxRuleAdapter(
 
     private fun chooseOptions(taxRule: WorkTaxRules) {
         mainActivity.mainViewModel.setTaxRule(taxRule)
-        gotoTaxRuleUpdateFragment()
+        parentFragment.gotoTaxRuleUpdateFragment()
     }
 
-    private fun gotoTaxRuleUpdateFragment() {
-        mView.findNavController().navigate(
-            TaxRulesFragmentDirections
-                .actionTaxRulesFragmentToTaxRuleUpdateFragment()
-        )
-    }
 }

@@ -94,7 +94,7 @@ class EmployerPayRatesFragment :
         if (curEmployer != null) {
             binding.apply {
                 val payRateAdapter = EmployerWageAdapter(
-                    mainActivity, mView, curEmployer!!, TAG
+                    mainActivity, mView, this@EmployerPayRatesFragment, curEmployer!!, TAG
                 )
                 rvWage.apply {
                     layoutManager = LinearLayoutManager(
@@ -183,6 +183,13 @@ class EmployerPayRatesFragment :
         mView.findNavController().navigate(
             EmployerPayRatesFragmentDirections
                 .actionEmployerPayRatesFragmentToEmployerPayRateAddFragment()
+        )
+    }
+
+    fun gotoEmployerWageUpdateFragment() {
+        mView.findNavController().navigate(
+            EmployerPayRatesFragmentDirections
+                .actionEmployerPayRatesFragmentToEmployerWageUpdateFragment()
         )
     }
 

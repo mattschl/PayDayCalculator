@@ -163,7 +163,7 @@ class TaxRulesFragment :
                     spEffectiveDate.adapter.count > 1
                 ) {
                     val taxRuleAdapter = TaxRuleAdapter(
-                        mainActivity, mView
+                        mainActivity, this@TaxRulesFragment, mView,
                     )
                     rvTaxRules.apply {
                         layoutManager = GridLayoutManager(
@@ -335,6 +335,13 @@ class TaxRulesFragment :
         mView.findNavController().navigate(
             TaxRulesFragmentDirections
                 .actionTaxRulesFragmentToTaxTypeAddFragment()
+        )
+    }
+
+    fun gotoTaxRuleUpdateFragment() {
+        mView.findNavController().navigate(
+            TaxRulesFragmentDirections
+                .actionTaxRulesFragmentToTaxRuleUpdateFragment()
         )
     }
 

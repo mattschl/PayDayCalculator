@@ -382,6 +382,13 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         )
     }
 
+    override fun gotoEmployerExtraDefinitionUpdateFragment() {
+        mView.findNavController().navigate(
+            EmployerExtraDefinitionsFragmentDirections
+                .actionEmployerExtraDefinitionsFragmentToEmployerExtraDefinitionUpdateFragment()
+        )
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null

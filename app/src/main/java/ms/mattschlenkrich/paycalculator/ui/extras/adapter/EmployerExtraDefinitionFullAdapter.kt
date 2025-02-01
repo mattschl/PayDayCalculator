@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -16,9 +15,7 @@ import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraDefTypeAndEmp
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtrasDefinitions
 import ms.mattschlenkrich.paycalculator.databinding.ListEmployerExtraDefinitonBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.employer.EmployerUpdateFragmentDirections
 import ms.mattschlenkrich.paycalculator.ui.employer.IEmployerUpdateFragment
-import ms.mattschlenkrich.paycalculator.ui.extras.EmployerExtraDefinitionsFragmentDirections
 import ms.mattschlenkrich.paycalculator.ui.extras.IEmployerExtraDefinitionsFragment
 
 class EmployerExtraDefinitionFullAdapter(
@@ -159,24 +156,7 @@ class EmployerExtraDefinitionFullAdapter(
         mainActivity.mainViewModel.setEmployerString(definition.employer.employerName)
         mainActivity.mainViewModel.setEmployer(definition.employer)
         mainActivity.mainViewModel.setExtraDefinitionFull(definition)
-        if (employerExtraDefinitionsFragment != null) {
-            gotoEmployerExtraDefinitionUpdateFragmentFromExtraDefinition()
-        } else if (employerUpdateFragment != null) {
-            gotoEmployerExtraDefinitionUpdateFragmentFromEmployerUpdate()
-        }
-    }
-
-    private fun gotoEmployerExtraDefinitionUpdateFragmentFromExtraDefinition() {
-        mView.findNavController().navigate(
-            EmployerExtraDefinitionsFragmentDirections
-                .actionEmployerExtraDefinitionsFragmentToEmployerExtraDefinitionUpdateFragment()
-        )
-    }
-
-    private fun gotoEmployerExtraDefinitionUpdateFragmentFromEmployerUpdate() {
-        mView.findNavController().navigate(
-            EmployerUpdateFragmentDirections
-                .actionEmployerUpdateFragmentToEmployerExtraDefinitionUpdateFragment()
-        )
+        employerExtraDefinitionsFragment?.gotoEmployerExtraDefinitionUpdateFragment()
+        employerUpdateFragment?.gotoEmployerExtraDefinitionUpdateFragment()
     }
 }

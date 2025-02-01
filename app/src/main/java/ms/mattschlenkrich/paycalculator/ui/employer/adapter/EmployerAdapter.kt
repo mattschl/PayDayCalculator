@@ -15,7 +15,7 @@ import ms.mattschlenkrich.paycalculator.ui.employer.EmployerFragment
 
 class EmployerAdapter(
     private val mainActivity: MainActivity,
-    private val employerFragment: EmployerFragment,
+    private val parentFragment: EmployerFragment,
     private val mView: View,
 ) :
     RecyclerView.Adapter<EmployerAdapter.EmployerViewHolder>() {
@@ -69,6 +69,6 @@ class EmployerAdapter(
 
     private fun gotoUpdateEmployer(employer: Employers) {
         mainActivity.mainViewModel.setEmployer(employer)
-        employerFragment.gotoEmployerUpdateFragment()
+        parentFragment.gotoEmployerUpdateFragment()
     }
 }

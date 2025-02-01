@@ -1,9 +1,7 @@
 package ms.mattschlenkrich.paycalculator.ui.employer.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -12,12 +10,12 @@ import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paycalculator.databinding.ListEmployerExtraItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.employer.EmployerUpdateFragmentDirections
+import ms.mattschlenkrich.paycalculator.ui.employer.EmployerUpdateFragment
 
 class EmployerExtraDefinitionsShortAdapter(
     private val employer: Employers,
     private val mainActivity: MainActivity,
-    private val mView: View,
+    private val parentFragment: EmployerUpdateFragment,
 ) : RecyclerView.Adapter<EmployerExtraDefinitionsShortAdapter.DefinitionViewHolder>() {
 
     private val df = DateFunctions()
@@ -96,13 +94,6 @@ class EmployerExtraDefinitionsShortAdapter(
         mainActivity.mainViewModel.setEmployerString(employer.employerName)
         mainActivity.mainViewModel.setEmployer(employer)
         mainActivity.mainViewModel.setWorkExtraType(extra)
-        gotoEmployerExtraDefinitionsFragment()
-    }
-
-    private fun gotoEmployerExtraDefinitionsFragment() {
-        mView.findNavController().navigate(
-            EmployerUpdateFragmentDirections
-                .actionEmployerUpdateFragmentToEmployerExtraDefinitionsFragment()
-        )
+        parentFragment.gotoEmployerExtraDefinitionsFragment()
     }
 }

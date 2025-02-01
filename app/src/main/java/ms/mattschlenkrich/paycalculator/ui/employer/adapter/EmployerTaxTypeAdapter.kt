@@ -1,9 +1,7 @@
 package ms.mattschlenkrich.paycalculator.ui.employer.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -11,11 +9,9 @@ import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerTaxTypes
 import ms.mattschlenkrich.paycalculator.databinding.ListEmployerTaxItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.employer.EmployerUpdateFragment
-import ms.mattschlenkrich.paycalculator.ui.employer.EmployerUpdateFragmentDirections
 
 class EmployerTaxTypeAdapter(
     private val mainActivity: MainActivity,
-    private val mView: View,
     private val parentFragment: EmployerUpdateFragment,
 ) : RecyclerView.Adapter<EmployerTaxTypeAdapter.EmployerTaxViewHolder>() {
 
@@ -75,13 +71,7 @@ class EmployerTaxTypeAdapter(
 
     private fun gotoTaxRules(employerTaxType: EmployerTaxTypes) {
         mainActivity.mainViewModel.setTaxTypeString(employerTaxType.etrTaxType)
-        gotoaRulesFragment()
+        parentFragment.gotoRulesFragment()
     }
 
-    private fun gotoaRulesFragment() {
-        mView.findNavController().navigate(
-            EmployerUpdateFragmentDirections
-                .actionEmployerUpdateFragmentToTaxRulesFragment()
-        )
-    }
 }

@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -16,11 +15,12 @@ import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.databinding.ListWagesItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.employer.EmployerPayRatesFragmentDirections
+import ms.mattschlenkrich.paycalculator.ui.employer.EmployerPayRatesFragment
 
 class EmployerWageAdapter(
     private val mainActivity: MainActivity,
     private val mView: View,
+    private val parentFragment: EmployerPayRatesFragment,
     private val curEmployer: Employers,
     private val parentTag: String,
 ) : RecyclerView.Adapter<EmployerWageAdapter.WageViewHolder>() {
@@ -101,13 +101,6 @@ class EmployerWageAdapter(
         mainActivity.mainViewModel.setPayRate(wage)
         mainActivity.mainViewModel.setEmployer(curEmployer)
         mainActivity.mainViewModel.addCallingFragment(parentTag)
-        gotoEmployerWageUpdateFragment()
-    }
-
-    private fun gotoEmployerWageUpdateFragment() {
-        mView.findNavController().navigate(
-            EmployerPayRatesFragmentDirections
-                .actionEmployerPayRatesFragmentToEmployerWageUpdateFragment()
-        )
+        parentFragment.gotoEmployerWageUpdateFragment()
     }
 }

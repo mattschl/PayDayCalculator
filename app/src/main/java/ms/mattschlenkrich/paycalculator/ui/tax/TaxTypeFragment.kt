@@ -56,7 +56,7 @@ class TaxTypeFragment :
 
     private fun populateTaxTypeList() {
         taxTypeAdapter = TaxTypeAdapter(
-            mainActivity, mView
+            mainActivity, this@TaxTypeFragment, mView
         )
         binding.rvTaxTypes.apply {
             layoutManager = StaggeredGridLayoutManager(
@@ -139,6 +139,13 @@ class TaxTypeFragment :
         mView.findNavController().navigate(
             TaxTypeFragmentDirections
                 .actionTaxTypeFragmentToTaxTypeAddFragment()
+        )
+    }
+
+    fun gotoTaxTypeUpdateFragment() {
+        mView.findNavController().navigate(
+            TaxTypeFragmentDirections
+                .actionTaxTypeFragmentToTaxTypeUpdateFragment()
         )
     }
 

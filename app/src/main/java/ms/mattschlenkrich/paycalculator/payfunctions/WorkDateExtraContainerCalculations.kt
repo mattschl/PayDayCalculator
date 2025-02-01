@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paycalculator.payfunctions
 
-import android.view.View
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -18,7 +17,6 @@ class WorkDateExtraContainerCalculations(
     private val mainActivity: MainActivity,
     private val workDate: WorkDates,
     private val wage: Double,
-    private val mView: View
 ) {
     private lateinit var workDateExtraList: List<WorkDateExtras>
     private lateinit var extraDefinitionAndTypeList: List<ExtraDefinitionAndType>
@@ -42,7 +40,9 @@ class WorkDateExtraContainerCalculations(
                                 when (extra.wdeAppliesTo) {
                                     AppliesToFrequencies.Hourly.value -> {
                                         extra.wdeValue *
-                                                (workDate.wdRegHours + workDate.wdOtHours + workDate.wdDblOtHours)
+                                                (workDate.wdRegHours +
+                                                        workDate.wdOtHours +
+                                                        workDate.wdDblOtHours)
                                     }
 
                                     AppliesToFrequencies.Daily.value -> {
@@ -55,7 +55,9 @@ class WorkDateExtraContainerCalculations(
                                 }
                             } else {
                                 extra.wdeValue * wage *
-                                        (workDate.wdRegHours + workDate.wdOtHours + workDate.wdDblOtHours)
+                                        (workDate.wdRegHours +
+                                                workDate.wdOtHours * 1.5
+                                                + workDate.wdDblOtHours * 2)
 
                             }
                         if (amount > 0.0) {
@@ -84,7 +86,9 @@ class WorkDateExtraContainerCalculations(
                                 when (extra.extraType.wetAppliesTo) {
                                     AppliesToFrequencies.Hourly.value -> {
                                         extra.definition.weValue *
-                                                (workDate.wdRegHours + workDate.wdOtHours + workDate.wdDblOtHours)
+                                                (workDate.wdRegHours +
+                                                        workDate.wdOtHours +
+                                                        workDate.wdDblOtHours)
                                     }
 
                                     AppliesToFrequencies.Daily.value -> {

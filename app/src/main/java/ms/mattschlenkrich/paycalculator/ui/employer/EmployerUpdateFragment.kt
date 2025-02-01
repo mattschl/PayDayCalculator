@@ -142,7 +142,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
     override fun populateTaxes(employerId: Long) {
         binding.apply {
             val employerTaxTypeAdapter = EmployerTaxTypeAdapter(
-                mainActivity, mView, this@EmployerUpdateFragment
+                mainActivity, this@EmployerUpdateFragment
             )
             rvTaxes.apply {
                 layoutManager = LinearLayoutManager(mView.context)
@@ -162,7 +162,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
         binding.apply {
             val extraTypeAdapter =
                 EmployerExtraDefinitionsShortAdapter(
-                    curEmployer!!, mainActivity, mView
+                    curEmployer!!, mainActivity, this@EmployerUpdateFragment,
                 )
             rvExtras.apply {
                 layoutManager = LinearLayoutManager(mView.context)
@@ -353,7 +353,6 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
         )
         datePickerDialog.setTitle(getString(R.string.choose_the_first_date))
         datePickerDialog.show()
-
     }
 
     private fun deleteEmployer() {
@@ -434,6 +433,27 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
         mView.findNavController().navigate(
             EmployerUpdateFragmentDirections
                 .actionEmployerUpdateFragmentToEmployerExtraDefinitionsAddFragment()
+        )
+    }
+
+    fun gotoEmployerExtraDefinitionsFragment() {
+        mView.findNavController().navigate(
+            EmployerUpdateFragmentDirections
+                .actionEmployerUpdateFragmentToEmployerExtraDefinitionsFragment()
+        )
+    }
+
+    fun gotoRulesFragment() {
+        mView.findNavController().navigate(
+            EmployerUpdateFragmentDirections
+                .actionEmployerUpdateFragmentToTaxRulesFragment()
+        )
+    }
+
+    override fun gotoEmployerExtraDefinitionUpdateFragment() {
+        mView.findNavController().navigate(
+            EmployerUpdateFragmentDirections
+                .actionEmployerUpdateFragmentToEmployerExtraDefinitionUpdateFragment()
         )
     }
 
