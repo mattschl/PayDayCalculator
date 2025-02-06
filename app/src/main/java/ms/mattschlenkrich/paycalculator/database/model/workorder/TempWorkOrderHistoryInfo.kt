@@ -8,6 +8,8 @@ data class TempWorkOrderHistoryInfo(
     val woHistoryDblOtHours: Double,
     val woHistoryNote: String,
     val woWorkPerformed: String,
+    val woArea: String,
+    val woWorkPerformedNote: String,
     val woMaterialQty: Double,
     val woMaterial: String,
 )

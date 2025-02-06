@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Pay Calculator</string>
+    <string name="db_name">pay.db</string>
 
     <string name="__calculated">" - Calculated "</string>
     <string name="__current">" - CURRENT"</string>
@@ -380,8 +381,9 @@
     <string name="finish_adding_work_date">Finish adding work date</string>
     <string name="would_you_like_to_save_this_date_now_and_continue">Would you like to save this date now and continue?</string>
     <string name="save_now">Save Now</string>
-    <string name="db_name">pay.db</string>
     <string name="__time_sheet">" - time sheet"</string>
     <string name="__summary">" - Summary"</string>
+    <string name="area">Area</string>
+    <string name="area_optional">Area (optional)</string>
 
 </resources>

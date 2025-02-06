@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.paycalculator.database.model.workorder.Areas
 import ms.mattschlenkrich.paycalculator.database.model.workorder.JobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.Material
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
@@ -257,4 +258,13 @@ class WorkOrderViewModel(
             workOrderId
         )
 
+    fun insertArea(area: Areas) =
+        viewModelScope.launch {
+            workOrderRepository.insertArea(area)
+        }
+
+    fun updateArea(area: Areas) =
+        viewModelScope.launch { workOrderRepository.updateArea(area) }
+
+    fun getAreasList() = workOrderRepository.getAreasList()
 }

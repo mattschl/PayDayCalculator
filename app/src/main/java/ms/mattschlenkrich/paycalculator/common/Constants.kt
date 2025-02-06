@@ -3,7 +3,7 @@
 package ms.mattschlenkrich.paycalculator.common
 
 const val PAY_DB_NAME = "pay.db"
-const val PAY_DB_VERSION = 5
+const val PAY_DB_VERSION = 6
 
 const val PAY_PERIODS_LIMIT = 12
 
@@ -13,7 +13,7 @@ const val DATE_CHECK = "yyyy-MM-dd"
 
 //const val DATE_CHECK_WITH_YEAR = "?"
 const val DISPLAY_DATE = "EEE dd LLL"
-const val DISPLAY_DATE_WITH_YEAR = "EEE dd LLL /yy"
+//const val DISPLAY_DATE_WITH_YEAR = "EEE dd LLL /yy"
 
 const val TABLE_EMPLOYERS = "employers"
 const val EMPLOYER_ID = "employerId"
@@ -149,7 +149,7 @@ const val WAIT_500 = 500L
 //const val WAIT_750 = 750L
 const val WAIT_1000 = 1000L
 const val WAIT_1500 = 1500L
-const val WAIT_2000 = 2000L
+//const val WAIT_2000 = 2000L
 
 const val FRAG_EMPLOYERS = "Employers"
 const val FRAG_EMPLOYER_UPDATE = "EmployerUpdate"

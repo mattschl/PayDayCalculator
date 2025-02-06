@@ -14,5 +14,11 @@ data class WorkOrderHistoryWorkPerformedCombined(
         parentColumn = "wowpWorkPerformedId",
         entityColumn = "workPerformedId"
     )
-    val workPerformed: WorkPerformed
+    val workPerformed: WorkPerformed,
+    @Relation(
+        entity = Areas::class,
+        parentColumn = "wowpAreaId",
+        entityColumn = "areaId"
+    )
+    val area: Areas,
 ) : Parcelable

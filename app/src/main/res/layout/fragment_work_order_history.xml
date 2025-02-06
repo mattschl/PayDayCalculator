@@ -191,21 +191,10 @@
                 app:layout_constraintStart_toEndOf="@id/lblDblOtHours"
                 tools:ignore="DuplicateSpeakableTextCheck" />
 
-            <TextView
-                android:id="@+id/lblNote"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/note"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="italic"
-                app:layout_constraintBaseline_toBaselineOf="@id/etNote"
-                app:layout_constraintEnd_toStartOf="@id/etNote"
-                app:layout_constraintStart_toStartOf="parent" />
 
             <EditText
                 android:id="@+id/etNote"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/enter_note_optional"
                 android:importantForAutofill="no"
@@ -218,8 +207,9 @@
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/lblNote"
-                app:layout_constraintTop_toBottomOf="@id/etDblOtHours" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etDblOtHours"
+                tools:ignore="DuplicateSpeakableTextCheck,VisualLintTextFieldSize" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/crdWorkPerformed"
@@ -228,7 +218,7 @@
                 android:layout_margin="@dimen/dimen_8dp"
                 android:backgroundTint="@color/white"
                 android:elevation="10dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:cardCornerRadius="10dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/etNote">
@@ -241,19 +231,32 @@
                         android:id="@+id/lblWorkPerformed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/add_work_performed_below"
+                        android:text="@string/work_performed"
                         android:textColor="@color/black"
-                        android:textSize="20sp"
+                        android:textSize="@dimen/text_size_medium"
                         android:textStyle="italic"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/acWorkPerformed"
+                        app:layout_constraintStart_toStartOf="@+id/acWorkPerformed"
                         app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/lblArea"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/area"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_medium"
+                        android:textStyle="italic"
+                        app:layout_constraintBaseline_toBaselineOf="@id/lblWorkPerformed"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/acWorkPerformed" />
+
 
                     <AutoCompleteTextView
                         android:id="@+id/acWorkPerformed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="@string/start_typing_for_matches"
+                        android:hint="@string/work_performed"
                         android:importantForAutofill="no"
                         android:inputType="textMultiLine|textCapSentences"
                         android:maxWidth="@dimen/text_box_extra_wide"
@@ -263,10 +266,49 @@
                         android:textColor="@color/black"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        app:layout_constraintEnd_toStartOf="@id/btnAddWorkPerformed"
+                        app:layout_constraintEnd_toStartOf="@id/acArea"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/lblWorkPerformed"
                         tools:ignore="DuplicateSpeakableTextCheck" />
+
+                    <AutoCompleteTextView
+                        android:id="@+id/acArea"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/area_optional"
+                        android:importantForAutofill="no"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:maxWidth="@dimen/text_box_medium"
+                        android:minHeight="@dimen/minimum_touch_height"
+                        android:paddingStart="@dimen/dimen_20dp"
+                        android:paddingEnd="@dimen/dimen_20dp"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBaseline_toBaselineOf="@id/acWorkPerformed"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/acWorkPerformed"
+                        tools:ignore="DuplicateSpeakableTextCheck" />
+
+                    <EditText
+                        android:id="@+id/etWorkPerformedNote"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/enter_note_optional"
+                        android:importantForAutofill="no"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:maxWidth="@dimen/layout_width_wide"
+                        android:maxLines="3"
+                        android:minHeight="@dimen/minimum_touch_height"
+                        android:paddingStart="@dimen/dimen_20dp"
+                        android:paddingEnd="@dimen/dimen_20dp"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@id/btnAddWorkPerformed"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/acWorkPerformed"
+                        tools:ignore="VisualLintTextFieldSize" />
 
                     <Button
                         android:id="@+id/btnAddWorkPerformed"
@@ -274,9 +316,9 @@
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/green"
                         android:text="@string/add"
-                        app:layout_constraintBaseline_toBaselineOf="@id/acWorkPerformed"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/acWorkPerformed"
+                        app:layout_constraintStart_toEndOf="@id/etWorkPerformedNote"
+                        app:layout_constraintTop_toBottomOf="@id/acWorkPerformed"
                         tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck" />
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -286,7 +328,7 @@
                         android:layout_margin="@dimen/dimen_10dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/acWorkPerformed" />
+                        app:layout_constraintTop_toBottomOf="@id/etWorkPerformedNote" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

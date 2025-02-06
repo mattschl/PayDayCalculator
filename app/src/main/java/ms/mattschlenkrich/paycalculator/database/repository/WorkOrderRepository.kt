@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.paycalculator.database.repository
 
 import ms.mattschlenkrich.paycalculator.database.PayDatabase
+import ms.mattschlenkrich.paycalculator.database.model.workorder.Areas
 import ms.mattschlenkrich.paycalculator.database.model.workorder.JobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.Material
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
@@ -197,4 +198,12 @@ class WorkOrderRepository(private val db: PayDatabase) {
             workOrderId
         )
 
+    suspend fun insertArea(area: Areas) =
+        db.getWorkOrderDao().insertArea(area)
+
+    suspend fun updateArea(area: Areas) =
+        db.getWorkOrderDao().updateArea(area)
+
+    fun getAreasList() =
+        db.getWorkOrderDao().getAreasList()
 }

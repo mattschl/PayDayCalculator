@@ -384,6 +384,10 @@ class WorkOrderHistoryAddFragment :
                         "" else etNote.text.toString(),
                     if (acWorkPerformed.text.isNullOrBlank())
                         "" else acWorkPerformed.text.toString().trim(),
+                    if (acArea.text.isNullOrBlank())
+                        "" else acArea.text.toString().trim(),
+                    if (etNote.text.isNullOrBlank())
+                        "" else etNote.text.toString().trim(),
                     if (etMaterialQty.text.isNullOrBlank())
                         0.0 else etMaterialQty.text.toString().trim().toDouble(),
                     if (acMaterials.text.isNullOrBlank())

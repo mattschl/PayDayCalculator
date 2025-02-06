@@ -19,9 +19,14 @@ import kotlinx.parcelize.Parcelize
             entity = WorkPerformed::class,
             parentColumns = ["workPerformedId"],
             childColumns = ["wowpWorkPerformedId"]
-        )],
+        ), ForeignKey(
+            entity = Areas::class,
+            parentColumns = ["areaId"],
+            childColumns = ["wowpAreaId"]
+        )
+    ],
     indices = [Index(
-        value = ["wowpHistoryId", "wowpWorkPerformedId"],
+        value = ["wowpHistoryId", "wowpWorkPerformedId", "wowpAreaId"],
         unique = true
     )]
 )
@@ -33,6 +38,9 @@ data class WorkOrderHistoryWorkPerformed(
     val wowpHistoryId: Long,
     @ColumnInfo(index = true)
     val wowpWorkPerformedId: Long,
+    @ColumnInfo(index = true)
+    val wowpAreaId: Long?,
+    val wowpNote: String?,
     val wowpSequence: Int,
     val wowpIsDeleted: Boolean,
     val wowpUpdateTime: String,

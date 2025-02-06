@@ -117,6 +117,8 @@ class WorkOrderLookupAdapter(
                     history.woHistoryDblOtHours,
                     history.woHistoryNote,
                     history.woWorkPerformed,
+                    history.woArea,
+                    history.woHistoryNote,
                     history.woMaterialQty,
                     history.woMaterial
                 )

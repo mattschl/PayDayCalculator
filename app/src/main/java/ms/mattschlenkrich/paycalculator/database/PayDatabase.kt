@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_VERSION
 import ms.mattschlenkrich.paycalculator.database.dao.EmployerDao
@@ -29,6 +28,7 @@ import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkPayPeriodTa
 import ms.mattschlenkrich.paycalculator.database.model.tax.TaxEffectiveDates
 import ms.mattschlenkrich.paycalculator.database.model.tax.TaxTypes
 import ms.mattschlenkrich.paycalculator.database.model.tax.WorkTaxRules
+import ms.mattschlenkrich.paycalculator.database.model.workorder.Areas
 import ms.mattschlenkrich.paycalculator.database.model.workorder.JobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.Material
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
@@ -61,6 +61,7 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
         WorkOrderJobSpec::class,
         Material::class,
         WorkOrderHistoryMaterial::class,
+        Areas::class,
     ],
     views = [ExtraDefinitionAndType::class,
         ExtraTypeAndDefByDay::class],
@@ -94,8 +95,8 @@ abstract class PayDatabase : RoomDatabase() {
                 PayDatabase::class.java,
                 PAY_DB_NAME
             )
-//                .fallbackToDestructiveMigration()
-                .createFromAsset(context.getString(R.string.db_name))
+                .fallbackToDestructiveMigration()
+//                .createFromAsset(context.getString(R.string.db_name))
                 .build()
         }
     }

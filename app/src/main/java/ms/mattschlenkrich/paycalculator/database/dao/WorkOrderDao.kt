@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Update
+import ms.mattschlenkrich.paycalculator.database.model.workorder.Areas
 import ms.mattschlenkrich.paycalculator.database.model.workorder.JobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.Material
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
@@ -377,4 +378,17 @@ interface WorkOrderDao {
     )
     fun getMaterialsHistoryByWorkOrderId(workOrderId: Long):
             LiveData<List<WorkOrderHistoryMaterialCombined>>
+
+    @Insert
+    suspend fun insertArea(area: Areas)
+
+    @Update
+    suspend fun updateArea(area: Areas)
+
+    @Query(
+        "SELECT * FROM areas " +
+                "WHERE areaIsDeleted = 0 " +
+                "ORDER BY areaName"
+    )
+    fun getAreasList(): LiveData<List<Areas>>
 }
