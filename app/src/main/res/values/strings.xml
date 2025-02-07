@@ -391,5 +391,8 @@
     <string name="update_area_description_for">"Update Area Description for "</string>
     <string name="please_enter_a_valid_description_of_the_area">Please enter a valid description of the area!</string>
     <string name="this_area_description_already_exists">This Area Description already Exists!</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="edit_the_work_performed">Edit the Work Performed</string>
 
 </resources>

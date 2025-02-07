@@ -584,6 +584,9 @@
         <action
             android:id="@+id/action_workOrderHistoryUpdateFragment_to_areaUpdateFragment"
             app:destination="@id/areaUpdateFragment" />
+        <action
+            android:id="@+id/action_workOrderHistoryUpdateFragment_to_workOrderHistoryWorkPerformedUpdateFragment"
+            app:destination="@id/workOrderHistoryWorkPerformedUpdateFragment" />
     </fragment>
 
     <!--    action_global_workOrdersFragment-->
@@ -833,5 +836,15 @@
     <action
         android:id="@+id/action_global_areaViewFragment"
         app:destination="@id/areaViewFragment" />
+    <fragment
+        android:id="@+id/workOrderHistoryWorkPerformedUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderHistoryWorkPerformedUpdateFragment"
+        android:label="fragment_work_order_history_work_performed_update"
+        tools:layout="@layout/fragment_work_order_history_work_performed_update">
+        <action
+            android:id="@+id/action_workOrderHistoryWorkPerformedUpdateFragment_to_workOrderHistoryUpdateFragment"
+            app:destination="@id/workOrderHistoryUpdateFragment"
+            app:popUpTo="@id/workOrderHistoryUpdateFragment" />
+    </fragment>
 
 </navigation>

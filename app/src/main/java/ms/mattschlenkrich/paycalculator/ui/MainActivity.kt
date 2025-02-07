@@ -118,6 +118,7 @@ class MainActivity : AppCompatActivity() {
                 //                menu.add(getString(R.string.update_future_pay_dates))
                 menu.add(getString(R.string.view_work_order_list))
                 menu.add(getString(R.string.view_job_spec_list))
+                menu.add(getString(R.string.view_areas_list))
                 menu.add(getString(R.string.view_work_performed_list))
                 menu.add(getString(R.string.view_material_list))
                 menu.add(resources.getString(R.string.app_name))
@@ -145,6 +146,11 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
 
+                    getString(R.string.view_areas_list) -> {
+                        gotoAreasView()
+                        true
+                    }
+
                     getString(R.string.view_job_spec_list) -> {
                         gotoJobSpecs()
                         true
@@ -162,6 +168,12 @@ class MainActivity : AppCompatActivity() {
 
             }
         })
+    }
+
+    private fun gotoAreasView() {
+        findNavController(R.id.nav_host_fragment_container).navigate(
+            NavGraphDirections.actionGlobalAreaViewFragment()
+        )
     }
 
     private fun gotoWorkPerformedView() {

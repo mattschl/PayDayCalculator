@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paycalculator.payfunctions
 
-import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -24,7 +23,7 @@ import ms.mattschlenkrich.paycalculator.database.model.tax.TaxTypes
 import ms.mattschlenkrich.paycalculator.database.model.tax.WorkTaxRules
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
-private const val TAG = "PayCalculationsAsync"
+//private const val TAG = "PayCalculationsAsync"
 
 class PayCalculationsAsync(
     private val mainActivity: MainActivity,
@@ -192,43 +191,43 @@ class PayCalculationsAsync(
                         TaxBasedOn.TimeWorkedStatsAndExtras.value -> getPayGross()
                         else -> 0.0
                     }
-                Log.d(TAG, "\n------------------------------------------------------")
-                Log.d(TAG, "tax rules size is ${taxRules.size}")
+//                Log.d(TAG, "\n------------------------------------------------------")
+//                Log.d(TAG, "tax rules size is ${taxRules.size}")
                 var previousBracket = 0.0
                 val tDefinitions = taxRules.filter { tRule -> tRule.wtType == type.taxType }
-                Log.d(TAG, "size of filtered list is ${tDefinitions.size}")
+//                Log.d(TAG, "size of filtered list is ${tDefinitions.size}")
                 for (rule in tDefinitions) {
-                    Log.d(TAG, "calculating level ${rule.wtLevel}")
+//                    Log.d(TAG, "calculating level ${rule.wtLevel}")
                     if (runningRemainder > 0.0
                     ) {
                         var taxable: Double
-                        Log.d(TAG, "Tax calculations for ${type.taxType}")
-                        Log.d(TAG, "Running remainder BEFORE exemption $runningRemainder")
+//                        Log.d(TAG, "Tax calculations for ${type.taxType}")
+//                        Log.d(TAG, "Running remainder BEFORE exemption $runningRemainder")
                         runningRemainder -=
                             if (rule.wtHasExemption) {
                                 getTotalAdjustedForTax(rule.wtExemptionAmount)
                             } else {
                                 0.0
                             }
-                        Log.d(TAG, "Running remainder AFTER exemption $runningRemainder")
+//                        Log.d(TAG, "Running remainder AFTER exemption $runningRemainder")
                         if (runningRemainder < 0.0) {
                             runningRemainder = 0.0
                         }
                         if (rule.wtHasBracket &&
                             runningRemainder >= getTotalAdjustedForTax(rule.wtBracketAmount - previousBracket)
                         ) {
-                            Log.d(TAG, "Bracket is ${rule.wtBracketAmount}")
+//                            Log.d(TAG, "Bracket is ${rule.wtBracketAmount}")
                             taxable = getTotalAdjustedForTax(rule.wtBracketAmount - previousBracket)
-                            Log.d(TAG, "taxable = $taxable")
+//                            Log.d(TAG, "taxable = $taxable")
                             runningRemainder -= taxable
                             previousBracket = rule.wtBracketAmount
                         } else {
                             taxable = runningRemainder
                             runningRemainder = 0.0
                         }
-                        Log.d(TAG, "New running remainder is $runningRemainder")
+//                        Log.d(TAG, "New running remainder is $runningRemainder")
                         subTotal += taxable * rule.wtPercent
-                        Log.d(TAG, "running tax total is $subTotal")
+//                        Log.d(TAG, "running tax total is $subTotal")
                     }
                 }
                 taxAndAmountList.add(
@@ -387,10 +386,10 @@ class PayCalculationsAsync(
                                 extraAndDef.definition.weValue * getPayTimeWorked() / 100
                             }
                         }
-                    Log.d(
-                        TAG,
-                        "----- Value of $subTotal for ${extraAndDef.extraType.wetName} --------"
-                    )
+//                    Log.d(
+//                        TAG,
+//                        "----- Value of $subTotal for ${extraAndDef.extraType.wetName} --------"
+//                    )
                     val newExtraContainer = ExtraContainer(
                         extraAndDef.extraType.wetName,
                         subTotal,

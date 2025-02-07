@@ -50,7 +50,6 @@ private const val TAG = FRAG_WORK_ORDER_HISTORY_UPDATE
 class WorkOrderHistoryUpdateFragment :
     Fragment(R.layout.fragment_work_order_history), IWorkOrderHistoryUpdateFragment {
 
-    private var curArea: Areas? = null
     private var _binding: FragmentWorkOrderHistoryBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View
@@ -67,6 +66,7 @@ class WorkOrderHistoryUpdateFragment :
     private var materialListForAutoComplete = ArrayList<Material>()
     private var areaListForAutoComplete = ArrayList<Areas>()
     private var curWorkPerformed: WorkPerformed? = null
+    private var curArea: Areas? = null
     private var workPerformedSequence = 0
     private var curMaterial: Material? = null
     private var materialSequence = 0
@@ -370,7 +370,9 @@ class WorkOrderHistoryUpdateFragment :
         val workPerformedAdapter =
             WorKOrderHistoryWorkPerformedAdapter(
                 mainActivity,
+                this@WorkOrderHistoryUpdateFragment,
                 TAG,
+                curHistoryDetailed.history,
                 mView,
             )
         binding.rvWorkPerformed.apply {
@@ -887,6 +889,20 @@ class WorkOrderHistoryUpdateFragment :
         mView.findNavController().navigate(
             WorkOrderHistoryUpdateFragmentDirections
                 .actionWorkOrderHistoryUpdateFragmentToWorkOrderAddFragment()
+        )
+    }
+
+    fun gotoWorkOrderHistoryWorkPerformedUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkOrderHistoryUpdateFragmentDirections
+                .actionWorkOrderHistoryUpdateFragmentToWorkOrderHistoryWorkPerformedUpdateFragment()
+        )
+    }
+
+    fun gotoAreaUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkOrderHistoryUpdateFragmentDirections
+                .actionWorkOrderHistoryUpdateFragmentToAreaUpdateFragment()
         )
     }
 

@@ -9,15 +9,19 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformedInSequence
 import ms.mattschlenkrich.paycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
+import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderHistoryUpdateFragment
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderHistoryUpdateFragmentDirections
 
 class WorKOrderHistoryWorkPerformedAdapter(
-    val mainActivity: MainActivity,
-    val parentFragment: String,
-    val mView: View,
+    private val mainActivity: MainActivity,
+    private val workOrderHistoryUpdateFragment: WorkOrderHistoryUpdateFragment,
+    private val parentFragment: String,
+    private val curHistory: WorkOrderHistory,
+    private val mView: View,
 ) : RecyclerView.Adapter<WorKOrderHistoryWorkPerformedAdapter.ViewHolder>() {
 
 //    private val df = DateFunctions()
@@ -125,11 +129,14 @@ class WorKOrderHistoryWorkPerformedAdapter(
     }
 
     private fun editArea(areaId: Long) {
-
+        mainActivity.mainViewModel.setAreaId(areaId)
+        workOrderHistoryUpdateFragment.gotoAreaUpdateFragment()
     }
 
     private fun gotoWorkPerformedHistoryEdit(wpWorkPerformedId: Long) {
-
+        mainActivity.mainViewModel.setWorkOrderHistory(curHistory)
+        mainActivity.mainViewModel.setWorkPerformedId(wpWorkPerformedId)
+        workOrderHistoryUpdateFragment.gotoWorkOrderHistoryWorkPerformedUpdateFragment()
     }
 
     private fun editWorkPerformed(workPerformedId: Long) {
