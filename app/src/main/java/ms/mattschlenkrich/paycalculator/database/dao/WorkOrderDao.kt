@@ -264,8 +264,13 @@ interface WorkOrderDao {
     @Update
     suspend fun updateWorkPerformed(workPerformed: WorkPerformed)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     suspend fun insertWorkOrderHistoryWorkPerformed(
+        workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
+    )
+
+    @Update
+    suspend fun updateWorkOrderHistoryWorkPerformed(
         workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
     )
 

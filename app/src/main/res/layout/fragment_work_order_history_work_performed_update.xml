@@ -17,7 +17,7 @@
             android:padding="@dimen/dimen_8dp"
             android:text="@string/work_performed"
             android:textColor="@color/black"
-            android:textSize="@dimen/text_size_large"
+            android:textSize="@dimen/text_size_medium"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -81,7 +81,6 @@
             android:hint="@string/area_optional"
             android:importantForAutofill="no"
             android:inputType="textMultiLine|textCapSentences"
-            android:maxWidth="@dimen/text_box_medium"
             android:minHeight="@dimen/minimum_touch_height"
             android:paddingStart="@dimen/dimen_20dp"
             android:paddingEnd="@dimen/dimen_20dp"
@@ -92,6 +91,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lblArea"
             tools:ignore="DuplicateSpeakableTextCheck" />
+
+        <TextView
+            android:id="@+id/lblNote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_25dp"
+            android:text="@string/note"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_medium"
+            android:textStyle="italic"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/acArea" />
 
         <EditText
             android:id="@+id/etWorkPerformedNote"
@@ -105,24 +116,25 @@
             android:minHeight="@dimen/minimum_touch_height"
             android:paddingStart="@dimen/dimen_20dp"
             android:paddingEnd="@dimen/dimen_20dp"
+            android:selectAllOnFocus="true"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/acArea"
+            app:layout_constraintTop_toBottomOf="@id/lblNote"
             tools:ignore="VisualLintTextFieldSize" />
 
-        <Button
-            android:id="@+id/btnUpdate"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabDone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/green"
-            android:text="@string/update"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etWorkPerformedNote"
-            tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck" />
-
+            android:layout_marginEnd="@dimen/dimen_25dp"
+            android:layout_marginBottom="@dimen/dimen_25dp"
+            android:backgroundTint="@color/dark_green"
+            android:contentDescription="@string/done"
+            android:src="@drawable/ic_done"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -5,17 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
+import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.database.model.workorder.Areas
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWithDates
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformedCombined
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderHistoryWorkPerformedUpdateBinding
@@ -29,12 +35,13 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private lateinit var originaWorkOrderlHistory: WorkOrderHistoryWithDates
+    private lateinit var originalWorkOrderHistory: WorkOrderHistoryWithDates
     private lateinit var originalWorkPerformedHistory: WorkOrderHistoryWorkPerformedCombined
     private lateinit var workPerformedListForAutoComplete: List<WorkPerformed>
     private lateinit var areaListForAutoComplete: List<Areas>
     private var curArea: Areas? = null
     private var curWorkPerformed: WorkPerformed? = null
+    private val nf = NumberFunctions()
     private val df = DateFunctions()
 
     override fun onCreateView(
@@ -110,7 +117,7 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
                 mainActivity.workOrderViewModel.getWorkOrderHistoriesById(
                     mainActivity.mainViewModel.getWorkOrderHistory()!!.woHistoryId
                 ).observe(viewLifecycleOwner) { history ->
-                    originaWorkOrderlHistory = history
+                    originalWorkOrderHistory = history
                 }
             }
         }
@@ -130,11 +137,11 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
         withContext(Dispatchers.Main) {
             binding.apply {
                 var display = getString(R.string.edit_work_performed_on) +
-                        "${originaWorkOrderlHistory.workDate.wdDate}\n" +
+                        "${originalWorkOrderHistory.workDate.wdDate}\n" +
                         getString(R.string.for_work_order) +
-                        "${originaWorkOrderlHistory.workOrder.woNumber} @ " +
-                        "${originaWorkOrderlHistory.workOrder.woAddress} \n " +
-                        originaWorkOrderlHistory.workOrder.woDescription
+                        "${originalWorkOrderHistory.workOrder.woNumber} @ " +
+                        "${originalWorkOrderHistory.workOrder.woAddress} \n " +
+                        originalWorkOrderHistory.workOrder.woDescription
                 tvInfo.text = display
                 display = getString(R.string.old_work_description) +
                         originalWorkPerformedHistory.workPerformed.wpDescription
@@ -171,7 +178,8 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
         return false
     }
 
-    private fun setCurArea(): Areas? {
+    private fun setCurArea(): Boolean {
+        curArea = null
         binding.apply {
             for (area in areaListForAutoComplete) {
                 if (acArea.text.toString() ==
@@ -179,16 +187,142 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
                     !acArea.text.isNullOrBlank()
                 ) {
                     curArea = area
-                    return area
+                    return true
                 }
             }
         }
-        return null
+        return false
     }
 
     private fun setClickActions() {
-//        TODO("Not yet implemented")
+        binding.apply {
+            fabDone.setOnClickListener { updateWorkPerformedInHistoryIfValid() }
+        }
     }
+
+    private fun updateWorkPerformedInHistoryIfValid() {
+        val answer = validateHistoryAndUpdate()
+        if (answer != ANSWER_OK) {
+            Toast.makeText(
+                mView.context,
+                getString(R.string.error_) +
+                        answer,
+                Toast.LENGTH_LONG
+            ).show()
+        } else {
+            gotoCallingFragment()
+        }
+    }
+
+    private fun validateHistoryAndUpdate(): String {
+        binding.apply {
+            if (acWorkPerformed.text.isNullOrBlank()) {
+                return getString(R.string.please_enter_a_valid_description_of_work_performed_to_add_it)
+            } else if (setCurWorkPerformed()) {
+                updateWorkPerformedHistory(curWorkPerformed!!)
+                return ANSWER_OK
+            } else if (!acWorkPerformed.text.isNullOrBlank()) {
+                CoroutineScope(Dispatchers.Default).launch {
+                    val workPerformed = insertWorkPerformedIntoDatabase(
+                        acWorkPerformed.text.toString()
+                    )
+                    updateWorkPerformedHistory(workPerformed)
+                }
+                return ANSWER_OK
+            }
+        }
+        return ANSWER_OK
+    }
+
+    private fun updateWorkPerformedHistory(workPerformed: WorkPerformed) {
+        binding.apply {
+            if (acArea.text.isNullOrBlank()) {
+                curArea = null
+                updateHistory(workPerformed.workPerformedId, null)
+            } else if (setCurArea()) {
+                updateHistory(workPerformed.workPerformedId, curArea?.areaId)
+            } else if (!acArea.text.isNullOrBlank()) {
+                val newArea: Areas = addAreaToDb(acArea.text.toString().trim())
+                updateHistory(workPerformed.workPerformedId, newArea.areaId)
+            }
+
+        }
+    }
+
+    private fun updateHistory(workPerformedId: Long, areaId: Long?) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val note: String? = getNote()
+            delay(WAIT_250)
+            mainActivity.workOrderViewModel.updateWorkOrderHistoryWorkPerformed(
+                WorkOrderHistoryWorkPerformed(
+                    originalWorkPerformedHistory.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId,
+                    originalWorkPerformedHistory.workOrderHistoryWorkPerformed.wowpHistoryId,
+                    workPerformedId,
+                    areaId,
+                    note,
+                    originalWorkPerformedHistory.workOrderHistoryWorkPerformed.wowpSequence,
+                    false,
+                    df.getCurrentTimeAsString()
+                )
+            )
+        }
+    }
+
+    private fun getNote(): String? {
+        binding.apply {
+            return if (etWorkPerformedNote.text.isNullOrBlank()) {
+                null
+            } else {
+                etWorkPerformedNote.text.toString().trim()
+            }
+        }
+    }
+
+    private fun addAreaToDb(areaName: String): Areas {
+        val newArea = Areas(
+            nf.generateRandomIdAsLong(),
+            areaName,
+            false,
+            df.getCurrentTimeAsString()
+        )
+        mainActivity.workOrderViewModel.insertArea(newArea)
+        return newArea
+    }
+
+    private fun insertWorkPerformedIntoDatabase(workPerformedName: String): WorkPerformed {
+        val newWorkPerformed = WorkPerformed(
+            nf.generateRandomIdAsLong(),
+            workPerformedName,
+            false,
+            df.getCurrentTimeAsString()
+        )
+        mainActivity.workOrderViewModel.insertWorkPerformed(newWorkPerformed)
+        return newWorkPerformed
+    }
+
+    private fun gotoCallingFragment() {
+        if (mainActivity.mainViewModel.getCallingFragment()!!.contains(
+                FRAG_WORK_ORDER_HISTORY_UPDATE
+            )
+        ) {
+            gotoWorkOrderHistoryUpdate()
+        }
+    }
+
+    private fun gotoWorkOrderHistoryUpdate() {
+        mainActivity.mainViewModel.setWorkPerformedHistoryId(null)
+        mainActivity.mainViewModel.setWorkPerformedId(null)
+        mainActivity.mainViewModel.setAreaId(null)
+        gotoWorkOrderHistoryUpdateFragment()
+    }
+
+    private fun gotoWorkOrderHistoryUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkOrderHistoryWorkPerformedUpdateFragmentDirections
+                .actionWorkOrderHistoryWorkPerformedUpdateFragmentToWorkOrderHistoryUpdateFragment()
+        )
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()

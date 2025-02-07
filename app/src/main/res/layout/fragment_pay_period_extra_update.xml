@@ -126,7 +126,7 @@
             android:layout_marginEnd="@dimen/dimen_25dp"
             android:layout_marginBottom="@dimen/dimen_25dp"
             android:backgroundTint="@color/dark_green"
-            android:contentDescription="@string/add_new"
+            android:contentDescription="@string/done"
             android:src="@drawable/ic_done"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

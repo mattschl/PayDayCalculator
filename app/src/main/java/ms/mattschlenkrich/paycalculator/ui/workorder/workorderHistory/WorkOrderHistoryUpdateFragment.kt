@@ -717,9 +717,7 @@ class WorkOrderHistoryUpdateFragment :
                 false,
                 df.getCurrentTimeAsString()
             )
-        mainActivity.workOrderViewModel.insertWorkPerformed(
-            workPerformed
-        )
+        mainActivity.workOrderViewModel.insertWorkPerformed(workPerformed)
         return workPerformed
     }
 
@@ -885,6 +883,13 @@ class WorkOrderHistoryUpdateFragment :
         mView.findNavController().navigate(
             WorkOrderHistoryUpdateFragmentDirections
                 .actionWorkOrderHistoryUpdateFragmentToAreaUpdateFragment()
+        )
+    }
+
+    fun gotoWorkPerformedUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkOrderHistoryUpdateFragmentDirections
+                .actionWorkOrderHistoryUpdateFragmentToWorkPerformedUpdateFragment()
         )
     }
 

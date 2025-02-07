@@ -183,6 +183,14 @@ class WorkOrderViewModel(
         )
     }
 
+    fun updateWorkOrderHistoryWorkPerformed(
+        workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
+    ) = viewModelScope.launch {
+        workOrderRepository.updateWorkOrderHistoryWorkPerformed(
+            workOrderHistoryWorkPerformed
+        )
+    }
+
     fun removeWorkPerformedFromWorkOderHistory(
         workPerformedHistoryId: Long
     ) = viewModelScope.launch {

@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +13,6 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistor
 import ms.mattschlenkrich.paycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderHistoryUpdateFragment
-import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderHistoryUpdateFragmentDirections
 
 class WorKOrderHistoryWorkPerformedAdapter(
     private val mainActivity: MainActivity,
@@ -129,7 +127,7 @@ class WorKOrderHistoryWorkPerformedAdapter(
                     }
                 }
             }
-            .setNeutralButton(mView.context.getString(R.string.cancel), null)
+            .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()
     }
 
@@ -141,14 +139,14 @@ class WorKOrderHistoryWorkPerformedAdapter(
     private fun gotoWorkPerformedHistoryEdit(workPerformedHistoryId: Long) {
         mainActivity.mainViewModel.setWorkOrderHistory(curHistory)
         mainActivity.mainViewModel.setWorkPerformedHistoryId(workPerformedHistoryId)
+        mainActivity.mainViewModel.addCallingFragment(parentFragment)
         workOrderHistoryUpdateFragment.gotoWorkOrderHistoryWorkPerformedUpdateFragment()
     }
 
     private fun editWorkPerformed(workPerformedId: Long) {
         mainActivity.mainViewModel.setWorkPerformedId(workPerformedId)
-        gotoWorkPerformedUpdateFragment()
-
         mainActivity.mainViewModel.addCallingFragment(parentFragment)
+        workOrderHistoryUpdateFragment.gotoWorkPerformedUpdateFragment()
     }
 
     private fun removeWorkPerformedFromWorkOrder(workOrderHistoryWorkPerformedId: Long) {
@@ -156,13 +154,5 @@ class WorKOrderHistoryWorkPerformedAdapter(
             workOrderHistoryWorkPerformedId
         )
     }
-
-    private fun gotoWorkPerformedUpdateFragment() {
-        mView.findNavController().navigate(
-            WorkOrderHistoryUpdateFragmentDirections
-                .actionWorkOrderHistoryUpdateFragmentToWorkPerformedUpdateFragment()
-        )
-    }
-
 
 }

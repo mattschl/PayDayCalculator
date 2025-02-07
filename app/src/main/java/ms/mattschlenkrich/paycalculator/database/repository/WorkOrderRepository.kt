@@ -141,6 +141,12 @@ class WorkOrderRepository(private val db: PayDatabase) {
         workOrderHistoryWorkPerformed
     )
 
+    suspend fun updateWorkOrderHistoryWorkPerformed(
+        workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
+    ) = db.getWorkOrderDao().updateWorkOrderHistoryWorkPerformed(
+        workOrderHistoryWorkPerformed
+    )
+
     suspend fun removeWorkPerformedFromWorkOderHistory(
         workPerformedHistoryId: Long
     ) = db.getWorkOrderDao().removeWorkPerformedFromWorkOrderHistory(
