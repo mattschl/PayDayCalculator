@@ -146,7 +146,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
     }
 
     private fun populateDateHistory(workOrderId: Long) {
-        mainActivity.workOrderViewModel.getWorkOrderHistoriesById(
+        mainActivity.workOrderViewModel.getWorkOrderHistoriesByWorkOrder(
             workOrderId
         ).observe(viewLifecycleOwner) { list ->
             calculateHistoryTotals(list)
@@ -161,11 +161,15 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
                 layoutManager = LinearLayoutManager(mView.context)
                 adapter = workOrderHistoryAdapter
             }
-            if (list.isEmpty()) {
-                binding.crdHistory.visibility = View.GONE
-            } else {
-                binding.crdHistory.visibility = View.VISIBLE
-            }
+            hideUnHideHistory(list)
+        }
+    }
+
+    private fun hideUnHideHistory(list: List<WorkOrderHistoryWithDates>) {
+        if (list.isEmpty()) {
+            binding.crdHistory.visibility = View.GONE
+        } else {
+            binding.crdHistory.visibility = View.VISIBLE
         }
     }
 

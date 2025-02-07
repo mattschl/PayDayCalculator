@@ -20,5 +20,5 @@ data class WorkOrderHistoryWorkPerformedCombined(
         parentColumn = "wowpAreaId",
         entityColumn = "areaId"
     )
-    val area: Areas,
+    val area: Areas?,
 ) : Parcelable

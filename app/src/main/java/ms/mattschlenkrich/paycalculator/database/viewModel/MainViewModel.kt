@@ -51,10 +51,19 @@ class MainViewModel(
     private var workOrder: WorkOrder? = null
     private var jobSpec: JobSpec? = null
     private var workPerformedId: Long? = null
+    private var workPerformedHistoryId: Long? = null
     private var material: Material? = null
     private var materialInSequence: MaterialInSequence? = null
     private var extraContainer: ExtraContainer? = null
     private var areaId: Long? = null
+
+    fun setWorkPerformedHistoryId(newWorkPerformedHistoryId: Long?) {
+        workPerformedHistoryId = newWorkPerformedHistoryId
+    }
+
+    fun getWorkPerformedHistoryId(): Long? {
+        return workPerformedHistoryId
+    }
 
     fun setAreaId(newAreaId: Long?) {
         areaId = newAreaId

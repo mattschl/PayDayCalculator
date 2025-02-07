@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
-import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformedInSequence
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformedCombined
 import ms.mattschlenkrich.paycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderHistoryUpdateFragment
@@ -31,27 +31,24 @@ class WorKOrderHistoryWorkPerformedAdapter(
     ) : RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCallBack =
-        object : DiffUtil.ItemCallback<WorkPerformedInSequence>() {
+        object : DiffUtil.ItemCallback<WorkOrderHistoryWorkPerformedCombined>() {
             override fun areItemsTheSame(
-                oldItem: WorkPerformedInSequence,
-                newItem: WorkPerformedInSequence
+                oldItem: WorkOrderHistoryWorkPerformedCombined,
+                newItem: WorkOrderHistoryWorkPerformedCombined
             ): Boolean {
                 return oldItem == newItem
             }
 
             override fun areContentsTheSame(
-                oldItem: WorkPerformedInSequence,
-                newItem: WorkPerformedInSequence
+                oldItem: WorkOrderHistoryWorkPerformedCombined,
+                newItem: WorkOrderHistoryWorkPerformedCombined
             ): Boolean {
-                return oldItem.workPerformedHistoryId ==
-                        newItem.workPerformedHistoryId &&
-                        oldItem.wpWorkPerformedId ==
-                        newItem.wpWorkPerformedId &&
-                        oldItem.wpDescription ==
-                        newItem.wpDescription &&
-                        oldItem.wpSequence ==
-                        newItem.wpSequence
+                return oldItem.workPerformed.workPerformedId == newItem.workPerformed.workPerformedId &&
+                        oldItem.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId ==
+                        newItem.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId &&
+                        oldItem.area == newItem.area
             }
+
 
         }
 
@@ -73,17 +70,17 @@ class WorKOrderHistoryWorkPerformedAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val work = differ.currentList[position]
         holder.itemBinding.apply {
-            var display = "${work.wpSequence}) " +
-                    work.wpDescription
-            display += if (work.wpArea.isBlank()) {
+            var display = "${position + 1}) " +
+                    work.workPerformed.wpDescription
+            display += if (work.area == null) {
                 ""
             } else {
-                " in ${work.wpArea} "
+                " in ${work.area.areaName} "
             }
-            display += if (work.wpNote.isNullOrBlank()) {
+            display += if (work.workOrderHistoryWorkPerformed.wowpNote.isNullOrBlank()) {
                 ""
             } else {
-                " - ${work.wpNote}."
+                " - ${work.workOrderHistoryWorkPerformed.wowpNote}."
             }
             tvDisplay.text = display
             holder.itemView.setOnClickListener {
@@ -92,7 +89,7 @@ class WorKOrderHistoryWorkPerformedAdapter(
         }
     }
 
-    private fun chooseOptions(woWorkPerformed: WorkPerformedInSequence, display: String) {
+    private fun chooseOptions(work: WorkOrderHistoryWorkPerformedCombined, display: String) {
         AlertDialog.Builder(mView.context)
             .setTitle(
                 mView.context.getString(R.string.choose_option_for) +
@@ -102,25 +99,33 @@ class WorKOrderHistoryWorkPerformedAdapter(
                 arrayOf(
                     "Edit the work performed description in the history",
                     "Remove this work performed description in the history",
-                    "Edit Work description of ${woWorkPerformed.wpDescription}",
-                    "Edit area description of ${woWorkPerformed.wpArea}"
+                    "Edit Work description of ${work.workPerformed.wpDescription}",
+                    if (work.area != null) {
+                        "Edit area description of ${work.area.areaName}"
+                    } else {
+                        ""
+                    }
                 )
             ) { _, pos ->
                 when (pos) {
                     0 -> {
-                        gotoWorkPerformedHistoryEdit(woWorkPerformed.wpWorkPerformedId)
+                        gotoWorkPerformedHistoryEdit(
+                            work.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId
+                        )
                     }
 
                     1 -> {
-                        removeWorkPerformedFromWorkOrder(woWorkPerformed.workPerformedHistoryId)
+                        removeWorkPerformedFromWorkOrder(
+                            work.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId
+                        )
                     }
 
                     2 -> {
-                        editWorkPerformed(woWorkPerformed.wpWorkPerformedId)
+                        editWorkPerformed(work.workOrderHistoryWorkPerformed.wowpWorkPerformedId)
                     }
 
                     3 -> {
-                        editArea(woWorkPerformed.wpAreaId)
+                        editArea(work.workOrderHistoryWorkPerformed.wowpAreaId!!)
                     }
                 }
             }
@@ -133,9 +138,9 @@ class WorKOrderHistoryWorkPerformedAdapter(
         workOrderHistoryUpdateFragment.gotoAreaUpdateFragment()
     }
 
-    private fun gotoWorkPerformedHistoryEdit(wpWorkPerformedId: Long) {
+    private fun gotoWorkPerformedHistoryEdit(workPerformedHistoryId: Long) {
         mainActivity.mainViewModel.setWorkOrderHistory(curHistory)
-        mainActivity.mainViewModel.setWorkPerformedId(wpWorkPerformedId)
+        mainActivity.mainViewModel.setWorkPerformedHistoryId(workPerformedHistoryId)
         workOrderHistoryUpdateFragment.gotoWorkOrderHistoryWorkPerformedUpdateFragment()
     }
 

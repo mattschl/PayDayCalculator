@@ -394,5 +394,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="edit_the_work_performed">Edit the Work Performed</string>
+    <string name="old_work_description">"Old Work Description: "</string>
+    <string name="old_area_of_work">"Old Area of work: "</string>
+    <string name="no_area_was_indicated">No Area was indicated</string>
+    <string name="edit_work_performed_on">"Edit Work Performed on "</string>
+    <string name="for_work_order">"For Work Order "</string>
 
 </resources>

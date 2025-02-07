@@ -38,7 +38,6 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistor
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformedCombined
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
-import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformedInSequence
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderHistoryBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderCommonFunctions
@@ -184,24 +183,7 @@ class WorkOrderHistoryUpdateFragment :
         mainActivity.workOrderViewModel.getWorkPerformedCombinedByWorkOrderHistory(
             curHistoryDetailed.history.woHistoryId
         ).observe(viewLifecycleOwner) { list ->
-            val workPerFormedActualList =
-                ArrayList<WorkPerformedInSequence>()
-            var seq = 0
-            list.listIterator().forEach {
-                seq++
-                workPerFormedActualList.add(
-                    WorkPerformedInSequence(
-                        it.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId,
-                        it.workPerformed.workPerformedId,
-                        it.workPerformed.wpDescription,
-                        it.area.areaId,
-                        it.area.areaName,
-                        it.workOrderHistoryWorkPerformed.wowpNote,
-                        seq
-                    )
-                )
-            }
-            populateWorkPerformedRecycler(workPerFormedActualList)
+            populateWorkPerformedRecycler(list)
             determineWorkPerformedSequence(list)
         }
     }
@@ -365,7 +347,7 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun populateWorkPerformedRecycler(
-        workPerFormedActualList: ArrayList<WorkPerformedInSequence>
+        workPerFormedActualList: List<WorkOrderHistoryWorkPerformedCombined>
     ) {
         val workPerformedAdapter =
             WorKOrderHistoryWorkPerformedAdapter(

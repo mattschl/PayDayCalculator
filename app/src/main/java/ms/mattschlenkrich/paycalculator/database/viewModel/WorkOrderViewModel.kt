@@ -94,8 +94,14 @@ class WorkOrderViewModel(
     fun getWorkOrderHistoriesByDate(workDateId: Long) =
         workOrderRepository.getWorkOrderHistoriesByDate(workDateId)
 
-    fun getWorkOrderHistoriesById(workOrderId: Long) =
-        workOrderRepository.getWorkOrderHistoriesById(workOrderId)
+    fun getWorkOrderHistoriesById(historyId: Long) =
+        workOrderRepository.getWorkOrderHistoriesById(historyId)
+
+    fun getWorkPerformedHistoryById(historyWorkPerformedId: Long) =
+        workOrderRepository.getWorkPerformedHistoryById(historyWorkPerformedId)
+
+    fun getWorkOrderHistoriesByWorkOrder(workOrderId: Long) =
+        workOrderRepository.getWorkOrderHistoriesByWorkOrder(workOrderId)
 
     fun getWorkOrderHistory(historyID: Long) =
         workOrderRepository.getWorkOrderHistory(historyID)

@@ -13,28 +13,35 @@
             android:id="@+id/tvInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dimen_8dp"
-            android:maxLines="5"
+            android:layout_margin="@dimen/dimen_10dp"
             android:padding="@dimen/dimen_8dp"
             android:text="@string/work_performed"
-            android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_large"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/vSpacer"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dimen_8dp"
+            android:backgroundTint="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvInfo" />
 
         <TextView
             android:id="@+id/lblWorkPerformed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dimen_25dp"
+            android:layout_marginTop="@dimen/dimen_25dp"
             android:text="@string/work_performed"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_medium"
             android:textStyle="italic"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvInfo" />
-
+            app:layout_constraintTop_toBottomOf="@id/vSpacer" />
 
         <AutoCompleteTextView
             android:id="@+id/acWorkPerformed"
@@ -47,6 +54,7 @@
             android:minHeight="@dimen/minimum_touch_height"
             android:paddingStart="@dimen/dimen_20dp"
             android:paddingEnd="@dimen/dimen_20dp"
+            android:selectAllOnFocus="true"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -77,6 +85,7 @@
             android:minHeight="@dimen/minimum_touch_height"
             android:paddingStart="@dimen/dimen_20dp"
             android:paddingEnd="@dimen/dimen_20dp"
+            android:selectAllOnFocus="true"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"

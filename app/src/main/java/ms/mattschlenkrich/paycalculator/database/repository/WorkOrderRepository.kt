@@ -72,8 +72,14 @@ class WorkOrderRepository(private val db: PayDatabase) {
     fun getWorkOrderHistoriesByDate(workDateId: Long) =
         db.getWorkOrderDao().getWorkOrderHistoriesByDate(workDateId)
 
-    fun getWorkOrderHistoriesById(workOrderId: Long) =
-        db.getWorkOrderDao().getWorkOrderHistoriesById(workOrderId)
+    fun getWorkOrderHistoriesById(historyId: Long) =
+        db.getWorkOrderDao().getWorkOrderHistoriesById(historyId)
+
+    fun getWorkOrderHistoriesByWorkOrder(workOrderId: Long) =
+        db.getWorkOrderDao().getWorkOrderHistoriesByWorkOrder(workOrderId)
+
+    fun getWorkPerformedHistoryById(historyWorkPerformedId: Long) =
+        db.getWorkOrderDao().getWorkPerformedHistoryById(historyWorkPerformedId)
 
     fun getWorkOrderHistory(historyID: Long) =
         db.getWorkOrderDao().getWorkOrderHistory(historyID)

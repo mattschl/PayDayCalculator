@@ -146,20 +146,20 @@ interface WorkOrderDao {
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistory " +
-                "WHERE woHistoryWorkOrderId = :workOrderId " +
-                "AND woHistoryDeleted = 0 "
+                "WHERE woHistoryId = :historyId "
     )
-    fun getWorkOrderHistoriesById(workOrderId: Long): LiveData<List<WorkOrderHistoryWithDates>>
+    fun getWorkOrderHistoriesById(historyId: Long): LiveData<WorkOrderHistoryWithDates>
 
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistory " +
-                "WHERE woHistoryWorkOrderId = :workOrderNumber " +
+                "WHERE woHistoryWorkOrderId = :workOrderId " +
                 "AND woHistoryDeleted = 0 " +
                 "Order BY woHistoryUpdateTime"
     )
-    fun getWorkOrderHistoriesByNumber(workOrderNumber: String): LiveData<List<WorkOrderHistoryWithDates>>
+    fun getWorkOrderHistoriesByWorkOrder(workOrderId: Long):
+            LiveData<List<WorkOrderHistoryWithDates>>
 
     @RewriteQueriesToDropUnusedColumns
     @Transaction
@@ -288,6 +288,15 @@ interface WorkOrderDao {
     )
     fun getWorkPerformedByWorkOrderHistory(historyId: Long):
             LiveData<List<WorkOrderHistoryWorkPerformedCombined>>
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT * FROM workOrderHistoryWorkPerformed " +
+                "WHERE workOrderHistoryWorkPerformedId = :historyWorkPerformedId"
+    )
+    fun getWorkPerformedHistoryById(historyWorkPerformedId: Long):
+            LiveData<WorkOrderHistoryWorkPerformedCombined>
 
     @Insert
     suspend fun insertMaterial(material: Material)
