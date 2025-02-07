@@ -385,5 +385,11 @@
     <string name="__summary">" - Summary"</string>
     <string name="area">Area</string>
     <string name="area_optional">Area (optional)</string>
+    <string name="view_areas_list">View Areas List</string>
+    <string name="no_areas_in_the_list_to_view">No Areas in the list to view</string>
+    <string name="update_area_description">Update Area Description</string>
+    <string name="update_area_description_for">"Update Area Description for "</string>
+    <string name="please_enter_a_valid_description_of_the_area">Please enter a valid description of the area!</string>
+    <string name="this_area_description_already_exists">This Area Description already Exists!</string>
 
 </resources>

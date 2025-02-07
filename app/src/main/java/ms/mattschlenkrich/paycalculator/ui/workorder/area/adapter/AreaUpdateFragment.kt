@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.workorder.workPerforrmed
+package ms.mattschlenkrich.paycalculator.ui.workorder.area.adapter
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,13 +10,12 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
-import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_PERFORMED_VIEW
-import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
+import ms.mattschlenkrich.paycalculator.common.FRAG_AREA_VIEW
+import ms.mattschlenkrich.paycalculator.database.model.workorder.Areas
 import ms.mattschlenkrich.paycalculator.databinding.FragmentSingleItemUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
-
-class WorkPerformedUpdateFragment :
+class AreaUpdateFragment :
     Fragment(R.layout.fragment_single_item_update) {
 
     private var _binding: FragmentSingleItemUpdateBinding? = null
@@ -25,8 +24,8 @@ class WorkPerformedUpdateFragment :
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
 
-    private val workPerformedList = ArrayList<WorkPerformed>()
-    private lateinit var oldWorkPerformed: WorkPerformed
+    private lateinit var areasList: List<Areas>
+    private lateinit var oldArea: Areas
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,7 +36,7 @@ class WorkPerformedUpdateFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = getString(R.string.update_work_performed_description)
+        mainActivity.title = getString(R.string.update_area_description)
         return mView
     }
 
@@ -47,41 +46,34 @@ class WorkPerformedUpdateFragment :
         setClickActions()
     }
 
-
     private fun setValues() {
-        populateWorkPerformedListForValidation()
-        if (mainActivity.mainViewModel.getWorkPerformedId() != null) {
-            mainActivity.workOrderViewModel.getWorkPerformed(
-                mainActivity.mainViewModel.getWorkPerformedId()!!
-            ).observe(viewLifecycleOwner) { work ->
-                oldWorkPerformed = work
+        populateAreasListForValidation()
+        if (mainActivity.mainViewModel.getAreaId() != null) {
+            mainActivity.workOrderViewModel.getArea(
+                mainActivity.mainViewModel.getAreaId()!!
+            ).observe(viewLifecycleOwner) { area ->
+                oldArea = area
                 binding.apply {
                     val display =
-                        getString(R.string.update_work_description_) +
-                                oldWorkPerformed.wpDescription
+                        getString(R.string.update_area_description_for) +
+                                oldArea.areaName
                     tvTitle.text = display
-                    etItem.setText(oldWorkPerformed.wpDescription)
+                    etItem.setText(oldArea.areaName)
                 }
             }
-
         }
     }
 
-    private fun populateWorkPerformedListForValidation() {
-        mainActivity.workOrderViewModel.getWorkPerformedAll().observe(
-            viewLifecycleOwner
-        ) { list ->
-            workPerformedList.clear()
-            for (workPerformed in list.listIterator()) {
-                workPerformedList.add(workPerformed)
-            }
+    private fun populateAreasListForValidation() {
+        mainActivity.workOrderViewModel.getAreasList().observe(viewLifecycleOwner) { list ->
+            areasList = list
         }
     }
 
     private fun setClickActions() {
         binding.apply {
             btnUpdate.setOnClickListener {
-                updateWorkPerformedIfValid()
+                updateAreaDescriptionIfValid()
             }
             btnCancel.setOnClickListener {
                 gotoCallingFragment()
@@ -89,42 +81,43 @@ class WorkPerformedUpdateFragment :
         }
     }
 
-    private fun updateWorkPerformedIfValid() {
-        val answer = validateWorkPerformed()
+    private fun updateAreaDescriptionIfValid() {
+        val answer = validateArea()
         if (answer == ANSWER_OK) {
-            updateWorkPerformed()
+            updateArea()
         } else {
             Toast.makeText(
                 mView.context,
-                answer, Toast.LENGTH_LONG
+                answer,
+                Toast.LENGTH_LONG
             ).show()
         }
     }
 
-    private fun validateWorkPerformed(): String {
+    private fun validateArea(): String {
         binding.apply {
             if (etItem.text.isNullOrBlank()) {
                 return getString(R.string.error_) +
-                        getString(R.string.please_enter_a_valid_work_performed_description)
+                        getString(R.string.please_enter_a_valid_description_of_the_area)
             }
-            for (workPerformed in workPerformedList) {
-                if (workPerformed.wpDescription ==
+            for (area in areasList) {
+                if (area.areaName ==
                     etItem.text.toString().trim() &&
                     etItem.text.toString().trim() !=
-                    oldWorkPerformed.wpDescription
+                    oldArea.areaName
                 ) {
                     return getString(R.string.error_) +
-                            getString(R.string.this_work_performed_description_already_exists)
+                            getString(R.string.this_area_description_already_exists)
                 }
             }
         }
         return ANSWER_OK
     }
 
-    private fun updateWorkPerformed() {
-        mainActivity.workOrderViewModel.updateWorkPerformed(
-            WorkPerformed(
-                oldWorkPerformed.workPerformedId,
+    private fun updateArea() {
+        mainActivity.workOrderViewModel.updateArea(
+            Areas(
+                oldArea.areaId,
                 binding.etItem.text.toString().trim(),
                 false,
                 df.getCurrentTimeAsString()
@@ -134,28 +127,28 @@ class WorkPerformedUpdateFragment :
     }
 
     private fun gotoCallingFragment() {
-        mainActivity.mainViewModel.setWorkPerformedId(null)
+        mainActivity.mainViewModel.setAreaId(null)
         if (mainActivity.mainViewModel.getCallingFragment()!!.contains(
-                FRAG_WORK_PERFORMED_VIEW
+                FRAG_AREA_VIEW
             )
         ) {
-            gotoWorkPerformedViewFragment()
+            gotoAreaViewFragment()
         } else {
-            gotoWorkPerformedUpdateFragment()
+            gotoWorkOrderHistoryUpdateFragment()
         }
     }
 
-    private fun gotoWorkPerformedViewFragment() {
+    private fun gotoAreaViewFragment() {
         mView.findNavController().navigate(
-            WorkPerformedUpdateFragmentDirections
-                .actionWorkPerformedUpdateFragmentToWorkPerformedViewFragment()
+            AreaUpdateFragmentDirections
+                .actionAreaUpdateFragmentToAreaViewFragment()
         )
     }
 
-    private fun gotoWorkPerformedUpdateFragment() {
+    private fun gotoWorkOrderHistoryUpdateFragment() {
         mView.findNavController().navigate(
-            WorkPerformedUpdateFragmentDirections
-                .actionWorkPerformedUpdateFragmentToWorkOrderHistoryUpdateFragment()
+            AreaUpdateFragmentDirections
+                .actionAreaUpdateFragmentToWorkOrderHistoryUpdateFragment()
         )
     }
 

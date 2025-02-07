@@ -391,4 +391,22 @@ interface WorkOrderDao {
                 "ORDER BY areaName"
     )
     fun getAreasList(): LiveData<List<Areas>>
+
+    @Query(
+        "SELECT * FROM areas " +
+                "WHERE areaId = :areaId"
+    )
+    fun getArea(areaId: Long): LiveData<Areas>
+
+    @Query(
+        "SELECT * FROM areas " +
+                "WHERE areaName = :areaName"
+    )
+    fun getArea(areaName: String): LiveData<Areas>
+
+    @Query(
+        "SELECT * FROM areas " +
+                "WHERE areaName LIKE :query"
+    )
+    fun searchAreas(query: String): LiveData<List<Areas>>
 }

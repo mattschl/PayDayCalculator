@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -17,6 +16,7 @@ import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderH
 
 class WorKOrderHistoryWorkPerformedAdapter(
     val mainActivity: MainActivity,
+    val parentFragment: String,
     val mView: View,
 ) : RecyclerView.Adapter<WorKOrderHistoryWorkPerformedAdapter.ViewHolder>() {
 
@@ -67,42 +67,76 @@ class WorKOrderHistoryWorkPerformedAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val woWorkPerformed = differ.currentList[position]
+        val work = differ.currentList[position]
         holder.itemBinding.apply {
-            val display = "${woWorkPerformed.wpSequence}) " +
-                    woWorkPerformed.wpDescription
+            var display = "${work.wpSequence}) " +
+                    work.wpDescription
+            display += if (work.wpArea.isBlank()) {
+                ""
+            } else {
+                " in ${work.wpArea} "
+            }
+            display += if (work.wpNote.isNullOrBlank()) {
+                ""
+            } else {
+                " - ${work.wpNote}."
+            }
             tvDisplay.text = display
-        }
-        holder.itemView.setOnClickListener {
-            chooseOptions(woWorkPerformed)
+            holder.itemView.setOnClickListener {
+                chooseOptions(work, display)
+            }
         }
     }
 
-    private fun chooseOptions(woWorkPerformed: WorkPerformedInSequence) {
+    private fun chooseOptions(woWorkPerformed: WorkPerformedInSequence, display: String) {
         AlertDialog.Builder(mView.context)
             .setTitle(
                 mView.context.getString(R.string.choose_option_for) +
-                        woWorkPerformed.wpDescription
+                        display
             )
-            .setPositiveButton(mView.context.getString(R.string.edit_description)) { _, _ ->
-                editWorkPerformed(woWorkPerformed.wpWorkPerformedId)
-            }
-            .setNegativeButton(mView.context.getString(R.string.remove)) { _, _ ->
-                removeWorkPerformedFromWorkOrder(
-                    woWorkPerformed.workPerformedHistoryId
+            .setItems(
+                arrayOf(
+                    "Edit the work performed description in the history",
+                    "Remove this work performed description in the history",
+                    "Edit Work description of ${woWorkPerformed.wpDescription}",
+                    "Edit area description of ${woWorkPerformed.wpArea}"
                 )
+            ) { _, pos ->
+                when (pos) {
+                    0 -> {
+                        gotoWorkPerformedHistoryEdit(woWorkPerformed.wpWorkPerformedId)
+                    }
+
+                    1 -> {
+                        removeWorkPerformedFromWorkOrder(woWorkPerformed.workPerformedHistoryId)
+                    }
+
+                    2 -> {
+                        editWorkPerformed(woWorkPerformed.wpWorkPerformedId)
+                    }
+
+                    3 -> {
+                        editArea(woWorkPerformed.wpAreaId)
+                    }
+                }
             }
             .setNeutralButton(mView.context.getString(R.string.cancel), null)
             .show()
     }
 
+    private fun editArea(areaId: Long) {
+
+    }
+
+    private fun gotoWorkPerformedHistoryEdit(wpWorkPerformedId: Long) {
+
+    }
+
     private fun editWorkPerformed(workPerformedId: Long) {
-        mainActivity.workOrderViewModel.getWorkPerformed(
-            workPerformedId
-        ).observe(mView.findViewTreeLifecycleOwner()!!) { workPerformed ->
-            mainActivity.mainViewModel.setWorkPerformed(workPerformed)
-            gotoWorkPerformedUpdateFragment()
-        }
+        mainActivity.mainViewModel.setWorkPerformedId(workPerformedId)
+        gotoWorkPerformedUpdateFragment()
+
+        mainActivity.mainViewModel.addCallingFragment(parentFragment)
     }
 
     private fun removeWorkPerformedFromWorkOrder(workOrderHistoryWorkPerformedId: Long) {

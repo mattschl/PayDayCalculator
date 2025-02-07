@@ -263,8 +263,13 @@ class WorkOrderViewModel(
             workOrderRepository.insertArea(area)
         }
 
-    fun updateArea(area: Areas) =
-        viewModelScope.launch { workOrderRepository.updateArea(area) }
+    fun updateArea(area: Areas) = viewModelScope.launch { workOrderRepository.updateArea(area) }
 
     fun getAreasList() = workOrderRepository.getAreasList()
+
+    fun getArea(areaId: Long) = workOrderRepository.getArea(areaId)
+
+    fun getArea(areaName: String) = workOrderRepository.getArea(areaName)
+
+    fun searchAreas(query: String) = workOrderRepository.searchAreas(query)
 }

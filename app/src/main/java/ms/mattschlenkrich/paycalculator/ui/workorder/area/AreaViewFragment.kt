@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.workorder.workPerforrmed
+package ms.mattschlenkrich.paycalculator.ui.workorder.area
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,29 +8,28 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
-import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_PERFORMED_VIEW
+import ms.mattschlenkrich.paycalculator.common.FRAG_AREA_VIEW
 import ms.mattschlenkrich.paycalculator.databinding.FragmentRecyclerViewBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.workorder.workPerforrmed.adapter.WorkPerformedAdapter
+import ms.mattschlenkrich.paycalculator.ui.workorder.area.adapter.AreaViewAdapter
 
-private const val TAG = FRAG_WORK_PERFORMED_VIEW
+private const val TAG = FRAG_AREA_VIEW
 
-class WorkPerformedViewFragment :
+class AreaViewFragment :
     Fragment(R.layout.fragment_recycler_view),
     SearchView.OnQueryTextListener,
     MenuProvider {
-
     private var _binding: FragmentRecyclerViewBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private var workPerformedAdapter: WorkPerformedAdapter? = null
+    private lateinit var areaViewAdapter: AreaViewAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,29 +41,22 @@ class WorkPerformedViewFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = getString(R.string.view_work_performed_list)
+        mainActivity.title = getString(R.string.view_areas_list)
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        populateWorkPerformedList()
-        val menuHost: MenuHost = requireActivity()
+        populateAreaList()
+        val menuHost = requireActivity()
         menuHost.addMenuProvider(
             this, viewLifecycleOwner, Lifecycle.State.RESUMED
         )
         setBaseView()
     }
 
-    private fun setBaseView() {
-        binding.apply {
-            tvNoInfo.text = getString(R.string.no_job_specs_to_view)
-            fabNew.visibility = View.GONE
-        }
-    }
-
-    private fun populateWorkPerformedList() {
-        workPerformedAdapter = WorkPerformedAdapter(
-            mainActivity, mView, TAG
+    private fun populateAreaList() {
+        areaViewAdapter = AreaViewAdapter(
+            mainActivity, mView, this@AreaViewFragment, TAG
         )
         binding.rvRecycler.apply {
             layoutManager = StaggeredGridLayoutManager(
@@ -72,14 +64,14 @@ class WorkPerformedViewFragment :
                 StaggeredGridLayoutManager.VERTICAL
             )
             setHasFixedSize(true)
-            adapter = workPerformedAdapter
+            adapter = areaViewAdapter
         }
         activity?.let {
-            mainActivity.workOrderViewModel.getWorkPerformedAll().observe(
+            mainActivity.workOrderViewModel.getAreasList().observe(
                 viewLifecycleOwner
-            ) { workPerformedList ->
-                workPerformedAdapter!!.differ.submitList(workPerformedList)
-                updateUI(workPerformedList)
+            ) { areaList ->
+                areaViewAdapter.differ.submitList(areaList)
+                updateUI(areaList)
             }
         }
     }
@@ -93,6 +85,13 @@ class WorkPerformedViewFragment :
                 rvRecycler.visibility = View.VISIBLE
                 crdNoInfo.visibility = View.GONE
             }
+        }
+    }
+
+    private fun setBaseView() {
+        binding.apply {
+            tvNoInfo.text = getString(R.string.no_areas_in_the_list_to_view)
+            fabNew.visibility = View.GONE
         }
     }
 
@@ -114,22 +113,26 @@ class WorkPerformedViewFragment :
 
     override fun onQueryTextChange(query: String?): Boolean {
         if (query != null) {
-            searchWorkPerformed(query)
+            searchAreas(query)
         }
         return true
     }
 
-    private fun searchWorkPerformed(query: String) {
-        if (workPerformedAdapter != null) {
-            val searchQuery = "%$query%"
-            mainActivity.workOrderViewModel.searchFromWorkPerformed(
-                searchQuery
-            ).observe(viewLifecycleOwner) { list ->
-                workPerformedAdapter!!.differ.submitList(list)
+    private fun searchAreas(query: String) {
+        val searchQuery = "%$query%"
+        mainActivity.workOrderViewModel.searchAreas(searchQuery)
+            .observe(viewLifecycleOwner) { list ->
+                areaViewAdapter.differ.submitList(list)
                 updateUI(list)
-
             }
-        }
+    }
+
+    fun gotoAreaUpdateFragment() {
+        mView.findNavController().navigate(
+            AreaViewFragmentDirections
+                .actionAreaViewFragmentToAreaUpdateFragment()
+        )
+
     }
 
     override fun onDestroy() {

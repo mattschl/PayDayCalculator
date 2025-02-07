@@ -65,18 +65,22 @@ class WorkPerformedAdapter(
             tvDisplay.text = display
         }
         holder.itemView.setOnClickListener {
-            gotoWorkPerformedUpdate(workPerformed)
+            gotoWorkPerformedUpdate(workPerformed.workPerformedId)
         }
     }
 
-    private fun gotoWorkPerformedUpdate(workPerformed: WorkPerformed?) {
+    private fun gotoWorkPerformedUpdate(workPerformedId: Long) {
         mainActivity.mainViewModel.setCallingFragment(parentTag)
-        mainActivity.mainViewModel.setWorkPerformed(workPerformed)
+        mainActivity.mainViewModel.setWorkPerformedId(workPerformedId)
+        gotoWorkPerformedUpdateFragment()
+
+    }
+
+    private fun gotoWorkPerformedUpdateFragment() {
         mView.findNavController().navigate(
             WorkPerformedViewFragmentDirections
                 .actionWorkPerformedViewFragmentToWorkPerformedUpdateFragment()
         )
-
     }
 
 

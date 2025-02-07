@@ -94,6 +94,7 @@ class WorkOrderHistoryUpdateFragment :
 
     private fun populateInitialValues() {
         CoroutineScope(Dispatchers.Main).launch {
+            removeFragmentReferenceFromHistory()
             populateWorkPerformedListForAutoComplete()
             populateMaterialListForAutoComplete()
             populateAreaListForAutoComplete()
@@ -113,6 +114,10 @@ class WorkOrderHistoryUpdateFragment :
                 populateFromTempValues()
             }
         }
+    }
+
+    private fun removeFragmentReferenceFromHistory() {
+        mainActivity.mainViewModel.removeCallingFragment(TAG)
     }
 
     private fun unHideMaterialAndWorkPerformed() {
@@ -365,6 +370,7 @@ class WorkOrderHistoryUpdateFragment :
         val workPerformedAdapter =
             WorKOrderHistoryWorkPerformedAdapter(
                 mainActivity,
+                TAG,
                 mView,
             )
         binding.rvWorkPerformed.apply {

@@ -581,6 +581,9 @@
         <action
             android:id="@+id/action_workOrderHistoryUpdateFragment_to_materialQuantityUpdateFragment"
             app:destination="@id/materialQuantityUpdateFragment" />
+        <action
+            android:id="@+id/action_workOrderHistoryUpdateFragment_to_areaUpdateFragment"
+            app:destination="@id/areaUpdateFragment" />
     </fragment>
 
     <!--    action_global_workOrdersFragment-->
@@ -769,7 +772,7 @@
         android:id="@+id/workPerformedUpdateFragment"
         android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workPerforrmed.WorkPerformedUpdateFragment"
         android:label="WorkPerformedUpdateFragment"
-        tools:layout="@layout/fragment_work_performed_update">
+        tools:layout="@layout/fragment_single_item_update">
         <action
             android:id="@+id/action_workPerformedUpdateFragment_to_workOrderHistoryUpdateFragment"
             app:destination="@id/workOrderHistoryUpdateFragment"
@@ -805,5 +808,30 @@
     <action
         android:id="@+id/action_global_payDetailFragmentNew"
         app:destination="@id/payDetailFragmentNew" />
+    <fragment
+        android:id="@+id/areaViewFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.area.AreaViewFragment"
+        android:label="AreaViewFragment"
+        tools:layout="@layout/fragment_recycler_view">
+        <action
+            android:id="@+id/action_areaViewFragment_to_areaUpdateFragment"
+            app:destination="@id/areaUpdateFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/areaUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.area.adapter.AreaUpdateFragment"
+        android:label="AreaUpdateFragment"
+        tools:layout="@layout/fragment_single_item_update">
+        <action
+            android:id="@+id/action_areaUpdateFragment_to_areaViewFragment"
+            app:destination="@id/areaViewFragment"
+            app:popUpTo="@id/areaViewFragment" />
+        <action
+            android:id="@+id/action_areaUpdateFragment_to_workOrderHistoryUpdateFragment"
+            app:destination="@id/workOrderHistoryUpdateFragment" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_areaViewFragment"
+        app:destination="@id/areaViewFragment" />
 
 </navigation>

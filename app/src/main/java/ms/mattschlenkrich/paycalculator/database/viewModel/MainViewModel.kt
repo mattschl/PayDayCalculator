@@ -19,7 +19,6 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.MaterialInSeque
 import ms.mattschlenkrich.paycalculator.database.model.workorder.TempWorkOrderHistoryInfo
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
-import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
 
 class MainViewModel(
     app: Application,
@@ -51,10 +50,19 @@ class MainViewModel(
     private var workOrderNumber: String? = null
     private var workOrder: WorkOrder? = null
     private var jobSpec: JobSpec? = null
-    private var workPerformed: WorkPerformed? = null
+    private var workPerformedId: Long? = null
     private var material: Material? = null
     private var materialInSequence: MaterialInSequence? = null
     private var extraContainer: ExtraContainer? = null
+    private var areaId: Long? = null
+
+    fun setAreaId(newAreaId: Long?) {
+        areaId = newAreaId
+    }
+
+    fun getAreaId(): Long? {
+        return areaId
+    }
 
     fun setExtraContainer(newExtraContainer: ExtraContainer?) {
         extraContainer = newExtraContainer
@@ -80,12 +88,12 @@ class MainViewModel(
         return material
     }
 
-    fun setWorkPerformed(newWorkPerformed: WorkPerformed?) {
-        workPerformed = newWorkPerformed
+    fun setWorkPerformedId(newWorkPerformedId: Long?) {
+        workPerformedId = newWorkPerformedId
     }
 
-    fun getWorkPerformed(): WorkPerformed? {
-        return workPerformed
+    fun getWorkPerformedId(): Long? {
+        return workPerformedId
     }
 
     fun getJobSpec(): JobSpec? {
@@ -255,6 +263,7 @@ class MainViewModel(
     fun removeCallingFragment(oldFragment: String) {
         callingFragment = if (callingFragment != null) {
             callingFragment!!.replace(", $oldFragment", "")
+            callingFragment!!.replace(oldFragment, "")
         } else {
             null
         }

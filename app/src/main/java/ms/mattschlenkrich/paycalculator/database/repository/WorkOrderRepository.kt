@@ -189,21 +189,20 @@ class WorkOrderRepository(private val db: PayDatabase) {
     )
 
     fun getMaterialsByHistory(historyId: Long) =
-        db.getWorkOrderDao().getMaterialsByHistory(
-            historyId
-        )
+        db.getWorkOrderDao().getMaterialsByHistory(historyId)
 
     fun getMaterialsHistoryByWorkOrderId(workOrderId: Long) =
-        db.getWorkOrderDao().getMaterialsHistoryByWorkOrderId(
-            workOrderId
-        )
+        db.getWorkOrderDao().getMaterialsHistoryByWorkOrderId(workOrderId)
 
-    suspend fun insertArea(area: Areas) =
-        db.getWorkOrderDao().insertArea(area)
+    suspend fun insertArea(area: Areas) = db.getWorkOrderDao().insertArea(area)
 
-    suspend fun updateArea(area: Areas) =
-        db.getWorkOrderDao().updateArea(area)
+    suspend fun updateArea(area: Areas) = db.getWorkOrderDao().updateArea(area)
 
-    fun getAreasList() =
-        db.getWorkOrderDao().getAreasList()
+    fun getAreasList() = db.getWorkOrderDao().getAreasList()
+
+    fun getArea(areaId: Long) = db.getWorkOrderDao().getArea(areaId)
+
+    fun getArea(areaName: String) = db.getWorkOrderDao().getArea(areaName)
+
+    fun searchAreas(query: String) = db.getWorkOrderDao().searchAreas(query)
 }
