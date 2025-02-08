@@ -311,6 +311,8 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
                 nf.generateRandomIdAsLong(),
                 curWorkOrder.workOrderId,
                 curJobSpec!!.jobSpecId,
+                null,
+                null,
                 jobSpecSequence,
                 false,
                 df.getCurrentTimeAsString()

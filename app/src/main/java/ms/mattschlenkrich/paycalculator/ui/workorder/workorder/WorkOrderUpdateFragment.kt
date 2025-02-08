@@ -21,7 +21,6 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDERS
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
-import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_UPDATE
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
@@ -37,7 +36,7 @@ import ms.mattschlenkrich.paycalculator.ui.workorder.adapter.MaterialCountAdapte
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.adapter.WorkOrderJobSpecAdapter
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater.WorkOrderHistoryAdapter
 
-private const val TAG = FRAG_WORK_ORDER_UPDATE
+//private const val TAG = FRAG_WORK_ORDER_UPDATE
 
 class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
 
@@ -334,6 +333,8 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order_add) {
                 nf.generateRandomIdAsLong(),
                 curWorkOrder.workOrderId,
                 curJobSpec!!.jobSpecId,
+                null,
+                null,
                 jobSpecSequence,
                 false,
                 df.getCurrentTimeAsString()

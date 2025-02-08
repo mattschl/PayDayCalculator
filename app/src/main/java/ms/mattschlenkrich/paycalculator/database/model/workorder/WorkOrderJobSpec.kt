@@ -20,14 +20,18 @@ import kotlinx.parcelize.Parcelize
             entity = JobSpec::class,
             parentColumns = ["jobSpecId"],
             childColumns = ["wojsJobSpecId"]
+        ),
+        ForeignKey(
+            entity = Areas::class,
+            parentColumns = ["areaId"],
+            childColumns = ["wojsAreaId"]
         )
     ],
     indices =
     [Index(
-        value = ["wojsWorkOrderId", "wojsJobSpecId"],
+        value = ["wojsWorkOrderId", "wojsJobSpecId", "wojsAreaId"],
         unique = true
-    )
-    ]
+    )]
 )
 @Parcelize
 data class WorkOrderJobSpec(
@@ -37,6 +41,9 @@ data class WorkOrderJobSpec(
     val wojsWorkOrderId: Long,
     @ColumnInfo(index = true)
     val wojsJobSpecId: Long,
+    @ColumnInfo(index = true)
+    val wojsAreaId: Long?,
+    val wojsNote: String?,
     val wojsSequence: Int,
     val wojsIsDeleted: Boolean,
     val wojsUpdateTime: String,
