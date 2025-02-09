@@ -53,8 +53,6 @@ class WorkOrderHistoryUpdateFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private val df = DateFunctions()
-    private val nf = NumberFunctions()
     private val workOrderList = ArrayList<WorkOrder>()
     private val workOrderListForAutocomplete = ArrayList<String>()
     private var workDateObject: WorkDates? = null
@@ -70,6 +68,8 @@ class WorkOrderHistoryUpdateFragment :
     private var curMaterial: Material? = null
     private var materialSequence = 0
     private lateinit var commonFunctions: WorkOrderCommonFunctions
+    private val df = DateFunctions()
+    private val nf = NumberFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -723,16 +723,18 @@ class WorkOrderHistoryUpdateFragment :
 
     private fun setCurWorkPerformed(): Boolean {
         binding.apply {
-            for (workPerformed in workPerformedListForAutoComplete) {
-                if (acWorkPerformed.text.toString() ==
-                    workPerformed.wpDescription &&
-                    !acWorkPerformed.text.isNullOrBlank()
-                ) {
-                    curWorkPerformed = workPerformed
-                    return true
+            if (!acWorkPerformed.text.isNullOrBlank()) {
+                for (workPerformed in workPerformedListForAutoComplete) {
+                    if (acWorkPerformed.text.toString().trim() ==
+                        workPerformed.wpDescription
+                    ) {
+                        curWorkPerformed = workPerformed
+                        return true
+                    }
                 }
             }
         }
+        curWorkPerformed = null
         return false
     }
 

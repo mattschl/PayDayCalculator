@@ -9,11 +9,17 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class WorkOrderJobSpecCombined(
     @Embedded
-    var WorkOrderJobSpec: WorkOrderJobSpec,
+    var workOrderJobSpec: WorkOrderJobSpec,
     @Relation(
         entity = JobSpec::class,
         parentColumn = "wojsJobSpecId",
         entityColumn = "jobSpecId"
     )
-    var jobSpec: JobSpec
+    var jobSpec: JobSpec,
+    @Relation(
+        entity = Areas::class,
+        parentColumn = "wojsAreaId",
+        entityColumn = "areaId"
+    )
+    var area: Areas?
 ) : Parcelable

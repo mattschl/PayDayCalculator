@@ -95,11 +95,13 @@ class WorKOrderHistoryWorkPerformedAdapter(
             )
             .setItems(
                 arrayOf(
-                    "Edit the work performed description in the history",
-                    "Remove this work performed description in the history",
-                    "Edit Work description of ${work.workPerformed.wpDescription}",
+                    mView.context.getString(R.string.edit_the_work_performed_description_in_the_history),
+                    mView.context.getString(R.string.remove_this_work_performed_description_in_the_history),
+                    mView.context.getString(R.string.edit_work_description_of_) +
+                            work.workPerformed.wpDescription,
                     if (work.area != null) {
-                        "Edit area description of ${work.area.areaName}"
+                        mView.context.getString(R.string.edit_area_description_of_) +
+                                work.area.areaName
                     } else {
                         ""
                     }

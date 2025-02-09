@@ -399,5 +399,18 @@
     <string name="no_area_was_indicated">No Area was indicated</string>
     <string name="edit_work_performed_on">"Edit Work Performed on "</string>
     <string name="for_work_order">"For Work Order "</string>
+    <string name="would_you_like_to_update_job_specs_for_this_work_order">Would you like to update Job Specs for this Work Order?</string>
+    <string name="reg_hrs_">"Reg Hrs: "</string>
+    <string name="ot_hrs_">"Ot Hrs: "</string>
+    <string name="dblot_hrs_">"DblOt Hrs: "</string>
+    <string name="edit_the_work_performed_description_in_the_history">Edit the work performed description in the history</string>
+    <string name="remove_this_work_performed_description_in_the_history">Remove this work performed description in the history</string>
+    <string name="edit_work_description_of_">"Edit Work description of "</string>
+    <string name="edit_area_description_of_">"Edit area description of "</string>
+    <string name="edit_the_job_spec_description_in_the_work_order">Edit the Job Spec description in the Work Order</string>
+    <string name="remove_this_work_job_spec_description_in_the_work_order">Remove this work Job Spec description in the Work Order</string>
+    <string name="edit_work_description_of">"Edit Work description of "</string>
+    <string name="enter_job_spec_and_details">Enter Job Spec and Details</string>
+    <string name="add_job_spec_below">Add Job Spec below:</string>
 
 </resources>

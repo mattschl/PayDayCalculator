@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder.workorder
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,42 +12,34 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
-import ms.mattschlenkrich.paycalculator.database.model.workorder.JobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
-import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpec
-import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderAddBinding
+import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
-class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
+class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
 
-    private var _binding: FragmentWorkOrderAddBinding? = null
+    private var _binding: FragmentWorkOrderBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
 
-    private val df = DateFunctions()
-
-    private val nf = NumberFunctions()
-    private val workOrderList = ArrayList<WorkOrder>()
+    private lateinit var workOrderList: List<WorkOrder>
     private lateinit var curEmployer: Employers
     private lateinit var curWorkOrder: WorkOrder
-    private var curJobSpec: JobSpec? = null
-    private val jobSpecList = ArrayList<JobSpec>()
-    private var jobSpecSequence = 0
+    private val df = DateFunctions()
+    private val nf = NumberFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentWorkOrderAddBinding.inflate(
+        _binding = FragmentWorkOrderBinding.inflate(
             inflater, container, false
         )
         mView = binding.root
@@ -62,6 +55,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
     }
 
     private fun populateInitialValues() {
+        hideJobSpecsAndHistory()
         binding.apply {
             if (mainActivity.mainViewModel.getEmployer() != null) {
                 curEmployer = mainActivity.mainViewModel.getEmployer()!!
@@ -80,19 +74,20 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
             }
             crdHistory.visibility = View.INVISIBLE
         }
-        populateJobSpecListForAutoComplete()
+    }
+
+    private fun hideJobSpecsAndHistory() {
+        binding.apply {
+            crdJobSpecs.visibility = View.GONE
+            crdHistory.visibility = View.GONE
+        }
     }
 
     private fun populateWorkOrderListForValidation() {
-        workOrderList.clear()
         mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
             curEmployer.employerId
-        ).observe(
-            viewLifecycleOwner
-        ) { list ->
-            list.listIterator().forEach {
-                workOrderList.add(it)
-            }
+        ).observe(viewLifecycleOwner) { list ->
+            workOrderList = list
         }
     }
 
@@ -101,10 +96,8 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
             viewLifecycleOwner
         ) { list ->
             binding.apply {
-                val employerAdapter = ArrayAdapter<Any>(
-                    mView.context,
-                    R.layout.spinner_item_bold
-                )
+                val employerAdapter =
+                    ArrayAdapter<Any>(mView.context, R.layout.spinner_item_bold)
                 list.listIterator().forEach {
                     employerAdapter.add(it.employerName)
                 }
@@ -120,88 +113,38 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
         }
     }
 
-    private fun populateJobSpecListForAutoComplete() {
-        mainActivity.workOrderViewModel.getJobSpecsAll()
-            .observe(viewLifecycleOwner) { list ->
-                val jobSpecNameList = ArrayList<String>()
-                list.listIterator().forEach {
-                    jobSpecNameList.add(it.jsName)
-                    jobSpecList.add(it)
-                }
-                populateJobSpecsNamesForAutoComplete(jobSpecNameList)
-            }
-    }
-
-    private fun populateJobSpecsNamesForAutoComplete(
-        jobSpecNameList: ArrayList<String>
-    ) {
-        binding.apply {
-            val jsAdapter = ArrayAdapter(
-                mView.context,
-                R.layout.spinner_item_normal,
-                jobSpecNameList
-            )
-            acJobSpec.setAdapter(jsAdapter)
-        }
-    }
-
     private fun setClickActions() {
         binding.apply {
-            fabDone.setOnClickListener {
-                saveWorkOrderAndAddJobSpecIfValid(gotoUpdate = false, addJobSpecToWorkOrder = false)
-            }
+            fabDone.setOnClickListener { saveWorkOrderAndAddJobSpecIfValid() }
             onSelectEmployer()
-            acJobSpec.setOnItemClickListener { _, _, _, _ ->
-                setCurrentJoSpec()
-            }
-            btnAddJobSpec.setOnClickListener {
-                saveWorkOrderAndAddJobSpecIfValid(gotoUpdate = true, addJobSpecToWorkOrder = true)
-            }
         }
     }
 
-    private fun setCurrentJoSpec(): Boolean {
-        for (jobSpec in jobSpecList) {
-            if (jobSpec.jsName == binding.acJobSpec.text.toString().trim()) {
-                curJobSpec = jobSpec
-                return true
-            }
-        }
-        curJobSpec = null
-        return false
-    }
-
-    private fun saveWorkOrderAndAddJobSpecIfValid(
-        gotoUpdate: Boolean, addJobSpecToWorkOrder: Boolean
-    ) {
+    private fun saveWorkOrderAndAddJobSpecIfValid() {
         val answer = validateWorkOrder()
         if (answer == ANSWER_OK) {
-            saveWorkOrderAndAddJobSpecs(gotoUpdate, addJobSpecToWorkOrder)
+            saveWorkOrderAndAChooseNextSteps()
         } else {
-            Toast.makeText(
-                mView.context,
-                answer, Toast.LENGTH_LONG
-            ).show()
+            Toast.makeText(mView.context, answer, Toast.LENGTH_LONG).show()
         }
     }
 
-    private fun saveWorkOrderAndAddJobSpecs(
-        gotoUpdate: Boolean, addJobSpecToWorkOrder: Boolean
-    ) {
+    private fun saveWorkOrderAndAChooseNextSteps() {
         curWorkOrder = getCurrentWorkOrder()
         mainActivity.workOrderViewModel.insertWorkOrder(curWorkOrder)
         mainActivity.mainViewModel.setWorkOrder(curWorkOrder)
-        mainActivity.mainViewModel.setWorkOrderNumber(
-            curWorkOrder.woNumber
-        )
-        if (addJobSpecToWorkOrder) {
-            addJobSpecToWorkOrderIfValid()
-        }
-        if (gotoUpdate) {
-            gotoWorkOrderUpdate()
-        } else {
-            gotoCallingFragment()
-        }
+        mainActivity.mainViewModel.setWorkOrderNumber(curWorkOrder.woNumber)
+        chooseToGotoUpdate()
+    }
+
+    private fun chooseToGotoUpdate() {
+        AlertDialog.Builder(mView.context)
+            .setTitle(getString(R.string.choose_the_next_step))
+            .setMessage(getString(R.string.would_you_like_to_update_job_specs_for_this_work_order))
+            .setPositiveButton(getString(R.string.yes)) { _, _ -> gotoWorkOrderUpdate() }
+            .setNegativeButton(getString(R.string.no)) { _, _ -> gotoCallingFragment() }
+            .setNeutralButton(getString(R.string.cancel), null)
+            .show()
     }
 
     private fun onSelectEmployer() {
@@ -229,23 +172,6 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
         }
     }
 
-    private fun addJobSpecToWorkOrderOrAddToDatabaseFirst() {
-        for (jobSpec in jobSpecList) {
-            if (jobSpec.jsName ==
-                binding.acJobSpec.text.toString().trim()
-            ) {
-                curJobSpec = jobSpec
-                addJobSpecToWorkOrder()
-                break
-            }
-        }
-        CoroutineScope(Dispatchers.Main).launch {
-            curJobSpec = addJobSpecToDatabase()
-            delay(WAIT_100)
-            addJobSpecToWorkOrder()
-        }
-    }
-
     private fun validateWorkOrder(): String {
         binding.apply {
             if (etWorkOrderNumber.text.isEmpty()) {
@@ -268,60 +194,6 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
         return ANSWER_OK
     }
 
-    private fun addJobSpecToWorkOrderIfValid() {
-        binding.apply {
-            if (acJobSpec.text.isNullOrBlank()) {
-                Toast.makeText(
-                    mView.context,
-                    getString(R.string.add_a_description_first),
-                    Toast.LENGTH_LONG
-                ).show()
-            } else if (curJobSpec != null) {
-                addJobSpecToWorkOrder()
-            } else if (acJobSpec.text.isNotBlank()) {
-                addJobSpecToWorkOrderOrAddToDatabaseFirst()
-            } else {
-                Toast.makeText(
-                    mView.context,
-                    getString(R.string.add_a_description_first),
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-    }
-
-    private fun addJobSpecToDatabase(): JobSpec {
-        val newJobSpec =
-            JobSpec(
-                nf.generateRandomIdAsLong(),
-                binding.acJobSpec.text.toString().trim(),
-                false,
-                df.getCurrentTimeAsString()
-            )
-        mainActivity.workOrderViewModel.insertJobSpec(
-            newJobSpec
-        )
-        return newJobSpec
-    }
-
-    private fun addJobSpecToWorkOrder() {
-        jobSpecSequence++
-        mainActivity.workOrderViewModel.insertWorkOrderJobSpec(
-            WorkOrderJobSpec(
-                nf.generateRandomIdAsLong(),
-                curWorkOrder.workOrderId,
-                curJobSpec!!.jobSpecId,
-                null,
-                null,
-                jobSpecSequence,
-                false,
-                df.getCurrentTimeAsString()
-            )
-        )
-//        populateJobSpecsForWorkOrder()
-//        binding.acJobSpec.text = null
-    }
-
     private fun gotoWorkOrderUpdate() {
         Toast.makeText(
             mView.context,
@@ -332,7 +204,6 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order_add) {
     }
 
     private fun gotoCallingFragment() {
-        //TODO: Check for originating fragment and goto
         gotoTimeSheetAddWorkOrderFragment()
     }
 

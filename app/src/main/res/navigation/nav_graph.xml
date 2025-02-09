@@ -604,7 +604,7 @@
         android:id="@+id/workOrderAddFragment"
         android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workorder.WorkOrderAddFragment"
         android:label="fragment_work_order_add"
-        tools:layout="@layout/fragment_work_order_add">
+        tools:layout="@layout/fragment_work_order">
         <action
             android:id="@+id/action_workOrderAddFragment_to_workOrderHistoryAddFragment"
             app:destination="@id/workOrderHistoryAddFragment"
@@ -630,7 +630,7 @@
         android:id="@+id/workOrderUpdateFragment"
         android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workorder.WorkOrderUpdateFragment"
         android:label="fragment_work_order_add"
-        tools:layout="@layout/fragment_work_order_add">
+        tools:layout="@layout/fragment_work_order">
         <action
             android:id="@+id/action_workOrderUpdateFragment_to_workDateUpdateFragment"
             app:destination="@id/workDateUpdateFragment"
