@@ -11,6 +11,8 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_AREA_VIEW
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_UPDATE
 import ms.mattschlenkrich.paycalculator.database.model.workorder.Areas
 import ms.mattschlenkrich.paycalculator.databinding.FragmentSingleItemUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
@@ -133,8 +135,16 @@ class AreaUpdateFragment :
             )
         ) {
             gotoAreaViewFragment()
-        } else {
+        } else if (mainActivity.mainViewModel.getCallingFragment()!!.contains(
+                FRAG_WORK_ORDER_HISTORY_UPDATE
+            )
+        ) {
             gotoWorkOrderHistoryUpdateFragment()
+        } else if (mainActivity.mainViewModel.getCallingFragment()!!.contains(
+                FRAG_WORK_ORDER_UPDATE
+            )
+        ) {
+            gotoWorkOrderUpdateFragment()
         }
     }
 
@@ -149,6 +159,13 @@ class AreaUpdateFragment :
         mView.findNavController().navigate(
             AreaUpdateFragmentDirections
                 .actionAreaUpdateFragmentToWorkOrderHistoryUpdateFragment()
+        )
+    }
+
+    private fun gotoWorkOrderUpdateFragment() {
+        mView.findNavController().navigate(
+            AreaUpdateFragmentDirections
+                .actionAreaUpdateFragmentToWorkOrderUpdateFragment()
         )
     }
 

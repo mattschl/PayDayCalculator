@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -147,7 +148,6 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
                         originalWorkPerformedHistory.workPerformed.wpDescription
                 lblWorkPerformed.text = display
                 acWorkPerformed.setText(originalWorkPerformedHistory.workPerformed.wpDescription)
-                setCurWorkPerformed()
                 display = if (originalWorkPerformedHistory.area != null) {
                     getString(R.string.old_area_of_work) +
                             originalWorkPerformedHistory.area!!.areaName
@@ -156,22 +156,25 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
                 }
                 lblArea.text = display
                 acArea.setText(originalWorkPerformedHistory.area?.areaName)
-                setCurArea()
-                etWorkPerformedNote.setText(
-                    originalWorkPerformedHistory.workOrderHistoryWorkPerformed.wowpNote
-                )
+                if (originalWorkPerformedHistory.workOrderHistoryWorkPerformed.wowpNote != null) {
+                    etWorkPerformedNote.setText(
+                        originalWorkPerformedHistory.workOrderHistoryWorkPerformed.wowpNote
+                    )
+                }
             }
         }
 
     private fun setCurWorkPerformed(): Boolean {
+        curWorkPerformed = null
         binding.apply {
-            for (workPerformed in workPerformedListForAutoComplete) {
-                if (acWorkPerformed.text.toString() ==
-                    workPerformed.wpDescription &&
-                    !acWorkPerformed.text.isNullOrBlank()
-                ) {
-                    curWorkPerformed = workPerformed
-                    return true
+            if (!acWorkPerformed.text.isNullOrBlank()) {
+                for (workPerformed in workPerformedListForAutoComplete) {
+                    if (acWorkPerformed.text.toString().trim() ==
+                        workPerformed.wpDescription
+                    ) {
+                        curWorkPerformed = workPerformed
+                        return true
+                    }
                 }
             }
         }
@@ -181,13 +184,14 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
     private fun setCurArea(): Boolean {
         curArea = null
         binding.apply {
-            for (area in areaListForAutoComplete) {
-                if (acArea.text.toString() ==
-                    area.areaName &&
-                    !acArea.text.isNullOrBlank()
-                ) {
-                    curArea = area
-                    return true
+            if (!acArea.text.isNullOrBlank()) {
+                for (area in areaListForAutoComplete) {
+                    if (acArea.text.toString().trim() ==
+                        area.areaName
+                    ) {
+                        curArea = area
+                        return true
+                    }
                 }
             }
         }
@@ -201,12 +205,12 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
     }
 
     private fun updateWorkPerformedInHistoryIfValid() {
-        val answer = validateHistoryAndUpdate()
-        if (answer != ANSWER_OK) {
+        val message = validateOrAddWorkPerformedToDbAndUpdateWithArea()
+        if (message != ANSWER_OK) {
             Toast.makeText(
                 mView.context,
                 getString(R.string.error_) +
-                        answer,
+                        message,
                 Toast.LENGTH_LONG
             ).show()
         } else {
@@ -214,38 +218,41 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
         }
     }
 
-    private fun validateHistoryAndUpdate(): String {
+    private fun validateOrAddWorkPerformedToDbAndUpdateWithArea(): String {
         binding.apply {
-            if (acWorkPerformed.text.isNullOrBlank()) {
-                return getString(R.string.please_enter_a_valid_description_of_work_performed_to_add_it)
-            } else if (setCurWorkPerformed()) {
+            if (setCurWorkPerformed()) {
                 updateWorkPerformedHistory(curWorkPerformed!!)
                 return ANSWER_OK
             } else if (!acWorkPerformed.text.isNullOrBlank()) {
-                CoroutineScope(Dispatchers.Default).launch {
-                    val workPerformed = insertWorkPerformedIntoDatabase(
-                        acWorkPerformed.text.toString()
-                    )
-                    updateWorkPerformedHistory(workPerformed)
-                }
+                insertWorkPerformedIntoDbAndContinueToUpdate()
                 return ANSWER_OK
             }
         }
-        return ANSWER_OK
+        return getString(R.string.please_enter_a_valid_description_of_work_performed_to_add_it)
+    }
+
+    private fun insertWorkPerformedIntoDbAndContinueToUpdate() {
+        CoroutineScope(Dispatchers.Default).launch {
+            val workPerformed = insertWorkPerformedIntoDatabase(
+                binding.acWorkPerformed.text.toString().trim()
+            )
+            updateWorkPerformedHistory(workPerformed)
+        }
     }
 
     private fun updateWorkPerformedHistory(workPerformed: WorkPerformed) {
-        binding.apply {
-            if (acArea.text.isNullOrBlank()) {
-                curArea = null
-                updateHistory(workPerformed.workPerformedId, null)
-            } else if (setCurArea()) {
-                updateHistory(workPerformed.workPerformedId, curArea?.areaId)
-            } else if (!acArea.text.isNullOrBlank()) {
-                val newArea: Areas = addAreaToDb(acArea.text.toString().trim())
-                updateHistory(workPerformed.workPerformedId, newArea.areaId)
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.apply {
+                if (acArea.text.isNullOrBlank()) {
+                    curArea = null
+                    updateHistory(workPerformed.workPerformedId, null)
+                } else if (setCurArea()) {
+                    updateHistory(workPerformed.workPerformedId, curArea?.areaId)
+                } else if (!acArea.text.isNullOrBlank()) {
+                    val newAreaId = async { insertAreaIntoDb(acArea.text.toString().trim()) }
+                    updateHistory(workPerformed.workPerformedId, newAreaId.await())
+                }
             }
-
         }
     }
 
@@ -278,7 +285,7 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
         }
     }
 
-    private fun addAreaToDb(areaName: String): Areas {
+    private fun insertAreaIntoDb(areaName: String): Long {
         val newArea = Areas(
             nf.generateRandomIdAsLong(),
             areaName,
@@ -286,7 +293,7 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
             df.getCurrentTimeAsString()
         )
         mainActivity.workOrderViewModel.insertArea(newArea)
-        return newArea
+        return newArea.areaId
     }
 
     private fun insertWorkPerformedIntoDatabase(workPerformedName: String): WorkPerformed {

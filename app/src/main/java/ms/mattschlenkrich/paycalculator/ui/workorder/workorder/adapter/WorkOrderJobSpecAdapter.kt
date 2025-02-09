@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
@@ -17,6 +18,8 @@ import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.WorkOrderUpdateFr
 class WorkOrderJobSpecAdapter(
     private val mainActivity: MainActivity,
     private val workOrderUpdateFragment: WorkOrderUpdateFragment,
+    private val workOrder: WorkOrder,
+    private val parentFragment: String,
     private val mView: View
 ) : RecyclerView.Adapter<WorkOrderJobSpecAdapter.ViewHolder>() {
 
@@ -70,7 +73,7 @@ class WorkOrderJobSpecAdapter(
             var display = jobSpec.jobSpec.jsName
             display +=
                 if (jobSpec.workOrderJobSpec.wojsAreaId != null) {
-                    mView.context.getString(R.string.pipe) + jobSpec.area?.areaName
+                    mView.context.getString(R.string._in_) + " " + jobSpec.area?.areaName
                 } else {
                     ""
                 }
@@ -124,7 +127,7 @@ class WorkOrderJobSpecAdapter(
                     }
 
                     3 -> {
-                        editArea(jobSpec.area!!.areaId)
+                        editArea(jobSpec.workOrderJobSpec.wojsAreaId!!)
                     }
                 }
             }
@@ -135,6 +138,8 @@ class WorkOrderJobSpecAdapter(
 
     private fun gotoJobSpecUpdate(workOrderJobSpecId: Long) {
         mainActivity.mainViewModel.setWorkOrderJobSpecId(workOrderJobSpecId)
+        mainActivity.mainViewModel.setWorkOrder(workOrder)
+        workOrderUpdateFragment.gotoWorkOrderJobSpecUpdateFragment()
     }
 
     private fun removeJobSpecFromWorkOrder(woJobSpec: WorkOrderJobSpecCombined) {
@@ -146,11 +151,14 @@ class WorkOrderJobSpecAdapter(
 
     private fun editJobSpec(woJobSpec: WorkOrderJobSpecCombined) {
         mainActivity.mainViewModel.setJobSpec(woJobSpec.jobSpec)
+        mainActivity.mainViewModel.addCallingFragment(parentFragment)
         workOrderUpdateFragment.gotoJobSpecUpdateFragment()
     }
 
     private fun editArea(areaId: Long) {
         mainActivity.mainViewModel.setAreaId(areaId)
+        mainActivity.mainViewModel.addCallingFragment(parentFragment)
+        workOrderUpdateFragment.gotoAreaUpdateFragment()
     }
 
 }

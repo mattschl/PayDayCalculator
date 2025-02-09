@@ -199,8 +199,11 @@ interface WorkOrderDao {
     )
     fun searchJobSpecs(query: String): LiveData<List<JobSpec>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     suspend fun insertWorkOrderJobSpec(workOrderJobSpec: WorkOrderJobSpec)
+
+    @Update
+    suspend fun updateWorkOrderJobSpec(workOrderJobSpec: WorkOrderJobSpec)
 
     @Query(
         "UPDATE workOrderJobSpecs " +
@@ -223,6 +226,14 @@ interface WorkOrderDao {
     )
     fun getWorkOrderJobSpecs(workOrderId: Long):
             LiveData<List<WorkOrderJobSpecCombined>>
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT * FROM workOrderJobSpecs " +
+                "WHERE workOrderJobSpecId = :workOrderJobSpecId"
+    )
+    fun getWorkOrderJobSpec(workOrderJobSpecId: Long): LiveData<WorkOrderJobSpecCombined>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWorkPerformed(workPerformed: WorkPerformed)

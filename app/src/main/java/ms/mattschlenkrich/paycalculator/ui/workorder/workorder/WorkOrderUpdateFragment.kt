@@ -22,6 +22,7 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDERS
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_UPDATE
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
@@ -39,7 +40,7 @@ import ms.mattschlenkrich.paycalculator.ui.workorder.adapter.MaterialCountAdapte
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.adapter.WorkOrderJobSpecAdapter
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater.WorkOrderHistoryAdapter
 
-//private const val TAG = FRAG_WORK_ORDER_UPDATE
+private const val TAG = FRAG_WORK_ORDER_UPDATE
 
 class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order) {
 
@@ -424,7 +425,11 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order) {
 
     private fun populateJobSpecRecycler(jobSpecList: List<WorkOrderJobSpecCombined>) {
         val workOrderJobSpecAdapter = WorkOrderJobSpecAdapter(
-            mainActivity, this@WorkOrderUpdateFragment, mView
+            mainActivity,
+            this@WorkOrderUpdateFragment,
+            curWorkOrder,
+            TAG,
+            mView
         )
         binding.rvJobSpecs.apply {
             layoutManager = StaggeredGridLayoutManager(
@@ -522,6 +527,44 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order) {
         }
     }
 
+    private fun getCurrentWorkOrder(): WorkOrder {
+        binding.apply {
+            return WorkOrder(
+                curWorkOrder.workOrderId,
+                etWorkOrderNumber.text.toString(),
+                curEmployer.employerId,
+                etAddress.text.toString().trim(),
+                etDescription.text.toString().trim(),
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
+    private fun validateWorkOrder(): String {
+        binding.apply {
+            if (etWorkOrderNumber.text.isEmpty()) {
+                return getString(R.string.please_enter_a_valid_work_order_number)
+            }
+            for (workOrder in workOrderList) {
+                if (workOrder.woNumber ==
+                    etWorkOrderNumber.text.toString() &&
+                    etWorkOrderNumber.text.toString() !=
+                    curWorkOrder.woNumber
+                ) {
+                    return getString(R.string.this_work_order_has_been_used)
+                }
+            }
+            if (etAddress.text.isEmpty()) {
+                return getString(R.string.please_enter_an_address)
+            }
+            if (etDescription.text.isEmpty()) {
+                return getString(R.string.please_enter_a_description)
+            }
+        }
+        return ANSWER_OK
+    }
+
     private fun gotoCallingFragment() {
         when (mainActivity.mainViewModel.getCallingFragment()) {
 
@@ -567,42 +610,18 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order) {
         )
     }
 
-    private fun getCurrentWorkOrder(): WorkOrder {
-        binding.apply {
-            return WorkOrder(
-                curWorkOrder.workOrderId,
-                etWorkOrderNumber.text.toString(),
-                curEmployer.employerId,
-                etAddress.text.toString().trim(),
-                etDescription.text.toString().trim(),
-                false,
-                df.getCurrentTimeAsString()
-            )
-        }
+    fun gotoWorkOrderJobSpecUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkOrderUpdateFragmentDirections
+                .actionWorkOrderUpdateFragmentToWorkOrderJobSpecUpdateFragment()
+        )
     }
 
-    private fun validateWorkOrder(): String {
-        binding.apply {
-            if (etWorkOrderNumber.text.isEmpty()) {
-                return getString(R.string.please_enter_a_valid_work_order_number)
-            }
-            for (workOrder in workOrderList) {
-                if (workOrder.woNumber ==
-                    etWorkOrderNumber.text.toString() &&
-                    etWorkOrderNumber.text.toString() !=
-                    curWorkOrder.woNumber
-                ) {
-                    return getString(R.string.this_work_order_has_been_used)
-                }
-            }
-            if (etAddress.text.isEmpty()) {
-                return getString(R.string.please_enter_an_address)
-            }
-            if (etDescription.text.isEmpty()) {
-                return getString(R.string.please_enter_a_description)
-            }
-        }
-        return ANSWER_OK
+    fun gotoAreaUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkOrderUpdateFragmentDirections
+                .actionWorkOrderUpdateFragmentToAreaUpdateFragment()
+        )
     }
 
     override fun onDestroy() {

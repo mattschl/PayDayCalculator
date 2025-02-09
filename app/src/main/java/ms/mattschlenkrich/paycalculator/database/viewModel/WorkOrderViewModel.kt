@@ -135,6 +135,11 @@ class WorkOrderViewModel(
             workOrderRepository.insertWorkOrderJobSpec(workOrderJobSpec)
         }
 
+    fun updateWorkOrderJobSpec(workOrderJobSpec: WorkOrderJobSpec) =
+        viewModelScope.launch {
+            workOrderRepository.updateWorkOrderJobSpec(workOrderJobSpec)
+        }
+
     fun deleteWorkOrderJobSpec(
         workOrderJobSpecId: Long, updateTime: String
     ) = viewModelScope.launch {
@@ -145,6 +150,9 @@ class WorkOrderViewModel(
 
     fun getWorkOrderJobSpecs(workOrderId: Long) =
         workOrderRepository.getWorkOrderJobSpecs(workOrderId)
+
+    fun getWorkOrderJobSpec(workOrderJobSpecId: Long) =
+        workOrderRepository.getWorkOrderJobSpec(workOrderJobSpecId)
 
     fun insertWorkPerformed(workPerformed: WorkPerformed) =
         viewModelScope.launch {

@@ -233,7 +233,7 @@
     <string name="please_enter_a_new_name_for_this_material">Please enter a new name for this material!</string>
     <string name="please_enter_a_new_quantity">Please enter a new quantity!</string>
     <string name="please_enter_a_valid_description_of_work_performed_to_add_it">Please enter a valid description of work performed to add it.</string>
-    <string name="please_enter_a_valid_job_spec">Please enter a valid Job Spec!</string>
+    <string name="please_enter_a_valid_job_spec">Please enter a valid Job Spec description!</string>
     <string name="please_enter_a_valid_material_description_to_add_it">Please enter a valid material description to add it.</string>
     <string name="please_enter_a_valid_work_order_before_adding_work_performed">Please enter a valid work order before adding work performed</string>
     <string name="please_enter_a_valid_work_order_number">Please enter a valid work order number</string>
@@ -412,5 +412,12 @@
     <string name="edit_work_description_of">"Edit Work description of "</string>
     <string name="enter_job_spec_and_details">Enter Job Spec and Details</string>
     <string name="add_job_spec_below">Add Job Spec below:</string>
+    <string name="job_spec">Job Spec</string>
+    <string name="edit_job_spec">Edit Job Spec</string>
+    <string name="original_job_spec">"Original Job Spec: "</string>
+    <string name="_at_">\nAt:</string>
+    <string name="edit_the_job_spec_for_wo_">"Edit the Job Spec for WO: "</string>
+    <string name="_in_">" in "</string>
+    <string name="an_unknown_error_occurred">An unknown error occurred</string>
 
 </resources>

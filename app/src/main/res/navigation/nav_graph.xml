@@ -654,6 +654,12 @@
             android:id="@+id/action_workOrderUpdateFragment_to_workOrderHistoryUpdateFragment2"
             app:destination="@id/workOrderHistoryUpdateFragment"
             app:popUpTo="@id/workOrderHistoryUpdateFragment" />
+        <action
+            android:id="@+id/action_workOrderUpdateFragment_to_workOrderJobSpecUpdateFragment"
+            app:destination="@id/workOrderJobSpecUpdateFragment" />
+        <action
+            android:id="@+id/action_workOrderUpdateFragment_to_areaUpdateFragment"
+            app:destination="@id/areaUpdateFragment" />
     </fragment>
 
     <!--    workOrderViewFragment-->
@@ -735,6 +741,9 @@
             android:id="@+id/action_jobSpecUpdateFragment_to_jobSpecViewFragment"
             app:destination="@id/jobSpecViewFragment"
             app:popUpTo="@id/jobSpecViewFragment" />
+        <action
+            android:id="@+id/action_jobSpecUpdateFragment_to_areaUpdateFragment"
+            app:destination="@id/areaUpdateFragment" />
     </fragment>
 
     <!--    action_global_materialViewFragment-->
@@ -831,7 +840,16 @@
             app:popUpTo="@id/areaViewFragment" />
         <action
             android:id="@+id/action_areaUpdateFragment_to_workOrderHistoryUpdateFragment"
-            app:destination="@id/workOrderHistoryUpdateFragment" />
+            app:destination="@id/workOrderHistoryUpdateFragment"
+            app:popUpTo="@id/workOrderHistoryUpdateFragment" />
+        <action
+            android:id="@+id/action_areaUpdateFragment_to_workOrderHistoryUpdateFragment2"
+            app:destination="@id/workOrderHistoryUpdateFragment"
+            app:popUpTo="@id/workOrderHistoryUpdateFragment" />
+        <action
+            android:id="@+id/action_areaUpdateFragment_to_workOrderUpdateFragment"
+            app:destination="@id/workOrderUpdateFragment"
+            app:popUpTo="@id/workOrderUpdateFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_areaViewFragment"
@@ -845,6 +863,19 @@
             android:id="@+id/action_workOrderHistoryWorkPerformedUpdateFragment_to_workOrderHistoryUpdateFragment"
             app:destination="@id/workOrderHistoryUpdateFragment"
             app:popUpTo="@id/workOrderHistoryUpdateFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/workOrderJobSpecUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workorder.WorkOrderJobSpecUpdateFragment"
+        android:label="WorkOrderJobSpecUpdateFragment"
+        tools:layout="@layout/fragment_work_order_job_spec_update">
+        <action
+            android:id="@+id/action_workOrderJobSpecUpdateFragment_to_workOrderUpdateFragment"
+            app:destination="@id/workOrderUpdateFragment"
+            app:popUpTo="@id/workOrderHistoryUpdateFragment" />
+        <action
+            android:id="@+id/action_workOrderJobSpecUpdateFragment_to_jobSpecUpdateFragment"
+            app:destination="@id/jobSpecUpdateFragment" />
     </fragment>
 
 </navigation>
