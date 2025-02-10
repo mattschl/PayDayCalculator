@@ -221,7 +221,7 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
     private fun validateOrAddWorkPerformedToDbAndUpdateWithArea(): String {
         binding.apply {
             if (setCurWorkPerformed()) {
-                AddAreaeAndupdateWorkPerformedHistory(curWorkPerformed!!)
+                addAreaAndUpdateWorkPerformedHistory(curWorkPerformed!!)
                 return ANSWER_OK
             } else if (!acWorkPerformed.text.isNullOrBlank()) {
                 insertWorkPerformedIntoDbAndContinueToUpdate()
@@ -236,11 +236,11 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
             val workPerformed = insertWorkPerformedIntoDatabase(
                 binding.acWorkPerformed.text.toString().trim()
             )
-            AddAreaeAndupdateWorkPerformedHistory(workPerformed)
+            addAreaAndUpdateWorkPerformedHistory(workPerformed)
         }
     }
 
-    private fun AddAreaeAndupdateWorkPerformedHistory(workPerformed: WorkPerformed) {
+    private fun addAreaAndUpdateWorkPerformedHistory(workPerformed: WorkPerformed) {
         CoroutineScope(Dispatchers.Main).launch {
             binding.apply {
                 if (acArea.text.isNullOrBlank()) {
