@@ -214,14 +214,14 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
                 Toast.LENGTH_LONG
             ).show()
         } else {
-            gotoCallingFragment()
+//            gotoCallingFragment()
         }
     }
 
     private fun validateOrAddWorkPerformedToDbAndUpdateWithArea(): String {
         binding.apply {
             if (setCurWorkPerformed()) {
-                updateWorkPerformedHistory(curWorkPerformed!!)
+                AddAreaeAndupdateWorkPerformedHistory(curWorkPerformed!!)
                 return ANSWER_OK
             } else if (!acWorkPerformed.text.isNullOrBlank()) {
                 insertWorkPerformedIntoDbAndContinueToUpdate()
@@ -236,11 +236,11 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
             val workPerformed = insertWorkPerformedIntoDatabase(
                 binding.acWorkPerformed.text.toString().trim()
             )
-            updateWorkPerformedHistory(workPerformed)
+            AddAreaeAndupdateWorkPerformedHistory(workPerformed)
         }
     }
 
-    private fun updateWorkPerformedHistory(workPerformed: WorkPerformed) {
+    private fun AddAreaeAndupdateWorkPerformedHistory(workPerformed: WorkPerformed) {
         CoroutineScope(Dispatchers.Main).launch {
             binding.apply {
                 if (acArea.text.isNullOrBlank()) {
@@ -272,6 +272,7 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
                     df.getCurrentTimeAsString()
                 )
             )
+            gotoCallingFragment()
         }
     }
 

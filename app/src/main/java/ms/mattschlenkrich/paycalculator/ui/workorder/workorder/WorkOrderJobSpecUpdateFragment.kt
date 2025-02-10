@@ -198,7 +198,7 @@ class WorkOrderJobSpecUpdateFragment :
                 Toast.LENGTH_LONG
             ).show()
         } else {
-            gotoCallingFragment()
+//            gotoCallingFragment()
         }
     }
 
@@ -243,12 +243,12 @@ class WorkOrderJobSpecUpdateFragment :
             binding.apply {
                 if (acArea.text.isNullOrBlank()) {
                     curArea = null
-                    updateWorkOrderJobSpec(jobSpecId, null)
+                    updateWorkOrderJobSpecAndGotoCallingFragment(jobSpecId, null)
                 } else if (setCurArea()) {
-                    updateWorkOrderJobSpec(jobSpecId, curArea?.areaId)
+                    updateWorkOrderJobSpecAndGotoCallingFragment(jobSpecId, curArea?.areaId)
                 } else if (!acArea.text.isNullOrBlank()) {
                     val newAreaId = async { insertAreaIntoDb(acArea.text.toString().trim()) }
-                    updateWorkOrderJobSpec(jobSpecId, newAreaId.await())
+                    updateWorkOrderJobSpecAndGotoCallingFragment(jobSpecId, newAreaId.await())
                 }
             }
         }
@@ -265,7 +265,7 @@ class WorkOrderJobSpecUpdateFragment :
         return newArea.areaId
     }
 
-    private fun updateWorkOrderJobSpec(jobSpecId: Long, areaId: Long?) {
+    private fun updateWorkOrderJobSpecAndGotoCallingFragment(jobSpecId: Long, areaId: Long?) {
         CoroutineScope(Dispatchers.Main).launch {
             val note: String? = getNote()
             delay(WAIT_250)
@@ -281,6 +281,7 @@ class WorkOrderJobSpecUpdateFragment :
                     df.getCurrentTimeAsString()
                 )
             )
+            gotoCallingFragment()
         }
     }
 
