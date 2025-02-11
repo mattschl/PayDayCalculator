@@ -81,6 +81,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                         }
                     }
                 }
+                changeDate()
             }
         }
     }
@@ -258,6 +259,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                             chkIsFixed.isEnabled = true
                         }
                     }
+                    break
                 }
             }
         }
@@ -292,18 +294,27 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                 saveExtra()
                 gotoCallingFragment()
             } else {
-                Toast.makeText(
-                    mView.context,
-                    message,
-                    Toast.LENGTH_LONG
-                ).show()
+                displayError(message)
             }
         }
     }
 
+    private fun displayError(message: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) + message,
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
     private fun validateExtra(): String {
         binding.apply {
-            //TODO: create validation rules
+            if (etValue.text.isNullOrBlank() ||
+                etValue.text.toString() == getString(R.string.zero_dollars) ||
+                etValue.text.toString() == getString(R.string.zero_percent)
+            ) {
+                return getString(R.string.please_enter_a_value_for_this_extra)
+            }
             return ANSWER_OK
         }
     }

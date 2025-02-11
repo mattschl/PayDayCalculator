@@ -419,5 +419,6 @@
     <string name="edit_the_job_spec_for_wo_">"Edit the Job Spec for WO: "</string>
     <string name="_in_">" in "</string>
     <string name="an_unknown_error_occurred">An unknown error occurred</string>
+    <string name="please_enter_a_value_for_this_extra">Please enter a value for this extra!</string>
 
 </resources>
