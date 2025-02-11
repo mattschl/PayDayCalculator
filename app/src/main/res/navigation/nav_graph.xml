@@ -831,7 +831,7 @@
     </fragment>
     <fragment
         android:id="@+id/areaUpdateFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.area.adapter.AreaUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.area.AreaUpdateFragment"
         android:label="AreaUpdateFragment"
         tools:layout="@layout/fragment_single_item_update">
         <action

@@ -40,7 +40,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
     private val nf = NumberFunctions()
-    private val employerList = ArrayList<Employers>()
+    private lateinit var employerList: List<Employers>
     private var startDate = ""
 
     override fun onCreateView(
@@ -71,10 +71,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     private fun populateEmployerListForValidation() {
         mainActivity.employerViewModel.getEmployers()
             .observe(viewLifecycleOwner) { employers ->
-                employerList.clear()
-                employers.listIterator().forEach {
-                    employerList.add(it)
-                }
+                employerList = employers
             }
     }
 
@@ -101,25 +98,38 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         binding.tvStartDate.text = df.getDisplayDate(startDate)
     }
 
-    private fun setMenuActions() {
-        mainActivity.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.save_menu, menu)
+    private fun setClickActions() {
+        binding.apply {
+            crdTaxes.setOnClickListener {
+                setTaxOptions()
             }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        saveEmployerAndContinue()
-                        true
-                    }
-
-                    else -> {
-                        false
-                    }
-                }
+            crdExtras.setOnClickListener {
+                setExtraOptions()
             }
-        }, viewLifecycleOwner, Lifecycle.State.CREATED)
+            tvStartDate.setOnClickListener {
+                changeCheckDate()
+            }
+        }
+        setMenuActions()
+        setSpinnerActions()
+    }
+
+    private fun setTaxOptions() {
+        AlertDialog.Builder(mView.context)
+            .setMessage(
+                getString(R.string.you_cannot_add_taxes_until_the_employer_is_saved)
+            )
+            .setNegativeButton(getString(R.string.ok), null)
+            .show()
+    }
+
+    private fun setExtraOptions() {
+        AlertDialog.Builder(mView.context)
+            .setMessage(
+                getString(R.string.you_cannot_add_any_extra_credits_or_deductions_until_the_employer_is_saved)
+            )
+            .setNegativeButton(getString(R.string.ok), null)
+            .show()
     }
 
     private fun changeCheckDate() {
@@ -147,6 +157,27 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         datePickerDialog.show()
     }
 
+    private fun setMenuActions() {
+        mainActivity.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.save_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.menu_save -> {
+                        saveEmployerAndContinue()
+                        true
+                    }
+
+                    else -> {
+                        false
+                    }
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
+    }
+
     private fun setSpinnerActions() {
         binding.apply {
             spFrequency.onItemSelectedListener =
@@ -160,40 +191,6 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
                     }
                 }
         }
-    }
-
-    private fun setClickActions() {
-        binding.apply {
-            crdTaxes.setOnClickListener {
-                setTaxOptions()
-            }
-            crdExtras.setOnClickListener {
-                setExtraOptions()
-            }
-            tvStartDate.setOnClickListener {
-                changeCheckDate()
-            }
-        }
-        setMenuActions()
-        setSpinnerActions()
-    }
-
-    private fun setExtraOptions() {
-        AlertDialog.Builder(mView.context)
-            .setMessage(
-                getString(R.string.you_cannot_add_any_extra_credits_or_deductions_until_the_employer_is_saved)
-            )
-            .setNegativeButton(getString(R.string.ok), null)
-            .show()
-    }
-
-    private fun setTaxOptions() {
-        AlertDialog.Builder(mView.context)
-            .setMessage(
-                getString(R.string.you_cannot_add_taxes_until_the_employer_is_saved)
-            )
-            .setNegativeButton(getString(R.string.ok), null)
-            .show()
     }
 
     private fun changeUiVisibilities() {
@@ -234,36 +231,36 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
                 addEmployerTaxRules(curEmployer.employerId)
                 chooseNextStepsAfterSaving(curEmployer)
             } else {
-                Toast.makeText(
-                    mView.context,
-                    message,
-                    Toast.LENGTH_LONG
-                ).show()
+                displayError(message)
             }
         }
+    }
+
+    private fun displayError(message: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) + message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateEmployer(): String {
         binding.apply {
             if (etName.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.the_employer_must_have_a_name)
+                return getString(R.string.the_employer_must_have_a_name)
             }
             if (employerList.isNotEmpty()) {
                 for (employer in employerList) {
                     if (employer.employerName == etName.text.toString().trim()) {
-                        return getString(R.string.error_) +
-                                getString(R.string.this_employer_already_exists)
+                        return getString(R.string.this_employer_already_exists)
                     }
                 }
             }
             if (etDaysBefore.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.the_number_of_days_before_the_pay_day_is_required)
+                return getString(R.string.the_number_of_days_before_the_pay_day_is_required)
             }
             if (etMidMonthDate.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.for_semi_monthly_pay_days_there_needs_to_be_a_mid_month_pay_day)
+                return getString(R.string.for_semi_monthly_pay_days_there_needs_to_be_a_mid_month_pay_day)
             }
             return ANSWER_OK
         }
