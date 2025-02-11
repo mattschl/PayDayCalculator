@@ -45,7 +45,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
     private lateinit var mainActivity: MainActivity
     private lateinit var employerViewModel: EmployerViewModel
     private val df = DateFunctions()
-    private val employerList = ArrayList<Employers>()
+    private lateinit var employerList: List<Employers>
     private var curEmployer: Employers? = null
     private var startDate = ""
 
@@ -70,6 +70,36 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
     private fun populateValues() {
         populateEmployerListForValidation()
         populateSpinners()
+        populateUIValues()
+    }
+
+    private fun populateEmployerListForValidation() {
+        employerViewModel.getEmployers().observe(
+            viewLifecycleOwner
+        ) { employers ->
+            employerList = employers
+        }
+    }
+
+    private fun populateSpinners() {
+        binding.apply {
+            val frequencyAdapter = ArrayAdapter(
+                mView.context, R.layout.spinner_item_bold,
+                resources.getStringArray(R.array.pay_day_frequencies)
+            )
+            frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
+            spFrequency.adapter = frequencyAdapter
+
+            val dayOfWeekAdapter = ArrayAdapter(
+                mView.context, R.layout.spinner_item_bold,
+                resources.getStringArray(R.array.pay_days)
+            )
+            dayOfWeekAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
+            spDayOfWeek.adapter = dayOfWeekAdapter
+        }
+    }
+
+    private fun populateUIValues() {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
             if (mainActivity.mainViewModel.getEmployer() != null) {
@@ -105,35 +135,6 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
                 populateTaxes(curEmployer!!.employerId)
                 populateExtras(curEmployer!!.employerId)
             }
-        }
-    }
-
-    private fun populateEmployerListForValidation() {
-        employerViewModel.getEmployers().observe(
-            viewLifecycleOwner
-        ) { employers ->
-            employerList.clear()
-            employers.listIterator().forEach {
-                employerList.add(it)
-            }
-        }
-    }
-
-    private fun populateSpinners() {
-        binding.apply {
-            val frequencyAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.pay_day_frequencies)
-            )
-            frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
-            spFrequency.adapter = frequencyAdapter
-
-            val dayOfWeekAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.pay_days)
-            )
-            dayOfWeekAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
-            spDayOfWeek.adapter = dayOfWeekAdapter
         }
     }
 
@@ -185,25 +186,15 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
     private fun setClickActions() {
         setMenuActions()
         binding.apply {
-            fabDone.setOnClickListener {
-                updateEmployerIfValid()
-            }
-            fabAddTax.setOnClickListener {
-                gotoTaxTypesAdd()
-            }
+            fabDone.setOnClickListener { updateEmployerIfValid() }
+            fabAddTax.setOnClickListener { gotoTaxTypesAdd() }
             lblTaxes.setOnLongClickListener {
                 gotoTaxRules()
                 false
             }
-            fabAddExtra.setOnClickListener {
-                gotoExtraAdd(curEmployer)
-            }
-            btnWage.setOnClickListener {
-                gotoPayRate(curEmployer)
-            }
-            binding.tvStartDate.setOnClickListener {
-                changeCheckDate()
-            }
+            fabAddExtra.setOnClickListener { gotoExtraAdd(curEmployer) }
+            btnWage.setOnClickListener { gotoPayRate(curEmployer) }
+            binding.tvStartDate.setOnClickListener { changeCheckDate() }
             setSpinnerActions()
         }
     }
@@ -235,37 +226,37 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
             updateEmployer()
             gotoEmployerFragment()
         } else {
-            Toast.makeText(
-                mView.context,
-                message,
-                Toast.LENGTH_LONG
-            ).show()
+            displayError(message)
         }
+    }
+
+    private fun displayError(message: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) + message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateEmployer(): String {
         binding.apply {
             if (etName.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.the_employer_must_have_a_name)
+                return getString(R.string.the_employer_must_have_a_name)
             }
             if (employerList.isNotEmpty()) {
                 for (employer in employerList) {
                     if (employer.employerName == etName.text.toString().trim() &&
                         employer.employerName != curEmployer!!.employerName
                     ) {
-                        return getString(R.string.error_) +
-                                getString(R.string.this_employer_already_exists)
+                        return getString(R.string.this_employer_already_exists)
                     }
                 }
             }
             if (etDaysBefore.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.the_number_of_days_before_the_pay_day_is_required)
+                return getString(R.string.the_number_of_days_before_the_pay_day_is_required)
             }
             if (etMidMonthDate.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.for_semi_monthly_pay_days_there_needs_to_be_a_mid_month_pay_day)
+                return getString(R.string.for_semi_monthly_pay_days_there_needs_to_be_a_mid_month_pay_day)
             }
             return ANSWER_OK
         }
