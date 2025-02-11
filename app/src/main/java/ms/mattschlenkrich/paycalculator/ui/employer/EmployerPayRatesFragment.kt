@@ -31,7 +31,7 @@ class EmployerPayRatesFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private val employerList = ArrayList<Employers>()
+    private lateinit var employerList: List<Employers>
     private var curEmployer: Employers? = null
 
     override fun onCreateView(
@@ -63,9 +63,8 @@ class EmployerPayRatesFragment :
             ) { employers ->
                 employerAdapter.clear()
                 employerAdapter.notifyDataSetChanged()
-                employerList.clear()
+                employerList = employers
                 employers.listIterator().forEach {
-                    employerList.add(it)
                     employerAdapter.add(it.employerName)
                 }
                 employerAdapter.add(getString(R.string.add_new_employer))
@@ -75,6 +74,12 @@ class EmployerPayRatesFragment :
 
             }
             spEmployers.adapter = employerAdapter
+            getEmployerFromHistory()
+        }
+    }
+
+    private fun getEmployerFromHistory() {
+        binding.apply {
             CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_250)
                 if (mainActivity.mainViewModel.getEmployer() != null) {

@@ -64,6 +64,15 @@ class EmployerPayRateAddFragment :
         populateSpinner()
     }
 
+    private fun populateSpinner() {
+        val frequencyAdapter = ArrayAdapter(
+            mView.context, R.layout.spinner_item_bold,
+            resources.getStringArray(R.array.pay_day_frequencies)
+        )
+        frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
+        binding.spPerFrequency.adapter = frequencyAdapter
+    }
+
     private fun setClickActions() {
         binding.apply {
             tvEffectiveDate.setOnClickListener {
@@ -99,15 +108,6 @@ class EmployerPayRateAddFragment :
         }
     }
 
-    private fun populateSpinner() {
-        val frequencyAdapter = ArrayAdapter(
-            mView.context, R.layout.spinner_item_bold,
-            resources.getStringArray(R.array.pay_day_frequencies)
-        )
-        frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
-        binding.spPerFrequency.adapter = frequencyAdapter
-    }
-
     private fun setMenuActions() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -137,19 +137,22 @@ class EmployerPayRateAddFragment :
             mainActivity.employerViewModel.insertPayRate(curWage)
             gotoCallingFragment()
         } else {
-            Toast.makeText(
-                mView.context,
-                message,
-                Toast.LENGTH_LONG
-            ).show()
+            displayError(message)
         }
+    }
+
+    private fun displayError(message: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) + message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validatePayRate(): String {
         binding.apply {
             return if (etWage.text.isNullOrBlank()) {
-                getString(R.string.error_) +
-                        getString(R.string.there_has_to_be_a_wage_to_save)
+                getString(R.string.there_has_to_be_a_wage_to_save)
             } else {
                 ANSWER_OK
             }

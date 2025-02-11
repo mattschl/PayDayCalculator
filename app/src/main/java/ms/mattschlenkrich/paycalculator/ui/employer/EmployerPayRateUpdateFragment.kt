@@ -31,9 +31,9 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var curPayRate: EmployerPayRates
     private val df = DateFunctions()
     private val cf = NumberFunctions()
-    private lateinit var curPayRate: EmployerPayRates
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -117,20 +117,23 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
                 updatePayRate()
                 gotoCallingFragment()
             } else {
-                Toast.makeText(
-                    mView.context,
-                    message,
-                    Toast.LENGTH_LONG
-                ).show()
+                displayError(message)
             }
         }
+    }
+
+    private fun displayError(message: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) + message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validatePayRate(): String {
         binding.apply {
             return if (etWage.text.isNullOrBlank()) {
-                getString(R.string.error_) +
-                        getString(R.string.there_has_to_be_a_wage_to_save)
+                getString(R.string.there_has_to_be_a_wage_to_save)
             } else {
                 ANSWER_OK
             }
