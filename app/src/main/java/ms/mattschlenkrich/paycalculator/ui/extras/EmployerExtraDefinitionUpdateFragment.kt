@@ -34,7 +34,6 @@ class EmployerExtraDefinitionUpdateFragment :
     private lateinit var curExtraDefinitionFull: ExtraDefTypeAndEmployer
     private val df = DateFunctions()
     private val nf = NumberFunctions()
-    private val definitionList = ArrayList<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,6 +56,7 @@ class EmployerExtraDefinitionUpdateFragment :
     private fun populateValues() {
         curEmployer = mainActivity.mainViewModel.getEmployer()!!
         binding.apply {
+            etName.isEnabled = false
             if (mainActivity.mainViewModel.getExtraDefinitionFull() != null) {
                 curExtraDefinitionFull =
                     mainActivity.mainViewModel.getExtraDefinitionFull()!!
@@ -83,15 +83,11 @@ class EmployerExtraDefinitionUpdateFragment :
             } else {
                 getString(R.string.debit)
             }
-            display += getString(R.string.calculated) +
-                    resources.getStringArray(
-                        R.array.applies_to_frequencies
-                    )[curExtraDefinitionFull.extraType.wetAppliesTo] +
+            display += " " + getString(R.string.calculated) +
+                    resources.getStringArray(R.array.applies_to_frequencies)[curExtraDefinitionFull.extraType.wetAppliesTo] +
                     getString(R.string.period_space) +
                     getString(R.string._attaches_to_) +
-                    resources.getStringArray(
-                        R.array.attach_to_frequencies
-                    )[curExtraDefinitionFull.extraType.wetAttachTo] +
+                    resources.getStringArray(R.array.attach_to_frequencies)[curExtraDefinitionFull.extraType.wetAttachTo] +
                     getString(R.string.period_hyphen)
             display += if (curExtraDefinitionFull.extraType.wetIsDefault) {
                 getString(R.string.is_automatic)
@@ -209,12 +205,16 @@ class EmployerExtraDefinitionUpdateFragment :
             updateDefinition()
             gotoEmployerExtraDefinitionsFragment()
         } else {
-            Toast.makeText(
-                mView.context,
-                message,
-                Toast.LENGTH_LONG
-            ).show()
+            displayError(message)
         }
+    }
+
+    private fun displayError(message: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) + message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun getCurrentDefinition(): WorkExtrasDefinitions {
@@ -235,17 +235,12 @@ class EmployerExtraDefinitionUpdateFragment :
 
     private fun validateExtraDefinition(): String {
         binding.apply {
-            if (etName.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.there_needs_to_be_a_description)
-            }
-            if (definitionList.isNotEmpty()) {
-                for (name in definitionList) {
-                    if (name == etName.text.toString().trim()) {
-                        return getString(R.string.error_) +
-                                getString(R.string.this_extra_item_already_exists)
-                    }
-                }
+            if (etValue.text.isNullOrBlank() ||
+                nf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0 ||
+                etValue.text.toString() == getString(R.string.zero_dollars) ||
+                etValue.text.toString() == getString(R.string.zero_percent)
+            ) {
+                return getString(R.string.please_enter_a_value_for_this_extra)
             }
             return ANSWER_OK
         }

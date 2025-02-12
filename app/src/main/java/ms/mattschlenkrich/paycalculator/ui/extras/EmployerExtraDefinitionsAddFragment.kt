@@ -43,7 +43,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     private lateinit var mainActivity: MainActivity
     private lateinit var curEmployer: Employers
     private val df = DateFunctions()
-    private val cf = NumberFunctions()
+    private val nf = NumberFunctions()
     private lateinit var extraList: List<WorkExtraTypes>
 
     override fun onCreateView(
@@ -198,14 +198,14 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
             chkIsFixed.setOnClickListener {
                 etValue.setText(
                     if (chkIsFixed.isChecked) {
-                        cf.displayDollars(
-                            cf.getDoubleFromDollarOrPercentString(
+                        nf.displayDollars(
+                            nf.getDoubleFromDollarOrPercentString(
                                 etValue.text.toString()
                             )
                         )
                     } else {
-                        cf.getPercentStringFromDouble(
-                            cf.getDoubleFromDollarOrPercentString(
+                        nf.getPercentStringFromDouble(
+                            nf.getDoubleFromDollarOrPercentString(
                                 etValue.text.toString()
                             ) / 100
                         )
@@ -273,10 +273,10 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                 }
             }
             return WorkExtrasDefinitions(
-                cf.generateRandomIdAsLong(),
+                nf.generateRandomIdAsLong(),
                 curEmployer.employerId,
                 extraId,
-                cf.getDoubleFromDollarOrPercentString(etValue.text.toString()),
+                nf.getDoubleFromDollarOrPercentString(etValue.text.toString()),
                 chkIsFixed.isChecked,
                 tvEffectiveDate.text.toString(),
                 false,
@@ -308,6 +308,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     private fun validateExtra(): String {
         binding.apply {
             if (etValue.text.isNullOrBlank() ||
+                nf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0 ||
                 etValue.text.toString() == getString(R.string.zero_dollars) ||
                 etValue.text.toString() == getString(R.string.zero_percent)
             ) {
