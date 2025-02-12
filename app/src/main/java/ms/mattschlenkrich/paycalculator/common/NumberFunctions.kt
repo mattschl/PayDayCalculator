@@ -56,14 +56,17 @@ class NumberFunctions {
         }
     }
 
-    fun getDoubleFromDollarOrPercentString(numString: String): Double {
-        return if (numString.contains("%")) {
-            getDoubleFromPercentString(numString)
-        } else if (numString.contains("$")) {
-            getDoubleFromDollars(numString)
-        } else {
-            numString.toDouble()
+    fun getDoubleFromDollarOrPercentString(numString: String?): Double {
+        if (numString != null) {
+            return if (numString.contains("%")) {
+                getDoubleFromPercentString(numString)
+            } else if (numString.contains("$")) {
+                getDoubleFromDollars(numString)
+            } else {
+                numString.toDouble()
+            }
         }
+        return 0.0
     }
 
     fun roundTo2Decimals(num: Double): Double {

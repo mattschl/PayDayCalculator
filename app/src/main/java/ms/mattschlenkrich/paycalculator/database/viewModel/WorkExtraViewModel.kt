@@ -81,4 +81,7 @@ class WorkExtraViewModel(
 //
 //    fun getWorkDateExtras(workDateId: Long) =
 //        workExtraRepository.getWorkDateExtras(workDateId)
+
+    fun getDefaultExtraTypesAndCurrentDef(employerId: Long, cutoffDate: String) =
+        workExtraRepository.getDefaultExtraTypesAndCurrentDef(employerId, cutoffDate)
 }

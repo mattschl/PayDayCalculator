@@ -236,9 +236,7 @@ class EmployerExtraDefinitionUpdateFragment :
     private fun validateExtraDefinition(): String {
         binding.apply {
             if (etValue.text.isNullOrBlank() ||
-                nf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0 ||
-                etValue.text.toString() == getString(R.string.zero_dollars) ||
-                etValue.text.toString() == getString(R.string.zero_percent)
+                nf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0
             ) {
                 return getString(R.string.please_enter_a_value_for_this_extra)
             }

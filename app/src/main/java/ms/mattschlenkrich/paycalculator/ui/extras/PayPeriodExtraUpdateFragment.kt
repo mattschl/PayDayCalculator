@@ -33,9 +33,10 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
     private lateinit var curPayPeriod: PayPeriods
     private lateinit var curEmployer: Employers
     private lateinit var oldPayPeriodExtra: WorkPayPeriodExtras
-    private var extraList = ArrayList<WorkPayPeriodExtras>()
+    private lateinit var existingExtraList: List<WorkPayPeriodExtras>
     private val df = DateFunctions()
-    private val cf = NumberFunctions()
+    private val nf = NumberFunctions()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -57,13 +58,13 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
 
     private fun populateValues() {
         populateSpinners()
-        extraList = mainActivity.mainViewModel.getPayPeriodExtraList()
         if (mainActivity.mainViewModel.getEmployer() != null) {
             curEmployer = mainActivity.mainViewModel.getEmployer()!!
         }
         if (mainActivity.mainViewModel.getPayPeriod() != null) {
             curPayPeriod = mainActivity.mainViewModel.getPayPeriod()!!
         }
+        populateExistingExtraList()
         if (mainActivity.mainViewModel.getPayPeriodExtra() != null) {
             oldPayPeriodExtra = mainActivity.mainViewModel.getPayPeriodExtra()!!
             binding.apply {
@@ -77,15 +78,22 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
                 etExtraName.setText(oldPayPeriodExtra.ppeName)
                 spAppliesTo.setSelection(oldPayPeriodExtra.ppeAppliesTo)
                 display = if (oldPayPeriodExtra.ppeIsFixed) {
-                    cf.displayDollars(oldPayPeriodExtra.ppeValue)
+                    nf.displayDollars(oldPayPeriodExtra.ppeValue)
                 } else {
-                    cf.getPercentStringFromDouble(oldPayPeriodExtra.ppeValue)
+                    nf.getPercentStringFromDouble(oldPayPeriodExtra.ppeValue)
                 }
                 etValue.setText(display)
                 chkIsFixed.isChecked = oldPayPeriodExtra.ppeIsFixed
                 chkIsCredit.isChecked = oldPayPeriodExtra.ppeIsCredit
             }
         }
+    }
+
+    private fun populateExistingExtraList() {
+        mainActivity.payDayViewModel.getPayPeriodExtras(curPayPeriod.payPeriodId)
+            .observe(viewLifecycleOwner) { list ->
+                existingExtraList = list
+            }
     }
 
     private fun populateSpinners() {
@@ -100,9 +108,11 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
     }
 
     private fun setClickActions() {
-        chooseFixedOrPercent()
         setMenuActions()
         binding.apply {
+            chkIsFixed.setOnClickListener {
+                setFixedOrPercent()
+            }
             fabDone.setOnClickListener {
                 updatePayPeriodExtraIfValid()
             }
@@ -143,34 +153,36 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
             updatePayPeriodExtra()
             gotoPayDetail()
         } else {
-            Toast.makeText(
-                mView.context,
-                message,
-                Toast.LENGTH_LONG
-            ).show()
+            displayError(message)
         }
     }
 
+    private fun displayError(message: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) + message,
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
     private fun validateExtra(): String {
-        changeTextToFixedOrPercentString()
         binding.apply {
             if (etExtraName.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.the_extra_must_have_a_name)
+                return getString(R.string.the_extra_must_have_a_name)
             }
-            if (extraList.isNotEmpty()) {
-                for (extra in extraList) {
+            if (existingExtraList.isNotEmpty()) {
+                for (extra in existingExtraList) {
                     if (extra.ppeName == etExtraName.text.toString().trim() &&
                         etExtraName.text.toString().trim() != oldPayPeriodExtra.ppeName
                     ) {
-                        getString(R.string.error_) +
-                                getString(R.string.this_extra_name_has_already_been_used)
+                        return getString(R.string.this_extra_name_has_already_been_used)
                     }
                 }
             }
-            if (cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0) {
-                return getString(R.string.error_) +
-                        getString(R.string.this_extra_must_have_a_value)
+            if (etValue.text.isNullOrBlank() ||
+                nf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0
+            ) {
+                return getString(R.string.this_extra_must_have_a_value)
             }
             return ANSWER_OK
         }
@@ -191,7 +203,7 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
                 etExtraName.text.toString().trim(),
                 spAppliesTo.selectedItemPosition,
                 3,
-                cf.getDoubleFromDollarOrPercentString(
+                nf.getDoubleFromDollarOrPercentString(
                     etValue.text.toString()
                 ),
                 chkIsFixed.isChecked,
@@ -202,24 +214,18 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
         }
     }
 
-    private fun chooseFixedOrPercent() {
-        binding.chkIsFixed.setOnClickListener {
-            changeTextToFixedOrPercentString()
-        }
-    }
-
-    private fun changeTextToFixedOrPercentString() {
+    private fun setFixedOrPercent() {
         binding.apply {
             etValue.setText(
                 if (chkIsFixed.isChecked) {
-                    cf.displayDollars(
-                        cf.getDoubleFromDollarOrPercentString(
+                    nf.displayDollars(
+                        nf.getDoubleFromDollarOrPercentString(
                             etValue.text.toString()
                         )
                     )
                 } else {
-                    cf.getPercentStringFromDouble(
-                        cf.getDoubleFromDollarOrPercentString(
+                    nf.getPercentStringFromDouble(
+                        nf.getDoubleFromDollarOrPercentString(
                             etValue.text.toString()
                         ) / 100
                     )

@@ -544,7 +544,7 @@ class PayCalculationsAsync(
 
     private suspend fun getCustomExtrasByPayFromDb() {
         coroutineScope {
-            val customExtrasDeferred = async { getCustomExtraByPayFromDb() }
+            val customExtrasDeferred = async { getCustomExtraListByPayFromDb() }
             customExtrasByPay = customExtrasDeferred.await()
         }
     }
@@ -641,7 +641,7 @@ class PayCalculationsAsync(
             )
         }
 
-    private suspend fun getCustomExtraByPayFromDb(): List<WorkPayPeriodExtras> =
+    private suspend fun getCustomExtraListByPayFromDb(): List<WorkPayPeriodExtras> =
         withContext(defaultScope) {
             mainActivity.payCalculationsViewModel.getCustomPayPeriodExtras(
                 currentPayPeriod.payPeriodId

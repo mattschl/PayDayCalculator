@@ -205,4 +205,22 @@ interface WorkExtraDao {
                 "WHERE wdeWorkDateId = :workDateId "
     )
     fun getWorkDateExtras(workDateId: Long): LiveData<List<WorkDateExtras>>
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT *, MAX(weEffectiveDate) FROM workExtraTypes " +
+                "JOIN ( " +
+                "SELECT * FROM workExtrasDefinitions " +
+                "WHERE weEmployerId = :employerId " +
+                "AND weIsDeleted = 0 " +
+                "AND weEffectiveDate <= :cutoffDate " +
+                ") ON workExtraTypeId = weExtraTypeId " +
+                "WHERE wetEmployerId = :employerId " +
+                "AND wetIsDefault = 1 " +
+                "GROUP BY wetName " +
+                "ORDER BY wetAppliesTo, wetName"
+    )
+    fun getDefaultExtraTypesAndCurrentDef(employerId: Long, cutoffDate: String):
+            LiveData<List<ExtraDefinitionAndType>>
 }

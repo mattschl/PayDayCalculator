@@ -420,5 +420,9 @@
     <string name="_in_">" in "</string>
     <string name="an_unknown_error_occurred">An unknown error occurred</string>
     <string name="please_enter_a_value_for_this_extra">Please enter a value for this extra!</string>
+    <string name="overwrite_existing_extra">"Overwrite existing extra: "</string>
+    <string name="if_this_extra_is_overwritten__">If this extra is overwritten, only the new extra will be included in the pay calculation. Do you want to proceed?</string>
+    <string name="this_is_already_used_for_this_payday">This is already used for this payday. If you add it, this will show both in the pay details. This might cause confusion. Would you like to add it anyway?</string>
+    <string name="confirm_adding_duplicate_extra__">"Confirm adding duplicate Extra:  "</string>
 
 </resources>
