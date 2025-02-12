@@ -34,8 +34,8 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private val employerList = ArrayList<Employers>()
-    private val extraTypeList = ArrayList<WorkExtraTypes>()
+    private lateinit var employerList: List<Employers>
+    private lateinit var extraTypeList: List<WorkExtraTypes>
     private var curEmployer: Employers? = null
     private var curExtraType: WorkExtraTypes? = null
 
@@ -56,6 +56,135 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         super.onViewCreated(view, savedInstanceState)
         populateValues()
         setClickActions()
+    }
+
+    private fun populateValues() {
+        populateEmployersSpinner()
+        mainActivity.mainViewModel.removeCallingFragment(TAG)
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.apply {
+                delay(WAIT_250)
+                setSelectionToEmployerFoundInList()
+                delay(WAIT_250)
+                setSelectionToExtraTypeFoundInList()
+            }
+        }
+    }
+
+    private fun populateExtraTypeInfo() {
+        if (curExtraType != null) {
+            binding.apply {
+                if (curExtraType!!.wetIsDeleted) {
+                    tvAppliesTo.text = getString(R.string.deleted)
+                    tvAppliesTo.setTextColor(Color.RED)
+                    tvAttachTo.visibility = View.GONE
+                    tvDefault.visibility = View.GONE
+                    tvCredit.visibility = View.GONE
+                } else {
+                    tvAppliesTo.setTextColor(Color.BLACK)
+                    tvAttachTo.visibility = View.VISIBLE
+                    tvDefault.visibility = View.VISIBLE
+                    tvCredit.visibility = View.VISIBLE
+                    var display = getString(R.string.calculated) +
+                            resources.getStringArray(
+                                R.array.applies_to_frequencies
+                            )[curExtraType!!.wetAppliesTo]
+                    tvAppliesTo.text = display
+                    display = getString(R.string.attaches_to) +
+                            resources.getStringArray(
+                                R.array.attach_to_frequencies
+                            )[curExtraType!!.wetAttachTo]
+                    tvAttachTo.text = display
+                    display = getString(R.string.this_is_a) +
+                            if (curExtraType!!.wetIsCredit) {
+                                getString(R.string.credit)
+                            } else {
+                                getString(R.string.deduction)
+                            }
+                    tvCredit.text = display
+                    display = getString(R.string.applied) +
+                            if (curExtraType!!.wetIsDefault) {
+                                getString(R.string.by_default)
+                            } else {
+                                getString(R.string.manually)
+                            }
+                    tvDefault.text = display
+                }
+            }
+        }
+    }
+
+    private fun populateExtraTypeSpinner() {
+        if (curEmployer != null) {
+            binding.apply {
+                val extraAdapter = ArrayAdapter<Any>(
+                    mView.context, R.layout.spinner_item_bold
+                )
+                mainActivity.workExtraViewModel.getExtraDefTypes(curEmployer!!.employerId)
+                    .observe(viewLifecycleOwner) { extraTypes ->
+                        extraTypeList = extraTypes
+                        extraTypes.listIterator().forEach {
+                            extraAdapter.add(it.wetName)
+                        }
+                        extraAdapter.add(getString(R.string.add_a_new_extra_type))
+                        updateUI(employerList, extraTypeList)
+                    }
+                spExtraType.adapter = extraAdapter
+            }
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun populateExtrasList() {
+        if (curEmployer != null && curExtraType != null) {
+            binding.apply {
+                val extraDefinitionAdapter = EmployerExtraDefinitionFullAdapter(
+                    mainActivity, mView,
+                    this@EmployerExtraDefinitionsFragment,
+                    null
+                )
+                rvExtras.apply {
+                    layoutManager = GridLayoutManager(
+                        mView.context,
+                        2,
+                        GridLayoutManager.VERTICAL,
+                        false
+                    )
+                    setHasFixedSize(true)
+                    adapter = extraDefinitionAdapter
+                }
+                activity.let {
+                    mainActivity.workExtraViewModel.getActiveExtraDefinitionsFull(
+                        curEmployer!!.employerId, curExtraType!!.workExtraTypeId
+                    ).observe(
+                        viewLifecycleOwner
+                    ) { extras ->
+                        extraDefinitionAdapter.notifyDataSetChanged()
+                        extraDefinitionAdapter.differ.submitList(extras)
+                        updateExtrasUI(extras)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun populateEmployersSpinner() {
+        val employerAdapter = ArrayAdapter<Any>(
+            mView.context,
+            R.layout.spinner_item_bold
+        )
+        mainActivity.employerViewModel.getEmployers().observe(
+            viewLifecycleOwner
+        ) { employers ->
+            employerAdapter.clear()
+            employerList = employers
+            employerAdapter.notifyDataSetChanged()
+            employers.listIterator().forEach {
+                employerAdapter.add(it.employerName)
+            }
+            employerAdapter.add(getString(R.string.add_new_employer))
+        }
+        binding.spEmployers.adapter = employerAdapter
     }
 
     private fun setClickActions() {
@@ -171,137 +300,6 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                 break
             }
         }
-    }
-
-    private fun populateValues() {
-        populateEmployersSpinner()
-        mainActivity.mainViewModel.removeCallingFragment(TAG)
-        CoroutineScope(Dispatchers.Main).launch {
-            binding.apply {
-                delay(WAIT_250)
-                setSelectionToEmployerFoundInList()
-                delay(WAIT_250)
-                setSelectionToExtraTypeFoundInList()
-            }
-        }
-    }
-
-    private fun populateExtraTypeInfo() {
-        if (curExtraType != null) {
-            binding.apply {
-                if (curExtraType!!.wetIsDeleted) {
-                    tvAppliesTo.text = getString(R.string.deleted)
-                    tvAppliesTo.setTextColor(Color.RED)
-                    tvAttachTo.visibility = View.GONE
-                    tvDefault.visibility = View.GONE
-                    tvCredit.visibility = View.GONE
-                } else {
-                    tvAppliesTo.setTextColor(Color.BLACK)
-                    tvAttachTo.visibility = View.VISIBLE
-                    tvDefault.visibility = View.VISIBLE
-                    tvCredit.visibility = View.VISIBLE
-                    var display = getString(R.string.calculated) +
-                            resources.getStringArray(
-                                R.array.applies_to_frequencies
-                            )[curExtraType!!.wetAppliesTo]
-                    tvAppliesTo.text = display
-                    display = getString(R.string.attaches_to) +
-                            resources.getStringArray(
-                                R.array.attach_to_frequencies
-                            )[curExtraType!!.wetAttachTo]
-                    tvAttachTo.text = display
-                    display = getString(R.string.this_is_a) +
-                            if (curExtraType!!.wetIsCredit) {
-                                getString(R.string.credit)
-                            } else {
-                                getString(R.string.deduction)
-                            }
-                    tvCredit.text = display
-                    display = getString(R.string.applied) +
-                            if (curExtraType!!.wetIsDefault) {
-                                getString(R.string.by_default)
-                            } else {
-                                getString(R.string.manually)
-                            }
-                    tvDefault.text = display
-                }
-            }
-        }
-    }
-
-    private fun populateExtraTypeSpinner() {
-        if (curEmployer != null) {
-            binding.apply {
-                val extraAdapter = ArrayAdapter<Any>(
-                    mView.context, R.layout.spinner_item_bold
-                )
-                mainActivity.workExtraViewModel.getExtraDefTypes(curEmployer!!.employerId)
-                    .observe(viewLifecycleOwner) { extraTypes ->
-                        extraTypeList.clear()
-                        extraTypes.listIterator().forEach {
-                            extraAdapter.add(it.wetName)
-                            extraTypeList.add(it)
-                        }
-                        extraAdapter.add(getString(R.string.add_a_new_extra_type))
-                        updateUI(employerList, extraTypeList)
-                    }
-                spExtraType.adapter = extraAdapter
-            }
-        }
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    override fun populateExtrasList() {
-        if (curEmployer != null && curExtraType != null) {
-            binding.apply {
-                val extraDefinitionAdapter = EmployerExtraDefinitionFullAdapter(
-                    mainActivity, mView,
-                    this@EmployerExtraDefinitionsFragment,
-                    null
-                )
-                rvExtras.apply {
-                    layoutManager = GridLayoutManager(
-                        mView.context,
-                        2,
-                        GridLayoutManager.VERTICAL,
-                        false
-                    )
-                    setHasFixedSize(true)
-                    adapter = extraDefinitionAdapter
-                }
-                activity.let {
-                    mainActivity.workExtraViewModel.getActiveExtraDefinitionsFull(
-                        curEmployer!!.employerId, curExtraType!!.workExtraTypeId
-                    ).observe(
-                        viewLifecycleOwner
-                    ) { extras ->
-                        extraDefinitionAdapter.notifyDataSetChanged()
-                        extraDefinitionAdapter.differ.submitList(extras)
-                        updateExtrasUI(extras)
-                    }
-                }
-            }
-        }
-    }
-
-    private fun populateEmployersSpinner() {
-        val employerAdapter = ArrayAdapter<Any>(
-            mView.context,
-            R.layout.spinner_item_bold
-        )
-        mainActivity.employerViewModel.getEmployers().observe(
-            viewLifecycleOwner
-        ) { employers ->
-            employerAdapter.clear()
-            employerList.clear()
-            employerAdapter.notifyDataSetChanged()
-            employers.listIterator().forEach {
-                employerAdapter.add(it.employerName)
-                employerList.add(it)
-            }
-            employerAdapter.add(getString(R.string.add_new_employer))
-        }
-        binding.spEmployers.adapter = employerAdapter
     }
 
     private fun updateUI(employers: List<Employers>, extraList: List<WorkExtraTypes>) {

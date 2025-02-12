@@ -44,7 +44,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     private lateinit var curEmployer: Employers
     private val df = DateFunctions()
     private val cf = NumberFunctions()
-    private val extraList = ArrayList<WorkExtraTypes>()
+    private lateinit var extraList: List<WorkExtraTypes>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -97,11 +97,9 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                 curEmployer.employerId
             )
                 .observe(viewLifecycleOwner) { typesList ->
-                    extraTypeAdapter.clear()
-                    extraList.clear()
+                    extraList = typesList
                     typesList.listIterator().forEach {
                         extraTypeAdapter.add(it.wetName)
-                        extraList.add(it)
                     }
                     extraTypeAdapter.add(getString(R.string.add_a_new_extra_type))
                 }
