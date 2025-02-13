@@ -131,7 +131,7 @@ class PayPeriodExtraAddFragment :
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
-                        saveExtraIfValidationsSucceed()
+                        prepareToSaveExtraIfValidationsSucceed()
                         true
                     }
 
@@ -163,7 +163,7 @@ class PayPeriodExtraAddFragment :
         }
     }
 
-    private fun saveExtraIfValidationsSucceed() {
+    private fun prepareToSaveExtraIfValidationsSucceed() {
         val message = validateExtra()
         if (message == ANSWER_OK) {
             validateFromExistingExtrasAndContinue()
@@ -175,11 +175,20 @@ class PayPeriodExtraAddFragment :
     private fun validateFromExistingExtrasAndContinue() {
         if (existingWorkDateExtraList.isNotEmpty()) {
             binding.apply {
+                var continueOn = true
                 for (extra in existingWorkDateExtraList) {
                     if (etExtraName.text.toString().trim() == extra.extra.wdeName
                     ) {
-                        chooseToOverWriteExistingExtra(extra.extra.wdeName)
+                        continueOn = false
+                        chooseToAddInAdditionExistingExtra(
+                            extra.extra.wdeName,
+                            getString(R.string.this_is_already_used_for_this_payday__add)
+                        )
+                        break
                     }
+                }
+                if (continueOn) {
+                    validateFromExistingDefaultExtrasAndContinueToSave()
                 }
             }
         } else {
@@ -190,10 +199,19 @@ class PayPeriodExtraAddFragment :
     private fun validateFromExistingDefaultExtrasAndContinueToSave() {
         if (defaultExtraList.isNotEmpty()) {
             binding.apply {
+                var continueOn = true
                 for (extra in defaultExtraList) {
                     if (etExtraName.text.toString().trim() == extra.extraType.wetName) {
-                        chooseToOverWriteExistingExtra(extra.extraType.wetName)
+                        continueOn = false
+                        chooseToAddInAdditionExistingExtra(
+                            extra.extraType.wetName,
+                            getString(R.string.this_is_already_used_for_this_payday__overwrite)
+                        )
+                        break
                     }
+                }
+                if (continueOn) {
+                    saveExtraAndGotoCallingFragment()
                 }
             }
         } else {
@@ -201,20 +219,19 @@ class PayPeriodExtraAddFragment :
         }
     }
 
-    private fun chooseToOverWriteExistingExtra(extraName: String) {
+    private fun chooseToAddInAdditionExistingExtra(extraName: String, message: String) {
         AlertDialog.Builder(mView.context)
             .setTitle(
                 getString(R.string.confirm_adding_duplicate_extra__) +
                         extraName
             )
-            .setMessage(getString(R.string.this_is_already_used_for_this_payday))
+            .setMessage(message)
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
                 saveExtraAndGotoCallingFragment()
             }
             .setNegativeButton(getString(R.string.no), null)
             .show()
     }
-
 
     private fun displayError(message: String) {
         Toast.makeText(
@@ -246,6 +263,15 @@ class PayPeriodExtraAddFragment :
         }
     }
 
+    private fun saveExtraAndGotoCallingFragment() {
+        binding.apply {
+            mainActivity.payDayViewModel.insertPayPeriodExtra(
+                getCurrentPayPeriodExtra()
+            )
+        }
+        gotoCallingFragment()
+    }
+
     private fun getCurrentPayPeriodExtra(): WorkPayPeriodExtras {
         binding.apply {
             return WorkPayPeriodExtras(
@@ -264,15 +290,6 @@ class PayPeriodExtraAddFragment :
                 df.getCurrentTimeAsString(),
             )
         }
-    }
-
-    private fun saveExtraAndGotoCallingFragment() {
-        binding.apply {
-            mainActivity.payDayViewModel.insertPayPeriodExtra(
-                getCurrentPayPeriodExtra()
-            )
-        }
-        gotoCallingFragment()
     }
 
     private fun gotoCallingFragment() {

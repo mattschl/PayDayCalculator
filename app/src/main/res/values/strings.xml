@@ -306,7 +306,7 @@
     <string name="this_job_spec_already_exists">This job spec already exists!</string>
     <string name="this_material_already_exists">This material already exists!</string>
     <string name="this_tax_type_already_exists">This tax type already exists!</string>
-    <string name="this_work_order_does_not_exist">This Work Order does not exist. It must be created before coninuing. Would you like to create it now?</string>
+    <string name="this_work_order_does_not_exist">This Work Order does not exist. It must be created before continuing. Would you like to create it now?</string>
     <string name="this_work_order_has_been_used">This Work Order number has been used!</string>
     <string name="this_work_performed_description_already_exists">This Work Performed description already exists!</string>
     <string name="time_sheet">Time Sheet</string>
@@ -422,7 +422,8 @@
     <string name="please_enter_a_value_for_this_extra">Please enter a value for this extra!</string>
     <string name="overwrite_existing_extra">"Overwrite existing extra: "</string>
     <string name="if_this_extra_is_overwritten__">If this extra is overwritten, only the new extra will be included in the pay calculation. Do you want to proceed?</string>
-    <string name="this_is_already_used_for_this_payday">This is already used for this payday. If you add it, this will show both in the pay details. This might cause confusion. Would you like to add it anyway?</string>
+    <string name="this_is_already_used_for_this_payday__add">This is already used for this payday. If you add it, this will show both in the pay details. This might cause confusion because one is manual and one is automatic. Would you like to add it anyway?</string>
+    <string name="this_is_already_used_for_this_payday__overwrite">This is already used for this payday. If you add it, this will only the manually entered extra. This cannot be undone!!. Would you like to add it to overwrite anyway?</string>
     <string name="confirm_adding_duplicate_extra__">"Confirm adding duplicate Extra:  "</string>
 
 </resources>
