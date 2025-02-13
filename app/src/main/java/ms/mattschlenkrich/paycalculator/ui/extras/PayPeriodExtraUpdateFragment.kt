@@ -191,12 +191,43 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
     }
 
     private fun updatePayPeriodExtraIfValid() {
-        val message = validateExtra()
+        val message = validateExtraForErrors()
         if (message == ANSWER_OK) {
             validateFromExistingExtrasAndContinue()
         } else {
             displayError(message)
         }
+    }
+
+    private fun validateExtraForErrors(): String {
+        binding.apply {
+            if (etExtraName.text.isNullOrBlank()) {
+                return getString(R.string.the_extra_must_have_a_name)
+            }
+            if (existingWorkDateExtraList.isNotEmpty()) {
+                for (extra in existingPayPeriodExtraList) {
+                    if (extra.ppeName == etExtraName.text.toString().trim() &&
+                        extra.ppeName != oldPayPeriodExtra.ppeName
+                    ) {
+                        return getString(R.string.this_extra_name_has_already_been_used)
+                    }
+                }
+            }
+            if (etValue.text.isNullOrBlank() ||
+                nf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0
+            ) {
+                return getString(R.string.this_extra_must_have_a_value)
+            }
+            return ANSWER_OK
+        }
+    }
+
+    private fun displayError(message: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) + message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateFromExistingExtrasAndContinue() {
@@ -261,37 +292,6 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
             }
             .setNegativeButton(getString(R.string.no), null)
             .show()
-    }
-
-    private fun displayError(message: String) {
-        Toast.makeText(
-            mView.context,
-            getString(R.string.error_) + message,
-            Toast.LENGTH_LONG
-        ).show()
-    }
-
-    private fun validateExtra(): String {
-        binding.apply {
-            if (etExtraName.text.isNullOrBlank()) {
-                return getString(R.string.the_extra_must_have_a_name)
-            }
-            if (existingWorkDateExtraList.isNotEmpty()) {
-                for (extra in existingPayPeriodExtraList) {
-                    if (extra.ppeName == etExtraName.text.toString().trim() &&
-                        extra.ppeName != oldPayPeriodExtra.ppeName
-                    ) {
-                        return getString(R.string.this_extra_name_has_already_been_used)
-                    }
-                }
-            }
-            if (etValue.text.isNullOrBlank() ||
-                nf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0
-            ) {
-                return getString(R.string.this_extra_must_have_a_value)
-            }
-            return ANSWER_OK
-        }
     }
 
     private fun updatePayPeriodExtraAndGotoCallingFragment() {

@@ -164,12 +164,42 @@ class PayPeriodExtraAddFragment :
     }
 
     private fun prepareToSaveExtraIfValidationsSucceed() {
-        val message = validateExtra()
+        val message = validateExtraForErrors()
         if (message == ANSWER_OK) {
             validateFromExistingExtrasAndContinue()
         } else {
             displayError(message)
         }
+    }
+
+    private fun validateExtraForErrors(): String {
+        binding.apply {
+            if (etExtraName.text.isNullOrBlank()
+            ) {
+                return getString(R.string.the_extra_must_have_a_name)
+            }
+            if (existingPayPeriodExtraList.isNotEmpty()) {
+                for (extra in existingPayPeriodExtraList) {
+                    if (extra.ppeName == etExtraName.text.toString().trim()) {
+                        return getString(R.string.this_extra_name_has_already_been_used)
+                    }
+                }
+            }
+            if (etValue.text.isNullOrBlank() ||
+                nf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0
+            ) {
+                return getString(R.string.this_extra_must_have_a_value)
+            }
+            return ANSWER_OK
+        }
+    }
+
+    private fun displayError(message: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) + message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateFromExistingExtrasAndContinue() {
@@ -180,7 +210,7 @@ class PayPeriodExtraAddFragment :
                     if (etExtraName.text.toString().trim() == extra.extra.wdeName
                     ) {
                         continueOn = false
-                        chooseToAddInAdditionExistingExtra(
+                        chooseToAddInAdditionToExistingExtra(
                             extra.extra.wdeName,
                             getString(R.string.this_is_already_used_for_this_payday__add)
                         )
@@ -203,7 +233,7 @@ class PayPeriodExtraAddFragment :
                 for (extra in defaultExtraList) {
                     if (etExtraName.text.toString().trim() == extra.extraType.wetName) {
                         continueOn = false
-                        chooseToAddInAdditionExistingExtra(
+                        chooseToAddInAdditionToExistingExtra(
                             extra.extraType.wetName,
                             getString(R.string.this_is_already_used_for_this_payday__overwrite)
                         )
@@ -219,7 +249,7 @@ class PayPeriodExtraAddFragment :
         }
     }
 
-    private fun chooseToAddInAdditionExistingExtra(extraName: String, message: String) {
+    private fun chooseToAddInAdditionToExistingExtra(extraName: String, message: String) {
         AlertDialog.Builder(mView.context)
             .setTitle(
                 getString(R.string.confirm_adding_duplicate_extra__) +
@@ -231,36 +261,6 @@ class PayPeriodExtraAddFragment :
             }
             .setNegativeButton(getString(R.string.no), null)
             .show()
-    }
-
-    private fun displayError(message: String) {
-        Toast.makeText(
-            mView.context,
-            getString(R.string.error_) + message,
-            Toast.LENGTH_LONG
-        ).show()
-    }
-
-    private fun validateExtra(): String {
-        binding.apply {
-            if (etExtraName.text.isNullOrBlank()
-            ) {
-                return getString(R.string.the_extra_must_have_a_name)
-            }
-            if (existingPayPeriodExtraList.isNotEmpty()) {
-                for (extra in existingPayPeriodExtraList) {
-                    if (extra.ppeName == etExtraName.text.toString().trim()) {
-                        return getString(R.string.this_extra_name_has_already_been_used)
-                    }
-                }
-            }
-            if (etValue.text.isNullOrBlank() ||
-                nf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0
-            ) {
-                return getString(R.string.this_extra_must_have_a_value)
-            }
-            return ANSWER_OK
-        }
     }
 
     private fun saveExtraAndGotoCallingFragment() {
