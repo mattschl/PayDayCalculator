@@ -38,11 +38,10 @@ class WorkExtraTypesFragment : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        populateExtraTypeList()
-        //TODO: Add tje functionality to this fragment
+        populateExtraTypeRecycler()
     }
 
-    private fun populateExtraTypeList() {
+    private fun populateExtraTypeRecycler() {
         extraTypeAdapter = ExtraTypeAdapter()
         binding.rvTypes.apply {
             layoutManager = StaggeredGridLayoutManager(

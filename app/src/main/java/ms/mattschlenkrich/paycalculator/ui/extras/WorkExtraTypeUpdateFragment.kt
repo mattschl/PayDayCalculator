@@ -31,12 +31,10 @@ class WorkExtraTypeUpdateFragment : Fragment(
     val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private val df = DateFunctions()
-
-    //    private val cf = NumberFunctions()
-    private val extraTypeList = ArrayList<WorkExtraTypes>()
+    private lateinit var extraTypeList: List<WorkExtraTypes>
     private lateinit var currentEmployer: Employers
     private lateinit var currentExtraType: WorkExtraTypes
+    private val df = DateFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -104,10 +102,7 @@ class WorkExtraTypeUpdateFragment : Fragment(
             .observe(
                 viewLifecycleOwner
             ) { names ->
-                extraTypeList.clear()
-                names.listIterator().forEach {
-                    extraTypeList.add(it)
-                }
+                extraTypeList = names
             }
     }
 
@@ -199,12 +194,16 @@ class WorkExtraTypeUpdateFragment : Fragment(
         if (message == ANSWER_OK) {
             updateExtraTypeAndGotoDefinition()
         } else {
-            Toast.makeText(
-                mView.context,
-                message,
-                Toast.LENGTH_LONG
-            ).show()
+            displayError(message)
         }
+    }
+
+    private fun displayError(message: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) + message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateExtraType(): String {
@@ -229,16 +228,13 @@ class WorkExtraTypeUpdateFragment : Fragment(
                 }
             }
             if (etExtraName.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.the_extra_must_have_a_name)
+                return getString(R.string.the_extra_must_have_a_name)
             }
             if (appliesToAllFound) {
-                return getString(R.string.error_) +
-                        getString(R.string.there_can_only_be_one_extra_that_uses_the_sum_that_includes_other_extras)
+                return getString(R.string.there_can_only_be_one_extra_that_uses_the_sum_that_includes_other_extras)
             }
             if (nameFound) {
-                return getString(R.string.error_) +
-                        getString(R.string.this_extra_type_already_exists)
+                return getString(R.string.this_extra_type_already_exists)
             }
             return ANSWER_OK
         }
