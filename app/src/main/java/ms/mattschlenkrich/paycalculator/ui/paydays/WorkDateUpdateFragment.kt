@@ -394,7 +394,7 @@ class WorkDateUpdateFragment : Fragment(
 
     private fun gotoWorkDateExtraAdd() {
         mainActivity.mainViewModel.setWorkDateObject(getCurrentWorkDate())
-        mainActivity.mainViewModel.setWorkDateExtraList(workDateExtras)
+        mainActivity.mainViewModel.setCallingFragment(TAG)
         gotoWorkDateExtraAddFragment()
     }
 

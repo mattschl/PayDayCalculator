@@ -29,7 +29,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var curDateObject: WorkDates
-    private var extraList = ArrayList<WorkDateExtras>()
+    private lateinit var existingWorkDateExtraList: List<WorkDateExtras>
     private val df = DateFunctions()
     private val cf = NumberFunctions()
 
@@ -87,9 +87,18 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         }
     }
 
+    private fun getExtraListForDate() {
+        mainActivity.payDayViewModel.getWorkDateExtras(curDateObject.workDateId)
+            .observe(viewLifecycleOwner) { list ->
+                existingWorkDateExtraList = list
+            }
+    }
+
     private fun setClickActions() {
         setMenuActions()
-        chooseFixedOrPercent()
+        binding.chkIsFixed.setOnClickListener {
+            changeTextToFixedOrPercentString()
+        }
     }
 
     private fun setMenuActions() {
@@ -113,12 +122,6 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun chooseFixedOrPercent() {
-        binding.chkIsFixed.setOnClickListener {
-            changeTextToFixedOrPercentString()
-        }
-    }
-
     private fun changeTextToFixedOrPercentString() {
         binding.apply {
             etValue.setText(
@@ -139,47 +142,40 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         }
     }
 
-    private fun getExtraListForDate() {
-        if (mainActivity.mainViewModel.getWorkDateExtraList().isNotEmpty()) {
-            extraList = mainActivity.mainViewModel.getWorkDateExtraList()
-        }
-    }
-
     private fun saveWorkDateExtraIfValid() {
-        val message = validateExtra()
+        val message = validateExtraForErrors()
         if (message == ANSWER_OK) {
             saveWorkDateExtra()
-            gotoCallingFragment()
         } else {
-            Toast.makeText(
-                mView.context,
-                message,
-                Toast.LENGTH_LONG
-            ).show()
+            displayError(message)
         }
     }
 
-    private fun validateExtra(): String {
-        changeTextToFixedOrPercentString()
+    private fun validateExtraForErrors(): String {
         binding.apply {
             if (etExtraName.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.the_extra_must_have_a_name)
+                return getString(R.string.the_extra_must_have_a_name)
             }
-            if (extraList.isNotEmpty()) {
-                for (extra in extraList) {
+            if (existingWorkDateExtraList.isNotEmpty()) {
+                for (extra in existingWorkDateExtraList) {
                     if (extra.wdeName == etExtraName.text.toString().trim()) {
-                        getString(R.string.error_) +
-                                getString(R.string.this_extra_name_has_already_been_used)
+                        return getString(R.string.this_extra_name_has_already_been_used)
                     }
                 }
             }
             if (cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0) {
-                getString(R.string.error_) +
-                        getString(R.string.this_extra_must_have_a_value)
+                return getString(R.string.this_extra_must_have_a_value)
             }
             return ANSWER_OK
         }
+    }
+
+    private fun displayError(message: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) + message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun getCurrentWorkDateExtra(): WorkDateExtras {
@@ -204,10 +200,10 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         mainActivity.payDayViewModel.insertWorkDateExtra(
             getCurrentWorkDateExtra()
         )
+        gotoCallingFragment()
     }
 
     private fun gotoCallingFragment() {
-        mainActivity.mainViewModel.eraseWorkDateExtraList()
         gotoWorkDateUpdateFragment()
     }
 

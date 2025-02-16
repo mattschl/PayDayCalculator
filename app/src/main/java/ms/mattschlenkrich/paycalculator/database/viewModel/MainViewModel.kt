@@ -198,10 +198,6 @@ class MainViewModel(
         return workDateExtraList
     }
 
-    fun eraseWorkDateExtraList() {
-        workDateExtraList.clear()
-    }
-
     fun setPayRate(newRate: EmployerPayRates?) {
         payRate = newRate
     }

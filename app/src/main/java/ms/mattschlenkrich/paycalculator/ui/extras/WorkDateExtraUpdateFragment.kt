@@ -191,41 +191,42 @@ class WorkDateExtraUpdateFragment
     }
 
     private fun updateWorkDateExtraIfValid() {
-        val message = validateExtra()
+        val message = validateExtraForErrors()
         if (message == ANSWER_OK) {
             updateWorkDateExtra()
             gotoWorkDateUpdate()
         } else {
-            Toast.makeText(
-                mView.context,
-                message,
-                Toast.LENGTH_LONG
-            ).show()
+            displayError(message)
         }
     }
 
-    private fun validateExtra(): String {
+    private fun validateExtraForErrors(): String {
         binding.apply {
             if (etExtraName.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.the_extra_must_have_a_name)
+                return getString(R.string.the_extra_must_have_a_name)
             }
             if (extraList.isNotEmpty()) {
                 for (extra in extraList) {
                     if (extra.wdeName == etExtraName.text.toString().trim() &&
                         etExtraName.text.toString().trim() != oldWorkDateExtra.wdeName
                     ) {
-                        return getString(R.string.error_) +
-                                getString(R.string.this_extra_name_has_already_been_used)
+                        return getString(R.string.this_extra_name_has_already_been_used)
                     }
                 }
             }
             if (cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0) {
-                return getString(R.string.error_) +
-                        getString(R.string.this_extra_must_have_a_value)
+                return getString(R.string.this_extra_must_have_a_value)
             }
             return ANSWER_OK
         }
+    }
+
+    private fun displayError(message: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) + message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun getCurrentWorkDateExtra(): WorkDateExtras {
