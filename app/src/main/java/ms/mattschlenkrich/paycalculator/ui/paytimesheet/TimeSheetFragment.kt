@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.paydays
+package ms.mattschlenkrich.paycalculator.ui.paytimesheet
 
 import android.graphics.Color
 import android.os.Bundle
@@ -28,7 +28,7 @@ import ms.mattschlenkrich.paycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paycalculator.payfunctions.PayCalculationsAsync
 import ms.mattschlenkrich.paycalculator.payfunctions.PayDateProjections
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.paydays.adapter.WorkDateAdapter
+import ms.mattschlenkrich.paycalculator.ui.paytimesheet.adapter.WorkDateAdapter
 import java.time.LocalDate
 
 private const val TAG = FRAG_TIME_SHEET
@@ -102,7 +102,7 @@ class TimeSheetFragment :
                 gotoNewWorkDate()
             }
             crdPayDetails.setOnClickListener {
-                gotoTimeSheet()
+                gotoPayDetails()
             }
         }
     }
@@ -417,14 +417,14 @@ class TimeSheetFragment :
         )
     }
 
-    private fun gotoTimeSheet() {
+    private fun gotoPayDetails() {
         mainActivity.mainViewModel.setPayPeriod(getSelectedPayPeriod())
         mainActivity.mainViewModel.setCutOffDate(curCutOff)
         mainActivity.mainViewModel.setEmployer(curEmployer)
-        gotoTimeSheetFragment()
+        gotoPayDetailFragment()
     }
 
-    private fun gotoTimeSheetFragment() {
+    private fun gotoPayDetailFragment() {
         mView.findNavController().navigate(
             TimeSheetFragmentDirections
                 .actionTimeSheetFragmentToPayDetailFragmentNew()

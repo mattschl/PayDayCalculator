@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.paydays
+package ms.mattschlenkrich.paycalculator.ui.paytimesheet
 
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtraTypes
 

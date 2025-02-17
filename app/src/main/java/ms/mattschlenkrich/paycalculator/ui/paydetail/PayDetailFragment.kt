@@ -1,7 +1,8 @@
-package ms.mattschlenkrich.paycalculator.ui.paydays
+package ms.mattschlenkrich.paycalculator.ui.paydetail
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -31,22 +32,22 @@ import ms.mattschlenkrich.paycalculator.common.WAIT_1500
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
-import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraContainer
 import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraDefinitionAndType
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkDateExtrasAndDates
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkPayPeriodExtras
+import ms.mattschlenkrich.paycalculator.database.model.tax.TaxAndAmount
 import ms.mattschlenkrich.paycalculator.databinding.FragmentPayDetailsBinding
 import ms.mattschlenkrich.paycalculator.payfunctions.IPayCalculations
 import ms.mattschlenkrich.paycalculator.payfunctions.PayCalculationsAsync
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.paydays.adapter.PayDetailExtraContainerAdapter
+import ms.mattschlenkrich.paycalculator.ui.paydetail.adapter.PayDetailExtraAdapter
 import ms.mattschlenkrich.paycalculator.ui.tax.adapter.PayDetailTaxAdapter
 import java.time.LocalDate
 
 private const val TAG = FRAG_PAY_DETAILS
 
-class PayDetailFragmentNew :
+class PayDetailFragment :
     Fragment(R.layout.fragment_pay_details),
     IPayDetailsFragment {
 
@@ -57,6 +58,8 @@ class PayDetailFragmentNew :
     private var curEmployer: Employers? = null
     private var curPayPeriod: PayPeriods? = null
     private val cutOffs = ArrayList<String>()
+    private lateinit var taxList: List<TaxAndAmount>
+    private var debitTotal = 0.0
     private var creditTotal = 0.0
     private var curCutOff = ""
     private var valuesFilled = false
@@ -294,9 +297,15 @@ class PayDetailFragmentNew :
         CoroutineScope(Dispatchers.Main).launch {
             getCurrentPayPeriodObject()
             delay(WAIT_250)
+//            val payCalculationsAsync = PayCalculationsAsync(
+//                mainActivity, curEmployer!!, curPayPeriod!!
+//            )
             val payCalculations = PayCalculationsAsync(
                 mainActivity, curEmployer!!, curPayPeriod!!
             )
+//            val payCalculations = PayCalculationsAsync(
+//                mainActivity, curEmployer!!, curPayPeriod!!
+//            )
             delay(WAIT_1000)
             populateExtras(payCalculations)
             delay(WAIT_1500)
@@ -341,9 +350,6 @@ class PayDetailFragmentNew :
                     -payCalculations.getDebitTotalsByPay()
                             - payCalculations.getAllTaxDeductions()
                 )
-                tvCreditTotal.text = nf.displayDollars(
-                    payCalculations.getCreditTotalAll()
-                )
                 tvDeductions.text = display
                 tvDeductions.setTextColor(Color.RED)
                 display = getString(R.string.net_) +
@@ -355,6 +361,10 @@ class PayDetailFragmentNew :
                 tvNetPay.text = display
             }
         }
+    }
+
+    override fun gotoPeriodExtraUpdateFragment() {
+        TODO("Not yet implemented")
     }
 
     private fun nextStepsIfDateListIsEmpty(dates: List<PayPeriods>) {
@@ -383,10 +393,9 @@ class PayDetailFragmentNew :
         CoroutineScope(Dispatchers.Main).launch {
             val extrasList =
                 processExtras(payCalculations)
-            val creditList = payCalculations.getCredits()
-            delay(WAIT_250)
-            populateCredits(creditList)
-            populateDeductions(payCalculations)
+            delay(WAIT_1000)
+            populateCredits(extrasList)
+            populateDeductions(payCalculations, extrasList)
             mainActivity.mainViewModel.setPayPeriodExtraList(extrasList)
         }
     }
@@ -426,12 +435,12 @@ class PayDetailFragmentNew :
         return extraList as ArrayList<WorkPayPeriodExtras>
     }
 
-    private fun populateCredits(creditList: List<ExtraContainer>) {
+    private fun populateCredits(extraList: ArrayList<WorkPayPeriodExtras>) {
+        val creditList = getCreditList(extraList)
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
-            val creditListAdapter = PayDetailExtraContainerAdapter(
-                mainActivity, curPayPeriod!!, creditList, mView,
-                this@PayDetailFragmentNew
+            val creditListAdapter = PayDetailExtraAdapter(
+                mainActivity, creditList, mView, this@PayDetailFragment
             )
             binding.apply {
                 rvCredits.layoutManager = LinearLayoutManager(mView.context)
@@ -441,46 +450,27 @@ class PayDetailFragmentNew :
         }
     }
 
-//    private fun populateCredits(extraList: ArrayList<WorkPayPeriodExtras>) {
-//        val creditList = getCreditList(extraList)
-//        CoroutineScope(Dispatchers.Main).launch {
-//            delay(WAIT_250)
-//            val creditListAdapter = PayDetailExtraAdapter(
-//                mainActivity, creditList, mView, this@PayDetailFragmentNew
-//            )
-//            binding.apply {
-//                rvCredits.layoutManager = LinearLayoutManager(mView.context)
-//                rvCredits.adapter = creditListAdapter
-//                tvCreditTotal.text = nf.displayDollars(creditTotal)
-//            }
-//        }
-//    }
-
     private fun populateDeductions(
         payCalculations: IPayCalculations,
+        extraList: ArrayList<WorkPayPeriodExtras>,
     ) {
-//        val debitList = getDeductions(
-//            payCalculations, extraList
-//        )
-        val debitList = payCalculations.getDebits()
+        val debitList = getDeductions(
+            payCalculations, extraList
+        )
         CoroutineScope(Dispatchers.Main).launch {
             binding.apply {
                 delay(WAIT_500)
-                val deductionListAdapter = PayDetailExtraContainerAdapter(
-                    mainActivity, curPayPeriod!!, debitList,
-                    mView, this@PayDetailFragmentNew
+                val deductionListAdapter = PayDetailExtraAdapter(
+                    mainActivity, debitList, mView, this@PayDetailFragment
                 )
                 rvDebits.layoutManager = LinearLayoutManager(mView.context)
                 rvDebits.adapter = deductionListAdapter
                 delay(WAIT_250)
-                val taxListAdapter = PayDetailTaxAdapter(payCalculations.getTaxList()!!)
+                val taxListAdapter = PayDetailTaxAdapter(taxList)
                 rvTax.layoutManager = LinearLayoutManager(mView.context)
                 rvTax.adapter = taxListAdapter
                 delay(WAIT_250)
-                tvDebitTotal.text = nf.displayDollars(
-                    payCalculations.getDebitTotalsByPay() +
-                            payCalculations.getAllTaxDeductions()
-                )
+                tvDebitTotal.text = nf.displayDollars(debitTotal)
             }
         }
     }
@@ -654,6 +644,10 @@ class PayDetailFragmentNew :
                     }
                     if (mainActivity.mainViewModel.getCutOffDate() != null) {
                         curCutOff = mainActivity.mainViewModel.getCutOffDate()!!
+                        Log.d(
+                            TAG,
+                            "current cutoff is $curCutOff"
+                        )
                         for (i in 0 until spCutOff.adapter.count) {
                             if (spCutOff.getItemAtPosition(i).toString() == curCutOff) {
                                 spCutOff.setSelection(i)
@@ -702,6 +696,52 @@ class PayDetailFragmentNew :
         df.getCurrentTimeAsString()
     )
 
+    private fun getCreditList(extraList: ArrayList<WorkPayPeriodExtras>):
+            ArrayList<WorkPayPeriodExtras> {
+        val creditList = ArrayList<WorkPayPeriodExtras>()
+        creditTotal = 0.0
+        for (extra in extraList) {
+            if (extra.ppeIsCredit) {
+                creditList.add(extra)
+                if (!extra.ppeIsDeleted) {
+                    creditTotal += extra.ppeValue
+                }
+            }
+        }
+        return creditList
+    }
+
+    private fun getDeductions(
+        payCalculations: IPayCalculations,
+        extraList: ArrayList<WorkPayPeriodExtras>,
+    ): ArrayList<WorkPayPeriodExtras> {
+        val debitList = ArrayList<WorkPayPeriodExtras>()
+        debitTotal = 0.0
+        for (extra in extraList) {
+            if (!extra.ppeIsCredit) {
+                debitList.add(extra)
+                if (!extra.ppeIsDeleted) {
+                    debitTotal += extra.ppeValue
+                }
+            }
+        }
+        val tempTaxList = ArrayList<TaxAndAmount>()
+        val newTaxList = payCalculations.getTaxList()
+        if (!newTaxList.isNullOrEmpty()) {
+            for (tax in newTaxList
+            ) {
+                tempTaxList.add(
+                    TaxAndAmount(
+                        tax.taxType, tax.amount
+                    )
+                )
+                debitTotal += tax.amount
+            }
+        }
+        taxList = tempTaxList
+        return debitList
+    }
+
     private fun gotoEmployerAdd() {
         mainActivity.mainViewModel.setCallingFragment(TAG)
         mView.findNavController().navigate(
@@ -723,8 +763,8 @@ class PayDetailFragmentNew :
 
     private fun gotoPayPeriodExtraAddFragment() {
         mView.findNavController().navigate(
-            PayDetailFragmentNewDirections
-                .actionPayDetailFragmentNewToPayPeriodExtraAddFragment()
+            PayDetailFragmentDirections
+                .actionPayDetailsFragmentToPayPeriodExtraAddFragment()
         )
     }
 

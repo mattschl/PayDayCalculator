@@ -1,10 +1,9 @@
-package ms.mattschlenkrich.paycalculator.ui.paydays.adapter
+package ms.mattschlenkrich.paycalculator.ui.paydetail.adapter
 
 import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,10 +19,9 @@ import ms.mattschlenkrich.paycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkPayPeriodExtras
 import ms.mattschlenkrich.paycalculator.databinding.ListPayDetailExtraItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.paydays.IPayDetailsFragment
-import ms.mattschlenkrich.paycalculator.ui.paydays.PayDetailFragmentNewDirections
+import ms.mattschlenkrich.paycalculator.ui.paydetail.IPayDetailsFragment
 
-private const val TAG = "PayDetailExtraContainerAdapter"
+//private const val TAG = "PayDetailExtraContainerAdapter"
 
 class PayDetailExtraContainerAdapter(
     private val mainActivity: MainActivity,
@@ -119,7 +117,7 @@ class PayDetailExtraContainerAdapter(
         mainActivity.mainViewModel.setWorkDateExtra(null)
         mainActivity.mainViewModel.setExtraContainer(extraContainer)
         mainActivity.mainViewModel.addCallingFragment(FRAG_PAY_DETAILS)
-        gotoPeriodExtraUpdateFragment()
+        parentFragment.gotoPeriodExtraUpdateFragment()
     }
 
     private fun insertOrUpdateExtraOnChange(
@@ -163,13 +161,4 @@ class PayDetailExtraContainerAdapter(
         }
         return extraContainer
     }
-
-
-    private fun gotoPeriodExtraUpdateFragment() {
-        mView.findNavController().navigate(
-            PayDetailFragmentNewDirections
-                .actionPayDetailFragmentNewToPayPeriodExtraUpdateFragment()
-        )
-    }
-
 }
