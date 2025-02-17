@@ -99,7 +99,7 @@ class TimeSheetFragment :
             onSelectEmployer()
             onSelectCutOffDate()
             fabAddDate.setOnClickListener {
-                gotoNewWorkDate()
+                gotoWorkDateAdd()
             }
             crdPayDetails.setOnClickListener {
                 gotoPayDetails()
@@ -120,7 +120,7 @@ class TimeSheetFragment :
                         if (spEmployers.selectedItem.toString() !=
                             getString(R.string.add_new_employer)
                         ) {
-                            CoroutineScope(Dispatchers.IO).launch {
+                            CoroutineScope(Dispatchers.Default).launch {
                                 curEmployer = mainActivity.employerViewModel.findEmployer(
                                     spEmployers.selectedItem.toString()
                                 )
@@ -129,7 +129,7 @@ class TimeSheetFragment :
                                 delay(WAIT_100)
                                 mainActivity.mainViewModel.setEmployer(curEmployer)
                                 mainActivity.title = getString(R.string.time_sheet) +
-                                        " for ${spEmployers.selectedItem}"
+                                        " for " + spEmployers.selectedItem.toString()
                                 populateCutOffDates()
                             }
                         } else {
@@ -178,7 +178,6 @@ class TimeSheetFragment :
                         cutOffAdapter.add(it.ppCutoffDate)
                         cutOffs.add(it.ppCutoffDate)
                     }
-//                    Log.d(TAG, "cutOffAdapter has ${dates.size}")
                     if (dates.isEmpty() ||
                         dates[0].ppCutoffDate < df.getCurrentDateAsString()
                     ) {
@@ -261,14 +260,12 @@ class TimeSheetFragment :
                 layoutManager = LinearLayoutManager(mView.context)
                 adapter = workDateAdapter
             }
-            activity?.let {
-                mainActivity.payDayViewModel.getWorkDateList(
-                    curEmployer!!.employerId,
-                    curCutOff
-                ).observe(viewLifecycleOwner) { workDates ->
-                    workDateAdapter!!.differ.submitList(workDates)
-                    updateUI(workDates)
-                }
+            mainActivity.payDayViewModel.getWorkDateList(
+                curEmployer!!.employerId,
+                curCutOff
+            ).observe(viewLifecycleOwner) { workDates ->
+                workDateAdapter!!.differ.submitList(workDates)
+                updateUI(workDates)
             }
         }
     }
@@ -389,7 +386,7 @@ class TimeSheetFragment :
 
     }
 
-    private fun gotoNewWorkDate() {
+    private fun gotoWorkDateAdd() {
         mainActivity.mainViewModel.setPayPeriod(getSelectedPayPeriod())
         mainActivity.mainViewModel.setCutOffDate(curCutOff)
         mainActivity.mainViewModel.setEmployer(curEmployer)

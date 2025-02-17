@@ -120,7 +120,6 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
                 layoutManager = LinearLayoutManager(mView.context)
                 adapter = extraAdapter
             }
-            activity?.let {
                 mainActivity.workExtraViewModel.getExtraTypesByDaily(
                     payPeriod!!.ppEmployerId
                 ).observe(viewLifecycleOwner) { extras ->
@@ -132,7 +131,6 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
                     }
                     updateExtraUI(extras)
                 }
-            }
         }
     }
 

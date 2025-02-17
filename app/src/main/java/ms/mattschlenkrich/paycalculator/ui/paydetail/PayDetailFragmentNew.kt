@@ -103,6 +103,7 @@ class PayDetailFragmentNew :
     }
 
     private fun setClickActions() {
+        setMenuAction()
         binding.apply {
             fabAddExtra.setOnClickListener {
                 chooseToGotoExtraAdd(true)
@@ -111,24 +112,8 @@ class PayDetailFragmentNew :
                 chooseToGotoExtraAdd(false)
             }
         }
-        setMenuAction()
         onSelectEmployer()
         onSelectCutOffDate()
-    }
-
-    private fun chooseToGotoExtraAdd(isCredit: Boolean) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(getString(R.string.warning_))
-            .setMessage(
-                getString(
-                    R.string.it_is_best_to_add_custom_extras_only_after_all_the_work_hours_have_been_entered
-                )
-            )
-            .setPositiveButton(getString(R.string.continue_)) { _, _ ->
-                gotoExtraAddFragment(isCredit)
-            }
-            .setNegativeButton(getString(R.string.cancel), null)
-            .show()
     }
 
     private fun setMenuAction() {
@@ -178,6 +163,21 @@ class PayDetailFragmentNew :
             )
         )
         populateCutOffDates(curEmployer)
+    }
+
+    private fun chooseToGotoExtraAdd(isCredit: Boolean) {
+        AlertDialog.Builder(mView.context)
+            .setTitle(getString(R.string.warning_))
+            .setMessage(
+                getString(
+                    R.string.it_is_best_to_add_custom_extras_only_after_all_the_work_hours_have_been_entered
+                )
+            )
+            .setPositiveButton(getString(R.string.continue_)) { _, _ ->
+                gotoExtraAddFragment(isCredit)
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
     }
 
     private fun onSelectEmployer() {
@@ -371,14 +371,6 @@ class PayDetailFragmentNew :
         }
     }
 
-    private fun gotoTimeSheetFragment() {
-        mView.findNavController().navigate(
-            PayDetailFragmentDirections
-                .actionPayDetailFragmentToTimeSheetFragment()
-
-        )
-    }
-
     private fun populateExtras(payCalculations: IPayCalculations) {
         CoroutineScope(Dispatchers.Main).launch {
             val extrasList =
@@ -441,21 +433,6 @@ class PayDetailFragmentNew :
         }
     }
 
-//    private fun populateCredits(extraList: ArrayList<WorkPayPeriodExtras>) {
-//        val creditList = getCreditList(extraList)
-//        CoroutineScope(Dispatchers.Main).launch {
-//            delay(WAIT_250)
-//            val creditListAdapter = PayDetailExtraAdapter(
-//                mainActivity, creditList, mView, this@PayDetailFragmentNew
-//            )
-//            binding.apply {
-//                rvCredits.layoutManager = LinearLayoutManager(mView.context)
-//                rvCredits.adapter = creditListAdapter
-//                tvCreditTotal.text = nf.displayDollars(creditTotal)
-//            }
-//        }
-//    }
-
     private fun populateDeductions(
         payCalculations: IPayCalculations,
     ) {
@@ -486,49 +463,49 @@ class PayDetailFragmentNew :
     }
 
     private fun processExtrasByManuallyAdded(
-        it: WorkPayPeriodExtras,
+        workPayPeriodExtras: WorkPayPeriodExtras,
         payCalculations: IPayCalculations,
         extraList: MutableList<WorkPayPeriodExtras>
     ) {
         var sum = 0.0
-        when (it.ppeAppliesTo) {
+        when (workPayPeriodExtras.ppeAppliesTo) {
             AppliesToFrequencies.Hourly.value -> {
-                sum = if (it.ppeIsFixed) {
-                    payCalculations.getHoursWorked() * it.ppeValue
+                sum = if (workPayPeriodExtras.ppeIsFixed) {
+                    payCalculations.getHoursWorked() * workPayPeriodExtras.ppeValue
                 } else {
-                    payCalculations.getPayTimeWorked() * it.ppeValue / 100
+                    payCalculations.getPayTimeWorked() * workPayPeriodExtras.ppeValue / 100
                 }
             }
 
             AppliesToFrequencies.Daily.value -> {
-                sum = if (it.ppeIsFixed) {
-                    payCalculations.getDaysWorked() * it.ppeValue
+                sum = if (workPayPeriodExtras.ppeIsFixed) {
+                    payCalculations.getDaysWorked() * workPayPeriodExtras.ppeValue
                 } else {
-                    payCalculations.getPayTimeWorked() * it.ppeValue / 100
+                    payCalculations.getPayTimeWorked() * workPayPeriodExtras.ppeValue / 100
                 }
             }
 
             AppliesToFrequencies.PerPayForHourlyWages.value -> {
-                sum = if (it.ppeIsFixed) {
-                    payCalculations.getDaysWorked() * it.ppeValue
+                sum = if (workPayPeriodExtras.ppeIsFixed) {
+                    payCalculations.getDaysWorked() * workPayPeriodExtras.ppeValue
                 } else {
-                    payCalculations.getPayAllHourly() * it.ppeValue / 100
+                    payCalculations.getPayAllHourly() * workPayPeriodExtras.ppeValue / 100
                 }
             }
         }
         extraList.add(
             WorkPayPeriodExtras(
-                it.workPayPeriodExtraId,
-                it.ppePayPeriodId,
-                it.ppeExtraTypeId,
-                it.ppeName,
-                it.ppeAppliesTo,
-                it.ppeAttachTo,
+                workPayPeriodExtras.workPayPeriodExtraId,
+                workPayPeriodExtras.ppePayPeriodId,
+                workPayPeriodExtras.ppeExtraTypeId,
+                workPayPeriodExtras.ppeName,
+                workPayPeriodExtras.ppeAppliesTo,
+                workPayPeriodExtras.ppeAttachTo,
                 sum,
-                it.ppeIsFixed,
-                it.ppeIsCredit,
-                it.ppeIsDeleted,
-                it.ppeUpdateTime
+                workPayPeriodExtras.ppeIsFixed,
+                workPayPeriodExtras.ppeIsCredit,
+                workPayPeriodExtras.ppeIsDeleted,
+                workPayPeriodExtras.ppeUpdateTime
             )
         )
     }
@@ -578,59 +555,62 @@ class PayDetailFragmentNew :
 
     private fun processExtraByPayPeriod(
         extraList: MutableList<WorkPayPeriodExtras>,
-        it: ExtraDefinitionAndType,
+        extraDefinitionAndType: ExtraDefinitionAndType,
         payCalculations: IPayCalculations
     ) {
         var notFound = true
         for (extra in extraList) {
-            if (extra.ppeName == it.extraType.wetName) {
+            if (extra.ppeName == extraDefinitionAndType.extraType.wetName) {
                 notFound = false
             }
         }
         if (notFound) {
-            when (it.extraType.wetAppliesTo) {
+            when (extraDefinitionAndType.extraType.wetAppliesTo) {
                 0 -> {
-                    val sum = if (it.definition.weIsFixed) {
-                        payCalculations.getHoursWorked() * it.definition.weValue
+                    val sum = if (extraDefinitionAndType.definition.weIsFixed) {
+                        payCalculations.getHoursWorked() * extraDefinitionAndType.definition.weValue
                     } else {
-                        payCalculations.getPayTimeWorked() * it.definition.weValue / 100
+                        payCalculations.getPayTimeWorked() * extraDefinitionAndType.definition.weValue / 100
                     }
                     extraList.add(
-                        addWorkPayPeriodExtra(it, sum)
+                        addWorkPayPeriodExtra(extraDefinitionAndType, sum)
                     )
                 }
 
                 1 -> {
                     val sum =
-                        if (it.definition.weIsFixed) {
-                            payCalculations.getDaysWorked() * it.definition.weValue
+                        if (extraDefinitionAndType.definition.weIsFixed) {
+                            payCalculations.getDaysWorked() * extraDefinitionAndType.definition.weValue
                         } else {
-                            payCalculations.getPayTimeWorked() * it.definition.weValue / 100
+                            payCalculations.getPayTimeWorked() * extraDefinitionAndType.definition.weValue / 100
                         }
                     extraList.add(
-                        addWorkPayPeriodExtra(it, sum)
+                        addWorkPayPeriodExtra(extraDefinitionAndType, sum)
                     )
                 }
 
                 3 -> {
-                    if (it.definition.weIsFixed) {
+                    if (extraDefinitionAndType.definition.weIsFixed) {
                         extraList.add(
-                            addWorkPayPeriodExtra(it, it.definition.weValue)
+                            addWorkPayPeriodExtra(
+                                extraDefinitionAndType,
+                                extraDefinitionAndType.definition.weValue
+                            )
                         )
                     } else {
                         val sum =
-                            payCalculations.getPayAllHourly() * it.definition.weValue / 100
+                            payCalculations.getPayAllHourly() * extraDefinitionAndType.definition.weValue / 100
                         extraList.add(
-                            addWorkPayPeriodExtra(it, sum)
+                            addWorkPayPeriodExtra(extraDefinitionAndType, sum)
                         )
                     }
                 }
 
                 4 -> {
                     val sum =
-                        payCalculations.getPayGross() * it.definition.weValue / 100
+                        payCalculations.getPayGross() * extraDefinitionAndType.definition.weValue / 100
                     extraList.add(
-                        addWorkPayPeriodExtra(it, sum)
+                        addWorkPayPeriodExtra(extraDefinitionAndType, sum)
                     )
                 }
             }
@@ -705,10 +685,7 @@ class PayDetailFragmentNew :
 
     private fun gotoEmployerAdd() {
         mainActivity.mainViewModel.setCallingFragment(TAG)
-        mView.findNavController().navigate(
-            PayDetailFragmentDirections
-                .actionPayDetailsFragmentToEmployerAddFragment()
-        )
+        gotoEmployerAddFragment()
     }
 
     private fun gotoExtraAddFragment(isCredit: Boolean) {
@@ -722,7 +699,22 @@ class PayDetailFragmentNew :
         gotoPayPeriodExtraAddFragment()
     }
 
-    fun gotoPayPeriodExtraAddFragment() {
+    private fun gotoEmployerAddFragment() {
+        mView.findNavController().navigate(
+            PayDetailFragmentDirections
+                .actionPayDetailsFragmentToEmployerAddFragment()
+        )
+    }
+
+    private fun gotoTimeSheetFragment() {
+        mView.findNavController().navigate(
+            PayDetailFragmentDirections
+                .actionPayDetailFragmentToTimeSheetFragment()
+
+        )
+    }
+
+    private fun gotoPayPeriodExtraAddFragment() {
         mView.findNavController().navigate(
             PayDetailFragmentNewDirections
                 .actionPayDetailFragmentNewToPayPeriodExtraAddFragment()

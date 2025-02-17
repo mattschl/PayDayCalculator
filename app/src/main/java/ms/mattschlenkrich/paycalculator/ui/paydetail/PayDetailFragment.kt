@@ -47,6 +47,10 @@ import java.time.LocalDate
 
 private const val TAG = FRAG_PAY_DETAILS
 
+//--------------------------------------------------------------------------
+//NOTE: This is an older version of this class it could possibly be deleted?
+//__________________________________________________________________________
+
 class PayDetailFragment :
     Fragment(R.layout.fragment_pay_details),
     IPayDetailsFragment {
