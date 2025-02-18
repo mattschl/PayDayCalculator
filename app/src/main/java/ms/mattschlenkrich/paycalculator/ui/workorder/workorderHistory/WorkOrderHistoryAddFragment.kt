@@ -42,10 +42,7 @@ class WorkOrderHistoryAddFragment :
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
     private val nf = NumberFunctions()
-    private val workOrderList =
-        ArrayList<WorkOrder>()
-    private val workOrderListForAutocomplete =
-        ArrayList<String>()
+    private lateinit var workOrderList: List<WorkOrder>
     private var workDateObject: WorkDates? = null
     private var curEmployer: Employers? = null
     private var curWorkOrder: WorkOrder? = null
@@ -142,6 +139,23 @@ class WorkOrderHistoryAddFragment :
                 etNote.setText(
                     tempWorkOrderHistory.woHistoryNote
                 )
+                if (tempWorkOrderHistory.woWorkPerformed.isNotEmpty()) {
+                    acWorkOrder.setText(tempWorkOrderHistory.woWorkPerformed)
+                }
+                if (tempWorkOrderHistory.woArea.isNotEmpty()) {
+                    acArea.setText(tempWorkOrderHistory.woArea)
+                }
+                if (tempWorkOrderHistory.woWorkPerformedNote.isNotEmpty()) {
+                    etWorkPerformedNote.setText(tempWorkOrderHistory.woWorkPerformedNote)
+                }
+                if (tempWorkOrderHistory.woMaterial.isNotEmpty()) {
+                    acMaterials.setText(tempWorkOrderHistory.woMaterial)
+                }
+                if (tempWorkOrderHistory.woMaterialQty != 0.0) {
+                    etMaterialQty.setText(
+                        nf.getNumberFromDouble((tempWorkOrderHistory.woMaterialQty))
+                    )
+                }
                 setCurWorkOrder()
                 mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
             }
@@ -153,10 +167,9 @@ class WorkOrderHistoryAddFragment :
             mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
                 workDateObject!!.wdEmployerId
             ).observe(viewLifecycleOwner) { list ->
-                workOrderList.clear()
-                workOrderListForAutocomplete.clear()
+                val workOrderListForAutocomplete = ArrayList<String>()
+                workOrderList = list
                 list.listIterator().forEach {
-                    workOrderList.add(it)
                     workOrderListForAutocomplete.add(it.woNumber)
                 }
                 binding.apply {
@@ -386,8 +399,8 @@ class WorkOrderHistoryAddFragment :
                         "" else acWorkPerformed.text.toString().trim(),
                     if (acArea.text.isNullOrBlank())
                         "" else acArea.text.toString().trim(),
-                    if (etNote.text.isNullOrBlank())
-                        "" else etNote.text.toString().trim(),
+                    if (etWorkPerformedNote.text.isNullOrBlank())
+                        "" else etWorkPerformedNote.text.toString().trim(),
                     if (etMaterialQty.text.isNullOrBlank())
                         0.0 else etMaterialQty.text.toString().trim().toDouble(),
                     if (acMaterials.text.isNullOrBlank())

@@ -120,17 +120,17 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
                 layoutManager = LinearLayoutManager(mView.context)
                 adapter = extraAdapter
             }
-                mainActivity.workExtraViewModel.getExtraTypesByDaily(
-                    payPeriod!!.ppEmployerId
-                ).observe(viewLifecycleOwner) { extras ->
-                    extraAdapter.differ.submitList(extras)
-                    extras.listIterator().forEach { extra ->
-                        if (extra.wetIsDefault) {
-                            workExtrasDefaultList.add(extra)
-                        }
+            mainActivity.workExtraViewModel.getExtraTypesByDaily(
+                payPeriod!!.ppEmployerId
+            ).observe(viewLifecycleOwner) { extras ->
+                extraAdapter.differ.submitList(extras)
+                extras.listIterator().forEach { extra ->
+                    if (extra.wetIsDefault) {
+                        workExtrasDefaultList.add(extra)
                     }
-                    updateExtraUI(extras)
                 }
+                updateExtraUI(extras)
+            }
         }
     }
 

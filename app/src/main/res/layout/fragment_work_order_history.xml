@@ -13,203 +13,235 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/lblDate"
-                android:layout_width="wrap_content"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/crdWorkOrder"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen_8dp"
-                android:text="@string/work_date"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="italic"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_margin="@dimen/dimen_8dp"
+                android:backgroundTint="@color/white"
+                android:elevation="10dp"
+                android:visibility="visible"
+                app:cardCornerRadius="10dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/lblEmployer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/employer"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="italic"
-                app:layout_constraintBaseline_toBaselineOf="@id/tvEmployers"
-                app:layout_constraintEnd_toStartOf="@id/tvEmployers"
-                app:layout_constraintStart_toStartOf="parent" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/tvEmployers"
-                android:layout_width="@dimen/text_box_wide"
-                android:layout_height="@dimen/minimum_touch_height"
-                android:textColor="@color/black"
-                android:textSize="@dimen/text_size_large"
-                android:textStyle="bold"
-                app:flow_verticalAlign="center"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/lblEmployer"
-                app:layout_constraintTop_toBottomOf="@id/lblDate" />
+                    <TextView
+                        android:id="@+id/lblDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dimen_8dp"
+                        android:text="@string/work_date"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="italic"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/lblWorkOrder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/work_order"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="italic"
-                app:layout_constraintBaseline_toBaselineOf="@id/acWorkOrder"
-                app:layout_constraintEnd_toStartOf="@id/acWorkOrder"
-                app:layout_constraintStart_toStartOf="parent" />
+                    <TextView
+                        android:id="@+id/lblEmployer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/employer"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="italic"
+                        app:layout_constraintBaseline_toBaselineOf="@id/tvEmployers"
+                        app:layout_constraintEnd_toStartOf="@id/tvEmployers"
+                        app:layout_constraintStart_toStartOf="parent" />
 
+                    <TextView
+                        android:id="@+id/tvEmployers"
+                        android:layout_width="@dimen/text_box_wide"
+                        android:layout_height="@dimen/minimum_touch_height"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_large"
+                        android:textStyle="bold"
+                        app:flow_verticalAlign="center"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/lblEmployer"
+                        app:layout_constraintTop_toBottomOf="@id/lblDate" />
 
-            <AutoCompleteTextView
-                android:id="@+id/acWorkOrder"
-                android:layout_width="@dimen/text_box_wide"
-                android:layout_height="wrap_content"
-                android:hint="@string/type_numbers"
-                android:minHeight="@dimen/minimum_touch_height"
-                android:selectAllOnFocus="true"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/btnWorkOrder"
-                app:layout_constraintStart_toEndOf="@id/lblWorkOrder"
-                app:layout_constraintTop_toBottomOf="@+id/tvEmployers" />
-
-            <Button
-                android:id="@+id/btnWorkOrder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/create"
-                app:layout_constraintBaseline_toBaselineOf="@id/acWorkOrder"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/acWorkOrder" />
+                    <TextView
+                        android:id="@+id/lblWorkOrder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/work_order"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="italic"
+                        app:layout_constraintBaseline_toBaselineOf="@id/acWorkOrder"
+                        app:layout_constraintEnd_toStartOf="@id/acWorkOrder"
+                        app:layout_constraintStart_toStartOf="parent" />
 
 
-            <TextView
-                android:id="@+id/tvDescription"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="@dimen/dimen_20dp"
-                android:paddingEnd="@dimen/dimen_20dp"
-                android:text="@string/description"
-                android:textColor="@color/red"
-                android:textSize="18sp"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/acWorkOrder" />
+                    <AutoCompleteTextView
+                        android:id="@+id/acWorkOrder"
+                        android:layout_width="@dimen/text_box_wide"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/type_numbers"
+                        android:minHeight="@dimen/minimum_touch_height"
+                        android:selectAllOnFocus="true"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@id/btnWorkOrder"
+                        app:layout_constraintStart_toEndOf="@id/lblWorkOrder"
+                        app:layout_constraintTop_toBottomOf="@+id/tvEmployers" />
 
-            <TextView
-                android:id="@+id/lblRegHours"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/hr"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="italic"
-                app:layout_constraintBaseline_toBaselineOf="@id/etRegHours"
-                app:layout_constraintEnd_toStartOf="@id/etRegHours"
-                app:layout_constraintStart_toStartOf="parent" />
+                    <Button
+                        android:id="@+id/btnWorkOrder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/create"
+                        app:layout_constraintBaseline_toBaselineOf="@id/acWorkOrder"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/acWorkOrder" />
 
-            <EditText
-                android:id="@+id/etRegHours"
-                android:layout_width="@dimen/text_box_small"
-                android:layout_height="@dimen/minimum_touch_height"
-                android:hint="@string/zero_double"
-                android:importantForAutofill="no"
-                android:inputType="numberDecimal"
-                android:minHeight="48dp"
-                android:selectAllOnFocus="true"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/lblOtHours"
-                app:layout_constraintStart_toEndOf="@id/lblRegHours"
-                app:layout_constraintTop_toBottomOf="@id/tvDescription"
-                tools:ignore="DuplicateSpeakableTextCheck" />
+                    <TextView
+                        android:id="@+id/tvDescription"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="@dimen/dimen_20dp"
+                        android:paddingEnd="@dimen/dimen_20dp"
+                        android:text="@string/description"
+                        android:textColor="@color/red"
+                        android:textSize="18sp"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/acWorkOrder" />
 
-            <TextView
-                android:id="@+id/lblOtHours"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/ot"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="italic"
-                app:layout_constraintBaseline_toBaselineOf="@id/etOtHours"
-                app:layout_constraintEnd_toStartOf="@id/etOtHours"
-                app:layout_constraintStart_toEndOf="@id/etRegHours" />
+                    <TextView
+                        android:id="@+id/lblRegHours"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/hr"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="italic"
+                        app:layout_constraintBaseline_toBaselineOf="@id/etRegHours"
+                        app:layout_constraintEnd_toStartOf="@id/etRegHours"
+                        app:layout_constraintStart_toStartOf="parent" />
 
-            <EditText
-                android:id="@+id/etOtHours"
-                android:layout_width="@dimen/text_box_small"
-                android:layout_height="@dimen/minimum_touch_height"
-                android:hint="@string/zero_double"
-                android:importantForAutofill="no"
-                android:inputType="numberDecimal"
-                android:minHeight="48dp"
-                android:selectAllOnFocus="true"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintBaseline_toBaselineOf="@id/etRegHours"
-                app:layout_constraintEnd_toStartOf="@+id/lblDblOtHours"
-                app:layout_constraintStart_toEndOf="@id/lblOtHours"
-                tools:ignore="DuplicateSpeakableTextCheck" />
+                    <EditText
+                        android:id="@+id/etRegHours"
+                        android:layout_width="@dimen/text_box_small"
+                        android:layout_height="@dimen/minimum_touch_height"
+                        android:hint="@string/zero_double"
+                        android:importantForAutofill="no"
+                        android:inputType="numberDecimal"
+                        android:minHeight="48dp"
+                        android:selectAllOnFocus="true"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@id/lblOtHours"
+                        app:layout_constraintStart_toEndOf="@id/lblRegHours"
+                        app:layout_constraintTop_toBottomOf="@id/tvDescription"
+                        tools:ignore="DuplicateSpeakableTextCheck" />
 
+                    <TextView
+                        android:id="@+id/lblOtHours"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ot"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="italic"
+                        app:layout_constraintBaseline_toBaselineOf="@id/etOtHours"
+                        app:layout_constraintEnd_toStartOf="@id/etOtHours"
+                        app:layout_constraintStart_toEndOf="@id/etRegHours" />
 
-            <TextView
-                android:id="@+id/lblDblOtHours"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dbl_ot"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="italic"
-                app:layout_constraintBaseline_toBaselineOf="@id/etDblOtHours"
-                app:layout_constraintEnd_toStartOf="@id/etDblOtHours"
-                app:layout_constraintStart_toEndOf="@id/etOtHours" />
-
-            <EditText
-                android:id="@+id/etDblOtHours"
-                android:layout_width="@dimen/text_box_small"
-                android:layout_height="@dimen/minimum_touch_height"
-                android:hint="@string/zero_double"
-                android:importantForAutofill="no"
-                android:inputType="numberDecimal"
-                android:minHeight="48dp"
-                android:selectAllOnFocus="true"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintBaseline_toBaselineOf="@+id/etOtHours"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/lblDblOtHours"
-                tools:ignore="DuplicateSpeakableTextCheck" />
+                    <EditText
+                        android:id="@+id/etOtHours"
+                        android:layout_width="@dimen/text_box_small"
+                        android:layout_height="@dimen/minimum_touch_height"
+                        android:hint="@string/zero_double"
+                        android:importantForAutofill="no"
+                        android:inputType="numberDecimal"
+                        android:minHeight="48dp"
+                        android:selectAllOnFocus="true"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBaseline_toBaselineOf="@id/etRegHours"
+                        app:layout_constraintEnd_toStartOf="@+id/lblDblOtHours"
+                        app:layout_constraintStart_toEndOf="@id/lblOtHours"
+                        tools:ignore="DuplicateSpeakableTextCheck" />
 
 
-            <EditText
-                android:id="@+id/etNote"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:hint="@string/enter_note_optional"
-                android:importantForAutofill="no"
-                android:inputType="textMultiLine|textCapSentences"
-                android:maxWidth="@dimen/tex_box_super_wide"
-                android:minHeight="@dimen/minimum_touch_height"
-                android:paddingStart="@dimen/dimen_20dp"
-                android:paddingEnd="@dimen/dimen_20dp"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/etDblOtHours"
-                tools:ignore="DuplicateSpeakableTextCheck,VisualLintTextFieldSize" />
+                    <TextView
+                        android:id="@+id/lblDblOtHours"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dbl_ot"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="italic"
+                        app:layout_constraintBaseline_toBaselineOf="@id/etDblOtHours"
+                        app:layout_constraintEnd_toStartOf="@id/etDblOtHours"
+                        app:layout_constraintStart_toEndOf="@id/etOtHours" />
+
+                    <EditText
+                        android:id="@+id/etDblOtHours"
+                        android:layout_width="@dimen/text_box_small"
+                        android:layout_height="@dimen/minimum_touch_height"
+                        android:hint="@string/zero_double"
+                        android:importantForAutofill="no"
+                        android:inputType="numberDecimal"
+                        android:minHeight="48dp"
+                        android:selectAllOnFocus="true"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBaseline_toBaselineOf="@+id/etOtHours"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/lblDblOtHours"
+                        tools:ignore="DuplicateSpeakableTextCheck" />
+
+
+                    <EditText
+                        android:id="@+id/etNote"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/dimen_25dp"
+                        android:hint="@string/enter_note_optional"
+                        android:importantForAutofill="no"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:maxWidth="@dimen/tex_box_super_wide"
+                        android:minHeight="@dimen/minimum_touch_height"
+                        android:paddingStart="@dimen/dimen_20dp"
+                        android:paddingEnd="@dimen/dimen_20dp"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@id/fabDone"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/etDblOtHours"
+                        tools:ignore="DuplicateSpeakableTextCheck,VisualLintTextFieldSize" />
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/fabDone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dimen_25dp"
+                        android:layout_marginEnd="@dimen/dimen_25dp"
+                        android:backgroundTint="@color/dark_green"
+                        android:contentDescription="@string/done"
+                        android:src="@drawable/ic_done"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/crdWorkPerformed"
@@ -221,7 +253,7 @@
                 android:visibility="visible"
                 app:cardCornerRadius="10dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/etNote">
+                app:layout_constraintTop_toBottomOf="@id/crdWorkOrder">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -427,17 +459,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/crdMaterials" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fabDone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen_25dp"
-                android:layout_marginEnd="@dimen/dimen_25dp"
-                android:backgroundTint="@color/dark_green"
-                android:contentDescription="@string/done"
-                android:src="@drawable/ic_done"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
