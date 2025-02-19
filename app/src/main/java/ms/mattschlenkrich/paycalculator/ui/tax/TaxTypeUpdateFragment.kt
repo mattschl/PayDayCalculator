@@ -28,10 +28,9 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private val df = DateFunctions()
-
-    private val taxTypeList = ArrayList<TaxTypes>()
+    private lateinit var taxTypeList: List<TaxTypes>
     private lateinit var curTaxType: TaxTypes
+    private val df = DateFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,10 +76,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
         mainActivity.workTaxViewModel.getTaxTypes().observe(
             viewLifecycleOwner
         ) { taxTypes ->
-            taxTypeList.clear()
-            taxTypes.listIterator().forEach {
-                taxTypeList.add(it)
-            }
+            taxTypeList = taxTypes
         }
     }
 
@@ -133,27 +129,29 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
             updateWorkTaxType()
             gotoTaxTypes()
         } else {
-            Toast.makeText(
-                mView.context,
-                message,
-                Toast.LENGTH_LONG
-            ).show()
+            displayError(message)
         }
+    }
+
+    private fun displayError(message: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) + message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateTaxType(): String {
         binding.apply {
             if (etTaxType.text.isNullOrBlank()) {
-                getString(R.string.error_) +
-                        getString(R.string.the_tax_type_must_have_a_name)
+                getString(R.string.the_tax_type_must_have_a_name)
             }
             if (taxTypeList.isNotEmpty()) {
                 for (taxType in taxTypeList) {
                     if (taxType.taxType == etTaxType.text.toString() &&
                         taxType.taxType != curTaxType.taxType
                     ) {
-                        return getString(R.string.error_) +
-                                getString(R.string.this_tax_type_already_exists)
+                        return getString(R.string.this_tax_type_already_exists)
                     }
 
                 }

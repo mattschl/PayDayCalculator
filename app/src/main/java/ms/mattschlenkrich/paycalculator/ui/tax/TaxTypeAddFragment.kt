@@ -40,7 +40,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
 
     private val df = DateFunctions()
     private val nf = NumberFunctions()
-    private val taxTypeList = ArrayList<TaxTypes>()
+    private lateinit var taxTypeList: List<TaxTypes>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,10 +70,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         mainActivity.workTaxViewModel.getTaxTypes().observe(
             viewLifecycleOwner
         ) { list ->
-            taxTypeList.clear()
-            list.listIterator().forEach {
-                taxTypeList.add(it)
-            }
+            taxTypeList = list
         }
     }
 
@@ -126,27 +123,28 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
                 chooseNextStep(taxType)
             }
         } else {
-            Toast.makeText(
-                mView.context,
-                message,
-                Toast.LENGTH_LONG
-            ).show()
+            displayError(message)
         }
+    }
+
+    private fun displayError(message: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) + message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateTaxType(): String {
         binding.apply {
             if (etTaxType.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.the_tax_type_must_have_a_name)
+                return getString(R.string.the_tax_type_must_have_a_name)
             }
             if (taxTypeList.isNotEmpty()) {
                 for (taxType in taxTypeList) {
-                    if (taxType.taxType == etTaxType.text.toString()) {
-                        return getString(R.string.error_) +
-                                getString(R.string.this_tax_type_already_exists)
+                    if (taxType.taxType == etTaxType.text.toString().trim()) {
+                        return getString(R.string.this_tax_type_already_exists)
                     }
-
                 }
             }
             return ANSWER_OK

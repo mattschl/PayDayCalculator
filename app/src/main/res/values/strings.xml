@@ -425,5 +425,6 @@
     <string name="this_is_already_used_for_this_payday__add">This is already used for this payday. If you add it, this will show both in the pay details. This might cause confusion because one is manual and one is automatic. Would you like to add it anyway?</string>
     <string name="this_is_already_used_for_this_payday__overwrite">This is already used for this payday. If you add it, this will only the manually entered extra. This cannot be undone!!. Would you like to add it to overwrite anyway?</string>
     <string name="confirm_adding_duplicate_extra__">"Confirm adding duplicate Extra:  "</string>
+    <string name="this_cannot_be_deleted">This cannot be deleted!</string>
 
 </resources>

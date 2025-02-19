@@ -106,38 +106,39 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
         binding.apply {
             val message = validateTaxRule()
             if (message == ANSWER_OK) {
-                saveTaxRule()
-                gotoCallingFragment()
+                saveTaxRuleAndGotoCallingFragment()
             } else {
-                Toast.makeText(
-                    mView.context,
-                    message,
-                    Toast.LENGTH_LONG
-                ).show()
+                displayError(message)
             }
         }
+    }
+
+    private fun displayError(message: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) + message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateTaxRule(): String {
         binding.apply {
             if (etPercentage.text.isNullOrBlank() ||
-                etPercentage.text.toString() == getString(R.string.zero_percent) ||
-                etPercentage.text.toString().toDouble() == 0.0
+                nf.getDoubleFromDollarOrPercentString(etPercentage.text.toString()) == 0.0
             ) {
-                return getString(R.string.error_) +
-                        getString(R.string.there_should_be_a_percentage_here)
+                return getString(R.string.there_should_be_a_percentage_here)
             }
-            if (etExemption.text.isNullOrBlank() &&
+            if ((etExemption.text.isNullOrBlank() ||
+                        nf.getDoubleFromDollarOrPercentString(etExemption.text.toString()) == 0.0) &&
                 chkExemption.isChecked
             ) {
-                return getString(R.string.error_) +
-                        getString(R.string.an_exemption_is_indicated_but_no_amount_was_entered)
+                return getString(R.string.an_exemption_is_indicated_but_no_amount_was_entered)
             }
-            if (etUpperLimit.text.isNullOrBlank() &&
+            if ((etUpperLimit.text.isNullOrBlank() ||
+                        nf.getDoubleFromDollarOrPercentString(etUpperLimit.text.toString()) == 0.0) &&
                 chkUpperLimit.isChecked
             ) {
-                return getString(R.string.error_) +
-                        getString(R.string.an_upper_limit_is_indicated_but_no_amount_was_entered)
+                return getString(R.string.an_upper_limit_is_indicated_but_no_amount_was_entered)
             }
             return ANSWER_OK
         }
@@ -149,7 +150,7 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
                 nf.generateRandomIdAsLong(),
                 tvTaxRuleType.text.toString(),
                 tvTaxRuleLevel.text.toString().toInt(),
-                wtEffectiveDate = tvEffectiveDate.text.toString(),
+                tvEffectiveDate.text.toString(),
                 nf.getDoubleFromPercentString(etPercentage.text.toString()),
                 chkExemption.isChecked,
                 if (chkExemption.isChecked)
@@ -163,10 +164,11 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
         }
     }
 
-    private fun saveTaxRule() {
+    private fun saveTaxRuleAndGotoCallingFragment() {
         mainActivity.workTaxViewModel.insertTaxRule(
             getCurrentTaxRule()
         )
+        gotoCallingFragment()
     }
 
     private fun gotoCallingFragment() {

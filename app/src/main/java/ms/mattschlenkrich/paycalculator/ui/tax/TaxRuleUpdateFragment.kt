@@ -121,36 +121,32 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
     private fun updateTaxRuleIfValid() {
         val message = validateTaxRule()
         if (message == ANSWER_OK) {
-            updateTaxRule()
-            gotoTaxRulesFragment()
+            updateTaxRuleAndGotoCallingFragment()
         } else {
-            Toast.makeText(
-                mView.context,
-                message,
-                Toast.LENGTH_LONG
-            ).show()
+            displayError(message)
         }
     }
 
     private fun validateTaxRule(): String {
         binding.apply {
-            val errorMessage = if (etPercentage.text.isNullOrBlank()) {
-                "    ERROR!!\n" +
-                        "There should be a percentage here!"
-            } else if (etExemption.text.isNullOrBlank() &&
+            if (etPercentage.text.isNullOrBlank() ||
+                nf.getDoubleFromDollarOrPercentString(etPercentage.text.toString()) == 0.0
+            ) {
+                return getString(R.string.there_should_be_a_percentage_here)
+            }
+            if ((etExemption.text.isNullOrBlank() ||
+                        nf.getDoubleFromDollarOrPercentString(etExemption.text.toString()) == 0.0) &&
                 chkExemption.isChecked
             ) {
-                "    ERROR!!\n" +
-                        "An exemption is indicated but no amount was entered!"
-            } else if (etUpperLimit.text.isNullOrBlank() &&
+                return getString(R.string.an_exemption_is_indicated_but_no_amount_was_entered)
+            }
+            if ((etUpperLimit.text.isNullOrBlank() ||
+                        nf.getDoubleFromDollarOrPercentString(etUpperLimit.text.toString()) == 0.0) &&
                 chkUpperLimit.isChecked
             ) {
-                "    ERROR!!\n" +
-                        "An upper limit is indicated but no amount was entered!"
-            } else {
-                ANSWER_OK
+                return getString(R.string.an_upper_limit_is_indicated_but_no_amount_was_entered)
             }
-            return errorMessage
+            return ANSWER_OK
         }
     }
 
@@ -172,16 +168,21 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
         }
     }
 
-    private fun updateTaxRule() {
+    private fun updateTaxRuleAndGotoCallingFragment() {
         mainActivity.workTaxViewModel.updateTaxRule(
             getCurrentTaxRule()
         )
+        gotoTaxRulesFragment()
     }
 
     private fun deleteTaxRule() {
+        displayError(getString(R.string.this_cannot_be_deleted))
+    }
+
+    private fun displayError(message: String) {
         Toast.makeText(
             mView.context,
-            "This cannot be deleted!",
+            getString(R.string.error_) + message,
             Toast.LENGTH_LONG
         ).show()
     }

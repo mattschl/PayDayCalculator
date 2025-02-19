@@ -208,6 +208,8 @@ class TaxRulesFragment :
     }
 
     private fun setClickActions() {
+        selectTaxType()
+        selectEffectiveDate()
         binding.apply {
             fabNew.setOnClickListener {
                 gotoTaxRuleAdd()
@@ -216,8 +218,6 @@ class TaxRulesFragment :
                 gotoTaxTypeUpdate()
             }
         }
-        selectTaxType()
-        selectEffectiveDate()
     }
 
     private fun chooseNewEffectiveDate() {
