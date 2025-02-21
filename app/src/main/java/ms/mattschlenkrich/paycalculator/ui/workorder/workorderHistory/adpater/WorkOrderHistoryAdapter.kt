@@ -3,7 +3,6 @@ package ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
@@ -11,12 +10,13 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkOrderHistoryDetailItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.WorkOrderUpdateFragmentDirections
+import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.WorkOrderUpdateFragment
 
 class WorkOrderHistoryAdapter(
     val mainActivity: MainActivity,
     val mView: View,
-    private val workOrderHistory: List<WorkOrderHistoryWithDates>
+    private val workOrderHistory: List<WorkOrderHistoryWithDates>,
+    private val parentFragment: WorkOrderUpdateFragment,
 ) : RecyclerView.Adapter<WorkOrderHistoryAdapter.ViewHolder>() {
 
     private val df = DateFunctions()
@@ -87,14 +87,7 @@ class WorkOrderHistoryAdapter(
         mainActivity.mainViewModel.setWorkDateObject(
             history.workDate
         )
-        gotoWorkOrderHistoryFragment()
-    }
-
-    private fun gotoWorkOrderHistoryFragment() {
-        mView.findNavController().navigate(
-            WorkOrderUpdateFragmentDirections
-                .actionWorkOrderUpdateFragmentToWorkOrderHistoryUpdateFragment()
-        )
+        parentFragment.gotoWorkOrderHistoryFragment()
     }
 
     override fun getItemCount(): Int {

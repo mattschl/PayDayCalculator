@@ -259,10 +259,19 @@ class PayCalculationsAsync(
                         ) {
                             0.0
                         } else {
-                            extraAndDef.definition.weValue * totalBeforePercentageAdjustment
+                            extraAndDef.definition.weValue * totalBeforePercentageAdjustment / 100
                         }
                     if (extraAndDef.extraType.wetIsCredit) {
                         creditExtraContainers.add(
+                            ExtraContainer(
+                                extraAndDef.extraType.wetName,
+                                subTotal,
+                                extraAndDef,
+                                null,
+                                null
+                            )
+                        )
+                        creditExtraContainersByPercentage.add(
                             ExtraContainer(
                                 extraAndDef.extraType.wetName,
                                 subTotal,

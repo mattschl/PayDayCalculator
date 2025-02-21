@@ -48,7 +48,6 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-
     private lateinit var workOrderList: List<WorkOrder>
     private lateinit var curEmployer: Employers
     private lateinit var curWorkOrder: WorkOrder
@@ -181,7 +180,12 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order) {
             calculateHistoryTotals(list)
             val histories = list.sortedBy { it.workDate.wdDate }
             val workOrderHistoryAdapter =
-                WorkOrderHistoryAdapter(mainActivity, mView, histories)
+                WorkOrderHistoryAdapter(
+                    mainActivity,
+                    mView,
+                    histories,
+                    this@WorkOrderUpdateFragment
+                )
             binding.rvHistory.apply {
                 layoutManager = LinearLayoutManager(mView.context)
                 adapter = workOrderHistoryAdapter
@@ -621,6 +625,13 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order) {
         mView.findNavController().navigate(
             WorkOrderUpdateFragmentDirections
                 .actionWorkOrderUpdateFragmentToAreaUpdateFragment()
+        )
+    }
+
+    fun gotoWorkOrderHistoryFragment() {
+        mView.findNavController().navigate(
+            WorkOrderUpdateFragmentDirections
+                .actionWorkOrderUpdateFragmentToWorkOrderHistoryUpdateFragment()
         )
     }
 

@@ -471,7 +471,8 @@
     <!--    action_global_payDetailFragment-->
     <action
         android:id="@+id/action_global_payDetailFragment"
-        app:destination="@id/payDetailFragment" />
+        app:destination="@id/payDetailFragment"
+        app:popUpTo="@id/payDetailFragment" />
 
     <!--    payDetailFragment-->
     <fragment
@@ -819,7 +820,8 @@
     </fragment>
     <action
         android:id="@+id/action_global_payDetailFragmentNew"
-        app:destination="@id/payDetailFragmentNew" />
+        app:destination="@id/payDetailFragmentNew"
+        app:popUpTo="@id/payDetailFragmentNew" />
     <fragment
         android:id="@+id/areaViewFragment"
         android:name="ms.mattschlenkrich.paycalculator.ui.workorder.area.AreaViewFragment"

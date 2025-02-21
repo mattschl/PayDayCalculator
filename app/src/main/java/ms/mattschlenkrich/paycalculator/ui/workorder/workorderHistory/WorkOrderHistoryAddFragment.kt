@@ -109,8 +109,7 @@ class WorkOrderHistoryAddFragment :
 
     private fun populateTempWorkOrderInfo() {
         if (mainActivity.mainViewModel.getTempWorkOrderHistoryInfo() != null) {
-            val tempWorkOrderHistory =
-                mainActivity.mainViewModel.getTempWorkOrderHistoryInfo()!!
+            val tempWorkOrderHistory = mainActivity.mainViewModel.getTempWorkOrderHistoryInfo()!!
             binding.apply {
                 if (mainActivity.mainViewModel.getWorkOrderNumber() != null) {
                     acWorkOrder.setText(
@@ -200,7 +199,7 @@ class WorkOrderHistoryAddFragment :
                 validateWorkOrderNumberAndSaveHistoryIfValid()
             }
             btnWorkOrder.setOnClickListener {
-                if (btnWorkOrder.text.toString() == getString(R.string.update)) {
+                if (btnWorkOrder.text.toString() == getString(R.string.edit)) {
                     gotoWorkOrderUpdate()
                 } else {
                     gotoWorkOrderAdd()

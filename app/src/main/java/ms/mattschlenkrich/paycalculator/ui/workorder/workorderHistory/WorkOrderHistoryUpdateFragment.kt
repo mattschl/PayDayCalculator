@@ -53,15 +53,14 @@ class WorkOrderHistoryUpdateFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private val workOrderList = ArrayList<WorkOrder>()
-    private val workOrderListForAutocomplete = ArrayList<String>()
+    private lateinit var workOrderList: List<WorkOrder>
     private var workDateObject: WorkDates? = null
     private lateinit var curEmployer: Employers
     private lateinit var curHistoryDetailed: WorkOrderHistoryWithDates
     private var curWorkOrder: WorkOrder? = null
-    private var workPerformedListForAutoComplete = ArrayList<WorkPerformed>()
-    private var materialListForAutoComplete = ArrayList<Material>()
-    private var areaListForAutoComplete = ArrayList<Areas>()
+    private lateinit var workPerformedListForAutoComplete: List<WorkPerformed>
+    private lateinit var materialListForAutoComplete: List<Material>
+    private lateinit var areaListForAutoComplete: List<Areas>
     private var curWorkPerformed: WorkPerformed? = null
     private var curArea: Areas? = null
     private var workPerformedSequence = 0
@@ -146,10 +145,9 @@ class WorkOrderHistoryUpdateFragment :
     private fun populateMaterialListForAutoComplete() {
         mainActivity.workOrderViewModel.getMaterialsList()
             .observe(viewLifecycleOwner) { list ->
-                materialListForAutoComplete.clear()
+                materialListForAutoComplete = list
                 val materialListNames = ArrayList<String>()
                 list.listIterator().forEach {
-                    materialListForAutoComplete.add(it)
                     materialListNames.add(it.mName)
                 }
                 val mAdapter = ArrayAdapter(
@@ -164,10 +162,9 @@ class WorkOrderHistoryUpdateFragment :
     private fun populateAreaListForAutoComplete() {
         mainActivity.workOrderViewModel.getAreasList()
             .observe(viewLifecycleOwner) { list ->
-                areaListForAutoComplete.clear()
+                areaListForAutoComplete = list
                 val areaNameList = ArrayList<String>()
                 list.listIterator().forEach {
-                    areaListForAutoComplete.add(it)
                     areaNameList.add(it.areaName)
                 }
                 val mAdapter = ArrayAdapter(
@@ -273,10 +270,9 @@ class WorkOrderHistoryUpdateFragment :
         mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
             workDateObject!!.wdEmployerId
         ).observe(viewLifecycleOwner) { list ->
-            workOrderList.clear()
-            workOrderListForAutocomplete.clear()
+            workOrderList = list
+            val workOrderListForAutocomplete = ArrayList<String>()
             list.listIterator().forEach {
-                workOrderList.add(it)
                 workOrderListForAutocomplete.add(it.woNumber)
             }
             binding.apply {
@@ -292,10 +288,9 @@ class WorkOrderHistoryUpdateFragment :
     private fun populateWorkPerformedListForAutoComplete() {
         mainActivity.workOrderViewModel.getWorkPerformedAll()
             .observe(viewLifecycleOwner) { list ->
-                workPerformedListForAutoComplete.clear()
+                workPerformedListForAutoComplete = list
                 val workPerformedDescriptions = ArrayList<String>()
                 list.listIterator().forEach {
-                    workPerformedListForAutoComplete.add(it)
                     workPerformedDescriptions.add(it.wpDescription)
                 }
                 val wpAdapter = ArrayAdapter(
@@ -418,9 +413,13 @@ class WorkOrderHistoryUpdateFragment :
         binding.apply {
             fabDone.setOnClickListener { validateWorkOrderNumberAndPrepareToUpdate() }
             btnWorkOrder.setOnClickListener {
-                setOnWorkOrderSelected(acWorkOrder.text.toString())
-                mainActivity.mainViewModel.setCallingFragment(TAG)
-                gotoWorkOrderUpdateFragment()
+                if (btnWorkOrder.text.toString() == getString(R.string.edit)) {
+                    setOnWorkOrderSelected(acWorkOrder.text.toString())
+                    mainActivity.mainViewModel.setCallingFragment(TAG)
+                    gotoWorkOrderUpdateFragment()
+                } else {
+                    gotoWorkOrderAdd()
+                }
             }
             acWorkOrder.setOnItemClickListener { _, _, _, _ -> setCurWorkOrder() }
             acWorkOrder.setOnLongClickListener {
@@ -513,20 +512,31 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun updateHistory() {
-        mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
-        val history = getCurHistory()
-        mainActivity.workOrderViewModel.updateWorkOrderHistory(
-            history.woHistoryId,
-            curWorkOrder!!.workOrderId,
-            history.woHistoryWorkDateId,
-            history.woHistoryRegHours,
-            history.woHistoryOtHours,
-            history.woHistoryDblOtHours,
-            history.woHistoryNote,
-            false,
-            history.woHistoryUpdateTime
-        )
-        gotoCallingFragment()
+        try {
+            mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
+            val history = getCurHistory()
+            mainActivity.workOrderViewModel.updateWorkOrderHistory(
+                history.woHistoryId,
+                curWorkOrder!!.workOrderId,
+                history.woHistoryWorkDateId,
+                history.woHistoryRegHours,
+                history.woHistoryOtHours,
+                history.woHistoryDblOtHours,
+                history.woHistoryNote,
+                false,
+                history.woHistoryUpdateTime
+            )
+            gotoCallingFragment()
+        } catch (e: Exception) {
+            AlertDialog.Builder(mView.context)
+                .setTitle(getString(R.string.something_went_wrong))
+                .setMessage(
+                    getString(R.string.an_unknown_error_occurred_error_was) +
+                            e.toString()
+                )
+                .setNeutralButton(getString(R.string.ok), null)
+                .show()
+        }
     }
 
     private fun setOnWorkOrderSelected(woNumber: String) {
@@ -591,21 +601,29 @@ class WorkOrderHistoryUpdateFragment :
     private fun addMaterialToHistory(material: Material) {
         binding.apply {
             materialSequence++
-            mainActivity.workOrderViewModel.insertWorkOrderHistoryMaterial(
-                WorkOrderHistoryMaterial(
-                    nf.generateRandomIdAsLong(),
-                    curHistoryDetailed.history.woHistoryId,
-                    material.materialId,
-                    if (etMaterialQty.text.isNullOrBlank()) 1.0 else
-                        etMaterialQty.text.toString().trim().toDouble(),
-                    materialSequence,
-                    false,
-                    df.getCurrentTimeAsString()
+            try {
+                mainActivity.workOrderViewModel.insertWorkOrderHistoryMaterial(
+                    WorkOrderHistoryMaterial(
+                        nf.generateRandomIdAsLong(),
+                        curHistoryDetailed.history.woHistoryId,
+                        material.materialId,
+                        if (etMaterialQty.text.isNullOrBlank()) 1.0 else
+                            etMaterialQty.text.toString().trim().toDouble(),
+                        materialSequence,
+                        false,
+                        df.getCurrentTimeAsString()
+                    )
                 )
-            )
-            curMaterial = null
-            acMaterials.text.clear()
-            etMaterialQty.text.clear()
+                curMaterial = null
+                acMaterials.text.clear()
+                etMaterialQty.text.clear()
+            } catch (e: Exception) {
+                AlertDialog.Builder(mView.context)
+                    .setTitle(getString(R.string.something_went_wrong))
+                    .setMessage(getString(R.string.check_to_see_if_this_material_has_already_been_added_))
+                    .setNeutralButton(getString(R.string.ok), null)
+                    .show()
+            }
         }
     }
 
@@ -613,7 +631,7 @@ class WorkOrderHistoryUpdateFragment :
         val material =
             Material(
                 nf.generateRandomIdAsLong(),
-                binding.acMaterials.text.toString(),
+                binding.acMaterials.text.toString().trim(),
                 0.0,
                 0.0,
                 false,
@@ -671,18 +689,26 @@ class WorkOrderHistoryUpdateFragment :
             } else {
                 null
             }
-            mainActivity.workOrderViewModel.insertWorkOrderHistoryWorkPerformed(
-                WorkOrderHistoryWorkPerformed(
-                    nf.generateRandomIdAsLong(),
-                    curHistoryDetailed.history.woHistoryId,
-                    workPerformed.workPerformedId,
-                    area?.areaId,
-                    note,
-                    workPerformedSequence,
-                    false,
-                    df.getCurrentTimeAsString()
+            try {
+                mainActivity.workOrderViewModel.insertWorkOrderHistoryWorkPerformed(
+                    WorkOrderHistoryWorkPerformed(
+                        nf.generateRandomIdAsLong(),
+                        curHistoryDetailed.history.woHistoryId,
+                        workPerformed.workPerformedId,
+                        area?.areaId,
+                        note,
+                        workPerformedSequence,
+                        false,
+                        df.getCurrentTimeAsString()
+                    )
                 )
-            )
+            } catch (e: Exception) {
+                AlertDialog.Builder(mView.context)
+                    .setTitle(getString(R.string.something_went_wrong))
+                    .setMessage(getString(R.string.check_to_see_if_this_work_was_already_entered_))
+                    .setNeutralButton(getString(R.string.ok), null)
+                    .show()
+            }
             curWorkPerformed = null
             resetWorkPerformedValues()
         }
@@ -758,7 +784,7 @@ class WorkOrderHistoryUpdateFragment :
             mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(
                 TempWorkOrderHistoryInfo(
                     if (acWorkOrder.text.isNullOrBlank())
-                        "0" else acWorkOrder.text.toString(),
+                        "0" else acWorkOrder.text.toString().trim(),
                     lblDate.text.toString(),
                     if (etRegHours.text.isNullOrBlank())
                         0.0 else etRegHours.text.toString().toDouble(),
@@ -839,7 +865,6 @@ class WorkOrderHistoryUpdateFragment :
                     etDblOtHours.text.toString().toDouble().toString()
                 }
             )
-
         }
     }
 

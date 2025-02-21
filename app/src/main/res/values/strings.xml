@@ -426,5 +426,9 @@
     <string name="this_is_already_used_for_this_payday__overwrite">This is already used for this payday. If you add it, this will only the manually entered extra. This cannot be undone!!. Would you like to add it to overwrite anyway?</string>
     <string name="confirm_adding_duplicate_extra__">"Confirm adding duplicate Extra:  "</string>
     <string name="this_cannot_be_deleted">This cannot be deleted!</string>
+    <string name="something_went_wrong">Something went wrong!</string>
+    <string name="check_to_see_if_this_work_was_already_entered_">Check to see if this work was already entered for the area noted. If so please correct the error before going on.</string>
+    <string name="an_unknown_error_occurred_error_was">"An unknown error occurred. \n Error was: "</string>
+    <string name="check_to_see_if_this_material_has_already_been_added_">check to see if this material has already been added. Fix the error and try again.</string>
 
 </resources>
