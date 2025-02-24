@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory
 
 import android.app.AlertDialog
+import android.database.sqlite.SQLiteException
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -147,9 +148,7 @@ class WorkOrderHistoryUpdateFragment :
             .observe(viewLifecycleOwner) { list ->
                 materialListForAutoComplete = list
                 val materialListNames = ArrayList<String>()
-                list.listIterator().forEach {
-                    materialListNames.add(it.mName)
-                }
+                list.listIterator().forEach { materialListNames.add(it.mName) }
                 val mAdapter = ArrayAdapter(
                     mView.context,
                     R.layout.spinner_item_normal,
@@ -164,9 +163,7 @@ class WorkOrderHistoryUpdateFragment :
             .observe(viewLifecycleOwner) { list ->
                 areaListForAutoComplete = list
                 val areaNameList = ArrayList<String>()
-                list.listIterator().forEach {
-                    areaNameList.add(it.areaName)
-                }
+                list.listIterator().forEach { areaNameList.add(it.areaName) }
                 val mAdapter = ArrayAdapter(
                     mView.context,
                     R.layout.spinner_item_normal,
@@ -272,9 +269,7 @@ class WorkOrderHistoryUpdateFragment :
         ).observe(viewLifecycleOwner) { list ->
             workOrderList = list
             val workOrderListForAutocomplete = ArrayList<String>()
-            list.listIterator().forEach {
-                workOrderListForAutocomplete.add(it.woNumber)
-            }
+            list.listIterator().forEach { workOrderListForAutocomplete.add(it.woNumber) }
             binding.apply {
                 val woAdapter = ArrayAdapter(
                     mView.context, R.layout.spinner_item_normal,
@@ -290,9 +285,7 @@ class WorkOrderHistoryUpdateFragment :
             .observe(viewLifecycleOwner) { list ->
                 workPerformedListForAutoComplete = list
                 val workPerformedDescriptions = ArrayList<String>()
-                list.listIterator().forEach {
-                    workPerformedDescriptions.add(it.wpDescription)
-                }
+                list.listIterator().forEach { workPerformedDescriptions.add(it.wpDescription) }
                 val wpAdapter = ArrayAdapter(
                     mView.context,
                     R.layout.spinner_item_normal,
@@ -305,11 +298,7 @@ class WorkOrderHistoryUpdateFragment :
     private fun setCurWorkOrder() {
         binding.apply {
             if (acWorkOrder.text.isNullOrBlank()) {
-                Toast.makeText(
-                    mView.context,
-                    getString(R.string.please_enter_a_valid_work_order_before_adding_work_performed),
-                    Toast.LENGTH_LONG
-                ).show()
+                displayError(getString(R.string.please_enter_a_valid_work_order_before_adding_work_performed))
             }
             if (doesWorkOrderExist()) {
                 populateWorkOrderInfo()
@@ -344,14 +333,13 @@ class WorkOrderHistoryUpdateFragment :
     private fun populateWorkPerformedRecycler(
         workPerFormedActualList: List<WorkOrderHistoryWorkPerformedCombined>
     ) {
-        val workPerformedAdapter =
-            WorKOrderHistoryWorkPerformedAdapter(
-                mainActivity,
-                this@WorkOrderHistoryUpdateFragment,
-                TAG,
-                curHistoryDetailed.history,
-                mView,
-            )
+        val workPerformedAdapter = WorKOrderHistoryWorkPerformedAdapter(
+            mainActivity,
+            this@WorkOrderHistoryUpdateFragment,
+            TAG,
+            curHistoryDetailed.history,
+            mView,
+        )
         binding.rvWorkPerformed.apply {
             layoutManager = LinearLayoutManager(
                 mView.context
@@ -385,28 +373,24 @@ class WorkOrderHistoryUpdateFragment :
             }
             populateMaterialRecycler(materialActualList)
             determineMaterialSequence(list)
-
         }
     }
 
     private fun populateMaterialRecycler(
         materialActualList: ArrayList<MaterialInSequence>
     ) {
-        val materialAdapter =
-            WorkOrderHistoryMaterialAdapter(
-                mainActivity,
-                mView,
-                this@WorkOrderHistoryUpdateFragment
-            )
+        val materialAdapter = WorkOrderHistoryMaterialAdapter(
+            mainActivity,
+            mView,
+            this@WorkOrderHistoryUpdateFragment
+        )
         binding.rvMaterials.apply {
             layoutManager = LinearLayoutManager(
                 mView.context
             )
             adapter = materialAdapter
         }
-        materialAdapter.differ.submitList(
-            materialActualList
-        )
+        materialAdapter.differ.submitList(materialActualList)
     }
 
     private fun setClickActions() {
@@ -504,10 +488,7 @@ class WorkOrderHistoryUpdateFragment :
             saveMaterialIfValidAndAddToWorkOrder(false)
             updateHistory()
         } else {
-            Toast.makeText(
-                mView.context,
-                answer, Toast.LENGTH_LONG
-            ).show()
+            displayError(answer)
         }
     }
 
@@ -527,7 +508,7 @@ class WorkOrderHistoryUpdateFragment :
                 history.woHistoryUpdateTime
             )
             gotoCallingFragment()
-        } catch (e: Exception) {
+        } catch (e: SQLiteException) {
             AlertDialog.Builder(mView.context)
                 .setTitle(getString(R.string.something_went_wrong))
                 .setMessage(
@@ -581,11 +562,7 @@ class WorkOrderHistoryUpdateFragment :
         if (binding.acMaterials.text.isNullOrBlank()
         ) {
             if (displayError) {
-                Toast.makeText(
-                    mView.context,
-                    getString(R.string.please_enter_a_valid_material_description_to_add_it),
-                    Toast.LENGTH_LONG
-                ).show()
+                displayError(getString(R.string.please_enter_a_valid_material_description_to_add_it))
             }
         } else if (setCurMaterial()) {
             addMaterialToHistory(curMaterial!!)
@@ -617,10 +594,13 @@ class WorkOrderHistoryUpdateFragment :
                 curMaterial = null
                 acMaterials.text.clear()
                 etMaterialQty.text.clear()
-            } catch (e: Exception) {
+            } catch (e: SQLiteException) {
                 AlertDialog.Builder(mView.context)
                     .setTitle(getString(R.string.something_went_wrong))
-                    .setMessage(getString(R.string.check_to_see_if_this_material_has_already_been_added_))
+                    .setMessage(
+                        getString(R.string.check_to_see_if_this_material_has_already_been_added_) +
+                                " " + e.toString()
+                    )
                     .setNeutralButton(getString(R.string.ok), null)
                     .show()
             }
@@ -643,14 +623,14 @@ class WorkOrderHistoryUpdateFragment :
         return material
     }
 
-    private fun saveWorkPerformedIfValidAndAddToWorkOrder(displayError: Boolean) {
+    private fun saveWorkPerformedIfValidAndAddToWorkOrder(showError: Boolean) {
         CoroutineScope(Dispatchers.Default).launch {
             if (binding.acWorkPerformed.text.isNullOrBlank()
             ) {
-                if (displayError) {
+                if (showError) {
                     val answer = validateWorkPerformed()
                     if (answer != ANSWER_OK) {
-                        Toast.makeText(mView.context, answer, Toast.LENGTH_LONG).show()
+                        displayError(answer)
                     }
                 }
             } else if (setCurWorkPerformed()) {
@@ -658,11 +638,20 @@ class WorkOrderHistoryUpdateFragment :
             } else if (!binding.acWorkPerformed.text.isNullOrBlank()) {
                 CoroutineScope(Dispatchers.Main).launch {
                     val workPerformed = insertNewWorkPerformedIntoDatabase()
-                    delay(WAIT_250)
-                    addWorkPerformedToHistory(workPerformed)
+                    if (workPerformed != null) {
+                        delay(WAIT_250)
+                        addWorkPerformedToHistory(workPerformed)
+                    }
                 }
             }
         }
+    }
+
+    private fun displayError(answer: String) {
+        Toast.makeText(
+            mView.context,
+            answer, Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateWorkPerformed(): String {
@@ -702,27 +691,29 @@ class WorkOrderHistoryUpdateFragment :
                         df.getCurrentTimeAsString()
                     )
                 )
-            } catch (e: Exception) {
+            } catch (e: SQLiteException) {
                 AlertDialog.Builder(mView.context)
                     .setTitle(getString(R.string.something_went_wrong))
-                    .setMessage(getString(R.string.check_to_see_if_this_work_was_already_entered_))
+                    .setMessage(
+                        getString(R.string.check_to_see_if_this_work_was_already_entered_) +
+                                " " + e.toString()
+                    )
                     .setNeutralButton(getString(R.string.ok), null)
                     .show()
             }
-            curWorkPerformed = null
             resetWorkPerformedValues()
         }
     }
 
-    private suspend fun resetWorkPerformedValues() {
+    private suspend fun resetWorkPerformedValues() =
         withContext(Dispatchers.Main) {
+            curWorkPerformed = null
             binding.apply {
                 acWorkPerformed.text.clear()
                 acArea.text.clear()
                 etWorkPerformedNote.text.clear()
             }
         }
-    }
 
     private fun insertAreaIntoDatabase(areaName: String): Areas {
         val newArea = Areas(
@@ -735,16 +726,20 @@ class WorkOrderHistoryUpdateFragment :
         return newArea
     }
 
-    private fun insertNewWorkPerformedIntoDatabase(): WorkPerformed {
-        val workPerformed =
-            WorkPerformed(
-                nf.generateRandomIdAsLong(),
-                binding.acWorkPerformed.text.toString(),
-                false,
-                df.getCurrentTimeAsString()
-            )
-        mainActivity.workOrderViewModel.insertWorkPerformed(workPerformed)
-        return workPerformed
+    private fun insertNewWorkPerformedIntoDatabase(): WorkPerformed? {
+        try {
+            val workPerformed =
+                WorkPerformed(
+                    nf.generateRandomIdAsLong(),
+                    binding.acWorkPerformed.text.toString(),
+                    false,
+                    df.getCurrentTimeAsString()
+                )
+            mainActivity.workOrderViewModel.insertWorkPerformed(workPerformed)
+            return workPerformed
+        } catch (e: SQLiteException) {
+            return null
+        }
     }
 
     private fun setCurWorkPerformed(): Boolean {

@@ -57,7 +57,7 @@ class WorkPerformedViewFragment :
 
     private fun setBaseView() {
         binding.apply {
-            tvNoInfo.text = getString(R.string.no_job_specs_to_view)
+            tvNoInfo.text = getString(R.string.no_work_descriptions_to_view)
             fabNew.visibility = View.GONE
         }
     }

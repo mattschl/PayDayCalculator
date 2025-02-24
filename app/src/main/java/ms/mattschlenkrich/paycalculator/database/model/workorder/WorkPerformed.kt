@@ -2,11 +2,15 @@ package ms.mattschlenkrich.paycalculator.database.model.workorder
 
 import android.os.Parcelable
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Entity(
-    tableName = "workPerformed"
+    tableName = "workPerformed",
+    indices = [Index(
+        value = ["wpDescription"], unique = true
+    )]
 )
 @Parcelize
 data class WorkPerformed(

@@ -101,6 +101,9 @@ class WorkDateAdapter(
                 display += nf.getNumberFromDouble(workDate.wdStatHours) +
                         mView.context.getString(R.string.stat_vacation_hrs)
             }
+            if (display.isBlank()) {
+                display += mView.context.getString(R.string.no_time_entered)
+            }
             tvHours.text = display
 //            val extrasAdapter = TimeSheetWorkDateExtraAdapter(mView)
             CoroutineScope(Dispatchers.Main).launch {

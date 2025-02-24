@@ -1,5 +1,7 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder.workPerforrmed
 
+import android.app.AlertDialog
+import android.database.sqlite.SQLiteException
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -94,18 +96,22 @@ class WorkPerformedUpdateFragment :
         if (answer == ANSWER_OK) {
             updateWorkPerformed()
         } else {
-            Toast.makeText(
-                mView.context,
-                answer, Toast.LENGTH_LONG
-            ).show()
+            displayError(answer)
         }
+    }
+
+    private fun displayError(answer: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) + answer,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateWorkPerformed(): String {
         binding.apply {
             if (etItem.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.please_enter_a_valid_work_performed_description)
+                return getString(R.string.please_enter_a_valid_work_performed_description)
             }
             for (workPerformed in workPerformedList) {
                 if (workPerformed.wpDescription ==
@@ -113,8 +119,7 @@ class WorkPerformedUpdateFragment :
                     etItem.text.toString().trim() !=
                     oldWorkPerformed.wpDescription
                 ) {
-                    return getString(R.string.error_) +
-                            getString(R.string.this_work_performed_description_already_exists)
+                    return getString(R.string.this_work_performed_description_already_exists)
                 }
             }
         }
@@ -122,15 +127,26 @@ class WorkPerformedUpdateFragment :
     }
 
     private fun updateWorkPerformed() {
-        mainActivity.workOrderViewModel.updateWorkPerformed(
-            WorkPerformed(
-                oldWorkPerformed.workPerformedId,
-                binding.etItem.text.toString().trim(),
-                false,
-                df.getCurrentTimeAsString()
+        try {
+            mainActivity.workOrderViewModel.updateWorkPerformed(
+                WorkPerformed(
+                    oldWorkPerformed.workPerformedId,
+                    binding.etItem.text.toString().trim(),
+                    false,
+                    df.getCurrentTimeAsString()
+                )
             )
-        )
-        gotoCallingFragment()
+            gotoCallingFragment()
+        } catch (e: SQLiteException) {
+            AlertDialog.Builder(mView.context)
+                .setTitle(getString(R.string.something_went_wrong))
+                .setMessage(
+                    getString(R.string.check_to_see_if_this_work_was_already_entered_) +
+                            " " + e.toString()
+                )
+                .setNeutralButton(getString(R.string.ok), null)
+                .show()
+        }
     }
 
     private fun gotoCallingFragment() {
