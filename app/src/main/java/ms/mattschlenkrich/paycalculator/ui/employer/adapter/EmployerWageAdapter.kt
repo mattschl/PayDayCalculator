@@ -15,7 +15,7 @@ import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.databinding.ListWagesItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.employer.EmployerPayRatesFragment
+import ms.mattschlenkrich.paycalculator.ui.employer.payrate.EmployerPayRatesFragment
 
 class EmployerWageAdapter(
     private val mainActivity: MainActivity,

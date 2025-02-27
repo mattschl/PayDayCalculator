@@ -107,7 +107,7 @@
     <!--    taxTypeAddFragment-->
     <fragment
         android:id="@+id/taxTypeAddFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.tax.TaxTypeAddFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.tax.types.TaxTypeAddFragment"
         android:label="fragment_tax_type_add"
         tools:layout="@layout/fragment_tax_type_add">
         <action
@@ -127,7 +127,7 @@
     <!--    taxTypeUpdateFragment-->
     <fragment
         android:id="@+id/taxTypeUpdateFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.tax.TaxTypeUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.tax.types.TaxTypeUpdateFragment"
         android:label="fragment_tax_type_update"
         tools:layout="@layout/fragment_tax_type_update">
         <action
@@ -176,7 +176,7 @@
     <!--    taxRuleAddFragment-->
     <fragment
         android:id="@+id/taxRuleAddFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.tax.TaxRuleAddFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.tax.rules.TaxRuleAddFragment"
         android:label="TaxRuleAddFragment"
         tools:layout="@layout/fragment_tax_rule_add">
         <action
@@ -188,7 +188,7 @@
     <!--    taxRuleUpdateFragment-->
     <fragment
         android:id="@+id/taxRuleUpdateFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.tax.TaxRuleUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.tax.rules.TaxRuleUpdateFragment"
         android:label="TaxRuleUpdateFragment"
         tools:layout="@layout/fragment_tax_rule_update">
         <action
@@ -399,7 +399,7 @@
     <!--    employerPayRatesFragment-->
     <fragment
         android:id="@+id/employerPayRatesFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.employer.EmployerPayRatesFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.employer.payrate.EmployerPayRatesFragment"
         android:label="fragment_employer_pay_rates"
         tools:layout="@layout/fragment_employer_pay_rates">
         <action
@@ -421,7 +421,7 @@
     <!--    employerPayRateAddFragment-->
     <fragment
         android:id="@+id/employerPayRateAddFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.employer.EmployerPayRateAddFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.employer.payrate.EmployerPayRateAddFragment"
         android:label="fragment_employer_wage_update"
         tools:layout="@layout/fragment_employer_wage_update">
         <action
@@ -433,7 +433,7 @@
     <!--    employerWageUpdateFragment-->
     <fragment
         android:id="@+id/employerWageUpdateFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.employer.EmployerPayRateUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.employer.payrate.EmployerPayRateUpdateFragment"
         android:label="EmployerWageUpdateFragment"
         tools:layout="@layout/fragment_employer_wage_update">
         <action

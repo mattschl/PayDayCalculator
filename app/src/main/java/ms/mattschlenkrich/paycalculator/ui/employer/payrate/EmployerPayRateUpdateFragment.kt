@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.employer
+package ms.mattschlenkrich.paycalculator.ui.employer.payrate
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -20,18 +20,18 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_PAY_RATES
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerPayRates
-import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
-import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerPayRateAddBinding
+import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerWageUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import java.time.LocalDate
 
-class EmployerPayRateAddFragment :
-    Fragment(R.layout.fragment_employer_pay_rate_add) {
+//private const val TAG = FRAG_PAY_RATE_UPDATE
 
-    private var _binding: FragmentEmployerPayRateAddBinding? = null
+class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_update) {
+
+    private var _binding: FragmentEmployerWageUpdateBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var curPayRate: EmployerPayRates
     private val df = DateFunctions()
     private val cf = NumberFunctions()
 
@@ -39,13 +39,14 @@ class EmployerPayRateAddFragment :
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentEmployerPayRateAddBinding.inflate(
+        _binding = FragmentEmployerWageUpdateBinding.inflate(
             inflater, container, false
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
         val display =
-            getString(R.string.add_a_pay_rate)
+            getString(R.string.edit_pay_rate_for) +
+                    mainActivity.mainViewModel.getEmployer()!!.employerName
         mainActivity.title = display
         return mView
     }
@@ -57,11 +58,13 @@ class EmployerPayRateAddFragment :
     }
 
     private fun populateValues() {
-        binding.apply {
-            tvEffectiveDate.text = LocalDate.now().toString()
-            changeEffectiveDate()
-        }
         populateSpinner()
+        binding.apply {
+            curPayRate = mainActivity.mainViewModel.getPayRate()!!
+            tvEffectiveDate.text = curPayRate.eprEffectiveDate
+            etWage.setText(cf.displayDollars(curPayRate.eprPayRate))
+            spPerFrequency.setSelection(curPayRate.eprPerPeriod)
+        }
     }
 
     private fun populateSpinner() {
@@ -74,15 +77,101 @@ class EmployerPayRateAddFragment :
     }
 
     private fun setClickActions() {
+        setMenuActions()
         binding.apply {
+            fabDone.setOnClickListener {
+                updatePayRateIfValid()
+            }
+
             tvEffectiveDate.setOnClickListener {
-                changeEffectiveDate()
+                changeDate()
             }
         }
-        setMenuActions()
     }
 
-    private fun changeEffectiveDate() {
+    private fun setMenuActions() {
+        mainActivity.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_delete, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.menu_delete -> {
+                        deletePayRate()
+                        true
+                    }
+
+                    else -> {
+                        false
+                    }
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
+    }
+
+    private fun updatePayRateIfValid() {
+        binding.apply {
+            val message = validatePayRate()
+            if (message == ANSWER_OK) {
+                updatePayRate()
+                gotoCallingFragment()
+            } else {
+                displayError(message)
+            }
+        }
+    }
+
+    private fun displayError(message: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) + message,
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    private fun validatePayRate(): String {
+        binding.apply {
+            return if (etWage.text.isNullOrBlank()) {
+                getString(R.string.there_has_to_be_a_wage_to_save)
+            } else {
+                ANSWER_OK
+            }
+        }
+    }
+
+    private fun updatePayRate() {
+        binding.apply {
+            mainActivity.employerViewModel.updatePayRate(
+                EmployerPayRates(
+                    curPayRate.employerPayRateId,
+                    curPayRate.eprEmployerId,
+                    tvEffectiveDate.text.toString(),
+                    spPerFrequency.selectedItemPosition,
+                    cf.getDoubleFromDollars(etWage.text.toString()),
+                    false,
+                    df.getCurrentTimeAsString()
+                )
+            )
+        }
+    }
+
+    private fun deletePayRate() {
+        mainActivity.employerViewModel.updatePayRate(
+            EmployerPayRates(
+                curPayRate.employerPayRateId,
+                curPayRate.eprEmployerId,
+                curPayRate.eprEffectiveDate,
+                curPayRate.eprPerPeriod,
+                curPayRate.eprPayRate,
+                true,
+                df.getCurrentTimeAsString()
+            )
+        )
+        gotoCallingFragment()
+    }
+
+    private fun changeDate() {
         binding.apply {
             val curDateAll = tvEffectiveDate.text.toString().split("-")
             val datePickerDialog = DatePickerDialog(
@@ -108,73 +197,6 @@ class EmployerPayRateAddFragment :
         }
     }
 
-    private fun setMenuActions() {
-        mainActivity.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.save_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        savePayRate()
-                        true
-                    }
-
-                    else -> {
-                        false
-                    }
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.CREATED)
-    }
-
-    private fun savePayRate() {
-        val curEmployer = mainActivity.mainViewModel.getEmployer()!!
-        val message = validatePayRate()
-        if (message == ANSWER_OK) {
-            val curWage = getCurrentPayRates(curEmployer)
-            mainActivity.employerViewModel.insertPayRate(curWage)
-            gotoCallingFragment()
-        } else {
-            displayError(message)
-        }
-    }
-
-    private fun displayError(message: String) {
-        Toast.makeText(
-            mView.context,
-            getString(R.string.error_) + message,
-            Toast.LENGTH_LONG
-        ).show()
-    }
-
-    private fun validatePayRate(): String {
-        binding.apply {
-            return if (etWage.text.isNullOrBlank()) {
-                getString(R.string.there_has_to_be_a_wage_to_save)
-            } else {
-                ANSWER_OK
-            }
-        }
-    }
-
-    private fun getCurrentPayRates(
-        curEmployer: Employers
-    ): EmployerPayRates {
-        binding.apply {
-            return EmployerPayRates(
-                cf.generateRandomIdAsLong(),
-                curEmployer.employerId,
-                tvEffectiveDate.text.toString(),
-                spPerFrequency.selectedItemPosition,
-                cf.getDoubleFromDollars(etWage.text.toString()),
-                false,
-                df.getCurrentTimeAsString()
-            )
-        }
-    }
-
     private fun gotoCallingFragment() {
         if (mainActivity.mainViewModel.getCallingFragment()!!.contains(FRAG_PAY_RATES)) {
             gotoPayRateFragment()
@@ -183,8 +205,8 @@ class EmployerPayRateAddFragment :
 
     private fun gotoPayRateFragment() {
         mView.findNavController().navigate(
-            EmployerPayRateAddFragmentDirections
-                .actionEmployerPayRateAddFragmentToEmployerPayRatesFragment()
+            EmployerPayRateUpdateFragmentDirections
+                .actionEmployerWageUpdateFragmentToEmployerPayRatesFragment()
         )
     }
 

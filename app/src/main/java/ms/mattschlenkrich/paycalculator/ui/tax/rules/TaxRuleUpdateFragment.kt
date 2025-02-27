@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.tax
+package ms.mattschlenkrich.paycalculator.ui.tax.rules
 
 import android.os.Bundle
 import android.view.LayoutInflater
