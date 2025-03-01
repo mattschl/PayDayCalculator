@@ -8,12 +8,12 @@
 
         <CheckBox
             android:id="@+id/chActive"
-            android:layout_width="@dimen/minimum_touch_height"
+            android:layout_width="@dimen/dimen_25dp"
             android:layout_height="@dimen/minimum_touch_height" />
 
         <TextView
             android:id="@+id/tvExtraDescription"
-            android:layout_width="130dp"
+            android:layout_width="125dp"
             android:layout_height="wrap_content"
             android:text="@string/extra_type"
             android:textColor="@color/black"

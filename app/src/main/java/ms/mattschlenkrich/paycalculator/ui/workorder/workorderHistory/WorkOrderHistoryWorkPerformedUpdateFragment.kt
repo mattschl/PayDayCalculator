@@ -40,6 +40,8 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
     private lateinit var originalWorkPerformedHistory: WorkOrderHistoryWorkPerformedCombined
     private lateinit var workPerformedListForAutoComplete: List<WorkPerformed>
     private lateinit var areaListForAutoComplete: List<Areas>
+    private lateinit var historyWorkPerformedCombinedList:
+            List<WorkOrderHistoryWorkPerformedCombined>
     private var curArea: Areas? = null
     private var curWorkPerformed: WorkPerformed? = null
     private val nf = NumberFunctions()
@@ -70,10 +72,20 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
             populateHistoryObject()
             populateWorkPerformedListForAutoComplete()
             populateAreaListForAutoComplete()
+            populateHistoryWorkPerformedList()
             delay(WAIT_250)
             populateUI()
         }
     }
+
+    private suspend fun populateHistoryWorkPerformedList() =
+        withContext(Dispatchers.Main) {
+            mainActivity.workOrderViewModel.getWorkPerformedCombinedByWorkOrderHistory(
+                originalWorkOrderHistory.history.woHistoryWorkOrderId
+            ).observe(viewLifecycleOwner) { list ->
+                historyWorkPerformedCombinedList = list
+            }
+        }
 
     private suspend fun populateWorkPerformedListForAutoComplete() =
         withContext(Dispatchers.Main) {
@@ -207,15 +219,19 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
     private fun updateWorkPerformedInHistoryIfValid() {
         val message = validateOrAddWorkPerformedToDbAndUpdateWithArea()
         if (message != ANSWER_OK) {
-            Toast.makeText(
-                mView.context,
-                getString(R.string.error_) +
-                        message,
-                Toast.LENGTH_LONG
-            ).show()
+            displayError(message)
         } else {
 //            gotoCallingFragment()
         }
+    }
+
+    private fun displayError(message: String) {
+        Toast.makeText(
+            mView.context,
+            getString(R.string.error_) +
+                    message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateOrAddWorkPerformedToDbAndUpdateWithArea(): String {
@@ -242,18 +258,40 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
 
     private fun addAreaAndUpdateWorkPerformedHistory(workPerformed: WorkPerformed) {
         CoroutineScope(Dispatchers.Main).launch {
-            binding.apply {
-                if (acArea.text.isNullOrBlank()) {
-                    curArea = null
-                    updateHistory(workPerformed.workPerformedId, null)
-                } else if (setCurArea()) {
-                    updateHistory(workPerformed.workPerformedId, curArea?.areaId)
-                } else if (!acArea.text.isNullOrBlank()) {
-                    val newAreaId = async { insertAreaIntoDb(acArea.text.toString().trim()) }
-                    updateHistory(workPerformed.workPerformedId, newAreaId.await())
+            val answer = validateWorkPerformedCombined(workPerformed)
+            if (answer == ANSWER_OK) {
+                binding.apply {
+                    if (acArea.text.isNullOrBlank()) {
+                        curArea = null
+                        updateHistory(workPerformed.workPerformedId, null)
+                    } else if (setCurArea()) {
+                        updateHistory(workPerformed.workPerformedId, curArea?.areaId)
+                    } else if (!acArea.text.isNullOrBlank()) {
+                        val newAreaId = async { insertAreaIntoDb(acArea.text.toString().trim()) }
+                        updateHistory(workPerformed.workPerformedId, newAreaId.await())
+                    }
                 }
+            } else {
+                displayError(answer)
             }
         }
+    }
+
+    private fun validateWorkPerformedCombined(workPerformed: WorkPerformed): String {
+        binding.apply {
+            val area = if (acArea.text.isNullOrBlank()) {
+                null
+            } else {
+                acArea.text.toString().trim()
+            }
+            for (wpCombined in historyWorkPerformedCombinedList) {
+                if (wpCombined.workPerformed.wpDescription == workPerformed.wpDescription &&
+                    wpCombined.area?.areaName == area
+                )
+                    return getString(R.string.this_work_performed_description_already_exists)
+            }
+        }
+        return ANSWER_OK
     }
 
     private fun updateHistory(workPerformedId: Long, areaId: Long?) {

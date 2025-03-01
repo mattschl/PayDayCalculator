@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -9,11 +10,13 @@
             android:id="@+id/tvAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dimen_8dp"
+            android:paddingStart="@dimen/dimen_8dp"
+            android:paddingEnd="@dimen/dimen_8dp"
             android:text="@string/address"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_medium"
             android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/tvWorkOrder"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,6 +24,8 @@
             android:id="@+id/tvWorkOrder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingStart="@dimen/dimen_8dp"
+            android:paddingEnd="@dimen/dimen_8dp"
             android:text="@string/work_order"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_medium"
@@ -33,12 +38,13 @@
             android:id="@+id/tvDetails"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingStart="@dimen/dimen_8dp"
+            android:paddingEnd="@dimen/dimen_8dp"
             android:text="@string/details"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_medium"
             android:textStyle="italic"
             app:layout_constraintBaseline_toBaselineOf="@id/tvAddress"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tvWorkOrder" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

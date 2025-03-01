@@ -9,9 +9,9 @@
 
         <TextView
             android:id="@+id/tvTaxName"
-            android:layout_width="@dimen/text_box_extra_wide"
+            android:layout_width="@dimen/text_box_wide"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dimen_50dp"
+            android:layout_marginStart="@dimen/dimen_10dp"
             android:text="@string/taxes"
             android:textColor="@color/black"
             android:textSize="@dimen/label_text_size" />

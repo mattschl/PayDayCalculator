@@ -1,7 +1,7 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder.workPerforrmed
 
 import android.app.AlertDialog
-import android.database.sqlite.SQLiteException
+import android.database.sqlite.SQLiteConstraintException
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +26,6 @@ class WorkPerformedUpdateFragment :
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private val df = DateFunctions()
-
     private val workPerformedList = ArrayList<WorkPerformed>()
     private lateinit var oldWorkPerformed: WorkPerformed
 
@@ -137,7 +136,7 @@ class WorkPerformedUpdateFragment :
                 )
             )
             gotoCallingFragment()
-        } catch (e: SQLiteException) {
+        } catch (e: SQLiteConstraintException) {
             AlertDialog.Builder(mView.context)
                 .setTitle(getString(R.string.something_went_wrong))
                 .setMessage(

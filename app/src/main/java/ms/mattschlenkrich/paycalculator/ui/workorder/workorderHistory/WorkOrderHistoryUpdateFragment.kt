@@ -1,7 +1,7 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory
 
 import android.app.AlertDialog
-import android.database.sqlite.SQLiteException
+import android.database.sqlite.SQLiteConstraintException
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -60,6 +60,8 @@ class WorkOrderHistoryUpdateFragment :
     private lateinit var curHistoryDetailed: WorkOrderHistoryWithDates
     private var curWorkOrder: WorkOrder? = null
     private lateinit var workPerformedListForAutoComplete: List<WorkPerformed>
+    private lateinit var existingWorkPerformedListForValidation:
+            List<WorkOrderHistoryWorkPerformedCombined>
     private lateinit var materialListForAutoComplete: List<Material>
     private lateinit var areaListForAutoComplete: List<Areas>
     private var curWorkPerformed: WorkPerformed? = null
@@ -173,11 +175,12 @@ class WorkOrderHistoryUpdateFragment :
             }
     }
 
-    private fun populateWorkPerformed() {
+    private fun populateWorkPerformedLists() {
         mainActivity.workOrderViewModel.getWorkPerformedCombinedByWorkOrderHistory(
             curHistoryDetailed.history.woHistoryId
         ).observe(viewLifecycleOwner) { list ->
             populateWorkPerformedRecycler(list)
+            existingWorkPerformedListForValidation = list
             determineWorkPerformedSequence(list)
         }
     }
@@ -194,7 +197,7 @@ class WorkOrderHistoryUpdateFragment :
                         history.workOrder.woNumber
                     ).observe(viewLifecycleOwner) { workOrder ->
                         curWorkOrder = workOrder
-                        populateWorkPerformed()
+                        populateWorkPerformedLists()
                         populateMaterials()
                     }
                     etRegHours.setText(
@@ -508,7 +511,7 @@ class WorkOrderHistoryUpdateFragment :
                 history.woHistoryUpdateTime
             )
             gotoCallingFragment()
-        } catch (e: SQLiteException) {
+        } catch (e: SQLiteConstraintException) {
             AlertDialog.Builder(mView.context)
                 .setTitle(getString(R.string.something_went_wrong))
                 .setMessage(
@@ -594,7 +597,7 @@ class WorkOrderHistoryUpdateFragment :
                 curMaterial = null
                 acMaterials.text.clear()
                 etMaterialQty.text.clear()
-            } catch (e: SQLiteException) {
+            } catch (e: SQLiteConstraintException) {
                 AlertDialog.Builder(mView.context)
                     .setTitle(getString(R.string.something_went_wrong))
                     .setMessage(
@@ -658,6 +661,21 @@ class WorkOrderHistoryUpdateFragment :
         if (!setCurWorkPerformed()) {
             return getString(R.string.please_enter_a_valid_description_of_work_performed_to_add_it)
         }
+        binding.apply {
+            val curWorkPerformed = acWorkPerformed.text.toString().trim()
+            val currArea = if (acArea.text.isNullOrBlank()) {
+                null
+            } else {
+                acArea.text.toString().trim()
+            }
+            for (workPerformed in existingWorkPerformedListForValidation) {
+                if (workPerformed.workPerformed.wpDescription == curWorkPerformed &&
+                    workPerformed.area?.areaName == currArea
+                ) {
+                    return getString(R.string.this_work_description_and_area_is_already_used)
+                }
+            }
+        }
         return ANSWER_OK
     }
 
@@ -670,7 +688,7 @@ class WorkOrderHistoryUpdateFragment :
                 etWorkPerformedNote.text.toString().trim()
             }
             val area: Areas? = if (curArea != null && !acArea.text.isNullOrBlank() &&
-                acArea.text.toString() == curArea?.areaName
+                acArea.text.toString().trim() == curArea?.areaName
             ) {
                 curArea!!
             } else if (!acArea.text.isNullOrBlank()) {
@@ -691,7 +709,7 @@ class WorkOrderHistoryUpdateFragment :
                         df.getCurrentTimeAsString()
                     )
                 )
-            } catch (e: SQLiteException) {
+            } catch (e: SQLiteConstraintException) {
                 AlertDialog.Builder(mView.context)
                     .setTitle(getString(R.string.something_went_wrong))
                     .setMessage(
@@ -710,7 +728,6 @@ class WorkOrderHistoryUpdateFragment :
             curWorkPerformed = null
             binding.apply {
                 acWorkPerformed.text.clear()
-                acArea.text.clear()
                 etWorkPerformedNote.text.clear()
             }
         }
@@ -737,7 +754,7 @@ class WorkOrderHistoryUpdateFragment :
                 )
             mainActivity.workOrderViewModel.insertWorkPerformed(workPerformed)
             return workPerformed
-        } catch (e: SQLiteException) {
+        } catch (e: SQLiteConstraintException) {
             return null
         }
     }

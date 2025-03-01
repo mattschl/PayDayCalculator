@@ -222,22 +222,10 @@
                         android:textColor="@color/black"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        app:layout_constraintEnd_toStartOf="@id/fabDone"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/etDblOtHours"
                         tools:ignore="DuplicateSpeakableTextCheck,VisualLintTextFieldSize" />
-
-                    <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:id="@+id/fabDone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/dimen_25dp"
-                        android:layout_marginEnd="@dimen/dimen_25dp"
-                        android:backgroundTint="@color/dark_green"
-                        android:contentDescription="@string/done"
-                        android:src="@drawable/ic_done"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -355,10 +343,8 @@
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvWorkPerformed"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/dimen_10dp"
-                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/etWorkPerformedNote" />
 
@@ -368,13 +354,14 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/crdMaterials"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/dimen_8dp"
                 android:backgroundTint="@color/white"
                 android:elevation="10dp"
                 android:visibility="gone"
                 app:cardCornerRadius="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/crdWorkPerformed">
 
@@ -458,6 +445,18 @@
                 android:layout_height="@dimen/dimen_50dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/crdMaterials" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabDone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_25dp"
+                android:layout_marginEnd="@dimen/dimen_25dp"
+                android:backgroundTint="@color/dark_green"
+                android:contentDescription="@string/done"
+                android:src="@drawable/ic_done"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
