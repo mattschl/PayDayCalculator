@@ -93,6 +93,7 @@ class WorkDateUpdateFragment : Fragment(
                 etStat.setText(
                     nf.getNumberFromDouble(currentWorkDateObject.wdStatHours)
                 )
+                etNote.setText(currentWorkDateObject.wdNote)
             }
             populateExtras()
             populateWorkOrderHistory()
@@ -363,6 +364,7 @@ class WorkDateUpdateFragment : Fragment(
                     .toDouble(),
                 if (etStat.text.isNullOrBlank()) 0.0 else etStat.text.toString().trim()
                     .toDouble(),
+                if (etNote.text.isNullOrBlank()) null else etNote.text.toString().trim(),
                 false,
                 df.getCurrentTimeAsString()
             )

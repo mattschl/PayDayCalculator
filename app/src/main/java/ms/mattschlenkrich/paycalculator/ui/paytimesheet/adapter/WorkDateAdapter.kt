@@ -101,6 +101,10 @@ class WorkDateAdapter(
                 display += nf.getNumberFromDouble(workDate.wdStatHours) +
                         mView.context.getString(R.string.stat_vacation_hrs)
             }
+            if (!workDate.wdNote.isNullOrBlank()) {
+                if (display.isNotBlank()) display += " - "
+                display += workDate.wdNote
+            }
             if (display.isBlank()) {
                 display += mView.context.getString(R.string.no_time_entered)
             }
@@ -182,6 +186,7 @@ class WorkDateAdapter(
                 workDate.wdOtHours,
                 workDate.wdDblOtHours,
                 workDate.wdStatHours,
+                workDate.wdNote,
                 true,
                 df.getCurrentTimeAsString()
             )

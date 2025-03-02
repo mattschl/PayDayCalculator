@@ -137,6 +137,22 @@
             app:layout_constraintStart_toEndOf="@id/lblStat"
             tools:ignore="LabelFor" />
 
+        <EditText
+            android:id="@+id/etNote"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/minimum_touch_height"
+            android:layout_marginStart="@dimen/dimen_10dp"
+            android:layout_marginEnd="@dimen/dimen_10dp"
+            android:hint="@string/enter_note_optional"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:selectAllOnFocus="true"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etStat"
+            tools:ignore="LabelFor,VisualLintTextFieldSize" />
+
         <androidx.cardview.widget.CardView
             android:id="@+id/crdExtras"
             android:layout_width="match_parent"
@@ -146,7 +162,7 @@
             android:elevation="10dp"
             app:cardCornerRadius="10dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etStat">
+            app:layout_constraintTop_toBottomOf="@id/etNote">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

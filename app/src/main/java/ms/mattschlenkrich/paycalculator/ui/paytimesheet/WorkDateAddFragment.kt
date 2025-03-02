@@ -258,6 +258,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
                     .toDouble(),
                 if (etStat.text.isNullOrBlank()) 0.0 else etStat.text.toString().trim()
                     .toDouble(),
+                if (etNote.text.isNullOrBlank()) null else etNote.text.toString().trim(),
                 false,
                 df.getCurrentTimeAsString()
             )
@@ -329,6 +330,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
             tempWorkDate.wdOtHours,
             tempWorkDate.wdDblOtHours,
             tempWorkDate.wdStatHours,
+            tempWorkDate.wdNote,
             false,
             df.getCurrentTimeAsString()
         )

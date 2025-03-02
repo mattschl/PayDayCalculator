@@ -42,6 +42,7 @@ data class WorkDates(
     val wdOtHours: Double,
     val wdDblOtHours: Double,
     val wdStatHours: Double,
+    val wdNote: String?,
     val wdIsDeleted: Boolean,
     val wdUpdateTime: String,
 ) : Parcelable
