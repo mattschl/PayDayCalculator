@@ -12,7 +12,7 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkOrderHistoryItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.paytimesheet.WorkDateUpdateFragmentDirections
+import ms.mattschlenkrich.paycalculator.ui.timesheet.WorkDateUpdateFragmentDirections
 
 class WorkDateWorkOrderHistoryAdapter(
     private val mainActivity: MainActivity,

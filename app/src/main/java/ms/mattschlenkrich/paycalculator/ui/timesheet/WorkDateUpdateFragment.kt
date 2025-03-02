@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.paytimesheet
+package ms.mattschlenkrich.paycalculator.ui.timesheet
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -24,7 +24,7 @@ import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkDateUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.paytimesheet.adapter.WorkDateUpdateCustomExtraAdapter
+import ms.mattschlenkrich.paycalculator.ui.timesheet.adapter.WorkDateUpdateCustomExtraAdapter
 import ms.mattschlenkrich.paycalculator.ui.workorder.adapter.WorkDateWorkOrderHistoryAdapter
 
 private const val TAG = FRAG_WORK_DATE_UPDATE

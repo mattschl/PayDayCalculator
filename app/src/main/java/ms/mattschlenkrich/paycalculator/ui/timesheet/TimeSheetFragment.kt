@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.paytimesheet
+package ms.mattschlenkrich.paycalculator.ui.timesheet
 
 import android.graphics.Color
 import android.os.Bundle
@@ -28,7 +28,7 @@ import ms.mattschlenkrich.paycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paycalculator.payfunctions.PayCalculationsAsync
 import ms.mattschlenkrich.paycalculator.payfunctions.PayDateProjections
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.paytimesheet.adapter.WorkDateAdapter
+import ms.mattschlenkrich.paycalculator.ui.timesheet.adapter.WorkDateAdapter
 import java.time.LocalDate
 
 private const val TAG = FRAG_TIME_SHEET

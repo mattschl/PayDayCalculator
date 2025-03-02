@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.paytimesheet.adapter
+package ms.mattschlenkrich.paycalculator.ui.timesheet.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -12,8 +12,8 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkDateExtraItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.paytimesheet.WorkDateUpdateFragment
-import ms.mattschlenkrich.paycalculator.ui.paytimesheet.WorkDateUpdateFragmentDirections
+import ms.mattschlenkrich.paycalculator.ui.timesheet.WorkDateUpdateFragment
+import ms.mattschlenkrich.paycalculator.ui.timesheet.WorkDateUpdateFragmentDirections
 
 class WorkDateUpdateCustomExtraAdapter(
     private val mainActivity: MainActivity,

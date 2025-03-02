@@ -21,7 +21,7 @@
     <!--    timeSheetFragment-->
     <fragment
         android:id="@+id/timeSheetFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.paytimesheet.TimeSheetFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.timesheet.TimeSheetFragment"
         android:label="TimeSheetFragment"
         tools:layout="@layout/fragment_time_sheet">
         <action
@@ -44,7 +44,7 @@
     <!--    workDateAddFragment-->
     <fragment
         android:id="@+id/workDateAddFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.paytimesheet.WorkDateAddFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.timesheet.WorkDateAddFragment"
         android:label="fragment_work_date_add"
         tools:layout="@layout/fragment_work_date_add">
         <action
@@ -60,7 +60,7 @@
     <!--    workDateUpdateFragment-->
     <fragment
         android:id="@+id/workDateUpdateFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.paytimesheet.WorkDateUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.timesheet.WorkDateUpdateFragment"
         android:label="WorkDateUpdateFragment"
         tools:layout="@layout/fragment_work_date_update">
         <action
