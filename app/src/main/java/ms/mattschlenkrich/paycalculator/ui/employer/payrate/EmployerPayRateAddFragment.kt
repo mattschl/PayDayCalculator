@@ -17,6 +17,7 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.FRAG_EMPLOYER_UPDATE
 import ms.mattschlenkrich.paycalculator.common.FRAG_PAY_RATES
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerPayRates
@@ -44,8 +45,7 @@ class EmployerPayRateAddFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        val display =
-            getString(R.string.add_a_pay_rate)
+        val display = getString(R.string.add_a_pay_rate)
         mainActivity.title = display
         return mView
     }
@@ -58,7 +58,7 @@ class EmployerPayRateAddFragment :
 
     private fun populateValues() {
         binding.apply {
-            tvEffectiveDate.text = LocalDate.now().toString()
+            tvEffectiveDate.text = LocalDate.now().minusMonths(1).toString()
             changeEffectiveDate()
         }
         populateSpinner()
@@ -67,7 +67,7 @@ class EmployerPayRateAddFragment :
     private fun populateSpinner() {
         val frequencyAdapter = ArrayAdapter(
             mView.context, R.layout.spinner_item_bold,
-            resources.getStringArray(R.array.pay_day_frequencies)
+            resources.getStringArray(R.array.pay_rate_based_on)
         )
         frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
         binding.spPerFrequency.adapter = frequencyAdapter
@@ -176,8 +176,11 @@ class EmployerPayRateAddFragment :
     }
 
     private fun gotoCallingFragment() {
-        if (mainActivity.mainViewModel.getCallingFragment()!!.contains(FRAG_PAY_RATES)) {
+        val callingFragment = mainActivity.mainViewModel.getCallingFragment()!!
+        if (callingFragment.contains(FRAG_PAY_RATES)) {
             gotoPayRateFragment()
+        } else if (callingFragment.contains(FRAG_EMPLOYER_UPDATE)) {
+            gotoEmployerUpdateFragment()
         }
     }
 
@@ -185,6 +188,13 @@ class EmployerPayRateAddFragment :
         mView.findNavController().navigate(
             EmployerPayRateAddFragmentDirections
                 .actionEmployerPayRateAddFragmentToEmployerPayRatesFragment()
+        )
+    }
+
+    private fun gotoEmployerUpdateFragment() {
+        mView.findNavController().navigate(
+            EmployerPayRateAddFragmentDirections
+                .actionEmployerPayRateAddFragmentToEmployerUpdateFragment()
         )
     }
 

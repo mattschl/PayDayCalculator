@@ -103,39 +103,51 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
             if (mainActivity.mainViewModel.getEmployer() != null) {
-                curEmployer = mainActivity.mainViewModel.getEmployer()!!
-                binding.apply {
-                    mainActivity.title = getString(R.string.update) + " " +
-                            curEmployer!!.employerName
-                    etName.setText(curEmployer!!.employerName)
-                    for (i in 0 until spFrequency.adapter.count) {
-                        if (spFrequency.getItemAtPosition(i) == curEmployer!!.payFrequency) {
-                            spFrequency.setSelection(i)
-                            break
+                CoroutineScope(Dispatchers.Main).launch {
+                    curEmployer = mainActivity.mainViewModel.getEmployer()!!
+                    ifPayRateNotExistsGotoPayRate(curEmployer!!.employerId)
+                    binding.apply {
+                        mainActivity.title = getString(R.string.update) + " " +
+                                curEmployer!!.employerName
+                        etName.setText(curEmployer!!.employerName)
+                        for (i in 0 until spFrequency.adapter.count) {
+                            if (spFrequency.getItemAtPosition(i) == curEmployer!!.payFrequency) {
+                                spFrequency.setSelection(i)
+                                break
+                            }
                         }
-                    }
-                    startDate = curEmployer!!.startDate
-                    tvStartDate.text = df.getDisplayDate(startDate)
-                    for (i in 0 until spDayOfWeek.adapter.count) {
-                        if (spDayOfWeek.getItemAtPosition(i) == curEmployer!!.dayOfWeek) {
-                            spDayOfWeek.setSelection(i)
-                            break
+                        startDate = curEmployer!!.startDate
+                        tvStartDate.text = df.getDisplayDate(startDate)
+                        for (i in 0 until spDayOfWeek.adapter.count) {
+                            if (spDayOfWeek.getItemAtPosition(i) == curEmployer!!.dayOfWeek) {
+                                spDayOfWeek.setSelection(i)
+                                break
+                            }
                         }
+                        etDaysBefore.setText(
+                            String.format(curEmployer!!.cutoffDaysBefore.toString())
+                        )
+                        etMidMonthDate.setText(
+                            String.format(curEmployer!!.midMonthlyDate.toString())
+                        )
+                        etMainMonthDate.setText(
+                            String.format(curEmployer!!.mainMonthlyDate.toString())
+                        )
                     }
-                    etDaysBefore.setText(
-                        String.format(curEmployer!!.cutoffDaysBefore.toString())
-                    )
-                    etMidMonthDate.setText(
-                        String.format(curEmployer!!.midMonthlyDate.toString())
-                    )
-                    etMainMonthDate.setText(
-                        String.format(curEmployer!!.mainMonthlyDate.toString())
-                    )
+                    populateTaxes(curEmployer!!.employerId)
+                    populateExtras(curEmployer!!.employerId)
                 }
-                populateTaxes(curEmployer!!.employerId)
-                populateExtras(curEmployer!!.employerId)
             }
         }
+    }
+
+    private fun ifPayRateNotExistsGotoPayRate(employerId: Long) {
+        employerViewModel.getEmployerPayRates(employerId).observe(viewLifecycleOwner) { list ->
+            if (list.isEmpty()) {
+                gotoPayRateAdd(curEmployer!!)
+            }
+        }
+
     }
 
     override fun populateTaxes(employerId: Long) {
@@ -422,6 +434,19 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
         mView.findNavController().navigate(
             EmployerUpdateFragmentDirections
                 .actionEmployerUpdateFragmentToEmployerExtraDefinitionsAddFragment()
+        )
+    }
+
+    private fun gotoPayRateAdd(curEmployer: Employers) {
+        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainActivity.mainViewModel.setCallingFragment(TAG)
+        gotoPayRateAddFragment()
+    }
+
+    private fun gotoPayRateAddFragment() {
+        mView.findNavController().navigate(
+            EmployerUpdateFragmentDirections
+                .actionEmployerUpdateFragmentToEmployerPayRateAddFragment()
         )
     }
 

@@ -21,3 +21,10 @@ enum class TaxBasedOn(val value: Int) {
     TimeWorkedStatsAndExtras(2),
 }
 
+enum class PayRateBasedOn(val value: Int) {
+    Hourly(0),
+    Daily(1),
+    Weekly(2),
+    BiWeekly(3),
+    Monthly(4)
+}

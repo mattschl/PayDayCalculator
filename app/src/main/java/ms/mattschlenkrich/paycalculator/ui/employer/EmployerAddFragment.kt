@@ -16,15 +16,17 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
-import ms.mattschlenkrich.paycalculator.common.FRAG_EMPLOYERS
-import ms.mattschlenkrich.paycalculator.common.FRAG_TIME_SHEET
-import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDERS
 import ms.mattschlenkrich.paycalculator.common.INTERVAL_MONTHLY
 import ms.mattschlenkrich.paycalculator.common.INTERVAL_SEMI_MONTHLY
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerTaxTypes
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerAddBinding
@@ -225,15 +227,17 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
             val message = validateEmployer()
             if (message == ANSWER_OK) {
                 val curEmployer = getCurrentEmployer()
-                mainActivity.employerViewModel.insertEmployer(
-                    curEmployer
-                )
-                addEmployerTaxRules(curEmployer.employerId)
-                chooseNextStepsAfterSaving(curEmployer)
+                chooseToSaveAndContinue(curEmployer)
             } else {
                 displayError(message)
             }
         }
+    }
+
+    private fun saveEmployer(curEmployer: Employers) {
+        mainActivity.employerViewModel.insertEmployer(
+            curEmployer
+        )
     }
 
     private fun displayError(message: String) {
@@ -275,7 +279,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
                     EmployerTaxTypes(
                         etrEmployerId = employerId,
                         etrTaxType = it.taxType,
-                        etrInclude = false,
+                        etrInclude = true,
                         etrIsDeleted = false,
                         etrUpdateTime = df.getCurrentTimeAsString()
                     )
@@ -301,63 +305,67 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         }
     }
 
-    private fun chooseNextStepsAfterSaving(curEmployer: Employers) {
+    private fun chooseToSaveAndContinue(curEmployer: Employers) {
         AlertDialog.Builder(mView.context)
             .setTitle(
                 getString(R.string.choose_next_steps_for) +
                         curEmployer.employerName
             )
             .setMessage(
-                getString(R.string.the_taxes_have_been_set_up_automatically)
+                getString(R.string.would_you_like_to_go_to_the_next_step)
             )
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                gotoEmployerUpdate(curEmployer)
+                CoroutineScope(Dispatchers.Main).launch {
+                    saveEmployer(curEmployer)
+                    delay(WAIT_250)
+                    addEmployerTaxRules(curEmployer.employerId)
+                    delay(WAIT_250)
+                    gotoEmployerUpdate(curEmployer)
+                }
             }
-            .setNegativeButton(getString(R.string.no)) { _, _ ->
-                gotoCallingFragment(curEmployer)
-            }
+            .setNegativeButton(getString(R.string.go_back), null)
             .show()
     }
 
-    private fun gotoCallingFragment(employer: Employers) {
-        when (mainActivity.mainViewModel.getCallingFragment()) {
-            FRAG_EMPLOYERS -> {
-                gotoEmployers()
-            }
+//    private fun gotoCallingFragment(employer: Employers) {
+//        when (mainActivity.mainViewModel.getCallingFragment()) {
+//            FRAG_EMPLOYERS -> {
+//                gotoEmployers()
+//            }
+//
+//            FRAG_WORK_ORDERS -> {
+//                gotoWorkOrdersFragment(employer)
+//            }
+//
+//            FRAG_TIME_SHEET -> {
+//                gotoTimeSheet(employer)
+//            }
+//        }
+//    }
 
-            FRAG_WORK_ORDERS -> {
-                gotoWorkOrdersFragment(employer)
-            }
+//    private fun gotoTimeSheet(employer: Employers) {
+//        mainActivity.mainViewModel.setEmployer(employer)
+//        gotoTimeSheetFragment()
+//    }
 
-            FRAG_TIME_SHEET -> {
-                gotoTimeSheet(employer)
-            }
-        }
-    }
+//    private fun gotoTimeSheetFragment() {
+//        mView.findNavController().navigate(
+//            EmployerAddFragmentDirections
+//                .actionEmployerAddFragmentToTimeSheetFragment()
+//        )
+//    }
 
-    private fun gotoTimeSheet(employer: Employers) {
-        mainActivity.mainViewModel.setEmployer(employer)
-        gotoTimeSheetFragment()
-    }
-
-    private fun gotoTimeSheetFragment() {
-        mView.findNavController().navigate(
-            EmployerAddFragmentDirections
-                .actionEmployerAddFragmentToTimeSheetFragment()
-        )
-    }
-
-    private fun gotoWorkOrdersFragment(employer: Employers) {
-        mainActivity.mainViewModel.setEmployer(employer)
-        gotoWorkOrdersFragment()
-    }
-
-    private fun gotoWorkOrdersFragment() {
-        mView.findNavController().navigate(
-            EmployerAddFragmentDirections
-                .actionEmployerAddFragmentToWorkOrdersFragment()
-        )
-    }
+//    private fun gotoWorkOrdersFragment(employer: Employers) {
+//        mainActivity.mainViewModel.setEmployer(employer)
+//        gotoWorkOrdersFragment()
+//    }
+//
+//    private fun gotoWorkOrdersFragment() {
+//        mView.findNavController().navigate(
+//            EmployerAddFragmentDirections
+//                .actionEmployerAddFragmentToWorkOrdersFragment()
+//        )
+//    }
 
     private fun gotoEmployerUpdate(curEmployer: Employers) {
         mainActivity.mainViewModel.setEmployer(curEmployer)
@@ -371,17 +379,17 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         )
     }
 
-    private fun gotoEmployers() {
-        mainActivity.mainViewModel.setEmployer(null)
-        gotoEmployerFragment()
-    }
+//    private fun gotoEmployers() {
+//        mainActivity.mainViewModel.setEmployer(null)
+//        gotoEmployerFragment()
+//    }
 
-    private fun gotoEmployerFragment() {
-        mView.findNavController().navigate(
-            EmployerAddFragmentDirections
-                .actionEmployerAddFragmentToEmployerFragment()
-        )
-    }
+//    private fun gotoEmployerFragment() {
+//        mView.findNavController().navigate(
+//            EmployerAddFragmentDirections
+//                .actionEmployerAddFragmentToEmployerFragment()
+//        )
+//    }
 
     override fun onDestroy() {
         super.onDestroy()

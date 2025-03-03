@@ -4,6 +4,13 @@
         <item>Bi-Weekly</item>
         <item>Weekly</item>
     </string-array>
+    <string-array name="pay_rate_based_on">
+        <item>Hourly</item>
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Bi-Weekly</item>
+        <item>Monthly</item>
+    </string-array>
     <string-array name="pay_days">
         <item>Friday</item>
         <item>Saturday</item>

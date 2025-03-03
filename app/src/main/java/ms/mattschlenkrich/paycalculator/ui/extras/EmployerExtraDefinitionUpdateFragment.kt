@@ -100,14 +100,12 @@ class EmployerExtraDefinitionUpdateFragment :
                     chkIsFixed.isChecked = false
                     chkIsFixed.text = getString(R.string.defaults_to_percentage)
                     chkIsFixed.isEnabled = false
-                    etValue.setText(getString(R.string.zero_percent))
                 }
 
                 1 -> {
                     chkIsFixed.isChecked = true
                     chkIsFixed.text = getString(R.string.defaults_to_fixed)
                     chkIsFixed.isEnabled = false
-                    etValue.setText(getString(R.string.zero_dollars))
                 }
 
                 else -> {

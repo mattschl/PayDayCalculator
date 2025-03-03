@@ -323,7 +323,7 @@
     <string name="the_number_of_days_before_the_pay_day_is_required">The number of days before the pay day is required!</string>
     <string name="the_tax_type_has_been_added_but_there_are_no_rules_yet_">The tax type has been added but there are no rules yet. Would you like to edit those rules now?</string>
     <string name="the_tax_type_must_have_a_name">The tax type must have a Name!</string>
-    <string name="the_taxes_have_been_set_up_automatically">The taxes have been set up automatically. \nWould you like to open this employer in EDIT mode to edit taxes, create extra deductions or extra items added to paychecks?</string>
+    <string name="would_you_like_to_go_to_the_next_step">nWould you like to the next step? First add a pay rate, then edit taxes, create extra deductions or extra items added to paychecks?</string>
     <string name="there_can_only_be_one_extra_that_uses_the_sum_that_includes_other_extras">There can only be one extra that uses the sum that includes other extras.</string>
     <string name="there_has_to_be_a_wage_to_save">There has to be a wage to save</string>
     <string name="there_is_no_work_order_selected">There is no work order selected</string>

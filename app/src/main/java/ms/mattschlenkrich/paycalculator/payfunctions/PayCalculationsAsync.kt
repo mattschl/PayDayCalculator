@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.paycalculator.common.AppliesToFrequencies
 import ms.mattschlenkrich.paycalculator.common.AttachToFrequencies
+import ms.mattschlenkrich.paycalculator.common.PayRateBasedOn
 import ms.mattschlenkrich.paycalculator.common.TaxBasedOn
 import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
@@ -583,11 +584,15 @@ class PayCalculationsAsync(
 
     private fun fixRateByInterval(rate: EmployerPayRates): Double {
         when (rate.eprPerPeriod) {
-            AttachToFrequencies.Hourly.value -> return rate.eprPayRate
+            PayRateBasedOn.Hourly.value -> return rate.eprPayRate
 
-            AttachToFrequencies.Daily.value -> return rate.eprPayRate / 8
+            PayRateBasedOn.Daily.value -> return rate.eprPayRate / 8
 
-            AttachToFrequencies.Weekly.value -> return rate.eprPayRate / 40
+            PayRateBasedOn.Weekly.value -> return rate.eprPayRate / 40
+
+            PayRateBasedOn.BiWeekly.value -> return rate.eprPayRate / 80
+
+            PayRateBasedOn.Monthly.value -> return rate.eprPayRate / (365 / 12) / 8
         }
         return 0.0
     }

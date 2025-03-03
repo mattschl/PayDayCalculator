@@ -284,6 +284,9 @@
         <action
             android:id="@+id/action_employerUpdateFragment_to_employerPayRatesFragment"
             app:destination="@id/employerPayRatesFragment" />
+        <action
+            android:id="@+id/action_employerUpdateFragment_to_employerPayRateAddFragment"
+            app:destination="@id/employerPayRateAddFragment" />
     </fragment>
 
     <!--    employerExtraDefinitionsAddFragment-->
@@ -428,6 +431,10 @@
             android:id="@+id/action_employerPayRateAddFragment_to_employerPayRatesFragment"
             app:destination="@id/employerPayRatesFragment"
             app:popUpTo="@id/employerPayRatesFragment" />
+        <action
+            android:id="@+id/action_employerPayRateAddFragment_to_employerUpdateFragment"
+            app:destination="@id/employerUpdateFragment"
+            app:popUpTo="@id/employerUpdateFragment" />
     </fragment>
 
     <!--    employerWageUpdateFragment-->
