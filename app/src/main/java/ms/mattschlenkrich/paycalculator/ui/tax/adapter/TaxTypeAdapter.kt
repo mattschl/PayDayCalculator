@@ -11,7 +11,7 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.database.model.tax.TaxTypes
 import ms.mattschlenkrich.paycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.tax.TaxTypeFragment
+import ms.mattschlenkrich.paycalculator.ui.tax.types.TaxTypeFragment
 
 class TaxTypeAdapter(
     private val mainActivity: MainActivity,

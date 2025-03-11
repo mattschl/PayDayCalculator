@@ -93,7 +93,7 @@
     <!--    taxTypeFragment-->
     <fragment
         android:id="@+id/taxTypeFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.tax.TaxTypeFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.tax.types.TaxTypeFragment"
         android:label="fragment_tax_type"
         tools:layout="@layout/fragment_tax_type">
         <action
@@ -148,7 +148,7 @@
     <!--    taxRulesFragment-->
     <fragment
         android:id="@+id/taxRulesFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.tax.TaxRulesFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.tax.rules.TaxRulesFragment"
         android:label="TaxRulesFragment"
         tools:layout="@layout/fragment_tax_rules">
         <action

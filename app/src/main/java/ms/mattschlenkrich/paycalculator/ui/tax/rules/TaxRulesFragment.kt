@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.tax
+package ms.mattschlenkrich.paycalculator.ui.tax.rules
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog

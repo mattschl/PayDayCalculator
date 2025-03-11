@@ -11,7 +11,7 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.tax.WorkTaxRules
 import ms.mattschlenkrich.paycalculator.databinding.ListTaxRuleItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.tax.TaxRulesFragment
+import ms.mattschlenkrich.paycalculator.ui.tax.rules.TaxRulesFragment
 
 class TaxRuleAdapter(
     private val mainActivity: MainActivity,
