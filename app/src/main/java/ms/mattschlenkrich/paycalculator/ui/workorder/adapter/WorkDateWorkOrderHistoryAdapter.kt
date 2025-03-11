@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
@@ -12,11 +11,12 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkOrderHistoryItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.timesheet.WorkDateUpdateFragmentDirections
+import ms.mattschlenkrich.paycalculator.ui.timesheet.workdate.WorkDateUpdateFragment
 
 class WorkDateWorkOrderHistoryAdapter(
     private val mainActivity: MainActivity,
     private val mView: View,
+    private val workDateUpdateFragment: WorkDateUpdateFragment,
     private val workOrderHistory: ArrayList<WorkOrderHistoryWithDates>
 ) : RecyclerView.Adapter<WorkDateWorkOrderHistoryAdapter.ViewHolder>() {
 
@@ -111,13 +111,7 @@ class WorkDateWorkOrderHistoryAdapter(
 
     private fun gotoWorkOrderHistoryUpdate(history: WorkOrderHistoryWithDates) {
         mainActivity.mainViewModel.setWorkOrderHistory(history.history)
-        gotoWorkOrderHistoryUpdateFragment()
+        workDateUpdateFragment.gotoWorkOrderHistoryUpdateFragment()
     }
 
-    private fun gotoWorkOrderHistoryUpdateFragment() {
-        mView.findNavController().navigate(
-            WorkDateUpdateFragmentDirections
-                .actionWorkDateUpdateFragmentToWorkOrderHistoryUpdateFragment()
-        )
-    }
 }

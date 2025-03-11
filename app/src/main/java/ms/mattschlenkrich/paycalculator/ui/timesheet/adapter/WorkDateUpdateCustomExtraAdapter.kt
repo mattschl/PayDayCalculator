@@ -4,7 +4,6 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
@@ -12,8 +11,7 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkDateExtraItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.timesheet.WorkDateUpdateFragment
-import ms.mattschlenkrich.paycalculator.ui.timesheet.WorkDateUpdateFragmentDirections
+import ms.mattschlenkrich.paycalculator.ui.timesheet.workdate.WorkDateUpdateFragment
 
 class WorkDateUpdateCustomExtraAdapter(
     private val mainActivity: MainActivity,
@@ -123,14 +121,7 @@ class WorkDateUpdateCustomExtraAdapter(
     private fun gotoUpdateWorkDateExtra(extra: WorkDateExtras) {
         mainActivity.mainViewModel.setWorkDateExtra(extra)
         mainActivity.mainViewModel.setWorkDateExtraList(workDateExtras)
-        gotoWorkDateExtraUpdateFragment()
+        workDateUpdateFragment.gotoWorkDateExtraUpdateFragment()
     }
 
-    private fun gotoWorkDateExtraUpdateFragment() {
-        mView.findNavController().navigate(
-            WorkDateUpdateFragmentDirections
-                .actionWorkDateUpdateFragmentToWorkDateExtraUpdateFragment()
-
-        )
-    }
 }

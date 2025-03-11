@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.extras
+package ms.mattschlenkrich.paycalculator.ui.extras.payperiodextra
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -24,18 +23,19 @@ import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraDefinitionAnd
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDateExtraAndTypeAndDef
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkPayPeriodExtras
-import ms.mattschlenkrich.paycalculator.databinding.FragmentPayPeriodExtraAddBinding
+import ms.mattschlenkrich.paycalculator.databinding.FragmentPayPeriodExtraUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
-class PayPeriodExtraAddFragment :
-    Fragment(R.layout.fragment_pay_period_extra_add) {
 
-    private var _binding: FragmentPayPeriodExtraAddBinding? = null
+class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra_update) {
+
+    private var _binding: FragmentPayPeriodExtraUpdateBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var curPayPeriod: PayPeriods
     private lateinit var curEmployer: Employers
+    private lateinit var oldPayPeriodExtra: WorkPayPeriodExtras
     private lateinit var existingPayPeriodExtraList: List<WorkPayPeriodExtras>
     private lateinit var existingWorkDateExtraList: List<WorkDateExtraAndTypeAndDef>
     private lateinit var defaultExtraList: List<ExtraDefinitionAndType>
@@ -46,12 +46,12 @@ class PayPeriodExtraAddFragment :
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentPayPeriodExtraAddBinding.inflate(
+        _binding = FragmentPayPeriodExtraUpdateBinding.inflate(
             inflater, container, false
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainActivity.title = getString(R.string.add_an_extra_to_this_pay_period)
+        mainActivity.title = getString(R.string.update_extra_for_this_pay_period)
         return mView
     }
 
@@ -72,13 +72,27 @@ class PayPeriodExtraAddFragment :
         populateExistingPayPeriodExtraList()
         populateExistingWorkDateExtraList()
         populateDefaultExtraList()
-        val display = getString(R.string.cutoff_date_) +
-                curPayPeriod.ppCutoffDate +
-                getString(R.string._for_) +
-                curEmployer.employerName
-        binding.apply {
-            lblPayInfo.text = display
-            chkIsCredit.isChecked = mainActivity.mainViewModel.getIsCredit()
+        if (mainActivity.mainViewModel.getPayPeriodExtra() != null) {
+            oldPayPeriodExtra = mainActivity.mainViewModel.getPayPeriodExtra()!!
+            binding.apply {
+                mainActivity.title = getString(R.string.update_extra_) +
+                        oldPayPeriodExtra.ppeName
+                var display = getString(R.string.pay_cutoff_) +
+                        curPayPeriod.ppCutoffDate +
+                        getString(R.string.employer_) +
+                        curEmployer.employerName
+                lblPayInfo.text = display
+                etExtraName.setText(oldPayPeriodExtra.ppeName)
+                spAppliesTo.setSelection(oldPayPeriodExtra.ppeAppliesTo)
+                display = if (oldPayPeriodExtra.ppeIsFixed) {
+                    nf.displayDollars(oldPayPeriodExtra.ppeValue)
+                } else {
+                    nf.getPercentStringFromDouble(oldPayPeriodExtra.ppeValue)
+                }
+                etValue.setText(display)
+                chkIsFixed.isChecked = oldPayPeriodExtra.ppeIsFixed
+                chkIsCredit.isChecked = oldPayPeriodExtra.ppeIsCredit
+            }
         }
     }
 
@@ -118,20 +132,26 @@ class PayPeriodExtraAddFragment :
 
     private fun setClickActions() {
         setMenuActions()
-        binding.chkIsFixed.setOnClickListener { setFixedOrPercent() }
+        binding.apply {
+            chkIsFixed.setOnClickListener {
+                setFixedOrPercent()
+            }
+            fabDone.setOnClickListener {
+                updatePayPeriodExtraIfValid()
+            }
+        }
     }
 
     private fun setMenuActions() {
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(object : MenuProvider {
+        mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.save_menu, menu)
+                menuInflater.inflate(R.menu.menu_delete, menu)
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        prepareToSaveExtraIfValidationsSucceed()
+                    R.id.menu_delete -> {
+                        deleteExtra()
                         true
                     }
 
@@ -163,7 +183,14 @@ class PayPeriodExtraAddFragment :
         }
     }
 
-    private fun prepareToSaveExtraIfValidationsSucceed() {
+    private fun deleteExtra() {
+        mainActivity.payDayViewModel.deletePayPeriodExtra(
+            oldPayPeriodExtra.workPayPeriodExtraId, df.getCurrentTimeAsString()
+        )
+        gotoCallingFragment()
+    }
+
+    private fun updatePayPeriodExtraIfValid() {
         val message = validateExtraForErrors()
         if (message == ANSWER_OK) {
             validateFromExistingExtrasAndContinue()
@@ -174,13 +201,14 @@ class PayPeriodExtraAddFragment :
 
     private fun validateExtraForErrors(): String {
         binding.apply {
-            if (etExtraName.text.isNullOrBlank()
-            ) {
+            if (etExtraName.text.isNullOrBlank()) {
                 return getString(R.string.the_extra_must_have_a_name)
             }
-            if (existingPayPeriodExtraList.isNotEmpty()) {
+            if (existingWorkDateExtraList.isNotEmpty()) {
                 for (extra in existingPayPeriodExtraList) {
-                    if (extra.ppeName == etExtraName.text.toString().trim()) {
+                    if (extra.ppeName == etExtraName.text.toString().trim() &&
+                        extra.ppeName != oldPayPeriodExtra.ppeName
+                    ) {
                         return getString(R.string.this_extra_name_has_already_been_used)
                     }
                 }
@@ -207,7 +235,8 @@ class PayPeriodExtraAddFragment :
             binding.apply {
                 var continueOn = true
                 for (extra in existingWorkDateExtraList) {
-                    if (etExtraName.text.toString().trim() == extra.extra.wdeName
+                    if (etExtraName.text.toString().trim() == extra.extra.wdeName &&
+                        extra.extra.wdeName != oldPayPeriodExtra.ppeName
                     ) {
                         continueOn = false
                         chooseToAddInAdditionToExistingExtra(
@@ -231,7 +260,9 @@ class PayPeriodExtraAddFragment :
             binding.apply {
                 var continueOn = true
                 for (extra in defaultExtraList) {
-                    if (etExtraName.text.toString().trim() == extra.extraType.wetName) {
+                    if (etExtraName.text.toString().trim() == extra.extraType.wetName &&
+                        extra.extraType.wetName != oldPayPeriodExtra.ppeName
+                    ) {
                         continueOn = false
                         chooseToAddInAdditionToExistingExtra(
                             extra.extraType.wetName,
@@ -241,11 +272,11 @@ class PayPeriodExtraAddFragment :
                     }
                 }
                 if (continueOn) {
-                    saveExtraAndGotoCallingFragment()
+                    updatePayPeriodExtraAndGotoCallingFragment()
                 }
             }
         } else {
-            saveExtraAndGotoCallingFragment()
+            updatePayPeriodExtraAndGotoCallingFragment()
         }
     }
 
@@ -257,27 +288,25 @@ class PayPeriodExtraAddFragment :
             )
             .setMessage(message)
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                saveExtraAndGotoCallingFragment()
+                updatePayPeriodExtraAndGotoCallingFragment()
             }
             .setNegativeButton(getString(R.string.no), null)
             .show()
     }
 
-    private fun saveExtraAndGotoCallingFragment() {
-        binding.apply {
-            mainActivity.payDayViewModel.insertPayPeriodExtra(
-                getCurrentPayPeriodExtra()
-            )
-        }
+    private fun updatePayPeriodExtraAndGotoCallingFragment() {
+        mainActivity.payDayViewModel.updatePayPeriodExtra(
+            getCurrentPayPeriodExtra()
+        )
         gotoCallingFragment()
     }
 
     private fun getCurrentPayPeriodExtra(): WorkPayPeriodExtras {
         binding.apply {
             return WorkPayPeriodExtras(
-                nf.generateRandomIdAsLong(),
-                curPayPeriod.payPeriodId,
-                null,
+                oldPayPeriodExtra.workPayPeriodExtraId,
+                oldPayPeriodExtra.ppePayPeriodId,
+                oldPayPeriodExtra.ppeExtraTypeId,
                 etExtraName.text.toString().trim(),
                 spAppliesTo.selectedItemPosition,
                 3,
@@ -287,19 +316,25 @@ class PayPeriodExtraAddFragment :
                 chkIsFixed.isChecked,
                 chkIsCredit.isChecked,
                 false,
-                df.getCurrentTimeAsString(),
+                df.getCurrentTimeAsString()
             )
         }
     }
 
     private fun gotoCallingFragment() {
-        gotoPayDetailsFragment()
+        gotoPayDetail()
     }
 
-    private fun gotoPayDetailsFragment() {
+    private fun gotoPayDetail() {
+        mainActivity.mainViewModel.clearPayPeriodExtraList()
+        mainActivity.mainViewModel.setPayPeriodExtra(null)
+        gotoPayDetailFragment()
+    }
+
+    private fun gotoPayDetailFragment() {
         mView.findNavController().navigate(
-            PayPeriodExtraAddFragmentDirections
-                .actionPayPeriodExtraAddFragmentToPayDetailFragmentNew()
+            PayPeriodExtraUpdateFragmentDirections
+                .actionPayPeriodExtraUpdateFragmentToPayDetailFragmentNew()
         )
     }
 

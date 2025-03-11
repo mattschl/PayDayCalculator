@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.extras
+package ms.mattschlenkrich.paycalculator.ui.extras.employerextras
 
 import android.os.Bundle
 import android.view.LayoutInflater

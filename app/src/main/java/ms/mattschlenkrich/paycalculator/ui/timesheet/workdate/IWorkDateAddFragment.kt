@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.timesheet
+package ms.mattschlenkrich.paycalculator.ui.timesheet.workdate
 
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtraTypes
 

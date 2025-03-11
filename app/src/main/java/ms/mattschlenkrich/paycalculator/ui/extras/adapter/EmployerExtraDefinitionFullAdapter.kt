@@ -16,7 +16,7 @@ import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtrasDefiniti
 import ms.mattschlenkrich.paycalculator.databinding.ListEmployerExtraDefinitonBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.employer.IEmployerUpdateFragment
-import ms.mattschlenkrich.paycalculator.ui.extras.IEmployerExtraDefinitionsFragment
+import ms.mattschlenkrich.paycalculator.ui.extras.employerextras.IEmployerExtraDefinitionsFragment
 
 class EmployerExtraDefinitionFullAdapter(
     private val mainActivity: MainActivity,

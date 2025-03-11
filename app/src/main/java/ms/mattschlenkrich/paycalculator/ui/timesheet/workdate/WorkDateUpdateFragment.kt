@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.timesheet
+package ms.mattschlenkrich.paycalculator.ui.timesheet.workdate
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -128,6 +128,7 @@ class WorkDateUpdateFragment : Fragment(
                     WorkDateWorkOrderHistoryAdapter(
                         mainActivity,
                         mView,
+                        this@WorkDateUpdateFragment,
                         list as ArrayList
                     )
                 rvHistory.apply {
@@ -404,6 +405,21 @@ class WorkDateUpdateFragment : Fragment(
         mView.findNavController().navigate(
             WorkDateUpdateFragmentDirections
                 .actionWorkDateUpdateFragmentToWorkDateExtraAddFragment()
+        )
+    }
+
+    fun gotoWorkDateExtraUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkDateUpdateFragmentDirections
+                .actionWorkDateUpdateFragmentToWorkDateExtraUpdateFragment()
+
+        )
+    }
+
+    fun gotoWorkOrderHistoryUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkDateUpdateFragmentDirections
+                .actionWorkDateUpdateFragmentToWorkOrderHistoryUpdateFragment()
         )
     }
 
