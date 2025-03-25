@@ -561,10 +561,10 @@ class WorkOrderHistoryUpdateFragment :
         return false
     }
 
-    private fun saveMaterialIfValidAndAddToWorkOrder(displayError: Boolean) {
+    private fun saveMaterialIfValidAndAddToWorkOrder(showError: Boolean) {
         if (binding.acMaterials.text.isNullOrBlank()
         ) {
-            if (displayError) {
+            if (showError) {
                 displayError(getString(R.string.please_enter_a_valid_material_description_to_add_it))
             }
         } else if (setCurMaterial()) {
@@ -653,7 +653,8 @@ class WorkOrderHistoryUpdateFragment :
     private fun displayError(answer: String) {
         Toast.makeText(
             mView.context,
-            answer, Toast.LENGTH_LONG
+            getString(R.string.error_) + answer,
+            Toast.LENGTH_LONG
         ).show()
     }
 

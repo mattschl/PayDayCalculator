@@ -435,5 +435,6 @@
     <string name="this_work_description_and_area_is_already_used">This work description and area is already used.</string>
     <string name="enter_work_performed">Enter Work Performed</string>
     <string name="enter_area">Enter Area</string>
+    <string name="this_job_spec_and_area_is_already_used">This Job spec and area is already used!</string>
 
 </resources>
