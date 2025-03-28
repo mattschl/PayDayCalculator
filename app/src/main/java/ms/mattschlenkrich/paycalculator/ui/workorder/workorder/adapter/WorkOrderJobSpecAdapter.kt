@@ -13,11 +13,11 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.WorkOrderUpdateFragment
+import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.IWorkOrderUpdateFragment
 
 class WorkOrderJobSpecAdapter(
     private val mainActivity: MainActivity,
-    private val workOrderUpdateFragment: WorkOrderUpdateFragment,
+    private val workOrderUpdateFragment: IWorkOrderUpdateFragment,
     private val workOrder: WorkOrder,
     private val parentFragment: String,
     private val mView: View

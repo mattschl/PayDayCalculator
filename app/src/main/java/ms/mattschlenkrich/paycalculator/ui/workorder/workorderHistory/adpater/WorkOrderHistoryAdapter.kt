@@ -10,13 +10,13 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkOrderHistoryDetailItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.WorkOrderUpdateFragment
+import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.IWorkOrderUpdateFragment
 
 class WorkOrderHistoryAdapter(
     val mainActivity: MainActivity,
     val mView: View,
     private val workOrderHistory: List<WorkOrderHistoryWithDates>,
-    private val parentFragment: WorkOrderUpdateFragment,
+    private val parentFragment: IWorkOrderUpdateFragment,
 ) : RecyclerView.Adapter<WorkOrderHistoryAdapter.ViewHolder>() {
 
     private val df = DateFunctions()
