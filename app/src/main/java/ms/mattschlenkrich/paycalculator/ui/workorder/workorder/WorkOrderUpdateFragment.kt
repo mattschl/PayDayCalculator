@@ -25,6 +25,7 @@ import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_UPDATE
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
+import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.workorder.Areas
 import ms.mattschlenkrich.paycalculator.database.model.workorder.JobSpec
@@ -90,11 +91,10 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
                 tvEmployer.visibility = View.VISIBLE
                 tvEmployer.text = curEmployer.employerName
             }
+            populateWorkOrderListForValidation()
             if (mainActivity.mainViewModel.getWorkOrder() != null) {
                 curWorkOrder = mainActivity.mainViewModel.getWorkOrder()!!
                 setValuesFromHistory(curWorkOrder)
-            } else {
-                populateWorkOrderListForValidation()
             }
         }
     }
@@ -290,66 +290,74 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
                 setCurrentJobSpec()
             }
             btnAddJobSpec.setOnClickListener {
-                addJobSpecToWorkOrderIfValid()
+                addJobSpecToWorkOrderIfValid(true)
             }
-//            spEmployers.setOnItemClickListener { _, _, _, _ ->
-//                onSelectEmployer()
-//            }
+            onSelectEmployer()
         }
     }
 
-    private fun addJobSpecToWorkOrderIfValid() {
+    private fun addJobSpecToWorkOrderIfValid(showError: Boolean) {
         CoroutineScope(Dispatchers.Main).launch {
             binding.apply {
                 if (acJobSpec.text.isNullOrBlank()) {
-                    displayMessage(
-                        getString(R.string.error_) +
-                                getString(R.string.add_a_description_first)
-                    )
+                    if (showError) {
+                        displayMessage(
+                            getString(R.string.error_) +
+                                    getString(R.string.add_a_description_first)
+                        )
+                    }
                 } else {
                     val jobSpec = async {
-                        if (setCurrentJobSpec()) {
+                        return@async if (setCurrentJobSpec()) {
                             curJobSpec!!
                         } else {
-                            saveJobSpecToDatabase()
+                            insertJobSpecIntoDatabase()
                         }
                     }
                     val area = async {
-                        if (setCurrentArea()) {
+                        return@async if (setCurrentArea()) {
                             curArea!!
                         } else if (acArea.text.isNullOrBlank()) {
                             null
                         } else {
-                            saveAreaToDatabase()
+                            insertAreaIntoDatabase()
                         }
                     }
                     val jobSpecCombinedIsValid = async {
-                        validateJobSpecCombined(jobSpec.await(), area.await())
+                        validateJobSpecCombined(
+                            jobSpec.await(), area.await(), showError
+                        )
                     }
                     if (jobSpecCombinedIsValid.await()) {
-                        addJobSpecToWorkOrder(jobSpec.await(), area.await())
+                        addJobSpecToWorkOrder(
+                            jobSpec.await(), area.await()
+                        )
                     }
                 }
             }
         }
     }
 
-    private fun validateJobSpecCombined(jobSpec: JobSpec, area: Areas?): Boolean {
+    private fun validateJobSpecCombined(
+        jobSpec: JobSpec, area: Areas?, showError: Boolean
+    ): Boolean {
         for (combinedJobSpec in jobSpecCombinedList) {
             if (jobSpec.jsName == combinedJobSpec.jobSpec.jsName &&
                 area?.areaName == combinedJobSpec.area?.areaName
             ) {
-                displayMessage(
-                    getString(R.string.error_) +
-                            getString(R.string.this_job_spec_has_already_been_entered_for_this_area)
-                )
+                if (showError) {
+                    displayMessage(
+                        getString(R.string.error_) +
+                                getString(R.string.this_job_spec_has_already_been_entered_for_this_area)
+                    )
+                }
                 return false
             }
         }
         return true
     }
 
-    private fun saveAreaToDatabase(): Areas {
+    private fun insertAreaIntoDatabase(): Areas {
         val newArea = Areas(
             nf.generateRandomIdAsLong(),
             binding.acArea.text.toString().trim(),
@@ -361,7 +369,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
     }
 
 
-    private fun saveJobSpecToDatabase(): JobSpec {
+    private fun insertJobSpecIntoDatabase(): JobSpec {
         val newJobSpec =
             JobSpec(
                 nf.generateRandomIdAsLong(),
@@ -500,11 +508,15 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
     }
 
     private fun prepareToUpdate() {
-        val answer = validateWorkOrder()
-        if (answer == ANSWER_OK) {
-            updateWorkOrder()
-        } else {
-            displayMessage(getString(R.string.error_) + answer)
+        CoroutineScope(Dispatchers.Main).launch {
+            addJobSpecToWorkOrderIfValid(false)
+            delay(WAIT_500)
+            val answer = validateWorkOrder()
+            if (answer == ANSWER_OK) {
+                updateWorkOrder()
+            } else {
+                displayMessage(getString(R.string.error_) + answer)
+            }
         }
     }
 

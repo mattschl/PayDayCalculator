@@ -15,6 +15,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -25,6 +26,7 @@ import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
+import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paycalculator.database.model.workorder.Areas
@@ -301,7 +303,10 @@ class WorkOrderHistoryUpdateFragment :
     private fun setCurWorkOrder() {
         binding.apply {
             if (acWorkOrder.text.isNullOrBlank()) {
-                displayError(getString(R.string.please_enter_a_valid_work_order_before_adding_work_performed))
+                displayMessage(
+                    getString(R.string.error_) +
+                            getString(R.string.please_enter_a_valid_work_order_before_adding_work_performed)
+                )
             }
             if (doesWorkOrderExist()) {
                 populateWorkOrderInfo()
@@ -421,10 +426,10 @@ class WorkOrderHistoryUpdateFragment :
                 CoroutineScope(Dispatchers.Default).launch { setCurArea() }
             }
             btnAddWorkPerformed.setOnClickListener {
-                saveWorkPerformedIfValidAndAddToWorkOrder(true)
+                addWorkPerformedToWorkOrderIfValid(true)
             }
             btnAddMaterial.setOnClickListener {
-                saveMaterialIfValidAndAddToWorkOrder(true)
+                addMaterialToWorkOrderIfValid(true)
             }
             acWorkOrder.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
@@ -487,11 +492,16 @@ class WorkOrderHistoryUpdateFragment :
     private fun updateHistoryIfValid() {
         val answer = validateHistory()
         if (answer == ANSWER_OK) {
-            saveWorkPerformedIfValidAndAddToWorkOrder(false)
-            saveMaterialIfValidAndAddToWorkOrder(false)
-            updateHistory()
+            CoroutineScope(Dispatchers.Main).launch {
+                addWorkPerformedToWorkOrderIfValid(false)
+                addMaterialToWorkOrderIfValid(false)
+                delay(WAIT_500)
+                updateHistory()
+            }
         } else {
-            displayError(answer)
+            displayMessage(
+                getString(R.string.error_) + answer
+            )
         }
     }
 
@@ -561,11 +571,14 @@ class WorkOrderHistoryUpdateFragment :
         return false
     }
 
-    private fun saveMaterialIfValidAndAddToWorkOrder(showError: Boolean) {
+    private fun addMaterialToWorkOrderIfValid(showError: Boolean) {
         if (binding.acMaterials.text.isNullOrBlank()
         ) {
             if (showError) {
-                displayError(getString(R.string.please_enter_a_valid_material_description_to_add_it))
+                displayMessage(
+                    getString(R.string.error_) +
+                            getString(R.string.please_enter_a_valid_material_description_to_add_it)
+                )
             }
         } else if (setCurMaterial()) {
             addMaterialToHistory(curMaterial!!)
@@ -626,76 +639,108 @@ class WorkOrderHistoryUpdateFragment :
         return material
     }
 
-    private fun saveWorkPerformedIfValidAndAddToWorkOrder(showError: Boolean) {
-        CoroutineScope(Dispatchers.Default).launch {
-            if (binding.acWorkPerformed.text.isNullOrBlank()
-            ) {
-                if (showError) {
-                    val answer = validateWorkPerformed()
-                    if (answer != ANSWER_OK) {
-                        displayError(answer)
+    private fun addWorkPerformedToWorkOrderIfValid(showError: Boolean) {
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.apply {
+                if (acWorkPerformed.text.isNullOrBlank()) {
+                    if (showError) {
+                        displayMessage(
+                            getString(R.string.error_) +
+                                    getString(R.string.please_enter_a_valid_description_of_work_performed_to_add_it)
+                        )
                     }
-                }
-            } else if (setCurWorkPerformed()) {
-                addWorkPerformedToHistory(curWorkPerformed!!)
-            } else if (!binding.acWorkPerformed.text.isNullOrBlank()) {
-                CoroutineScope(Dispatchers.Main).launch {
-                    val workPerformed = insertNewWorkPerformedIntoDatabase()
-                    if (workPerformed != null) {
-                        delay(WAIT_250)
-                        addWorkPerformedToHistory(workPerformed)
+                } else {
+                    val workPerformed = async {
+                        return@async if (setCurWorkPerformed()) {
+                            curWorkPerformed!!
+                        } else {
+                            insertNewWorkPerformedIntoDatabase()!!
+                        }
+                    }
+                    val area = async {
+                        return@async if (setCurArea()) {
+                            curArea!!
+                        } else if (acArea.text.isNullOrBlank()) {
+                            null
+                        } else {
+                            insertAreaIntoDatabase(
+                                acArea.text.toString().trim()
+                            )
+                        }
+                    }
+                    val workPerformedCombinedIsValid = async {
+                        validateWorkPerformedCombined(
+                            workPerformed.await(), area.await(), showError
+                        )
+                    }
+                    if (workPerformedCombinedIsValid.await()) {
+                        addWorkPerformedToHistory(
+                            workPerformed.await(), area.await()
+                        )
                     }
                 }
             }
         }
     }
 
-    private fun displayError(answer: String) {
+    private fun validateWorkPerformedCombined(
+        workPerformed: WorkPerformed, area: Areas?, showError: Boolean
+    ): Boolean {
+        for (combinedWorkPerformed in existingWorkPerformedListForValidation) {
+            if (workPerformed.wpDescription == combinedWorkPerformed.workPerformed.wpDescription &&
+                area?.areaName == combinedWorkPerformed.area?.areaName
+            ) {
+                if (showError) {
+                    displayMessage(
+                        getString(R.string.error_) +
+                                getString(R.string.this_work_description_and_area_is_already_used)
+                    )
+                }
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun displayMessage(message: String) {
         Toast.makeText(
             mView.context,
-            getString(R.string.error_) + answer,
+            message,
             Toast.LENGTH_LONG
         ).show()
     }
 
-    private fun validateWorkPerformed(): String {
-        if (!setCurWorkPerformed()) {
-            return getString(R.string.please_enter_a_valid_description_of_work_performed_to_add_it)
-        }
-        binding.apply {
-            val curWorkPerformed = acWorkPerformed.text.toString().trim()
-            val currArea = if (acArea.text.isNullOrBlank()) {
-                null
-            } else {
-                acArea.text.toString().trim()
-            }
-            for (workPerformed in existingWorkPerformedListForValidation) {
-                if (workPerformed.workPerformed.wpDescription == curWorkPerformed &&
-                    workPerformed.area?.areaName == currArea
-                ) {
-                    return getString(R.string.this_work_description_and_area_is_already_used)
-                }
-            }
-        }
-        return ANSWER_OK
-    }
+//    private fun validateWorkPerformed(): String {
+//        if (!setCurWorkPerformed()) {
+//            return getString(R.string.please_enter_a_valid_description_of_work_performed_to_add_it)
+//        }
+//        binding.apply {
+//            val curWorkPerformed = acWorkPerformed.text.toString().trim()
+//            val currArea = if (acArea.text.isNullOrBlank()) {
+//                null
+//            } else {
+//                acArea.text.toString().trim()
+//            }
+//            for (workPerformed in existingWorkPerformedListForValidation) {
+//                if (workPerformed.workPerformed.wpDescription == curWorkPerformed &&
+//                    workPerformed.area?.areaName == currArea
+//                ) {
+//                    return getString(R.string.this_work_description_and_area_is_already_used)
+//                }
+//            }
+//        }
+//        return ANSWER_OK
+//    }
 
-    private suspend fun addWorkPerformedToHistory(workPerformed: WorkPerformed) {
+    private suspend fun addWorkPerformedToHistory(
+        workPerformed: WorkPerformed, area: Areas?
+    ) {
         workPerformedSequence++
         binding.apply {
             val note = if (etWorkPerformedNote.text.isNullOrBlank()) {
                 ""
             } else {
                 etWorkPerformedNote.text.toString().trim()
-            }
-            val area: Areas? = if (curArea != null && !acArea.text.isNullOrBlank() &&
-                acArea.text.toString().trim() == curArea?.areaName
-            ) {
-                curArea!!
-            } else if (!acArea.text.isNullOrBlank()) {
-                insertAreaIntoDatabase(acArea.text.toString().trim())
-            } else {
-                null
             }
             try {
                 mainActivity.workOrderViewModel.insertWorkOrderHistoryWorkPerformed(
@@ -777,7 +822,7 @@ class WorkOrderHistoryUpdateFragment :
         return false
     }
 
-    private fun setCurArea(): Areas? {
+    private fun setCurArea(): Boolean {
         binding.apply {
             for (area in areaListForAutoComplete) {
                 if (acArea.text.toString() ==
@@ -785,11 +830,11 @@ class WorkOrderHistoryUpdateFragment :
                     !acArea.text.isNullOrBlank()
                 ) {
                     curArea = area
-                    return area
+                    return true
                 }
             }
         }
-        return null
+        return false
     }
 
     override fun setTempWorkOrderHistoryInfo() {
