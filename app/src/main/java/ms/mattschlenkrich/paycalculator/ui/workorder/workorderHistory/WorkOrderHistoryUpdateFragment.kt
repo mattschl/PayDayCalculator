@@ -710,28 +710,6 @@ class WorkOrderHistoryUpdateFragment :
         ).show()
     }
 
-//    private fun validateWorkPerformed(): String {
-//        if (!setCurWorkPerformed()) {
-//            return getString(R.string.please_enter_a_valid_description_of_work_performed_to_add_it)
-//        }
-//        binding.apply {
-//            val curWorkPerformed = acWorkPerformed.text.toString().trim()
-//            val currArea = if (acArea.text.isNullOrBlank()) {
-//                null
-//            } else {
-//                acArea.text.toString().trim()
-//            }
-//            for (workPerformed in existingWorkPerformedListForValidation) {
-//                if (workPerformed.workPerformed.wpDescription == curWorkPerformed &&
-//                    workPerformed.area?.areaName == currArea
-//                ) {
-//                    return getString(R.string.this_work_description_and_area_is_already_used)
-//                }
-//            }
-//        }
-//        return ANSWER_OK
-//    }
-
     private suspend fun addWorkPerformedToHistory(
         workPerformed: WorkPerformed, area: Areas?
     ) {
