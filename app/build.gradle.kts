@@ -72,8 +72,8 @@ dependencies {
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
-    implementation("org.mockito:mockito-core:5.16.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+    implementation("org.mockito:mockito-core:5.16.1")
     implementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
     implementation("io.mockk:mockk:1.13.17")
     testImplementation("junit:junit:4.13.2")
@@ -86,10 +86,10 @@ dependencies {
     ksp("androidx.room:room-compiler:$room_version")
 
     //coRoutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
     implementation("androidx.room:room-ktx:$room_version")
 
-    val nav_version = "2.8.5"
+    val nav_version = "2.8.9"
     // Kotlin Navigation
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
