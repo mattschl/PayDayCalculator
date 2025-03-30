@@ -327,46 +327,6 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
             .show()
     }
 
-//    private fun gotoCallingFragment(employer: Employers) {
-//        when (mainActivity.mainViewModel.getCallingFragment()) {
-//            FRAG_EMPLOYERS -> {
-//                gotoEmployers()
-//            }
-//
-//            FRAG_WORK_ORDERS -> {
-//                gotoWorkOrdersFragment(employer)
-//            }
-//
-//            FRAG_TIME_SHEET -> {
-//                gotoTimeSheet(employer)
-//            }
-//        }
-//    }
-
-//    private fun gotoTimeSheet(employer: Employers) {
-//        mainActivity.mainViewModel.setEmployer(employer)
-//        gotoTimeSheetFragment()
-//    }
-
-//    private fun gotoTimeSheetFragment() {
-//        mView.findNavController().navigate(
-//            EmployerAddFragmentDirections
-//                .actionEmployerAddFragmentToTimeSheetFragment()
-//        )
-//    }
-
-//    private fun gotoWorkOrdersFragment(employer: Employers) {
-//        mainActivity.mainViewModel.setEmployer(employer)
-//        gotoWorkOrdersFragment()
-//    }
-//
-//    private fun gotoWorkOrdersFragment() {
-//        mView.findNavController().navigate(
-//            EmployerAddFragmentDirections
-//                .actionEmployerAddFragmentToWorkOrdersFragment()
-//        )
-//    }
-
     private fun gotoEmployerUpdate(curEmployer: Employers) {
         mainActivity.mainViewModel.setEmployer(curEmployer)
         gotoEmployerUpdateFragment()
@@ -378,18 +338,6 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
                 .actionEmployerAddFragmentToEmployerUpdateFragment()
         )
     }
-
-//    private fun gotoEmployers() {
-//        mainActivity.mainViewModel.setEmployer(null)
-//        gotoEmployerFragment()
-//    }
-
-//    private fun gotoEmployerFragment() {
-//        mView.findNavController().navigate(
-//            EmployerAddFragmentDirections
-//                .actionEmployerAddFragmentToEmployerFragment()
-//        )
-//    }
 
     override fun onDestroy() {
         super.onDestroy()

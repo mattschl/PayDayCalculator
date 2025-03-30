@@ -177,11 +177,6 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
                 )
             rvExtras.apply {
                 layoutManager = LinearLayoutManager(mView.context)
-//                    StaggeredGridLayoutManager(
-//                    2,
-//                    StaggeredGridLayoutManager.VERTICAL
-//                )
-//                setHasFixedSize(true)
                 adapter = extraTypeAdapter
             }
             activity.let {

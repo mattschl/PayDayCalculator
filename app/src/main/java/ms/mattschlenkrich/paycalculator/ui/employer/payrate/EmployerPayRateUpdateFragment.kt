@@ -117,15 +117,15 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
                 updatePayRate()
                 gotoCallingFragment()
             } else {
-                displayError(message)
+                displayMessage(getString(R.string.error_) + message)
             }
         }
     }
 
-    private fun displayError(message: String) {
+    private fun displayMessage(message: String) {
         Toast.makeText(
             mView.context,
-            getString(R.string.error_) + message,
+            message,
             Toast.LENGTH_LONG
         ).show()
     }

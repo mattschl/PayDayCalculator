@@ -424,7 +424,7 @@
     <string name="work_performed">Work Performed: </string>
     <string name="work_summary">Work Summary </string>
     <string name="would_you_like_to_add_work_performed_or_materials_to_this_history_">Would you like to add work performed or materials to this history?</string>
-    <string name="would_you_like_to_go_to_the_next_step">nWould you like to the next step? First add a pay rate, then edit taxes, create extra deductions or extra items added to paychecks?</string>
+    <string name="would_you_like_to_go_to_the_next_step">Would you like to the next step? First add a pay rate, then edit taxes, create extra deductions or extra items added to paychecks?</string>
     <string name="would_you_like_to_open_this_work_order_to_view_or_edit_it">Would you like to open this Work Order to view or edit it?</string>
     <string name="would_you_like_to_replace_the_old_information_for_this_work_date">Would you like to REPLACE the old information for this work date?</string>
     <string name="would_you_like_to_save_this_date_now_and_continue">Would you like to save this date now and continue?</string>

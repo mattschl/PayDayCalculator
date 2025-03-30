@@ -147,7 +147,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         if (message == ANSWER_OK) {
             saveWorkDateExtra()
         } else {
-            displayError(message)
+            displayMessage(getString(R.string.error_) + message)
         }
     }
 
@@ -170,10 +170,10 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         }
     }
 
-    private fun displayError(message: String) {
+    private fun displayMessage(message: String) {
         Toast.makeText(
             mView.context,
-            getString(R.string.error_) + message,
+            message,
             Toast.LENGTH_LONG
         ).show()
     }
