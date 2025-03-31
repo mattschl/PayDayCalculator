@@ -229,7 +229,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
                 val curEmployer = getCurrentEmployer()
                 chooseToSaveAndContinue(curEmployer)
             } else {
-                displayError(message)
+                displayMessage(getString(R.string.error_) + message)
             }
         }
     }
@@ -240,10 +240,10 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         )
     }
 
-    private fun displayError(message: String) {
+    private fun displayMessage(message: String) {
         Toast.makeText(
             mView.context,
-            getString(R.string.error_) + message,
+            message,
             Toast.LENGTH_LONG
         ).show()
     }

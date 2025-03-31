@@ -47,8 +47,7 @@ class WorkOrderHistoryAddFragment :
     private var curEmployer: Employers? = null
     private var curWorkOrder: WorkOrder? = null
     private lateinit var curHistory: WorkOrderHistory
-    private lateinit var commonFunctions:
-            WorkOrderCommonFunctions
+    private lateinit var commonFunctions: WorkOrderCommonFunctions
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -298,10 +297,7 @@ class WorkOrderHistoryAddFragment :
             curHistory = getCurHistory()
             saveHistory(gotoUpdate)
         } else {
-            Toast.makeText(
-                mView.context,
-                answer, Toast.LENGTH_LONG
-            ).show()
+            displayMessage(getString(R.string.error_) + answer)
         }
     }
 
@@ -363,11 +359,10 @@ class WorkOrderHistoryAddFragment :
     private fun setCurWorkOrder() {
         binding.apply {
             if (acWorkOrder.text.isNullOrBlank()) {
-                Toast.makeText(
-                    mView.context,
-                    getString(R.string.please_enter_a_valid_work_order_before_adding_work_performed),
-                    Toast.LENGTH_LONG
-                ).show()
+                displayMessage(
+                    getString(R.string.error_) +
+                            getString(R.string.please_enter_a_valid_work_order_before_adding_work_performed)
+                )
             }
             if (doesWorkOrderExist()) {
                 populateWorkOrderInfo()
@@ -377,6 +372,13 @@ class WorkOrderHistoryAddFragment :
                 tvDescription.visibility = View.INVISIBLE
             }
         }
+    }
+
+    private fun displayMessage(message: String) {
+        Toast.makeText(
+            mView.context,
+            message, Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun setTempWorkOrderHistory() {

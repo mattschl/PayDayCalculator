@@ -520,10 +520,10 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
         }
     }
 
-    private fun displayMessage(mess: String) {
+    private fun displayMessage(message: String) {
         Toast.makeText(
             mView.context,
-            mess,
+            message,
             Toast.LENGTH_LONG
         ).show()
     }

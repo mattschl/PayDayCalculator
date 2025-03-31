@@ -217,19 +217,18 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
     }
 
     private fun updateWorkPerformedInHistoryIfValid() {
-        val message = validateOrAddWorkPerformedToDbAndUpdateWithArea()
-        if (message != ANSWER_OK) {
-            displayError(message)
+        val answer = validateOrAddWorkPerformedToDbAndUpdateWithArea()
+        if (answer != ANSWER_OK) {
+            displayMessage(getString(R.string.error_) + answer)
         } else {
 //            gotoCallingFragment()
         }
     }
 
-    private fun displayError(message: String) {
+    private fun displayMessage(message: String) {
         Toast.makeText(
             mView.context,
-            getString(R.string.error_) +
-                    message,
+            message,
             Toast.LENGTH_LONG
         ).show()
     }
@@ -272,7 +271,7 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
                     }
                 }
             } else {
-                displayError(answer)
+                displayMessage(getString(R.string.error_) + answer)
             }
         }
     }

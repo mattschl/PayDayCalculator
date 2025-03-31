@@ -195,12 +195,16 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
     }
 
     private fun gotoWorkOrderUpdate() {
+        displayMessage(getString(R.string.work_order_has_been_added_automatically_before_adding_work_specs))
+        gotoWorkOrderUpdateFragment()
+    }
+
+    private fun displayMessage(message: String) {
         Toast.makeText(
             mView.context,
-            getString(R.string.work_order_has_been_added_automatically_before_adding_work_specs),
+            message,
             Toast.LENGTH_LONG
         ).show()
-        gotoWorkOrderUpdateFragment()
     }
 
     private fun gotoCallingFragment() {

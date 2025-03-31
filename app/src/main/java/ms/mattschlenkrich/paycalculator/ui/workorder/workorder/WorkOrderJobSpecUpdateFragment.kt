@@ -191,15 +191,20 @@ class WorkOrderJobSpecUpdateFragment :
     private fun updateJobSpecInWorkOrderIfValid() {
         val message = validateOrAddJobSpecToDbAndUpdateWithArea()
         if (message != ANSWER_OK) {
-            Toast.makeText(
-                mView.context,
-                getString(R.string.error_) +
-                        message,
-                Toast.LENGTH_LONG
-            ).show()
+            showMessage(
+                getString(R.string.error_) + message
+            )
         } else {
 //            gotoCallingFragment()
         }
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(
+            mView.context,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateOrAddJobSpecToDbAndUpdateWithArea(): String {

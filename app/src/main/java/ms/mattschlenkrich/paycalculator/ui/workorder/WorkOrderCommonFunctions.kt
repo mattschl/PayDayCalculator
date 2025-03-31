@@ -6,7 +6,6 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistor
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
 class WorkOrderCommonFunctions(val mainActivity: MainActivity) {
-
     fun getWorkDateObject(): WorkDates? {
         return mainActivity.mainViewModel.getWorkDateObject()
     }
