@@ -88,26 +88,28 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
         if (answer == ANSWER_OK) {
             updateJobSpecAndContinue()
         } else {
-            Toast.makeText(
-                mView.context,
-                answer, Toast.LENGTH_LONG
-            ).show()
+            displayMessage(getString(R.string.error_) + answer)
         }
 
+    }
+
+    private fun displayMessage(answer: String) {
+        Toast.makeText(
+            mView.context,
+            answer, Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateJobSpec(): String {
         binding.apply {
             if (etJobSpec.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.please_enter_a_valid_job_spec)
+                return getString(R.string.please_enter_a_valid_job_spec)
             }
             for (jobSpec in jobSpecList) {
                 if (jobSpec.jsName == binding.etJobSpec.text.toString().trim() &&
                     jobSpec.jsName != oldJobSpec.jsName
                 ) {
-                    return getString(R.string.error_) +
-                            getString(R.string.this_job_spec_already_exists)
+                    return getString(R.string.this_job_spec_already_exists)
                 }
             }
             return ANSWER_OK

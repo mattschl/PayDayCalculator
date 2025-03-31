@@ -88,19 +88,22 @@ class AreaUpdateFragment :
         if (answer == ANSWER_OK) {
             updateArea()
         } else {
-            Toast.makeText(
-                mView.context,
-                answer,
-                Toast.LENGTH_LONG
-            ).show()
+            displayMessage(getString(R.string.error_) + answer)
         }
+    }
+
+    private fun displayMessage(answer: String) {
+        Toast.makeText(
+            mView.context,
+            answer,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateArea(): String {
         binding.apply {
             if (etItem.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.please_enter_a_valid_description_of_the_area)
+                return getString(R.string.please_enter_a_valid_description_of_the_area)
             }
             for (area in areasList) {
                 if (area.areaName ==
@@ -108,8 +111,7 @@ class AreaUpdateFragment :
                     etItem.text.toString().trim() !=
                     oldArea.areaName
                 ) {
-                    return getString(R.string.error_) +
-                            getString(R.string.this_area_description_already_exists)
+                    return getString(R.string.this_area_description_already_exists)
                 }
             }
         }

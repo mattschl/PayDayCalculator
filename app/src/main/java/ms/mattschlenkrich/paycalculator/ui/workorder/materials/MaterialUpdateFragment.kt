@@ -90,41 +90,40 @@ class MaterialUpdateFragment
             updateMaterial()
             gotoCallingFragment()
         } else {
-            Toast.makeText(
-                mView.context,
-                answer,
-                Toast.LENGTH_LONG
-            ).show()
+            displayMessage(getString(R.string.error_) + answer)
         }
+    }
+
+    private fun displayMessage(answer: String) {
+        Toast.makeText(
+            mView.context,
+            answer,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateMaterial(): String {
         binding.apply {
             if (etMaterial.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.please_enter_a_new_name_for_this_material)
+                return getString(R.string.please_enter_a_new_name_for_this_material)
             }
             if (etCost.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.there_needs_to_be_a_cost_including_zero)
+                return getString(R.string.there_needs_to_be_a_cost_including_zero)
             }
             if (etPrice.text.isNullOrBlank()) {
-                return getString(R.string.error_) +
-                        getString(R.string.there_needs_to_be_a_price_including_zero)
+                return getString(R.string.there_needs_to_be_a_price_including_zero)
             }
             for (material in materialList) {
                 if (material.mName == etMaterial.text.toString().trim() &&
                     etMaterial.text.toString().trim() != oldMaterial.mName
                 ) {
-                    return getString(R.string.error_) +
-                            getString(R.string.this_material_already_exists)
+                    return getString(R.string.this_material_already_exists)
                 }
             }
             if (nf.getDoubleFromDollars(etCost.text.toString()) >
                 nf.getDoubleFromDollars(etPrice.text.toString())
             ) {
-                return getString(R.string.error_) +
-                        getString(R.string.the_cost_is_greater_than_the_price)
+                return getString(R.string.the_cost_is_greater_than_the_price)
             }
         }
         return ANSWER_OK

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.paycalculator.R
@@ -70,7 +71,8 @@ class MaterialQuantityUpdateFragment : Fragment(R.layout.fragment_material_quant
     }
 
     private fun updateMaterialQuantityIfValid() {
-        if (validateQuantity() == ANSWER_OK) {
+        val answer = validateQuantity()
+        if (answer == ANSWER_OK) {
             val newQty = binding.etNewQuantity.text.toString().trim().toDouble()
             if (newQty != material.mQty) {
                 mainActivity.workOrderViewModel.updateWorkOrderHistoryMaterial(
@@ -86,13 +88,22 @@ class MaterialQuantityUpdateFragment : Fragment(R.layout.fragment_material_quant
                 )
             }
             gotoWorkOrderHistoryUpdate()
+        } else {
+            showMessage(getString(R.string.error_) + answer)
         }
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(
+            mView.context,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateQuantity(): String {
         if (binding.etNewQuantity.text.isNullOrBlank()) {
-            return getString(R.string.error_) +
-                    getString(R.string.please_enter_a_new_quantity)
+            return getString(R.string.please_enter_a_new_quantity)
         }
         return ANSWER_OK
     }
