@@ -668,12 +668,12 @@ class WorkOrderHistoryUpdateFragment :
                             )
                         }
                     }
-                    val workPerformedCombinedIsValid = async {
-                        validateWorkPerformedCombined(
+                    val combinedWorkPerformedIsUnique = async {
+                        isCombinedWorkPerformedUnique(
                             workPerformed.await(), area.await(), showError
                         )
                     }
-                    if (workPerformedCombinedIsValid.await()) {
+                    if (combinedWorkPerformedIsUnique.await()) {
                         addWorkPerformedToHistory(
                             workPerformed.await(), area.await()
                         )
@@ -683,7 +683,7 @@ class WorkOrderHistoryUpdateFragment :
         }
     }
 
-    private fun validateWorkPerformedCombined(
+    private fun isCombinedWorkPerformedUnique(
         workPerformed: WorkPerformed, area: Areas?, showError: Boolean
     ): Boolean {
         for (combinedWorkPerformed in existingWorkPerformedListForValidation) {

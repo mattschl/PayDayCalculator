@@ -46,8 +46,6 @@ class WorKOrderHistoryWorkPerformedAdapter(
                         newItem.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId &&
                         oldItem.area == newItem.area
             }
-
-
         }
 
     val differ = AsyncListDiffer(this, differCallBack)
@@ -98,10 +96,10 @@ class WorKOrderHistoryWorkPerformedAdapter(
                     mView.context.getString(R.string.edit_the_work_performed_description_in_the_history),
                     mView.context.getString(R.string.remove_this_work_performed_description_in_the_history),
                     mView.context.getString(R.string.edit_work_description_of_) +
-                            work.workPerformed.wpDescription,
+                            " \" ${work.workPerformed.wpDescription} \"",
                     if (work.area != null) {
                         mView.context.getString(R.string.edit_area_description_of_) +
-                                work.area.areaName
+                                " \" ${work.area.areaName} \""
                     } else {
                         ""
                     }
@@ -146,6 +144,7 @@ class WorKOrderHistoryWorkPerformedAdapter(
     }
 
     private fun editWorkPerformed(workPerformedId: Long) {
+        mainActivity.mainViewModel.setWorkOrderHistory(curHistory)
         mainActivity.mainViewModel.setWorkPerformedId(workPerformedId)
         mainActivity.mainViewModel.addCallingFragment(parentFragment)
         workOrderHistoryUpdateFragment.gotoWorkPerformedUpdateFragment()
