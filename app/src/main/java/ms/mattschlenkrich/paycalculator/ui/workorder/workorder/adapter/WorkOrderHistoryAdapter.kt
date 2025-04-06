@@ -1,5 +1,6 @@
-package ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater
+package ms.mattschlenkrich.paycalculator.ui.workorder.workorder.adapter
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -76,8 +77,24 @@ class WorkOrderHistoryAdapter(
             }
         }
         holder.itemView.setOnClickListener {
-            gotoEditWorkOrderHistory(history)
+            chooseOptions(history)
         }
+    }
+
+    private fun chooseOptions(history: WorkOrderHistoryWithDates) {
+        AlertDialog.Builder(mView.context)
+            .setTitle(
+                mView.context.getString(R.string.choose_option_for) +
+                        " ${mView.context.getString(R.string.work_performed_on)}" +
+                        " ${df.getDisplayDate(history.workDate.wdDate)}"
+            )
+            .setPositiveButton(mView.context.getString(R.string.edit)) { _, _ ->
+                gotoEditWorkOrderHistory(
+                    history
+                )
+            }
+            .setNegativeButton(mView.context.getString(R.string.cancel), null)
+            .show()
     }
 
     private fun gotoEditWorkOrderHistory(history: WorkOrderHistoryWithDates) {

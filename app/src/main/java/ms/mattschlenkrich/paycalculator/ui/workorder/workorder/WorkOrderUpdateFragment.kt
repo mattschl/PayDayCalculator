@@ -37,8 +37,8 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpe
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.adapter.MaterialCountAdapter
+import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.adapter.WorkOrderHistoryAdapter
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.adapter.WorkOrderJobSpecAdapter
-import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater.WorkOrderHistoryAdapter
 
 private const val TAG = FRAG_WORK_ORDER_UPDATE
 

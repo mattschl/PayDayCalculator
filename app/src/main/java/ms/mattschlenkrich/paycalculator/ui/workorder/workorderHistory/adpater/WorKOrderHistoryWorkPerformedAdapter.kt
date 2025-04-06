@@ -44,7 +44,8 @@ class WorKOrderHistoryWorkPerformedAdapter(
                 return oldItem.workPerformed.workPerformedId == newItem.workPerformed.workPerformedId &&
                         oldItem.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId ==
                         newItem.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId &&
-                        oldItem.area == newItem.area
+                        oldItem.area == newItem.area &&
+                        oldItem.workOrderHistoryWorkPerformed.wowpNote == newItem.workOrderHistoryWorkPerformed.wowpNote
             }
         }
 

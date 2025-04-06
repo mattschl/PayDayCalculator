@@ -187,6 +187,38 @@ class WorkOrderHistoryUpdateFragment :
         }
     }
 
+    private fun populateWorkOrderListForAutoComplete() {
+        mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
+            workDateObject!!.wdEmployerId
+        ).observe(viewLifecycleOwner) { list ->
+            workOrderList = list
+            val workOrderListForAutocomplete = ArrayList<String>()
+            list.listIterator().forEach { workOrderListForAutocomplete.add(it.woNumber) }
+            binding.apply {
+                val woAdapter = ArrayAdapter(
+                    mView.context, R.layout.spinner_item_normal,
+                    workOrderListForAutocomplete
+                )
+                acWorkOrder.setAdapter(woAdapter)
+            }
+        }
+    }
+
+    private fun populateWorkPerformedListForAutoComplete() {
+        mainActivity.workOrderViewModel.getWorkPerformedAll()
+            .observe(viewLifecycleOwner) { list ->
+                workPerformedListForAutoComplete = list
+                val workPerformedDescriptions = ArrayList<String>()
+                list.listIterator().forEach { workPerformedDescriptions.add(it.wpDescription) }
+                val wpAdapter = ArrayAdapter(
+                    mView.context,
+                    R.layout.spinner_item_normal,
+                    workPerformedDescriptions
+                )
+                binding.acWorkPerformed.setAdapter(wpAdapter)
+            }
+    }
+
     private fun populateFromHistory() {
         val historyId =
             commonFunctions.getWorkOrderHistory()!!.woHistoryId
@@ -266,38 +298,6 @@ class WorkOrderHistoryUpdateFragment :
                 )
             }
         }
-    }
-
-    private fun populateWorkOrderListForAutoComplete() {
-        mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
-            workDateObject!!.wdEmployerId
-        ).observe(viewLifecycleOwner) { list ->
-            workOrderList = list
-            val workOrderListForAutocomplete = ArrayList<String>()
-            list.listIterator().forEach { workOrderListForAutocomplete.add(it.woNumber) }
-            binding.apply {
-                val woAdapter = ArrayAdapter(
-                    mView.context, R.layout.spinner_item_normal,
-                    workOrderListForAutocomplete
-                )
-                acWorkOrder.setAdapter(woAdapter)
-            }
-        }
-    }
-
-    private fun populateWorkPerformedListForAutoComplete() {
-        mainActivity.workOrderViewModel.getWorkPerformedAll()
-            .observe(viewLifecycleOwner) { list ->
-                workPerformedListForAutoComplete = list
-                val workPerformedDescriptions = ArrayList<String>()
-                list.listIterator().forEach { workPerformedDescriptions.add(it.wpDescription) }
-                val wpAdapter = ArrayAdapter(
-                    mView.context,
-                    R.layout.spinner_item_normal,
-                    workPerformedDescriptions
-                )
-                binding.acWorkPerformed.setAdapter(wpAdapter)
-            }
     }
 
     private fun setCurWorkOrder() {

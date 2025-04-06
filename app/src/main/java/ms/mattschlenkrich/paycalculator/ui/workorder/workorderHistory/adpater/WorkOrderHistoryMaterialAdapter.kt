@@ -43,18 +43,12 @@ class WorkOrderHistoryMaterialAdapter(
                 oldItem: MaterialInSequence,
                 newItem: MaterialInSequence
             ): Boolean {
-                return oldItem.workOrderHistoryMaterialId ==
-                        newItem.workOrderHistoryMaterialId &&
-                        oldItem.workOrderHistoryId ==
-                        newItem.workOrderHistoryId &&
-                        oldItem.materialId ==
-                        newItem.materialId &&
-                        oldItem.mName ==
-                        newItem.mName &&
-                        oldItem.mQty ==
-                        newItem.mQty &&
-                        oldItem.mSequence ==
-                        newItem.mSequence
+                return oldItem.workOrderHistoryMaterialId == newItem.workOrderHistoryMaterialId &&
+                        oldItem.workOrderHistoryId == newItem.workOrderHistoryId &&
+                        oldItem.materialId == newItem.materialId &&
+                        oldItem.mName == newItem.mName &&
+                        oldItem.mQty == newItem.mQty &&
+                        oldItem.mSequence == newItem.mSequence
             }
 
         }
