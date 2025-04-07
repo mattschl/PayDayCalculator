@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.extras.adapter
+package ms.mattschlenkrich.paycalculator.ui.extras.employerextras.adapter
 
 import android.app.AlertDialog
 import android.graphics.Color
@@ -38,15 +38,15 @@ class EmployerExtraDefinitionFullAdapter(
                 oldItem: ExtraDefTypeAndEmployer,
                 newItem: ExtraDefTypeAndEmployer
             ): Boolean {
-                return oldItem.employer.employerId == newItem.employer.employerId &&
-                        oldItem.definition.workExtraDefId == newItem.definition.workExtraDefId
+                return oldItem == newItem
             }
 
             override fun areContentsTheSame(
                 oldItem: ExtraDefTypeAndEmployer,
                 newItem: ExtraDefTypeAndEmployer
             ): Boolean {
-                return oldItem == newItem
+                return oldItem.employer.employerId == newItem.employer.employerId &&
+                        oldItem.definition.workExtraDefId == newItem.definition.workExtraDefId
             }
         }
 

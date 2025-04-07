@@ -9,14 +9,13 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkExtraTypesBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.extras.adapter.ExtraTypeAdapter
+import ms.mattschlenkrich.paycalculator.ui.extras.employerextras.adapter.ExtraTypeAdapter
 
 //private const val TAG = FRAG_EXTRA_TYPES
 
 class WorkExtraTypesFragment : Fragment(
     R.layout.fragment_work_extra_types
 ) {
-
     private var _binding: FragmentWorkExtraTypesBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View

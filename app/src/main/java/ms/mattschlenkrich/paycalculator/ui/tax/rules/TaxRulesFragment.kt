@@ -25,7 +25,7 @@ import ms.mattschlenkrich.paycalculator.database.model.tax.TaxEffectiveDates
 import ms.mattschlenkrich.paycalculator.database.model.tax.WorkTaxRules
 import ms.mattschlenkrich.paycalculator.databinding.FragmentTaxRulesBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.tax.adapter.TaxRuleAdapter
+import ms.mattschlenkrich.paycalculator.ui.tax.rules.adapter.TaxRuleAdapter
 
 private const val TAG = FRAG_TAX_RULES
 

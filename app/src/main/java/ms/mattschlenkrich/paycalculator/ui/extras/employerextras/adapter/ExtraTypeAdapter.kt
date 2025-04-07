@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.extras.adapter
+package ms.mattschlenkrich.paycalculator.ui.extras.employerextras.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater

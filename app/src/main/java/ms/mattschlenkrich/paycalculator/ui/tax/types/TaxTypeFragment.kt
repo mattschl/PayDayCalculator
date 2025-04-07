@@ -19,7 +19,7 @@ import ms.mattschlenkrich.paycalculator.common.FRAG_TAX_TYPE
 import ms.mattschlenkrich.paycalculator.database.model.tax.TaxTypes
 import ms.mattschlenkrich.paycalculator.databinding.FragmentTaxTypeBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.tax.adapter.TaxTypeAdapter
+import ms.mattschlenkrich.paycalculator.ui.tax.types.adapter.TaxTypeAdapter
 
 private const val TAG = FRAG_TAX_TYPE
 

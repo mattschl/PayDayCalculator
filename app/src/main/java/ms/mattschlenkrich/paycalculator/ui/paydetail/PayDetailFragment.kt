@@ -42,7 +42,7 @@ import ms.mattschlenkrich.paycalculator.payfunctions.IPayCalculations
 import ms.mattschlenkrich.paycalculator.payfunctions.PayCalculationsAsync
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.paydetail.adapter.PayDetailExtraAdapter
-import ms.mattschlenkrich.paycalculator.ui.tax.adapter.PayDetailTaxAdapter
+import ms.mattschlenkrich.paycalculator.ui.paydetail.adapter.PayDetailTaxAdapter
 import java.time.LocalDate
 
 private const val TAG = FRAG_PAY_DETAILS

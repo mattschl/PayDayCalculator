@@ -23,7 +23,7 @@ import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerExtraDefinitionsBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.extras.adapter.EmployerExtraDefinitionFullAdapter
+import ms.mattschlenkrich.paycalculator.ui.extras.employerextras.adapter.EmployerExtraDefinitionFullAdapter
 
 private const val TAG = FRAG_EXTRA_DEFINITIONS
 
@@ -153,16 +153,14 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     setHasFixedSize(true)
                     adapter = extraDefinitionAdapter
                 }
-                activity.let {
-                    mainActivity.workExtraViewModel.getActiveExtraDefinitionsFull(
-                        curEmployer!!.employerId, curExtraType!!.workExtraTypeId
-                    ).observe(
-                        viewLifecycleOwner
-                    ) { extras ->
-                        extraDefinitionAdapter.notifyDataSetChanged()
-                        extraDefinitionAdapter.differ.submitList(extras)
-                        updateExtrasUI(extras)
-                    }
+                mainActivity.workExtraViewModel.getActiveExtraDefinitionsFull(
+                    curEmployer!!.employerId, curExtraType!!.workExtraTypeId
+                ).observe(
+                    viewLifecycleOwner
+                ) { extras ->
+                    extraDefinitionAdapter.notifyDataSetChanged()
+                    extraDefinitionAdapter.differ.submitList(extras)
+                    updateExtrasUI(extras)
                 }
             }
         }
