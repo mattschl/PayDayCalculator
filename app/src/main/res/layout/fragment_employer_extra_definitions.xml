@@ -76,8 +76,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dimen_20dp"
-                    android:maxWidth="@dimen/text_box_wide"
-                    android:maxLines="2"
+                    android:maxWidth="@dimen/text_box_medium"
+                    android:minLines="2"
                     android:singleLine="false"
                     android:text="@string/applies_to"
                     android:textColor="@color/black"
@@ -91,8 +91,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dimen_20dp"
-                    android:maxWidth="@dimen/text_box_wide"
-                    android:maxLines="2"
+                    android:maxWidth="@dimen/text_box_medium"
+                    android:minLines="2"
                     android:singleLine="false"
                     android:text="@string/attach_to"
                     android:textColor="@color/black"
@@ -108,8 +108,8 @@
                     android:text="@string/is_a_credit"
                     android:textColor="@color/black"
                     android:textSize="@dimen/label_text_size"
-                    app:layout_constraintEnd_toStartOf="@id/tvDefault"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/tvAppliesTo"
+                    app:layout_constraintStart_toStartOf="@+id/tvAppliesTo"
                     app:layout_constraintTop_toBottomOf="@id/tvAppliesTo" />
 
                 <TextView
@@ -119,8 +119,8 @@
                     android:text="@string/is_default"
                     android:textColor="@color/black"
                     android:textSize="@dimen/label_text_size"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/tvCredit"
+                    app:layout_constraintEnd_toEndOf="@+id/tvAttachTo"
+                    app:layout_constraintStart_toStartOf="@+id/tvAttachTo"
                     app:layout_constraintTop_toBottomOf="@id/tvAppliesTo" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

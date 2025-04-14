@@ -326,10 +326,6 @@
     </fragment>
 
     <!--    action_global_workExtraTypesFragment-->
-    <action
-        android:id="@+id/action_global_workExtraTypesFragment"
-        app:destination="@id/workExtraTypesFragment"
-        app:popUpTo="@id/workExtraTypesFragment" />
 
     <!--    workExtraTypeAddFragment-->
     <fragment
@@ -450,11 +446,6 @@
     </fragment>
 
     <!--    workExtraTypesFragment-->
-    <fragment
-        android:id="@+id/workExtraTypesFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.extras.employerextras.WorkExtraTypesFragment"
-        android:label="WorkExtraTypesFragment"
-        tools:layout="@layout/fragment_work_extra_types" />
 
     <!--    workDateExtraAddFragment-->
     <fragment

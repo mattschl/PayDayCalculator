@@ -164,6 +164,7 @@ class TimeSheetFragment :
     private fun populateCutOffDates() {
         if (curEmployer != null) {
             binding.apply {
+                fabAddDate.visibility = View.INVISIBLE
                 val cutOffAdapter = ArrayAdapter<Any>(
                     mView.context,
                     R.layout.spinner_item_bold
@@ -318,6 +319,7 @@ class TimeSheetFragment :
                             nf.getNumberFromDouble(payCalculations.getHoursStat())
                 }
                 tvHours.text = display
+                fabAddDate.visibility = View.VISIBLE
             }
         }
     }
