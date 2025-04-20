@@ -40,6 +40,7 @@
             android:inputType="text|textCapWords"
             android:maxWidth="@dimen/text_box_wide"
             android:minHeight="@dimen/minimum_touch_height"
+            android:selectAllOnFocus="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lblExtra"
             app:layout_constraintTop_toBottomOf="@id/tvInfo" />

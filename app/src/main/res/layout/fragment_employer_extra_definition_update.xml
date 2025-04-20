@@ -23,6 +23,7 @@
             android:id="@+id/tvEmployer"
             android:layout_width="@dimen/text_box_wide"
             android:layout_height="wrap_content"
+            android:selectAllOnFocus="true"
             android:text="@string/employer_name"
             android:textAlignment="center"
             android:textColor="@color/black"
