@@ -9,6 +9,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -214,21 +215,34 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun confirmSaveNow(fragment: String) {
-        AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.finish_adding_work_date))
-            .setMessage(getString(R.string.would_you_like_to_save_this_date_now_and_continue))
-            .setPositiveButton(getString(R.string.save_now)) { _, _ ->
-                saveWorkDate(fragment)
-            }
-            .setNegativeButton(getString(R.string.go_back), null)
-            .show()
+    private fun automaticallySave(fragment: String) {
+        displayMessage(getString(R.string.this_work_date_has_been_saved_automatically))
+        saveWorkDate(fragment)
     }
+
+    private fun displayMessage(message: String) {
+        Toast.makeText(
+            mView.context,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+//    private fun confirmSaveNow(fragment: String) {
+//        AlertDialog.Builder(requireContext())
+//            .setTitle(getString(R.string.finish_adding_work_date))
+//            .setMessage(getString(R.string.would_you_like_to_save_this_date_now_and_continue))
+//            .setPositiveButton(getString(R.string.save_now)) { _, _ ->
+//                saveWorkDate(fragment)
+//            }
+//            .setNegativeButton(getString(R.string.go_back), null)
+//            .show()
+//    }
 
     override fun validateWorkDateToSave(fragment: String) {
         var found = false
         if (usedWorkDatesList.isEmpty()) {
-            confirmSaveNow(fragment)
+            automaticallySave(fragment)
         } else {
             for (date in usedWorkDatesList) {
                 if (date.wdDate == curDateString) {
@@ -237,7 +251,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
                 }
             }
             if (!found) {
-                confirmSaveNow(fragment)
+                automaticallySave(fragment)
             }
         }
     }
