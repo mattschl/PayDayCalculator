@@ -58,6 +58,9 @@ class PayDayViewModel(
     fun getWorkDateList(employerId: Long, cutOff: String) =
         payDayRepository.getWorkDateList(employerId, cutOff)
 
+    fun getWorkDatesByDateRange(employerId: Long, firstDate: String, lastDate: String) =
+        payDayRepository.getWorkDatesByDateRange(employerId, firstDate, lastDate)
+
     fun getWorkDateListUsed(employerId: Long, cutOff: String) =
         payDayRepository.getWorkDateListUsed(employerId, cutOff)
 

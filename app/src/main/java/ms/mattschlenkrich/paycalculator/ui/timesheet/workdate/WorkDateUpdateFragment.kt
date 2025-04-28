@@ -18,7 +18,9 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_TIME_SHEET
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_UPDATE
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
+import ms.mattschlenkrich.paycalculator.common.HolidayPayCalculator
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
@@ -26,6 +28,7 @@ import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkDateUpdateBindin
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.timesheet.adapter.WorkDateUpdateCustomExtraAdapter
 import ms.mattschlenkrich.paycalculator.ui.workorder.adapter.WorkDateWorkOrderHistoryAdapter
+import kotlin.math.round
 
 private const val TAG = FRAG_WORK_DATE_UPDATE
 
@@ -254,6 +257,24 @@ class WorkDateUpdateFragment : Fragment(
             }
             btnTransfer.setOnClickListener {
                 transferWorkOrderTotals()
+            }
+            lblStat.setOnClickListener {
+                setStatHoursEstimate()
+            }
+        }
+    }
+
+    private fun setStatHoursEstimate() {
+        binding.apply {
+            etStat.setText("")
+            CoroutineScope(Dispatchers.Main).launch {
+                val holidayPayCalculator = HolidayPayCalculator(
+                    mainActivity, currentWorkDateObject.wdEmployerId, curDateString
+                )
+                delay(WAIT_1000)
+                val statHours = round(holidayPayCalculator.getStatHours() * 4) / 4
+                etStat.setText(nf.getNumberFromDouble(statHours))
+
             }
         }
     }

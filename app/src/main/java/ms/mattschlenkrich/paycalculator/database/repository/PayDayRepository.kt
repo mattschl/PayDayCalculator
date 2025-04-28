@@ -23,6 +23,9 @@ class PayDayRepository(private val db: PayDatabase) {
     fun getWorkDateList(employerId: Long, cutOff: String) =
         db.getPayDayDao().getWorkDateList(employerId, cutOff)
 
+    fun getWorkDatesByDateRange(employerId: Long, firstDate: String, lastDate: String) =
+        db.getPayDayDao().getWorkDatesByDateRange(employerId, firstDate, lastDate)
+
     fun getWorkDateListUsed(employerId: Long, cutOff: String) =
         db.getPayDayDao().getWorkDateListUsed(employerId, cutOff)
 

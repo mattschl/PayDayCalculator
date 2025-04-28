@@ -56,6 +56,17 @@ interface PayDayDao {
     fun getWorkDateList(employerId: Long, cutOff: String): LiveData<List<WorkDates>>
 
     @Query(
+        "SELECT * FROM workDates " +
+                "WHERE wdEmployerId = :employerId " +
+                "AND wdDate <= :lastDate " +
+                "AND wdDate >= :firstDate " +
+                "AND wdIsDeleted = 0 " +
+                "ORDER BY wdDate"
+    )
+    fun getWorkDatesByDateRange(employerId: Long, firstDate: String, lastDate: String):
+            List<WorkDates>
+
+    @Query(
         "SELECT * FROM $TABLE_WORK_DATES " +
                 "WHERE wdEmployerId = :employerId " +
                 "AND wdCutoffDate = :cutOff " +
