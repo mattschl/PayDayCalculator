@@ -28,7 +28,7 @@ import ms.mattschlenkrich.paycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paycalculator.payfunctions.PayCalculationsAsync
 import ms.mattschlenkrich.paycalculator.payfunctions.PayDateProjections
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.timesheet.adapter.WorkDateAdapter
+import ms.mattschlenkrich.paycalculator.ui.timesheet.timesheetadapter.WorkDateAdapter
 import java.time.LocalDate
 
 private const val TAG = FRAG_TIME_SHEET

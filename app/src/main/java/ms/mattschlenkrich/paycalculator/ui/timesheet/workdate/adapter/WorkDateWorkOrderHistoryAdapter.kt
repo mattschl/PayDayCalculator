@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.workorder.adapter
+package ms.mattschlenkrich.paycalculator.ui.timesheet.workdate.adapter
 
 import android.app.AlertDialog
 import android.view.LayoutInflater

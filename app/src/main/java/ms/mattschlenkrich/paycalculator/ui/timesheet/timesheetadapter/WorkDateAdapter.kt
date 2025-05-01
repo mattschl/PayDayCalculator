@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.timesheet.adapter
+package ms.mattschlenkrich.paycalculator.ui.timesheet.timesheetadapter
 
 import android.graphics.Color
 import android.view.LayoutInflater
