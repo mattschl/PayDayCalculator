@@ -55,7 +55,6 @@ interface WorkOrderDao {
     )
     suspend fun deleteWorkOrder(workOrderId: Long, updateTime: String)
 
-
     @Query(
         "UPDATE workOrders " +
                 "SET woDeleted = 1, " +
@@ -131,6 +130,12 @@ interface WorkOrderDao {
                 "WHERE woHistoryId = :historyID"
     )
     suspend fun deleteWorkOrderHistory(historyID: Long, updateTime: String)
+
+    @Query(
+        "DELETE FROM workOrderHistory " +
+                "WHERE woHistoryId = :historyId"
+    )
+    suspend fun deleteWorkOrderHistory(historyId: Long)
 
     @RewriteQueriesToDropUnusedColumns
     @Transaction
@@ -287,10 +292,10 @@ interface WorkOrderDao {
 
     @Query(
         "DELETE FROM workOrderHistoryWorkPerformed  " +
-                "WHERE workOrderHistoryWorkPerformedId = :workPerformedHistoryId"
+                "WHERE wowpHistoryId = :historyId"
     )
-    suspend fun removeWorkPerformedFromWorkOrderHistory(
-        workPerformedHistoryId: Long
+    suspend fun removeAllWorkPerformedFromWorkOrderHistory(
+        historyId: Long
     )
 
     @RewriteQueriesToDropUnusedColumns
@@ -347,6 +352,12 @@ interface WorkOrderDao {
                 "WHERE materialId = :materialId"
     )
     suspend fun deleteMaterial(materialId: Long, updateTime: String)
+
+    @Query(
+        "DELETE FROM workOrderHistoryMaterials " +
+                "WHERE wohmHistoryId = :historyId"
+    )
+    suspend fun removeAllMaterialsFromWorkOrderHistory(historyId: Long)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkOrderHistoryMaterial(

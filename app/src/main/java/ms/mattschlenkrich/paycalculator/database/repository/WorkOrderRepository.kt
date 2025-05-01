@@ -69,6 +69,9 @@ class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun deleteWorkOrderHistory(historyID: Long, updateTime: String) =
         db.getWorkOrderDao().deleteWorkOrderHistory(historyID, updateTime)
 
+    suspend fun deleteWorkOrderHistory(historyId: Long) =
+        db.getWorkOrderDao().deleteWorkOrderHistory(historyId)
+
     fun getWorkOrderHistoriesByDate(workDateId: Long) =
         db.getWorkOrderDao().getWorkOrderHistoriesByDate(workDateId)
 
@@ -153,10 +156,10 @@ class WorkOrderRepository(private val db: PayDatabase) {
         workOrderHistoryWorkPerformed
     )
 
-    suspend fun removeWorkPerformedFromWorkOderHistory(
-        workPerformedHistoryId: Long
-    ) = db.getWorkOrderDao().removeWorkPerformedFromWorkOrderHistory(
-        workPerformedHistoryId
+    suspend fun removeAllWorkPerformedFromWorkOrderHistory(
+        historyId: Long
+    ) = db.getWorkOrderDao().removeAllWorkPerformedFromWorkOrderHistory(
+        historyId
     )
 
     fun getWorkPerformedCombinedByWorkOrderHistory(historyId: Long) =
@@ -211,6 +214,9 @@ class WorkOrderRepository(private val db: PayDatabase) {
 
     fun getMaterialsHistoryByWorkOrderId(workOrderId: Long) =
         db.getWorkOrderDao().getMaterialsHistoryByWorkOrderId(workOrderId)
+
+    suspend fun removeAllMaterialsFromWorkOrderHistory(historyId: Long) =
+        db.getWorkOrderDao().removeAllMaterialsFromWorkOrderHistory(historyId)
 
     suspend fun insertArea(area: Areas) = db.getWorkOrderDao().insertArea(area)
 
