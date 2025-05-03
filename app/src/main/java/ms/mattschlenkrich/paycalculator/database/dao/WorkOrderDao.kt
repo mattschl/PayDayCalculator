@@ -298,6 +298,12 @@ interface WorkOrderDao {
         historyId: Long
     )
 
+    @Query(
+        "DELETE FROM workOrderHistoryWorkPerformed " +
+                "WHERE workOrderHistoryWorkPerformedId = :historyWorkPerformedId"
+    )
+    suspend fun deleteWorkOrderHistoryWorkPerformed(historyWorkPerformedId: Long)
+
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(

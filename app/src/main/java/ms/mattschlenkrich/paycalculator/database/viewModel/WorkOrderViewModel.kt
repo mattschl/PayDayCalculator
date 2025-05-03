@@ -264,6 +264,11 @@ class WorkOrderViewModel(
             workOrderRepository.removeAllMaterialsFromWorkOrderHistory(historyId)
         }
 
+    fun deleteWorkOrderHistoryWorkPerformed(historyWorkPerformedId: Long) =
+        viewModelScope.launch {
+            workOrderRepository.deleteWorkOrderHistoryWorkPerformed(historyWorkPerformedId)
+        }
+
     fun updateWorkOrderHistoryMaterial(
         workOrderHistoryMaterial: WorkOrderHistoryMaterial
     ) = viewModelScope.launch {

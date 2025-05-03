@@ -152,9 +152,8 @@ class WorKOrderHistoryWorkPerformedAdapter(
     }
 
     private fun removeWorkPerformedFromWorkOrder(workOrderHistoryWorkPerformedId: Long) {
-        mainActivity.workOrderViewModel.removeAllWorkPerformedFromWorkOderHistory(
+        mainActivity.workOrderViewModel.deleteWorkOrderHistoryWorkPerformed(
             workOrderHistoryWorkPerformedId
         )
     }
-
 }
