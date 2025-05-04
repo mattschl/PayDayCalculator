@@ -186,13 +186,13 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
         setMenuActions()
         binding.apply {
             fabAddExtra.setOnClickListener {
-                validateWorkDateToSave(FRAG_WORK_DATE_EXTRA_ADD)
+                validateWorkDateToSave(FRAG_WORK_DATE_EXTRA_ADD, true)
             }
             tvWorkDate.setOnClickListener {
                 changeDate()
             }
             fabAddWorkOrder.setOnClickListener {
-                validateWorkDateToSave(FRAG_WORK_ORDER_HISTORY_ADD)
+                validateWorkDateToSave(FRAG_WORK_ORDER_HISTORY_ADD, true)
             }
             lblStat.setOnClickListener {
                 setStatHoursEstimate()
@@ -223,7 +223,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
-                        validateWorkDateToSave(FRAG_TIME_SHEET)
+                        validateWorkDateToSave(FRAG_TIME_SHEET, false)
                         true
                     }
 
@@ -235,11 +235,6 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun automaticallySave(fragment: String) {
-        displayMessage(getString(R.string.this_work_date_has_been_saved_automatically))
-        saveWorkDate(fragment)
-    }
-
     private fun displayMessage(message: String) {
         Toast.makeText(
             mView.context,
@@ -248,21 +243,13 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
         ).show()
     }
 
-//    private fun confirmSaveNow(fragment: String) {
-//        AlertDialog.Builder(requireContext())
-//            .setTitle(getString(R.string.finish_adding_work_date))
-//            .setMessage(getString(R.string.would_you_like_to_save_this_date_now_and_continue))
-//            .setPositiveButton(getString(R.string.save_now)) { _, _ ->
-//                saveWorkDate(fragment)
-//            }
-//            .setNegativeButton(getString(R.string.go_back), null)
-//            .show()
-//    }
-
-    override fun validateWorkDateToSave(fragment: String) {
+    override fun validateWorkDateToSave(fragment: String, isAutomaticallySaved: Boolean) {
         var found = false
+        if (isAutomaticallySaved) {
+            displayMessage(getString(R.string.this_work_date_has_been_saved_automatically))
+        }
         if (usedWorkDatesList.isEmpty()) {
-            automaticallySave(fragment)
+            saveWorkDate(fragment)
         } else {
             for (date in usedWorkDatesList) {
                 if (date.wdDate == curDateString) {
@@ -271,7 +258,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
                 }
             }
             if (!found) {
-                automaticallySave(fragment)
+                saveWorkDate(fragment)
             }
         }
     }
