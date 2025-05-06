@@ -117,6 +117,9 @@ class WorkOrderRepository(private val db: PayDatabase) {
         workOrderJobSpecId, updateTime
     )
 
+    suspend fun deleteWorkOrderJobSpec(workOrderJobSpecId: Long) =
+        db.getWorkOrderDao().deleteWorkOrderJobSpec(workOrderJobSpecId)
+
     fun getWorkOrderJobSpecs(workOrderId: Long) =
         db.getWorkOrderDao().getWorkOrderJobSpecs(workOrderId)
 

@@ -372,24 +372,26 @@ class WorkDateUpdateFragment : Fragment(
 
     private fun getCurrentWorkDate(): WorkDates {
         binding.apply {
-            return WorkDates(
-                currentWorkDateObject.workDateId,
-                currentWorkDateObject.wdPayPeriodId,
-                currentWorkDateObject.wdEmployerId,
-                currentWorkDateObject.wdCutoffDate,
-                curDateString,
-                if (etHours.text.isNullOrBlank()) 0.0 else etHours.text.toString().trim()
-                    .toDouble(),
-                if (etOt.text.isNullOrBlank()) 0.0 else etOt.text.toString().trim()
-                    .toDouble(),
-                if (etDblOt.text.isNullOrBlank()) 0.0 else etDblOt.text.toString().trim()
-                    .toDouble(),
-                if (etStat.text.isNullOrBlank()) 0.0 else etStat.text.toString().trim()
-                    .toDouble(),
-                if (etNote.text.isNullOrBlank()) null else etNote.text.toString().trim(),
-                false,
-                df.getCurrentTimeAsString()
-            )
+            currentWorkDateObject.apply {
+                return WorkDates(
+                    workDateId,
+                    wdPayPeriodId,
+                    wdEmployerId,
+                    wdCutoffDate,
+                    curDateString,
+                    if (etHours.text.isNullOrBlank()) 0.0 else etHours.text.toString().trim()
+                        .toDouble(),
+                    if (etOt.text.isNullOrBlank()) 0.0 else etOt.text.toString().trim()
+                        .toDouble(),
+                    if (etDblOt.text.isNullOrBlank()) 0.0 else etDblOt.text.toString().trim()
+                        .toDouble(),
+                    if (etStat.text.isNullOrBlank()) 0.0 else etStat.text.toString().trim()
+                        .toDouble(),
+                    if (etNote.text.isNullOrBlank()) null else etNote.text.toString().trim(),
+                    false,
+                    df.getCurrentTimeAsString()
+                )
+            }
         }
     }
 

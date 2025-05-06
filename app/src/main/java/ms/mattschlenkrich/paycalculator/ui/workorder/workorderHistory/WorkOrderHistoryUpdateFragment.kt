@@ -509,17 +509,19 @@ class WorkOrderHistoryUpdateFragment :
         try {
             mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
             val history = getCurHistory()
-            mainActivity.workOrderViewModel.updateWorkOrderHistory(
-                history.woHistoryId,
-                curWorkOrder!!.workOrderId,
-                history.woHistoryWorkDateId,
-                history.woHistoryRegHours,
-                history.woHistoryOtHours,
-                history.woHistoryDblOtHours,
-                history.woHistoryNote,
-                false,
-                history.woHistoryUpdateTime
-            )
+            history.apply {
+                mainActivity.workOrderViewModel.updateWorkOrderHistory(
+                    woHistoryId,
+                    curWorkOrder!!.workOrderId,
+                    woHistoryWorkDateId,
+                    woHistoryRegHours,
+                    woHistoryOtHours,
+                    woHistoryDblOtHours,
+                    woHistoryNote,
+                    false,
+                    df.getCurrentTimeAsString()
+                )
+            }
             gotoCallingFragment()
         } catch (e: SQLiteConstraintException) {
             AlertDialog.Builder(mView.context)

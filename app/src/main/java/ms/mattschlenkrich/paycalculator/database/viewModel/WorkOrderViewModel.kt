@@ -153,6 +153,11 @@ class WorkOrderViewModel(
         )
     }
 
+    fun deleteWorkOrderJobSpec(workOrderJobSpecId: Long) =
+        viewModelScope.launch {
+            workOrderRepository.deleteWorkOrderJobSpec(workOrderJobSpecId)
+        }
+
     fun getWorkOrderJobSpecs(workOrderId: Long) =
         workOrderRepository.getWorkOrderJobSpecs(workOrderId)
 

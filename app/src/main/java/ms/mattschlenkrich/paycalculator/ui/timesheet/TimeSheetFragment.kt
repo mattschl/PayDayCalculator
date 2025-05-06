@@ -389,9 +389,11 @@ class TimeSheetFragment :
     }
 
     private fun gotoWorkDateAdd() {
-        mainActivity.mainViewModel.setPayPeriod(getSelectedPayPeriod())
-        mainActivity.mainViewModel.setCutOffDate(curCutOff)
-        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainActivity.mainViewModel.apply {
+            setPayPeriod(getSelectedPayPeriod())
+            setCutOffDate(curCutOff)
+            setEmployer(curEmployer)
+        }
         gotoWorkDateAddFragment()
     }
 
@@ -403,9 +405,11 @@ class TimeSheetFragment :
     }
 
     private fun gotoEmployerAdd() {
-        mainActivity.mainViewModel.setCallingFragment(TAG)
-        mainActivity.mainViewModel.setEmployer(null)
-        mainActivity.mainViewModel.setCutOffDate(null)
+        mainActivity.mainViewModel.apply {
+            mainActivity.mainViewModel.setCallingFragment(TAG)
+            mainActivity.mainViewModel.setEmployer(null)
+            mainActivity.mainViewModel.setCutOffDate(null)
+        }
         gotoEmployerAddFragment()
     }
 
@@ -417,9 +421,11 @@ class TimeSheetFragment :
     }
 
     private fun gotoPayDetails() {
-        mainActivity.mainViewModel.setPayPeriod(getSelectedPayPeriod())
-        mainActivity.mainViewModel.setCutOffDate(curCutOff)
-        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainActivity.mainViewModel.apply {
+            mainActivity.mainViewModel.setPayPeriod(getSelectedPayPeriod())
+            mainActivity.mainViewModel.setCutOffDate(curCutOff)
+            mainActivity.mainViewModel.setEmployer(curEmployer)
+        }
         gotoPayDetailFragment()
     }
 
@@ -431,8 +437,10 @@ class TimeSheetFragment :
     }
 
     override fun onStop() {
-        mainActivity.mainViewModel.setEmployer(curEmployer)
-        mainActivity.mainViewModel.setCutOffDate(curCutOff)
+        mainActivity.mainViewModel.apply {
+            mainActivity.mainViewModel.setEmployer(curEmployer)
+            mainActivity.mainViewModel.setCutOffDate(curCutOff)
+        }
         super.onStop()
     }
 

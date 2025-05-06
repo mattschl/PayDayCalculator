@@ -171,21 +171,23 @@ class WorkDateExtraUpdateFragment
     private fun deleteExtra() {
         binding.apply {
             val extra = getCurrentWorkDateExtra()
-            mainActivity.payDayViewModel.updateWorkDateExtra(
-                WorkDateExtras(
-                    extra.workDateExtraId,
-                    extra.wdeWorkDateId,
-                    extra.wdeExtraTypeId,
-                    extra.wdeName,
-                    extra.wdeAppliesTo,
-                    extra.wdeAttachTo,
-                    extra.wdeValue,
-                    extra.wdeIsFixed,
-                    extra.wdeIsCredit,
-                    true,
-                    df.getCurrentTimeAsString()
+            extra.apply {
+                mainActivity.payDayViewModel.updateWorkDateExtra(
+                    WorkDateExtras(
+                        workDateExtraId,
+                        wdeWorkDateId,
+                        wdeExtraTypeId,
+                        wdeName,
+                        wdeAppliesTo,
+                        wdeAttachTo,
+                        wdeValue,
+                        wdeIsFixed,
+                        wdeIsCredit,
+                        true,
+                        df.getCurrentTimeAsString()
+                    )
                 )
-            )
+            }
         }
         gotoWorkDateUpdate()
     }

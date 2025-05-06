@@ -530,15 +530,17 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
 
     private fun updateWorkOrder() {
         val workOrder = getCurrentWorkOrder()
-        mainActivity.workOrderViewModel.updateWorkOrder(
-            workOrder.workOrderId,
-            workOrder.woNumber,
-            workOrder.woEmployerId,
-            workOrder.woAddress,
-            workOrder.woDescription,
-            false,
-            df.getCurrentTimeAsString()
-        )
+        workOrder.apply {
+            mainActivity.workOrderViewModel.updateWorkOrder(
+                workOrderId,
+                woNumber,
+                woEmployerId,
+                woAddress,
+                woDescription,
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
         gotoCallingFragment()
     }
 

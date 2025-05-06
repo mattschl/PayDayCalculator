@@ -296,18 +296,20 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
             val note: String? = getNote()
             delay(WAIT_250)
             try {
-                mainActivity.workOrderViewModel.updateWorkOrderHistoryWorkPerformed(
-                    WorkOrderHistoryWorkPerformed(
-                        originalWorkPerformedHistory.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId,
-                        originalWorkPerformedHistory.workOrderHistoryWorkPerformed.wowpHistoryId,
-                        workPerformedId,
-                        areaId,
-                        note,
-                        originalWorkPerformedHistory.workOrderHistoryWorkPerformed.wowpSequence,
-                        false,
-                        df.getCurrentTimeAsString()
+                originalWorkPerformedHistory.workOrderHistoryWorkPerformed.apply {
+                    mainActivity.workOrderViewModel.updateWorkOrderHistoryWorkPerformed(
+                        WorkOrderHistoryWorkPerformed(
+                            workOrderHistoryWorkPerformedId,
+                            wowpHistoryId,
+                            workPerformedId,
+                            areaId,
+                            note,
+                            wowpSequence,
+                            false,
+                            df.getCurrentTimeAsString()
+                        )
                     )
-                )
+                }
             } catch (e: SQLiteException) {
                 AlertDialog.Builder(mView.context)
                     .setTitle(getString(R.string.something_went_wrong))
@@ -383,9 +385,11 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
     }
 
     private fun gotoWorkOrderHistoryUpdate() {
-        mainActivity.mainViewModel.setWorkPerformedHistoryId(null)
-        mainActivity.mainViewModel.setWorkPerformedId(null)
-        mainActivity.mainViewModel.setAreaId(null)
+        mainActivity.mainViewModel.apply {
+            setWorkPerformedHistoryId(null)
+            setWorkPerformedId(null)
+            setAreaId(null)
+        }
         gotoWorkOrderHistoryUpdateFragment()
     }
 

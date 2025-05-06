@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paycalculator.databinding.ListSingleItemBinding
@@ -23,7 +22,7 @@ class WorkOrderJobSpecAdapter(
     private val mView: View
 ) : RecyclerView.Adapter<WorkOrderJobSpecAdapter.ViewHolder>() {
 
-    private val df = DateFunctions()
+//    private val df = DateFunctions()
 
     class ViewHolder(
         val itemBinding: ListSingleItemBinding
@@ -137,27 +136,32 @@ class WorkOrderJobSpecAdapter(
     }
 
     private fun gotoJobSpecUpdate(workOrderJobSpecId: Long) {
-        mainActivity.mainViewModel.setWorkOrderJobSpecId(workOrderJobSpecId)
-        mainActivity.mainViewModel.setWorkOrder(workOrder)
+        mainActivity.mainViewModel.apply {
+            setWorkOrderJobSpecId(workOrderJobSpecId)
+            setWorkOrder(workOrder)
+        }
         workOrderUpdateFragment.gotoWorkOrderJobSpecUpdateFragment()
     }
 
     private fun removeJobSpecFromWorkOrder(woJobSpec: WorkOrderJobSpecCombined) {
         mainActivity.workOrderViewModel.deleteWorkOrderJobSpec(
-            woJobSpec.workOrderJobSpec.workOrderJobSpecId,
-            df.getCurrentTimeAsString()
+            woJobSpec.workOrderJobSpec.workOrderJobSpecId
         )
     }
 
     private fun editJobSpec(woJobSpec: WorkOrderJobSpecCombined) {
-        mainActivity.mainViewModel.setJobSpec(woJobSpec.jobSpec)
-        mainActivity.mainViewModel.addCallingFragment(parentFragment)
+        mainActivity.mainViewModel.apply {
+            setJobSpec(woJobSpec.jobSpec)
+            addCallingFragment(parentFragment)
+        }
         workOrderUpdateFragment.gotoJobSpecUpdateFragment()
     }
 
     private fun editArea(areaId: Long) {
-        mainActivity.mainViewModel.setAreaId(areaId)
-        mainActivity.mainViewModel.addCallingFragment(parentFragment)
+        mainActivity.mainViewModel.apply {
+            setAreaId(areaId)
+            addCallingFragment(parentFragment)
+        }
         workOrderUpdateFragment.gotoAreaUpdateFragment()
     }
 

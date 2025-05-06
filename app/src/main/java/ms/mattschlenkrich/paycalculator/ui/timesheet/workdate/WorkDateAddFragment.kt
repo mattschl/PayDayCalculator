@@ -341,20 +341,23 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
 
     private fun getUpdatedWorkDate(date: WorkDates): WorkDates {
         val tempWorkDate = getCurWorkDate()
-        return WorkDates(
-            date.workDateId,
-            tempWorkDate.wdPayPeriodId,
-            tempWorkDate.wdEmployerId,
-            tempWorkDate.wdCutoffDate,
-            tempWorkDate.wdDate,
-            tempWorkDate.wdRegHours,
-            tempWorkDate.wdOtHours,
-            tempWorkDate.wdDblOtHours,
-            tempWorkDate.wdStatHours,
-            tempWorkDate.wdNote,
-            false,
-            df.getCurrentTimeAsString()
-        )
+
+        tempWorkDate.apply {
+            return WorkDates(
+                date.workDateId,
+                wdPayPeriodId,
+                wdEmployerId,
+                wdCutoffDate,
+                wdDate,
+                wdRegHours,
+                wdOtHours,
+                wdDblOtHours,
+                wdStatHours,
+                wdNote,
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
     }
 
     private fun saveExtras(workDate: WorkDates) {
@@ -362,21 +365,23 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
             mainActivity.workExtraViewModel.getExtraTypeAndDefByTypeId(
                 extraType.workExtraTypeId, workDate.wdCutoffDate
             ).observe(viewLifecycleOwner) { extra ->
-                mainActivity.payDayViewModel.insertWorkDateExtra(
-                    WorkDateExtras(
-                        nf.generateRandomIdAsLong(),
-                        workDate.workDateId,
-                        extra.extraType.workExtraTypeId,
-                        extra.extraType.wetName,
-                        extra.extraType.wetAppliesTo,
-                        extra.extraType.wetAttachTo,
-                        extra.definition.weValue,
-                        extra.definition.weIsFixed,
-                        extra.extraType.wetIsCredit,
-                        false,
-                        df.getCurrentTimeAsString()
+                extra.apply {
+                    mainActivity.payDayViewModel.insertWorkDateExtra(
+                        WorkDateExtras(
+                            nf.generateRandomIdAsLong(),
+                            workDate.workDateId,
+                            extraType.workExtraTypeId,
+                            extraType.wetName,
+                            extraType.wetAppliesTo,
+                            extraType.wetAttachTo,
+                            definition.weValue,
+                            definition.weIsFixed,
+                            extraType.wetIsCredit,
+                            false,
+                            df.getCurrentTimeAsString()
+                        )
                     )
-                )
+                }
             }
         }
     }

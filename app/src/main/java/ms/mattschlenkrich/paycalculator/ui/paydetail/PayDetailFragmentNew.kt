@@ -468,46 +468,50 @@ class PayDetailFragmentNew :
         extraList: MutableList<WorkPayPeriodExtras>
     ) {
         var sum = 0.0
-        when (workPayPeriodExtras.ppeAppliesTo) {
-            AppliesToFrequencies.Hourly.value -> {
-                sum = if (workPayPeriodExtras.ppeIsFixed) {
-                    payCalculations.getHoursWorked() * workPayPeriodExtras.ppeValue
-                } else {
-                    payCalculations.getPayTimeWorked() * workPayPeriodExtras.ppeValue / 100
+        payCalculations.apply {
+            when (workPayPeriodExtras.ppeAppliesTo) {
+                AppliesToFrequencies.Hourly.value -> {
+                    sum = if (workPayPeriodExtras.ppeIsFixed) {
+                        getHoursWorked() * workPayPeriodExtras.ppeValue
+                    } else {
+                        getPayTimeWorked() * workPayPeriodExtras.ppeValue / 100
+                    }
                 }
-            }
 
-            AppliesToFrequencies.Daily.value -> {
-                sum = if (workPayPeriodExtras.ppeIsFixed) {
-                    payCalculations.getDaysWorked() * workPayPeriodExtras.ppeValue
-                } else {
-                    payCalculations.getPayTimeWorked() * workPayPeriodExtras.ppeValue / 100
+                AppliesToFrequencies.Daily.value -> {
+                    sum = if (workPayPeriodExtras.ppeIsFixed) {
+                        getDaysWorked() * workPayPeriodExtras.ppeValue
+                    } else {
+                        getPayTimeWorked() * workPayPeriodExtras.ppeValue / 100
+                    }
                 }
-            }
 
-            AppliesToFrequencies.PerPayForHourlyWages.value -> {
-                sum = if (workPayPeriodExtras.ppeIsFixed) {
-                    payCalculations.getDaysWorked() * workPayPeriodExtras.ppeValue
-                } else {
-                    payCalculations.getPayAllHourly() * workPayPeriodExtras.ppeValue / 100
+                AppliesToFrequencies.PerPayForHourlyWages.value -> {
+                    sum = if (workPayPeriodExtras.ppeIsFixed) {
+                        payCalculations.getDaysWorked() * workPayPeriodExtras.ppeValue
+                    } else {
+                        payCalculations.getPayAllHourly() * workPayPeriodExtras.ppeValue / 100
+                    }
                 }
             }
         }
-        extraList.add(
-            WorkPayPeriodExtras(
-                workPayPeriodExtras.workPayPeriodExtraId,
-                workPayPeriodExtras.ppePayPeriodId,
-                workPayPeriodExtras.ppeExtraTypeId,
-                workPayPeriodExtras.ppeName,
-                workPayPeriodExtras.ppeAppliesTo,
-                workPayPeriodExtras.ppeAttachTo,
-                sum,
-                workPayPeriodExtras.ppeIsFixed,
-                workPayPeriodExtras.ppeIsCredit,
-                workPayPeriodExtras.ppeIsDeleted,
-                workPayPeriodExtras.ppeUpdateTime
+        workPayPeriodExtras.apply {
+            extraList.add(
+                WorkPayPeriodExtras(
+                    workPayPeriodExtraId,
+                    ppePayPeriodId,
+                    ppeExtraTypeId,
+                    ppeName,
+                    ppeAppliesTo,
+                    ppeAttachTo,
+                    sum,
+                    ppeIsFixed,
+                    ppeIsCredit,
+                    ppeIsDeleted,
+                    ppeUpdateTime,
+                )
             )
-        )
+        }
     }
 
     private fun processExtrasByDay(
@@ -565,53 +569,55 @@ class PayDetailFragmentNew :
             }
         }
         if (notFound) {
-            when (extraDefinitionAndType.extraType.wetAppliesTo) {
-                0 -> {
-                    val sum = if (extraDefinitionAndType.definition.weIsFixed) {
-                        payCalculations.getHoursWorked() * extraDefinitionAndType.definition.weValue
-                    } else {
-                        payCalculations.getPayTimeWorked() * extraDefinitionAndType.definition.weValue / 100
-                    }
-                    extraList.add(
-                        addWorkPayPeriodExtra(extraDefinitionAndType, sum)
-                    )
-                }
-
-                1 -> {
-                    val sum =
-                        if (extraDefinitionAndType.definition.weIsFixed) {
-                            payCalculations.getDaysWorked() * extraDefinitionAndType.definition.weValue
+            payCalculations.apply {
+                when (extraDefinitionAndType.extraType.wetAppliesTo) {
+                    0 -> {
+                        val sum = if (extraDefinitionAndType.definition.weIsFixed) {
+                            getHoursWorked() * extraDefinitionAndType.definition.weValue
                         } else {
-                            payCalculations.getPayTimeWorked() * extraDefinitionAndType.definition.weValue / 100
+                            getPayTimeWorked() * extraDefinitionAndType.definition.weValue / 100
                         }
-                    extraList.add(
-                        addWorkPayPeriodExtra(extraDefinitionAndType, sum)
-                    )
-                }
-
-                3 -> {
-                    if (extraDefinitionAndType.definition.weIsFixed) {
-                        extraList.add(
-                            addWorkPayPeriodExtra(
-                                extraDefinitionAndType,
-                                extraDefinitionAndType.definition.weValue
-                            )
-                        )
-                    } else {
-                        val sum =
-                            payCalculations.getPayAllHourly() * extraDefinitionAndType.definition.weValue / 100
                         extraList.add(
                             addWorkPayPeriodExtra(extraDefinitionAndType, sum)
                         )
                     }
-                }
 
-                4 -> {
-                    val sum =
-                        payCalculations.getPayGross() * extraDefinitionAndType.definition.weValue / 100
-                    extraList.add(
-                        addWorkPayPeriodExtra(extraDefinitionAndType, sum)
-                    )
+                    1 -> {
+                        val sum =
+                            if (extraDefinitionAndType.definition.weIsFixed) {
+                                getDaysWorked() * extraDefinitionAndType.definition.weValue
+                            } else {
+                                getPayTimeWorked() * extraDefinitionAndType.definition.weValue / 100
+                            }
+                        extraList.add(
+                            addWorkPayPeriodExtra(extraDefinitionAndType, sum)
+                        )
+                    }
+
+                    3 -> {
+                        if (extraDefinitionAndType.definition.weIsFixed) {
+                            extraList.add(
+                                addWorkPayPeriodExtra(
+                                    extraDefinitionAndType,
+                                    extraDefinitionAndType.definition.weValue
+                                )
+                            )
+                        } else {
+                            val sum =
+                                getPayAllHourly() * extraDefinitionAndType.definition.weValue / 100
+                            extraList.add(
+                                addWorkPayPeriodExtra(extraDefinitionAndType, sum)
+                            )
+                        }
+                    }
+
+                    4 -> {
+                        val sum =
+                            getPayGross() * extraDefinitionAndType.definition.weValue / 100
+                        extraList.add(
+                            addWorkPayPeriodExtra(extraDefinitionAndType, sum)
+                        )
+                    }
                 }
             }
         }
@@ -689,14 +695,16 @@ class PayDetailFragmentNew :
     }
 
     private fun gotoExtraAddFragment(isCredit: Boolean) {
-        mainActivity.payDayViewModel.getPayPeriod(
-            curCutOff, curEmployer!!.employerId
-        ).observe(viewLifecycleOwner) { payPeriod ->
-            mainActivity.mainViewModel.setPayPeriod(payPeriod)
+        mainActivity.mainViewModel.apply {
+            mainActivity.payDayViewModel.getPayPeriod(
+                curCutOff, curEmployer!!.employerId
+            ).observe(viewLifecycleOwner) { payPeriod ->
+                setPayPeriod(payPeriod)
+            }
+            setEmployer(curEmployer!!)
+            setIsCredit(isCredit)
+            gotoPayPeriodExtraAddFragment()
         }
-        mainActivity.mainViewModel.setEmployer(curEmployer!!)
-        mainActivity.mainViewModel.setIsCredit(isCredit)
-        gotoPayPeriodExtraAddFragment()
     }
 
     private fun gotoEmployerAddFragment() {
@@ -729,8 +737,10 @@ class PayDetailFragmentNew :
     }
 
     override fun onStop() {
-        mainActivity.mainViewModel.setEmployer(curEmployer)
-        mainActivity.mainViewModel.setCutOffDate(curCutOff)
+        mainActivity.mainViewModel.apply {
+            setEmployer(curEmployer)
+            setCutOffDate(curCutOff)
+        }
         super.onStop()
     }
 

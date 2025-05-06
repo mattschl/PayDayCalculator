@@ -220,6 +220,12 @@ interface WorkOrderDao {
         workOrderJobSpecId: Long, updateTime: String
     )
 
+    @Query(
+        "DELETE FROM workOrderJobSpecs " +
+                "WHERE workOrderJobSpecId = :workOrderJobSpecId"
+    )
+    suspend fun deleteWorkOrderJobSpec(workOrderJobSpecId: Long)
+
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
