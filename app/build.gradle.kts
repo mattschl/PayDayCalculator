@@ -75,7 +75,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation("org.mockito:mockito-core:5.17.0")
     implementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
-    implementation("io.mockk:mockk:1.14.0")
+    implementation("io.mockk:mockk:1.14.2")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
@@ -89,7 +89,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     implementation("androidx.room:room-ktx:$room_version")
 
-    val nav_version = "2.8.9"
+    val nav_version = "2.9.0"
     // Kotlin Navigation
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
@@ -97,7 +97,7 @@ dependencies {
 //    implementation("androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version")
 
     //Lifecycle architecture
-    val lifecycle_version = "2.8.7"
+    val lifecycle_version = "2.9.0"
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     // LiveData

@@ -96,7 +96,7 @@ abstract class PayDatabase : RoomDatabase() {
                 PayDatabase::class.java,
                 PAY_DB_NAME
             )
-                .fallbackToDestructiveMigration()
+                .fallbackToDestructiveMigration(false)
                 .createFromAsset(context.getString(R.string.db_name))
                 .build()
         }
