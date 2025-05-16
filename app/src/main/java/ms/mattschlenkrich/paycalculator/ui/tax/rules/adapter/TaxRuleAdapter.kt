@@ -14,12 +14,13 @@ import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.tax.rules.TaxRulesFragment
 
 class TaxRuleAdapter(
-    private val mainActivity: MainActivity,
-    private val parentFragment: TaxRulesFragment,
-    private val mView: View
+    val mainActivity: MainActivity,
+    private val mView: View,
+    private val taxRulesFragment: TaxRulesFragment,
 ) : RecyclerView.Adapter<TaxRuleAdapter.TaxRuleViewHolder>() {
 
     private val cf = NumberFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
 
     class TaxRuleViewHolder(val itemBinding: ListTaxRuleItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -89,8 +90,8 @@ class TaxRuleAdapter(
     }
 
     private fun chooseOptions(taxRule: WorkTaxRules) {
-        mainActivity.mainViewModel.setTaxRule(taxRule)
-        parentFragment.gotoTaxRuleUpdateFragment()
+        mainViewModel.setTaxRule(taxRule)
+        taxRulesFragment.gotoTaxRuleUpdateFragment()
     }
 
 }

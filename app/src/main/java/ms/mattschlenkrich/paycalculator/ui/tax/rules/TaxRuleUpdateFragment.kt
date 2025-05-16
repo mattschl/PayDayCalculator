@@ -17,6 +17,8 @@ import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.tax.WorkTaxRules
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentTaxRuleUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -27,6 +29,8 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workTaxViewModel: WorkTaxViewModel
     private val df = DateFunctions()
     private val nf = NumberFunctions()
     private var curTaxRule: WorkTaxRules? = null
@@ -40,6 +44,8 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workTaxViewModel = mainActivity.workTaxViewModel
         mainActivity.title = getString(R.string.view_or_update_tax_rule)
         return mView
     }
@@ -52,8 +58,8 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
 
     private fun populateValues() {
         binding.apply {
-            if (mainActivity.mainViewModel.getTaxRule() != null) {
-                curTaxRule = mainActivity.mainViewModel.getTaxRule()
+            if (mainViewModel.getTaxRule() != null) {
+                curTaxRule = mainViewModel.getTaxRule()
                 tvTaxRuleType.text = curTaxRule!!.wtType
                 tvTaxRuleLevel.text = String.format(curTaxRule!!.wtLevel.toString())
                 tvEffectiveDate.text = curTaxRule!!.wtEffectiveDate
@@ -169,22 +175,16 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
     }
 
     private fun updateTaxRuleAndGotoCallingFragment() {
-        mainActivity.workTaxViewModel.updateTaxRule(
-            getCurrentTaxRule()
-        )
+        workTaxViewModel.updateTaxRule(getCurrentTaxRule())
         gotoTaxRulesFragment()
     }
 
     private fun deleteTaxRule() {
-        displayError(getString(R.string.this_cannot_be_deleted))
+        displayError(getString(R.string.error_) + getString(R.string.this_cannot_be_deleted))
     }
 
     private fun displayError(message: String) {
-        Toast.makeText(
-            mView.context,
-            getString(R.string.error_) + message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun gotoTaxRulesFragment() {

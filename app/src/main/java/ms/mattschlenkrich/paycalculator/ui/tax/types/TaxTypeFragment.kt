@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.FRAG_TAX_TYPE
 import ms.mattschlenkrich.paycalculator.database.model.tax.TaxTypes
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentTaxTypeBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.tax.types.adapter.TaxTypeAdapter
@@ -32,6 +34,8 @@ class TaxTypeFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var workTaxViewModel: WorkTaxViewModel
+    private lateinit var mainViewModel: MainViewModel
     private lateinit var taxTypeAdapter: TaxTypeAdapter
 
     override fun onCreateView(
@@ -41,6 +45,8 @@ class TaxTypeFragment :
         _binding = FragmentTaxTypeBinding.inflate(inflater, container, false)
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        workTaxViewModel = mainActivity.workTaxViewModel
+        mainViewModel = mainActivity.mainViewModel
         mainActivity.title = getString(R.string.choose_a_tax_type)
         return mView
     }
@@ -55,9 +61,7 @@ class TaxTypeFragment :
     }
 
     private fun populateTaxTypeList() {
-        taxTypeAdapter = TaxTypeAdapter(
-            mainActivity, this@TaxTypeFragment, mView
-        )
+        taxTypeAdapter = TaxTypeAdapter(mainActivity, mView, this@TaxTypeFragment)
         binding.rvTaxTypes.apply {
             layoutManager = StaggeredGridLayoutManager(
                 2,
@@ -67,9 +71,7 @@ class TaxTypeFragment :
             adapter = taxTypeAdapter
         }
         activity?.let {
-            mainActivity.workTaxViewModel.getTaxTypes().observe(
-                viewLifecycleOwner
-            ) { taxTypes ->
+            workTaxViewModel.getTaxTypes().observe(viewLifecycleOwner) { taxTypes ->
                 taxTypeAdapter.differ.submitList(taxTypes)
                 updateUI(taxTypes)
             }
@@ -88,8 +90,7 @@ class TaxTypeFragment :
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.search_menu, menu)
-        val mMenuSearch = menu.findItem(R.id.menu_search)
-            .actionView as SearchView
+        val mMenuSearch = menu.findItem(R.id.menu_search).actionView as SearchView
         mMenuSearch.isSubmitButtonEnabled = false
         mMenuSearch.setOnQueryTextListener(this)
     }
@@ -111,9 +112,7 @@ class TaxTypeFragment :
 
     private fun searchTaxTypes(query: String) {
         val searchQuery = "%$query%"
-        mainActivity.workTaxViewModel.searchTaxTypes(searchQuery).observe(
-            viewLifecycleOwner
-        ) { list ->
+        workTaxViewModel.searchTaxTypes(searchQuery).observe(viewLifecycleOwner) { list ->
             taxTypeAdapter.differ.submitList(list)
         }
     }
@@ -131,7 +130,7 @@ class TaxTypeFragment :
     }
 
     private fun gotoTaxTypeAdd() {
-        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mainViewModel.setCallingFragment(TAG)
         gotoTaxTypeAddFragment()
     }
 

@@ -23,6 +23,8 @@ import ms.mattschlenkrich.paycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.database.model.tax.TaxEffectiveDates
 import ms.mattschlenkrich.paycalculator.database.model.tax.WorkTaxRules
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentTaxRulesBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.tax.rules.adapter.TaxRuleAdapter
@@ -36,6 +38,8 @@ class TaxRulesFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workTaxViewModel: WorkTaxViewModel
     private val df = DateFunctions()
     private val cf = NumberFunctions()
 
@@ -48,6 +52,8 @@ class TaxRulesFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workTaxViewModel = mainActivity.workTaxViewModel
         mainActivity.title = getString(R.string.view_universal_tax_rules)
         return mView
     }
@@ -64,7 +70,7 @@ class TaxRulesFragment :
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_1000)
             binding.apply {
-                if (mainActivity.mainViewModel.getTaxTypeString() != null) {
+                if (mainViewModel.getTaxTypeString() != null) {
                     for (i in 0 until spTaxType.adapter.count) {
                         if (spTaxType.getItemAtPosition(i) ==
                             mainActivity.mainViewModel.getTaxTypeString()!!
@@ -108,9 +114,9 @@ class TaxRulesFragment :
 
     private fun populateSummary() {
         binding.apply {
-            mainActivity.workTaxViewModel.findTaxType(
-                spTaxType.selectedItem.toString()
-            ).observe(viewLifecycleOwner) { type ->
+            workTaxViewModel.findTaxType(spTaxType.selectedItem.toString()).observe(
+                viewLifecycleOwner
+            ) { type ->
                 val display = "${getString(R.string.base_on)} " +
                         resources.getStringArray(R.array.tax_based_on)[
                             type.ttBasedOn
@@ -125,9 +131,7 @@ class TaxRulesFragment :
             mView.context,
             R.layout.spinner_item_bold
         )
-        mainActivity.workTaxViewModel.getTaxEffectiveDates().observe(
-            viewLifecycleOwner
-        ) { dates ->
+        workTaxViewModel.getTaxEffectiveDates().observe(viewLifecycleOwner) { dates ->
             dateAdapter.clear()
             dates.listIterator().forEach {
                 dateAdapter.add(it.tdEffectiveDate)
@@ -142,9 +146,7 @@ class TaxRulesFragment :
             mView.context,
             R.layout.spinner_item_bold
         )
-        mainActivity.workTaxViewModel.getTaxTypes().observe(
-            viewLifecycleOwner
-        ) { types ->
+        workTaxViewModel.getTaxTypes().observe(viewLifecycleOwner) { types ->
             taxTypeAdapter.clear()
             types.listIterator().forEach {
                 taxTypeAdapter.add(it.taxType)
@@ -163,7 +165,7 @@ class TaxRulesFragment :
                     spEffectiveDate.adapter.count > 1
                 ) {
                     val taxRuleAdapter = TaxRuleAdapter(
-                        mainActivity, this@TaxRulesFragment, mView,
+                        mainActivity, mView, this@TaxRulesFragment,
                     )
                     rvTaxRules.apply {
                         layoutManager = GridLayoutManager(
@@ -175,17 +177,13 @@ class TaxRulesFragment :
                         setHasFixedSize(true)
                         adapter = taxRuleAdapter
                     }
-                    activity.let {
-                        mainActivity.workTaxViewModel.getTaxRules(
-                            spTaxType.selectedItem.toString(),
-                            spEffectiveDate.selectedItem.toString()
-                        ).observe(
-                            viewLifecycleOwner
-                        ) { taxRules ->
-                            rvTaxRules.adapter!!.notifyDataSetChanged()
-                            taxRuleAdapter.differ.submitList(taxRules)
-                            updateUI(taxRules)
-                        }
+                    workTaxViewModel.getTaxRules(
+                        spTaxType.selectedItem.toString(),
+                        spEffectiveDate.selectedItem.toString()
+                    ).observe(viewLifecycleOwner) { taxRules ->
+                        rvTaxRules.adapter!!.notifyDataSetChanged()
+                        taxRuleAdapter.differ.submitList(taxRules)
+                        updateUI(taxRules)
                     }
                 } else {
                     rvTaxRules.adapter = null
@@ -280,15 +278,15 @@ class TaxRulesFragment :
 
     private fun gotoTaxTypeUpdate() {
         binding.apply {
-            mainActivity.workTaxViewModel.findTaxType(
-                spTaxType.selectedItem.toString()
-            ).observe(viewLifecycleOwner) { type ->
-                mainActivity.mainViewModel.setTaxType(
+            workTaxViewModel.findTaxType(spTaxType.selectedItem.toString()).observe(
+                viewLifecycleOwner
+            ) { type ->
+                mainViewModel.setTaxType(
                     type
                 )
             }
         }
-        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mainViewModel.setCallingFragment(TAG)
         gotoTaxTypeUpdateFragment()
     }
 
@@ -301,20 +299,20 @@ class TaxRulesFragment :
 
     private fun gotoTaxRuleAdd() {
         binding.apply {
-            mainActivity.mainViewModel.setTaxTypeString(
+            mainViewModel.setTaxTypeString(
                 spTaxType.selectedItem.toString()
             )
-            mainActivity.mainViewModel.setEffectiveDateString(
+            mainViewModel.setEffectiveDateString(
                 spEffectiveDate.selectedItem.toString()
             )
             if (rvTaxRules.adapter != null) {
-                mainActivity.mainViewModel.setTaxLevel(
+                mainViewModel.setTaxLevel(
                     rvTaxRules.adapter!!.itemCount
                 )
             } else {
-                mainActivity.mainViewModel.setTaxLevel(0)
+                mainViewModel.setTaxLevel(0)
             }
-            mainActivity.mainViewModel.addCallingFragment(TAG)
+            mainViewModel.addCallingFragment(TAG)
         }
         gotoTaxRuleAddFragment()
     }
@@ -327,7 +325,7 @@ class TaxRulesFragment :
     }
 
     private fun gotoTaxTypeAdd() {
-        mainActivity.mainViewModel.addCallingFragment(TAG)
+        mainViewModel.addCallingFragment(TAG)
         gotoTaxTypeAddFragment()
     }
 

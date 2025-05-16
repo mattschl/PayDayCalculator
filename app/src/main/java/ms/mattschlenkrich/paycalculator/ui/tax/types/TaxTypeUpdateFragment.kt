@@ -19,6 +19,8 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_TAX_RULES
 import ms.mattschlenkrich.paycalculator.common.FRAG_TAX_TYPE
 import ms.mattschlenkrich.paycalculator.database.model.tax.TaxTypes
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentTaxTypeUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -28,6 +30,8 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workTaxViewModel: WorkTaxViewModel
     private lateinit var taxTypeList: List<TaxTypes>
     private lateinit var curTaxType: TaxTypes
     private val df = DateFunctions()
@@ -39,6 +43,8 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
         _binding = FragmentTaxTypeUpdateBinding.inflate(inflater, container, false)
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workTaxViewModel = mainActivity.workTaxViewModel
         mainActivity.title = getString(R.string.update_tax_type)
         return mView
     }
@@ -52,8 +58,8 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     private fun populateValues() {
         populateSpinner()
         populateTaxTypeListForValidation()
-        if (mainActivity.mainViewModel.getTaxType() != null) {
-            curTaxType = mainActivity.mainViewModel.getTaxType()!!
+        if (mainViewModel.getTaxType() != null) {
+            curTaxType = mainViewModel.getTaxType()!!
             binding.apply {
                 etTaxType.setText(curTaxType.taxType)
                 spBasedOn.setSelection(curTaxType.ttBasedOn)
@@ -73,9 +79,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     }
 
     private fun populateTaxTypeListForValidation() {
-        mainActivity.workTaxViewModel.getTaxTypes().observe(
-            viewLifecycleOwner
-        ) { taxTypes ->
+        workTaxViewModel.getTaxTypes().observe(viewLifecycleOwner) { taxTypes ->
             taxTypeList = taxTypes
         }
     }
@@ -111,7 +115,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     }
 
     private fun deleteTaxType() {
-        mainActivity.workTaxViewModel.updateWorkTaxType(
+        workTaxViewModel.updateWorkTaxType(
             TaxTypes(
                 curTaxType.taxTypeId,
                 curTaxType.taxType,
@@ -129,16 +133,12 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
             updateWorkTaxType()
             gotoTaxTypes()
         } else {
-            displayError(message)
+            displayError(getString(R.string.error_) + message)
         }
     }
 
     private fun displayError(message: String) {
-        Toast.makeText(
-            mView.context,
-            getString(R.string.error_) + message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun validateTaxType(): String {
@@ -172,22 +172,22 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     }
 
     private fun updateWorkTaxType() {
-        mainActivity.workTaxViewModel.updateWorkTaxType(
-            getCurrentTaxType()
-        )
+        mainActivity.workTaxViewModel.updateWorkTaxType(getCurrentTaxType())
     }
 
     private fun gotoTaxTypes() {
-        mainActivity.mainViewModel.setTaxType(null)
+        mainViewModel.setTaxType(null)
         gotoCallingFragment()
     }
 
     private fun gotoCallingFragment() {
-        if (mainActivity.mainViewModel.getCallingFragment()!!.contains(FRAG_TAX_TYPE)) {
-            gotoTaxTypesFragment()
-        }
-        if (mainActivity.mainViewModel.getCallingFragment()!!.contains(FRAG_TAX_RULES)) {
-            gotoTaxRulesFragment()
+        mainViewModel.apply {
+            if (getCallingFragment()!!.contains(FRAG_TAX_TYPE)) {
+                gotoTaxTypesFragment()
+            }
+            if (getCallingFragment()!!.contains(FRAG_TAX_RULES)) {
+                gotoTaxRulesFragment()
+            }
         }
     }
 

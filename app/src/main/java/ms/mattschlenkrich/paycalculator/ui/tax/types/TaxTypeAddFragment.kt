@@ -28,6 +28,9 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerTaxTypes
 import ms.mattschlenkrich.paycalculator.database.model.tax.TaxTypes
+import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentTaxTypeAddBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -37,6 +40,9 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var workTaxViewModel: WorkTaxViewModel
+    private lateinit var employerViewModel: EmployerViewModel
+    private lateinit var mainViewModel: MainViewModel
 
     private val df = DateFunctions()
     private val nf = NumberFunctions()
@@ -51,6 +57,9 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        workTaxViewModel = mainActivity.workTaxViewModel
+        employerViewModel = mainActivity.employerViewModel
+        mainViewModel = mainActivity.mainViewModel
         mainActivity.title = getString(R.string.add_a_new_tax_type)
         return mView
     }
@@ -67,7 +76,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     }
 
     private fun populateTaxTypeListForValidation() {
-        mainActivity.workTaxViewModel.getTaxTypes().observe(
+        workTaxViewModel.getTaxTypes().observe(
             viewLifecycleOwner
         ) { list ->
             taxTypeList = list
@@ -123,16 +132,12 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
                 chooseNextStep(taxType)
             }
         } else {
-            displayError(message)
+            displayError(getString(R.string.error_) + message)
         }
     }
 
     private fun displayError(message: String) {
-        Toast.makeText(
-            mView.context,
-            getString(R.string.error_) + message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun validateTaxType(): String {
@@ -164,9 +169,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     }
 
     private fun saveTaxType(taxType: TaxTypes) {
-        mainActivity.workTaxViewModel.insertTaxType(
-            taxType
-        )
+        workTaxViewModel.insertTaxType(taxType)
     }
 
     private fun chooseNextStep(taxType: TaxTypes) {
@@ -179,24 +182,22 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
                 getString(R.string.the_tax_type_has_been_added_but_there_are_no_rules_yet_)
             )
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                mainActivity.mainViewModel.setTaxType(taxType)
-                mainActivity.mainViewModel.setTaxTypeString(taxType.taxType)
+                mainViewModel.setTaxType(taxType)
+                mainViewModel.setTaxTypeString(taxType.taxType)
                 gotoTaxRulesFragment()
             }
             .setNegativeButton(getString(R.string.no)) { _, _ ->
-                mainActivity.mainViewModel.setTaxType(taxType)
-                mainActivity.mainViewModel.setTaxTypeString(taxType.taxType)
+                mainViewModel.setTaxType(taxType)
+                mainViewModel.setTaxTypeString(taxType.taxType)
                 gotoCallingFragment()
             }
             .show()
     }
 
     private fun attachTaxTypeToEmployers(taxType: TaxTypes) {
-        mainActivity.employerViewModel.getEmployers().observe(
-            viewLifecycleOwner
-        ) { employers ->
+        employerViewModel.getEmployers().observe(viewLifecycleOwner) { employers ->
             employers.forEach {
-                mainActivity.workTaxViewModel.insertEmployerTaxType(
+                workTaxViewModel.insertEmployerTaxType(
                     EmployerTaxTypes(
                         etrEmployerId = it.employerId,
                         etrTaxType = taxType.taxType,
@@ -217,7 +218,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     }
 
     private fun gotoCallingFragment() {
-        val callingFragment = mainActivity.mainViewModel.getCallingFragment()
+        val callingFragment = mainViewModel.getCallingFragment()
         if (callingFragment != null) {
             if (callingFragment.contains(FRAG_EMPLOYER_UPDATE)) {
                 gotoEmployerUpdateFragment()

@@ -15,8 +15,8 @@ import ms.mattschlenkrich.paycalculator.ui.tax.types.TaxTypeFragment
 
 class TaxTypeAdapter(
     private val mainActivity: MainActivity,
+    private val mView: View,
     private val parentFragment: TaxTypeFragment,
-    private val mView: View
 ) : RecyclerView.Adapter<TaxTypeAdapter.TaxTypeViewHolder>() {
 
     class TaxTypeViewHolder(val itemBinding: ListSingleItemBinding) :

@@ -19,6 +19,7 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_TAX_RULES
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.tax.WorkTaxRules
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentTaxRuleAddBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -28,6 +29,7 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
     private val df = DateFunctions()
     private val nf = NumberFunctions()
 
@@ -40,6 +42,7 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
         mainActivity.title = getString(R.string.add_tax_rule)
         return mView
     }
@@ -52,9 +55,9 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
 
     private fun populateValues() {
         binding.apply {
-            tvTaxRuleType.text = mainActivity.mainViewModel.getTaxTypeString()
-            tvEffectiveDate.text = mainActivity.mainViewModel.getEffectiveDateString()
-            tvTaxRuleLevel.text = mainActivity.mainViewModel.getTaxLevel().toString()
+            tvTaxRuleType.text = mainViewModel.getTaxTypeString()
+            tvEffectiveDate.text = mainViewModel.getEffectiveDateString()
+            tvTaxRuleLevel.text = mainViewModel.getTaxLevel().toString()
         }
     }
 
@@ -108,17 +111,13 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
             if (message == ANSWER_OK) {
                 saveTaxRuleAndGotoCallingFragment()
             } else {
-                displayError(message)
+                displayError(getString(R.string.error_) + message)
             }
         }
     }
 
     private fun displayError(message: String) {
-        Toast.makeText(
-            mView.context,
-            getString(R.string.error_) + message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun validateTaxRule(): String {
