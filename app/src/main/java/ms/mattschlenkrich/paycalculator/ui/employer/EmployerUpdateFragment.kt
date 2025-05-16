@@ -380,8 +380,10 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
     }
 
     private fun gotoTaxRules() {
-        mainViewModel.setEmployer(getCurrentEmployer())
-        mainViewModel.setCallingFragment(TAG)
+        mainViewModel.apply {
+            setEmployer(getCurrentEmployer())
+            setCallingFragment(TAG)
+        }
         gotoTaxRulesFragment()
     }
 
@@ -393,8 +395,10 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
     }
 
     private fun gotoTaxTypesAdd() {
-        mainViewModel.setEmployer(getCurrentEmployer())
-        mainViewModel.setCallingFragment(TAG)
+        mainViewModel.apply {
+            setEmployer(getCurrentEmployer())
+            setCallingFragment(TAG)
+        }
         gotoTaxTypesAddFragment()
     }
 
@@ -434,8 +438,10 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
     }
 
     private fun gotoPayRateAdd(curEmployer: Employers) {
-        mainViewModel.setEmployer(curEmployer)
-        mainViewModel.setCallingFragment(TAG)
+        mainViewModel.apply {
+            setEmployer(curEmployer)
+            setCallingFragment(TAG)
+        }
         gotoPayRateAddFragment()
     }
 

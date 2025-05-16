@@ -24,15 +24,17 @@ import ms.mattschlenkrich.paycalculator.ui.paydetail.IPayDetailsFragment
 //private const val TAG = "PayDetailExtraContainerAdapter"
 
 class PayDetailExtraContainerAdapter(
-    private val mainActivity: MainActivity,
+    val mainActivity: MainActivity,
+    private val mView: View,
     private val payPeriod: PayPeriods,
     private val extraContainerList: List<ExtraContainer>,
-    private val mView: View,
     private val parentFragment: IPayDetailsFragment
 ) : RecyclerView.Adapter<PayDetailExtraContainerAdapter.ExtraViewHolder>() {
 
     private val nf = NumberFunctions()
     private val df = DateFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
+    private val payDayViewModel = mainActivity.payDayViewModel
 
     class ExtraViewHolder(val itemBinding: ListPayDetailExtraItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -113,11 +115,13 @@ class PayDetailExtraContainerAdapter(
     }
 
     private fun updateExtra(extraContainer: ExtraContainer) {
-        mainActivity.mainViewModel.setPayPeriodExtra(extraContainer.payPeriodExtra)
-        mainActivity.mainViewModel.setWorkDateExtra(null)
-        mainActivity.mainViewModel.setExtraContainer(extraContainer)
-        mainActivity.mainViewModel.addCallingFragment(FRAG_PAY_DETAILS)
-        parentFragment.gotoPeriodExtraUpdateFragment()
+        mainViewModel.apply {
+            setPayPeriodExtra(extraContainer.payPeriodExtra)
+            setWorkDateExtra(null)
+            setExtraContainer(extraContainer)
+            addCallingFragment(FRAG_PAY_DETAILS)
+            parentFragment.gotoPeriodExtraUpdateFragment()
+        }
     }
 
     private fun insertOrUpdateExtraOnChange(
@@ -125,37 +129,39 @@ class PayDetailExtraContainerAdapter(
     ): ExtraContainer {
         CoroutineScope(Dispatchers.Default).launch {
             if (extraContainer.payPeriodExtra != null) {
+                val payPeriodExtra = extraContainer.payPeriodExtra!!
                 val newExtra = WorkPayPeriodExtras(
-                    extraContainer.payPeriodExtra!!.workPayPeriodExtraId,
-                    extraContainer.payPeriodExtra!!.ppePayPeriodId,
-                    extraContainer.payPeriodExtra!!.ppeExtraTypeId,
-                    extraContainer.payPeriodExtra!!.ppeName,
-                    extraContainer.payPeriodExtra!!.ppeAppliesTo,
+                    payPeriodExtra.workPayPeriodExtraId,
+                    payPeriodExtra.ppePayPeriodId,
+                    payPeriodExtra.ppeExtraTypeId,
+                    payPeriodExtra.ppeName,
+                    payPeriodExtra.ppeAppliesTo,
                     3,
-                    extraContainer.payPeriodExtra!!.ppeValue,
-                    extraContainer.payPeriodExtra!!.ppeIsFixed,
-                    extraContainer.payPeriodExtra!!.ppeIsCredit,
+                    payPeriodExtra.ppeValue,
+                    payPeriodExtra.ppeIsFixed,
+                    payPeriodExtra.ppeIsCredit,
                     delete,
                     df.getCurrentTimeAsString()
                 )
                 extraContainer.payPeriodExtra = newExtra
-                mainActivity.payDayViewModel.updatePayPeriodExtra(newExtra)
+                payDayViewModel.updatePayPeriodExtra(newExtra)
             } else if (extraContainer.extraDefinitionAndType != null) {
+                val extraDefinitionAndType = extraContainer.extraDefinitionAndType!!
                 val newExtra = WorkPayPeriodExtras(
                     nf.generateRandomIdAsLong(),
                     payPeriod.payPeriodId,
-                    extraContainer.extraDefinitionAndType!!.extraType.workExtraTypeId,
-                    extraContainer.extraDefinitionAndType!!.extraType.wetName,
-                    extraContainer.extraDefinitionAndType!!.extraType.wetAppliesTo,
-                    extraContainer.extraDefinitionAndType!!.extraType.wetAttachTo,
-                    extraContainer.extraDefinitionAndType!!.definition.weValue,
-                    extraContainer.extraDefinitionAndType!!.definition.weIsFixed,
-                    extraContainer.extraDefinitionAndType!!.extraType.wetIsCredit,
+                    extraDefinitionAndType.extraType.workExtraTypeId,
+                    extraDefinitionAndType.extraType.wetName,
+                    extraDefinitionAndType.extraType.wetAppliesTo,
+                    extraDefinitionAndType.extraType.wetAttachTo,
+                    extraDefinitionAndType.definition.weValue,
+                    extraDefinitionAndType.definition.weIsFixed,
+                    extraDefinitionAndType.extraType.wetIsCredit,
                     delete,
                     df.getCurrentTimeAsString()
                 )
                 extraContainer.payPeriodExtra = newExtra
-                mainActivity.payDayViewModel.insertPayPeriodExtra(newExtra)
+                payDayViewModel.insertPayPeriodExtra(newExtra)
             }
 
         }

@@ -339,9 +339,11 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
 
     private fun gotoExtraTypeUpdateFragment() {
         if (curExtraType != null) {
-            mainViewModel.setEmployer(curEmployer)
-            mainViewModel.setWorkExtraType(curExtraType)
-            mainViewModel.addCallingFragment(TAG)
+            mainViewModel.apply {
+                setEmployer(curEmployer)
+                setWorkExtraType(curExtraType)
+                addCallingFragment(TAG)
+            }
             gotoFragmentToWorkExtraTypeUpdateFragment()
         }
     }
@@ -354,9 +356,11 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     }
 
     private fun gotoExtraAddFragment() {
-        mainViewModel.setEmployer(curEmployer)
-        mainViewModel.setWorkExtraType(curExtraType)
-        mainViewModel.addCallingFragment(TAG)
+        mainViewModel.apply {
+            setEmployer(curEmployer)
+            setWorkExtraType(curExtraType)
+            addCallingFragment(TAG)
+        }
         gotoEmployerExtraDefinitionsAddFragment()
     }
 
@@ -375,8 +379,10 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     }
 
     private fun gotoExtraTypeAdd() {
-        mainViewModel.addCallingFragment(TAG)
-        mainViewModel.setEmployer(curEmployer)
+        mainViewModel.apply {
+            addCallingFragment(TAG)
+            setEmployer(curEmployer)
+        }
         gotoWorkExtraTypeAddFragment()
     }
 

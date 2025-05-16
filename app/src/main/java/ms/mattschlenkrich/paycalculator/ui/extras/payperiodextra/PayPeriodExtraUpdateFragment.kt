@@ -330,8 +330,10 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
     }
 
     private fun gotoPayDetail() {
-        mainViewModel.clearPayPeriodExtraList()
-        mainViewModel.setPayPeriodExtra(null)
+        mainViewModel.apply {
+            clearPayPeriodExtraList()
+            setPayPeriodExtra(null)
+        }
         gotoPayDetailFragment()
     }
 

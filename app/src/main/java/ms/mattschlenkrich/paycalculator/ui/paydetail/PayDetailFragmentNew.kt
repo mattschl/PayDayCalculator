@@ -36,6 +36,10 @@ import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraDefinitionAnd
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkDateExtrasAndDates
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkPayPeriodExtras
+import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentPayDetailsBinding
 import ms.mattschlenkrich.paycalculator.payfunctions.IPayCalculations
 import ms.mattschlenkrich.paycalculator.payfunctions.PayCalculationsAsync
@@ -54,6 +58,10 @@ class PayDetailFragmentNew :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var employerViewModel: EmployerViewModel
+    private lateinit var payDayViewModel: PayDayViewModel
+    private lateinit var workExtraViewModel: WorkExtraViewModel
     private var curEmployer: Employers? = null
     private var curPayPeriod: PayPeriods? = null
     private val cutOffs = ArrayList<String>()
@@ -72,6 +80,10 @@ class PayDetailFragmentNew :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        employerViewModel = mainActivity.employerViewModel
+        payDayViewModel = mainActivity.payDayViewModel
+        workExtraViewModel = mainActivity.workExtraViewModel
         mainActivity.title = getString(R.string.pay_details)
         return mView
     }
@@ -88,9 +100,7 @@ class PayDetailFragmentNew :
             mView.context,
             R.layout.spinner_item_bold
         )
-        mainActivity.employerViewModel.getEmployers().observe(
-            viewLifecycleOwner
-        ) { employers ->
+        employerViewModel.getEmployers().observe(viewLifecycleOwner) { employers ->
             employerAdapter.clear()
             employerAdapter.notifyDataSetChanged()
             employers.listIterator().forEach {
@@ -105,12 +115,8 @@ class PayDetailFragmentNew :
     private fun setClickActions() {
         setMenuAction()
         binding.apply {
-            fabAddExtra.setOnClickListener {
-                chooseToGotoExtraAdd(true)
-            }
-            fabAddDeduction.setOnClickListener {
-                chooseToGotoExtraAdd(false)
-            }
+            fabAddExtra.setOnClickListener { chooseToGotoExtraAdd(true) }
+            fabAddDeduction.setOnClickListener { chooseToGotoExtraAdd(false) }
         }
         onSelectEmployer()
         onSelectCutOffDate()
@@ -153,7 +159,7 @@ class PayDetailFragmentNew :
     }
 
     private fun deletePayDay() {
-        mainActivity.payDayViewModel.updatePayPeriod(
+        payDayViewModel.updatePayPeriod(
             PayPeriods(
                 curPayPeriod!!.payPeriodId,
                 curPayPeriod!!.ppCutoffDate,
@@ -194,13 +200,13 @@ class PayDetailFragmentNew :
                             getString(R.string.add_new_employer)
                         ) {
                             CoroutineScope(Dispatchers.IO).launch {
-                                curEmployer = mainActivity.employerViewModel.findEmployer(
+                                curEmployer = employerViewModel.findEmployer(
                                     spEmployers.selectedItem.toString()
                                 )
                             }
                             CoroutineScope(Dispatchers.Main).launch {
                                 delay(WAIT_100)
-                                mainActivity.mainViewModel.setEmployer(curEmployer)
+                                mainViewModel.setEmployer(curEmployer)
                                 mainActivity.title = getString(R.string.pay_details) +
                                         getString(R.string._for_) +
                                         spEmployers.selectedItem
@@ -224,9 +230,7 @@ class PayDetailFragmentNew :
                     mView.context,
                     R.layout.spinner_item_bold
                 )
-                mainActivity.payDayViewModel.getCutOffDates(
-                    employer.employerId
-                ).observe(
+                payDayViewModel.getCutOffDates(employer.employerId).observe(
                     viewLifecycleOwner
                 ) { dates ->
                     cutOffs.clear()
@@ -267,9 +271,7 @@ class PayDetailFragmentNew :
     }
 
     private fun getCurrentPayPeriodObject() {
-        mainActivity.payDayViewModel.getPayPeriod(
-            curCutOff, curEmployer!!.employerId
-        ).observe(
+        payDayViewModel.getPayPeriod(curCutOff, curEmployer!!.employerId).observe(
             viewLifecycleOwner
         ) { payPeriod ->
             curPayPeriod = payPeriod
@@ -373,32 +375,30 @@ class PayDetailFragmentNew :
 
     private fun populateExtras(payCalculations: IPayCalculations) {
         CoroutineScope(Dispatchers.Main).launch {
-            val extrasList =
-                processExtras(payCalculations)
+            val extrasList = processExtras(payCalculations)
             val creditList = payCalculations.getCredits()
             delay(WAIT_250)
             populateCredits(creditList)
             populateDeductions(payCalculations)
-            mainActivity.mainViewModel.setPayPeriodExtraList(extrasList)
+            mainViewModel.setPayPeriodExtraList(extrasList)
         }
     }
 
-    private fun processExtras(payCalculations: IPayCalculations)
-            : ArrayList<WorkPayPeriodExtras> {
+    private fun processExtras(payCalculations: IPayCalculations): ArrayList<WorkPayPeriodExtras> {
         val extraList = mutableListOf<WorkPayPeriodExtras>()
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
-            mainActivity.payDayViewModel.getPayPeriodExtras(
-                curPayPeriod!!.payPeriodId
-            ).observe(viewLifecycleOwner) { credit ->
+            payDayViewModel.getPayPeriodExtras(curPayPeriod!!.payPeriodId).observe(
+                viewLifecycleOwner
+            ) { credit ->
                 credit.listIterator().forEach {
                     processExtrasByManuallyAdded(it, payCalculations, extraList)
                 }
             }
             val workDateExtrasAndDates = ArrayList<WorkDateExtrasAndDates>()
-            mainActivity.payDayViewModel.getWorkDateExtrasAndDates(
-                curCutOff
-            ).observe(viewLifecycleOwner) { extraPlusDate ->
+            payDayViewModel.getWorkDateExtrasAndDates(curCutOff).observe(
+                viewLifecycleOwner
+            ) { extraPlusDate ->
                 extraPlusDate.listIterator().forEach {
                     workDateExtrasAndDates.add(it)
                 }
@@ -406,7 +406,7 @@ class PayDetailFragmentNew :
             delay(WAIT_250)
             processExtrasByDay(workDateExtrasAndDates, extraList)
             delay(WAIT_250)
-            mainActivity.workExtraViewModel.getExtraTypesAndDef(
+            workExtraViewModel.getExtraTypesAndDef(
                 curEmployer!!.employerId, curCutOff, 3
             ).observe(viewLifecycleOwner) { extras ->
                 extras.listIterator().forEach {
@@ -422,7 +422,7 @@ class PayDetailFragmentNew :
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
             val creditListAdapter = PayDetailExtraContainerAdapter(
-                mainActivity, curPayPeriod!!, creditList, mView,
+                mainActivity, mView, curPayPeriod!!, creditList,
                 this@PayDetailFragmentNew
             )
             binding.apply {
@@ -444,8 +444,8 @@ class PayDetailFragmentNew :
             binding.apply {
                 delay(WAIT_500)
                 val deductionListAdapter = PayDetailExtraContainerAdapter(
-                    mainActivity, curPayPeriod!!, debitList,
-                    mView, this@PayDetailFragmentNew
+                    mainActivity, mView, curPayPeriod!!, debitList,
+                    this@PayDetailFragmentNew
                 )
                 rvDebits.layoutManager = LinearLayoutManager(mView.context)
                 rvDebits.adapter = deductionListAdapter
@@ -628,8 +628,8 @@ class PayDetailFragmentNew :
             binding.apply {
                 CoroutineScope(Dispatchers.Main).launch {
                     delay(WAIT_500)
-                    if (mainActivity.mainViewModel.getEmployer() != null) {
-                        curEmployer = mainActivity.mainViewModel.getEmployer()!!
+                    if (mainViewModel.getEmployer() != null) {
+                        curEmployer = mainViewModel.getEmployer()!!
                         for (i in 0 until spEmployers.adapter.count) {
                             if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
                                 spEmployers.setSelection(i)
@@ -639,8 +639,8 @@ class PayDetailFragmentNew :
                         }
                     }
                     delay(WAIT_250)
-                    if (mainActivity.mainViewModel.getCutOffDate() != null) {
-                        curCutOff = mainActivity.mainViewModel.getCutOffDate()!!
+                    if (mainViewModel.getCutOffDate() != null) {
+                        curCutOff = mainViewModel.getCutOffDate()!!
                         for (i in 0 until spCutOff.adapter.count) {
                             if (spCutOff.getItemAtPosition(i).toString() == curCutOff) {
                                 spCutOff.setSelection(i)
@@ -690,13 +690,13 @@ class PayDetailFragmentNew :
     )
 
     private fun gotoEmployerAdd() {
-        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mainViewModel.setCallingFragment(TAG)
         gotoEmployerAddFragment()
     }
 
     private fun gotoExtraAddFragment(isCredit: Boolean) {
-        mainActivity.mainViewModel.apply {
-            mainActivity.payDayViewModel.getPayPeriod(
+        mainViewModel.apply {
+            payDayViewModel.getPayPeriod(
                 curCutOff, curEmployer!!.employerId
             ).observe(viewLifecycleOwner) { payPeriod ->
                 setPayPeriod(payPeriod)
@@ -709,15 +709,15 @@ class PayDetailFragmentNew :
 
     private fun gotoEmployerAddFragment() {
         mView.findNavController().navigate(
-            PayDetailFragmentDirections
-                .actionPayDetailsFragmentToEmployerAddFragment()
+            PayDetailFragmentNewDirections
+                .actionPayDetailFragmentNewToEmployerAddFragment()
         )
     }
 
     private fun gotoTimeSheetFragment() {
         mView.findNavController().navigate(
-            PayDetailFragmentDirections
-                .actionPayDetailFragmentToTimeSheetFragment()
+            PayDetailFragmentNewDirections
+                .actionPayDetailFragmentNewToTimeSheetFragment()
 
         )
     }
@@ -737,7 +737,7 @@ class PayDetailFragmentNew :
     }
 
     override fun onStop() {
-        mainActivity.mainViewModel.apply {
+        mainViewModel.apply {
             setEmployer(curEmployer)
             setCutOffDate(curCutOff)
         }

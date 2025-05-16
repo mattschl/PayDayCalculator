@@ -28,9 +28,6 @@
             android:id="@+id/action_timeSheetFragment_to_employerAddFragment"
             app:destination="@id/employerAddFragment" />
         <action
-            android:id="@+id/action_timeSheetFragment_to_payDetailFragment"
-            app:destination="@id/payDetailFragment" />
-        <action
             android:id="@+id/action_timeSheetFragment_to_workDateAddFragment"
             app:destination="@id/workDateAddFragment" />
         <action
@@ -472,35 +469,13 @@
     </fragment>
 
     <!--    action_global_payDetailFragment-->
-    <action
-        android:id="@+id/action_global_payDetailFragment"
-        app:destination="@id/payDetailFragment"
-        app:popUpTo="@id/payDetailFragment" />
+
     <action
         android:id="@+id/action_global_payDetailFragmentNew"
         app:destination="@id/payDetailFragmentNew"
         app:popUpTo="@id/payDetailFragmentNew" />
 
     <!--    payDetailFragment-->
-    <fragment
-        android:id="@+id/payDetailFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.paydetail.PayDetailFragment"
-        android:label="PayDetailFragment"
-        tools:layout="@layout/fragment_pay_details">
-        <action
-            android:id="@+id/action_payDetailsFragment_to_payPeriodExtraAddFragment"
-            app:destination="@id/payPeriodExtraAddFragment" />
-        <action
-            android:id="@+id/action_payDetailsFragment_to_payPeriodExtraUpdateFragment"
-            app:destination="@id/payPeriodExtraUpdateFragment" />
-        <action
-            android:id="@+id/action_payDetailFragment_to_timeSheetFragment"
-            app:destination="@id/timeSheetFragment"
-            app:popUpTo="@id/timeSheetFragment" />
-        <action
-            android:id="@+id/action_payDetailsFragment_to_employerAddFragment"
-            app:destination="@id/employerAddFragment" />
-    </fragment>
     <fragment
         android:id="@+id/payDetailFragmentNew"
         android:name="ms.mattschlenkrich.paycalculator.ui.paydetail.PayDetailFragmentNew"
@@ -512,6 +487,12 @@
         <action
             android:id="@+id/action_payDetailFragmentNew_to_payPeriodExtraAddFragment"
             app:destination="@id/payPeriodExtraAddFragment" />
+        <action
+            android:id="@+id/action_payDetailFragmentNew_to_employerAddFragment"
+            app:destination="@id/employerAddFragment" />
+        <action
+            android:id="@+id/action_payDetailFragmentNew_to_timeSheetFragment"
+            app:destination="@id/timeSheetFragment" />
     </fragment>
 
     <!--    payPeriodExtraAddFragment-->
@@ -520,10 +501,7 @@
         android:name="ms.mattschlenkrich.paycalculator.ui.extras.payperiodextra.PayPeriodExtraAddFragment"
         android:label="PayPeriodExtraAddFragment"
         tools:layout="@layout/fragment_pay_period_extra_add">
-        <action
-            android:id="@+id/action_payPeriodExtraAddFragment_to_payDetailFragment"
-            app:destination="@id/payDetailFragment"
-            app:popUpTo="@id/payDetailFragment" />
+
         <action
             android:id="@+id/action_payPeriodExtraAddFragment_to_payDetailFragmentNew"
             app:destination="@id/payDetailFragmentNew"
@@ -536,10 +514,7 @@
         android:name="ms.mattschlenkrich.paycalculator.ui.extras.payperiodextra.PayPeriodExtraUpdateFragment"
         android:label="PayPeriodExtraUpdateFragment"
         tools:layout="@layout/fragment_pay_period_extra_update">
-        <action
-            android:id="@+id/action_payPeriodExtraUpdateFragment_to_payDetailFragment"
-            app:destination="@id/payDetailFragment"
-            app:popUpTo="@id/payDetailFragment" />
+
         <action
             android:id="@+id/action_payPeriodExtraUpdateFragment_to_payDetailFragmentNew"
             app:destination="@id/payDetailFragmentNew"

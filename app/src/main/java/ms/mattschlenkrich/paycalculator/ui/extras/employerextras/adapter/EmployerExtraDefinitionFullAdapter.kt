@@ -155,9 +155,11 @@ class EmployerExtraDefinitionFullAdapter(
     }
 
     private fun gotoExtraUpdate(definition: ExtraDefTypeAndEmployer) {
-        mainViewModel.setEmployerString(definition.employer.employerName)
-        mainViewModel.setEmployer(definition.employer)
-        mainViewModel.setExtraDefinitionFull(definition)
+        mainViewModel.apply {
+            setEmployerString(definition.employer.employerName)
+            setEmployer(definition.employer)
+            setExtraDefinitionFull(definition)
+        }
         employerExtraDefinitionsFragment?.gotoEmployerExtraDefinitionUpdateFragment()
         employerUpdateFragment?.gotoEmployerExtraDefinitionUpdateFragment()
     }

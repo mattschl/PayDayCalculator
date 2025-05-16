@@ -19,6 +19,8 @@ class EmployerExtraDefinitionsShortAdapter(
 ) : RecyclerView.Adapter<EmployerExtraDefinitionsShortAdapter.DefinitionViewHolder>() {
 
     private val df = DateFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
+
 
     class DefinitionViewHolder(val itemBinding: ListEmployerExtraItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -90,9 +92,11 @@ class EmployerExtraDefinitionsShortAdapter(
     }
 
     private fun gotoExtraUpdate(extra: WorkExtraTypes) {
-        mainActivity.mainViewModel.setEmployerString(employer.employerName)
-        mainActivity.mainViewModel.setEmployer(employer)
-        mainActivity.mainViewModel.setWorkExtraType(extra)
+        mainViewModel.apply {
+            setEmployerString(employer.employerName)
+            setEmployer(employer)
+            setWorkExtraType(extra)
+        }
         employerUpdateFragment.gotoEmployerExtraDefinitionsFragment()
     }
 }

@@ -224,8 +224,10 @@ class WorkExtraTypeAddFragment : Fragment(
     }
 
     private fun gotoEmployerExtraDefinitions(extraType: WorkExtraTypes) {
-        mainViewModel.setEmployer(curEmployer)
-        mainViewModel.setWorkExtraType(extraType)
+        mainViewModel.apply {
+            setEmployer(curEmployer)
+            setWorkExtraType(extraType)
+        }
         gotoEmployerExtraDefinitionsFragment()
     }
 
