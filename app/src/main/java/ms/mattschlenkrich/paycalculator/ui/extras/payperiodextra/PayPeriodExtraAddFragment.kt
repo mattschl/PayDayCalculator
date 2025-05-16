@@ -24,6 +24,9 @@ import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraDefinitionAnd
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDateExtraAndTypeAndDef
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkPayPeriodExtras
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentPayPeriodExtraAddBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -34,6 +37,9 @@ class PayPeriodExtraAddFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var payDayViewModel: PayDayViewModel
+    private lateinit var workExtraViewModel: WorkExtraViewModel
     private lateinit var curPayPeriod: PayPeriods
     private lateinit var curEmployer: Employers
     private lateinit var existingPayPeriodExtraList: List<WorkPayPeriodExtras>
@@ -51,6 +57,9 @@ class PayPeriodExtraAddFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        payDayViewModel = mainActivity.payDayViewModel
+        workExtraViewModel = mainActivity.workExtraViewModel
         mainActivity.title = getString(R.string.add_an_extra_to_this_pay_period)
         return mView
     }
@@ -63,11 +72,11 @@ class PayPeriodExtraAddFragment :
 
     private fun populateValues() {
         populateSpinners()
-        if (mainActivity.mainViewModel.getEmployer() != null) {
-            curEmployer = mainActivity.mainViewModel.getEmployer()!!
+        if (mainViewModel.getEmployer() != null) {
+            curEmployer = mainViewModel.getEmployer()!!
         }
-        if (mainActivity.mainViewModel.getPayPeriod() != null) {
-            curPayPeriod = mainActivity.mainViewModel.getPayPeriod()!!
+        if (mainViewModel.getPayPeriod() != null) {
+            curPayPeriod = mainViewModel.getPayPeriod()!!
         }
         populateExistingPayPeriodExtraList()
         populateExistingWorkDateExtraList()
@@ -94,14 +103,14 @@ class PayPeriodExtraAddFragment :
     }
 
     private fun populateExistingPayPeriodExtraList() {
-        mainActivity.payDayViewModel.getPayPeriodExtras(curPayPeriod.payPeriodId)
+        payDayViewModel.getPayPeriodExtras(curPayPeriod.payPeriodId)
             .observe(viewLifecycleOwner) { list ->
                 existingPayPeriodExtraList = list
             }
     }
 
     private fun populateExistingWorkDateExtraList() {
-        mainActivity.payDayViewModel.getWorkDateExtrasPerPay(
+        payDayViewModel.getWorkDateExtrasPerPay(
             curEmployer.employerId, curPayPeriod.ppCutoffDate
         ).observe(viewLifecycleOwner) { list ->
             existingWorkDateExtraList = list
@@ -109,7 +118,7 @@ class PayPeriodExtraAddFragment :
     }
 
     private fun populateDefaultExtraList() {
-        mainActivity.workExtraViewModel.getDefaultExtraTypesAndCurrentDef(
+        workExtraViewModel.getDefaultExtraTypesAndCurrentDef(
             curEmployer.employerId, curPayPeriod.ppCutoffDate
         ).observe(viewLifecycleOwner) { list ->
             defaultExtraList = list
@@ -195,11 +204,7 @@ class PayPeriodExtraAddFragment :
     }
 
     private fun displayMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun validateFromExistingExtrasAndContinue() {
@@ -265,7 +270,7 @@ class PayPeriodExtraAddFragment :
 
     private fun saveExtraAndGotoCallingFragment() {
         binding.apply {
-            mainActivity.payDayViewModel.insertPayPeriodExtra(
+            payDayViewModel.insertPayPeriodExtra(
                 getCurrentPayPeriodExtra()
             )
         }

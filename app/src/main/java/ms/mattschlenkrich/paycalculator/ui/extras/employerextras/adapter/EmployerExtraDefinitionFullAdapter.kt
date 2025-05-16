@@ -19,7 +19,7 @@ import ms.mattschlenkrich.paycalculator.ui.employer.IEmployerUpdateFragment
 import ms.mattschlenkrich.paycalculator.ui.extras.employerextras.IEmployerExtraDefinitionsFragment
 
 class EmployerExtraDefinitionFullAdapter(
-    private val mainActivity: MainActivity,
+    val mainActivity: MainActivity,
     private val mView: View,
     private val employerExtraDefinitionsFragment: IEmployerExtraDefinitionsFragment?,
     private val employerUpdateFragment: IEmployerUpdateFragment?,
@@ -28,6 +28,8 @@ class EmployerExtraDefinitionFullAdapter(
 
     private val cf = NumberFunctions()
     private val df = DateFunctions()
+    val workExtraViewModel = mainActivity.workExtraViewModel
+    val mainViewModel = mainActivity.mainViewModel
 
     class DefinitionViewHolder(val itemBinding: ListEmployerExtraDefinitonBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -145,7 +147,7 @@ class EmployerExtraDefinitionFullAdapter(
     }
 
     private fun deleteExtra(definition: WorkExtrasDefinitions) {
-        mainActivity.workExtraViewModel.deleteWorkExtraDefinition(
+        workExtraViewModel.deleteWorkExtraDefinition(
             definition.workExtraDefId, df.getCurrentTimeAsString()
         )
         employerExtraDefinitionsFragment?.populateExtrasList()
@@ -153,9 +155,9 @@ class EmployerExtraDefinitionFullAdapter(
     }
 
     private fun gotoExtraUpdate(definition: ExtraDefTypeAndEmployer) {
-        mainActivity.mainViewModel.setEmployerString(definition.employer.employerName)
-        mainActivity.mainViewModel.setEmployer(definition.employer)
-        mainActivity.mainViewModel.setExtraDefinitionFull(definition)
+        mainViewModel.setEmployerString(definition.employer.employerName)
+        mainViewModel.setEmployer(definition.employer)
+        mainViewModel.setExtraDefinitionFull(definition)
         employerExtraDefinitionsFragment?.gotoEmployerExtraDefinitionUpdateFragment()
         employerUpdateFragment?.gotoEmployerExtraDefinitionUpdateFragment()
     }

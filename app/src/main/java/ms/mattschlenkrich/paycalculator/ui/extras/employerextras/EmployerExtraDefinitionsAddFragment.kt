@@ -29,6 +29,8 @@ import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtrasDefinitions
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerExtraDefinitionsAddBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -41,6 +43,8 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workExtraViewModel: WorkExtraViewModel
     private lateinit var curEmployer: Employers
     private val df = DateFunctions()
     private val nf = NumberFunctions()
@@ -55,6 +59,8 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workExtraViewModel = mainActivity.workExtraViewModel
         mainActivity.title = getString(R.string.add_a_definition)
         return mView
     }
@@ -72,8 +78,8 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
             CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_250)
                 tvEmployer.text = curEmployer.employerName
-                if (mainActivity.mainViewModel.getWorkExtraType() != null) {
-                    val extraType = mainActivity.mainViewModel.getWorkExtraType()!!
+                if (mainViewModel.getWorkExtraType() != null) {
+                    val extraType = mainViewModel.getWorkExtraType()!!
                     for (i in 0 until spExtraTypes.adapter.count) {
                         if (spExtraTypes.getItemAtPosition(i) == extraType.wetName) {
                             spExtraTypes.setSelection(i)
@@ -87,13 +93,13 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     }
 
     private fun populateSpinners() {
-        curEmployer = mainActivity.mainViewModel.getEmployer()!!
+        curEmployer = mainViewModel.getEmployer()!!
         binding.apply {
             val extraTypeAdapter = ArrayAdapter<String>(
                 mView.context,
                 R.layout.spinner_item_bold
             )
-            mainActivity.workExtraViewModel.getExtraDefTypes(
+            workExtraViewModel.getExtraDefTypes(
                 curEmployer.employerId
             )
                 .observe(viewLifecycleOwner) { typesList ->
@@ -298,11 +304,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     }
 
     private fun displayMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun validateExtra(): String {
@@ -319,14 +321,14 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     private fun saveExtra() {
         val currentExtraDefinition =
             getCurrentExtraDefinition()
-        mainActivity.workExtraViewModel.insertWorkExtraDefinition(
+        workExtraViewModel.insertWorkExtraDefinition(
             currentExtraDefinition
         )
     }
 
     private fun gotoCallingFragment() {
-        if (mainActivity.mainViewModel.getCallingFragment() != null) {
-            if (mainActivity.mainViewModel.getCallingFragment()!!.contains(
+        if (mainViewModel.getCallingFragment() != null) {
+            if (mainViewModel.getCallingFragment()!!.contains(
                     FRAG_EXTRA_DEFINITIONS
                 )
             ) {
@@ -345,7 +347,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     }
 
     private fun gotoExtraTypeAdd() {
-        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainViewModel.setEmployer(curEmployer)
         gotoWorkExtraTypeAddFragment()
     }
 

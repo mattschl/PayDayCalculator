@@ -20,6 +20,8 @@ import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtraTypes
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkExtraTypeUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -31,6 +33,8 @@ class WorkExtraTypeUpdateFragment : Fragment(
     val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workExtraViewModel: WorkExtraViewModel
     private lateinit var extraTypeList: List<WorkExtraTypes>
     private lateinit var currentEmployer: Employers
     private lateinit var currentExtraType: WorkExtraTypes
@@ -45,6 +49,8 @@ class WorkExtraTypeUpdateFragment : Fragment(
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workExtraViewModel = mainActivity.workExtraViewModel
         mainActivity.title =
             getString(R.string.update_extra_type)
         return mView
@@ -151,7 +157,7 @@ class WorkExtraTypeUpdateFragment : Fragment(
     }
 
     private fun deleteExtraType() {
-        mainActivity.workExtraViewModel.updateWorkExtraType(
+        workExtraViewModel.updateWorkExtraType(
             WorkExtraTypes(
                 currentExtraType.workExtraTypeId,
                 currentExtraType.wetName,
@@ -199,11 +205,7 @@ class WorkExtraTypeUpdateFragment : Fragment(
     }
 
     private fun displayMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun validateExtraType(): String {
@@ -258,14 +260,14 @@ class WorkExtraTypeUpdateFragment : Fragment(
 
     private fun updateExtraTypeAndGotoDefinition() {
         val newExtraType = getUpdatedExtraType()
-        mainActivity.workExtraViewModel.updateWorkExtraType(
+        workExtraViewModel.updateWorkExtraType(
             newExtraType
         )
         gotoWorkExtraDefinitions(newExtraType)
     }
 
     private fun gotoWorkExtraDefinitions(newExtraType: WorkExtraTypes) {
-        mainActivity.mainViewModel.setWorkExtraType(newExtraType)
+        mainViewModel.setWorkExtraType(newExtraType)
         gotoEmployerExtraDefinitionsFragment()
     }
 

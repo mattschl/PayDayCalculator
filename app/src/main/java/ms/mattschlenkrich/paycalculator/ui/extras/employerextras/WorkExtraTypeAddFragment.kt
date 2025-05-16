@@ -22,6 +22,8 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtraTypes
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkExtraTypeAddBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -33,6 +35,8 @@ class WorkExtraTypeAddFragment : Fragment(
     val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workExtraViewModel: WorkExtraViewModel
     private val df = DateFunctions()
     private val cf = NumberFunctions()
     private lateinit var extraTypeList: List<WorkExtraTypes>
@@ -47,6 +51,8 @@ class WorkExtraTypeAddFragment : Fragment(
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workExtraViewModel = mainActivity.workExtraViewModel
         mainActivity.title = getString(R.string.add_extra_type)
         return mView
     }
@@ -58,8 +64,8 @@ class WorkExtraTypeAddFragment : Fragment(
     }
 
     private fun populateValues() {
-        if (mainActivity.mainViewModel.getEmployer() != null) {
-            curEmployer = mainActivity.mainViewModel.getEmployer()!!
+        if (mainViewModel.getEmployer() != null) {
+            curEmployer = mainViewModel.getEmployer()!!
         }
         populateEmployerInfo()
         populateSpinners()
@@ -94,7 +100,7 @@ class WorkExtraTypeAddFragment : Fragment(
     }
 
     private fun populateExtraTypeList() {
-        mainActivity.workExtraViewModel.getExtraDefTypes(curEmployer.employerId)
+        workExtraViewModel.getExtraDefTypes(curEmployer.employerId)
             .observe(
                 viewLifecycleOwner
             ) { names ->
@@ -161,11 +167,7 @@ class WorkExtraTypeAddFragment : Fragment(
     }
 
     private fun displayMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun validateExtraType(): String {
@@ -217,13 +219,13 @@ class WorkExtraTypeAddFragment : Fragment(
 
     private fun saveExtraTypeAndGotoDefinition() {
         val newWorkExtraType = getCurrentWorkExtraType()
-        mainActivity.workExtraViewModel.insertWorkExtraType(newWorkExtraType)
+        workExtraViewModel.insertWorkExtraType(newWorkExtraType)
         gotoEmployerExtraDefinitions(newWorkExtraType)
     }
 
     private fun gotoEmployerExtraDefinitions(extraType: WorkExtraTypes) {
-        mainActivity.mainViewModel.setEmployer(curEmployer)
-        mainActivity.mainViewModel.setWorkExtraType(extraType)
+        mainViewModel.setEmployer(curEmployer)
+        mainViewModel.setWorkExtraType(extraType)
         gotoEmployerExtraDefinitionsFragment()
     }
 

@@ -21,6 +21,9 @@ import ms.mattschlenkrich.paycalculator.common.FRAG_EXTRA_DEFINITIONS
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtraTypes
+import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerExtraDefinitionsBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.extras.employerextras.adapter.EmployerExtraDefinitionFullAdapter
@@ -34,6 +37,9 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var employerViewModel: EmployerViewModel
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workExtraViewModel: WorkExtraViewModel
     private lateinit var employerList: List<Employers>
     private lateinit var extraTypeList: List<WorkExtraTypes>
     private var curEmployer: Employers? = null
@@ -48,6 +54,9 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        employerViewModel = mainActivity.employerViewModel
+        mainViewModel = mainActivity.mainViewModel
+        workExtraViewModel = mainActivity.workExtraViewModel
         mainActivity.title = getString(R.string.view_extra_pay_items)
         return mView
     }
@@ -60,7 +69,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
 
     private fun populateValues() {
         populateEmployersSpinner()
-        mainActivity.mainViewModel.removeCallingFragment(TAG)
+        mainViewModel.removeCallingFragment(TAG)
         CoroutineScope(Dispatchers.Main).launch {
             binding.apply {
                 delay(WAIT_250)
@@ -120,7 +129,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                 val extraAdapter = ArrayAdapter<Any>(
                     mView.context, R.layout.spinner_item_bold
                 )
-                mainActivity.workExtraViewModel.getExtraDefTypes(curEmployer!!.employerId)
+                workExtraViewModel.getExtraDefTypes(curEmployer!!.employerId)
                     .observe(viewLifecycleOwner) { extraTypes ->
                         extraTypeList = extraTypes
                         extraTypes.listIterator().forEach {
@@ -153,7 +162,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     setHasFixedSize(true)
                     adapter = extraDefinitionAdapter
                 }
-                mainActivity.workExtraViewModel.getActiveExtraDefinitionsFull(
+                workExtraViewModel.getActiveExtraDefinitionsFull(
                     curEmployer!!.employerId, curExtraType!!.workExtraTypeId
                 ).observe(
                     viewLifecycleOwner
@@ -171,7 +180,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
             mView.context,
             R.layout.spinner_item_bold
         )
-        mainActivity.employerViewModel.getEmployers().observe(
+        employerViewModel.getEmployers().observe(
             viewLifecycleOwner
         ) { employers ->
             employerAdapter.clear()
@@ -220,9 +229,9 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
 
     private fun setSelectionToEmployerFoundInList() {
         binding.apply {
-            if (mainActivity.mainViewModel.getEmployer() != null) {
+            if (mainViewModel.getEmployer() != null) {
                 val employerName =
-                    mainActivity.mainViewModel.getEmployer()!!.employerName
+                    mainViewModel.getEmployer()!!.employerName
                 for (i in 0 until spEmployers.adapter.count) {
                     if (spEmployers.getItemAtPosition(i) == employerName) {
                         spEmployers.setSelection(i)
@@ -276,9 +285,9 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
 
     private fun setSelectionToExtraTypeFoundInList() {
         binding.apply {
-            if (mainActivity.mainViewModel.getWorkExtraType() != null) {
+            if (mainViewModel.getWorkExtraType() != null) {
                 val extraType =
-                    mainActivity.mainViewModel.getWorkExtraType()!!.wetName
+                    mainViewModel.getWorkExtraType()!!.wetName
                 for (i in 0 until spExtraType.adapter.count) {
                     if (spExtraType.getItemAtPosition(i) == extraType) {
                         spExtraType.setSelection(i)
@@ -330,9 +339,9 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
 
     private fun gotoExtraTypeUpdateFragment() {
         if (curExtraType != null) {
-            mainActivity.mainViewModel.setEmployer(curEmployer)
-            mainActivity.mainViewModel.setWorkExtraType(curExtraType)
-            mainActivity.mainViewModel.addCallingFragment(TAG)
+            mainViewModel.setEmployer(curEmployer)
+            mainViewModel.setWorkExtraType(curExtraType)
+            mainViewModel.addCallingFragment(TAG)
             gotoFragmentToWorkExtraTypeUpdateFragment()
         }
     }
@@ -345,9 +354,9 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     }
 
     private fun gotoExtraAddFragment() {
-        mainActivity.mainViewModel.setEmployer(curEmployer)
-        mainActivity.mainViewModel.setWorkExtraType(curExtraType)
-        mainActivity.mainViewModel.addCallingFragment(TAG)
+        mainViewModel.setEmployer(curEmployer)
+        mainViewModel.setWorkExtraType(curExtraType)
+        mainViewModel.addCallingFragment(TAG)
         gotoEmployerExtraDefinitionsAddFragment()
     }
 
@@ -366,8 +375,8 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     }
 
     private fun gotoExtraTypeAdd() {
-        mainActivity.mainViewModel.addCallingFragment(TAG)
-        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainViewModel.addCallingFragment(TAG)
+        mainViewModel.setEmployer(curEmployer)
         gotoWorkExtraTypeAddFragment()
     }
 

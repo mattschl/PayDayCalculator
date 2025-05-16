@@ -19,6 +19,9 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
+import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkDateExtraUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -29,6 +32,9 @@ class WorkDateExtraUpdateFragment
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var employerViewModel: EmployerViewModel
+    private lateinit var payDayViewModel: PayDayViewModel
     private lateinit var curDateObject: WorkDates
     private lateinit var oldWorkDateExtra: WorkDateExtras
     private var extraList = ArrayList<WorkDateExtras>()
@@ -44,6 +50,9 @@ class WorkDateExtraUpdateFragment
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        employerViewModel = mainActivity.employerViewModel
+        payDayViewModel = mainActivity.payDayViewModel
         mainActivity.title = getString(R.string.update_this_extra)
         return mView
     }
@@ -61,23 +70,21 @@ class WorkDateExtraUpdateFragment
     }
 
     private fun populateInfoDisplay() {
-        if (mainActivity.mainViewModel.getWorkDateObject() != null &&
-            mainActivity.mainViewModel.getWorkDateExtra() != null &&
-            mainActivity.mainViewModel.getWorkDateString() != null
+        if (mainViewModel.getWorkDateObject() != null &&
+            mainViewModel.getWorkDateExtra() != null &&
+            mainViewModel.getWorkDateString() != null
         ) {
-            curDateObject =
-                mainActivity.mainViewModel.getWorkDateObject()!!
-            oldWorkDateExtra =
-                mainActivity.mainViewModel.getWorkDateExtra()!!
+            curDateObject = mainViewModel.getWorkDateObject()!!
+            oldWorkDateExtra = mainViewModel.getWorkDateExtra()!!
             mainActivity.title = getString(R.string.update_extra_) +
                     oldWorkDateExtra.wdeName
             binding.apply {
                 var display = getString(R.string.date_) +
                         df.getDisplayDate(
-                            mainActivity.mainViewModel.getWorkDateString()!!
+                            mainViewModel.getWorkDateString()!!
                         ) +
                         getString(R.string.employer_) +
-                        mainActivity.mainViewModel.getEmployerString()
+                        mainViewModel.getEmployerString()
                 lblDateInfo.text = display
                 etExtraName.setText(oldWorkDateExtra.wdeName)
                 spAppliesTo.setSelection(oldWorkDateExtra.wdeAppliesTo)
@@ -172,7 +179,7 @@ class WorkDateExtraUpdateFragment
         binding.apply {
             val extra = getCurrentWorkDateExtra()
             extra.apply {
-                mainActivity.payDayViewModel.updateWorkDateExtra(
+                payDayViewModel.updateWorkDateExtra(
                     WorkDateExtras(
                         workDateExtraId,
                         wdeWorkDateId,
@@ -224,11 +231,7 @@ class WorkDateExtraUpdateFragment
     }
 
     private fun displayMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun getCurrentWorkDateExtra(): WorkDateExtras {
@@ -258,13 +261,13 @@ class WorkDateExtraUpdateFragment
     }
 
     private fun updateWorkDateExtra() {
-        mainActivity.payDayViewModel.updateWorkDateExtra(
+        payDayViewModel.updateWorkDateExtra(
             getCurrentWorkDateExtra()
         )
     }
 
     private fun gotoWorkDateUpdate() {
-        mainActivity.mainViewModel.setWorkDateExtra(null)
+        mainViewModel.setWorkDateExtra(null)
         gotoWorkDateUpdateFragment()
     }
 

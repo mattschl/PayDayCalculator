@@ -19,6 +19,9 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
+import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkDateExtraAddBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -28,6 +31,9 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var employerViewModel: EmployerViewModel
+    private lateinit var payDayViewModel: PayDayViewModel
     private lateinit var curDateObject: WorkDates
     private lateinit var existingWorkDateExtraList: List<WorkDateExtras>
     private val df = DateFunctions()
@@ -43,6 +49,9 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        employerViewModel = mainActivity.employerViewModel
+        payDayViewModel = mainActivity.payDayViewModel
         mainActivity.title = getString(R.string.add_a_one_time_extra)
         return mView
     }
@@ -55,10 +64,9 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
 
     private fun populateValues() {
         populateSpinners()
-        if (mainActivity.mainViewModel.getWorkDateObject() != null) {
-            curDateObject =
-                mainActivity.mainViewModel.getWorkDateObject()!!
-            mainActivity.employerViewModel.getEmployer(curDateObject.wdEmployerId)
+        if (mainViewModel.getWorkDateObject() != null) {
+            curDateObject = mainViewModel.getWorkDateObject()!!
+            employerViewModel.getEmployer(curDateObject.wdEmployerId)
                 .observe(viewLifecycleOwner) { employer ->
                     val display = getString(R.string.date_) +
                             df.getDisplayDate(curDateObject.wdDate) +
@@ -88,7 +96,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
     }
 
     private fun getExtraListForDate() {
-        mainActivity.payDayViewModel.getWorkDateExtras(curDateObject.workDateId)
+        payDayViewModel.getWorkDateExtras(curDateObject.workDateId)
             .observe(viewLifecycleOwner) { list ->
                 existingWorkDateExtraList = list
             }
@@ -171,11 +179,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
     }
 
     private fun displayMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun getCurrentWorkDateExtra(): WorkDateExtras {
@@ -197,7 +201,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
     }
 
     private fun saveWorkDateExtra() {
-        mainActivity.payDayViewModel.insertWorkDateExtra(
+        payDayViewModel.insertWorkDateExtra(
             getCurrentWorkDateExtra()
         )
         gotoCallingFragment()

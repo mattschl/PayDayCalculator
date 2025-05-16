@@ -20,6 +20,8 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraDefTypeAndEmployer
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtrasDefinitions
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerExtraDefinitionUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -30,6 +32,8 @@ class EmployerExtraDefinitionUpdateFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workExtraViewModel: WorkExtraViewModel
     private lateinit var curEmployer: Employers
     private lateinit var curExtraDefinitionFull: ExtraDefTypeAndEmployer
     private val df = DateFunctions()
@@ -44,6 +48,8 @@ class EmployerExtraDefinitionUpdateFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workExtraViewModel = mainActivity.workExtraViewModel
         return mView
     }
 
@@ -54,12 +60,12 @@ class EmployerExtraDefinitionUpdateFragment :
     }
 
     private fun populateValues() {
-        curEmployer = mainActivity.mainViewModel.getEmployer()!!
+        curEmployer = mainViewModel.getEmployer()!!
         binding.apply {
             etName.isEnabled = false
-            if (mainActivity.mainViewModel.getExtraDefinitionFull() != null) {
+            if (mainViewModel.getExtraDefinitionFull() != null) {
                 curExtraDefinitionFull =
-                    mainActivity.mainViewModel.getExtraDefinitionFull()!!
+                    mainViewModel.getExtraDefinitionFull()!!
                 tvEmployer.text = curExtraDefinitionFull.employer.employerName
                 etName.setText(curExtraDefinitionFull.extraType.wetName)
                 etValue.setText(
@@ -208,11 +214,7 @@ class EmployerExtraDefinitionUpdateFragment :
     }
 
     private fun displayMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun getCurrentDefinition(): WorkExtrasDefinitions {
@@ -243,13 +245,13 @@ class EmployerExtraDefinitionUpdateFragment :
     }
 
     private fun updateDefinition() {
-        mainActivity.workExtraViewModel.updateWorkExtraDefinition(
+        workExtraViewModel.updateWorkExtraDefinition(
             getCurrentDefinition()
         )
     }
 
     private fun deleteExtra() {
-        mainActivity.workExtraViewModel.deleteWorkExtraDefinition(
+        workExtraViewModel.deleteWorkExtraDefinition(
             curExtraDefinitionFull.definition.workExtraDefId,
             df.getCurrentTimeAsString()
         )
