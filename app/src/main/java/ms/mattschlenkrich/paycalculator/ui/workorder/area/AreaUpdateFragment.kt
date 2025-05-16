@@ -14,6 +14,8 @@ import ms.mattschlenkrich.paycalculator.common.FRAG_AREA_VIEW
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_UPDATE
 import ms.mattschlenkrich.paycalculator.database.model.workorder.Areas
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentSingleItemUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -24,6 +26,8 @@ class AreaUpdateFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workOrderViewModel: WorkOrderViewModel
     private val df = DateFunctions()
 
     private lateinit var areasList: List<Areas>
@@ -38,6 +42,8 @@ class AreaUpdateFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workOrderViewModel = mainActivity.workOrderViewModel
         mainActivity.title = getString(R.string.update_area_description)
         return mView
     }
@@ -50,10 +56,10 @@ class AreaUpdateFragment :
 
     private fun setValues() {
         populateAreasListForValidation()
-        if (mainActivity.mainViewModel.getAreaId() != null) {
-            mainActivity.workOrderViewModel.getArea(
-                mainActivity.mainViewModel.getAreaId()!!
-            ).observe(viewLifecycleOwner) { area ->
+        if (mainViewModel.getAreaId() != null) {
+            workOrderViewModel.getArea(mainViewModel.getAreaId()!!).observe(
+                viewLifecycleOwner
+            ) { area ->
                 oldArea = area
                 binding.apply {
                     val display =
@@ -67,7 +73,7 @@ class AreaUpdateFragment :
     }
 
     private fun populateAreasListForValidation() {
-        mainActivity.workOrderViewModel.getAreasList().observe(viewLifecycleOwner) { list ->
+        workOrderViewModel.getAreasList().observe(viewLifecycleOwner) { list ->
             areasList = list
         }
     }
@@ -93,11 +99,7 @@ class AreaUpdateFragment :
     }
 
     private fun displayMessage(answer: String) {
-        Toast.makeText(
-            mView.context,
-            answer,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, answer, Toast.LENGTH_LONG).show()
     }
 
     private fun validateArea(): String {
@@ -119,7 +121,7 @@ class AreaUpdateFragment :
     }
 
     private fun updateArea() {
-        mainActivity.workOrderViewModel.updateArea(
+        workOrderViewModel.updateArea(
             Areas(
                 oldArea.areaId,
                 binding.etItem.text.toString().trim(),
@@ -131,18 +133,19 @@ class AreaUpdateFragment :
     }
 
     private fun gotoCallingFragment() {
-        mainActivity.mainViewModel.setAreaId(null)
-        if (mainActivity.mainViewModel.getCallingFragment()!!.contains(
+        mainViewModel.setAreaId(null)
+        val callingFragment = mainActivity.mainViewModel.getCallingFragment()!!
+        if (callingFragment.contains(
                 FRAG_AREA_VIEW
             )
         ) {
             gotoAreaViewFragment()
-        } else if (mainActivity.mainViewModel.getCallingFragment()!!.contains(
+        } else if (callingFragment.contains(
                 FRAG_WORK_ORDER_HISTORY_UPDATE
             )
         ) {
             gotoWorkOrderHistoryUpdateFragment()
-        } else if (mainActivity.mainViewModel.getCallingFragment()!!.contains(
+        } else if (callingFragment.contains(
                 FRAG_WORK_ORDER_UPDATE
             )
         ) {

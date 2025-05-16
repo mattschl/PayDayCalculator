@@ -13,6 +13,8 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_MATERIAL_VIEW
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.workorder.Material
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentMaterialUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -25,6 +27,8 @@ class MaterialUpdateFragment
     private lateinit var mainActivity: MainActivity
 
     private val materialList = ArrayList<Material>()
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workOrderViewModel: WorkOrderViewModel
     private lateinit var oldMaterial: Material
     private val df = DateFunctions()
     private val nf = NumberFunctions()
@@ -38,6 +42,8 @@ class MaterialUpdateFragment
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workOrderViewModel = mainActivity.workOrderViewModel
         mainActivity.title = getString(R.string.update_material_description)
         return mView
     }
@@ -50,8 +56,8 @@ class MaterialUpdateFragment
 
     private fun setInitialValues() {
         populateMaterialListForValidation()
-        if (mainActivity.mainViewModel.getMaterial() != null) {
-            oldMaterial = mainActivity.mainViewModel.getMaterial()!!
+        if (mainViewModel.getMaterial() != null) {
+            oldMaterial = mainViewModel.getMaterial()!!
             binding.apply {
                 val display = getString(R.string.update_) +
                         oldMaterial.mName
@@ -64,7 +70,7 @@ class MaterialUpdateFragment
     }
 
     private fun populateMaterialListForValidation() {
-        mainActivity.workOrderViewModel.getMaterialsList()
+        workOrderViewModel.getMaterialsList()
             .observe(viewLifecycleOwner) { list ->
                 materialList.clear()
                 for (material in list.listIterator()) {
@@ -95,11 +101,7 @@ class MaterialUpdateFragment
     }
 
     private fun displayMessage(answer: String) {
-        Toast.makeText(
-            mView.context,
-            answer,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, answer, Toast.LENGTH_LONG).show()
     }
 
     private fun validateMaterial(): String {
@@ -143,19 +145,18 @@ class MaterialUpdateFragment
     }
 
     private fun updateMaterial() {
-        mainActivity.workOrderViewModel.updateMaterial(
-            getCurMaterial()
-        )
+        workOrderViewModel.updateMaterial(getCurMaterial())
     }
 
     private fun gotoCallingFragment() {
-        mainActivity.mainViewModel.setMaterial(null)
-        if (mainActivity.mainViewModel.getCallingFragment()!!
-                .contains(FRAG_MATERIAL_VIEW)
-        ) {
-            gotoMaterialViewFragment()
-        } else {
-            gotoWorkOrderHistoryUpdateFragment()
+        mainViewModel.apply {
+            setMaterial(null)
+            if (getCallingFragment()!!.contains(FRAG_MATERIAL_VIEW)
+            ) {
+                gotoMaterialViewFragment()
+            } else {
+                gotoWorkOrderHistoryUpdateFragment()
+            }
         }
     }
 

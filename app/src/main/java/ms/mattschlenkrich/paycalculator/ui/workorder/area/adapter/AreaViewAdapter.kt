@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.database.model.workorder.Areas
 import ms.mattschlenkrich.paycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
@@ -15,9 +16,11 @@ import ms.mattschlenkrich.paycalculator.ui.workorder.area.AreaViewFragment
 class AreaViewAdapter(
     private val mainActivity: MainActivity,
     private val mView: View,
-    private val areaViewFragment: AreaViewFragment,
     private val parentTag: String,
+    private val areaViewFragment: AreaViewFragment,
 ) : RecyclerView.Adapter<AreaViewAdapter.AreaViewHolder>() {
+
+    private val mainViewModel = mainActivity.mainViewModel
 
     class AreaViewHolder(val itemBinding: ListSingleItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -53,7 +56,7 @@ class AreaViewAdapter(
         holder.itemBinding.apply {
             var display = area.areaName
             if (area.areaIsDeleted) {
-                display += " *DELETED*"
+                display += mView.context.getString(R.string._deleted_)
                 tvDisplay.setTextColor(Color.RED)
             } else {
                 tvDisplay.setTextColor(Color.BLACK)
@@ -66,8 +69,10 @@ class AreaViewAdapter(
     }
 
     private fun gotoAreaUpdate(areaId: Long) {
-        mainActivity.mainViewModel.setCallingFragment(parentTag)
-        mainActivity.mainViewModel.setAreaId(areaId)
+        mainViewModel.apply {
+            setCallingFragment(parentTag)
+            setAreaId(areaId)
+        }
         areaViewFragment.gotoAreaUpdateFragment()
     }
 }

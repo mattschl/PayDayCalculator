@@ -37,9 +37,7 @@ class MaterialCountAdapter(
         val material = materialCount[position]
         holder.itemBinding.apply {
             val display =
-                nf.getNumberFromDouble(material.quantity) +
-                        mView.context.getString(R.string.hyphen) +
-                        material.name
+                nf.getNumberFromDouble(material.quantity) + mView.context.getString(R.string.hyphen) + material.name
             tvDisplay.text = display
         }
     }

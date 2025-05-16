@@ -20,6 +20,8 @@ class MaterialViewAdapter(
     private val parentTag: String,
 ) : RecyclerView.Adapter<MaterialViewAdapter.MaterialViewHolder>() {
 
+    private val mainViewModel = mainActivity.mainViewModel
+
     class MaterialViewHolder(val itemBinding: ListSingleItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
@@ -68,8 +70,10 @@ class MaterialViewAdapter(
     }
 
     private fun gotoUpdateMaterial(material: Material) {
-        mainActivity.mainViewModel.setCallingFragment(parentTag)
-        mainActivity.mainViewModel.setMaterial(material)
+        mainViewModel.apply {
+            setCallingFragment(parentTag)
+            setMaterial(material)
+        }
         gotoMaterialUpdateFragment()
     }
 

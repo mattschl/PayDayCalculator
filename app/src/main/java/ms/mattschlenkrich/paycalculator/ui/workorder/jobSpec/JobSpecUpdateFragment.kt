@@ -12,6 +12,8 @@ import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_JOB_SPEC_VIEW
 import ms.mattschlenkrich.paycalculator.database.model.workorder.JobSpec
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentJobSpecBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -22,6 +24,8 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workOrderViewModel: WorkOrderViewModel
 
     private val jobSpecList = ArrayList<JobSpec>()
     private lateinit var oldJobSpec: JobSpec
@@ -36,6 +40,8 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workOrderViewModel = mainActivity.workOrderViewModel
         mainActivity.title = getString(R.string.update_job_spec)
         return mView
     }
@@ -48,9 +54,8 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
 
     private fun setValues() {
         populateJobSpecListForValidation()
-        if (mainActivity.mainViewModel.getJobSpec() != null) {
-            oldJobSpec =
-                mainActivity.mainViewModel.getJobSpec()!!
+        if (mainViewModel.getJobSpec() != null) {
+            oldJobSpec = mainViewModel.getJobSpec()!!
             binding.apply {
                 val display =
                     getString(R.string.update_) +
@@ -62,7 +67,7 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
     }
 
     private fun populateJobSpecListForValidation() {
-        mainActivity.workOrderViewModel.getJobSpecsAll().observe(
+        workOrderViewModel.getJobSpecsAll().observe(
             viewLifecycleOwner
         ) { list ->
             jobSpecList.clear()
@@ -94,10 +99,7 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
     }
 
     private fun displayMessage(answer: String) {
-        Toast.makeText(
-            mView.context,
-            answer, Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, answer, Toast.LENGTH_LONG).show()
     }
 
     private fun validateJobSpec(): String {
@@ -129,14 +131,16 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
     }
 
     private fun gotoCallingFragment() {
-        mainActivity.mainViewModel.setJobSpec(null)
-        if (mainActivity.mainViewModel.getCallingFragment()!!.contains(
-                FRAG_JOB_SPEC_VIEW
-            )
-        ) {
-            gotoJobSpecViewFragment()
-        } else {
-            gotoWorkOrderUpdateFragment()
+        mainViewModel.apply {
+            setJobSpec(null)
+            if (getCallingFragment()!!.contains(
+                    FRAG_JOB_SPEC_VIEW
+                )
+            ) {
+                gotoJobSpecViewFragment()
+            } else {
+                gotoWorkOrderUpdateFragment()
+            }
         }
     }
 

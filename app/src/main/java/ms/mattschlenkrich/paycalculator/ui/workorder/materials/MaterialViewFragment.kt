@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.FRAG_MATERIAL_VIEW
 import ms.mattschlenkrich.paycalculator.database.model.workorder.Material
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentRecyclerViewBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.materials.adapter.MaterialViewAdapter
@@ -31,6 +32,7 @@ class MaterialViewFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var workOrderViewModel: WorkOrderViewModel
     private var materialViewAdapter: MaterialViewAdapter? = null
 
     override fun onCreateView(
@@ -42,6 +44,7 @@ class MaterialViewFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        workOrderViewModel = mainActivity.workOrderViewModel
         mainActivity.title = getString(R.string.view_material_list)
         return mView
     }
@@ -63,9 +66,7 @@ class MaterialViewFragment :
     }
 
     private fun populateMaterials() {
-        materialViewAdapter = MaterialViewAdapter(
-            mainActivity, mView, TAG
-        )
+        materialViewAdapter = MaterialViewAdapter(mainActivity, mView, TAG)
         binding.rvRecycler.apply {
             layoutManager = StaggeredGridLayoutManager(
                 2,
@@ -74,13 +75,11 @@ class MaterialViewFragment :
             setHasFixedSize(true)
             adapter = materialViewAdapter
         }
-        activity.let {
-            mainActivity.workOrderViewModel.getMaterialsList().observe(
-                viewLifecycleOwner
-            ) { materialList ->
-                materialViewAdapter!!.differ.submitList(materialList)
-                updateUI(materialList)
-            }
+        workOrderViewModel.getMaterialsList().observe(
+            viewLifecycleOwner
+        ) { materialList ->
+            materialViewAdapter!!.differ.submitList(materialList)
+            updateUI(materialList)
         }
     }
 
@@ -102,8 +101,7 @@ class MaterialViewFragment :
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.search_menu, menu)
-        val mMenuSearch = menu.findItem(R.id.menu_search)
-            .actionView as SearchView
+        val mMenuSearch = menu.findItem(R.id.menu_search).actionView as SearchView
         mMenuSearch.isSubmitButtonEnabled = false
         mMenuSearch.setOnQueryTextListener(this)
     }
@@ -122,9 +120,7 @@ class MaterialViewFragment :
     private fun searchMaterial(query: String) {
         if (materialViewAdapter != null) {
             val searchQuery = "%$query%"
-            mainActivity.workOrderViewModel.searchMaterials(
-                searchQuery
-            ).observe(viewLifecycleOwner) { list ->
+            workOrderViewModel.searchMaterials(searchQuery).observe(viewLifecycleOwner) { list ->
                 materialViewAdapter!!.differ.submitList(list)
                 updateUI(list)
             }

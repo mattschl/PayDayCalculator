@@ -20,6 +20,8 @@ class JobSpecAdapter(
     private val parentTag: String,
 ) : RecyclerView.Adapter<JobSpecAdapter.JobSpecViewHolder>() {
 
+    private val mainViewModel = mainActivity.mainViewModel
+
     class JobSpecViewHolder(val itemBinding: ListSingleItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
@@ -68,8 +70,10 @@ class JobSpecAdapter(
     }
 
     private fun gotoUpdateJobSpec(jobSpec: JobSpec?) {
-        mainActivity.mainViewModel.setCallingFragment(parentTag)
-        mainActivity.mainViewModel.setJobSpec(jobSpec)
+        mainViewModel.apply {
+            setCallingFragment(parentTag)
+            setJobSpec(jobSpec)
+        }
         gotoJobSpecUpdateFragment()
     }
 

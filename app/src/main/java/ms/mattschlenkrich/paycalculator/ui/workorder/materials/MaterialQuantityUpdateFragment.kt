@@ -13,6 +13,8 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.workorder.MaterialInSequence
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryMaterial
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentMaterialQuantityUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -22,6 +24,8 @@ class MaterialQuantityUpdateFragment : Fragment(R.layout.fragment_material_quant
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workOrderViewModel: WorkOrderViewModel
     private val df = DateFunctions()
     private val nf = NumberFunctions()
     private lateinit var material: MaterialInSequence
@@ -35,6 +39,8 @@ class MaterialQuantityUpdateFragment : Fragment(R.layout.fragment_material_quant
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workOrderViewModel = mainActivity.workOrderViewModel
         mainActivity.title = getString(R.string.update_quantity)
         return mView
     }
@@ -47,9 +53,9 @@ class MaterialQuantityUpdateFragment : Fragment(R.layout.fragment_material_quant
 
     private fun populateDetails() {
         val date = df.getDisplayDate(
-            mainActivity.mainViewModel.getWorkDateObject()!!.wdDate
+            mainViewModel.getWorkDateObject()!!.wdDate
         )
-        material = mainActivity.mainViewModel.getMaterialInSequence()!!
+        material = mainViewModel.getMaterialInSequence()!!
         val display = getString(R.string.update_quantity_of) +
                 nf.getNumberFromDouble(material.mQty) +
                 getString(R.string._for_) +
@@ -75,7 +81,7 @@ class MaterialQuantityUpdateFragment : Fragment(R.layout.fragment_material_quant
         if (answer == ANSWER_OK) {
             val newQty = binding.etNewQuantity.text.toString().trim().toDouble()
             if (newQty != material.mQty) {
-                mainActivity.workOrderViewModel.updateWorkOrderHistoryMaterial(
+                workOrderViewModel.updateWorkOrderHistoryMaterial(
                     WorkOrderHistoryMaterial(
                         material.workOrderHistoryMaterialId,
                         material.workOrderHistoryId,
@@ -94,11 +100,7 @@ class MaterialQuantityUpdateFragment : Fragment(R.layout.fragment_material_quant
     }
 
     private fun showMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun validateQuantity(): String {
@@ -109,7 +111,7 @@ class MaterialQuantityUpdateFragment : Fragment(R.layout.fragment_material_quant
     }
 
     private fun gotoWorkOrderHistoryUpdate() {
-        mainActivity.mainViewModel.setMaterialInSequence(null)
+        mainViewModel.setMaterialInSequence(null)
         gotoWorkOrderHistoryUpdateFragment()
     }
 

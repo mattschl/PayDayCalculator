@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.FRAG_JOB_SPEC_VIEW
 import ms.mattschlenkrich.paycalculator.database.model.workorder.JobSpec
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentRecyclerViewBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.jobSpec.adapter.JobSpecAdapter
@@ -31,6 +32,7 @@ class JobSpecViewFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var workOrderViewModel: WorkOrderViewModel
     private var jobSpecAdapter: JobSpecAdapter? = null
 
     override fun onCreateView(
@@ -42,6 +44,7 @@ class JobSpecViewFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        workOrderViewModel = mainActivity.workOrderViewModel
         mainActivity.title = getString(R.string.view_job_spec_list)
         return mView
     }
@@ -67,13 +70,9 @@ class JobSpecViewFragment :
             setHasFixedSize(true)
             adapter = jobSpecAdapter
         }
-        activity?.let {
-            mainActivity.workOrderViewModel.getJobSpecsAll().observe(
-                viewLifecycleOwner
-            ) { jobSpecs ->
-                jobSpecAdapter!!.differ.submitList(jobSpecs)
-                updateUI(jobSpecs)
-            }
+        workOrderViewModel.getJobSpecsAll().observe(viewLifecycleOwner) { jobSpecs ->
+            jobSpecAdapter!!.differ.submitList(jobSpecs)
+            updateUI(jobSpecs)
         }
     }
 
@@ -122,12 +121,11 @@ class JobSpecViewFragment :
     private fun searchJobSpecs(query: String) {
         if (jobSpecAdapter != null) {
             val searchQuery = "%$query%"
-            mainActivity.workOrderViewModel.searchJobSpecs(
-                searchQuery
-            ).observe(viewLifecycleOwner) { list ->
-                jobSpecAdapter!!.differ.submitList(list)
-                updateUI(list)
-            }
+            workOrderViewModel.searchJobSpecs(searchQuery)
+                .observe(viewLifecycleOwner) { list ->
+                    jobSpecAdapter!!.differ.submitList(list)
+                    updateUI(list)
+                }
         }
     }
 }

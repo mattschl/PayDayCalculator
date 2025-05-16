@@ -19,7 +19,7 @@ import ms.mattschlenkrich.paycalculator.ui.timesheet.workdate.WorkDateUpdateFrag
 
 class WorkDateWorkOrderHistoryAdapter(
     private val workOrderHistory: ArrayList<WorkOrderHistoryWithDates>,
-    private val mainActivity: MainActivity,
+    val mainActivity: MainActivity,
     private val mView: View,
     private val workDateUpdateFragment: WorkDateUpdateFragment,
 ) : RecyclerView.Adapter<WorkDateWorkOrderHistoryAdapter.ViewHolder>() {

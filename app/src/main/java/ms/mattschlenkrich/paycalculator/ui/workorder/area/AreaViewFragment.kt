@@ -15,6 +15,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.FRAG_AREA_VIEW
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentRecyclerViewBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.area.adapter.AreaViewAdapter
@@ -29,6 +30,7 @@ class AreaViewFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var workOrderViewModel: WorkOrderViewModel
     private lateinit var areaViewAdapter: AreaViewAdapter
 
     override fun onCreateView(
@@ -41,6 +43,7 @@ class AreaViewFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        workOrderViewModel = mainActivity.workOrderViewModel
         mainActivity.title = getString(R.string.view_areas_list)
         return mView
     }
@@ -56,7 +59,7 @@ class AreaViewFragment :
 
     private fun populateAreaList() {
         areaViewAdapter = AreaViewAdapter(
-            mainActivity, mView, this@AreaViewFragment, TAG
+            mainActivity, mView, TAG, this@AreaViewFragment,
         )
         binding.rvRecycler.apply {
             layoutManager = StaggeredGridLayoutManager(
@@ -66,13 +69,11 @@ class AreaViewFragment :
             setHasFixedSize(true)
             adapter = areaViewAdapter
         }
-        activity?.let {
-            mainActivity.workOrderViewModel.getAreasList().observe(
-                viewLifecycleOwner
-            ) { areaList ->
-                areaViewAdapter.differ.submitList(areaList)
-                updateUI(areaList)
-            }
+        workOrderViewModel.getAreasList().observe(
+            viewLifecycleOwner
+        ) { areaList ->
+            areaViewAdapter.differ.submitList(areaList)
+            updateUI(areaList)
         }
     }
 
@@ -97,8 +98,7 @@ class AreaViewFragment :
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.search_menu, menu)
-        val mMenuSearch = menu.findItem(R.id.menu_search)
-            .actionView as SearchView
+        val mMenuSearch = menu.findItem(R.id.menu_search).actionView as SearchView
         mMenuSearch.isSubmitButtonEnabled = false
         mMenuSearch.setOnQueryTextListener(this)
     }
@@ -120,7 +120,7 @@ class AreaViewFragment :
 
     private fun searchAreas(query: String) {
         val searchQuery = "%$query%"
-        mainActivity.workOrderViewModel.searchAreas(searchQuery)
+        workOrderViewModel.searchAreas(searchQuery)
             .observe(viewLifecycleOwner) { list ->
                 areaViewAdapter.differ.submitList(list)
                 updateUI(list)
