@@ -18,14 +18,16 @@ import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.timesheet.workdate.WorkDateUpdateFragment
 
 class WorkDateWorkOrderHistoryAdapter(
+    private val workOrderHistory: ArrayList<WorkOrderHistoryWithDates>,
     private val mainActivity: MainActivity,
     private val mView: View,
     private val workDateUpdateFragment: WorkDateUpdateFragment,
-    private val workOrderHistory: ArrayList<WorkOrderHistoryWithDates>
 ) : RecyclerView.Adapter<WorkDateWorkOrderHistoryAdapter.ViewHolder>() {
 
     //    private val df = DateFunctions()
     private val nf = NumberFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
+    private val workOrderViewModel = mainActivity.workOrderViewModel
 
     class ViewHolder(
         val itemBinding: ListWorkOrderHistoryItemBinding
@@ -95,14 +97,14 @@ class WorkDateWorkOrderHistoryAdapter(
 
     private fun deleteWorkOrderHistory(historyId: Long) {
         CoroutineScope(Dispatchers.Main).launch {
-            mainActivity.workOrderViewModel.removeAllWorkPerformedFromWorkOderHistory(
+            workOrderViewModel.removeAllWorkPerformedFromWorkOderHistory(
                 historyId
             )
-            mainActivity.workOrderViewModel.removeAllMaterialsFromWorkOrderHistory(
+            workOrderViewModel.removeAllMaterialsFromWorkOrderHistory(
                 historyId
             )
             delay(WAIT_500)
-            mainActivity.workOrderViewModel.deleteWorkOrderHistory(historyId)
+            workOrderViewModel.deleteWorkOrderHistory(historyId)
         }
     }
 
@@ -111,7 +113,7 @@ class WorkDateWorkOrderHistoryAdapter(
     }
 
     private fun gotoWorkOrderHistoryUpdate(history: WorkOrderHistoryWithDates) {
-        mainActivity.mainViewModel.setWorkOrderHistory(history.history)
+        mainViewModel.setWorkOrderHistory(history.history)
         workDateUpdateFragment.gotoWorkOrderHistoryUpdateFragment()
     }
 

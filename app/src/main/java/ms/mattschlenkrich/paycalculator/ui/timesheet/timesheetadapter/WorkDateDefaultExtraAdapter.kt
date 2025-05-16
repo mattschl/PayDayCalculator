@@ -77,11 +77,18 @@ class WorkDateDefaultExtraAdapter(
             .setPositiveButton(
                 mView.context.getString(R.string.save)
             ) { _, _ ->
-                workDateAddFragment.addToExtraList(isChecked, extra)
-                workDateAddFragment.validateWorkDateToSave(FRAG_WORK_DATE_UPDATE, false)
+                saveWorkDate(isChecked, extra)
             }
             .setNegativeButton(mView.context.getString(R.string.go_back), null)
             .show()
 
+    }
+
+    private fun saveWorkDate(
+        isChecked: Boolean,
+        extra: WorkExtraTypes
+    ) {
+        workDateAddFragment.addToExtraList(isChecked, extra)
+        workDateAddFragment.validateWorkDateToSave(FRAG_WORK_DATE_UPDATE, false)
     }
 }

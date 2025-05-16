@@ -14,14 +14,16 @@ import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.timesheet.workdate.WorkDateUpdateFragment
 
 class WorkDateUpdateCustomExtraAdapter(
+    private val workDateExtras: ArrayList<WorkDateExtras>,
     private val mainActivity: MainActivity,
     private val mView: View,
     private val workDateUpdateFragment: WorkDateUpdateFragment,
-    private val workDateExtras: ArrayList<WorkDateExtras>,
 ) : RecyclerView.Adapter<WorkDateUpdateCustomExtraAdapter.ViewHolder>() {
 
     private val df = DateFunctions()
     private val nf = NumberFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
+    private val payDayViewModel = mainActivity.payDayViewModel
 
     class ViewHolder(
         val itemBinding: ListWorkDateExtraItemBinding
@@ -75,7 +77,7 @@ class WorkDateUpdateCustomExtraAdapter(
     }
 
     private fun deleteExtra(extra: WorkDateExtras) {
-        mainActivity.payDayViewModel.deleteWorkDateExtra(
+        payDayViewModel.deleteWorkDateExtra(
             extra.wdeName, extra.wdeWorkDateId, extra.wdeUpdateTime
         )
         workDateUpdateFragment.populateExtras()
@@ -83,7 +85,7 @@ class WorkDateUpdateCustomExtraAdapter(
 
     private fun activateExtra(extra: WorkDateExtras) {
         if (extra.workDateExtraId != 0L) {
-            mainActivity.payDayViewModel.updateWorkDateExtra(
+            payDayViewModel.updateWorkDateExtra(
                 WorkDateExtras(
                     extra.workDateExtraId,
                     extra.wdeWorkDateId,
@@ -99,7 +101,7 @@ class WorkDateUpdateCustomExtraAdapter(
                 )
             )
         } else {
-            mainActivity.payDayViewModel.insertWorkDateExtra(
+            payDayViewModel.insertWorkDateExtra(
                 WorkDateExtras(
                     nf.generateRandomIdAsLong(),
                     extra.wdeWorkDateId,
@@ -119,8 +121,10 @@ class WorkDateUpdateCustomExtraAdapter(
     }
 
     private fun gotoUpdateWorkDateExtra(extra: WorkDateExtras) {
-        mainActivity.mainViewModel.setWorkDateExtra(extra)
-        mainActivity.mainViewModel.setWorkDateExtraList(workDateExtras)
+        mainViewModel.apply {
+            setWorkDateExtra(extra)
+            mainViewModel.setWorkDateExtraList(workDateExtras)
+        }
         workDateUpdateFragment.gotoWorkDateExtraUpdateFragment()
     }
 

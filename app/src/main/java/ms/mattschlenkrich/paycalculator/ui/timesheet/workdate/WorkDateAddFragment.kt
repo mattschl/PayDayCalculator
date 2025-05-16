@@ -36,6 +36,9 @@ import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkDateAddBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.timesheet.timesheetadapter.WorkDateDefaultExtraAdapter
@@ -50,6 +53,9 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var payDayViewModel: PayDayViewModel
+    private lateinit var workExtraViewModel: WorkExtraViewModel
     private lateinit var curDateString: String
     private val workExtrasDefaultList = ArrayList<WorkExtraTypes>()
     private var payPeriod: PayPeriods? = null
@@ -67,6 +73,9 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        payDayViewModel = mainActivity.payDayViewModel
+        workExtraViewModel = mainActivity.workExtraViewModel
         mainActivity.title = getString(R.string.add_a_new_work_date)
         return mView
     }
@@ -78,8 +87,8 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
     }
 
     private fun populateValues() {
-        if (mainActivity.mainViewModel.getPayPeriod() != null) {
-            payPeriod = mainActivity.mainViewModel.getPayPeriod()
+        if (mainViewModel.getPayPeriod() != null) {
+            payPeriod = mainViewModel.getPayPeriod()
             populateWorkDateLists()
             CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_250)
@@ -90,7 +99,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
     }
 
     private fun populateWorkDateLists() {
-        mainActivity.payDayViewModel.getWorkDateListUsed(
+        payDayViewModel.getWorkDateListUsed(
             payPeriod!!.ppEmployerId,
             payPeriod!!.ppCutoffDate
         ).observe(viewLifecycleOwner) { list ->
@@ -124,9 +133,9 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
                 layoutManager = LinearLayoutManager(mView.context)
                 adapter = extraAdapter
             }
-            mainActivity.workExtraViewModel.getExtraTypesByDaily(
-                payPeriod!!.ppEmployerId
-            ).observe(viewLifecycleOwner) { extras ->
+            workExtraViewModel.getExtraTypesByDaily(payPeriod!!.ppEmployerId).observe(
+                viewLifecycleOwner
+            ) { extras ->
                 extraAdapter.differ.submitList(extras)
                 extras.listIterator().forEach { extra ->
                     if (extra.wetIsDefault) {
@@ -236,11 +245,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
     }
 
     private fun displayMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     override fun validateWorkDateToSave(fragment: String, isAutomaticallySaved: Boolean) {
@@ -289,8 +294,8 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
     private fun saveWorkDate(goBackTo: String) {
         CoroutineScope(Dispatchers.Main).launch {
             val workDate = getCurWorkDate()
-            mainActivity.payDayViewModel.insertWorkDate(workDate)
-            mainActivity.mainViewModel.setWorkDateObject(workDate)
+            payDayViewModel.insertWorkDate(workDate)
+            mainViewModel.setWorkDateObject(workDate)
             delay(WAIT_250)
             saveExtras(workDate)
             goBackToFragment(goBackTo, workDate)
@@ -313,8 +318,8 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
     private fun overWriteWorkDate(date: WorkDates, goBackTo: String) {
         CoroutineScope(Dispatchers.Main).launch {
             val workDate = getUpdatedWorkDate(date)
-            mainActivity.payDayViewModel.updateWorkDate(workDate)
-            mainActivity.mainViewModel.setWorkDateObject(workDate)
+            payDayViewModel.updateWorkDate(workDate)
+            mainViewModel.setWorkDateObject(workDate)
             delay(WAIT_250)
             saveExtras(workDate)
             goBackToFragment(goBackTo, workDate)
@@ -341,7 +346,6 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
 
     private fun getUpdatedWorkDate(date: WorkDates): WorkDates {
         val tempWorkDate = getCurWorkDate()
-
         tempWorkDate.apply {
             return WorkDates(
                 date.workDateId,
@@ -362,11 +366,11 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
 
     private fun saveExtras(workDate: WorkDates) {
         for (extraType in workExtrasDefaultList) {
-            mainActivity.workExtraViewModel.getExtraTypeAndDefByTypeId(
+            workExtraViewModel.getExtraTypeAndDefByTypeId(
                 extraType.workExtraTypeId, workDate.wdCutoffDate
             ).observe(viewLifecycleOwner) { extra ->
                 extra.apply {
-                    mainActivity.payDayViewModel.insertWorkDateExtra(
+                    payDayViewModel.insertWorkDateExtra(
                         WorkDateExtras(
                             nf.generateRandomIdAsLong(),
                             workDate.workDateId,
@@ -387,8 +391,10 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
     }
 
     private fun gotoTimeSheetAddWorkOrder(workDate: WorkDates) {
-        mainActivity.mainViewModel.setCallingFragment(TAG)
-        mainActivity.mainViewModel.setWorkDateObject(workDate)
+        mainViewModel.apply {
+            setCallingFragment(TAG)
+            setWorkDateObject(workDate)
+        }
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_100)
             gotoWorkOrderHistoryAddFragment()
@@ -403,7 +409,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
     }
 
     private fun gotoWorkDateUpdate(workDate: WorkDates) {
-        mainActivity.mainViewModel.setWorkDateObject(workDate)
+        mainViewModel.setWorkDateObject(workDate)
         gotoWorkDateUpdateFragment()
     }
 

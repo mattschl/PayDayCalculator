@@ -37,6 +37,9 @@ class WorkDateAdapter(
 
     private val df = DateFunctions()
     private val nf = NumberFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
+    private val payDayViewModel = mainActivity.payDayViewModel
+    private val workOrderViewModel = mainActivity.workOrderViewModel
 
     class WorkDateViewHolder(val itemBinding: ListWorkDateBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -175,7 +178,7 @@ class WorkDateAdapter(
     }
 
     private fun deleteWorkDate(workDate: WorkDates) {
-        mainActivity.payDayViewModel.updateWorkDate(
+        payDayViewModel.updateWorkDate(
             WorkDates(
                 workDate.workDateId,
                 workDate.wdPayPeriodId,
@@ -197,21 +200,23 @@ class WorkDateAdapter(
     }
 
     private fun deleteWorkOrders(workDate: WorkDates) {
-        mainActivity.workOrderViewModel.deleteWorkOrderHistoryByWorkDateId(
+        workOrderViewModel.deleteWorkOrderHistoryByWorkDateId(
             workDate.workDateId, df.getCurrentTimeAsString()
         )
     }
 
     private fun deleteExtras(workDate: WorkDates) {
-        mainActivity.payDayViewModel.deleteWorkDateExtrasByDateId(
+        payDayViewModel.deleteWorkDateExtrasByDateId(
             workDate.workDateId, df.getCurrentTimeAsString()
         )
     }
 
     private fun gotoWorkDateUpdate(workDate: WorkDates) {
-        mainActivity.mainViewModel.setWorkDateObject(workDate)
-        mainActivity.mainViewModel.setCutOffDate(curCutoff)
-        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainViewModel.apply {
+            setWorkDateObject(workDate)
+            setCutOffDate(curCutoff)
+            setEmployer(curEmployer)
+        }
         gotoWorkDateUpdateFragment()
     }
 

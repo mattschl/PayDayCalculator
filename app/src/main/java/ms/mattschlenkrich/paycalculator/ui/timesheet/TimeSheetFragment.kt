@@ -24,6 +24,9 @@ import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.PayPeriods
+import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paycalculator.payfunctions.PayCalculationsAsync
 import ms.mattschlenkrich.paycalculator.payfunctions.PayDateProjections
@@ -41,6 +44,9 @@ class TimeSheetFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var employerViewModel: EmployerViewModel
+    private lateinit var payDayViewModel: PayDayViewModel
     private var curEmployer: Employers? = null
     private val cutOffs = ArrayList<String>()
     private var curPayPeriod: PayPeriods? = null
@@ -61,6 +67,9 @@ class TimeSheetFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        employerViewModel = mainActivity.employerViewModel
+        payDayViewModel = mainActivity.payDayViewModel
         return mView
     }
 
@@ -76,7 +85,7 @@ class TimeSheetFragment :
             mView.context,
             R.layout.spinner_item_bold
         )
-        mainActivity.employerViewModel.getEmployers().observe(
+        employerViewModel.getEmployers().observe(
             viewLifecycleOwner
         ) { employers ->
             employerAdapter.clear()
@@ -121,13 +130,13 @@ class TimeSheetFragment :
                             getString(R.string.add_new_employer)
                         ) {
                             CoroutineScope(Dispatchers.Default).launch {
-                                curEmployer = mainActivity.employerViewModel.findEmployer(
+                                curEmployer = employerViewModel.findEmployer(
                                     spEmployers.selectedItem.toString()
                                 )
                             }
                             CoroutineScope(Dispatchers.Main).launch {
                                 delay(WAIT_100)
-                                mainActivity.mainViewModel.setEmployer(curEmployer)
+                                mainViewModel.setEmployer(curEmployer)
                                 mainActivity.title = getString(R.string.time_sheet) +
                                         " for " + spEmployers.selectedItem.toString()
                                 populateCutOffDates()
@@ -149,7 +158,7 @@ class TimeSheetFragment :
             curEmployer!!,
             if (cutOffs.isEmpty()) "" else cutOffs[0]
         )
-        mainActivity.payDayViewModel.insertPayPeriod(
+        payDayViewModel.insertPayPeriod(
             PayPeriods(
                 nf.generateRandomIdAsLong(),
                 nextCutOff,
@@ -169,7 +178,7 @@ class TimeSheetFragment :
                     mView.context,
                     R.layout.spinner_item_bold
                 )
-                mainActivity.payDayViewModel.getCutOffDates(curEmployer!!.employerId).observe(
+                payDayViewModel.getCutOffDates(curEmployer!!.employerId).observe(
                     viewLifecycleOwner
                 ) { dates ->
                     cutOffAdapter.clear()
@@ -208,9 +217,7 @@ class TimeSheetFragment :
                             ) {
                                 CoroutineScope(Dispatchers.Default).launch {
                                     curCutOff = spCutOff.selectedItem.toString()
-                                    if (valuesFilled) mainActivity.mainViewModel.setCutOffDate(
-                                        curCutOff
-                                    )
+                                    if (valuesFilled) mainViewModel.setCutOffDate(curCutOff)
                                     populatePayDayDate()
                                     populatePayDetails()
                                 }
@@ -261,13 +268,11 @@ class TimeSheetFragment :
                 layoutManager = LinearLayoutManager(mView.context)
                 adapter = workDateAdapter
             }
-            mainActivity.payDayViewModel.getWorkDateList(
-                curEmployer!!.employerId,
-                curCutOff
-            ).observe(viewLifecycleOwner) { workDates ->
-                workDateAdapter!!.differ.submitList(workDates)
-                updateUI(workDates)
-            }
+            payDayViewModel.getWorkDateList(curEmployer!!.employerId, curCutOff)
+                .observe(viewLifecycleOwner) { workDates ->
+                    workDateAdapter!!.differ.submitList(workDates)
+                    updateUI(workDates)
+                }
         }
     }
 
@@ -329,8 +334,8 @@ class TimeSheetFragment :
             binding.apply {
                 CoroutineScope(Dispatchers.Main).launch {
                     delay(WAIT_500)
-                    if (mainActivity.mainViewModel.getEmployer() != null) {
-                        curEmployer = mainActivity.mainViewModel.getEmployer()!!
+                    if (mainViewModel.getEmployer() != null) {
+                        curEmployer = mainViewModel.getEmployer()!!
                         for (i in 0 until spEmployers.adapter.count) {
                             if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
                                 spEmployers.setSelection(i)
@@ -338,8 +343,8 @@ class TimeSheetFragment :
                             }
                         }
                         delay(WAIT_500)
-                        if (mainActivity.mainViewModel.getCutOffDate() != null) {
-                            curCutOff = mainActivity.mainViewModel.getCutOffDate()!!
+                        if (mainViewModel.getCutOffDate() != null) {
+                            curCutOff = mainViewModel.getCutOffDate()!!
                             for (i in 0 until spCutOff.adapter.count) {
                                 if (spCutOff.getItemAtPosition(i).toString() == curCutOff) {
                                     spCutOff.setSelection(i)
@@ -378,18 +383,18 @@ class TimeSheetFragment :
     }
 
     private fun getSelectedPayPeriodObject() {
-        mainActivity.payDayViewModel.getPayPeriod(
+        payDayViewModel.getPayPeriod(
             binding.spCutOff.selectedItem.toString(),
             curEmployer!!.employerId
         ).observe(viewLifecycleOwner) { payPeriod ->
             curPayPeriod = payPeriod
         }
-        mainActivity.mainViewModel.setPayPeriod(curPayPeriod)
+        mainViewModel.setPayPeriod(curPayPeriod)
 
     }
 
     private fun gotoWorkDateAdd() {
-        mainActivity.mainViewModel.apply {
+        mainViewModel.apply {
             setPayPeriod(getSelectedPayPeriod())
             setCutOffDate(curCutOff)
             setEmployer(curEmployer)
@@ -405,10 +410,10 @@ class TimeSheetFragment :
     }
 
     private fun gotoEmployerAdd() {
-        mainActivity.mainViewModel.apply {
-            mainActivity.mainViewModel.setCallingFragment(TAG)
-            mainActivity.mainViewModel.setEmployer(null)
-            mainActivity.mainViewModel.setCutOffDate(null)
+        mainViewModel.apply {
+            setCallingFragment(TAG)
+            setEmployer(null)
+            setCutOffDate(null)
         }
         gotoEmployerAddFragment()
     }
@@ -421,10 +426,10 @@ class TimeSheetFragment :
     }
 
     private fun gotoPayDetails() {
-        mainActivity.mainViewModel.apply {
-            mainActivity.mainViewModel.setPayPeriod(getSelectedPayPeriod())
-            mainActivity.mainViewModel.setCutOffDate(curCutOff)
-            mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainViewModel.apply {
+            setPayPeriod(getSelectedPayPeriod())
+            setCutOffDate(curCutOff)
+            setEmployer(curEmployer)
         }
         gotoPayDetailFragment()
     }
@@ -437,9 +442,9 @@ class TimeSheetFragment :
     }
 
     override fun onStop() {
-        mainActivity.mainViewModel.apply {
-            mainActivity.mainViewModel.setEmployer(curEmployer)
-            mainActivity.mainViewModel.setCutOffDate(curCutOff)
+        mainViewModel.apply {
+            setEmployer(curEmployer)
+            setCutOffDate(curCutOff)
         }
         super.onStop()
     }

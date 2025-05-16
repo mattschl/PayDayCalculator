@@ -24,6 +24,10 @@ import ms.mattschlenkrich.paycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkExtraViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkDateUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.timesheet.timesheetadapter.WorkDateUpdateCustomExtraAdapter
@@ -40,6 +44,10 @@ class WorkDateUpdateFragment : Fragment(
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var payDayViewModel: PayDayViewModel
+    private lateinit var workExtraViewModel: WorkExtraViewModel
+    private lateinit var workOrderViewModel: WorkOrderViewModel
     private lateinit var curDateString: String
     private lateinit var currentWorkDateObject: WorkDates
     private val workDateExtras = ArrayList<WorkDateExtras>()
@@ -60,6 +68,10 @@ class WorkDateUpdateFragment : Fragment(
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        payDayViewModel = mainActivity.payDayViewModel
+        workExtraViewModel = mainActivity.workExtraViewModel
+        workOrderViewModel = mainActivity.workOrderViewModel
         mainActivity.title = getString(R.string.update_this_work_date)
         return mView
     }
@@ -75,12 +87,10 @@ class WorkDateUpdateFragment : Fragment(
     }
 
     private fun populateValues() {
-        if (mainActivity.mainViewModel.getWorkDateObject() != null) {
-            currentWorkDateObject = mainActivity.mainViewModel.getWorkDateObject()!!
+        if (mainViewModel.getWorkDateObject() != null) {
+            currentWorkDateObject = mainViewModel.getWorkDateObject()!!
             curDateString = currentWorkDateObject.wdDate
-            mainActivity.mainViewModel.setWorkDateString(
-                curDateString
-            )
+            mainViewModel.setWorkDateString(curDateString)
             populateUsedWorkDateList()
             binding.apply {
                 tvWorkDate.text = df.getDisplayDate(currentWorkDateObject.wdDate)
@@ -104,7 +114,7 @@ class WorkDateUpdateFragment : Fragment(
     }
 
     private fun populateUsedWorkDateList() {
-        mainActivity.payDayViewModel.getWorkDateList(
+        payDayViewModel.getWorkDateList(
             currentWorkDateObject.wdEmployerId,
             currentWorkDateObject.wdCutoffDate
         ).observe(viewLifecycleOwner) { list ->
@@ -117,7 +127,7 @@ class WorkDateUpdateFragment : Fragment(
 
     private fun populateWorkOrderHistory() {
         binding.apply {
-            mainActivity.workOrderViewModel.getWorkOrderHistoriesByDate(
+            workOrderViewModel.getWorkOrderHistoriesByDate(
                 currentWorkDateObject.workDateId
             ).observe(viewLifecycleOwner) { list ->
                 if (list.isNotEmpty()) {
@@ -129,10 +139,8 @@ class WorkDateUpdateFragment : Fragment(
                 }
                 val workOrderAdapter =
                     WorkDateWorkOrderHistoryAdapter(
-                        mainActivity,
-                        mView,
+                        list as ArrayList, mainActivity, mView,
                         this@WorkDateUpdateFragment,
-                        list as ArrayList
                     )
                 rvHistory.apply {
                     layoutManager = LinearLayoutManager(mView.context)
@@ -174,25 +182,20 @@ class WorkDateUpdateFragment : Fragment(
     }
 
     fun populateExtras() {
-        activity?.let {
-            mainActivity.payDayViewModel.getWorkDateExtras(
-                currentWorkDateObject.workDateId
-            )
-                .observe(viewLifecycleOwner) { extras ->
-                    workDateExtras.clear()
-                    customWorkDateExtras.clear()
-                    extras.listIterator().forEach {
-                        workDateExtras.add(it)
-                        customWorkDateExtras.add(it)
-
-                    }
+        payDayViewModel.getWorkDateExtras(currentWorkDateObject.workDateId)
+            .observe(viewLifecycleOwner) { extras ->
+                workDateExtras.clear()
+                customWorkDateExtras.clear()
+                extras.listIterator().forEach {
+                    workDateExtras.add(it)
+                    customWorkDateExtras.add(it)
                 }
-        }
+            }
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
             binding.apply {
                 activity?.let {
-                    mainActivity.workExtraViewModel.getExtraTypesAndDefByDaily(
+                    workExtraViewModel.getExtraTypesAndDefByDaily(
                         currentWorkDateObject.wdEmployerId,
                         currentWorkDateObject.wdCutoffDate
                     ).observe(viewLifecycleOwner) { extras ->
@@ -226,9 +229,8 @@ class WorkDateUpdateFragment : Fragment(
                             extra.wdeName
                         }
                         val extraAdapter = WorkDateUpdateCustomExtraAdapter(
-                            mainActivity, mView,
+                            workDateExtras, mainActivity, mView,
                             this@WorkDateUpdateFragment,
-                            workDateExtras
                         )
                         rvExtras.apply {
                             layoutManager = LinearLayoutManager(mView.context)
@@ -329,9 +331,7 @@ class WorkDateUpdateFragment : Fragment(
     }
 
     private fun updateWorkDate(fragment: String) {
-        mainActivity.payDayViewModel.updateWorkDate(
-            getCurrentWorkDate()
-        )
+        payDayViewModel.updateWorkDate(getCurrentWorkDate())
         gotoFragment(fragment)
     }
 
@@ -404,10 +404,10 @@ class WorkDateUpdateFragment : Fragment(
     }
 
     private fun gotoWorkOrderHistoryAdd() {
-        mainActivity.mainViewModel.setWorkDateObject(
-            getCurrentWorkDate()
-        )
-        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mainViewModel.apply {
+            setWorkDateObject(getCurrentWorkDate())
+            setCallingFragment(TAG)
+        }
         gotoWorkOrderHistoryAddFragment()
     }
 
@@ -419,8 +419,10 @@ class WorkDateUpdateFragment : Fragment(
     }
 
     private fun gotoWorkDateExtraAdd() {
-        mainActivity.mainViewModel.setWorkDateObject(getCurrentWorkDate())
-        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mainViewModel.apply {
+            setWorkDateObject(getCurrentWorkDate())
+            setCallingFragment(TAG)
+        }
         gotoWorkDateExtraAddFragment()
     }
 
