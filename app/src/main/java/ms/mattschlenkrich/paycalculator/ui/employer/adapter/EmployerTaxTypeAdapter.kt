@@ -11,9 +11,12 @@ import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.employer.EmployerUpdateFragment
 
 class EmployerTaxTypeAdapter(
-    private val mainActivity: MainActivity,
-    private val parentFragment: EmployerUpdateFragment,
+    val mainActivity: MainActivity,
+    private val employerUpdateFragment: EmployerUpdateFragment,
 ) : RecyclerView.Adapter<EmployerTaxTypeAdapter.EmployerTaxViewHolder>() {
+
+    val mainViewModel = mainActivity.mainViewModel
+    val workTaxViewModel = mainActivity.workTaxViewModel
 
     class EmployerTaxViewHolder(
         val itemBinding: ListEmployerTaxItemBinding
@@ -57,11 +60,11 @@ class EmployerTaxTypeAdapter(
             chkEmployerTax.text = employerTaxType.etrTaxType
             chkEmployerTax.isChecked = employerTaxType.etrInclude
             chkEmployerTax.setOnClickListener {
-                mainActivity.workTaxViewModel.updateEmployerTaxIncluded(
+                workTaxViewModel.updateEmployerTaxIncluded(
                     employerTaxType.etrEmployerId, employerTaxType.etrTaxType,
                     chkEmployerTax.isChecked
                 )
-                parentFragment.populateTaxes(employerTaxType.etrEmployerId)
+                employerUpdateFragment.populateTaxes(employerTaxType.etrEmployerId)
             }
             btnEdit.setOnClickListener {
                 gotoTaxRules(employerTaxType)
@@ -70,8 +73,8 @@ class EmployerTaxTypeAdapter(
     }
 
     private fun gotoTaxRules(employerTaxType: EmployerTaxTypes) {
-        mainActivity.mainViewModel.setTaxTypeString(employerTaxType.etrTaxType)
-        parentFragment.gotoRulesFragment()
+        mainViewModel.setTaxTypeString(employerTaxType.etrTaxType)
+        employerUpdateFragment.gotoRulesFragment()
     }
 
 }

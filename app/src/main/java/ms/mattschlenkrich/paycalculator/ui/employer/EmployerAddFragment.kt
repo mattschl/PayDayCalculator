@@ -29,6 +29,9 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerTaxTypes
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
+import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerAddBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -40,6 +43,9 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var employerViewModel: EmployerViewModel
+    private lateinit var workTaxViewModel: WorkTaxViewModel
     private val df = DateFunctions()
     private val nf = NumberFunctions()
     private lateinit var employerList: List<Employers>
@@ -54,6 +60,9 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        employerViewModel = mainActivity.employerViewModel
+        workTaxViewModel = mainActivity.workTaxViewModel
+        mainViewModel = mainActivity.mainViewModel
         mainActivity.title = getString(R.string.add_an_employer)
         return mView
     }
@@ -71,7 +80,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun populateEmployerListForValidation() {
-        mainActivity.employerViewModel.getEmployers()
+        employerViewModel.getEmployers()
             .observe(viewLifecycleOwner) { employers ->
                 employerList = employers
             }
@@ -235,17 +244,13 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun saveEmployer(curEmployer: Employers) {
-        mainActivity.employerViewModel.insertEmployer(
+        employerViewModel.insertEmployer(
             curEmployer
         )
     }
 
     private fun displayMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun validateEmployer(): String {
@@ -271,7 +276,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun addEmployerTaxRules(employerId: Long) {
-        mainActivity.workTaxViewModel.getTaxTypes().observe(
+        workTaxViewModel.getTaxTypes().observe(
             viewLifecycleOwner
         ) { type ->
             type.forEach {
@@ -328,7 +333,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun gotoEmployerUpdate(curEmployer: Employers) {
-        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainViewModel.setEmployer(curEmployer)
         gotoEmployerUpdateFragment()
     }
 

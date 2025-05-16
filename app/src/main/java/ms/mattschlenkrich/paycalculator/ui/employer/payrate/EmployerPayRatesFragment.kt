@@ -18,9 +18,11 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.FRAG_PAY_RATES
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
+import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerPayRatesBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.employer.adapter.EmployerWageAdapter
+import ms.mattschlenkrich.paycalculator.ui.employer.payrate.adapter.EmployerPayRateAdapter
 
 private const val TAG = FRAG_PAY_RATES
 
@@ -31,6 +33,8 @@ class EmployerPayRatesFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var employerViewModel: EmployerViewModel
     private lateinit var employerList: List<Employers>
     private var curEmployer: Employers? = null
 
@@ -44,6 +48,7 @@ class EmployerPayRatesFragment :
         mView = binding.root
         mainActivity = (activity as MainActivity)
         mainActivity.title = getString(R.string.view_or_edit_wages)
+        mainViewModel = mainActivity.mainViewModel
         return mView
     }
 
@@ -58,7 +63,7 @@ class EmployerPayRatesFragment :
             val employerAdapter = ArrayAdapter<String>(
                 mView.context, R.layout.spinner_item_bold
             )
-            mainActivity.employerViewModel.getEmployers().observe(
+            employerViewModel.getEmployers().observe(
                 viewLifecycleOwner
             ) { employers ->
                 employerAdapter.clear()
@@ -82,8 +87,8 @@ class EmployerPayRatesFragment :
         binding.apply {
             CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_250)
-                if (mainActivity.mainViewModel.getEmployer() != null) {
-                    curEmployer = mainActivity.mainViewModel.getEmployer()
+                if (mainViewModel.getEmployer() != null) {
+                    curEmployer = mainViewModel.getEmployer()
                     for (i in 0 until spEmployers.adapter.count) {
                         if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
                             spEmployers.setSelection(i)
@@ -98,8 +103,12 @@ class EmployerPayRatesFragment :
     private fun populatePayRates() {
         if (curEmployer != null) {
             binding.apply {
-                val payRateAdapter = EmployerWageAdapter(
-                    mainActivity, mView, this@EmployerPayRatesFragment, curEmployer!!, TAG
+                val payRateAdapter = EmployerPayRateAdapter(
+                    mainActivity,
+                    mView,
+                    curEmployer!!,
+                    TAG,
+                    this@EmployerPayRatesFragment,
                 )
                 rvWage.apply {
                     layoutManager = LinearLayoutManager(
@@ -108,7 +117,7 @@ class EmployerPayRatesFragment :
                     adapter = payRateAdapter
                 }
                 activity.let {
-                    mainActivity.employerViewModel.getEmployerPayRates(curEmployer!!.employerId)
+                    employerViewModel.getEmployerPayRates(curEmployer!!.employerId)
                         .observe(viewLifecycleOwner) { payRates ->
                             payRateAdapter.differ.submitList(payRates)
                             updateUI(payRates)
@@ -165,15 +174,15 @@ class EmployerPayRatesFragment :
     }
 
     private fun gotoAddEmployer() {
-        mainActivity.mainViewModel.addCallingFragment(TAG)
-        mainActivity.mainViewModel.setPayRate(null)
+        mainViewModel.addCallingFragment(TAG)
+        mainViewModel.setPayRate(null)
         gotoEmployerAddFragment()
     }
 
     private fun gotoPayRates() {
-        mainActivity.mainViewModel.setEmployer(curEmployer)
-        mainActivity.mainViewModel.setPayRate(null)
-        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mainViewModel.setEmployer(curEmployer)
+        mainViewModel.setPayRate(null)
+        mainViewModel.setCallingFragment(TAG)
         gotoEmployerPayRateAddFragment()
     }
 

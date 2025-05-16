@@ -16,6 +16,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
+import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.employer.adapter.EmployerAdapter
@@ -31,6 +32,7 @@ class EmployerFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var employerViewModel: EmployerViewModel
     private var employerAdapter: EmployerAdapter? = null
 
     override fun onCreateView(
@@ -40,6 +42,7 @@ class EmployerFragment :
         _binding = FragmentEmployerBinding.inflate(inflater, container, false)
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        employerViewModel = mainActivity.employerViewModel
         mainActivity.title = getString(R.string.view_employers)
         return mView
     }
@@ -56,8 +59,8 @@ class EmployerFragment :
     private fun populateEmployers() {
         employerAdapter = EmployerAdapter(
             mainActivity,
+            mView,
             this@EmployerFragment,
-            mView
         )
         binding.rvEmployers.apply {
             layoutManager = StaggeredGridLayoutManager(
@@ -68,7 +71,7 @@ class EmployerFragment :
             adapter = employerAdapter
         }
         activity?.let {
-            mainActivity.employerViewModel.getEmployers().observe(
+            employerViewModel.getEmployers().observe(
                 viewLifecycleOwner
             ) { employer ->
                 employerAdapter!!.differ.submitList(employer)
@@ -123,7 +126,7 @@ class EmployerFragment :
     private fun searchEmployers(query: String?) {
         if (employerAdapter != null) {
             val searchQuery = "%$query%"
-            mainActivity.employerViewModel.searchEmployers(searchQuery).observe(
+            employerViewModel.searchEmployers(searchQuery).observe(
                 viewLifecycleOwner
             ) { list ->
                 employerAdapter!!.differ.submitList(list)

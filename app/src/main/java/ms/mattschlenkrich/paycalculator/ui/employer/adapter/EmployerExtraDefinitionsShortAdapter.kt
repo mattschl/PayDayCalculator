@@ -15,7 +15,7 @@ import ms.mattschlenkrich.paycalculator.ui.employer.EmployerUpdateFragment
 class EmployerExtraDefinitionsShortAdapter(
     private val employer: Employers,
     private val mainActivity: MainActivity,
-    private val parentFragment: EmployerUpdateFragment,
+    private val employerUpdateFragment: EmployerUpdateFragment,
 ) : RecyclerView.Adapter<EmployerExtraDefinitionsShortAdapter.DefinitionViewHolder>() {
 
     private val df = DateFunctions()
@@ -93,6 +93,6 @@ class EmployerExtraDefinitionsShortAdapter(
         mainActivity.mainViewModel.setEmployerString(employer.employerName)
         mainActivity.mainViewModel.setEmployer(employer)
         mainActivity.mainViewModel.setWorkExtraType(extra)
-        parentFragment.gotoEmployerExtraDefinitionsFragment()
+        employerUpdateFragment.gotoEmployerExtraDefinitionsFragment()
     }
 }

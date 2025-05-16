@@ -20,6 +20,8 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_PAY_RATES
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerPayRates
+import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerWageUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -31,6 +33,8 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var employerViewModel: EmployerViewModel
     private lateinit var curPayRate: EmployerPayRates
     private val df = DateFunctions()
     private val cf = NumberFunctions()
@@ -44,9 +48,10 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
         val display =
             getString(R.string.edit_pay_rate_for) +
-                    mainActivity.mainViewModel.getEmployer()!!.employerName
+                    mainViewModel.getEmployer()!!.employerName
         mainActivity.title = display
         return mView
     }
@@ -60,7 +65,7 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
     private fun populateValues() {
         populateSpinner()
         binding.apply {
-            curPayRate = mainActivity.mainViewModel.getPayRate()!!
+            curPayRate = mainViewModel.getPayRate()!!
             tvEffectiveDate.text = curPayRate.eprEffectiveDate
             etWage.setText(cf.displayDollars(curPayRate.eprPayRate))
             spPerFrequency.setSelection(curPayRate.eprPerPeriod)
@@ -123,11 +128,7 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
     }
 
     private fun displayMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun validatePayRate(): String {
@@ -142,7 +143,7 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
 
     private fun updatePayRate() {
         binding.apply {
-            mainActivity.employerViewModel.updatePayRate(
+            employerViewModel.updatePayRate(
                 EmployerPayRates(
                     curPayRate.employerPayRateId,
                     curPayRate.eprEmployerId,
@@ -157,7 +158,7 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
     }
 
     private fun deletePayRate() {
-        mainActivity.employerViewModel.updatePayRate(
+        employerViewModel.updatePayRate(
             EmployerPayRates(
                 curPayRate.employerPayRateId,
                 curPayRate.eprEmployerId,
@@ -198,7 +199,7 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
     }
 
     private fun gotoCallingFragment() {
-        if (mainActivity.mainViewModel.getCallingFragment()!!.contains(FRAG_PAY_RATES)) {
+        if (mainViewModel.getCallingFragment()!!.contains(FRAG_PAY_RATES)) {
             gotoPayRateFragment()
         }
     }

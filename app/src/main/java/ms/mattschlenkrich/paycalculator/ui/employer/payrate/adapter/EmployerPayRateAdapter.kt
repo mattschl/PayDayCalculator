@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.employer.adapter
+package ms.mattschlenkrich.paycalculator.ui.employer.payrate.adapter
 
 import android.graphics.Color
 import android.graphics.Paint
@@ -17,15 +17,17 @@ import ms.mattschlenkrich.paycalculator.databinding.ListWagesItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.employer.payrate.EmployerPayRatesFragment
 
-class EmployerWageAdapter(
-    private val mainActivity: MainActivity,
+class EmployerPayRateAdapter(
+    val mainActivity: MainActivity,
     private val mView: View,
-    private val parentFragment: EmployerPayRatesFragment,
     private val curEmployer: Employers,
     private val parentTag: String,
-) : RecyclerView.Adapter<EmployerWageAdapter.WageViewHolder>() {
+    private val employerPayRatesFragment: EmployerPayRatesFragment,
+) : RecyclerView.Adapter<EmployerPayRateAdapter.WageViewHolder>() {
 
     private val cf = NumberFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
+
     private inline var TextView.strike: Boolean
         set(visible) {
             paintFlags = if (visible) paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
@@ -98,9 +100,9 @@ class EmployerWageAdapter(
     }
 
     private fun gotoWageUpdate(wage: EmployerPayRates) {
-        mainActivity.mainViewModel.setPayRate(wage)
-        mainActivity.mainViewModel.setEmployer(curEmployer)
-        mainActivity.mainViewModel.addCallingFragment(parentTag)
-        parentFragment.gotoEmployerWageUpdateFragment()
+        mainViewModel.setPayRate(wage)
+        mainViewModel.setEmployer(curEmployer)
+        mainViewModel.addCallingFragment(parentTag)
+        employerPayRatesFragment.gotoEmployerWageUpdateFragment()
     }
 }

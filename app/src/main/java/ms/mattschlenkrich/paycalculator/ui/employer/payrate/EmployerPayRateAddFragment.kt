@@ -22,6 +22,8 @@ import ms.mattschlenkrich.paycalculator.common.FRAG_PAY_RATES
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
+import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerPayRateAddBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import java.time.LocalDate
@@ -33,6 +35,8 @@ class EmployerPayRateAddFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var employerViewModel: EmployerViewModel
     private val df = DateFunctions()
     private val cf = NumberFunctions()
 
@@ -45,8 +49,7 @@ class EmployerPayRateAddFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        val display = getString(R.string.add_a_pay_rate)
-        mainActivity.title = display
+        mainActivity.title = getString(R.string.add_a_pay_rate)
         return mView
     }
 
@@ -130,11 +133,11 @@ class EmployerPayRateAddFragment :
     }
 
     private fun savePayRate() {
-        val curEmployer = mainActivity.mainViewModel.getEmployer()!!
+        val curEmployer = mainViewModel.getEmployer()!!
         val message = validatePayRate()
         if (message == ANSWER_OK) {
             val curWage = getCurrentPayRates(curEmployer)
-            mainActivity.employerViewModel.insertPayRate(curWage)
+            employerViewModel.insertPayRate(curWage)
             gotoCallingFragment()
         } else {
             displayMessage(getString(R.string.error_) + message)
@@ -176,7 +179,7 @@ class EmployerPayRateAddFragment :
     }
 
     private fun gotoCallingFragment() {
-        val callingFragment = mainActivity.mainViewModel.getCallingFragment()!!
+        val callingFragment = mainViewModel.getCallingFragment()!!
         if (callingFragment.contains(FRAG_PAY_RATES)) {
             gotoPayRateFragment()
         } else if (callingFragment.contains(FRAG_EMPLOYER_UPDATE)) {

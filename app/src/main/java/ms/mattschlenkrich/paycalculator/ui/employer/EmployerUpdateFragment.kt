@@ -29,6 +29,8 @@ import ms.mattschlenkrich.paycalculator.common.INTERVAL_SEMI_MONTHLY
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.employer.adapter.EmployerExtraDefinitionsShortAdapter
@@ -43,7 +45,9 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
     private lateinit var employerViewModel: EmployerViewModel
+    private lateinit var workTaxViewModel: WorkTaxViewModel
     private val df = DateFunctions()
     private lateinit var employerList: List<Employers>
     private var curEmployer: Employers? = null
@@ -56,13 +60,14 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
         _binding = FragmentEmployerUpdateBinding.inflate(inflater, container, false)
         mView = binding.root
         mainActivity = (activity as MainActivity)
-
+        mainViewModel = mainActivity.mainViewModel
+        employerViewModel = mainActivity.employerViewModel
+        workTaxViewModel = mainActivity.workTaxViewModel
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        employerViewModel = mainActivity.employerViewModel
         populateValues()
         setClickActions()
     }
@@ -102,7 +107,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
     private fun populateUIValues() {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
-            if (mainActivity.mainViewModel.getEmployer() != null) {
+            if (mainViewModel.getEmployer() != null) {
                 CoroutineScope(Dispatchers.Main).launch {
                     curEmployer = mainActivity.mainViewModel.getEmployer()!!
                     ifPayRateNotExistsGotoPayRate(curEmployer!!.employerId)
@@ -160,7 +165,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
                 adapter = employerTaxTypeAdapter
             }
             activity.let {
-                mainActivity.workTaxViewModel.getEmployerTaxTypes(
+                workTaxViewModel.getEmployerTaxTypes(
                     employerId
                 ).observe(viewLifecycleOwner) { employerTaxType ->
                     employerTaxTypeAdapter.differ.submitList(employerTaxType)
@@ -238,11 +243,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
     }
 
     private fun displayMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun validateEmployer(): String {
@@ -379,8 +380,8 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
     }
 
     private fun gotoTaxRules() {
-        mainActivity.mainViewModel.setEmployer(getCurrentEmployer())
-        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mainViewModel.setEmployer(getCurrentEmployer())
+        mainViewModel.setCallingFragment(TAG)
         gotoTaxRulesFragment()
     }
 
@@ -392,8 +393,8 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
     }
 
     private fun gotoTaxTypesAdd() {
-        mainActivity.mainViewModel.setEmployer(getCurrentEmployer())
-        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mainViewModel.setEmployer(getCurrentEmployer())
+        mainViewModel.setCallingFragment(TAG)
         gotoTaxTypesAddFragment()
     }
 
@@ -406,7 +407,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
 
     private fun gotoPayRate(curEmployer: Employers?) {
         if (curEmployer != null) {
-            mainActivity.mainViewModel.setEmployer(curEmployer)
+            mainViewModel.setEmployer(curEmployer)
             gotoEmployerPayRatesFragment()
         }
     }
@@ -420,7 +421,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
 
     private fun gotoExtraAdd(curEmployer: Employers?) {
         if (curEmployer != null) {
-            mainActivity.mainViewModel.setEmployer(curEmployer)
+            mainViewModel.setEmployer(curEmployer)
             gotoEmployerExtraDefinitionsAddFragment()
         }
     }
@@ -433,8 +434,8 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
     }
 
     private fun gotoPayRateAdd(curEmployer: Employers) {
-        mainActivity.mainViewModel.setEmployer(curEmployer)
-        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mainViewModel.setEmployer(curEmployer)
+        mainViewModel.setCallingFragment(TAG)
         gotoPayRateAddFragment()
     }
 
