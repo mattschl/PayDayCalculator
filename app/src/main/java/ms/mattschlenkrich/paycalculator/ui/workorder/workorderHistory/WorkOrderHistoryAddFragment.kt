@@ -27,6 +27,8 @@ import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paycalculator.database.model.workorder.TempWorkOrderHistoryInfo
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderHistoryBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderCommonFunctions
@@ -40,6 +42,8 @@ class WorkOrderHistoryAddFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workOrderViewModel: WorkOrderViewModel
     private val df = DateFunctions()
     private val nf = NumberFunctions()
     private lateinit var workOrderList: List<WorkOrder>
@@ -58,8 +62,9 @@ class WorkOrderHistoryAddFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        commonFunctions =
-            WorkOrderCommonFunctions(mainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workOrderViewModel = mainActivity.workOrderViewModel
+        commonFunctions = WorkOrderCommonFunctions(mainActivity)
         mainActivity.title = getString(R.string.add_time_to_work_order)
         return mView
     }
@@ -107,12 +112,12 @@ class WorkOrderHistoryAddFragment :
     }
 
     private fun populateTempWorkOrderInfo() {
-        if (mainActivity.mainViewModel.getTempWorkOrderHistoryInfo() != null) {
-            val tempWorkOrderHistory = mainActivity.mainViewModel.getTempWorkOrderHistoryInfo()!!
+        if (mainViewModel.getTempWorkOrderHistoryInfo() != null) {
+            val tempWorkOrderHistory = mainViewModel.getTempWorkOrderHistoryInfo()!!
             binding.apply {
-                if (mainActivity.mainViewModel.getWorkOrderNumber() != null) {
+                if (mainViewModel.getWorkOrderNumber() != null) {
                     acWorkOrder.setText(
-                        mainActivity.mainViewModel.getWorkOrderNumber()!!
+                        mainViewModel.getWorkOrderNumber()!!
                     )
                 } else {
                     acWorkOrder.setText(
@@ -155,16 +160,16 @@ class WorkOrderHistoryAddFragment :
                     )
                 }
                 setCurWorkOrder()
-                mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
+                mainViewModel.setTempWorkOrderHistoryInfo(null)
             }
         }
     }
 
     private fun populateWorkOrderLists() {
         if (workDateObject != null) {
-            mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
-                workDateObject!!.wdEmployerId
-            ).observe(viewLifecycleOwner) { list ->
+            workOrderViewModel.getWorkOrdersByEmployerId(workDateObject!!.wdEmployerId).observe(
+                viewLifecycleOwner
+            ) { list ->
                 val workOrderListForAutocomplete = ArrayList<String>()
                 workOrderList = list
                 list.listIterator().forEach {
@@ -183,9 +188,7 @@ class WorkOrderHistoryAddFragment :
     private fun populateWorkOrderInfo() {
         binding.apply {
             if (curWorkOrder != null) {
-                val display =
-                    curWorkOrder!!.woAddress + " - " +
-                            curWorkOrder!!.woNumber
+                val display = curWorkOrder!!.woAddress + " - " + curWorkOrder!!.woNumber
                 tvDescription.text = display
                 tvDescription.visibility = View.VISIBLE
             }
@@ -238,16 +241,9 @@ class WorkOrderHistoryAddFragment :
             chooseToGotoUpdate()
         } else {
             AlertDialog.Builder(mView.context)
-                .setTitle(
-                    getString(R.string.create_work_order_) +
-                            "${binding.acWorkOrder.text}?"
-                )
-                .setMessage(
-                    getString(R.string.this_work_order_does_not_exist)
-                )
-                .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                    gotoWorkOrderAdd()
-                }
+                .setTitle(getString(R.string.create_work_order_) + "${binding.acWorkOrder.text}?")
+                .setMessage(getString(R.string.this_work_order_does_not_exist))
+                .setPositiveButton(getString(R.string.yes)) { _, _ -> gotoWorkOrderAdd() }
                 .setNegativeButton(getString(R.string.no), null)
                 .show()
         }
@@ -302,17 +298,12 @@ class WorkOrderHistoryAddFragment :
     }
 
     private fun saveHistory(gotoUpdate: Boolean) {
-        mainActivity.workOrderViewModel.insertWorkOrderHistory(
-            curHistory
-        )
+        workOrderViewModel.insertWorkOrderHistory(curHistory)
         if (gotoUpdate) {
-            mainActivity.mainViewModel.setWorkOrderHistory(
-                curHistory
-            )
-
+            mainViewModel.setWorkOrderHistory(curHistory)
             gotoWorkOrderHistoryUpdate()
         } else {
-            mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
+            mainViewModel.setTempWorkOrderHistoryInfo(null)
             gotoCallingFragment()
         }
     }
@@ -341,18 +332,10 @@ class WorkOrderHistoryAddFragment :
 
     private fun chooseToGotoUpdate() {
         AlertDialog.Builder(mView.context)
-            .setTitle(
-                getString(R.string.choose_the_next_step)
-            )
-            .setMessage(
-                getString(R.string.would_you_like_to_add_work_performed_or_materials_to_this_history_)
-            )
-            .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                saveHistoryIfValid(true)
-            }
-            .setNegativeButton(getString(R.string.no)) { _, _ ->
-                saveHistoryIfValid(false)
-            }
+            .setTitle(getString(R.string.choose_the_next_step))
+            .setMessage(getString(R.string.would_you_like_to_add_work_performed_or_materials_to_this_history_))
+            .setPositiveButton(getString(R.string.yes)) { _, _ -> saveHistoryIfValid(true) }
+            .setNegativeButton(getString(R.string.no)) { _, _ -> saveHistoryIfValid(false) }
             .show()
     }
 
@@ -375,15 +358,12 @@ class WorkOrderHistoryAddFragment :
     }
 
     private fun displayMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message, Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun setTempWorkOrderHistory() {
         binding.apply {
-            mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(
+            mainViewModel.setTempWorkOrderHistoryInfo(
                 TempWorkOrderHistoryInfo(
                     if (acWorkOrder.text.isNullOrBlank())
                         "000" else acWorkOrder.text.toString(),
@@ -413,10 +393,7 @@ class WorkOrderHistoryAddFragment :
 
     private fun gotoWorkOrderLookup() {
         setTempWorkOrderHistory()
-        mainActivity.mainViewModel.setCallingFragment(
-            mainActivity.mainViewModel.getCallingFragment() +
-                    ", $TAG"
-        )
+        mainViewModel.addCallingFragment(TAG)
         gotoWorkOrderLookupFragment()
     }
 
@@ -439,7 +416,7 @@ class WorkOrderHistoryAddFragment :
 
     private fun gotoWorkOrderAdd() {
         setTempWorkOrderHistory()
-        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mainViewModel.setCallingFragment(TAG)
         gotoWorkOrderAddFragment()
     }
 
@@ -474,9 +451,7 @@ class WorkOrderHistoryAddFragment :
     }
 
     private fun gotoWorkOrderUpdate() {
-        mainActivity.mainViewModel.setWorkOrderNumber(
-            binding.acWorkOrder.text.toString()
-        )
+        mainViewModel.setWorkOrderNumber(binding.acWorkOrder.text.toString())
         setTempWorkOrderHistory()
         mainActivity.mainViewModel.setCallingFragment(TAG)
         gotoWorkOrderUpdateFragment()

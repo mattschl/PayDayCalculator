@@ -15,14 +15,16 @@ import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderHistoryUpdateFragment
 
 class WorKOrderHistoryWorkPerformedAdapter(
-    private val mainActivity: MainActivity,
-    private val workOrderHistoryUpdateFragment: WorkOrderHistoryUpdateFragment,
-    private val parentFragment: String,
+    val mainActivity: MainActivity,
     private val curHistory: WorkOrderHistory,
     private val mView: View,
+    private val parentFragment: String,
+    private val workOrderHistoryUpdateFragment: WorkOrderHistoryUpdateFragment,
 ) : RecyclerView.Adapter<WorKOrderHistoryWorkPerformedAdapter.ViewHolder>() {
 
-//    private val df = DateFunctions()
+    //    private val df = DateFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
+    private val workOrderViewModel = mainActivity.workOrderViewModel
 
     class ViewHolder(
         val itemBinding: ListSingleItemBinding
@@ -89,8 +91,7 @@ class WorKOrderHistoryWorkPerformedAdapter(
     private fun chooseOptions(work: WorkOrderHistoryWorkPerformedCombined, display: String) {
         AlertDialog.Builder(mView.context)
             .setTitle(
-                mView.context.getString(R.string.choose_option_for) +
-                        display
+                mView.context.getString(R.string.choose_option_for) + display
             )
             .setItems(
                 arrayOf(
@@ -133,27 +134,29 @@ class WorKOrderHistoryWorkPerformedAdapter(
     }
 
     private fun editArea(areaId: Long) {
-        mainActivity.mainViewModel.setAreaId(areaId)
+        mainViewModel.setAreaId(areaId)
         workOrderHistoryUpdateFragment.gotoAreaUpdateFragment()
     }
 
     private fun gotoWorkPerformedHistoryEdit(workPerformedHistoryId: Long) {
-        mainActivity.mainViewModel.setWorkOrderHistory(curHistory)
-        mainActivity.mainViewModel.setWorkPerformedHistoryId(workPerformedHistoryId)
-        mainActivity.mainViewModel.addCallingFragment(parentFragment)
+        mainViewModel.apply {
+            setWorkOrderHistory(curHistory)
+            setWorkPerformedHistoryId(workPerformedHistoryId)
+            addCallingFragment(parentFragment)
+        }
         workOrderHistoryUpdateFragment.gotoWorkOrderHistoryWorkPerformedUpdateFragment()
     }
 
     private fun editWorkPerformed(workPerformedId: Long) {
-        mainActivity.mainViewModel.setWorkOrderHistory(curHistory)
-        mainActivity.mainViewModel.setWorkPerformedId(workPerformedId)
-        mainActivity.mainViewModel.addCallingFragment(parentFragment)
+        mainViewModel.apply {
+            setWorkOrderHistory(curHistory)
+            setWorkPerformedId(workPerformedId)
+            addCallingFragment(parentFragment)
+        }
         workOrderHistoryUpdateFragment.gotoWorkPerformedUpdateFragment()
     }
 
     private fun removeWorkPerformedFromWorkOrder(workOrderHistoryWorkPerformedId: Long) {
-        mainActivity.workOrderViewModel.deleteWorkOrderHistoryWorkPerformed(
-            workOrderHistoryWorkPerformedId
-        )
+        workOrderViewModel.deleteWorkOrderHistoryWorkPerformed(workOrderHistoryWorkPerformedId)
     }
 }

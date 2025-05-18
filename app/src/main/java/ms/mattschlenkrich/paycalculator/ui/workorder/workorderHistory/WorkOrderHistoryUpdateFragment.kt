@@ -41,6 +41,8 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistor
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformedCombined
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderHistoryBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderCommonFunctions
@@ -56,6 +58,8 @@ class WorkOrderHistoryUpdateFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workOrderViewModel: WorkOrderViewModel
     private lateinit var workOrderList: List<WorkOrder>
     private var workDateObject: WorkDates? = null
     private lateinit var curEmployer: Employers
@@ -84,6 +88,8 @@ class WorkOrderHistoryUpdateFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workOrderViewModel = mainActivity.workOrderViewModel
         commonFunctions = WorkOrderCommonFunctions(mainActivity)
         mainActivity.title = getString(R.string.add_time_to_work_order)
         return mView
@@ -113,14 +119,14 @@ class WorkOrderHistoryUpdateFragment :
                 populateFromHistory()
             }
             delay(WAIT_100)
-            if (mainActivity.mainViewModel.getTempWorkOrderHistoryInfo() != null) {
+            if (mainViewModel.getTempWorkOrderHistoryInfo() != null) {
                 populateFromTempValues()
             }
         }
     }
 
     private fun removeFragmentReferenceFromHistory() {
-        mainActivity.mainViewModel.removeCallingFragment(TAG)
+        mainViewModel.removeCallingFragment(TAG)
     }
 
     private fun unHideMaterialAndWorkPerformed() {
@@ -139,46 +145,42 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun populateCurrentEmployer() {
-        if (mainActivity.mainViewModel.getEmployer() != null) {
-            curEmployer =
-                mainActivity.mainViewModel.getEmployer()!!
-            binding.tvEmployers.text =
-                curEmployer.employerName
+        if (mainViewModel.getEmployer() != null) {
+            curEmployer = mainViewModel.getEmployer()!!
+            binding.tvEmployers.text = curEmployer.employerName
         }
     }
 
     private fun populateMaterialListForAutoComplete() {
-        mainActivity.workOrderViewModel.getMaterialsList()
-            .observe(viewLifecycleOwner) { list ->
-                materialListForAutoComplete = list
-                val materialListNames = ArrayList<String>()
-                list.listIterator().forEach { materialListNames.add(it.mName) }
-                val mAdapter = ArrayAdapter(
-                    mView.context,
-                    R.layout.spinner_item_normal,
-                    materialListNames
-                )
-                binding.acMaterials.setAdapter(mAdapter)
-            }
+        workOrderViewModel.getMaterialsList().observe(viewLifecycleOwner) { list ->
+            materialListForAutoComplete = list
+            val materialListNames = ArrayList<String>()
+            list.listIterator().forEach { materialListNames.add(it.mName) }
+            val mAdapter = ArrayAdapter(
+                mView.context,
+                R.layout.spinner_item_normal,
+                materialListNames
+            )
+            binding.acMaterials.setAdapter(mAdapter)
+        }
     }
 
     private fun populateAreaListForAutoComplete() {
-        mainActivity.workOrderViewModel.getAreasList()
-            .observe(viewLifecycleOwner) { list ->
-                areaListForAutoComplete = list
-                val areaNameList = ArrayList<String>()
-                list.listIterator().forEach { areaNameList.add(it.areaName) }
-                val mAdapter = ArrayAdapter(
-                    mView.context,
-                    R.layout.spinner_item_normal,
-                    areaNameList
-                )
-                binding.acArea.setAdapter(mAdapter)
-            }
+        workOrderViewModel.getAreasList().observe(viewLifecycleOwner) { list ->
+            areaListForAutoComplete = list
+            val areaNameList = ArrayList<String>()
+            list.listIterator().forEach { areaNameList.add(it.areaName) }
+            val mAdapter = ArrayAdapter(
+                mView.context,
+                R.layout.spinner_item_normal,
+                areaNameList
+            )
+            binding.acArea.setAdapter(mAdapter)
+        }
     }
 
     private fun populateWorkPerformedLists() {
-        mainActivity.workOrderViewModel.getWorkPerformedCombinedByWorkOrderHistory(
+        workOrderViewModel.getWorkPerformedCombinedByWorkOrderHistory(
             curHistoryDetailed.history.woHistoryId
         ).observe(viewLifecycleOwner) { list ->
             populateWorkPerformedRecycler(list)
@@ -188,71 +190,58 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun populateWorkOrderListForAutoComplete() {
-        mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
-            workDateObject!!.wdEmployerId
-        ).observe(viewLifecycleOwner) { list ->
-            workOrderList = list
-            val workOrderListForAutocomplete = ArrayList<String>()
-            list.listIterator().forEach { workOrderListForAutocomplete.add(it.woNumber) }
-            binding.apply {
-                val woAdapter = ArrayAdapter(
-                    mView.context, R.layout.spinner_item_normal,
-                    workOrderListForAutocomplete
-                )
-                acWorkOrder.setAdapter(woAdapter)
+        workOrderViewModel.getWorkOrdersByEmployerId(workDateObject!!.wdEmployerId)
+            .observe(viewLifecycleOwner) { list ->
+                workOrderList = list
+                val workOrderListForAutocomplete = ArrayList<String>()
+                list.listIterator().forEach { workOrderListForAutocomplete.add(it.woNumber) }
+                binding.apply {
+                    val woAdapter = ArrayAdapter(
+                        mView.context, R.layout.spinner_item_normal,
+                        workOrderListForAutocomplete
+                    )
+                    acWorkOrder.setAdapter(woAdapter)
+                }
             }
-        }
     }
 
     private fun populateWorkPerformedListForAutoComplete() {
-        mainActivity.workOrderViewModel.getWorkPerformedAll()
-            .observe(viewLifecycleOwner) { list ->
-                workPerformedListForAutoComplete = list
-                val workPerformedDescriptions = ArrayList<String>()
-                list.listIterator().forEach { workPerformedDescriptions.add(it.wpDescription) }
-                val wpAdapter = ArrayAdapter(
-                    mView.context,
-                    R.layout.spinner_item_normal,
-                    workPerformedDescriptions
-                )
-                binding.acWorkPerformed.setAdapter(wpAdapter)
-            }
+        workOrderViewModel.getWorkPerformedAll().observe(viewLifecycleOwner) { list ->
+            workPerformedListForAutoComplete = list
+            val workPerformedDescriptions = ArrayList<String>()
+            list.listIterator().forEach { workPerformedDescriptions.add(it.wpDescription) }
+            val wpAdapter = ArrayAdapter(
+                mView.context,
+                R.layout.spinner_item_normal,
+                workPerformedDescriptions
+            )
+            binding.acWorkPerformed.setAdapter(wpAdapter)
+        }
     }
 
     private fun populateFromHistory() {
-        val historyId =
-            commonFunctions.getWorkOrderHistory()!!.woHistoryId
-        mainActivity.workOrderViewModel.getWorkOrderHistory(historyId)
+        val historyId = commonFunctions.getWorkOrderHistory()!!.woHistoryId
+        workOrderViewModel.getWorkOrderHistory(historyId)
             .observe(viewLifecycleOwner) { history ->
                 curHistoryDetailed = history
                 binding.apply {
                     acWorkOrder.setText(history.workOrder.woNumber)
-                    mainActivity.workOrderViewModel.getWorkOrder(
-                        history.workOrder.woNumber
-                    ).observe(viewLifecycleOwner) { workOrder ->
-                        curWorkOrder = workOrder
-                        populateWorkPerformedLists()
-                        populateMaterials()
-                    }
-                    etRegHours.setText(
-                        nf.getNumberFromDouble(history.history.woHistoryRegHours)
-                    )
-                    etOtHours.setText(
-                        nf.getNumberFromDouble(history.history.woHistoryOtHours)
-                    )
-                    etDblOtHours.setText(
-                        nf.getNumberFromDouble(history.history.woHistoryDblOtHours)
-                    )
+                    workOrderViewModel.getWorkOrder(history.workOrder.woNumber)
+                        .observe(viewLifecycleOwner) { workOrder ->
+                            curWorkOrder = workOrder
+                            populateWorkPerformedLists()
+                            populateMaterials()
+                        }
+                    etRegHours.setText(nf.getNumberFromDouble(history.history.woHistoryRegHours))
+                    etOtHours.setText(nf.getNumberFromDouble(history.history.woHistoryOtHours))
+                    etDblOtHours.setText(nf.getNumberFromDouble(history.history.woHistoryDblOtHours))
                     etNote.setText(history.history.woHistoryNote)
-//                    btnWorkOrder.visibility = View.VISIBLE
                     btnWorkOrder.text = getString(R.string.edit)
                 }
-                if (mainActivity.mainViewModel.getWorkOrderNumber() != null) {
-                    mainActivity.workOrderViewModel.getWorkOrder(
+                if (mainViewModel.getWorkOrderNumber() != null) {
+                    workOrderViewModel.getWorkOrder(
                         curHistoryDetailed.history.woHistoryWorkOrderId
-                    ).observe(
-                        viewLifecycleOwner
-                    ) { workOrder ->
+                    ).observe(viewLifecycleOwner) { workOrder ->
                         curWorkOrder = workOrder
                         setCurWorkOrder()
                     }
@@ -261,24 +250,16 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun populateFromTempValues() {
-        val tempWorkOrderInfo =
-            mainActivity.mainViewModel.getTempWorkOrderHistoryInfo()!!
-        mainActivity.workOrderViewModel.getWorkOrder(
-            tempWorkOrderInfo.woHistoryWorkOrderNumber
-        ).observe(viewLifecycleOwner) { workOrder ->
-            curWorkOrder = workOrder
-        }
+        val tempWorkOrderInfo = mainViewModel.getTempWorkOrderHistoryInfo()!!
+        workOrderViewModel.getWorkOrder(tempWorkOrderInfo.woHistoryWorkOrderNumber)
+            .observe(viewLifecycleOwner) { workOrder ->
+                curWorkOrder = workOrder
+            }
         binding.apply {
             acWorkOrder.setText(tempWorkOrderInfo.woHistoryWorkOrderNumber)
-            etRegHours.setText(
-                nf.getNumberFromDouble(tempWorkOrderInfo.woHistoryRegHours)
-            )
-            etOtHours.setText(
-                nf.getNumberFromDouble(tempWorkOrderInfo.woHistoryOtHours)
-            )
-            etDblOtHours.setText(
-                nf.getNumberFromDouble(tempWorkOrderInfo.woHistoryDblOtHours)
-            )
+            etRegHours.setText(nf.getNumberFromDouble(tempWorkOrderInfo.woHistoryRegHours))
+            etOtHours.setText(nf.getNumberFromDouble(tempWorkOrderInfo.woHistoryOtHours))
+            etDblOtHours.setText(nf.getNumberFromDouble(tempWorkOrderInfo.woHistoryDblOtHours))
             etNote.setText(tempWorkOrderInfo.woHistoryNote)
             if (tempWorkOrderInfo.woWorkPerformed.isNotEmpty()) {
                 acWorkOrder.setText(tempWorkOrderInfo.woWorkPerformed)
@@ -293,9 +274,7 @@ class WorkOrderHistoryUpdateFragment :
                 acMaterials.setText(tempWorkOrderInfo.woMaterial)
             }
             if (tempWorkOrderInfo.woMaterialQty != 0.0) {
-                etMaterialQty.setText(
-                    nf.getNumberFromDouble((tempWorkOrderInfo.woMaterialQty))
-                )
+                etMaterialQty.setText(nf.getNumberFromDouble((tempWorkOrderInfo.woMaterialQty)))
             }
         }
     }
@@ -330,8 +309,7 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun populateWorkOrderInfo() {
-        val display = curWorkOrder!!.woAddress +
-                " | " + curWorkOrder!!.woDescription
+        val display = curWorkOrder!!.woAddress + " | " + curWorkOrder!!.woDescription
         binding.apply {
             tvDescription.text = display
             tvDescription.visibility = View.VISIBLE
@@ -343,10 +321,10 @@ class WorkOrderHistoryUpdateFragment :
     ) {
         val workPerformedAdapter = WorKOrderHistoryWorkPerformedAdapter(
             mainActivity,
-            this@WorkOrderHistoryUpdateFragment,
-            TAG,
             curHistoryDetailed.history,
             mView,
+            TAG,
+            this@WorkOrderHistoryUpdateFragment,
         )
         binding.rvWorkPerformed.apply {
             layoutManager = LinearLayoutManager(
@@ -360,28 +338,26 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun populateMaterials() {
-        mainActivity.workOrderViewModel.getMaterialsByHistory(
-            curHistoryDetailed.history.woHistoryId
-        ).observe(viewLifecycleOwner) { list ->
-            val materialActualList =
-                ArrayList<MaterialInSequence>()
-            var seq = 0
-            list.listIterator().forEach {
-                seq++
-                materialActualList.add(
-                    MaterialInSequence(
-                        it.workOrderHistoryMaterial.workOrderHistoryMaterialId,
-                        getCurHistory().woHistoryId,
-                        it.material.materialId,
-                        it.material.mName,
-                        it.workOrderHistoryMaterial.wohmQuantity,
-                        seq
+        workOrderViewModel.getMaterialsByHistory(curHistoryDetailed.history.woHistoryId)
+            .observe(viewLifecycleOwner) { list ->
+                val materialActualList = ArrayList<MaterialInSequence>()
+                var seq = 0
+                list.listIterator().forEach {
+                    seq++
+                    materialActualList.add(
+                        MaterialInSequence(
+                            it.workOrderHistoryMaterial.workOrderHistoryMaterialId,
+                            getCurHistory().woHistoryId,
+                            it.material.materialId,
+                            it.material.mName,
+                            it.workOrderHistoryMaterial.wohmQuantity,
+                            seq
+                        )
                     )
-                )
+                }
+                populateMaterialRecycler(materialActualList)
+                determineMaterialSequence(list)
             }
-            populateMaterialRecycler(materialActualList)
-            determineMaterialSequence(list)
-        }
     }
 
     private fun populateMaterialRecycler(
@@ -393,9 +369,7 @@ class WorkOrderHistoryUpdateFragment :
             this@WorkOrderHistoryUpdateFragment
         )
         binding.rvMaterials.apply {
-            layoutManager = LinearLayoutManager(
-                mView.context
-            )
+            layoutManager = LinearLayoutManager(mView.context)
             adapter = materialAdapter
         }
         materialAdapter.differ.submitList(materialActualList)
@@ -407,7 +381,7 @@ class WorkOrderHistoryUpdateFragment :
             btnWorkOrder.setOnClickListener {
                 if (btnWorkOrder.text.toString() == getString(R.string.edit)) {
                     setOnWorkOrderSelected(acWorkOrder.text.toString())
-                    mainActivity.mainViewModel.setCallingFragment(TAG)
+                    mainViewModel.setCallingFragment(TAG)
                     gotoWorkOrderUpdateFragment()
                 } else {
                     gotoWorkOrderAdd()
@@ -425,9 +399,7 @@ class WorkOrderHistoryUpdateFragment :
             acArea.setOnItemClickListener { _, _, _, _ ->
                 CoroutineScope(Dispatchers.Default).launch { setCurArea() }
             }
-            btnAddWorkPerformed.setOnClickListener {
-                addWorkPerformedToWorkOrderIfValid(true)
-            }
+            btnAddWorkPerformed.setOnClickListener { addWorkPerformedToWorkOrderIfValid(true) }
             btnAddMaterial.setOnClickListener {
                 addMaterialToWorkOrderIfValid(true)
             }
@@ -458,16 +430,9 @@ class WorkOrderHistoryUpdateFragment :
             updateHistoryIfValid()
         } else {
             AlertDialog.Builder(mView.context)
-                .setTitle(
-                    getString(R.string.create_work_order_) +
-                            "${binding.acWorkOrder.text}?"
-                )
-                .setMessage(
-                    getString(R.string.this_work_order_does_not_exist)
-                )
-                .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                    gotoWorkOrderAdd()
-                }
+                .setTitle(getString(R.string.create_work_order_) + "${binding.acWorkOrder.text}?")
+                .setMessage(getString(R.string.this_work_order_does_not_exist))
+                .setPositiveButton(getString(R.string.yes)) { _, _ -> gotoWorkOrderAdd() }
                 .setNegativeButton(getString(R.string.no), null)
                 .show()
         }
@@ -475,10 +440,7 @@ class WorkOrderHistoryUpdateFragment :
 
     private fun gotoWorkOrderLookup() {
         setTempWorkOrderHistoryInfo()
-        mainActivity.mainViewModel.setCallingFragment(
-            mainActivity.mainViewModel.getCallingFragment() +
-                    ", $TAG"
-        )
+        mainViewModel.addCallingFragment(TAG)
         gotoWorkOrderLookupFragment()
     }
 
@@ -499,18 +461,16 @@ class WorkOrderHistoryUpdateFragment :
                 updateHistory()
             }
         } else {
-            displayMessage(
-                getString(R.string.error_) + answer
-            )
+            displayMessage(getString(R.string.error_) + answer)
         }
     }
 
     private fun updateHistory() {
         try {
-            mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
+            mainViewModel.setTempWorkOrderHistoryInfo(null)
             val history = getCurHistory()
             history.apply {
-                mainActivity.workOrderViewModel.updateWorkOrderHistory(
+                workOrderViewModel.updateWorkOrderHistory(
                     woHistoryId,
                     curWorkOrder!!.workOrderId,
                     woHistoryWorkDateId,
@@ -526,22 +486,19 @@ class WorkOrderHistoryUpdateFragment :
         } catch (e: SQLiteConstraintException) {
             AlertDialog.Builder(mView.context)
                 .setTitle(getString(R.string.something_went_wrong))
-                .setMessage(
-                    getString(R.string.an_unknown_error_occurred_error_was) +
-                            e.toString()
-                )
+                .setMessage(getString(R.string.an_unknown_error_occurred_error_was) + e.toString())
                 .setNeutralButton(getString(R.string.ok), null)
                 .show()
         }
     }
 
     private fun setOnWorkOrderSelected(woNumber: String) {
-        mainActivity.mainViewModel.setWorkOrderNumber(woNumber)
-        mainActivity.workOrderViewModel.getWorkOrder(woNumber).observe(
+        mainViewModel.setWorkOrderNumber(woNumber)
+        workOrderViewModel.getWorkOrder(woNumber).observe(
             viewLifecycleOwner
         ) { workOrder ->
             curWorkOrder = workOrder
-            mainActivity.mainViewModel.setWorkOrder(curWorkOrder)
+            mainViewModel.setWorkOrder(curWorkOrder)
             setCurWorkOrder()
         }
         setTempWorkOrderHistoryInfo()
@@ -562,8 +519,7 @@ class WorkOrderHistoryUpdateFragment :
     private fun setCurMaterial(): Boolean {
         binding.apply {
             for (material in materialListForAutoComplete) {
-                if (acMaterials.text.toString() ==
-                    material.mName && !acMaterials.text.isNullOrBlank()
+                if (acMaterials.text.toString() == material.mName && !acMaterials.text.isNullOrBlank()
                 ) {
                     curMaterial = material
                     return true
@@ -597,7 +553,7 @@ class WorkOrderHistoryUpdateFragment :
         binding.apply {
             materialSequence++
             try {
-                mainActivity.workOrderViewModel.insertWorkOrderHistoryMaterial(
+                workOrderViewModel.insertWorkOrderHistoryMaterial(
                     WorkOrderHistoryMaterial(
                         nf.generateRandomIdAsLong(),
                         curHistoryDetailed.history.woHistoryId,
@@ -626,18 +582,15 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun insertNewMaterialIntoDatabase(): Material {
-        val material =
-            Material(
-                nf.generateRandomIdAsLong(),
-                binding.acMaterials.text.toString().trim(),
-                0.0,
-                0.0,
-                false,
-                df.getCurrentTimeAsString()
-            )
-        mainActivity.workOrderViewModel.insertMaterial(
-            material
+        val material = Material(
+            nf.generateRandomIdAsLong(),
+            binding.acMaterials.text.toString().trim(),
+            0.0,
+            0.0,
+            false,
+            df.getCurrentTimeAsString()
         )
+        workOrderViewModel.insertMaterial(material)
         return material
     }
 
@@ -705,11 +658,7 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun displayMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private suspend fun addWorkPerformedToHistory(
@@ -723,7 +672,7 @@ class WorkOrderHistoryUpdateFragment :
                 etWorkPerformedNote.text.toString().trim()
             }
             try {
-                mainActivity.workOrderViewModel.insertWorkOrderHistoryWorkPerformed(
+                workOrderViewModel.insertWorkOrderHistoryWorkPerformed(
                     WorkOrderHistoryWorkPerformed(
                         nf.generateRandomIdAsLong(),
                         curHistoryDetailed.history.woHistoryId,
@@ -771,14 +720,13 @@ class WorkOrderHistoryUpdateFragment :
 
     private fun insertNewWorkPerformedIntoDatabase(): WorkPerformed? {
         try {
-            val workPerformed =
-                WorkPerformed(
-                    nf.generateRandomIdAsLong(),
-                    binding.acWorkPerformed.text.toString(),
-                    false,
-                    df.getCurrentTimeAsString()
-                )
-            mainActivity.workOrderViewModel.insertWorkPerformed(workPerformed)
+            val workPerformed = WorkPerformed(
+                nf.generateRandomIdAsLong(),
+                binding.acWorkPerformed.text.toString(),
+                false,
+                df.getCurrentTimeAsString()
+            )
+            workOrderViewModel.insertWorkPerformed(workPerformed)
             return workPerformed
         } catch (e: SQLiteConstraintException) {
             return null
@@ -819,7 +767,7 @@ class WorkOrderHistoryUpdateFragment :
 
     override fun setTempWorkOrderHistoryInfo() {
         binding.apply {
-            mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(
+            mainViewModel.setTempWorkOrderHistoryInfo(
                 TempWorkOrderHistoryInfo(
                     if (acWorkOrder.text.isNullOrBlank())
                         "0" else acWorkOrder.text.toString().trim(),
@@ -926,7 +874,7 @@ class WorkOrderHistoryUpdateFragment :
 
     private fun gotoWorkOrderAdd() {
         setTempWorkOrderHistoryInfo()
-        mainActivity.mainViewModel.setCallingFragment(TAG)
+        mainViewModel.setCallingFragment(TAG)
         gotoWorkOrderAddFragment()
     }
 

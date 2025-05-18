@@ -25,6 +25,8 @@ class WorkOrderHistoryMaterialAdapter(
 
     //    private val df = DateFunctions()
     private val nf = NumberFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
+    private val workOrderViewModel = mainActivity.workOrderViewModel
 
     class ViewHolder(
         val itemBinding: ListSingleItemBinding
@@ -70,9 +72,8 @@ class WorkOrderHistoryMaterialAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val material = differ.currentList[position]
         holder.itemBinding.apply {
-            val display =
-                "${nf.getNumberFromDouble(material.mQty)} -  " +
-                        material.mName
+            val display = "${nf.getNumberFromDouble(material.mQty)} -  " +
+                    material.mName
             tvDisplay.text = display
         }
         holder.itemView.setOnClickListener {
@@ -99,7 +100,6 @@ class WorkOrderHistoryMaterialAdapter(
                         removeMaterial(material)
                     }
 
-
                     1 -> {
                         changeQuantity(material)
                     }
@@ -108,8 +108,7 @@ class WorkOrderHistoryMaterialAdapter(
                         editMaterial(material)
                     }
 
-                    else -> {
-                        //No action
+                    else -> { //No action
                     }
                 }
             }.show()
@@ -117,14 +116,14 @@ class WorkOrderHistoryMaterialAdapter(
     }
 
     private fun removeMaterial(material: MaterialInSequence) {
-        mainActivity.workOrderViewModel.removeWorkOrderHistoryMaterial(
+        workOrderViewModel.removeWorkOrderHistoryMaterial(
             material.workOrderHistoryMaterialId
         )
     }
 
     private fun changeQuantity(material: MaterialInSequence) {
         workOrderHistoryUpdateFragment.setTempWorkOrderHistoryInfo()
-        mainActivity.mainViewModel.setMaterialInSequence(material)
+        mainViewModel.setMaterialInSequence(material)
         gotoMaterialQuantityUpdateFragment()
     }
 
@@ -137,10 +136,10 @@ class WorkOrderHistoryMaterialAdapter(
 
     private fun editMaterial(material: MaterialInSequence) {
         workOrderHistoryUpdateFragment.setTempWorkOrderHistoryInfo()
-        mainActivity.workOrderViewModel.getMaterial(
+        workOrderViewModel.getMaterial(
             material.materialId
         ).observe(mView.findViewTreeLifecycleOwner()!!) { mMaterial ->
-            mainActivity.mainViewModel.setMaterial(mMaterial)
+            mainViewModel.setMaterial(mMaterial)
             gotoMaterialUpdateFragment()
         }
 
