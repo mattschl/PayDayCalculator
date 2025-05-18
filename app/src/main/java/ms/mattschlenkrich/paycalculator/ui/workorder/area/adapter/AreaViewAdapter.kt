@@ -14,7 +14,7 @@ import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.area.AreaViewFragment
 
 class AreaViewAdapter(
-    private val mainActivity: MainActivity,
+    val mainActivity: MainActivity,
     private val mView: View,
     private val parentTag: String,
     private val areaViewFragment: AreaViewFragment,

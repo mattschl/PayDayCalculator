@@ -19,6 +19,9 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDERS
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
+import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderViewBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.adapter.WorkOrderViewAdapter
@@ -32,6 +35,9 @@ class WorkOrderViewFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workOrderViewModel: WorkOrderViewModel
+    private lateinit var employerViewModel: EmployerViewModel
     private var curEmployer: Employers? = null
     private var workOrderAdapter: WorkOrderViewAdapter? = null
 
@@ -44,6 +50,9 @@ class WorkOrderViewFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workOrderViewModel = mainActivity.workOrderViewModel
+        employerViewModel = mainActivity.employerViewModel
         return mView
     }
 
@@ -59,7 +68,7 @@ class WorkOrderViewFragment :
             mView.context,
             R.layout.spinner_item_bold
         )
-        mainActivity.employerViewModel.getEmployers().observe(
+        employerViewModel.getEmployers().observe(
             viewLifecycleOwner
         ) { employers ->
             employerAdapter.clear()
@@ -87,13 +96,13 @@ class WorkOrderViewFragment :
                             getString(R.string.add_new_employer)
                         ) {
                             CoroutineScope(Dispatchers.IO).launch {
-                                curEmployer = mainActivity.employerViewModel.findEmployer(
+                                curEmployer = employerViewModel.findEmployer(
                                     spEmployers.selectedItem.toString()
                                 )
                             }
                             CoroutineScope(Dispatchers.Main).launch {
                                 delay(WAIT_250)
-                                mainActivity.mainViewModel.setEmployer(curEmployer)
+                                mainViewModel.setEmployer(curEmployer)
                                 populateWorkOrders(curEmployer!!.employerId)
                             }
                         } else {
@@ -110,11 +119,11 @@ class WorkOrderViewFragment :
 
     private fun populateWorkOrders(employerId: Long) {
         workOrderAdapter = WorkOrderViewAdapter(
-            mainActivity, mView, TAG
+            mainActivity, mView, TAG, this@WorkOrderViewFragment
         )
-        mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
-            employerId
-        ).observe(viewLifecycleOwner) { list ->
+        workOrderViewModel.getWorkOrdersByEmployerId(employerId).observe(
+            viewLifecycleOwner
+        ) { list ->
             workOrderAdapter!!.differ.submitList(list)
         }
         binding.rvWorkOrders.apply {
@@ -125,8 +134,10 @@ class WorkOrderViewFragment :
     }
 
     private fun gotoEmployerAdd() {
-        mainActivity.mainViewModel.setCallingFragment(TAG)
-        mainActivity.mainViewModel.setEmployer(null)
+        mainViewModel.apply {
+            setCallingFragment(TAG)
+            setEmployer(null)
+        }
         gotoEmployerAddFragment()
     }
 
@@ -177,16 +188,15 @@ class WorkOrderViewFragment :
             curEmployer != null
         ) {
             val searchQuery = "%$query%"
-            mainActivity.workOrderViewModel.searchWorkOrders(
-                curEmployer!!.employerId, searchQuery
-            ).observe(viewLifecycleOwner) { list ->
-                workOrderAdapter!!.differ.submitList(list)
-            }
+            workOrderViewModel.searchWorkOrders(curEmployer!!.employerId, searchQuery)
+                .observe(viewLifecycleOwner) { list ->
+                    workOrderAdapter!!.differ.submitList(list)
+                }
         }
     }
 
     private fun addNewWorkOrder() {
-        mainActivity.mainViewModel.setEmployer(curEmployer)
+        mainViewModel.setEmployer(curEmployer)
         gotoWorkOrderAddFragment()
     }
 
@@ -194,6 +204,13 @@ class WorkOrderViewFragment :
         mView.findNavController().navigate(
             WorkOrderViewFragmentDirections
                 .actionWorkOrderViewFragmentToWorkOrderAddFragment()
+        )
+    }
+
+    fun gotoWorkOrderUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkOrderViewFragmentDirections
+                .actionWorkOrderViewFragmentToWorkOrderUpdateFragment()
         )
     }
 

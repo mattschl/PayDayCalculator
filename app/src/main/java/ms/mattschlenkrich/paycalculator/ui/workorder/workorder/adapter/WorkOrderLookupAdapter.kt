@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -15,15 +14,17 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.TempWorkOrderHi
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkOrderItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.WorkOrderLookupFragmentDirections
+import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.WorkOrderLookupFragment
 
 class WorkOrderLookupAdapter(
     val mainActivity: MainActivity,
-    val mView: View
+    val mView: View,
+    private val workOrderLookupFragment: WorkOrderLookupFragment,
 ) : RecyclerView.Adapter<WorkOrderLookupAdapter.ViewHolder>() {
 
-//    private val df = DateFunctions()
+    //    private val df = DateFunctions()
 //    private val nf = NumberFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
 
     class ViewHolder(
         val itemBinding: ListWorkOrderItemBinding
@@ -59,9 +60,7 @@ class WorkOrderLookupAdapter(
             tvAddress.text = workOrder.woAddress
             tvDescription.text = workOrder.woDescription
         }
-        holder.itemView.setOnClickListener {
-            chooseOptions(workOrder)
-        }
+        holder.itemView.setOnClickListener { chooseOptions(workOrder) }
     }
 
     private fun chooseOptions(workOrder: WorkOrder) {
@@ -71,58 +70,56 @@ class WorkOrderLookupAdapter(
                         workOrder.woNumber
             )
             .setMessage(
-                mView.context.getString(R.string.would_you_like_to_use_this_work_order) +
-                        mView.context.getString(R.string.line_break) +
-                        workOrder.woDescription
+                mView.context.getString(R.string.would_you_like_to_use_this_work_order) + mView.context.getString(
+                    R.string.line_break
+                ) + workOrder.woDescription
             )
             .setPositiveButton(mView.context.getString(R.string.yes)) { _, _ ->
-                mainActivity.mainViewModel.setWorkOrder(workOrder)
-                mainActivity.mainViewModel.setWorkOrderNumber(
-                    workOrder.woNumber
-                )
-                gotoCallingFragment(workOrder)
+                chooseThisWorkOrder(workOrder)
             }
             .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()
     }
 
-    private fun gotoCallingFragment(workOrder: WorkOrder) {
+    private fun chooseThisWorkOrder(workOrder: WorkOrder) {
         setViewModelValues(workOrder)
-        if (mainActivity.mainViewModel.getCallingFragment()!!.contains(
-                FRAG_WORK_ORDER_HISTORY_UPDATE
-            )
-        ) {
-            gotoWorkOrderHistoryUpdate()
-        }
-        if (mainActivity.mainViewModel.getCallingFragment()!!.contains(
-                FRAG_WORK_ORDER_HISTORY_ADD
-            )
-        ) {
-            gotoWorkOrderAdd()
-        }
+        gotoCallingFragment()
     }
 
     private fun setViewModelValues(workOrder: WorkOrder) {
-        mainActivity.mainViewModel.setWorkOrder(workOrder)
-        mainActivity.mainViewModel.setWorkOrderNumber(workOrder.woNumber)
-        if (mainActivity.mainViewModel.getTempWorkOrderHistoryInfo() != null) {
-            val history =
-                mainActivity.mainViewModel.getTempWorkOrderHistoryInfo()!!
-            mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(
-                TempWorkOrderHistoryInfo(
-                    workOrder.woNumber,
-                    history.woHistoryWorkDate,
-                    history.woHistoryRegHours,
-                    history.woHistoryOtHours,
-                    history.woHistoryDblOtHours,
-                    history.woHistoryNote,
-                    history.woWorkPerformed,
-                    history.woArea,
-                    history.woHistoryNote,
-                    history.woMaterialQty,
-                    history.woMaterial
+        mainViewModel.apply {
+            setWorkOrder(workOrder)
+            setWorkOrderNumber(workOrder.woNumber)
+            if (getTempWorkOrderHistoryInfo() != null) {
+                val history = getTempWorkOrderHistoryInfo()!!
+                setTempWorkOrderHistoryInfo(
+                    TempWorkOrderHistoryInfo(
+                        workOrder.woNumber,
+                        history.woHistoryWorkDate,
+                        history.woHistoryRegHours,
+                        history.woHistoryOtHours,
+                        history.woHistoryDblOtHours,
+                        history.woHistoryNote,
+                        history.woWorkPerformed,
+                        history.woArea,
+                        history.woHistoryNote,
+                        history.woMaterialQty,
+                        history.woMaterial
+                    )
                 )
-            )
+            }
+        }
+    }
+
+    private fun gotoCallingFragment() {
+        val callingFragment = mainViewModel.getCallingFragment()!!
+        if (callingFragment.contains(FRAG_WORK_ORDER_HISTORY_UPDATE)
+        ) {
+            gotoWorkOrderHistoryUpdate()
+        }
+        if (callingFragment.contains(FRAG_WORK_ORDER_HISTORY_ADD)
+        ) {
+            gotoWorkOrderAdd()
         }
     }
 
@@ -132,7 +129,7 @@ class WorkOrderLookupAdapter(
                 ", $FRAG_WORK_ORDER_HISTORY_UPDATE", ""
             )
         )
-        gotoWorkOrderHistoryUpdateFragment()
+        workOrderLookupFragment.gotoWorkOrderHistoryUpdateFragment()
     }
 
     private fun gotoWorkOrderAdd() {
@@ -141,21 +138,7 @@ class WorkOrderLookupAdapter(
                 ", $FRAG_WORK_ORDER_HISTORY_ADD", ""
             )
         )
-        gotoWorkOrderHistoryAddFragment()
-    }
-
-    private fun gotoWorkOrderHistoryAddFragment() {
-        mView.findNavController().navigate(
-            WorkOrderLookupFragmentDirections
-                .actionWorkOrderLookupFragmentToWorkOrderHistoryAddFragment()
-        )
-    }
-
-    private fun gotoWorkOrderHistoryUpdateFragment() {
-        mView.findNavController().navigate(
-            WorkOrderLookupFragmentDirections
-                .actionWorkOrderLookupFragmentToWorkOrderHistoryUpdateFragment()
-        )
+        workOrderLookupFragment.gotoWorkOrderHistoryAddFragment()
     }
 
     override fun getItemCount(): Int {

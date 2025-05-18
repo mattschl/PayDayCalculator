@@ -19,6 +19,9 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
+import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -28,7 +31,9 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workOrderViewModel: WorkOrderViewModel
+    private lateinit var employerViewModel: EmployerViewModel
     private lateinit var workOrderList: List<WorkOrder>
     private lateinit var curEmployer: Employers
     private lateinit var curWorkOrder: WorkOrder
@@ -44,6 +49,9 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workOrderViewModel = mainActivity.workOrderViewModel
+        employerViewModel = mainActivity.employerViewModel
         mainActivity.title = getString(R.string.add_new_work_order)
         return mView
     }
@@ -57,8 +65,8 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
     private fun populateInitialValues() {
         hideJobSpecsAndHistory()
         binding.apply {
-            if (mainActivity.mainViewModel.getEmployer() != null) {
-                curEmployer = mainActivity.mainViewModel.getEmployer()!!
+            if (mainViewModel.getEmployer() != null) {
+                curEmployer = mainViewModel.getEmployer()!!
                 spEmployers.visibility = View.INVISIBLE
                 tvEmployer.visibility = View.VISIBLE
                 tvEmployer.text = curEmployer.employerName
@@ -68,7 +76,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
                 tvEmployer.visibility = View.INVISIBLE
                 populateEmployers()
             }
-            if (mainActivity.mainViewModel.getTempWorkOrderHistoryInfo() != null) {
+            if (mainViewModel.getTempWorkOrderHistoryInfo() != null) {
                 populateValuesFromHistory()
 //                mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
             }
@@ -84,23 +92,20 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
     }
 
     private fun populateWorkOrderListForValidation() {
-        mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
-            curEmployer.employerId
-        ).observe(viewLifecycleOwner) { list ->
+        workOrderViewModel.getWorkOrdersByEmployerId(curEmployer.employerId).observe(
+            viewLifecycleOwner
+        ) { list ->
             workOrderList = list
         }
     }
 
     private fun populateEmployers() {
-        mainActivity.employerViewModel.getEmployers().observe(
+        employerViewModel.getEmployers().observe(
             viewLifecycleOwner
         ) { list ->
             binding.apply {
-                val employerAdapter =
-                    ArrayAdapter<Any>(mView.context, R.layout.spinner_item_bold)
-                list.listIterator().forEach {
-                    employerAdapter.add(it.employerName)
-                }
+                val employerAdapter = ArrayAdapter<Any>(mView.context, R.layout.spinner_item_bold)
+                list.listIterator().forEach { employerAdapter.add(it.employerName) }
                 spEmployers.adapter = employerAdapter
             }
         }
@@ -108,14 +113,12 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
 
     private fun populateValuesFromHistory() {
         val tempWorkOrder = mainActivity.mainViewModel.getTempWorkOrderHistoryInfo()!!
-        binding.apply {
-            etWorkOrderNumber.setText(tempWorkOrder.woHistoryWorkOrderNumber)
-        }
+        binding.etWorkOrderNumber.setText(tempWorkOrder.woHistoryWorkOrderNumber)
     }
 
     private fun setClickActions() {
-        binding.apply {
-            fabDone.setOnClickListener { saveWorkOrderAndAddJobSpecIfValid() }
+        binding.fabDone.setOnClickListener {
+            saveWorkOrderAndAddJobSpecIfValid()
             onSelectEmployer()
         }
     }
@@ -125,15 +128,17 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
         if (answer == ANSWER_OK) {
             saveWorkOrderAndAChooseNextSteps()
         } else {
-            Toast.makeText(mView.context, answer, Toast.LENGTH_LONG).show()
+            displayMessage(getString(R.string.error_) + answer)
         }
     }
 
     private fun saveWorkOrderAndAChooseNextSteps() {
         curWorkOrder = getCurrentWorkOrder()
-        mainActivity.workOrderViewModel.insertWorkOrder(curWorkOrder)
-        mainActivity.mainViewModel.setWorkOrder(curWorkOrder)
-        mainActivity.mainViewModel.setWorkOrderNumber(curWorkOrder.woNumber)
+        workOrderViewModel.insertWorkOrder(curWorkOrder)
+        mainViewModel.apply {
+            setWorkOrder(curWorkOrder)
+            setWorkOrderNumber(curWorkOrder.woNumber)
+        }
         chooseToGotoUpdate()
     }
 
@@ -200,11 +205,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
     }
 
     private fun displayMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun gotoCallingFragment() {

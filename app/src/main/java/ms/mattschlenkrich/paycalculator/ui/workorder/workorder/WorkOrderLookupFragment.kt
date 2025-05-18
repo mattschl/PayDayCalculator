@@ -7,9 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderViewBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.adapter.WorkOrderLookupAdapter
@@ -23,6 +26,8 @@ class WorkOrderLookupFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workOrderViewModel: WorkOrderViewModel
     private var curEmployer: Employers? = null
     private var workOrderAdapter: WorkOrderLookupAdapter? = null
 
@@ -35,12 +40,14 @@ class WorkOrderLookupFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workOrderViewModel = mainActivity.workOrderViewModel
+        mainActivity.title = getString(R.string.choose_a_work_order)
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mainActivity.title = getString(R.string.choose_a_work_order)
         populateInitialView()
         setClickActions()
     }
@@ -58,7 +65,7 @@ class WorkOrderLookupFragment :
 
     private fun populateEmployer() {
         binding.apply {
-            curEmployer = mainActivity.mainViewModel.getEmployer()
+            curEmployer = mainViewModel.getEmployer()
             tvEmployer.text = curEmployer?.employerName
             populateWorkOrders(curEmployer!!.employerId)
         }
@@ -66,16 +73,15 @@ class WorkOrderLookupFragment :
 
     private fun populateWorkOrders(employerId: Long) {
         workOrderAdapter = WorkOrderLookupAdapter(
-            mainActivity, mView
+            mainActivity, mView, this@WorkOrderLookupFragment
         )
-        mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
-            employerId
-        ).observe(viewLifecycleOwner) { list ->
+        workOrderViewModel.getWorkOrdersByEmployerId(employerId).observe(
+            viewLifecycleOwner
+        ) { list ->
             workOrderAdapter!!.differ.submitList(list)
         }
         binding.rvWorkOrders.apply {
-            layoutManager =
-                LinearLayoutManager(mView.context)
+            layoutManager = LinearLayoutManager(mView.context)
             adapter = workOrderAdapter!!
         }
     }
@@ -116,12 +122,26 @@ class WorkOrderLookupFragment :
             curEmployer != null
         ) {
             val searchQuery = "%$query%"
-            mainActivity.workOrderViewModel.searchWorkOrders(
-                curEmployer!!.employerId, searchQuery
-            ).observe(viewLifecycleOwner) { list ->
+            workOrderViewModel.searchWorkOrders(curEmployer!!.employerId, searchQuery).observe(
+                viewLifecycleOwner
+            ) { list ->
                 workOrderAdapter!!.differ.submitList(list)
             }
         }
+    }
+
+    fun gotoWorkOrderHistoryAddFragment() {
+        mView.findNavController().navigate(
+            WorkOrderLookupFragmentDirections
+                .actionWorkOrderLookupFragmentToWorkOrderHistoryAddFragment()
+        )
+    }
+
+    fun gotoWorkOrderHistoryUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkOrderLookupFragmentDirections
+                .actionWorkOrderLookupFragmentToWorkOrderHistoryUpdateFragment()
+        )
     }
 
     override fun onDestroy() {

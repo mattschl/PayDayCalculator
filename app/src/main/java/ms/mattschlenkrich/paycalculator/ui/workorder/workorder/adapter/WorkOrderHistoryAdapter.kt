@@ -4,6 +4,8 @@ import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
@@ -16,12 +18,12 @@ import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.IWorkOrderUpdateF
 class WorkOrderHistoryAdapter(
     val mainActivity: MainActivity,
     val mView: View,
-    private val workOrderHistory: List<WorkOrderHistoryWithDates>,
     private val parentFragment: IWorkOrderUpdateFragment,
 ) : RecyclerView.Adapter<WorkOrderHistoryAdapter.ViewHolder>() {
 
     private val df = DateFunctions()
     private val nf = NumberFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
 
     class ViewHolder(
         val itemBinding: ListWorkOrderHistoryDetailItemBinding
@@ -36,8 +38,30 @@ class WorkOrderHistoryAdapter(
         )
     }
 
+    private val differCallBack =
+        object : DiffUtil.ItemCallback<WorkOrderHistoryWithDates>() {
+            override fun areItemsTheSame(
+                oldItem: WorkOrderHistoryWithDates,
+                newItem: WorkOrderHistoryWithDates
+            ): Boolean {
+                return oldItem == newItem
+            }
+
+            override fun areContentsTheSame(
+                oldItem: WorkOrderHistoryWithDates,
+                newItem: WorkOrderHistoryWithDates
+            ): Boolean {
+                return oldItem.history.woHistoryId == newItem.history.woHistoryId &&
+                        oldItem.workDate.workDateId == newItem.workDate.workDateId &&
+                        oldItem.workOrder.workOrderId == newItem.workOrder.workOrderId
+            }
+
+        }
+
+    val differ = AsyncListDiffer(this, differCallBack)
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val history = workOrderHistory[position]
+        val history = differ.currentList[position]
         holder.itemBinding.apply {
             tvDate.text =
                 df.getDisplayDate(history.workDate.wdDate)
@@ -98,16 +122,14 @@ class WorkOrderHistoryAdapter(
     }
 
     private fun gotoEditWorkOrderHistory(history: WorkOrderHistoryWithDates) {
-        mainActivity.mainViewModel.setWorkOrderHistory(
-            history.history
-        )
-        mainActivity.mainViewModel.setWorkDateObject(
-            history.workDate
-        )
+        mainViewModel.apply {
+            setWorkOrderHistory(history.history)
+            setWorkDateObject(history.workDate)
+        }
         parentFragment.gotoWorkOrderHistoryFragment()
     }
 
     override fun getItemCount(): Int {
-        return workOrderHistory.size
+        return differ.currentList.size
     }
 }

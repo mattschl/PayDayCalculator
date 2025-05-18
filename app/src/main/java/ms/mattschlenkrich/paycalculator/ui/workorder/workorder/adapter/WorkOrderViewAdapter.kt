@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -12,16 +11,18 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkOrderItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.WorkOrderViewFragmentDirections
+import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.WorkOrderViewFragment
 
 class WorkOrderViewAdapter(
     val mainActivity: MainActivity,
     val mView: View,
-    private val parentTag: String
+    private val parentTag: String,
+    private val workOrderViewFragment: WorkOrderViewFragment,
 ) : RecyclerView.Adapter<WorkOrderViewAdapter.ViewHolder>() {
 
-//    private val df = DateFunctions()
+    //    private val df = DateFunctions()
 //    private val nf = NumberFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
 
     class ViewHolder(
         val itemBinding: ListWorkOrderItemBinding
@@ -72,26 +73,23 @@ class WorkOrderViewAdapter(
                 mView.context.getString(R.string.would_you_like_to_open_this_work_order_to_view_or_edit_it)
             )
             .setPositiveButton(mView.context.getString(R.string.open)) { _, _ ->
-                mainActivity.mainViewModel.setWorkOrder(workOrder)
-                mainActivity.mainViewModel.setWorkOrderNumber(
-                    workOrder.woNumber
-                )
+                setWorkOrder(workOrder)
                 gotoWorkOrderUpdate()
             }
             .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()
     }
 
-    private fun gotoWorkOrderUpdate() {
-        mainActivity.mainViewModel.setCallingFragment(parentTag)
-        gotoWorkOrderUpdateFragment()
+    private fun setWorkOrder(workOrder: WorkOrder) {
+        mainViewModel.apply {
+            setWorkOrder(workOrder)
+            setWorkOrderNumber(workOrder.woNumber)
+        }
     }
 
-    private fun gotoWorkOrderUpdateFragment() {
-        mView.findNavController().navigate(
-            WorkOrderViewFragmentDirections
-                .actionWorkOrderViewFragmentToWorkOrderUpdateFragment()
-        )
+    private fun gotoWorkOrderUpdate() {
+        mainViewModel.setCallingFragment(parentTag)
+        workOrderViewFragment.gotoWorkOrderUpdateFragment()
     }
 
     override fun getItemCount(): Int {

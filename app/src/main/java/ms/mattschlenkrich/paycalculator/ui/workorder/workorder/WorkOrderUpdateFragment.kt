@@ -34,6 +34,8 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpecCombined
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.adapter.MaterialCountAdapter
@@ -49,6 +51,8 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workOrderViewModel: WorkOrderViewModel
     private lateinit var workOrderList: List<WorkOrder>
     private lateinit var curEmployer: Employers
     private lateinit var curWorkOrder: WorkOrder
@@ -70,6 +74,8 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workOrderViewModel = mainActivity.workOrderViewModel
         mainActivity.title = getString(R.string.update_work_order)
         return mView
     }
@@ -84,16 +90,16 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
         populateJobSpecListForAutoComplete()
         populateAreaListForAutoComplete()
         unHideJobSpecsAndHistory()
-        if (mainActivity.mainViewModel.getEmployer() != null) {
-            curEmployer = mainActivity.mainViewModel.getEmployer()!!
+        if (mainViewModel.getEmployer() != null) {
+            curEmployer = mainViewModel.getEmployer()!!
             binding.apply {
                 spEmployers.visibility = View.INVISIBLE
                 tvEmployer.visibility = View.VISIBLE
                 tvEmployer.text = curEmployer.employerName
             }
             populateWorkOrderListForValidation()
-            if (mainActivity.mainViewModel.getWorkOrder() != null) {
-                curWorkOrder = mainActivity.mainViewModel.getWorkOrder()!!
+            if (mainViewModel.getWorkOrder() != null) {
+                curWorkOrder = mainViewModel.getWorkOrder()!!
                 setValuesFromHistory(curWorkOrder)
             }
         }
@@ -107,7 +113,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
     }
 
     private fun populateWorkOrderListForValidation() {
-        mainActivity.workOrderViewModel.getWorkOrdersByEmployerId(
+        workOrderViewModel.getWorkOrdersByEmployerId(
             curEmployer.employerId
         ).observe(viewLifecycleOwner) { list ->
             workOrderList = list
@@ -115,23 +121,18 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
     }
 
     private fun populateAreaListForAutoComplete() {
-        mainActivity.workOrderViewModel.getAreasList()
-            .observe(viewLifecycleOwner) { list ->
-                areaListForAutoComplete = list
-                val areaNames = ArrayList<String>()
-                list.listIterator().forEach {
-                    areaNames.add(it.areaName)
-                }
-                populateAreasInAutoComplete(areaNames)
+        workOrderViewModel.getAreasList().observe(viewLifecycleOwner) { list ->
+            areaListForAutoComplete = list
+            val areaNames = ArrayList<String>()
+            list.listIterator().forEach {
+                areaNames.add(it.areaName)
             }
+            populateAreasInAutoComplete(areaNames)
+        }
     }
 
     private fun populateAreasInAutoComplete(areaNames: ArrayList<String>) {
-        val areaAdapter = ArrayAdapter(
-            mView.context,
-            R.layout.spinner_item_normal,
-            areaNames
-        )
+        val areaAdapter = ArrayAdapter(mView.context, R.layout.spinner_item_normal, areaNames)
         binding.acArea.setAdapter(areaAdapter)
     }
 
@@ -145,15 +146,14 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
     }
 
     private fun populateJobSpecListForAutoComplete() {
-        mainActivity.workOrderViewModel.getJobSpecsAll()
-            .observe(viewLifecycleOwner) { list ->
-                val jobSpecNameList = ArrayList<String>()
-                list.listIterator().forEach {
-                    jobSpecListForAutoComplete = list
-                    jobSpecNameList.add(it.jsName)
-                }
-                populateJobSpecsInAutoComplete(jobSpecNameList)
+        workOrderViewModel.getJobSpecsAll().observe(viewLifecycleOwner) { list ->
+            val jobSpecNameList = ArrayList<String>()
+            list.listIterator().forEach {
+                jobSpecListForAutoComplete = list
+                jobSpecNameList.add(it.jsName)
             }
+            populateJobSpecsInAutoComplete(jobSpecNameList)
+        }
     }
 
     private fun populateJobSpecsInAutoComplete(jobSpecNameList: ArrayList<String>) {
@@ -175,18 +175,18 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
     }
 
     private fun populateDateHistory(workOrderId: Long) {
-        mainActivity.workOrderViewModel.getWorkOrderHistoriesByWorkOrder(
-            workOrderId
-        ).observe(viewLifecycleOwner) { list ->
+        workOrderViewModel.getWorkOrderHistoriesByWorkOrder(workOrderId).observe(
+            viewLifecycleOwner
+        ) { list ->
             calculateHistoryTotals(list)
             val histories = list.sortedBy { it.workDate.wdDate }
             val workOrderHistoryAdapter =
                 WorkOrderHistoryAdapter(
                     mainActivity,
                     mView,
-                    histories,
                     this@WorkOrderUpdateFragment
                 )
+            workOrderHistoryAdapter.differ.submitList(histories)
             binding.rvHistory.apply {
                 layoutManager = LinearLayoutManager(mView.context)
                 adapter = workOrderHistoryAdapter
@@ -204,9 +204,9 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
     }
 
     private fun populateMaterialHistory(workOrderId: Long) {
-        mainActivity.workOrderViewModel.getMaterialsHistoryByWorkOrderId(
-            workOrderId
-        ).observe(viewLifecycleOwner) { list ->
+        workOrderViewModel.getMaterialsHistoryByWorkOrderId(workOrderId).observe(
+            viewLifecycleOwner
+        ) { list ->
             if (list.isNotEmpty()) {
                 val materials = ArrayList<MaterialAndQuantity>()
                 var curMaterial = ""
@@ -346,10 +346,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
                 area?.areaName == combinedJobSpec.area?.areaName
             ) {
                 if (showError) {
-                    displayMessage(
-                        getString(R.string.error_) +
-                                getString(R.string.this_job_spec_has_already_been_entered_for_this_area)
-                    )
+                    displayMessage(getString(R.string.error_) + getString(R.string.this_job_spec_has_already_been_entered_for_this_area))
                 }
                 return false
             }
@@ -364,7 +361,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
             false,
             df.getCurrentTimeAsString()
         )
-        mainActivity.workOrderViewModel.insertArea(newArea)
+        workOrderViewModel.insertArea(newArea)
         return newArea
     }
 
@@ -377,7 +374,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
                 false,
                 df.getCurrentTimeAsString()
             )
-        mainActivity.workOrderViewModel.insertJobSpec(
+        workOrderViewModel.insertJobSpec(
             newJobSpec
         )
         return newJobSpec
@@ -395,7 +392,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
                 delay(WAIT_250)
                 jobSpecSequence++
                 CoroutineScope(Dispatchers.Default).launch {
-                    mainActivity.workOrderViewModel.insertWorkOrderJobSpec(
+                    workOrderViewModel.insertWorkOrderJobSpec(
                         WorkOrderJobSpec(
                             nf.generateRandomIdAsLong(),
                             curWorkOrder.workOrderId,
@@ -436,9 +433,9 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
     }
 
     private fun populateJobSpecsForWorkOrder() {
-        mainActivity.workOrderViewModel.getWorkOrderJobSpecs(
-            curWorkOrder.workOrderId
-        ).observe(viewLifecycleOwner) { jobSpecList ->
+        workOrderViewModel.getWorkOrderJobSpecs(curWorkOrder.workOrderId).observe(
+            viewLifecycleOwner
+        ) { jobSpecList ->
             jobSpecCombinedList = jobSpecList
             populateJobSpecSummary(jobSpecList)
             jobSpecSequence = determineSequence(jobSpecList)
@@ -521,11 +518,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
     }
 
     private fun displayMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun updateWorkOrder() {
@@ -609,7 +602,6 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
 
     private fun gotoCallingFragment() {
         when (mainActivity.mainViewModel.getCallingFragment()) {
-
             FRAG_WORK_ORDER_HISTORY_ADD -> {
                 gotoWorkOrderHistoryAddFragment()
             }

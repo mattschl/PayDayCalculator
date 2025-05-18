@@ -15,7 +15,7 @@ import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.materials.MaterialViewFragmentDirections
 
 class MaterialViewAdapter(
-    private val mainActivity: MainActivity,
+    val mainActivity: MainActivity,
     private val mView: View,
     private val parentTag: String,
 ) : RecyclerView.Adapter<MaterialViewAdapter.MaterialViewHolder>() {

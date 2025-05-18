@@ -15,12 +15,15 @@ import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.IWorkOrderUpdateFragment
 
 class WorkOrderJobSpecAdapter(
-    private val mainActivity: MainActivity,
+    val mainActivity: MainActivity,
     private val workOrderUpdateFragment: IWorkOrderUpdateFragment,
     private val workOrder: WorkOrder,
     private val parentFragment: String,
     private val mView: View
 ) : RecyclerView.Adapter<WorkOrderJobSpecAdapter.ViewHolder>() {
+
+    private val mainViewModel = mainActivity.mainViewModel
+    private val workOrderViewModel = mainActivity.workOrderViewModel
 
 //    private val df = DateFunctions()
 
@@ -48,7 +51,6 @@ class WorkOrderJobSpecAdapter(
                         oldItem.area?.areaId == newItem.area?.areaId &&
                         oldItem.area?.areaName == newItem.area?.areaName
             }
-
         }
 
     val differ = AsyncListDiffer(this, differCallBack)
@@ -136,7 +138,7 @@ class WorkOrderJobSpecAdapter(
     }
 
     private fun gotoJobSpecUpdate(workOrderJobSpecId: Long) {
-        mainActivity.mainViewModel.apply {
+        mainViewModel.apply {
             setWorkOrderJobSpecId(workOrderJobSpecId)
             setWorkOrder(workOrder)
         }
@@ -144,13 +146,11 @@ class WorkOrderJobSpecAdapter(
     }
 
     private fun removeJobSpecFromWorkOrder(woJobSpec: WorkOrderJobSpecCombined) {
-        mainActivity.workOrderViewModel.deleteWorkOrderJobSpec(
-            woJobSpec.workOrderJobSpec.workOrderJobSpecId
-        )
+        workOrderViewModel.deleteWorkOrderJobSpec(woJobSpec.workOrderJobSpec.workOrderJobSpecId)
     }
 
     private fun editJobSpec(woJobSpec: WorkOrderJobSpecCombined) {
-        mainActivity.mainViewModel.apply {
+        mainViewModel.apply {
             setJobSpec(woJobSpec.jobSpec)
             addCallingFragment(parentFragment)
         }
@@ -158,7 +158,7 @@ class WorkOrderJobSpecAdapter(
     }
 
     private fun editArea(areaId: Long) {
-        mainActivity.mainViewModel.apply {
+        mainViewModel.apply {
             setAreaId(areaId)
             addCallingFragment(parentFragment)
         }
