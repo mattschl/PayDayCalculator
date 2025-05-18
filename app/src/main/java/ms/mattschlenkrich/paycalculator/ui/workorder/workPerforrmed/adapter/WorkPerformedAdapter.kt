@@ -4,20 +4,23 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
 import ms.mattschlenkrich.paycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.workorder.workPerforrmed.WorkPerformedViewFragmentDirections
+import ms.mattschlenkrich.paycalculator.ui.workorder.workPerforrmed.WorkPerformedViewFragment
 
 class WorkPerformedAdapter(
-    private val mainActivity: MainActivity,
+    val mainActivity: MainActivity,
     private val mView: View,
     private val parentTag: String,
+    private val workPerformedViewFragment: WorkPerformedViewFragment
 ) : RecyclerView.Adapter<WorkPerformedAdapter.WorkPerformedViewHolder>() {
+
+    private val mainViewModel = mainActivity.mainViewModel
 
     class WorkPerformedViewHolder(val itemBinding: ListSingleItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -57,7 +60,7 @@ class WorkPerformedAdapter(
         holder.itemBinding.apply {
             var display = workPerformed.wpDescription
             if (workPerformed.wpIsDeleted) {
-                display += " *DELETED*"
+                display += mView.context.getString(R.string._deleted_)
                 tvDisplay.setTextColor(Color.RED)
             } else {
                 tvDisplay.setTextColor(Color.BLACK)
@@ -70,18 +73,11 @@ class WorkPerformedAdapter(
     }
 
     private fun gotoWorkPerformedUpdate(workPerformedId: Long) {
-        mainActivity.mainViewModel.setCallingFragment(parentTag)
-        mainActivity.mainViewModel.setWorkPerformedId(workPerformedId)
-        gotoWorkPerformedUpdateFragment()
+        mainViewModel.apply {
+            setCallingFragment(parentTag)
+            setWorkPerformedId(workPerformedId)
+        }
+        workPerformedViewFragment.gotoWorkPerformedUpdateFragment()
 
     }
-
-    private fun gotoWorkPerformedUpdateFragment() {
-        mView.findNavController().navigate(
-            WorkPerformedViewFragmentDirections
-                .actionWorkPerformedViewFragmentToWorkPerformedUpdateFragment()
-        )
-    }
-
-
 }

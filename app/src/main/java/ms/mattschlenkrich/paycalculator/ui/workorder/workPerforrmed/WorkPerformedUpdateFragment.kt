@@ -14,6 +14,8 @@ import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_PERFORMED_VIEW
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
+import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentSingleItemUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
@@ -25,6 +27,8 @@ class WorkPerformedUpdateFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var workOrderViewModel: WorkOrderViewModel
     private val df = DateFunctions()
     private val workPerformedList = ArrayList<WorkPerformed>()
     private lateinit var oldWorkPerformed: WorkPerformed
@@ -38,6 +42,8 @@ class WorkPerformedUpdateFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        workOrderViewModel = mainActivity.workOrderViewModel
         mainActivity.title = getString(R.string.update_work_performed_description)
         return mView
     }
@@ -48,30 +54,26 @@ class WorkPerformedUpdateFragment :
         setClickActions()
     }
 
-
     private fun setValues() {
         populateWorkPerformedListForValidation()
-        if (mainActivity.mainViewModel.getWorkPerformedId() != null) {
-            mainActivity.workOrderViewModel.getWorkPerformed(
-                mainActivity.mainViewModel.getWorkPerformedId()!!
-            ).observe(viewLifecycleOwner) { work ->
-                oldWorkPerformed = work
-                binding.apply {
-                    val display =
-                        getString(R.string.update_work_description_) +
-                                oldWorkPerformed.wpDescription
-                    tvTitle.text = display
-                    etItem.setText(oldWorkPerformed.wpDescription)
+        if (mainViewModel.getWorkPerformedId() != null) {
+            workOrderViewModel.getWorkPerformed(mainViewModel.getWorkPerformedId()!!)
+                .observe(viewLifecycleOwner) { work ->
+                    oldWorkPerformed = work
+                    binding.apply {
+                        val display =
+                            getString(R.string.update_work_description_) +
+                                    oldWorkPerformed.wpDescription
+                        tvTitle.text = display
+                        etItem.setText(oldWorkPerformed.wpDescription)
+                    }
                 }
-            }
 
         }
     }
 
     private fun populateWorkPerformedListForValidation() {
-        mainActivity.workOrderViewModel.getWorkPerformedAll().observe(
-            viewLifecycleOwner
-        ) { list ->
+        workOrderViewModel.getWorkPerformedAll().observe(viewLifecycleOwner) { list ->
             workPerformedList.clear()
             for (workPerformed in list.listIterator()) {
                 workPerformedList.add(workPerformed)
@@ -81,12 +83,8 @@ class WorkPerformedUpdateFragment :
 
     private fun setClickActions() {
         binding.apply {
-            btnUpdate.setOnClickListener {
-                updateWorkPerformedIfValid()
-            }
-            btnCancel.setOnClickListener {
-                gotoCallingFragment()
-            }
+            btnUpdate.setOnClickListener { updateWorkPerformedIfValid() }
+            btnCancel.setOnClickListener { gotoCallingFragment() }
         }
     }
 
@@ -100,11 +98,7 @@ class WorkPerformedUpdateFragment :
     }
 
     private fun displayError(answer: String) {
-        Toast.makeText(
-            mView.context,
-            getString(R.string.error_) + answer,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, getString(R.string.error_) + answer, Toast.LENGTH_LONG).show()
     }
 
     private fun validateWorkPerformed(): String {
@@ -127,7 +121,7 @@ class WorkPerformedUpdateFragment :
 
     private fun updateWorkPerformed() {
         try {
-            mainActivity.workOrderViewModel.updateWorkPerformed(
+            workOrderViewModel.updateWorkPerformed(
                 WorkPerformed(
                     oldWorkPerformed.workPerformedId,
                     binding.etItem.text.toString().trim(),
@@ -149,8 +143,8 @@ class WorkPerformedUpdateFragment :
     }
 
     private fun gotoCallingFragment() {
-        mainActivity.mainViewModel.setWorkPerformedId(null)
-        if (mainActivity.mainViewModel.getCallingFragment()!!.contains(
+        mainViewModel.setWorkPerformedId(null)
+        if (mainViewModel.getCallingFragment()!!.contains(
                 FRAG_WORK_PERFORMED_VIEW
             )
         ) {

@@ -12,9 +12,11 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_PERFORMED_VIEW
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentRecyclerViewBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.workPerforrmed.adapter.WorkPerformedAdapter
@@ -30,6 +32,7 @@ class WorkPerformedViewFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var workOrderViewModel: WorkOrderViewModel
     private var workPerformedAdapter: WorkPerformedAdapter? = null
 
     override fun onCreateView(
@@ -42,6 +45,7 @@ class WorkPerformedViewFragment :
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        workOrderViewModel = mainActivity.workOrderViewModel
         mainActivity.title = getString(R.string.view_work_performed_list)
         return mView
     }
@@ -64,7 +68,7 @@ class WorkPerformedViewFragment :
 
     private fun populateWorkPerformedList() {
         workPerformedAdapter = WorkPerformedAdapter(
-            mainActivity, mView, TAG
+            mainActivity, mView, TAG, this@WorkPerformedViewFragment
         )
         binding.rvRecycler.apply {
             layoutManager = StaggeredGridLayoutManager(
@@ -74,13 +78,11 @@ class WorkPerformedViewFragment :
             setHasFixedSize(true)
             adapter = workPerformedAdapter
         }
-        activity?.let {
-            mainActivity.workOrderViewModel.getWorkPerformedAll().observe(
-                viewLifecycleOwner
-            ) { workPerformedList ->
-                workPerformedAdapter!!.differ.submitList(workPerformedList)
-                updateUI(workPerformedList)
-            }
+        workOrderViewModel.getWorkPerformedAll().observe(
+            viewLifecycleOwner
+        ) { workPerformedList ->
+            workPerformedAdapter!!.differ.submitList(workPerformedList)
+            updateUI(workPerformedList)
         }
     }
 
@@ -122,7 +124,7 @@ class WorkPerformedViewFragment :
     private fun searchWorkPerformed(query: String) {
         if (workPerformedAdapter != null) {
             val searchQuery = "%$query%"
-            mainActivity.workOrderViewModel.searchFromWorkPerformed(
+            workOrderViewModel.searchFromWorkPerformed(
                 searchQuery
             ).observe(viewLifecycleOwner) { list ->
                 workPerformedAdapter!!.differ.submitList(list)
@@ -130,6 +132,13 @@ class WorkPerformedViewFragment :
 
             }
         }
+    }
+
+    fun gotoWorkPerformedUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkPerformedViewFragmentDirections
+                .actionWorkPerformedViewFragmentToWorkPerformedUpdateFragment()
+        )
     }
 
     override fun onDestroy() {
