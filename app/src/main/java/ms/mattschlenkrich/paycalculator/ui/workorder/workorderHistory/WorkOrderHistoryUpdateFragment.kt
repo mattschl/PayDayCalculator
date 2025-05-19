@@ -327,9 +327,7 @@ class WorkOrderHistoryUpdateFragment :
             this@WorkOrderHistoryUpdateFragment,
         )
         binding.rvWorkPerformed.apply {
-            layoutManager = LinearLayoutManager(
-                mView.context
-            )
+            layoutManager = LinearLayoutManager(mView.context)
             adapter = workPerformedAdapter
         }
         workPerformedAdapter.differ.submitList(

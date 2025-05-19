@@ -107,10 +107,8 @@ class WorkPerformedUpdateFragment :
                 return getString(R.string.please_enter_a_valid_work_performed_description)
             }
             for (workPerformed in workPerformedList) {
-                if (workPerformed.wpDescription ==
-                    etItem.text.toString().trim() &&
-                    etItem.text.toString().trim() !=
-                    oldWorkPerformed.wpDescription
+                if (workPerformed.wpDescription == etItem.text.toString().trim() &&
+                    etItem.text.toString().trim() != oldWorkPerformed.wpDescription
                 ) {
                     return getString(R.string.this_work_performed_description_already_exists)
                 }

@@ -228,8 +228,7 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
             CoroutineScope(Dispatchers.Main).launch {
                 if (acWorkPerformed.text.isNullOrBlank()) {
                     displayMessage(
-                        getString(R.string.error_) +
-                                getString(R.string.please_enter_a_valid_work_performed_description)
+                        getString(R.string.error_) + getString(R.string.please_enter_a_valid_work_performed_description)
                     )
                 } else {
                     val workPerformed = async {
@@ -247,15 +246,11 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
                         } else if (acArea.text.isNullOrBlank()) {
                             null
                         } else {
-                            insertAreaIntoDb(
-                                acArea.text.toString().trim()
-                            )
+                            insertAreaIntoDb(acArea.text.toString().trim())
                         }
                     }
                     val combinedWorkPerformedIsUnique = async {
-                        isCombinedWorkPerformedUnique(
-                            workPerformed.await()!!, area.await()
-                        )
+                        isCombinedWorkPerformedUnique(workPerformed.await()!!, area.await())
                     }
                     if (combinedWorkPerformedIsUnique.await()) {
                         updateWorkHistory(
@@ -278,8 +273,10 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
         workPerformed: WorkPerformed, area: Areas?
     ): Boolean {
         for (combinedWorkPerformed in historyWorkPerformedCombinedList) {
-            if (workPerformed.workPerformedId == combinedWorkPerformed.workPerformed.workPerformedId &&
-                area?.areaId == combinedWorkPerformed.area?.areaId
+            if (workPerformed.workPerformedId ==
+                combinedWorkPerformed.workPerformed.workPerformedId &&
+                area?.areaId == combinedWorkPerformed.area?.areaId &&
+                combinedWorkPerformed != originalWorkPerformedHistory
             ) {
                 return false
             }
