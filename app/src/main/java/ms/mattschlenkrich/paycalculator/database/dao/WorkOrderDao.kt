@@ -92,8 +92,7 @@ interface WorkOrderDao {
                 "OR woAddress LIKE :query) " +
                 "ORDER BY woNumber"
     )
-    fun searchWorkOrders(employerId: Long, query: String):
-            LiveData<List<WorkOrder>>
+    fun searchWorkOrders(employerId: Long, query: String): LiveData<List<WorkOrder>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkOrderHistory(history: WorkOrderHistory)
@@ -174,15 +173,21 @@ interface WorkOrderDao {
     )
     fun getWorkOrderHistory(historyID: Long): LiveData<WorkOrderHistoryWithDates>
 
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT * FROM workOrderHistory " +
+                "WHERE woHistoryId = :historyID"
+    )
+    fun getWorkOrderHistoryCombinedById(historyID: Long): WorkOrderHistoryWithDates
+
     @Query(
         "UPDATE workOrderHistory " +
                 "SET woHistoryDeleted = 1, " +
                 "woHistoryUpdateTime = :updateTime " +
                 "WHERE woHistoryWorkDateId = :workDateId"
     )
-    suspend fun deleteWorkOrderHistoryByWorkDateId(
-        workDateId: Long, updateTime: String
-    )
+    suspend fun deleteWorkOrderHistoryByWorkDateId(workDateId: Long, updateTime: String)
 
     @Insert
     suspend fun insertJobSpec(jobSpec: JobSpec)
@@ -216,9 +221,7 @@ interface WorkOrderDao {
                 "wojsUpdateTime = :updateTime " +
                 "WHERE workOrderJobSpecId = :workOrderJobSpecId"
     )
-    suspend fun deleteWorkOrderJobSpec(
-        workOrderJobSpecId: Long, updateTime: String
-    )
+    suspend fun deleteWorkOrderJobSpec(workOrderJobSpecId: Long, updateTime: String)
 
     @Query(
         "DELETE FROM workOrderJobSpecs " +
@@ -235,8 +238,7 @@ interface WorkOrderDao {
                 "ORDER BY wojsSequence, " +
                 "wojsUpdateTime"
     )
-    fun getWorkOrderJobSpecs(workOrderId: Long):
-            LiveData<List<WorkOrderJobSpecCombined>>
+    fun getWorkOrderJobSpecs(workOrderId: Long): LiveData<List<WorkOrderJobSpecCombined>>
 
     @RewriteQueriesToDropUnusedColumns
     @Transaction
@@ -300,9 +302,7 @@ interface WorkOrderDao {
         "DELETE FROM workOrderHistoryWorkPerformed  " +
                 "WHERE wowpHistoryId = :historyId"
     )
-    suspend fun removeAllWorkPerformedFromWorkOrderHistory(
-        historyId: Long
-    )
+    suspend fun removeAllWorkPerformedFromWorkOrderHistory(historyId: Long)
 
     @Query(
         "DELETE FROM workOrderHistoryWorkPerformed " +
@@ -381,9 +381,7 @@ interface WorkOrderDao {
                 "WHERE workOrderHistoryMaterialId = " +
                 ":workOrderHistoryMaterialId"
     )
-    suspend fun removeWorkOrderHistoryMaterial(
-        workOrderHistoryMaterialId: Long
-    )
+    suspend fun removeWorkOrderHistoryMaterial(workOrderHistoryMaterialId: Long)
 
     @Update
     suspend fun updateWorkOrderHistoryMaterial(
@@ -396,9 +394,7 @@ interface WorkOrderDao {
                 "wohmUpdateTime = :updateTime " +
                 "WHERE workOrderHistoryMaterialId = :historyMaterialId"
     )
-    suspend fun deleteWorkOrderHistoryMaterial(
-        historyMaterialId: Long, updateTime: String
-    )
+    suspend fun deleteWorkOrderHistoryMaterial(historyMaterialId: Long, updateTime: String)
 
     @RewriteQueriesToDropUnusedColumns
     @Transaction
@@ -408,8 +404,19 @@ interface WorkOrderDao {
                 "AND wohmIsDeleted = 0 " +
                 "ORDER BY wohmUpdateTime"
     )
-    fun getMaterialsByHistory(historyId: Long):
-            LiveData<List<WorkOrderHistoryMaterialCombined>>
+    fun getMaterialsByHistory(historyId: Long): LiveData<List<WorkOrderHistoryMaterialCombined>>
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT * FROM Materials " +
+                "INNER JOIN " +
+                "(SELECT wohmMaterialId FROM workOrderHistoryMaterials " +
+                "WHERE wohmHistoryId = :historyId " +
+                "AND wohmIsDeleted = 0 ) " +
+                "ON wohmMaterialId = materialId"
+    )
+    fun getMaterialsFromHistoryId(historyId: Long): List<Material>
 
     @RewriteQueriesToDropUnusedColumns
     @Transaction
@@ -422,10 +429,24 @@ interface WorkOrderDao {
                 "ORDER BY woHistoryUpdateTime) " +
                 "ON woHistoryId = wohmHistoryId " +
                 "WHERE wohmIsDeleted = 0 " +
-                "ORDER By wohmMaterialId"
+                "ORDER By wohmSequence"
     )
     fun getMaterialsHistoryByWorkOrderId(workOrderId: Long):
             LiveData<List<WorkOrderHistoryMaterialCombined>>
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT * FROM workOrderHistory " +
+                "INNER JOIN " +
+                "(SELECT * FROM workOrderHistoryMaterials " +
+                "WHERE workOrderHistoryMaterialId = :woHistoryMaterialId " +
+                "AND wohmIsDeleted = 0) " +
+                "ON woHistoryId = wohmHistoryId " +
+                "WHERE woHistoryDeleted = 0"
+    )
+    fun getWorkOrderHistoryMaterialCombined(woHistoryMaterialId: Long):
+            WorkOrderHistoryMaterialCombined
 
     @Insert
     suspend fun insertArea(area: Areas)

@@ -28,8 +28,6 @@ class MainViewModel(
     private var taxType: TaxTypes? = null
     private var taxTypeString: String? = null
     private var taxRule: WorkTaxRules? = null
-
-    //    private var effectiveDate: TaxEffectiveDates? = null
     private var effectiveDateString: String? = null
     private var taxLevel: Int? = null
     private var callingFragment: String? = null

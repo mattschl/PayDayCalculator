@@ -103,7 +103,7 @@ class WorkOrderHistoryUpdateFragment :
 
     private fun populateInitialValues() {
         CoroutineScope(Dispatchers.Main).launch {
-            removeFragmentReferenceFromHistory()
+            removeFragmentReferenceFromBackStack()
             populateWorkPerformedListForAutoComplete()
             populateMaterialListForAutoComplete()
             populateAreaListForAutoComplete()
@@ -125,7 +125,7 @@ class WorkOrderHistoryUpdateFragment :
         }
     }
 
-    private fun removeFragmentReferenceFromHistory() {
+    private fun removeFragmentReferenceFromBackStack() {
         mainViewModel.removeCallingFragment(TAG)
     }
 
@@ -364,6 +364,7 @@ class WorkOrderHistoryUpdateFragment :
         val materialAdapter = WorkOrderHistoryMaterialAdapter(
             mainActivity,
             mView,
+            TAG,
             this@WorkOrderHistoryUpdateFragment
         )
         binding.rvMaterials.apply {
@@ -517,7 +518,8 @@ class WorkOrderHistoryUpdateFragment :
     private fun setCurMaterial(): Boolean {
         binding.apply {
             for (material in materialListForAutoComplete) {
-                if (acMaterials.text.toString() == material.mName && !acMaterials.text.isNullOrBlank()
+                if (acMaterials.text.toString() == material.mName &&
+                    !acMaterials.text.isNullOrBlank()
                 ) {
                     curMaterial = material
                     return true
@@ -901,6 +903,27 @@ class WorkOrderHistoryUpdateFragment :
         mView.findNavController().navigate(
             WorkOrderHistoryUpdateFragmentDirections
                 .actionWorkOrderHistoryUpdateFragmentToWorkPerformedUpdateFragment()
+        )
+    }
+
+    override fun gotoMaterialUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkOrderHistoryUpdateFragmentDirections
+                .actionWorkOrderHistoryUpdateFragmentToMaterialUpdateFragment()
+        )
+    }
+
+    override fun gotoMaterialQuantityUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkOrderHistoryUpdateFragmentDirections
+                .actionWorkOrderHistoryUpdateFragmentToMaterialQuantityUpdateFragment()
+        )
+    }
+
+    override fun gotoWorkOrderHistoryMaterialUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkOrderHistoryUpdateFragmentDirections
+                .actionWorkOrderHistoryUpdateFragmentToWorkOrderHistoryMaterialUpdateFragment()
         )
     }
 

@@ -156,7 +156,7 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
     private suspend fun populateUI() =
         withContext(Dispatchers.Main) {
             binding.apply {
-                var display = getString(R.string.edit_work_performed_on) +
+                var display = getString(R.string.update_work_performed_on) +
                         "${originalWorkOrderHistory.workDate.wdDate}\n" +
                         getString(R.string.for_work_order) +
                         "${originalWorkOrderHistory.workOrder.woNumber} @ " +
