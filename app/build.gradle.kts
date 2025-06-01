@@ -73,7 +73,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
-    implementation("org.mockito:mockito-core:5.17.0")
+    implementation("org.mockito:mockito-core:5.18.0")
     implementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
     implementation("io.mockk:mockk:1.14.2")
     testImplementation("junit:junit:4.13.2")
