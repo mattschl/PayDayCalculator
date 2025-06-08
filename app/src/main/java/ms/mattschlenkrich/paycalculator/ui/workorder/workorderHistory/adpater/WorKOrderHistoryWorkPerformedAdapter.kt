@@ -43,11 +43,7 @@ class WorKOrderHistoryWorkPerformedAdapter(
                 oldItem: WorkOrderHistoryWorkPerformedCombined,
                 newItem: WorkOrderHistoryWorkPerformedCombined
             ): Boolean {
-                return oldItem.workPerformed.workPerformedId == newItem.workPerformed.workPerformedId &&
-                        oldItem.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId ==
-                        newItem.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId &&
-                        oldItem.area == newItem.area &&
-                        oldItem.workOrderHistoryWorkPerformed.wowpNote == newItem.workOrderHistoryWorkPerformed.wowpNote
+                return oldItem.workPerformed.workPerformedId == newItem.workPerformed.workPerformedId && oldItem.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId == newItem.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId && oldItem.area == newItem.area && oldItem.workOrderHistoryWorkPerformed.wowpNote == newItem.workOrderHistoryWorkPerformed.wowpNote
             }
         }
 
@@ -56,8 +52,7 @@ class WorKOrderHistoryWorkPerformedAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             ListSingleItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent, false
+                LayoutInflater.from(parent.context), parent, false
             )
         )
     }
@@ -69,8 +64,7 @@ class WorKOrderHistoryWorkPerformedAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val work = differ.currentList[position]
         holder.itemBinding.apply {
-            var display = "${position + 1}) " +
-                    work.workPerformed.wpDescription
+            var display = "${position + 1}) " + work.workPerformed.wpDescription
             display += if (work.area == null) {
                 ""
             } else {
@@ -89,48 +83,42 @@ class WorKOrderHistoryWorkPerformedAdapter(
     }
 
     private fun chooseOptions(work: WorkOrderHistoryWorkPerformedCombined, display: String) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                mView.context.getString(R.string.choose_option_for) + display
+        AlertDialog.Builder(mView.context).setTitle(
+            mView.context.getString(R.string.choose_option_for) + display
+        ).setItems(
+            arrayOf(
+                mView.context.getString(R.string.edit_the_work_performed_description_in_the_history),
+                mView.context.getString(R.string.remove_this_work_performed_description_in_the_history),
+                mView.context.getString(R.string.edit_work_description_of_) + " \" ${work.workPerformed.wpDescription} \"",
+                if (work.area != null) {
+                    mView.context.getString(R.string.edit_area_description_of_) + " \" ${work.area.areaName} \""
+                } else {
+                    ""
+                }
             )
-            .setItems(
-                arrayOf(
-                    mView.context.getString(R.string.edit_the_work_performed_description_in_the_history),
-                    mView.context.getString(R.string.remove_this_work_performed_description_in_the_history),
-                    mView.context.getString(R.string.edit_work_description_of_) +
-                            " \" ${work.workPerformed.wpDescription} \"",
-                    if (work.area != null) {
-                        mView.context.getString(R.string.edit_area_description_of_) +
-                                " \" ${work.area.areaName} \""
-                    } else {
-                        ""
-                    }
-                )
-            ) { _, pos ->
-                when (pos) {
-                    0 -> {
-                        gotoWorkPerformedHistoryEdit(
-                            work.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId
-                        )
-                    }
+        ) { _, pos ->
+            when (pos) {
+                0 -> {
+                    gotoWorkPerformedHistoryEdit(
+                        work.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId
+                    )
+                }
 
-                    1 -> {
-                        removeWorkPerformedFromWorkOrder(
-                            work.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId
-                        )
-                    }
+                1 -> {
+                    removeWorkPerformedFromWorkOrder(
+                        work.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId
+                    )
+                }
 
-                    2 -> {
-                        editWorkPerformed(work.workOrderHistoryWorkPerformed.wowpWorkPerformedId)
-                    }
+                2 -> {
+                    editWorkPerformed(work.workOrderHistoryWorkPerformed.wowpWorkPerformedId)
+                }
 
-                    3 -> {
-                        editArea(work.workOrderHistoryWorkPerformed.wowpAreaId!!)
-                    }
+                3 -> {
+                    editArea(work.workOrderHistoryWorkPerformed.wowpAreaId!!)
                 }
             }
-            .setNegativeButton(mView.context.getString(R.string.cancel), null)
-            .show()
+        }.setNegativeButton(mView.context.getString(R.string.cancel), null).show()
     }
 
     private fun editArea(areaId: Long) {

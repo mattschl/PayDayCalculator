@@ -31,35 +31,26 @@ class WorkOrderHistoryMaterialAdapter(
         val itemBinding: ListSingleItemBinding
     ) : RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallback =
-        object : DiffUtil.ItemCallback<MaterialInSequence>() {
-            override fun areItemsTheSame(
-                oldItem: MaterialInSequence,
-                newItem: MaterialInSequence
-            ): Boolean {
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(
-                oldItem: MaterialInSequence,
-                newItem: MaterialInSequence
-            ): Boolean {
-                return oldItem.workOrderHistoryMaterialId == newItem.workOrderHistoryMaterialId &&
-                        oldItem.workOrderHistoryId == newItem.workOrderHistoryId &&
-                        oldItem.materialId == newItem.materialId &&
-                        oldItem.mName == newItem.mName &&
-                        oldItem.mQty == newItem.mQty &&
-                        oldItem.mSequence == newItem.mSequence
-            }
-
+    private val differCallback = object : DiffUtil.ItemCallback<MaterialInSequence>() {
+        override fun areItemsTheSame(
+            oldItem: MaterialInSequence, newItem: MaterialInSequence
+        ): Boolean {
+            return oldItem == newItem
         }
+
+        override fun areContentsTheSame(
+            oldItem: MaterialInSequence, newItem: MaterialInSequence
+        ): Boolean {
+            return oldItem.workOrderHistoryMaterialId == newItem.workOrderHistoryMaterialId && oldItem.workOrderHistoryId == newItem.workOrderHistoryId && oldItem.materialId == newItem.materialId && oldItem.mName == newItem.mName && oldItem.mQty == newItem.mQty && oldItem.mSequence == newItem.mSequence
+        }
+
+    }
     val differ = AsyncListDiffer(this, differCallback)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             ListSingleItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent, false
+                LayoutInflater.from(parent.context), parent, false
             )
         )
     }
@@ -71,8 +62,7 @@ class WorkOrderHistoryMaterialAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val material = differ.currentList[position]
         holder.itemBinding.apply {
-            val display = "${nf.getNumberFromDouble(material.mQty)} -  " +
-                    material.mName
+            val display = "${nf.getNumberFromDouble(material.mQty)} -  " + material.mName
             tvDisplay.text = display
         }
         holder.itemView.setOnClickListener {
@@ -81,41 +71,38 @@ class WorkOrderHistoryMaterialAdapter(
     }
 
     private fun chooseOptions(material: MaterialInSequence) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                mView.context.getString(R.string.choose_option_for) +
-                        material.mName
+        AlertDialog.Builder(mView.context).setTitle(
+            mView.context.getString(R.string.choose_option_for) + material.mName
+        ).setItems(
+            arrayOf(
+                mView.context.getString(R.string.update_this_material_or_quantity_for_this_history),
+                mView.context.getString(R.string.change_the_quantity),
+                mView.context.getString(R.string.edit_the_material_in_the_database),
+                mView.context.getString(R.string.remove_this_item),
+                mView.context.getString(R.string.cancel)
             )
-            .setItems(
-                arrayOf(
-                    mView.context.getString(R.string.update_this_material_or_quantity_for_this_history),
-                    mView.context.getString(R.string.change_the_quantity),
-                    mView.context.getString(R.string.edit_the_material_in_the_database),
-                    mView.context.getString(R.string.remove_this_item),
-                    mView.context.getString(R.string.cancel)
-                )
-            ) { _, pos ->
-                when (pos) {
-                    0 -> {
-                        updateMaterialInHistory(material)
-                    }
-
-                    1 -> {
-                        changeQuantity(material)
-                    }
-
-                    2 -> {
-                        editMaterial(material)
-                    }
-
-                    3 -> {
-                        removeMaterialFromHistory(material)
-                    }
-
-                    else -> { //No action
-                    }
+        ) { _, pos ->
+            when (pos) {
+                0 -> {
+                    updateMaterialInHistory(material)
                 }
-            }.show()
+
+                1 -> {
+                    changeQuantity(material)
+                }
+
+                2 -> {
+                    editMaterial(material)
+                }
+
+                3 -> {
+                    removeMaterialFromHistory(material)
+                }
+
+                else -> { //No action
+                }
+            }
+        }.show()
 
     }
 

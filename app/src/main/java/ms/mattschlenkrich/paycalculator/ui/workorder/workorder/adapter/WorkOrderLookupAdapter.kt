@@ -30,25 +30,22 @@ class WorkOrderLookupAdapter(
         val itemBinding: ListWorkOrderItemBinding
     ) : RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<WorkOrder>() {
-            override fun areItemsTheSame(oldItem: WorkOrder, newItem: WorkOrder): Boolean {
-                return oldItem.workOrderId == newItem.workOrderId &&
-                        oldItem.woNumber == newItem.woNumber
-            }
-
-            override fun areContentsTheSame(oldItem: WorkOrder, newItem: WorkOrder): Boolean {
-                return oldItem == newItem
-            }
+    private val differCallBack = object : DiffUtil.ItemCallback<WorkOrder>() {
+        override fun areItemsTheSame(oldItem: WorkOrder, newItem: WorkOrder): Boolean {
+            return oldItem.workOrderId == newItem.workOrderId && oldItem.woNumber == newItem.woNumber
         }
+
+        override fun areContentsTheSame(oldItem: WorkOrder, newItem: WorkOrder): Boolean {
+            return oldItem == newItem
+        }
+    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             ListWorkOrderItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent, false
+                LayoutInflater.from(parent.context), parent, false
             )
         )
     }
@@ -64,21 +61,15 @@ class WorkOrderLookupAdapter(
     }
 
     private fun chooseOptions(workOrder: WorkOrder) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                mView.context.getString(R.string.choose) +
-                        workOrder.woNumber
-            )
-            .setMessage(
-                mView.context.getString(R.string.would_you_like_to_use_this_work_order) + mView.context.getString(
-                    R.string.line_break
-                ) + workOrder.woDescription
-            )
-            .setPositiveButton(mView.context.getString(R.string.yes)) { _, _ ->
-                chooseThisWorkOrder(workOrder)
-            }
-            .setNegativeButton(mView.context.getString(R.string.cancel), null)
-            .show()
+        AlertDialog.Builder(mView.context).setTitle(
+            mView.context.getString(R.string.choose) + workOrder.woNumber
+        ).setMessage(
+            mView.context.getString(R.string.would_you_like_to_use_this_work_order) + mView.context.getString(
+                R.string.line_break
+            ) + workOrder.woDescription
+        ).setPositiveButton(mView.context.getString(R.string.yes)) { _, _ ->
+            chooseThisWorkOrder(workOrder)
+        }.setNegativeButton(mView.context.getString(R.string.cancel), null).show()
     }
 
     private fun chooseThisWorkOrder(workOrder: WorkOrder) {
@@ -113,12 +104,10 @@ class WorkOrderLookupAdapter(
 
     private fun gotoCallingFragment() {
         val callingFragment = mainViewModel.getCallingFragment()!!
-        if (callingFragment.contains(FRAG_WORK_ORDER_HISTORY_UPDATE)
-        ) {
+        if (callingFragment.contains(FRAG_WORK_ORDER_HISTORY_UPDATE)) {
             gotoWorkOrderHistoryUpdate()
         }
-        if (callingFragment.contains(FRAG_WORK_ORDER_HISTORY_ADD)
-        ) {
+        if (callingFragment.contains(FRAG_WORK_ORDER_HISTORY_ADD)) {
             gotoWorkOrderAdd()
         }
     }

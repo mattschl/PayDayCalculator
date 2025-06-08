@@ -25,18 +25,16 @@ class JobSpecAdapter(
     class JobSpecViewHolder(val itemBinding: ListSingleItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<JobSpec>() {
-            override fun areItemsTheSame(oldItem: JobSpec, newItem: JobSpec): Boolean {
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(oldItem: JobSpec, newItem: JobSpec): Boolean {
-                return oldItem.jobSpecId == newItem.jobSpecId &&
-                        oldItem.jsName == newItem.jsName
-            }
-
+    private val differCallBack = object : DiffUtil.ItemCallback<JobSpec>() {
+        override fun areItemsTheSame(oldItem: JobSpec, newItem: JobSpec): Boolean {
+            return oldItem == newItem
         }
+
+        override fun areContentsTheSame(oldItem: JobSpec, newItem: JobSpec): Boolean {
+            return oldItem.jobSpecId == newItem.jobSpecId && oldItem.jsName == newItem.jsName
+        }
+
+    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 
@@ -79,8 +77,7 @@ class JobSpecAdapter(
 
     private fun gotoJobSpecUpdateFragment() {
         mView.findNavController().navigate(
-            JobSpecViewFragmentDirections
-                .actionJobSpecViewFragmentToJobSpecUpdateFragment()
+            JobSpecViewFragmentDirections.actionJobSpecViewFragmentToJobSpecUpdateFragment()
         )
     }
 }

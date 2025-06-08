@@ -25,18 +25,16 @@ class MaterialViewAdapter(
     class MaterialViewHolder(val itemBinding: ListSingleItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<Material>() {
-            override fun areItemsTheSame(oldItem: Material, newItem: Material): Boolean {
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(oldItem: Material, newItem: Material): Boolean {
-                return oldItem.materialId == newItem.materialId &&
-                        oldItem.mName == newItem.mName
-            }
-
+    private val differCallBack = object : DiffUtil.ItemCallback<Material>() {
+        override fun areItemsTheSame(oldItem: Material, newItem: Material): Boolean {
+            return oldItem == newItem
         }
+
+        override fun areContentsTheSame(oldItem: Material, newItem: Material): Boolean {
+            return oldItem.materialId == newItem.materialId && oldItem.mName == newItem.mName
+        }
+
+    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 
@@ -79,8 +77,7 @@ class MaterialViewAdapter(
 
     private fun gotoMaterialUpdateFragment() {
         mView.findNavController().navigate(
-            MaterialViewFragmentDirections
-                .actionMaterialViewFragmentToMaterialUpdateFragment()
+            MaterialViewFragmentDirections.actionMaterialViewFragmentToMaterialUpdateFragment()
         )
     }
 }

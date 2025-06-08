@@ -244,11 +244,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupMainViewModel() {
-        val mainViewModelFactory =
-            MainViewModelFactory(application)
+        val mainViewModelFactory = MainViewModelFactory(application)
         mainViewModel = ViewModelProvider(
-            this,
-            mainViewModelFactory
+            this, mainViewModelFactory
         )[MainViewModel::class.java]
     }
 
@@ -257,11 +255,9 @@ class MainActivity : AppCompatActivity() {
         val payDayRepository = PayDayRepository(
             PayDatabase(this)
         )
-        val payDayViewModelFactory =
-            PayDayViewModelFactory(application, payDayRepository)
+        val payDayViewModelFactory = PayDayViewModelFactory(application, payDayRepository)
         payDayViewModel = ViewModelProvider(
-            this,
-            payDayViewModelFactory
+            this, payDayViewModelFactory
         )[PayDayViewModel::class.java]
     }
 
@@ -269,11 +265,9 @@ class MainActivity : AppCompatActivity() {
         val workExtraRepository = WorkExtraRepository(
             PayDatabase(this)
         )
-        val workExtraViewModelFactory =
-            WorkExtraViewModelFactory(application, workExtraRepository)
+        val workExtraViewModelFactory = WorkExtraViewModelFactory(application, workExtraRepository)
         workExtraViewModel = ViewModelProvider(
-            this,
-            workExtraViewModelFactory
+            this, workExtraViewModelFactory
         )[WorkExtraViewModel::class.java]
     }
 
@@ -281,8 +275,7 @@ class MainActivity : AppCompatActivity() {
         val employerRepository = EmployerRepository(
             PayDatabase(this)
         )
-        val employerViewModelFactory =
-            EmployerViewModelFactory(application, employerRepository)
+        val employerViewModelFactory = EmployerViewModelFactory(application, employerRepository)
         employerViewModel = ViewModelProvider(
             this, employerViewModelFactory
         )[EmployerViewModel::class.java]
@@ -290,36 +283,30 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupWorkTaxViewModel() {
         val workTaxRepository = WorkTaxRepository(PayDatabase(this))
-        val workTaxViewModelFactory =
-            WorkTaxViewModelFactory(application, workTaxRepository)
+        val workTaxViewModelFactory = WorkTaxViewModelFactory(application, workTaxRepository)
         workTaxViewModel = ViewModelProvider(
             this, workTaxViewModelFactory
         )[WorkTaxViewModel::class.java]
     }
 
     private fun setupWorkOrderViewModel() {
-        val workOrderRepository =
-            WorkOrderRepository(PayDatabase(this))
-        val workOrderViewModelFactory =
-            WorkOrderViewModelFactory(application, workOrderRepository)
+        val workOrderRepository = WorkOrderRepository(PayDatabase(this))
+        val workOrderViewModelFactory = WorkOrderViewModelFactory(application, workOrderRepository)
         workOrderViewModel = ViewModelProvider(
             this, workOrderViewModelFactory
         )[WorkOrderViewModel::class.java]
     }
 
     private fun setupPayDetailViewModel() {
-        val payDetailRepository =
-            PayDetailRepository(PayDatabase(this))
-        val payDetailViewModelFactory =
-            PayDetailViewModelFactory(application, payDetailRepository)
+        val payDetailRepository = PayDetailRepository(PayDatabase(this))
+        val payDetailViewModelFactory = PayDetailViewModelFactory(application, payDetailRepository)
         payDetailViewModel = ViewModelProvider(
             this, payDetailViewModelFactory
         )[PayDetailViewModel::class.java]
     }
 
     private fun setupPayCalculationsViewModel() {
-        val payCalculationsRepository =
-            PayCalculationsRepository(PayDatabase(this))
+        val payCalculationsRepository = PayCalculationsRepository(PayDatabase(this))
         val payCalculationsViewModelFactory =
             PayCalculationsViewModelFactory(application, payCalculationsRepository)
         payCalculationsViewModel = ViewModelProvider(

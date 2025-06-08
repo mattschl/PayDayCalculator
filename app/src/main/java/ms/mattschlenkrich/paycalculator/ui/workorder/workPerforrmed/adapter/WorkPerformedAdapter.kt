@@ -25,21 +25,18 @@ class WorkPerformedAdapter(
     class WorkPerformedViewHolder(val itemBinding: ListSingleItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<WorkPerformed>() {
-            override fun areItemsTheSame(oldItem: WorkPerformed, newItem: WorkPerformed): Boolean {
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(
-                oldItem: WorkPerformed,
-                newItem: WorkPerformed
-            ): Boolean {
-                return oldItem.workPerformedId == newItem.workPerformedId &&
-                        oldItem.wpDescription == newItem.wpDescription
-            }
-
+    private val differCallBack = object : DiffUtil.ItemCallback<WorkPerformed>() {
+        override fun areItemsTheSame(oldItem: WorkPerformed, newItem: WorkPerformed): Boolean {
+            return oldItem == newItem
         }
+
+        override fun areContentsTheSame(
+            oldItem: WorkPerformed, newItem: WorkPerformed
+        ): Boolean {
+            return oldItem.workPerformedId == newItem.workPerformedId && oldItem.wpDescription == newItem.wpDescription
+        }
+
+    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 

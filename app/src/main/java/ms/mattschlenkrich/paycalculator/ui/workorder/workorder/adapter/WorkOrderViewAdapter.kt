@@ -28,25 +28,22 @@ class WorkOrderViewAdapter(
         val itemBinding: ListWorkOrderItemBinding
     ) : RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<WorkOrder>() {
-            override fun areItemsTheSame(oldItem: WorkOrder, newItem: WorkOrder): Boolean {
-                return oldItem.workOrderId == newItem.workOrderId &&
-                        oldItem.woNumber == newItem.woNumber
-            }
-
-            override fun areContentsTheSame(oldItem: WorkOrder, newItem: WorkOrder): Boolean {
-                return oldItem == newItem
-            }
+    private val differCallBack = object : DiffUtil.ItemCallback<WorkOrder>() {
+        override fun areItemsTheSame(oldItem: WorkOrder, newItem: WorkOrder): Boolean {
+            return oldItem.workOrderId == newItem.workOrderId && oldItem.woNumber == newItem.woNumber
         }
+
+        override fun areContentsTheSame(oldItem: WorkOrder, newItem: WorkOrder): Boolean {
+            return oldItem == newItem
+        }
+    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             ListWorkOrderItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent, false
+                LayoutInflater.from(parent.context), parent, false
             )
         )
     }
@@ -64,20 +61,14 @@ class WorkOrderViewAdapter(
     }
 
     private fun chooseOptions(workOrder: WorkOrder) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                mView.context.getString(R.string.choose_option_for_wo) +
-                        workOrder.woNumber
-            )
-            .setMessage(
-                mView.context.getString(R.string.would_you_like_to_open_this_work_order_to_view_or_edit_it)
-            )
-            .setPositiveButton(mView.context.getString(R.string.open)) { _, _ ->
-                setWorkOrder(workOrder)
-                gotoWorkOrderUpdate()
-            }
-            .setNegativeButton(mView.context.getString(R.string.cancel), null)
-            .show()
+        AlertDialog.Builder(mView.context).setTitle(
+            mView.context.getString(R.string.choose_option_for_wo) + workOrder.woNumber
+        ).setMessage(
+            mView.context.getString(R.string.would_you_like_to_open_this_work_order_to_view_or_edit_it)
+        ).setPositiveButton(mView.context.getString(R.string.open)) { _, _ ->
+            setWorkOrder(workOrder)
+            gotoWorkOrderUpdate()
+        }.setNegativeButton(mView.context.getString(R.string.cancel), null).show()
     }
 
     private fun setWorkOrder(workOrder: WorkOrder) {

@@ -22,8 +22,7 @@ class StartFragment : Fragment(R.layout.fragment_start) {
     private lateinit var mainActivity: MainActivity
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentStartBinding.inflate(
             inflater, container, false

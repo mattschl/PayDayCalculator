@@ -25,17 +25,15 @@ class AreaViewAdapter(
     class AreaViewHolder(val itemBinding: ListSingleItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<Areas>() {
-            override fun areItemsTheSame(oldItem: Areas, newItem: Areas): Boolean {
-                return oldItem.areaId == newItem.areaId &&
-                        oldItem.areaName == newItem.areaName
-            }
-
-            override fun areContentsTheSame(oldItem: Areas, newItem: Areas): Boolean {
-                return oldItem == newItem
-            }
+    private val differCallBack = object : DiffUtil.ItemCallback<Areas>() {
+        override fun areItemsTheSame(oldItem: Areas, newItem: Areas): Boolean {
+            return oldItem.areaId == newItem.areaId && oldItem.areaName == newItem.areaName
         }
+
+        override fun areContentsTheSame(oldItem: Areas, newItem: Areas): Boolean {
+            return oldItem == newItem
+        }
+    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 
