@@ -44,17 +44,15 @@ class WorkDateAdapter(
     class WorkDateViewHolder(val itemBinding: ListWorkDateBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<WorkDates>() {
-            override fun areItemsTheSame(oldItem: WorkDates, newItem: WorkDates): Boolean {
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(oldItem: WorkDates, newItem: WorkDates): Boolean {
-                return oldItem.workDateId == newItem.workDateId &&
-                        oldItem.wdDate == newItem.wdDate
-            }
+    private val differCallBack = object : DiffUtil.ItemCallback<WorkDates>() {
+        override fun areItemsTheSame(oldItem: WorkDates, newItem: WorkDates): Boolean {
+            return oldItem == newItem
         }
+
+        override fun areContentsTheSame(oldItem: WorkDates, newItem: WorkDates): Boolean {
+            return oldItem.workDateId == newItem.workDateId && oldItem.wdDate == newItem.wdDate
+        }
+    }
     val differ = AsyncListDiffer(this, differCallBack)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkDateViewHolder {
         return WorkDateViewHolder(
@@ -84,25 +82,20 @@ class WorkDateAdapter(
             tvWorkDate.text = display
             display = ""
             if (workDate.wdRegHours > 0) {
-                display = nf.getNumberFromDouble(workDate.wdRegHours) +
-                        mView.context.getString(R.string.hrs)
+                display =
+                    nf.getNumberFromDouble(workDate.wdRegHours) + mView.context.getString(R.string.hrs)
             }
             if (workDate.wdOtHours > 0) {
-                if (display.isNotBlank()) display +=
-                    mView.context.getString(R.string.pipe)
-                display += nf.getNumberFromDouble(workDate.wdOtHours) +
-                        mView.context.getString(R.string.ot_hrs)
+                if (display.isNotBlank()) display += mView.context.getString(R.string.pipe)
+                display += nf.getNumberFromDouble(workDate.wdOtHours) + mView.context.getString(R.string.ot_hrs)
             }
             if (workDate.wdDblOtHours > 0) {
-                if (display.isNotBlank()) display +=
-                    mView.context.getString(R.string.pipe)
-                display += nf.getNumberFromDouble(workDate.wdDblOtHours) +
-                        mView.context.getString(R.string.dbl_ot_hrs)
+                if (display.isNotBlank()) display += mView.context.getString(R.string.pipe)
+                display += nf.getNumberFromDouble(workDate.wdDblOtHours) + mView.context.getString(R.string.dbl_ot_hrs)
             }
             if (workDate.wdStatHours > 0) {
                 if (display.isNotBlank()) display += " | "
-                display += nf.getNumberFromDouble(workDate.wdStatHours) +
-                        mView.context.getString(R.string.stat_vacation_hrs)
+                display += nf.getNumberFromDouble(workDate.wdStatHours) + mView.context.getString(R.string.stat_vacation_hrs)
             }
             if (!workDate.wdNote.isNullOrBlank()) {
                 if (display.isNotBlank()) display += " - "
@@ -132,49 +125,41 @@ class WorkDateAdapter(
     }
 
     private fun chooseOptionsForDate(workDate: WorkDates) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                mView.context.getString(R.string.choose_an_action_for) +
-                        df.getDisplayDate(workDate.wdDate)
+        AlertDialog.Builder(mView.context).setTitle(
+            mView.context.getString(R.string.choose_an_action_for) + df.getDisplayDate(workDate.wdDate)
+        ).setItems(
+            arrayOf(
+                mView.context.getString(R.string.edit_this_date),
+                mView.context.getString(R.string.delete_this_date)
             )
-            .setItems(
-                arrayOf(
-                    mView.context.getString(R.string.edit_this_date),
-                    mView.context.getString(R.string.delete_this_date)
-                )
-            ) { _, pos ->
-                when (pos) {
-                    0 -> {
-                        gotoWorkDateUpdate(workDate)
-                    }
+        ) { _, pos ->
+            when (pos) {
+                0 -> {
+                    gotoWorkDateUpdate(workDate)
+                }
 
-                    1 -> {
-                        confirmDeleteWorkDate(workDate)
-                    }
+                1 -> {
+                    confirmDeleteWorkDate(workDate)
+                }
 
-                    else -> {
-                        //do nothing
-                    }
+                else -> {
+                    //do nothing
                 }
             }
-            .setNegativeButton(
-                mView.context.getString(R.string.cancel), null
-            )
-            .show()
+        }.setNegativeButton(
+            mView.context.getString(R.string.cancel), null
+        ).show()
     }
 
     private fun confirmDeleteWorkDate(workDate: WorkDates) {
-        android.app.AlertDialog.Builder(mView.context)
-            .setTitle(
-                mView.context.getString(R.string.are_you_sure_you_want_to_delete) +
-                        df.getDisplayDate(workDate.wdDate)
+        android.app.AlertDialog.Builder(mView.context).setTitle(
+            mView.context.getString(R.string.are_you_sure_you_want_to_delete) + df.getDisplayDate(
+                workDate.wdDate
             )
-            .setMessage(mView.context.getString(R.string.this_cannot_be_undone))
+        ).setMessage(mView.context.getString(R.string.this_cannot_be_undone))
             .setPositiveButton(mView.context.getString(R.string.delete)) { _, _ ->
                 deleteWorkDate(workDate)
-            }
-            .setNeutralButton(mView.context.getString(R.string.cancel), null)
-            .show()
+            }.setNeutralButton(mView.context.getString(R.string.cancel), null).show()
     }
 
     private fun deleteWorkDate(workDate: WorkDates) {
@@ -222,8 +207,7 @@ class WorkDateAdapter(
 
     private fun gotoWorkDateUpdateFragment() {
         mView.findNavController().navigate(
-            TimeSheetFragmentDirections
-                .actionTimeSheetFragmentToWorkDateUpdateFragment()
+            TimeSheetFragmentDirections.actionTimeSheetFragmentToWorkDateUpdateFragment()
         )
     }
 }

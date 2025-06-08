@@ -22,16 +22,15 @@ class TaxTypeAdapter(
     class TaxTypeViewHolder(val itemBinding: ListSingleItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<TaxTypes>() {
-            override fun areContentsTheSame(oldItem: TaxTypes, newItem: TaxTypes): Boolean {
-                return oldItem.taxType == newItem.taxType
-            }
-
-            override fun areItemsTheSame(oldItem: TaxTypes, newItem: TaxTypes): Boolean {
-                return oldItem == newItem
-            }
+    private val differCallBack = object : DiffUtil.ItemCallback<TaxTypes>() {
+        override fun areContentsTheSame(oldItem: TaxTypes, newItem: TaxTypes): Boolean {
+            return oldItem.taxType == newItem.taxType
         }
+
+        override fun areItemsTheSame(oldItem: TaxTypes, newItem: TaxTypes): Boolean {
+            return oldItem == newItem
+        }
+    }
     val differ = AsyncListDiffer(this, differCallBack)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaxTypeViewHolder {

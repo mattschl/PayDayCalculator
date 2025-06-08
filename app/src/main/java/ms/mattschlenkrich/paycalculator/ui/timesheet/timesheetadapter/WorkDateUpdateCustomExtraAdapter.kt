@@ -44,8 +44,7 @@ class WorkDateUpdateCustomExtraAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val extra = workDateExtras[position]
         holder.itemBinding.apply {
-            var display =
-                extra.wdeName
+            var display = extra.wdeName
             if (extra.wdeIsCredit) {
                 display += mView.context.getString(R.string.add_)
                 chkExtra.setTextColor(Color.BLACK)

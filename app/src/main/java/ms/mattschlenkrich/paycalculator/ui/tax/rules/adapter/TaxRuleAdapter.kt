@@ -25,25 +25,19 @@ class TaxRuleAdapter(
     class TaxRuleViewHolder(val itemBinding: ListTaxRuleItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<WorkTaxRules>() {
-            override fun areContentsTheSame(
-                oldItem: WorkTaxRules,
-                newItem: WorkTaxRules
-            ): Boolean {
-                return oldItem.workTaxRuleId == newItem.workTaxRuleId &&
-                        oldItem.wtType == newItem.wtType &&
-                        oldItem.wtLevel == newItem.wtLevel &&
-                        oldItem.wtEffectiveDate == newItem.wtEffectiveDate
-            }
-
-            override fun areItemsTheSame(
-                oldItem: WorkTaxRules,
-                newItem: WorkTaxRules
-            ): Boolean {
-                return oldItem == newItem
-            }
+    private val differCallBack = object : DiffUtil.ItemCallback<WorkTaxRules>() {
+        override fun areContentsTheSame(
+            oldItem: WorkTaxRules, newItem: WorkTaxRules
+        ): Boolean {
+            return oldItem.workTaxRuleId == newItem.workTaxRuleId && oldItem.wtType == newItem.wtType && oldItem.wtLevel == newItem.wtLevel && oldItem.wtEffectiveDate == newItem.wtEffectiveDate
         }
+
+        override fun areItemsTheSame(
+            oldItem: WorkTaxRules, newItem: WorkTaxRules
+        ): Boolean {
+            return oldItem == newItem
+        }
+    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 
@@ -62,23 +56,26 @@ class TaxRuleAdapter(
     override fun onBindViewHolder(holder: TaxRuleViewHolder, position: Int) {
         val taxRule = differ.currentList[position]
         holder.itemBinding.apply {
-            var display = mView.context.getString(R.string.level) + " " +
-                    taxRule.wtLevel
+            var display = mView.context.getString(R.string.level) + " " + taxRule.wtLevel
             tvTaxLevel.text = display
             display = cf.getPercentStringFromDouble(taxRule.wtPercent)
             tvPercent.text = display
             if (taxRule.wtHasExemption) {
                 tvExemption.visibility = View.VISIBLE
-                display = mView.context.getString(R.string.exemption_) + " " +
-                        cf.displayDollarsWithoutZeros(taxRule.wtExemptionAmount)
+                display =
+                    mView.context.getString(R.string.exemption_) + " " + cf.displayDollarsWithoutZeros(
+                        taxRule.wtExemptionAmount
+                    )
                 tvExemption.text = display
             } else {
                 tvExemption.visibility = View.GONE
             }
             if (taxRule.wtHasBracket) {
                 tvLimit.visibility = View.VISIBLE
-                display = mView.context.getString(R.string.upper_limit_) + " " +
-                        cf.displayDollarsWithoutZeros(taxRule.wtBracketAmount)
+                display =
+                    mView.context.getString(R.string.upper_limit_) + " " + cf.displayDollarsWithoutZeros(
+                        taxRule.wtBracketAmount
+                    )
                 tvLimit.text = display
             } else {
                 tvLimit.visibility = View.GONE

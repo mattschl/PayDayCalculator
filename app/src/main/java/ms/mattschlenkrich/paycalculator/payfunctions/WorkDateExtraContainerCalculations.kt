@@ -35,39 +35,28 @@ class WorkDateExtraContainerCalculations(
             if (workDateExtraList.isNotEmpty()) {
                 for (extra in workDateExtraList) {
                     if (!extra.wdeIsDeleted) {
-                        val amount: Double =
-                            if (extra.wdeIsFixed) {
-                                when (extra.wdeAppliesTo) {
-                                    AppliesToFrequencies.Hourly.value -> {
-                                        extra.wdeValue *
-                                                (workDate.wdRegHours +
-                                                        workDate.wdOtHours +
-                                                        workDate.wdDblOtHours)
-                                    }
-
-                                    AppliesToFrequencies.Daily.value -> {
-                                        extra.wdeValue
-                                    }
-
-                                    else -> {
-                                        0.0
-                                    }
+                        val amount: Double = if (extra.wdeIsFixed) {
+                            when (extra.wdeAppliesTo) {
+                                AppliesToFrequencies.Hourly.value -> {
+                                    extra.wdeValue * (workDate.wdRegHours + workDate.wdOtHours + workDate.wdDblOtHours)
                                 }
-                            } else {
-                                extra.wdeValue * wage *
-                                        (workDate.wdRegHours +
-                                                workDate.wdOtHours * 1.5
-                                                + workDate.wdDblOtHours * 2)
 
+                                AppliesToFrequencies.Daily.value -> {
+                                    extra.wdeValue
+                                }
+
+                                else -> {
+                                    0.0
+                                }
                             }
+                        } else {
+                            extra.wdeValue * wage * (workDate.wdRegHours + workDate.wdOtHours * 1.5 + workDate.wdDblOtHours * 2)
+
+                        }
                         if (amount > 0.0) {
                             extraContainers.add(
                                 ExtraContainer(
-                                    extra.wdeName,
-                                    amount,
-                                    null,
-                                    extra,
-                                    null
+                                    extra.wdeName, amount, null, extra, null
                                 )
                             )
                         }
@@ -77,40 +66,28 @@ class WorkDateExtraContainerCalculations(
             if (extraDefinitionAndTypeList.isNotEmpty()) {
                 for (extra in extraDefinitionAndTypeList) {
 
-                    if (!extra.extraType.wetIsDeleted &&
-                        !extra.definition.weIsDeleted &&
-                        extra.extraType.wetIsDefault
-                    ) {
-                        val amount: Double =
-                            if (extra.definition.weIsFixed) {
-                                when (extra.extraType.wetAppliesTo) {
-                                    AppliesToFrequencies.Hourly.value -> {
-                                        extra.definition.weValue *
-                                                (workDate.wdRegHours +
-                                                        workDate.wdOtHours +
-                                                        workDate.wdDblOtHours)
-                                    }
-
-                                    AppliesToFrequencies.Daily.value -> {
-                                        extra.definition.weValue
-                                    }
-
-                                    else -> {
-                                        0.0
-                                    }
+                    if (!extra.extraType.wetIsDeleted && !extra.definition.weIsDeleted && extra.extraType.wetIsDefault) {
+                        val amount: Double = if (extra.definition.weIsFixed) {
+                            when (extra.extraType.wetAppliesTo) {
+                                AppliesToFrequencies.Hourly.value -> {
+                                    extra.definition.weValue * (workDate.wdRegHours + workDate.wdOtHours + workDate.wdDblOtHours)
                                 }
-                            } else {
-                                extra.definition.weValue * wage *
-                                        (workDate.wdRegHours + workDate.wdOtHours + workDate.wdDblOtHours)
+
+                                AppliesToFrequencies.Daily.value -> {
+                                    extra.definition.weValue
+                                }
+
+                                else -> {
+                                    0.0
+                                }
                             }
+                        } else {
+                            extra.definition.weValue * wage * (workDate.wdRegHours + workDate.wdOtHours + workDate.wdDblOtHours)
+                        }
                         if (amount > 0.0) {
                             extraContainers.add(
                                 ExtraContainer(
-                                    extra.extraType.wetName,
-                                    amount,
-                                    extra,
-                                    null,
-                                    null
+                                    extra.extraType.wetName, amount, extra, null, null
                                 )
                             )
                         }
@@ -133,11 +110,10 @@ class WorkDateExtraContainerCalculations(
         )
     }
 
-    private suspend fun getCustomWorkDateExtrasFromDb() =
-        withContext(Dispatchers.Default) {
-            val customExtraListDeferred = async { getCustomWorkDateExtrasByDate() }
-            workDateExtraList = customExtraListDeferred.await()
-        }
+    private suspend fun getCustomWorkDateExtrasFromDb() = withContext(Dispatchers.Default) {
+        val customExtraListDeferred = async { getCustomWorkDateExtrasByDate() }
+        workDateExtraList = customExtraListDeferred.await()
+    }
 
     private fun getCustomWorkDateExtrasByDate(): List<WorkDateExtras> {
         return mainActivity.payDetailViewModel.getCustomWorkDateExtras(

@@ -17,25 +17,22 @@ class EmployerAdapter(
     val mainActivity: MainActivity,
     private val mView: View,
     private val employerFragment: EmployerFragment,
-) :
-    RecyclerView.Adapter<EmployerAdapter.EmployerViewHolder>() {
+) : RecyclerView.Adapter<EmployerAdapter.EmployerViewHolder>() {
 
     val mainViewModel = mainActivity.mainViewModel
 
     class EmployerViewHolder(val itemBinding: ListEmployerItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<Employers>() {
-            override fun areContentsTheSame(oldItem: Employers, newItem: Employers): Boolean {
-                return oldItem.employerId == newItem.employerId &&
-                        oldItem.employerName == newItem.employerName
-            }
-
-            override fun areItemsTheSame(oldItem: Employers, newItem: Employers): Boolean {
-                return oldItem == newItem
-            }
+    private val differCallBack = object : DiffUtil.ItemCallback<Employers>() {
+        override fun areContentsTheSame(oldItem: Employers, newItem: Employers): Boolean {
+            return oldItem.employerId == newItem.employerId && oldItem.employerName == newItem.employerName
         }
+
+        override fun areItemsTheSame(oldItem: Employers, newItem: Employers): Boolean {
+            return oldItem == newItem
+        }
+    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 

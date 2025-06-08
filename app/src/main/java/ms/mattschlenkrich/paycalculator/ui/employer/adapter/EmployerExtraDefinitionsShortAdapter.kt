@@ -25,22 +25,19 @@ class EmployerExtraDefinitionsShortAdapter(
     class DefinitionViewHolder(val itemBinding: ListEmployerExtraItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<WorkExtraTypes>() {
-            override fun areItemsTheSame(
-                oldItem: WorkExtraTypes,
-                newItem: WorkExtraTypes
-            ): Boolean {
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(
-                oldItem: WorkExtraTypes,
-                newItem: WorkExtraTypes
-            ): Boolean {
-                return oldItem.wetName == newItem.wetName
-            }
+    private val differCallBack = object : DiffUtil.ItemCallback<WorkExtraTypes>() {
+        override fun areItemsTheSame(
+            oldItem: WorkExtraTypes, newItem: WorkExtraTypes
+        ): Boolean {
+            return oldItem == newItem
         }
+
+        override fun areContentsTheSame(
+            oldItem: WorkExtraTypes, newItem: WorkExtraTypes
+        ): Boolean {
+            return oldItem.wetName == newItem.wetName
+        }
+    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 
@@ -48,9 +45,7 @@ class EmployerExtraDefinitionsShortAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DefinitionViewHolder {
         return DefinitionViewHolder(
             ListEmployerExtraItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
+                LayoutInflater.from(parent.context), parent, false
             )
         )
     }

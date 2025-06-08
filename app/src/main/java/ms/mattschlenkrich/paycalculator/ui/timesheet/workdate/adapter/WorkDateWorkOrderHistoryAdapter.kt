@@ -87,8 +87,7 @@ class WorkDateWorkOrderHistoryAdapter(
 
     private fun confirmDeleteWorkOrderHistory(history: WorkOrderHistoryWithDates) {
         AlertDialog.Builder(mView.context).setTitle(
-            mView.context.getString(R.string.are_you_sure_you_want_to_delete_wo) +
-                    history.workOrder.woNumber
+            mView.context.getString(R.string.are_you_sure_you_want_to_delete_wo) + history.workOrder.woNumber
         ).setMessage(mView.context.getString(R.string.this_cannot_be_undone))
             .setPositiveButton(mView.context.getString(R.string.delete)) { _, _ ->
                 deleteWorkOrderHistory(history.history.woHistoryId)

@@ -76,11 +76,8 @@ class PayDetailExtraContainerAdapter(
             }
             if (extraContainer.extraDefinitionAndType != null) {
                 chActive.isChecked =
-                    !extraContainer.extraDefinitionAndType!!.extraType.wetIsDeleted &&
-                            !extraContainer.extraDefinitionAndType!!.definition.weIsDeleted
-                if (extraContainer.extraDefinitionAndType!!.extraType.wetIsDeleted ||
-                    extraContainer.extraDefinitionAndType!!.definition.weIsDeleted
-                ) {
+                    !extraContainer.extraDefinitionAndType!!.extraType.wetIsDeleted && !extraContainer.extraDefinitionAndType!!.definition.weIsDeleted
+                if (extraContainer.extraDefinitionAndType!!.extraType.wetIsDeleted || extraContainer.extraDefinitionAndType!!.definition.weIsDeleted) {
                     btnEdit.visibility = View.INVISIBLE
                     tvExtraTotal.visibility = View.INVISIBLE
                 }
@@ -101,16 +98,12 @@ class PayDetailExtraContainerAdapter(
 
     private fun confirmUpdateExtra(extraContainer: ExtraContainer, delete: Boolean) {
         AlertDialog.Builder(mView.context)
-            .setTitle(mView.context.getString(R.string.continue_to_update))
-            .setMessage(
+            .setTitle(mView.context.getString(R.string.continue_to_update)).setMessage(
                 mView.context.getString(R.string.if_this_is_edited_any_default_calculations_will_be_overwritten)
-            )
-            .setPositiveButton(mView.context.getString(R.string.yes)) { _, _ ->
+            ).setPositiveButton(mView.context.getString(R.string.yes)) { _, _ ->
                 insertOrUpdateExtraOnChange(extraContainer, delete)
                 updateExtra(extraContainer)
-            }
-            .setNegativeButton(mView.context.getString(R.string.cancel), null)
-            .show()
+            }.setNegativeButton(mView.context.getString(R.string.cancel), null).show()
 
     }
 

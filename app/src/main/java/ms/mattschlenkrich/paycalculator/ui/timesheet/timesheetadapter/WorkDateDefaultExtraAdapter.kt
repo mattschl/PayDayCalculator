@@ -24,23 +24,19 @@ class WorkDateDefaultExtraAdapter(
         val itemBinding: ListWorkDateExtraItemBinding
     ) : RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<WorkExtraTypes>() {
-            override fun areItemsTheSame(
-                oldItem: WorkExtraTypes,
-                newItem: WorkExtraTypes
-            ): Boolean {
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(
-                oldItem: WorkExtraTypes,
-                newItem: WorkExtraTypes
-            ): Boolean {
-                return oldItem.workExtraTypeId == newItem.workExtraTypeId &&
-                        oldItem.wetName == newItem.wetName
-            }
+    private val differCallBack = object : DiffUtil.ItemCallback<WorkExtraTypes>() {
+        override fun areItemsTheSame(
+            oldItem: WorkExtraTypes, newItem: WorkExtraTypes
+        ): Boolean {
+            return oldItem == newItem
         }
+
+        override fun areContentsTheSame(
+            oldItem: WorkExtraTypes, newItem: WorkExtraTypes
+        ): Boolean {
+            return oldItem.workExtraTypeId == newItem.workExtraTypeId && oldItem.wetName == newItem.wetName
+        }
+    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 
@@ -70,23 +66,18 @@ class WorkDateDefaultExtraAdapter(
 
     private fun confirmSaveWorkDate(isChecked: Boolean, extra: WorkExtraTypes) {
         AlertDialog.Builder(mView.context)
-            .setTitle(mView.context.getString(R.string.choose_the_next_step))
-            .setMessage(
+            .setTitle(mView.context.getString(R.string.choose_the_next_step)).setMessage(
                 mView.context.getString(R.string.in_order_to_add_extras_this_work_date_must_be_saved)
-            )
-            .setPositiveButton(
+            ).setPositiveButton(
                 mView.context.getString(R.string.save)
             ) { _, _ ->
                 saveWorkDate(isChecked, extra)
-            }
-            .setNegativeButton(mView.context.getString(R.string.go_back), null)
-            .show()
+            }.setNegativeButton(mView.context.getString(R.string.go_back), null).show()
 
     }
 
     private fun saveWorkDate(
-        isChecked: Boolean,
-        extra: WorkExtraTypes
+        isChecked: Boolean, extra: WorkExtraTypes
     ) {
         workDateAddFragment.addToExtraList(isChecked, extra)
         workDateAddFragment.validateWorkDateToSave(FRAG_WORK_DATE_UPDATE, false)

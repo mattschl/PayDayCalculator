@@ -38,34 +38,26 @@ class EmployerPayRateAdapter(
     class WageViewHolder(val itemBinding: ListWagesItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<EmployerPayRates>() {
-            override fun areItemsTheSame(
-                oldItem: EmployerPayRates,
-                newItem: EmployerPayRates
-            ): Boolean {
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(
-                oldItem: EmployerPayRates,
-                newItem: EmployerPayRates
-            ): Boolean {
-                return oldItem.employerPayRateId == newItem.employerPayRateId &&
-                        oldItem.eprEmployerId == newItem.eprEmployerId &&
-                        oldItem.eprPayRate == newItem.eprPayRate &&
-                        oldItem.eprPerPeriod == newItem.eprPerPeriod
-            }
+    private val differCallBack = object : DiffUtil.ItemCallback<EmployerPayRates>() {
+        override fun areItemsTheSame(
+            oldItem: EmployerPayRates, newItem: EmployerPayRates
+        ): Boolean {
+            return oldItem == newItem
         }
+
+        override fun areContentsTheSame(
+            oldItem: EmployerPayRates, newItem: EmployerPayRates
+        ): Boolean {
+            return oldItem.employerPayRateId == newItem.employerPayRateId && oldItem.eprEmployerId == newItem.eprEmployerId && oldItem.eprPayRate == newItem.eprPayRate && oldItem.eprPerPeriod == newItem.eprPerPeriod
+        }
+    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WageViewHolder {
         return WageViewHolder(
             ListWagesItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
+                LayoutInflater.from(parent.context), parent, false
             )
         )
     }

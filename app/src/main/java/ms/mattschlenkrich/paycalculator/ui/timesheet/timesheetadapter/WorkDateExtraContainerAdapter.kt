@@ -12,8 +12,7 @@ import ms.mattschlenkrich.paycalculator.databinding.ListWorkDateExtraTimeSheetBi
 class WorkDateExtraContainerAdapter(
     private val extraContainerList: List<ExtraContainer>,
     private val mView: View,
-) :
-    RecyclerView.Adapter<WorkDateExtraContainerAdapter.DateExtrasHolder>() {
+) : RecyclerView.Adapter<WorkDateExtraContainerAdapter.DateExtrasHolder>() {
 
     private val cf = NumberFunctions()
 
@@ -37,11 +36,9 @@ class WorkDateExtraContainerAdapter(
     override fun onBindViewHolder(holder: DateExtrasHolder, position: Int) {
         val extra = extraContainerList[position]
         holder.itemBinding.apply {
-            var display = if (position > 0)
-                mView.context.getString(R.string.pipe)
+            var display = if (position > 0) mView.context.getString(R.string.pipe)
             else ""
-            display += extra.extraName + " " +
-                    cf.displayDollars(extra.amount)
+            display += extra.extraName + " " + cf.displayDollars(extra.amount)
             tvExtra.text = display
         }
         holder.itemView.setOnClickListener {

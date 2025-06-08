@@ -23,8 +23,7 @@ class EmployerExtraDefinitionFullAdapter(
     private val mView: View,
     private val employerExtraDefinitionsFragment: IEmployerExtraDefinitionsFragment?,
     private val employerUpdateFragment: IEmployerUpdateFragment?,
-) : RecyclerView.Adapter<
-        EmployerExtraDefinitionFullAdapter.DefinitionViewHolder>() {
+) : RecyclerView.Adapter<EmployerExtraDefinitionFullAdapter.DefinitionViewHolder>() {
 
     private val cf = NumberFunctions()
     private val df = DateFunctions()
@@ -34,32 +33,26 @@ class EmployerExtraDefinitionFullAdapter(
     class DefinitionViewHolder(val itemBinding: ListEmployerExtraDefinitonBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<ExtraDefTypeAndEmployer>() {
-            override fun areItemsTheSame(
-                oldItem: ExtraDefTypeAndEmployer,
-                newItem: ExtraDefTypeAndEmployer
-            ): Boolean {
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(
-                oldItem: ExtraDefTypeAndEmployer,
-                newItem: ExtraDefTypeAndEmployer
-            ): Boolean {
-                return oldItem.employer.employerId == newItem.employer.employerId &&
-                        oldItem.definition.workExtraDefId == newItem.definition.workExtraDefId
-            }
+    private val differCallBack = object : DiffUtil.ItemCallback<ExtraDefTypeAndEmployer>() {
+        override fun areItemsTheSame(
+            oldItem: ExtraDefTypeAndEmployer, newItem: ExtraDefTypeAndEmployer
+        ): Boolean {
+            return oldItem == newItem
         }
+
+        override fun areContentsTheSame(
+            oldItem: ExtraDefTypeAndEmployer, newItem: ExtraDefTypeAndEmployer
+        ): Boolean {
+            return oldItem.employer.employerId == newItem.employer.employerId && oldItem.definition.workExtraDefId == newItem.definition.workExtraDefId
+        }
+    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DefinitionViewHolder {
         return DefinitionViewHolder(
             ListEmployerExtraDefinitonBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
+                LayoutInflater.from(parent.context), parent, false
             )
         )
     }
@@ -75,8 +68,7 @@ class EmployerExtraDefinitionFullAdapter(
 
             if (definition.definition.weIsDeleted) {
                 tvEffectiveDate.setTextColor(Color.RED)
-                display = "* $display" +
-                        mView.context.getString(R.string._deleted_)
+                display = "* $display" + mView.context.getString(R.string._deleted_)
             } else if (position == 0) {
                 display += mView.context.getString(R.string.__current)
                 tvEffectiveDate.setTextColor(Color.BLACK)
@@ -117,33 +109,29 @@ class EmployerExtraDefinitionFullAdapter(
     }
 
     private fun chooseOptionForDefinition(definition: ExtraDefTypeAndEmployer) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                mView.resources.getString(R.string.choose_an_action) +
-                        mView.context.getString(R.string._for)
-                        + definition.extraType.wetName
+        AlertDialog.Builder(mView.context).setTitle(
+            mView.resources.getString(R.string.choose_an_action) + mView.context.getString(R.string._for) + definition.extraType.wetName
+        ).setItems(
+            arrayOf(
+                mView.resources.getString(R.string.edit_this_item),
+                mView.resources.getString(R.string.delete_this_item),
+                mView.resources.getString(R.string.cancel)
             )
-            .setItems(
-                arrayOf(
-                    mView.resources.getString(R.string.edit_this_item),
-                    mView.resources.getString(R.string.delete_this_item),
-                    mView.resources.getString(R.string.cancel)
-                )
-            ) { _, pos ->
-                when (pos) {
-                    0 -> {
-                        gotoExtraUpdate(definition)
-                    }
-
-                    1 -> {
-                        deleteExtra(definition.definition)
-                    }
-
-                    else -> {
-                        //do nothing
-                    }
+        ) { _, pos ->
+            when (pos) {
+                0 -> {
+                    gotoExtraUpdate(definition)
                 }
-            }.show()
+
+                1 -> {
+                    deleteExtra(definition.definition)
+                }
+
+                else -> {
+                    //do nothing
+                }
+            }
+        }.show()
     }
 
     private fun deleteExtra(definition: WorkExtrasDefinitions) {

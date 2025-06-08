@@ -22,23 +22,19 @@ class EmployerTaxTypeAdapter(
         val itemBinding: ListEmployerTaxItemBinding
     ) : RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<EmployerTaxTypes>() {
-            override fun areItemsTheSame(
-                oldItem: EmployerTaxTypes,
-                newItem: EmployerTaxTypes
-            ): Boolean {
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(
-                oldItem: EmployerTaxTypes,
-                newItem: EmployerTaxTypes
-            ): Boolean {
-                return oldItem.etrEmployerId == newItem.etrEmployerId &&
-                        oldItem.etrTaxType == newItem.etrTaxType
-            }
+    private val differCallBack = object : DiffUtil.ItemCallback<EmployerTaxTypes>() {
+        override fun areItemsTheSame(
+            oldItem: EmployerTaxTypes, newItem: EmployerTaxTypes
+        ): Boolean {
+            return oldItem == newItem
         }
+
+        override fun areContentsTheSame(
+            oldItem: EmployerTaxTypes, newItem: EmployerTaxTypes
+        ): Boolean {
+            return oldItem.etrEmployerId == newItem.etrEmployerId && oldItem.etrTaxType == newItem.etrTaxType
+        }
+    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 
@@ -61,7 +57,8 @@ class EmployerTaxTypeAdapter(
             chkEmployerTax.isChecked = employerTaxType.etrInclude
             chkEmployerTax.setOnClickListener {
                 workTaxViewModel.updateEmployerTaxIncluded(
-                    employerTaxType.etrEmployerId, employerTaxType.etrTaxType,
+                    employerTaxType.etrEmployerId,
+                    employerTaxType.etrTaxType,
                     chkEmployerTax.isChecked
                 )
                 employerUpdateFragment.populateTaxes(employerTaxType.etrEmployerId)
