@@ -12,10 +12,7 @@ class NumberFunctions {
 
     fun getDoubleFromDollars(dollars: String): Double {
         return if (dollars != "") {
-            dollars.trim()
-                .replace("$", "")
-                .replace(",", "")
-                .toDouble()
+            dollars.trim().replace("$", "").replace(",", "").toDouble()
         } else {
             0.0
         }
@@ -35,16 +32,14 @@ class NumberFunctions {
     }
 
     fun generateRandomIdAsLong(): Long {
-        var id =
-            Random().nextInt(Int.MAX_VALUE).toLong()
+        var id = Random().nextInt(Int.MAX_VALUE).toLong()
         id = if (Random().nextBoolean()) -id
         else id
         return id
     }
 
     fun getDoubleFromPercentString(percent: String): Double {
-        return percent.trim().replace("%", "")
-            .toDouble() / 100
+        return percent.trim().replace("%", "").toDouble() / 100
     }
 
     fun getPercentStringFromDouble(num: Double): String {

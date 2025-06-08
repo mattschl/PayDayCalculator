@@ -21,16 +21,12 @@ class PayCalculationsRepository(private val db: PayDatabase) {
     fun getCustomPayPeriodExtras(payPeriodId: Long) =
         db.getPayCalculationsDao().getCustomPayPeriodExtras(payPeriodId)
 
-    fun getExtraTypes(employerId: Long) =
-        db.getPayCalculationsDao().getExtraTypes(employerId)
+    fun getExtraTypes(employerId: Long) = db.getPayCalculationsDao().getExtraTypes(employerId)
 
     fun getCurrentEffectiveDate(cutoffDate: String) =
-        db.getPayCalculationsDao()
-            .getCurrentEffectiveDate(cutoffDate)
+        db.getPayCalculationsDao().getCurrentEffectiveDate(cutoffDate)
 
-    fun getTaxTypes(employerId: Long) =
-        db.getPayCalculationsDao().getTaxTypes(employerId)
+    fun getTaxTypes(employerId: Long) = db.getPayCalculationsDao().getTaxTypes(employerId)
 
-    fun getTaxRules(effectiveDate: String) =
-        db.getPayCalculationsDao().getTaxRules(effectiveDate)
+    fun getTaxRules(effectiveDate: String) = db.getPayCalculationsDao().getTaxRules(effectiveDate)
 }

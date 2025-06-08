@@ -147,6 +147,7 @@ class WorkOrderHistoryMaterialUpdateFragment :
 
     private fun updateMaterialInHistoryIfValid() {
         binding.apply {
+            if (etQuantity.text.isNullOrBlank()) etQuantity.setText("1")
             if (acMaterials.text.toString().trim() ==
                 originalWorkOrderHistoryMaterialCombined.material.mName &&
                 etQuantity.text.toString().toDouble() ==

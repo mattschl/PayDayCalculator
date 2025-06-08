@@ -27,8 +27,8 @@ class HolidayPayCalculator(
             val totalWorkDaysAsync = async { calculateDaysOfWork(holidayDate) }
             statHours = totalHoursAsync.await() / totalWorkDaysAsync.await()
             Log.d(
-                TABLE_WORK_DATES, "total hours: ${totalHoursAsync.await()} " +
-                        "total work days: ${totalWorkDaysAsync.await()}"
+                TABLE_WORK_DATES,
+                "total hours: ${totalHoursAsync.await()} " + "total work days: ${totalWorkDaysAsync.await()}"
             )
         }
     }
@@ -38,9 +38,7 @@ class HolidayPayCalculator(
     }
 
     private fun getWorkDates(
-        employerId: Long,
-        firstDate: String,
-        lastDate: String
+        employerId: Long, firstDate: String, lastDate: String
     ): List<WorkDates> {
         return mainActivity.payDayViewModel.getWorkDatesByDateRange(
             employerId, firstDate, lastDate
@@ -61,9 +59,9 @@ class HolidayPayCalculator(
         var dayCount = 0
         for (i in 31 downTo 1) {
             if (LocalDate.parse(startingDate)
-                    .minusDays(i.toLong()).dayOfWeek != DayOfWeek.SATURDAY &&
-                LocalDate.parse(startingDate)
-                    .minusDays(i.toLong()).dayOfWeek != DayOfWeek.SUNDAY
+                    .minusDays(i.toLong()).dayOfWeek != DayOfWeek.SATURDAY && LocalDate.parse(
+                    startingDate
+                ).minusDays(i.toLong()).dayOfWeek != DayOfWeek.SUNDAY
             ) {
                 dayCount++
             }

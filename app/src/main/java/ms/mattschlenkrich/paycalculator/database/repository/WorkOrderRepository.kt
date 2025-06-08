@@ -24,11 +24,9 @@ class WorkOrderRepository(private val db: PayDatabase) {
         description: String,
         isDeleted: Boolean,
         updateTime: String,
-    ) =
-        db.getWorkOrderDao().updateWorkOrder(
-            workOrderId, workOrderNumber, employerId, address,
-            description, isDeleted, updateTime
-        )
+    ) = db.getWorkOrderDao().updateWorkOrder(
+        workOrderId, workOrderNumber, employerId, address, description, isDeleted, updateTime
+    )
 
 //    suspend fun deleteWorkOrder(workOrderId: Long, updateTime: String) =
 //        db.getWorkOrderDao().deleteWorkOrder(workOrderId, updateTime)
@@ -59,11 +57,17 @@ class WorkOrderRepository(private val db: PayDatabase) {
         note: String?,
         isDeleted: Boolean,
         updateTime: String
-    ) =
-        db.getWorkOrderDao().updateWorkOrderHistory(
-            historyID, workOrderId, workDateId, regHours,
-            otHours, dblOtHours, note, isDeleted, updateTime
-        )
+    ) = db.getWorkOrderDao().updateWorkOrderHistory(
+        historyID,
+        workOrderId,
+        workDateId,
+        regHours,
+        otHours,
+        dblOtHours,
+        note,
+        isDeleted,
+        updateTime
+    )
 
     suspend fun deleteWorkOrderHistory(historyID: Long, updateTime: String) =
         db.getWorkOrderDao().deleteWorkOrderHistory(historyID, updateTime)
@@ -190,8 +194,7 @@ class WorkOrderRepository(private val db: PayDatabase) {
     fun getMaterialsHistoryByWorkOrderId(workOrderId: Long) =
         db.getWorkOrderDao().getMaterialsHistoryByWorkOrderId(workOrderId)
 
-    fun getWorkOrderHistoryMaterialCombined(woHistoryMaterialId: Long):
-            WorkOrderHistoryMaterialCombined =
+    fun getWorkOrderHistoryMaterialCombined(woHistoryMaterialId: Long): WorkOrderHistoryMaterialCombined =
         db.getWorkOrderDao().getWorkOrderHistoryMaterialCombined(woHistoryMaterialId)
 
     suspend fun removeAllMaterialsFromWorkOrderHistory(historyId: Long) =

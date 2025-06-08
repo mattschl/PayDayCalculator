@@ -8,11 +8,9 @@ import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkPayPeriodEx
 
 class PayDayRepository(private val db: PayDatabase) {
 
-    fun getCutOffDates(employerId: Long) =
-        db.getPayDayDao().getCutOffDates(employerId)
+    fun getCutOffDates(employerId: Long) = db.getPayDayDao().getCutOffDates(employerId)
 
-    suspend fun insertPayPeriod(cutOff: PayPeriods) =
-        db.getPayDayDao().insertPayPeriod(cutOff)
+    suspend fun insertPayPeriod(cutOff: PayPeriods) = db.getPayDayDao().insertPayPeriod(cutOff)
 
     suspend fun updatePayPeriod(payPeriod: PayPeriods) =
         db.getPayDayDao().updatePayPeriod(payPeriod)
@@ -29,11 +27,9 @@ class PayDayRepository(private val db: PayDatabase) {
     fun getWorkDateListUsed(employerId: Long, cutOff: String) =
         db.getPayDayDao().getWorkDateListUsed(employerId, cutOff)
 
-    suspend fun insertWorkDate(workDate: WorkDates) =
-        db.getPayDayDao().insertWorkDate(workDate)
+    suspend fun insertWorkDate(workDate: WorkDates) = db.getPayDayDao().insertWorkDate(workDate)
 
-    suspend fun updateWorkDate(workDate: WorkDates) =
-        db.getPayDayDao().updateWorkDate(workDate)
+    suspend fun updateWorkDate(workDate: WorkDates) = db.getPayDayDao().updateWorkDate(workDate)
 
 //    suspend fun updateWorkDates(
 //        id: Long,
@@ -63,8 +59,7 @@ class PayDayRepository(private val db: PayDatabase) {
     suspend fun updateWorkDateExtra(workDateExtra: WorkDateExtras) =
         db.getPayDayDao().updateWorkDateExtra(workDateExtra)
 
-    fun getWorkDateExtras(workDateId: Long) =
-        db.getPayDayDao().getWorkDateExtras(workDateId)
+    fun getWorkDateExtras(workDateId: Long) = db.getPayDayDao().getWorkDateExtras(workDateId)
 
     fun getWorkDateExtrasActive(workDateId: Long) =
         db.getPayDayDao().getWorkDateExtrasActive(workDateId)
@@ -99,14 +94,12 @@ class PayDayRepository(private val db: PayDatabase) {
     suspend fun deletePayPeriodExtra(extraId: Long, updateTime: String) =
         db.getPayDayDao().deletePayPeriodExtra(extraId, updateTime)
 
-    fun getPayPeriodExtras(payPeriodId: Long) =
-        db.getPayDayDao().getPayPeriodExtras(payPeriodId)
+    fun getPayPeriodExtras(payPeriodId: Long) = db.getPayDayDao().getPayPeriodExtras(payPeriodId)
 
 //    fun findPayPeriodExtra(workPayPeriodExtraId: Long) =
 //        db.getPayDayDao().findPayPeriodExtra(workPayPeriodExtraId)
 
-    fun findPayPeriodExtra(extraName: String) =
-        db.getPayDayDao().findPayPeriodExtra(extraName)
+    fun findPayPeriodExtra(extraName: String) = db.getPayDayDao().findPayPeriodExtra(extraName)
 
     fun getWorkDateExtrasAndDates(cutOffDate: String) =
         db.getPayDayDao().getWorkDateExtrasAndDates(cutOffDate)
