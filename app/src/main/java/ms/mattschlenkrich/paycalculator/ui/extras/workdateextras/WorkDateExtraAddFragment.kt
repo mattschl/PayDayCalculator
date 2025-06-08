@@ -41,8 +41,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
 
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWorkDateExtraAddBinding.inflate(
             inflater, container, false
@@ -68,10 +67,10 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
             curDateObject = mainViewModel.getWorkDateObject()!!
             employerViewModel.getEmployer(curDateObject.wdEmployerId)
                 .observe(viewLifecycleOwner) { employer ->
-                    val display = getString(R.string.date_) +
-                            df.getDisplayDate(curDateObject.wdDate) +
-                            getString(R.string.employer_) +
-                            employer.employerName
+                    val display =
+                        getString(R.string.date_) + df.getDisplayDate(curDateObject.wdDate) + getString(
+                            R.string.employer_
+                        ) + employer.employerName
                     binding.lblDateInfo.text = display
                 }
             getExtraListForDate()
@@ -87,8 +86,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
                 )
             }
             val frequencyAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
-                frequencies
+                mView.context, R.layout.spinner_item_bold, frequencies
             )
             frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spAppliesTo.adapter = frequencyAdapter
@@ -213,8 +211,7 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
 
     private fun gotoWorkDateUpdateFragment() {
         mView.findNavController().navigate(
-            WorkDateExtraAddFragmentDirections
-                .actionWorkDateExtraAddFragmentToWorkDateUpdateFragment()
+            WorkDateExtraAddFragmentDirections.actionWorkDateExtraAddFragmentToWorkDateUpdateFragment()
         )
     }
 

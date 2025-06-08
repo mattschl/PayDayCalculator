@@ -52,8 +52,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     private var startDate = ""
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEmployerAddBinding.inflate(
             inflater, container, false
@@ -80,23 +79,24 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun populateEmployerListForValidation() {
-        employerViewModel.getEmployers()
-            .observe(viewLifecycleOwner) { employers ->
-                employerList = employers
-            }
+        employerViewModel.getEmployers().observe(viewLifecycleOwner) { employers ->
+            employerList = employers
+        }
     }
 
     private fun populateSpinners() {
         binding.apply {
             val frequencyAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
+                mView.context,
+                R.layout.spinner_item_bold,
                 resources.getStringArray(R.array.pay_day_frequencies)
             )
             frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spFrequency.adapter = frequencyAdapter
 
             val dayOfWeekAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
+                mView.context,
+                R.layout.spinner_item_bold,
                 resources.getStringArray(R.array.pay_days)
             )
             dayOfWeekAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
@@ -126,41 +126,30 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun setTaxOptions() {
-        AlertDialog.Builder(mView.context)
-            .setMessage(
-                getString(R.string.you_cannot_add_taxes_until_the_employer_is_saved)
-            )
-            .setNegativeButton(getString(R.string.ok), null)
-            .show()
+        AlertDialog.Builder(mView.context).setMessage(
+            getString(R.string.you_cannot_add_taxes_until_the_employer_is_saved)
+        ).setNegativeButton(getString(R.string.ok), null).show()
     }
 
     private fun setExtraOptions() {
-        AlertDialog.Builder(mView.context)
-            .setMessage(
-                getString(R.string.you_cannot_add_any_extra_credits_or_deductions_until_the_employer_is_saved)
-            )
-            .setNegativeButton(getString(R.string.ok), null)
-            .show()
+        AlertDialog.Builder(mView.context).setMessage(
+            getString(R.string.you_cannot_add_any_extra_credits_or_deductions_until_the_employer_is_saved)
+        ).setNegativeButton(getString(R.string.ok), null).show()
     }
 
     private fun changeCheckDate() {
         val curDateAll = startDate.split("-")
         val datePickerDialog = DatePickerDialog(
-            requireContext(),
-            { _, year, monthOfYear, dayOfMonth ->
+            requireContext(), { _, year, monthOfYear, dayOfMonth ->
                 val month = monthOfYear + 1
                 val display = "$year-${
-                    month.toString()
-                        .padStart(2, '0')
+                    month.toString().padStart(2, '0')
                 }-${
                     dayOfMonth.toString().padStart(2, '0')
                 }"
                 startDate = display
                 binding.tvStartDate.text = df.getDisplayDate(startDate)
-            },
-            curDateAll[0].toInt(),
-            curDateAll[1].toInt() - 1,
-            curDateAll[2].toInt()
+            }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
         )
         datePickerDialog.setTitle(
             getString(R.string.choose_the_first_date)
@@ -191,16 +180,15 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
 
     private fun setSpinnerActions() {
         binding.apply {
-            spFrequency.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                        changeUiVisibilities()
-                    }
-
-                    override fun onNothingSelected(p0: AdapterView<*>?) {
-                        //not needed
-                    }
+            spFrequency.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                    changeUiVisibilities()
                 }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+                    //not needed
+                }
+            }
         }
     }
 
@@ -311,25 +299,19 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun chooseToSaveAndContinue(curEmployer: Employers) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                getString(R.string.choose_next_steps_for) +
-                        curEmployer.employerName
-            )
-            .setMessage(
-                getString(R.string.would_you_like_to_go_to_the_next_step)
-            )
-            .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                CoroutineScope(Dispatchers.Main).launch {
-                    saveEmployer(curEmployer)
-                    delay(WAIT_250)
-                    addEmployerTaxRules(curEmployer.employerId)
-                    delay(WAIT_250)
-                    gotoEmployerUpdate(curEmployer)
-                }
+        AlertDialog.Builder(mView.context).setTitle(
+            getString(R.string.choose_next_steps_for) + curEmployer.employerName
+        ).setMessage(
+            getString(R.string.would_you_like_to_go_to_the_next_step)
+        ).setPositiveButton(getString(R.string.yes)) { _, _ ->
+            CoroutineScope(Dispatchers.Main).launch {
+                saveEmployer(curEmployer)
+                delay(WAIT_250)
+                addEmployerTaxRules(curEmployer.employerId)
+                delay(WAIT_250)
+                gotoEmployerUpdate(curEmployer)
             }
-            .setNegativeButton(getString(R.string.go_back), null)
-            .show()
+        }.setNegativeButton(getString(R.string.go_back), null).show()
     }
 
     private fun gotoEmployerUpdate(curEmployer: Employers) {
@@ -339,8 +321,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
 
     private fun gotoEmployerUpdateFragment() {
         mView.findNavController().navigate(
-            EmployerAddFragmentDirections
-                .actionEmployerAddFragmentToEmployerUpdateFragment()
+            EmployerAddFragmentDirections.actionEmployerAddFragmentToEmployerUpdateFragment()
         )
     }
 

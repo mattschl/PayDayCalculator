@@ -25,8 +25,7 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkDateExtraUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
-class WorkDateExtraUpdateFragment
-    : Fragment(R.layout.fragment_work_date_extra_update) {
+class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_update) {
 
     private var _binding: FragmentWorkDateExtraUpdateBinding? = null
     private val binding get() = _binding!!
@@ -42,8 +41,7 @@ class WorkDateExtraUpdateFragment
     private val cf = NumberFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWorkDateExtraUpdateBinding.inflate(
             inflater, container, false
@@ -70,21 +68,14 @@ class WorkDateExtraUpdateFragment
     }
 
     private fun populateInfoDisplay() {
-        if (mainViewModel.getWorkDateObject() != null &&
-            mainViewModel.getWorkDateExtra() != null &&
-            mainViewModel.getWorkDateString() != null
-        ) {
+        if (mainViewModel.getWorkDateObject() != null && mainViewModel.getWorkDateExtra() != null && mainViewModel.getWorkDateString() != null) {
             curDateObject = mainViewModel.getWorkDateObject()!!
             oldWorkDateExtra = mainViewModel.getWorkDateExtra()!!
-            mainActivity.title = getString(R.string.update_extra_) +
-                    oldWorkDateExtra.wdeName
+            mainActivity.title = getString(R.string.update_extra_) + oldWorkDateExtra.wdeName
             binding.apply {
-                var display = getString(R.string.date_) +
-                        df.getDisplayDate(
-                            mainViewModel.getWorkDateString()!!
-                        ) +
-                        getString(R.string.employer_) +
-                        mainViewModel.getEmployerString()
+                var display = getString(R.string.date_) + df.getDisplayDate(
+                    mainViewModel.getWorkDateString()!!
+                ) + getString(R.string.employer_) + mainViewModel.getEmployerString()
                 lblDateInfo.text = display
                 etExtraName.setText(oldWorkDateExtra.wdeName)
                 spAppliesTo.setSelection(oldWorkDateExtra.wdeAppliesTo)
@@ -109,8 +100,7 @@ class WorkDateExtraUpdateFragment
                 )
             }
             val frequencyAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
-                frequencies
+                mView.context, R.layout.spinner_item_bold, frequencies
             )
             frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spAppliesTo.adapter = frequencyAdapter
@@ -216,8 +206,9 @@ class WorkDateExtraUpdateFragment
             }
             if (extraList.isNotEmpty()) {
                 for (extra in extraList) {
-                    if (extra.wdeName == etExtraName.text.toString().trim() &&
-                        etExtraName.text.toString().trim() != oldWorkDateExtra.wdeName
+                    if (extra.wdeName == etExtraName.text.toString()
+                            .trim() && etExtraName.text.toString()
+                            .trim() != oldWorkDateExtra.wdeName
                     ) {
                         return getString(R.string.this_extra_name_has_already_been_used)
                     }
@@ -236,14 +227,12 @@ class WorkDateExtraUpdateFragment
 
     private fun getCurrentWorkDateExtra(): WorkDateExtras {
         binding.apply {
-            val value = if (
-                cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) >= 1.0 &&
-                !chkIsFixed.isChecked
-            ) {
-                cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) / 100
-            } else {
-                cf.getDoubleFromDollarOrPercentString(etValue.text.toString())
-            }
+            val value =
+                if (cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) >= 1.0 && !chkIsFixed.isChecked) {
+                    cf.getDoubleFromDollarOrPercentString(etValue.text.toString()) / 100
+                } else {
+                    cf.getDoubleFromDollarOrPercentString(etValue.text.toString())
+                }
             return WorkDateExtras(
                 oldWorkDateExtra.workDateExtraId,
                 oldWorkDateExtra.wdeWorkDateId,
@@ -273,8 +262,7 @@ class WorkDateExtraUpdateFragment
 
     private fun gotoWorkDateUpdateFragment() {
         mView.findNavController().navigate(
-            WorkDateExtraUpdateFragmentDirections
-                .actionWorkDateExtraUpdateFragmentToWorkDateUpdateFragment()
+            WorkDateExtraUpdateFragmentDirections.actionWorkDateExtraUpdateFragmentToWorkDateUpdateFragment()
         )
     }
 

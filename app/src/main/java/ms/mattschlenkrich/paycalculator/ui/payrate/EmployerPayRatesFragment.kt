@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.employer.payrate
+package ms.mattschlenkrich.paycalculator.ui.payrate
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -22,12 +22,11 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerPayRatesBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.employer.payrate.adapter.EmployerPayRateAdapter
+import ms.mattschlenkrich.paycalculator.ui.payrate.adapter.EmployerPayRateAdapter
 
 private const val TAG = FRAG_PAY_RATES
 
-class EmployerPayRatesFragment :
-    Fragment(R.layout.fragment_employer_pay_rates) {
+class EmployerPayRatesFragment : Fragment(R.layout.fragment_employer_pay_rates) {
 
     private var _binding: FragmentEmployerPayRatesBinding? = null
     private val binding get() = _binding!!
@@ -39,8 +38,7 @@ class EmployerPayRatesFragment :
     private var curEmployer: Employers? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEmployerPayRatesBinding.inflate(
             inflater, container, false
@@ -138,26 +136,22 @@ class EmployerPayRatesFragment :
 
     private fun onSelectEmployer() {
         binding.apply {
-            spEmployers.onItemSelectedListener =
-                object : OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        if (spEmployers.selectedItem.toString() == getString(R.string.add_new_employer)) {
-                            gotoAddEmployer()
-                        } else {
-                            curEmployer = employerList[spEmployers.selectedItemPosition]
-                            populatePayRates()
-                        }
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        //not needed
+            spEmployers.onItemSelectedListener = object : OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
+                ) {
+                    if (spEmployers.selectedItem.toString() == getString(R.string.add_new_employer)) {
+                        gotoAddEmployer()
+                    } else {
+                        curEmployer = employerList[spEmployers.selectedItemPosition]
+                        populatePayRates()
                     }
                 }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    //not needed
+                }
+            }
         }
     }
 
@@ -188,22 +182,19 @@ class EmployerPayRatesFragment :
 
     private fun gotoEmployerAddFragment() {
         mView.findNavController().navigate(
-            EmployerPayRatesFragmentDirections
-                .actionEmployerPayRatesFragmentToEmployerAddFragment()
+            EmployerPayRatesFragmentDirections.actionEmployerPayRatesFragmentToEmployerAddFragment()
         )
     }
 
     private fun gotoEmployerPayRateAddFragment() {
         mView.findNavController().navigate(
-            EmployerPayRatesFragmentDirections
-                .actionEmployerPayRatesFragmentToEmployerPayRateAddFragment()
+            EmployerPayRatesFragmentDirections.actionEmployerPayRatesFragmentToEmployerPayRateAddFragment()
         )
     }
 
     fun gotoEmployerWageUpdateFragment() {
         mView.findNavController().navigate(
-            EmployerPayRatesFragmentDirections
-                .actionEmployerPayRatesFragmentToEmployerWageUpdateFragment()
+            EmployerPayRatesFragmentDirections.actionEmployerPayRatesFragmentToEmployerWageUpdateFragment()
         )
     }
 

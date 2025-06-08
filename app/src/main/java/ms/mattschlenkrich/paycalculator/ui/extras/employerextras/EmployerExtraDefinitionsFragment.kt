@@ -46,8 +46,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     private var curExtraType: WorkExtraTypes? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEmployerExtraDefinitionsBinding.inflate(
             inflater, container, false
@@ -94,29 +93,25 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     tvAttachTo.visibility = View.VISIBLE
                     tvDefault.visibility = View.VISIBLE
                     tvCredit.visibility = View.VISIBLE
-                    var display = getString(R.string.calculated) +
-                            resources.getStringArray(
-                                R.array.applies_to_frequencies
-                            )[curExtraType!!.wetAppliesTo]
+                    var display = getString(R.string.calculated) + resources.getStringArray(
+                        R.array.applies_to_frequencies
+                    )[curExtraType!!.wetAppliesTo]
                     tvAppliesTo.text = display
-                    display = getString(R.string.attaches_to) +
-                            resources.getStringArray(
-                                R.array.attach_to_frequencies
-                            )[curExtraType!!.wetAttachTo]
+                    display = getString(R.string.attaches_to) + resources.getStringArray(
+                        R.array.attach_to_frequencies
+                    )[curExtraType!!.wetAttachTo]
                     tvAttachTo.text = display
-                    display = getString(R.string.this_is_a) +
-                            if (curExtraType!!.wetIsCredit) {
-                                getString(R.string.credit)
-                            } else {
-                                getString(R.string.deduction)
-                            }
+                    display = getString(R.string.this_is_a) + if (curExtraType!!.wetIsCredit) {
+                        getString(R.string.credit)
+                    } else {
+                        getString(R.string.deduction)
+                    }
                     tvCredit.text = display
-                    display = getString(R.string.applied) +
-                            if (curExtraType!!.wetIsDefault) {
-                                getString(R.string.by_default)
-                            } else {
-                                getString(R.string.manually)
-                            }
+                    display = getString(R.string.applied) + if (curExtraType!!.wetIsDefault) {
+                        getString(R.string.by_default)
+                    } else {
+                        getString(R.string.manually)
+                    }
                     tvDefault.text = display
                 }
             }
@@ -148,16 +143,11 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         if (curEmployer != null && curExtraType != null) {
             binding.apply {
                 val extraDefinitionAdapter = EmployerExtraDefinitionFullAdapter(
-                    mainActivity, mView,
-                    this@EmployerExtraDefinitionsFragment,
-                    null
+                    mainActivity, mView, this@EmployerExtraDefinitionsFragment, null
                 )
                 rvExtras.apply {
                     layoutManager = GridLayoutManager(
-                        mView.context,
-                        2,
-                        GridLayoutManager.VERTICAL,
-                        false
+                        mView.context, 2, GridLayoutManager.VERTICAL, false
                     )
                     setHasFixedSize(true)
                     adapter = extraDefinitionAdapter
@@ -177,8 +167,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
 
     private fun populateEmployersSpinner() {
         val employerAdapter = ArrayAdapter<Any>(
-            mView.context,
-            R.layout.spinner_item_bold
+            mView.context, R.layout.spinner_item_bold
         )
         employerViewModel.getEmployers().observe(
             viewLifecycleOwner
@@ -209,29 +198,24 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
 
     private fun onSelectEmployer() {
         binding.apply {
-            spEmployers.onItemSelectedListener =
-                object : OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        findEmployerInListAndPopulateExtraTypes()
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        //not needed
-                    }
+            spEmployers.onItemSelectedListener = object : OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
+                ) {
+                    findEmployerInListAndPopulateExtraTypes()
                 }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    //not needed
+                }
+            }
         }
     }
 
     private fun setSelectionToEmployerFoundInList() {
         binding.apply {
             if (mainViewModel.getEmployer() != null) {
-                val employerName =
-                    mainViewModel.getEmployer()!!.employerName
+                val employerName = mainViewModel.getEmployer()!!.employerName
                 for (i in 0 until spEmployers.adapter.count) {
                     if (spEmployers.getItemAtPosition(i) == employerName) {
                         spEmployers.setSelection(i)
@@ -249,9 +233,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     curEmployer = employer
                     populateExtraTypeSpinner()
                     break
-                } else if (spEmployers.selectedItem.toString() ==
-                    getString(R.string.add_new_employer)
-                ) {
+                } else if (spEmployers.selectedItem.toString() == getString(R.string.add_new_employer)) {
                     gotoEmployerAddFragment()
                 }
             }
@@ -262,14 +244,9 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         binding.apply {
             spExtraType.onItemSelectedListener = object : OnItemSelectedListener {
                 override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
+                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
                 ) {
-                    if (spExtraType.selectedItem.toString() ==
-                        getString(R.string.add_a_new_extra_type)
-                    ) {
+                    if (spExtraType.selectedItem.toString() == getString(R.string.add_a_new_extra_type)) {
                         gotoExtraTypeAdd()
                     } else {
                         findExtraTypeInListAndPopulateDetails()
@@ -286,8 +263,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     private fun setSelectionToExtraTypeFoundInList() {
         binding.apply {
             if (mainViewModel.getWorkExtraType() != null) {
-                val extraType =
-                    mainViewModel.getWorkExtraType()!!.wetName
+                val extraType = mainViewModel.getWorkExtraType()!!.wetName
                 for (i in 0 until spExtraType.adapter.count) {
                     if (spExtraType.getItemAtPosition(i) == extraType) {
                         spExtraType.setSelection(i)
@@ -350,8 +326,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
 
     private fun gotoFragmentToWorkExtraTypeUpdateFragment() {
         mView.findNavController().navigate(
-            EmployerExtraDefinitionsFragmentDirections
-                .actionEmployerExtraDefinitionsFragmentToWorkExtraTypeUpdateFragment()
+            EmployerExtraDefinitionsFragmentDirections.actionEmployerExtraDefinitionsFragmentToWorkExtraTypeUpdateFragment()
         )
     }
 
@@ -366,15 +341,13 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
 
     private fun gotoEmployerExtraDefinitionsAddFragment() {
         mView.findNavController().navigate(
-            EmployerExtraDefinitionsFragmentDirections
-                .actionEmployerExtraDefinitionsFragmentToEmployerExtraDefinitionsAddFragment()
+            EmployerExtraDefinitionsFragmentDirections.actionEmployerExtraDefinitionsFragmentToEmployerExtraDefinitionsAddFragment()
         )
     }
 
     private fun gotoEmployerAddFragment() {
         mView.findNavController().navigate(
-            EmployerExtraDefinitionsFragmentDirections
-                .actionEmployerExtraDefinitionsFragmentToEmployerAddFragment()
+            EmployerExtraDefinitionsFragmentDirections.actionEmployerExtraDefinitionsFragmentToEmployerAddFragment()
         )
     }
 
@@ -388,15 +361,13 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
 
     private fun gotoWorkExtraTypeAddFragment() {
         mView.findNavController().navigate(
-            EmployerExtraDefinitionsFragmentDirections
-                .actionEmployerExtraDefinitionsFragmentToWorkExtraTypeAddFragment()
+            EmployerExtraDefinitionsFragmentDirections.actionEmployerExtraDefinitionsFragmentToWorkExtraTypeAddFragment()
         )
     }
 
     override fun gotoEmployerExtraDefinitionUpdateFragment() {
         mView.findNavController().navigate(
-            EmployerExtraDefinitionsFragmentDirections
-                .actionEmployerExtraDefinitionsFragmentToEmployerExtraDefinitionUpdateFragment()
+            EmployerExtraDefinitionsFragmentDirections.actionEmployerExtraDefinitionsFragmentToEmployerExtraDefinitionUpdateFragment()
         )
     }
 

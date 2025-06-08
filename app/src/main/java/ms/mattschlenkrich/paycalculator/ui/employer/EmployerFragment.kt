@@ -23,9 +23,7 @@ import ms.mattschlenkrich.paycalculator.ui.employer.adapter.EmployerAdapter
 
 //private const val TAG = FRAG_EMPLOYERS
 
-class EmployerFragment :
-    Fragment(R.layout.fragment_employer),
-    SearchView.OnQueryTextListener,
+class EmployerFragment : Fragment(R.layout.fragment_employer), SearchView.OnQueryTextListener,
     MenuProvider {
 
     private var _binding: FragmentEmployerBinding? = null
@@ -36,8 +34,7 @@ class EmployerFragment :
     private var employerAdapter: EmployerAdapter? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEmployerBinding.inflate(inflater, container, false)
         mView = binding.root
@@ -64,8 +61,7 @@ class EmployerFragment :
         )
         binding.rvEmployers.apply {
             layoutManager = StaggeredGridLayoutManager(
-                2,
-                StaggeredGridLayoutManager.VERTICAL
+                2, StaggeredGridLayoutManager.VERTICAL
             )
             setHasFixedSize(true)
             adapter = employerAdapter
@@ -102,8 +98,7 @@ class EmployerFragment :
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.search_menu, menu)
-        val mMenuSearch = menu.findItem(R.id.menu_search)
-            .actionView as SearchView
+        val mMenuSearch = menu.findItem(R.id.menu_search).actionView as SearchView
         mMenuSearch.isSubmitButtonEnabled = false
         mMenuSearch.setOnQueryTextListener(this)
     }
@@ -137,15 +132,13 @@ class EmployerFragment :
 
     fun gotoEmployerUpdateFragment() {
         mView.findNavController().navigate(
-            EmployerFragmentDirections
-                .actionEmployerFragmentToEmployerUpdateFragment()
+            EmployerFragmentDirections.actionEmployerFragmentToEmployerUpdateFragment()
         )
     }
 
     private fun gotoEmployerAddFragment() {
         mView.findNavController().navigate(
-            EmployerFragmentDirections
-                .actionEmployerFragmentToEmployerAddFragment()
+            EmployerFragmentDirections.actionEmployerFragmentToEmployerAddFragment()
         )
     }
 

@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.employer.payrate.adapter
+package ms.mattschlenkrich.paycalculator.ui.payrate.adapter
 
 import android.graphics.Color
 import android.graphics.Paint
@@ -15,7 +15,7 @@ import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.databinding.ListWagesItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.employer.payrate.EmployerPayRatesFragment
+import ms.mattschlenkrich.paycalculator.ui.payrate.EmployerPayRatesFragment
 
 class EmployerPayRateAdapter(
     val mainActivity: MainActivity,

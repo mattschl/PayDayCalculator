@@ -49,8 +49,7 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
     private val nf = NumberFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentPayPeriodExtraUpdateBinding.inflate(
             inflater, container, false
@@ -83,12 +82,9 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
         if (mainViewModel.getPayPeriodExtra() != null) {
             oldPayPeriodExtra = mainViewModel.getPayPeriodExtra()!!
             binding.apply {
-                mainActivity.title = getString(R.string.update_extra_) +
-                        oldPayPeriodExtra.ppeName
-                var display = getString(R.string.pay_cutoff_) +
-                        curPayPeriod.ppCutoffDate +
-                        getString(R.string.employer_) +
-                        curEmployer.employerName
+                mainActivity.title = getString(R.string.update_extra_) + oldPayPeriodExtra.ppeName
+                var display =
+                    getString(R.string.pay_cutoff_) + curPayPeriod.ppCutoffDate + getString(R.string.employer_) + curEmployer.employerName
                 lblPayInfo.text = display
                 etExtraName.setText(oldPayPeriodExtra.ppeName)
                 spAppliesTo.setSelection(oldPayPeriodExtra.ppeAppliesTo)
@@ -107,7 +103,8 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
     private fun populateSpinners() {
         binding.apply {
             val frequencyAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
+                mView.context,
+                R.layout.spinner_item_bold,
                 resources.getStringArray(R.array.attach_to_frequencies)
             )
             frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
@@ -214,16 +211,14 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
             }
             if (existingWorkDateExtraList.isNotEmpty()) {
                 for (extra in existingPayPeriodExtraList) {
-                    if (extra.ppeName == etExtraName.text.toString().trim() &&
-                        extra.ppeName != oldPayPeriodExtra.ppeName
+                    if (extra.ppeName == etExtraName.text.toString()
+                            .trim() && extra.ppeName != oldPayPeriodExtra.ppeName
                     ) {
                         return getString(R.string.this_extra_name_has_already_been_used)
                     }
                 }
             }
-            if (etValue.text.isNullOrBlank() ||
-                nf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0
-            ) {
+            if (etValue.text.isNullOrBlank() || nf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0) {
                 return getString(R.string.this_extra_must_have_a_value)
             }
             return ANSWER_OK
@@ -239,8 +234,8 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
             binding.apply {
                 var continueOn = true
                 for (extra in existingWorkDateExtraList) {
-                    if (etExtraName.text.toString().trim() == extra.extra.wdeName &&
-                        extra.extra.wdeName != oldPayPeriodExtra.ppeName
+                    if (etExtraName.text.toString()
+                            .trim() == extra.extra.wdeName && extra.extra.wdeName != oldPayPeriodExtra.ppeName
                     ) {
                         continueOn = false
                         chooseToAddInAdditionToExistingExtra(
@@ -264,8 +259,8 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
             binding.apply {
                 var continueOn = true
                 for (extra in defaultExtraList) {
-                    if (etExtraName.text.toString().trim() == extra.extraType.wetName &&
-                        extra.extraType.wetName != oldPayPeriodExtra.ppeName
+                    if (etExtraName.text.toString()
+                            .trim() == extra.extraType.wetName && extra.extraType.wetName != oldPayPeriodExtra.ppeName
                     ) {
                         continueOn = false
                         chooseToAddInAdditionToExistingExtra(
@@ -285,17 +280,11 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
     }
 
     private fun chooseToAddInAdditionToExistingExtra(extraName: String, message: String) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                getString(R.string.confirm_adding_duplicate_extra__) +
-                        extraName
-            )
-            .setMessage(message)
-            .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                updatePayPeriodExtraAndGotoCallingFragment()
-            }
-            .setNegativeButton(getString(R.string.no), null)
-            .show()
+        AlertDialog.Builder(mView.context).setTitle(
+            getString(R.string.confirm_adding_duplicate_extra__) + extraName
+        ).setMessage(message).setPositiveButton(getString(R.string.yes)) { _, _ ->
+            updatePayPeriodExtraAndGotoCallingFragment()
+        }.setNegativeButton(getString(R.string.no), null).show()
     }
 
     private fun updatePayPeriodExtraAndGotoCallingFragment() {
@@ -339,8 +328,7 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
 
     private fun gotoPayDetailFragment() {
         mView.findNavController().navigate(
-            PayPeriodExtraUpdateFragmentDirections
-                .actionPayPeriodExtraUpdateFragmentToPayDetailFragmentNew()
+            PayPeriodExtraUpdateFragmentDirections.actionPayPeriodExtraUpdateFragmentToPayDetailFragmentNew()
         )
     }
 

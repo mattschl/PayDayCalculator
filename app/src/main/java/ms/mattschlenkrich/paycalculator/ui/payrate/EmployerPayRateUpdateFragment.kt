@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.employer.payrate
+package ms.mattschlenkrich.paycalculator.ui.payrate
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -40,8 +40,7 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
     private val cf = NumberFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEmployerWageUpdateBinding.inflate(
             inflater, container, false
@@ -50,8 +49,7 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         val display =
-            getString(R.string.edit_pay_rate_for) +
-                    mainViewModel.getEmployer()!!.employerName
+            getString(R.string.edit_pay_rate_for) + mainViewModel.getEmployer()!!.employerName
         mainActivity.title = display
         return mView
     }
@@ -74,7 +72,8 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
 
     private fun populateSpinner() {
         val frequencyAdapter = ArrayAdapter(
-            mView.context, R.layout.spinner_item_bold,
+            mView.context,
+            R.layout.spinner_item_bold,
             resources.getStringArray(R.array.pay_rate_based_on)
         )
         frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
@@ -176,20 +175,15 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         binding.apply {
             val curDateAll = tvEffectiveDate.text.toString().split("-")
             val datePickerDialog = DatePickerDialog(
-                requireContext(),
-                { _, year, monthOfYear, dayOfMonth ->
+                requireContext(), { _, year, monthOfYear, dayOfMonth ->
                     val month = monthOfYear + 1
                     val display = "$year-${
-                        month.toString()
-                            .padStart(2, '0')
+                        month.toString().padStart(2, '0')
                     }-${
                         dayOfMonth.toString().padStart(2, '0')
                     }"
                     tvEffectiveDate.text = display
-                },
-                curDateAll[0].toInt(),
-                curDateAll[1].toInt() - 1,
-                curDateAll[2].toInt()
+                }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
             )
             datePickerDialog.setTitle(
                 getString(R.string.choose_when_this_wage_goes_into_effect)
@@ -206,8 +200,7 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
 
     private fun gotoPayRateFragment() {
         mView.findNavController().navigate(
-            EmployerPayRateUpdateFragmentDirections
-                .actionEmployerWageUpdateFragmentToEmployerPayRatesFragment()
+            EmployerPayRateUpdateFragmentDirections.actionEmployerWageUpdateFragmentToEmployerPayRatesFragment()
         )
     }
 

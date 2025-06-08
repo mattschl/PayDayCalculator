@@ -41,8 +41,7 @@ class WorkExtraTypeUpdateFragment : Fragment(
     private val df = DateFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWorkExtraTypeUpdateBinding.inflate(
             layoutInflater, container, false
@@ -51,8 +50,7 @@ class WorkExtraTypeUpdateFragment : Fragment(
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workExtraViewModel = mainActivity.workExtraViewModel
-        mainActivity.title =
-            getString(R.string.update_extra_type)
+        mainActivity.title = getString(R.string.update_extra_type)
         return mView
     }
 
@@ -78,10 +76,8 @@ class WorkExtraTypeUpdateFragment : Fragment(
     private fun populateEmployerInfo() {
         binding.apply {
             tvInfo.maxLines = 4
-            val display = getString(R.string.update_extra_type_) +
-                    currentExtraType.wetName +
-                    getString(R.string.__for) +
-                    currentEmployer.employerName
+            val display =
+                getString(R.string.update_extra_type_) + currentExtraType.wetName + getString(R.string.__for) + currentEmployer.employerName
             tvInfo.text = display
         }
     }
@@ -89,13 +85,15 @@ class WorkExtraTypeUpdateFragment : Fragment(
     private fun populateSpinners() {
         binding.apply {
             val appliesToAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
+                mView.context,
+                R.layout.spinner_item_bold,
                 resources.getStringArray(R.array.applies_to_frequencies)
             )
             appliesToAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spAppliesTo.adapter = appliesToAdapter
             val attachToAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
+                mView.context,
+                R.layout.spinner_item_bold,
                 resources.getStringArray(R.array.attach_to_frequencies)
             )
             attachToAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
@@ -104,12 +102,11 @@ class WorkExtraTypeUpdateFragment : Fragment(
     }
 
     private fun populateExtraTypeListForValidation() {
-        mainActivity.workExtraViewModel.getExtraDefTypes(currentEmployer.employerId)
-            .observe(
-                viewLifecycleOwner
-            ) { names ->
-                extraTypeList = names
-            }
+        mainActivity.workExtraViewModel.getExtraDefTypes(currentEmployer.employerId).observe(
+            viewLifecycleOwner
+        ) { names ->
+            extraTypeList = names
+        }
     }
 
     private fun populateExtraTypeDetails() {
@@ -175,23 +172,19 @@ class WorkExtraTypeUpdateFragment : Fragment(
 
     private fun onAppliesToSpinnerSelected() {
         binding.apply {
-            spAppliesTo.onItemSelectedListener =
-                object : OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        if (position == 4) {
-                            spAttachTo.setSelection(3)
-                        }
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        //not needed
+            spAppliesTo.onItemSelectedListener = object : OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
+                ) {
+                    if (position == 4) {
+                        spAttachTo.setSelection(3)
                     }
                 }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    //not needed
+                }
+            }
         }
     }
 
@@ -214,15 +207,14 @@ class WorkExtraTypeUpdateFragment : Fragment(
             var appliesToAllFound = false
             if (extraTypeList.isNotEmpty()) {
                 for (extra in extraTypeList) {
-                    if (extra.wetName == etExtraName.text.toString().trim() &&
-                        extra.wetName != currentExtraType.wetName
+                    if (extra.wetName == etExtraName.text.toString()
+                            .trim() && extra.wetName != currentExtraType.wetName
                     ) {
                         nameFound = true
                         break
                     }
-                    if (extra.wetAppliesTo == 4 &&
-                        extra.wetName != etExtraName.text.toString().trim() &&
-                        extra.wetName != currentExtraType.wetName
+                    if (extra.wetAppliesTo == 4 && extra.wetName != etExtraName.text.toString()
+                            .trim() && extra.wetName != currentExtraType.wetName
                     ) {
                         appliesToAllFound = true
                         break
@@ -273,8 +265,7 @@ class WorkExtraTypeUpdateFragment : Fragment(
 
     private fun gotoEmployerExtraDefinitionsFragment() {
         mView.findNavController().navigate(
-            WorkExtraTypeUpdateFragmentDirections
-                .actionWorkExtraTypeUpdateFragmentToEmployerExtraDefinitionsFragment()
+            WorkExtraTypeUpdateFragmentDirections.actionWorkExtraTypeUpdateFragmentToEmployerExtraDefinitionsFragment()
         )
     }
 

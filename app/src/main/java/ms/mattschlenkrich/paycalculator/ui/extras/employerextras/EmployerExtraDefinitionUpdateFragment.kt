@@ -40,8 +40,7 @@ class EmployerExtraDefinitionUpdateFragment :
     private val nf = NumberFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEmployerExtraDefinitionUpdateBinding.inflate(
             inflater, container, false
@@ -64,8 +63,7 @@ class EmployerExtraDefinitionUpdateFragment :
         binding.apply {
             etName.isEnabled = false
             if (mainViewModel.getExtraDefinitionFull() != null) {
-                curExtraDefinitionFull =
-                    mainViewModel.getExtraDefinitionFull()!!
+                curExtraDefinitionFull = mainViewModel.getExtraDefinitionFull()!!
                 tvEmployer.text = curExtraDefinitionFull.employer.employerName
                 etName.setText(curExtraDefinitionFull.extraType.wetName)
                 etValue.setText(
@@ -89,12 +87,11 @@ class EmployerExtraDefinitionUpdateFragment :
             } else {
                 getString(R.string.debit)
             }
-            display += " " + getString(R.string.calculated) +
-                    resources.getStringArray(R.array.applies_to_frequencies)[curExtraDefinitionFull.extraType.wetAppliesTo] +
-                    getString(R.string.period_space) +
-                    getString(R.string._attaches_to_) +
-                    resources.getStringArray(R.array.attach_to_frequencies)[curExtraDefinitionFull.extraType.wetAttachTo] +
-                    getString(R.string.period_hyphen)
+            display += " " + getString(R.string.calculated) + resources.getStringArray(R.array.applies_to_frequencies)[curExtraDefinitionFull.extraType.wetAppliesTo] + getString(
+                R.string.period_space
+            ) + getString(R.string._attaches_to_) + resources.getStringArray(R.array.attach_to_frequencies)[curExtraDefinitionFull.extraType.wetAttachTo] + getString(
+                R.string.period_hyphen
+            )
             display += if (curExtraDefinitionFull.extraType.wetIsDefault) {
                 getString(R.string.is_automatic)
             } else {
@@ -180,23 +177,17 @@ class EmployerExtraDefinitionUpdateFragment :
 
     private fun changeEffectiveDate() {
         binding.apply {
-            val curDateAll = tvEffectiveDate.text.toString()
-                .split("-")
+            val curDateAll = tvEffectiveDate.text.toString().split("-")
             val datePickerDialog = DatePickerDialog(
-                mView.context,
-                { _, year, monthOfYear, dayOfMonth ->
+                mView.context, { _, year, monthOfYear, dayOfMonth ->
                     val month = monthOfYear + 1
                     val display = "$year-${
-                        month.toString()
-                            .padStart(2, '0')
+                        month.toString().padStart(2, '0')
                     }-${
                         dayOfMonth.toString().padStart(2, '0')
                     }"
                     tvEffectiveDate.text = display
-                },
-                curDateAll[0].toInt(),
-                curDateAll[1].toInt() - 1,
-                curDateAll[2].toInt()
+                }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
             )
             datePickerDialog.setTitle(getString(R.string.choose_when_this_will_take_effect))
             datePickerDialog.show()
@@ -235,9 +226,7 @@ class EmployerExtraDefinitionUpdateFragment :
 
     private fun validateExtraDefinition(): String {
         binding.apply {
-            if (etValue.text.isNullOrBlank() ||
-                nf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0
-            ) {
+            if (etValue.text.isNullOrBlank() || nf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0) {
                 return getString(R.string.please_enter_a_value_for_this_extra)
             }
             return ANSWER_OK
@@ -252,16 +241,14 @@ class EmployerExtraDefinitionUpdateFragment :
 
     private fun deleteExtra() {
         workExtraViewModel.deleteWorkExtraDefinition(
-            curExtraDefinitionFull.definition.workExtraDefId,
-            df.getCurrentTimeAsString()
+            curExtraDefinitionFull.definition.workExtraDefId, df.getCurrentTimeAsString()
         )
         gotoEmployerExtraDefinitionsFragment()
     }
 
     private fun gotoEmployerExtraDefinitionsFragment() {
         mView.findNavController().navigate(
-            EmployerExtraDefinitionUpdateFragmentDirections
-                .actionEmployerExtraDefinitionUpdateFragmentToEmployerExtraDefinitionsFragment()
+            EmployerExtraDefinitionUpdateFragmentDirections.actionEmployerExtraDefinitionUpdateFragmentToEmployerExtraDefinitionsFragment()
         )
     }
 

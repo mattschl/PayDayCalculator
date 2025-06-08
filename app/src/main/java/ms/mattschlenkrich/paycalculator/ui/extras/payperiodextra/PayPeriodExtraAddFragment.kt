@@ -30,8 +30,7 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentPayPeriodExtraAddBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
-class PayPeriodExtraAddFragment :
-    Fragment(R.layout.fragment_pay_period_extra_add) {
+class PayPeriodExtraAddFragment : Fragment(R.layout.fragment_pay_period_extra_add) {
 
     private var _binding: FragmentPayPeriodExtraAddBinding? = null
     private val binding get() = _binding!!
@@ -49,8 +48,7 @@ class PayPeriodExtraAddFragment :
     private val nf = NumberFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentPayPeriodExtraAddBinding.inflate(
             inflater, container, false
@@ -81,10 +79,8 @@ class PayPeriodExtraAddFragment :
         populateExistingPayPeriodExtraList()
         populateExistingWorkDateExtraList()
         populateDefaultExtraList()
-        val display = getString(R.string.cutoff_date_) +
-                curPayPeriod.ppCutoffDate +
-                getString(R.string._for_) +
-                curEmployer.employerName
+        val display =
+            getString(R.string.cutoff_date_) + curPayPeriod.ppCutoffDate + getString(R.string._for_) + curEmployer.employerName
         binding.apply {
             lblPayInfo.text = display
             chkIsCredit.isChecked = mainActivity.mainViewModel.getIsCredit()
@@ -94,7 +90,8 @@ class PayPeriodExtraAddFragment :
     private fun populateSpinners() {
         binding.apply {
             val frequencyAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
+                mView.context,
+                R.layout.spinner_item_bold,
                 resources.getStringArray(R.array.attach_to_frequencies)
             )
             frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
@@ -183,8 +180,7 @@ class PayPeriodExtraAddFragment :
 
     private fun validateExtraForErrors(): String {
         binding.apply {
-            if (etExtraName.text.isNullOrBlank()
-            ) {
+            if (etExtraName.text.isNullOrBlank()) {
                 return getString(R.string.the_extra_must_have_a_name)
             }
             if (existingPayPeriodExtraList.isNotEmpty()) {
@@ -194,9 +190,7 @@ class PayPeriodExtraAddFragment :
                     }
                 }
             }
-            if (etValue.text.isNullOrBlank() ||
-                nf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0
-            ) {
+            if (etValue.text.isNullOrBlank() || nf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0) {
                 return getString(R.string.this_extra_must_have_a_value)
             }
             return ANSWER_OK
@@ -212,8 +206,7 @@ class PayPeriodExtraAddFragment :
             binding.apply {
                 var continueOn = true
                 for (extra in existingWorkDateExtraList) {
-                    if (etExtraName.text.toString().trim() == extra.extra.wdeName
-                    ) {
+                    if (etExtraName.text.toString().trim() == extra.extra.wdeName) {
                         continueOn = false
                         chooseToAddInAdditionToExistingExtra(
                             extra.extra.wdeName,
@@ -255,17 +248,11 @@ class PayPeriodExtraAddFragment :
     }
 
     private fun chooseToAddInAdditionToExistingExtra(extraName: String, message: String) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                getString(R.string.confirm_adding_duplicate_extra__) +
-                        extraName
-            )
-            .setMessage(message)
-            .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                saveExtraAndGotoCallingFragment()
-            }
-            .setNegativeButton(getString(R.string.no), null)
-            .show()
+        AlertDialog.Builder(mView.context).setTitle(
+            getString(R.string.confirm_adding_duplicate_extra__) + extraName
+        ).setMessage(message).setPositiveButton(getString(R.string.yes)) { _, _ ->
+            saveExtraAndGotoCallingFragment()
+        }.setNegativeButton(getString(R.string.no), null).show()
     }
 
     private fun saveExtraAndGotoCallingFragment() {
@@ -303,8 +290,7 @@ class PayPeriodExtraAddFragment :
 
     private fun gotoPayDetailsFragment() {
         mView.findNavController().navigate(
-            PayPeriodExtraAddFragmentDirections
-                .actionPayPeriodExtraAddFragmentToPayDetailFragmentNew()
+            PayPeriodExtraAddFragmentDirections.actionPayPeriodExtraAddFragmentToPayDetailFragmentNew()
         )
     }
 

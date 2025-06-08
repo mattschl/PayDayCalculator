@@ -43,8 +43,7 @@ class WorkExtraTypeAddFragment : Fragment(
     private lateinit var curEmployer: Employers
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWorkExtraTypeAddBinding.inflate(
             inflater, container, false
@@ -75,9 +74,8 @@ class WorkExtraTypeAddFragment : Fragment(
     private fun populateEmployerInfo() {
         binding.apply {
             tvInfo.maxLines = 4
-            val display = getString(R.string.add_a_new_extra_type) +
-                    getString(R.string._for_) +
-                    curEmployer.employerName
+            val display =
+                getString(R.string.add_a_new_extra_type) + getString(R.string._for_) + curEmployer.employerName
             tvInfo.text = display
         }
     }
@@ -85,13 +83,15 @@ class WorkExtraTypeAddFragment : Fragment(
     private fun populateSpinners() {
         binding.apply {
             val appliesToAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
+                mView.context,
+                R.layout.spinner_item_bold,
                 resources.getStringArray(R.array.applies_to_frequencies)
             )
             appliesToAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spAppliesTo.adapter = appliesToAdapter
             val attachToAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
+                mView.context,
+                R.layout.spinner_item_bold,
                 resources.getStringArray(R.array.attach_to_frequencies)
             )
             attachToAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
@@ -100,12 +100,11 @@ class WorkExtraTypeAddFragment : Fragment(
     }
 
     private fun populateExtraTypeList() {
-        workExtraViewModel.getExtraDefTypes(curEmployer.employerId)
-            .observe(
-                viewLifecycleOwner
-            ) { names ->
-                extraTypeList = names
-            }
+        workExtraViewModel.getExtraDefTypes(curEmployer.employerId).observe(
+            viewLifecycleOwner
+        ) { names ->
+            extraTypeList = names
+        }
     }
 
     private fun setClickActions() {
@@ -137,23 +136,19 @@ class WorkExtraTypeAddFragment : Fragment(
 
     private fun onAppliesToSpinnerSelected() {
         binding.apply {
-            spAppliesTo.onItemSelectedListener =
-                object : OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        if (position == 4) {
-                            spAttachTo.setSelection(3)
-                        }
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        //not needed
+            spAppliesTo.onItemSelectedListener = object : OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
+                ) {
+                    if (position == 4) {
+                        spAttachTo.setSelection(3)
                     }
                 }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    //not needed
+                }
+            }
         }
     }
 
@@ -180,8 +175,8 @@ class WorkExtraTypeAddFragment : Fragment(
                         nameFound = true
                         break
                     }
-                    if (extra.wetAppliesTo == 4 &&
-                        extra.wetName != etExtraName.text.toString().trim()
+                    if (extra.wetAppliesTo == 4 && extra.wetName != etExtraName.text.toString()
+                            .trim()
                     ) {
                         appliesToAllFound = true
                         break
@@ -233,8 +228,7 @@ class WorkExtraTypeAddFragment : Fragment(
 
     private fun gotoEmployerExtraDefinitionsFragment() {
         mView.findNavController().navigate(
-            WorkExtraTypeAddFragmentDirections
-                .actionWorkExtraTypeAddFragmentToEmployerExtraDefinitionsFragment()
+            WorkExtraTypeAddFragmentDirections.actionWorkExtraTypeAddFragmentToEmployerExtraDefinitionsFragment()
         )
     }
 

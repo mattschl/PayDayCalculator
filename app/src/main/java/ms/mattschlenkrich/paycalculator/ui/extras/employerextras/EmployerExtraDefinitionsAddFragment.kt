@@ -51,8 +51,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     private lateinit var extraList: List<WorkExtraTypes>
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEmployerExtraDefinitionsAddBinding.inflate(
             inflater, container, false
@@ -96,19 +95,17 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         curEmployer = mainViewModel.getEmployer()!!
         binding.apply {
             val extraTypeAdapter = ArrayAdapter<String>(
-                mView.context,
-                R.layout.spinner_item_bold
+                mView.context, R.layout.spinner_item_bold
             )
             workExtraViewModel.getExtraDefTypes(
                 curEmployer.employerId
-            )
-                .observe(viewLifecycleOwner) { typesList ->
-                    extraList = typesList
-                    typesList.listIterator().forEach {
-                        extraTypeAdapter.add(it.wetName)
-                    }
-                    extraTypeAdapter.add(getString(R.string.add_a_new_extra_type))
+            ).observe(viewLifecycleOwner) { typesList ->
+                extraList = typesList
+                typesList.listIterator().forEach {
+                    extraTypeAdapter.add(it.wetName)
                 }
+                extraTypeAdapter.add(getString(R.string.add_a_new_extra_type))
+            }
             spExtraTypes.adapter = extraTypeAdapter
         }
     }
@@ -149,23 +146,17 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
 
     private fun changeDate() {
         binding.apply {
-            val curDateAll = tvEffectiveDate.text.toString()
-                .split("-")
+            val curDateAll = tvEffectiveDate.text.toString().split("-")
             val datePickerDialog = DatePickerDialog(
-                mView.context,
-                { _, year, monthOfYear, dayOfMonth ->
+                mView.context, { _, year, monthOfYear, dayOfMonth ->
                     val month = monthOfYear + 1
                     val display = "$year-${
-                        month.toString()
-                            .padStart(2, '0')
+                        month.toString().padStart(2, '0')
                     }-${
                         dayOfMonth.toString().padStart(2, '0')
                     }"
                     tvEffectiveDate.text = display
-                },
-                curDateAll[0].toInt(),
-                curDateAll[1].toInt() - 1,
-                curDateAll[2].toInt()
+                }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
             )
             datePickerDialog.setTitle(getString(R.string.choose_when_this_will_take_effect))
             datePickerDialog.show()
@@ -174,28 +165,24 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
 
     private fun chooseExtraType() {
         binding.apply {
-            spExtraTypes.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
+            spExtraTypes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
+                ) {
+                    if (spExtraTypes.adapter.count > 0 && spExtraTypes.selectedItem.toString() == getString(
+                            R.string.add_a_new_extra_type
+                        )
                     ) {
-                        if (spExtraTypes.adapter.count > 0 &&
-                            spExtraTypes.selectedItem.toString() ==
-                            getString(R.string.add_a_new_extra_type)
-                        ) {
-                            gotoExtraTypeAdd()
-                        } else {
-                            populateFromExtraList()
-                        }
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        //not needed
+                        gotoExtraTypeAdd()
+                    } else {
+                        populateFromExtraList()
                     }
                 }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    //not needed
+                }
+            }
         }
     }
 
@@ -230,16 +217,11 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                     } else {
                         getString(R.string.debit)
                     }
-                    display += getString(R.string.__calculated) +
-                            resources.getStringArray(
-                                R.array.attach_to_frequencies
-                            )[extra.wetAppliesTo] +
-                            getString(R.string.period_space) +
-                            getString(R.string._attaches_to_) +
-                            resources.getStringArray(
-                                R.array.attach_to_frequencies
-                            )[extra.wetAttachTo] +
-                            getString(R.string.period_hyphen)
+                    display += getString(R.string.__calculated) + resources.getStringArray(
+                        R.array.attach_to_frequencies
+                    )[extra.wetAppliesTo] + getString(R.string.period_space) + getString(R.string._attaches_to_) + resources.getStringArray(
+                        R.array.attach_to_frequencies
+                    )[extra.wetAttachTo] + getString(R.string.period_hyphen)
                     display += if (extra.wetIsDefault) getString(R.string.is_automatic)
                     else getString(R.string.added_manually)
                     tvDescription.text = display
@@ -309,9 +291,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
 
     private fun validateExtra(): String {
         binding.apply {
-            if (etValue.text.isNullOrBlank() ||
-                nf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0
-            ) {
+            if (etValue.text.isNullOrBlank() || nf.getDoubleFromDollarOrPercentString(etValue.text.toString()) == 0.0) {
                 return getString(R.string.please_enter_a_value_for_this_extra)
             }
             return ANSWER_OK
@@ -319,8 +299,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     }
 
     private fun saveExtra() {
-        val currentExtraDefinition =
-            getCurrentExtraDefinition()
+        val currentExtraDefinition = getCurrentExtraDefinition()
         workExtraViewModel.insertWorkExtraDefinition(
             currentExtraDefinition
         )
@@ -341,8 +320,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
 
     private fun gotoEmployerUpdateFragment() {
         mView.findNavController().navigate(
-            EmployerExtraDefinitionsAddFragmentDirections
-                .actionEmployerExtraDefinitionsAddFragmentToEmployerUpdateFragment()
+            EmployerExtraDefinitionsAddFragmentDirections.actionEmployerExtraDefinitionsAddFragmentToEmployerUpdateFragment()
         )
     }
 
@@ -353,15 +331,13 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
 
     private fun gotoExtraDefinitionsFragment() {
         mView.findNavController().navigate(
-            EmployerExtraDefinitionsAddFragmentDirections
-                .actionEmployerExtraDefinitionsAddFragmentToEmployerExtraDefinitionsFragment()
+            EmployerExtraDefinitionsAddFragmentDirections.actionEmployerExtraDefinitionsAddFragmentToEmployerExtraDefinitionsFragment()
         )
     }
 
     private fun gotoWorkExtraTypeAddFragment() {
         mView.findNavController().navigate(
-            EmployerExtraDefinitionsAddFragmentDirections
-                .actionEmployerExtraDefinitionsAddFragmentToWorkExtraTypeAddFragment()
+            EmployerExtraDefinitionsAddFragmentDirections.actionEmployerExtraDefinitionsAddFragmentToWorkExtraTypeAddFragment()
         )
     }
 

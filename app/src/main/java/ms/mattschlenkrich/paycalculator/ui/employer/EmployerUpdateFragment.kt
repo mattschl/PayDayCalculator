@@ -54,8 +54,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
     private var startDate = ""
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEmployerUpdateBinding.inflate(inflater, container, false)
         mView = binding.root
@@ -89,14 +88,16 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
     private fun populateSpinners() {
         binding.apply {
             val frequencyAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
+                mView.context,
+                R.layout.spinner_item_bold,
                 resources.getStringArray(R.array.pay_day_frequencies)
             )
             frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spFrequency.adapter = frequencyAdapter
 
             val dayOfWeekAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
+                mView.context,
+                R.layout.spinner_item_bold,
                 resources.getStringArray(R.array.pay_days)
             )
             dayOfWeekAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
@@ -112,8 +113,8 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
                     curEmployer = mainActivity.mainViewModel.getEmployer()!!
                     ifPayRateNotExistsGotoPayRate(curEmployer!!.employerId)
                     binding.apply {
-                        mainActivity.title = getString(R.string.update) + " " +
-                                curEmployer!!.employerName
+                        mainActivity.title =
+                            getString(R.string.update) + " " + curEmployer!!.employerName
                         etName.setText(curEmployer!!.employerName)
                         for (i in 0 until spFrequency.adapter.count) {
                             if (spFrequency.getItemAtPosition(i) == curEmployer!!.payFrequency) {
@@ -176,10 +177,9 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
 
     override fun populateExtras(employerId: Long) {
         binding.apply {
-            val extraTypeAdapter =
-                EmployerExtraDefinitionsShortAdapter(
-                    curEmployer!!, mainActivity, this@EmployerUpdateFragment,
-                )
+            val extraTypeAdapter = EmployerExtraDefinitionsShortAdapter(
+                curEmployer!!, mainActivity, this@EmployerUpdateFragment,
+            )
             rvExtras.apply {
                 layoutManager = LinearLayoutManager(mView.context)
                 adapter = extraTypeAdapter
@@ -253,8 +253,8 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
             }
             if (employerList.isNotEmpty()) {
                 for (employer in employerList) {
-                    if (employer.employerName == etName.text.toString().trim() &&
-                        employer.employerName != curEmployer!!.employerName
+                    if (employer.employerName == etName.text.toString()
+                            .trim() && employer.employerName != curEmployer!!.employerName
                     ) {
                         return getString(R.string.this_employer_already_exists)
                     }
@@ -295,58 +295,52 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
 
     private fun setSpinnerActions() {
         binding.apply {
-            spFrequency.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                        when (spFrequency.selectedItem.toString()) {
-                            INTERVAL_SEMI_MONTHLY -> {
-                                lblMidMonthDate.visibility = View.VISIBLE
-                                etMidMonthDate.visibility = View.VISIBLE
-                                lblMainMonthDate.visibility = View.VISIBLE
-                                etMainMonthDate.visibility = View.VISIBLE
-                            }
+            spFrequency.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                    when (spFrequency.selectedItem.toString()) {
+                        INTERVAL_SEMI_MONTHLY -> {
+                            lblMidMonthDate.visibility = View.VISIBLE
+                            etMidMonthDate.visibility = View.VISIBLE
+                            lblMainMonthDate.visibility = View.VISIBLE
+                            etMainMonthDate.visibility = View.VISIBLE
+                        }
 
-                            INTERVAL_MONTHLY -> {
-                                lblMidMonthDate.visibility = View.GONE
-                                etMidMonthDate.visibility = View.GONE
-                                lblMainMonthDate.visibility = View.VISIBLE
-                                etMainMonthDate.visibility = View.VISIBLE
-                            }
+                        INTERVAL_MONTHLY -> {
+                            lblMidMonthDate.visibility = View.GONE
+                            etMidMonthDate.visibility = View.GONE
+                            lblMainMonthDate.visibility = View.VISIBLE
+                            etMainMonthDate.visibility = View.VISIBLE
+                        }
 
-                            else -> {
-                                lblMidMonthDate.visibility = View.GONE
-                                etMidMonthDate.visibility = View.GONE
-                                lblMainMonthDate.visibility = View.GONE
-                                etMainMonthDate.visibility = View.GONE
-                            }
+                        else -> {
+                            lblMidMonthDate.visibility = View.GONE
+                            etMidMonthDate.visibility = View.GONE
+                            lblMainMonthDate.visibility = View.GONE
+                            etMainMonthDate.visibility = View.GONE
                         }
                     }
-
-                    override fun onNothingSelected(p0: AdapterView<*>?) {
-                        //not needed
-                    }
                 }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+                    //not needed
+                }
+            }
         }
     }
 
     private fun changeCheckDate() {
         val curDateAll = startDate.split("-")
         val datePickerDialog = DatePickerDialog(
-            requireContext(),
-            { _, year, monthOfYear, dayOfMonth ->
+            requireContext(), { _, year, monthOfYear, dayOfMonth ->
                 val month = monthOfYear + 1
                 val display = "$year-${
-                    month.toString()
-                        .padStart(2, '0')
+                    month.toString().padStart(2, '0')
                 }-${
                     dayOfMonth.toString().padStart(2, '0')
                 }"
                 startDate = display
                 binding.tvStartDate.text = df.getDisplayDate(startDate)
-            },
-            curDateAll[0].toInt(),
-            curDateAll[1].toInt() - 1,
-            curDateAll[2].toInt()
+            }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
         )
         datePickerDialog.setTitle(getString(R.string.choose_the_first_date))
         datePickerDialog.show()
@@ -374,8 +368,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
 
     private fun gotoEmployerFragment() {
         mView.findNavController().navigate(
-            EmployerUpdateFragmentDirections
-                .actionEmployerUpdateFragmentToEmployerFragment()
+            EmployerUpdateFragmentDirections.actionEmployerUpdateFragmentToEmployerFragment()
         )
     }
 
@@ -389,8 +382,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
 
     private fun gotoTaxRulesFragment() {
         mView.findNavController().navigate(
-            EmployerUpdateFragmentDirections
-                .actionEmployerUpdateFragmentToTaxRulesFragment()
+            EmployerUpdateFragmentDirections.actionEmployerUpdateFragmentToTaxRulesFragment()
         )
     }
 
@@ -404,8 +396,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
 
     private fun gotoTaxTypesAddFragment() {
         mView.findNavController().navigate(
-            EmployerUpdateFragmentDirections
-                .actionEmployerUpdateFragmentToTaxTypeAddFragment()
+            EmployerUpdateFragmentDirections.actionEmployerUpdateFragmentToTaxTypeAddFragment()
         )
     }
 
@@ -418,8 +409,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
 
     private fun gotoEmployerPayRatesFragment() {
         mView.findNavController().navigate(
-            EmployerUpdateFragmentDirections
-                .actionEmployerUpdateFragmentToEmployerPayRatesFragment()
+            EmployerUpdateFragmentDirections.actionEmployerUpdateFragmentToEmployerPayRatesFragment()
         )
     }
 
@@ -432,8 +422,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
 
     private fun gotoEmployerExtraDefinitionsAddFragment() {
         mView.findNavController().navigate(
-            EmployerUpdateFragmentDirections
-                .actionEmployerUpdateFragmentToEmployerExtraDefinitionsAddFragment()
+            EmployerUpdateFragmentDirections.actionEmployerUpdateFragmentToEmployerExtraDefinitionsAddFragment()
         )
     }
 
@@ -447,29 +436,25 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
 
     private fun gotoPayRateAddFragment() {
         mView.findNavController().navigate(
-            EmployerUpdateFragmentDirections
-                .actionEmployerUpdateFragmentToEmployerPayRateAddFragment()
+            EmployerUpdateFragmentDirections.actionEmployerUpdateFragmentToEmployerPayRateAddFragment()
         )
     }
 
     fun gotoEmployerExtraDefinitionsFragment() {
         mView.findNavController().navigate(
-            EmployerUpdateFragmentDirections
-                .actionEmployerUpdateFragmentToEmployerExtraDefinitionsFragment()
+            EmployerUpdateFragmentDirections.actionEmployerUpdateFragmentToEmployerExtraDefinitionsFragment()
         )
     }
 
     fun gotoRulesFragment() {
         mView.findNavController().navigate(
-            EmployerUpdateFragmentDirections
-                .actionEmployerUpdateFragmentToTaxRulesFragment()
+            EmployerUpdateFragmentDirections.actionEmployerUpdateFragmentToTaxRulesFragment()
         )
     }
 
     override fun gotoEmployerExtraDefinitionUpdateFragment() {
         mView.findNavController().navigate(
-            EmployerUpdateFragmentDirections
-                .actionEmployerUpdateFragmentToEmployerExtraDefinitionUpdateFragment()
+            EmployerUpdateFragmentDirections.actionEmployerUpdateFragmentToEmployerExtraDefinitionUpdateFragment()
         )
     }
 
