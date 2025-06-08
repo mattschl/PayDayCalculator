@@ -31,8 +31,7 @@ class MaterialQuantityUpdateFragment : Fragment(R.layout.fragment_material_quant
     private lateinit var material: MaterialInSequence
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMaterialQuantityUpdateBinding.inflate(
             inflater, container, false
@@ -56,12 +55,10 @@ class MaterialQuantityUpdateFragment : Fragment(R.layout.fragment_material_quant
             mainViewModel.getWorkDateObject()!!.wdDate
         )
         material = mainViewModel.getMaterialInSequence()!!
-        val display = getString(R.string.update_quantity_of) +
-                nf.getNumberFromDouble(material.mQty) +
-                getString(R.string._for_) +
-                material.mName +
-                getString(R.string._on_) +
-                date
+        val display =
+            getString(R.string.update_quantity_of) + nf.getNumberFromDouble(material.mQty) + getString(
+                R.string._for_
+            ) + material.mName + getString(R.string._on_) + date
         binding.apply {
             tvDetails.text = display
             etNewQuantity.setText(nf.getNumberFromDouble(material.mQty))
@@ -117,8 +114,7 @@ class MaterialQuantityUpdateFragment : Fragment(R.layout.fragment_material_quant
 
     private fun gotoWorkOrderHistoryUpdateFragment() {
         mView.findNavController().navigate(
-            MaterialQuantityUpdateFragmentDirections
-                .actionMaterialQuantityUpdateFragmentToWorkOrderHistoryUpdateFragment()
+            MaterialQuantityUpdateFragmentDirections.actionMaterialQuantityUpdateFragmentToWorkOrderHistoryUpdateFragment()
         )
     }
 

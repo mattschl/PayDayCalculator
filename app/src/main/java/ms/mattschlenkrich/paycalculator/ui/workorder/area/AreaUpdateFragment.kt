@@ -19,8 +19,7 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentSingleItemUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
-class AreaUpdateFragment :
-    Fragment(R.layout.fragment_single_item_update) {
+class AreaUpdateFragment : Fragment(R.layout.fragment_single_item_update) {
 
     private var _binding: FragmentSingleItemUpdateBinding? = null
     private val binding get() = _binding!!
@@ -34,8 +33,7 @@ class AreaUpdateFragment :
     private lateinit var oldArea: Areas
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSingleItemUpdateBinding.inflate(
             inflater, container, false
@@ -62,9 +60,7 @@ class AreaUpdateFragment :
             ) { area ->
                 oldArea = area
                 binding.apply {
-                    val display =
-                        getString(R.string.update_area_description_for) +
-                                oldArea.areaName
+                    val display = getString(R.string.update_area_description_for) + oldArea.areaName
                     tvTitle.text = display
                     etItem.setText(oldArea.areaName)
                 }
@@ -108,10 +104,8 @@ class AreaUpdateFragment :
                 return getString(R.string.please_enter_a_valid_description_of_the_area)
             }
             for (area in areasList) {
-                if (area.areaName ==
-                    etItem.text.toString().trim() &&
-                    etItem.text.toString().trim() !=
-                    oldArea.areaName
+                if (area.areaName == etItem.text.toString().trim() && etItem.text.toString()
+                        .trim() != oldArea.areaName
                 ) {
                     return getString(R.string.this_area_description_already_exists)
                 }
@@ -155,22 +149,19 @@ class AreaUpdateFragment :
 
     private fun gotoAreaViewFragment() {
         mView.findNavController().navigate(
-            AreaUpdateFragmentDirections
-                .actionAreaUpdateFragmentToAreaViewFragment()
+            AreaUpdateFragmentDirections.actionAreaUpdateFragmentToAreaViewFragment()
         )
     }
 
     private fun gotoWorkOrderHistoryUpdateFragment() {
         mView.findNavController().navigate(
-            AreaUpdateFragmentDirections
-                .actionAreaUpdateFragmentToWorkOrderHistoryUpdateFragment()
+            AreaUpdateFragmentDirections.actionAreaUpdateFragmentToWorkOrderHistoryUpdateFragment()
         )
     }
 
     private fun gotoWorkOrderUpdateFragment() {
         mView.findNavController().navigate(
-            AreaUpdateFragmentDirections
-                .actionAreaUpdateFragmentToWorkOrderUpdateFragment()
+            AreaUpdateFragmentDirections.actionAreaUpdateFragmentToWorkOrderUpdateFragment()
         )
     }
 

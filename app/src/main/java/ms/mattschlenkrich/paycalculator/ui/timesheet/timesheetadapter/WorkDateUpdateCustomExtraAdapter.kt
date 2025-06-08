@@ -11,7 +11,7 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkDateExtraItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.timesheet.workdate.WorkDateUpdateFragment
+import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateUpdateFragment
 
 class WorkDateUpdateCustomExtraAdapter(
     private val workDateExtras: ArrayList<WorkDateExtras>,

@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.timesheet.workdate.adapter
+package ms.mattschlenkrich.paycalculator.ui.workdate.adapter
 
 import android.app.AlertDialog
 import android.view.LayoutInflater
@@ -15,7 +15,7 @@ import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkOrderHistoryItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.timesheet.workdate.WorkDateUpdateFragment
+import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateUpdateFragment
 
 class WorkDateWorkOrderHistoryAdapter(
     private val workOrderHistory: ArrayList<WorkOrderHistoryWithDates>,

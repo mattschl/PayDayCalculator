@@ -41,7 +41,7 @@
     <!--    workDateAddFragment-->
     <fragment
         android:id="@+id/workDateAddFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.timesheet.workdate.WorkDateAddFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateAddFragment"
         android:label="fragment_work_date_add"
         tools:layout="@layout/fragment_work_date_add">
         <action
@@ -57,7 +57,7 @@
     <!--    workDateUpdateFragment-->
     <fragment
         android:id="@+id/workDateUpdateFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.timesheet.workdate.WorkDateUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateUpdateFragment"
         android:label="WorkDateUpdateFragment"
         tools:layout="@layout/fragment_work_date_update">
         <action

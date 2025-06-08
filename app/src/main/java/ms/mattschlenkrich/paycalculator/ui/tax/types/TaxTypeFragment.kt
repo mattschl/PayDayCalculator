@@ -25,9 +25,7 @@ import ms.mattschlenkrich.paycalculator.ui.tax.types.adapter.TaxTypeAdapter
 
 private const val TAG = FRAG_TAX_TYPE
 
-class TaxTypeFragment :
-    Fragment(R.layout.fragment_tax_type),
-    SearchView.OnQueryTextListener,
+class TaxTypeFragment : Fragment(R.layout.fragment_tax_type), SearchView.OnQueryTextListener,
     MenuProvider {
 
     private var _binding: FragmentTaxTypeBinding? = null
@@ -39,8 +37,7 @@ class TaxTypeFragment :
     private lateinit var taxTypeAdapter: TaxTypeAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentTaxTypeBinding.inflate(inflater, container, false)
         mView = binding.root
@@ -64,8 +61,7 @@ class TaxTypeFragment :
         taxTypeAdapter = TaxTypeAdapter(mainActivity, mView, this@TaxTypeFragment)
         binding.rvTaxTypes.apply {
             layoutManager = StaggeredGridLayoutManager(
-                2,
-                StaggeredGridLayoutManager.VERTICAL
+                2, StaggeredGridLayoutManager.VERTICAL
             )
             setHasFixedSize(true)
             adapter = taxTypeAdapter
@@ -136,15 +132,13 @@ class TaxTypeFragment :
 
     private fun gotoTaxTypeAddFragment() {
         mView.findNavController().navigate(
-            TaxTypeFragmentDirections
-                .actionTaxTypeFragmentToTaxTypeAddFragment()
+            TaxTypeFragmentDirections.actionTaxTypeFragmentToTaxTypeAddFragment()
         )
     }
 
     fun gotoTaxTypeUpdateFragment() {
         mView.findNavController().navigate(
-            TaxTypeFragmentDirections
-                .actionTaxTypeFragmentToTaxTypeUpdateFragment()
+            TaxTypeFragmentDirections.actionTaxTypeFragmentToTaxTypeUpdateFragment()
         )
     }
 

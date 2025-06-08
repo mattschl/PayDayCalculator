@@ -29,8 +29,7 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderJobSpecUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
-class WorkOrderJobSpecUpdateFragment :
-    Fragment(R.layout.fragment_work_order_job_spec_update) {
+class WorkOrderJobSpecUpdateFragment : Fragment(R.layout.fragment_work_order_job_spec_update) {
 
     private var _binding: FragmentWorkOrderJobSpecUpdateBinding? = null
     private val binding get() = _binding!!
@@ -48,8 +47,7 @@ class WorkOrderJobSpecUpdateFragment :
     private val df = DateFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWorkOrderJobSpecUpdateBinding.inflate(
             inflater, container, false
@@ -77,83 +75,70 @@ class WorkOrderJobSpecUpdateFragment :
         }
     }
 
-    private suspend fun populateJobSpecValues() =
-        withContext(Dispatchers.Main) {
-            if (mainViewModel.getWorkOrderJobSpecId() != null) {
-                workOrderViewModel.getWorkOrderJobSpec(
-                    mainViewModel.getWorkOrderJobSpecId()!!
-                ).observe(viewLifecycleOwner) { jobSpec ->
-                    originalJobSpec = jobSpec
-                    binding.apply {
-                        var display = getString(R.string.original_job_spec) +
-                                jobSpec.jobSpec.jsName
-                        lblJobSpec.text = display
-                        acJobSpec.setText(jobSpec.jobSpec.jsName)
-                        display = if (jobSpec.workOrderJobSpec.wojsAreaId != null) {
-                            getString(R.string.old_area_of_work) +
-                                    jobSpec.area?.areaName
-                        } else {
-                            getString(R.string.no_area_was_indicated)
-                        }
-                        lblArea.text = display
-                        acArea.setText(jobSpec.area?.areaName)
-                        if (jobSpec.workOrderJobSpec.wojsNote != null) {
-                            etNote.setText(jobSpec.workOrderJobSpec.wojsNote)
-                        }
+    private suspend fun populateJobSpecValues() = withContext(Dispatchers.Main) {
+        if (mainViewModel.getWorkOrderJobSpecId() != null) {
+            workOrderViewModel.getWorkOrderJobSpec(
+                mainViewModel.getWorkOrderJobSpecId()!!
+            ).observe(viewLifecycleOwner) { jobSpec ->
+                originalJobSpec = jobSpec
+                binding.apply {
+                    var display = getString(R.string.original_job_spec) + jobSpec.jobSpec.jsName
+                    lblJobSpec.text = display
+                    acJobSpec.setText(jobSpec.jobSpec.jsName)
+                    display = if (jobSpec.workOrderJobSpec.wojsAreaId != null) {
+                        getString(R.string.old_area_of_work) + jobSpec.area?.areaName
+                    } else {
+                        getString(R.string.no_area_was_indicated)
+                    }
+                    lblArea.text = display
+                    acArea.setText(jobSpec.area?.areaName)
+                    if (jobSpec.workOrderJobSpec.wojsNote != null) {
+                        etNote.setText(jobSpec.workOrderJobSpec.wojsNote)
                     }
                 }
             }
         }
+    }
 
-    private suspend fun populateJobSpecListForAutoComplete() =
-        withContext(Dispatchers.Main) {
-            workOrderViewModel.getJobSpecsAll().observe(viewLifecycleOwner) { list ->
-                jobSpecListForAutoComplete = list
-                val jobSpecNames = ArrayList<String>()
-                list.listIterator().forEach { jobSpecNames.add(it.jsName) }
-                val jsAdapter = ArrayAdapter(
-                    mView.context,
-                    R.layout.spinner_item_normal,
-                    jobSpecNames
-                )
-                binding.acJobSpec.setAdapter(jsAdapter)
-            }
+    private suspend fun populateJobSpecListForAutoComplete() = withContext(Dispatchers.Main) {
+        workOrderViewModel.getJobSpecsAll().observe(viewLifecycleOwner) { list ->
+            jobSpecListForAutoComplete = list
+            val jobSpecNames = ArrayList<String>()
+            list.listIterator().forEach { jobSpecNames.add(it.jsName) }
+            val jsAdapter = ArrayAdapter(
+                mView.context, R.layout.spinner_item_normal, jobSpecNames
+            )
+            binding.acJobSpec.setAdapter(jsAdapter)
         }
+    }
 
-    private suspend fun populateAreaListForAutoComplete() =
-        withContext(Dispatchers.Main) {
-            workOrderViewModel.getAreasList().observe(viewLifecycleOwner) { list ->
-                areaListForAutoComplete = list
-                val areaNames = ArrayList<String>()
-                list.listIterator().forEach { areaNames.add(it.areaName) }
-                val areaAdapter = ArrayAdapter(
-                    mView.context,
-                    R.layout.spinner_item_normal,
-                    areaNames
-                )
-                binding.acArea.setAdapter(areaAdapter)
-            }
+    private suspend fun populateAreaListForAutoComplete() = withContext(Dispatchers.Main) {
+        workOrderViewModel.getAreasList().observe(viewLifecycleOwner) { list ->
+            areaListForAutoComplete = list
+            val areaNames = ArrayList<String>()
+            list.listIterator().forEach { areaNames.add(it.areaName) }
+            val areaAdapter = ArrayAdapter(
+                mView.context, R.layout.spinner_item_normal, areaNames
+            )
+            binding.acArea.setAdapter(areaAdapter)
         }
+    }
 
-    private suspend fun populateWorkOrderInfo() =
-        withContext(Dispatchers.Main) {
-            if (mainViewModel.getWorkOrder() != null) {
-                workOrder = mainViewModel.getWorkOrder()!!
-                val display = getString(R.string.edit_the_job_spec_for_wo_) + workOrder.woNumber +
-                        getString(R.string._at_) + " " + workOrder.woAddress +
-                        "\n" + workOrder.woDescription
-                binding.tvInfo.text = display
-            }
+    private suspend fun populateWorkOrderInfo() = withContext(Dispatchers.Main) {
+        if (mainViewModel.getWorkOrder() != null) {
+            workOrder = mainViewModel.getWorkOrder()!!
+            val display =
+                getString(R.string.edit_the_job_spec_for_wo_) + workOrder.woNumber + getString(R.string._at_) + " " + workOrder.woAddress + "\n" + workOrder.woDescription
+            binding.tvInfo.text = display
         }
+    }
 
     private fun setCurJobSpec(): Boolean {
         curJobSpec = null
         binding.apply {
             if (!acJobSpec.text.isNullOrBlank()) {
                 for (jobSpec in jobSpecListForAutoComplete) {
-                    if (acJobSpec.text.toString().trim() ==
-                        jobSpec.jsName
-                    ) {
+                    if (acJobSpec.text.toString().trim() == jobSpec.jsName) {
                         curJobSpec = jobSpec
                         return true
                     }
@@ -168,9 +153,7 @@ class WorkOrderJobSpecUpdateFragment :
         binding.apply {
             if (!acArea.text.isNullOrBlank()) {
                 for (area in areaListForAutoComplete) {
-                    if (acArea.text.toString().trim() ==
-                        area.areaName
-                    ) {
+                    if (acArea.text.toString().trim() == area.areaName) {
                         curArea = area
                         return true
                     }
@@ -248,10 +231,7 @@ class WorkOrderJobSpecUpdateFragment :
 
     private fun insertAreaIntoDb(areaName: String): Long {
         val newArea = Areas(
-            nf.generateRandomIdAsLong(),
-            areaName,
-            false,
-            df.getCurrentTimeAsString()
+            nf.generateRandomIdAsLong(), areaName, false, df.getCurrentTimeAsString()
         )
         workOrderViewModel.insertArea(newArea)
         return newArea.areaId
@@ -297,8 +277,7 @@ class WorkOrderJobSpecUpdateFragment :
 
     private fun gotoWorkOrderUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderJobSpecUpdateFragmentDirections
-                .actionWorkOrderJobSpecUpdateFragmentToWorkOrderUpdateFragment()
+            WorkOrderJobSpecUpdateFragmentDirections.actionWorkOrderJobSpecUpdateFragmentToWorkOrderUpdateFragment()
         )
     }
 

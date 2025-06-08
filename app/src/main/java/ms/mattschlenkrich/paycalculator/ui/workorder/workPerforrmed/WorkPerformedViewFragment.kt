@@ -23,10 +23,8 @@ import ms.mattschlenkrich.paycalculator.ui.workorder.workPerforrmed.adapter.Work
 
 private const val TAG = FRAG_WORK_PERFORMED_VIEW
 
-class WorkPerformedViewFragment :
-    Fragment(R.layout.fragment_recycler_view),
-    SearchView.OnQueryTextListener,
-    MenuProvider {
+class WorkPerformedViewFragment : Fragment(R.layout.fragment_recycler_view),
+    SearchView.OnQueryTextListener, MenuProvider {
 
     private var _binding: FragmentRecyclerViewBinding? = null
     private val binding get() = _binding!!
@@ -36,9 +34,7 @@ class WorkPerformedViewFragment :
     private var workPerformedAdapter: WorkPerformedAdapter? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentRecyclerViewBinding.inflate(
             inflater, container, false
@@ -72,8 +68,7 @@ class WorkPerformedViewFragment :
         )
         binding.rvRecycler.apply {
             layoutManager = StaggeredGridLayoutManager(
-                2,
-                StaggeredGridLayoutManager.VERTICAL
+                2, StaggeredGridLayoutManager.VERTICAL
             )
             setHasFixedSize(true)
             adapter = workPerformedAdapter
@@ -100,8 +95,7 @@ class WorkPerformedViewFragment :
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.search_menu, menu)
-        val mMenuSearch = menu.findItem(R.id.menu_search)
-            .actionView as SearchView
+        val mMenuSearch = menu.findItem(R.id.menu_search).actionView as SearchView
         mMenuSearch.isSubmitButtonEnabled = false
         mMenuSearch.setOnQueryTextListener(this)
     }
@@ -136,8 +130,7 @@ class WorkPerformedViewFragment :
 
     fun gotoWorkPerformedUpdateFragment() {
         mView.findNavController().navigate(
-            WorkPerformedViewFragmentDirections
-                .actionWorkPerformedViewFragmentToWorkPerformedUpdateFragment()
+            WorkPerformedViewFragmentDirections.actionWorkPerformedViewFragmentToWorkPerformedUpdateFragment()
         )
     }
 

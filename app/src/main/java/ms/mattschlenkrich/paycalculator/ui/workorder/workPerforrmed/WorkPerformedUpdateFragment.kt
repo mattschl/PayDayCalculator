@@ -20,8 +20,7 @@ import ms.mattschlenkrich.paycalculator.databinding.FragmentSingleItemUpdateBind
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
 
-class WorkPerformedUpdateFragment :
-    Fragment(R.layout.fragment_single_item_update) {
+class WorkPerformedUpdateFragment : Fragment(R.layout.fragment_single_item_update) {
 
     private var _binding: FragmentSingleItemUpdateBinding? = null
     private val binding get() = _binding!!
@@ -34,8 +33,7 @@ class WorkPerformedUpdateFragment :
     private lateinit var oldWorkPerformed: WorkPerformed
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSingleItemUpdateBinding.inflate(
             inflater, container, false
@@ -62,8 +60,7 @@ class WorkPerformedUpdateFragment :
                     oldWorkPerformed = work
                     binding.apply {
                         val display =
-                            getString(R.string.update_work_description_) +
-                                    oldWorkPerformed.wpDescription
+                            getString(R.string.update_work_description_) + oldWorkPerformed.wpDescription
                         tvTitle.text = display
                         etItem.setText(oldWorkPerformed.wpDescription)
                     }
@@ -107,8 +104,8 @@ class WorkPerformedUpdateFragment :
                 return getString(R.string.please_enter_a_valid_work_performed_description)
             }
             for (workPerformed in workPerformedList) {
-                if (workPerformed.wpDescription == etItem.text.toString().trim() &&
-                    etItem.text.toString().trim() != oldWorkPerformed.wpDescription
+                if (workPerformed.wpDescription == etItem.text.toString()
+                        .trim() && etItem.text.toString().trim() != oldWorkPerformed.wpDescription
                 ) {
                     return getString(R.string.this_work_performed_description_already_exists)
                 }
@@ -129,14 +126,10 @@ class WorkPerformedUpdateFragment :
             )
             gotoCallingFragment()
         } catch (e: SQLiteConstraintException) {
-            AlertDialog.Builder(mView.context)
-                .setTitle(getString(R.string.something_went_wrong))
+            AlertDialog.Builder(mView.context).setTitle(getString(R.string.something_went_wrong))
                 .setMessage(
-                    getString(R.string.check_to_see_if_this_work_was_already_entered_) +
-                            " " + e.toString()
-                )
-                .setNeutralButton(getString(R.string.ok), null)
-                .show()
+                    getString(R.string.check_to_see_if_this_work_was_already_entered_) + " " + e.toString()
+                ).setNeutralButton(getString(R.string.ok), null).show()
         }
     }
 
@@ -154,15 +147,13 @@ class WorkPerformedUpdateFragment :
 
     private fun gotoWorkPerformedViewFragment() {
         mView.findNavController().navigate(
-            WorkPerformedUpdateFragmentDirections
-                .actionWorkPerformedUpdateFragmentToWorkPerformedViewFragment()
+            WorkPerformedUpdateFragmentDirections.actionWorkPerformedUpdateFragmentToWorkPerformedViewFragment()
         )
     }
 
     private fun gotoWorkPerformedUpdateFragment() {
         mView.findNavController().navigate(
-            WorkPerformedUpdateFragmentDirections
-                .actionWorkPerformedUpdateFragmentToWorkOrderHistoryUpdateFragment()
+            WorkPerformedUpdateFragmentDirections.actionWorkPerformedUpdateFragmentToWorkOrderHistoryUpdateFragment()
         )
     }
 

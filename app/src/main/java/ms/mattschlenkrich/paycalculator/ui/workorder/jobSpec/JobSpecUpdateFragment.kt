@@ -32,8 +32,7 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
     private val df = DateFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentJobSpecBinding.inflate(
             inflater, container, false
@@ -57,9 +56,7 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
         if (mainViewModel.getJobSpec() != null) {
             oldJobSpec = mainViewModel.getJobSpec()!!
             binding.apply {
-                val display =
-                    getString(R.string.update_) +
-                            oldJobSpec.jsName
+                val display = getString(R.string.update_) + oldJobSpec.jsName
                 tvTitle.text = display
                 etJobSpec.setText(oldJobSpec.jsName)
             }
@@ -108,8 +105,8 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
                 return getString(R.string.please_enter_a_valid_job_spec)
             }
             for (jobSpec in jobSpecList) {
-                if (jobSpec.jsName == binding.etJobSpec.text.toString().trim() &&
-                    jobSpec.jsName != oldJobSpec.jsName
+                if (jobSpec.jsName == binding.etJobSpec.text.toString()
+                        .trim() && jobSpec.jsName != oldJobSpec.jsName
                 ) {
                     return getString(R.string.this_job_spec_already_exists)
                 }
@@ -146,15 +143,13 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
 
     private fun gotoJobSpecViewFragment() {
         mView.findNavController().navigate(
-            JobSpecUpdateFragmentDirections
-                .actionJobSpecUpdateFragmentToJobSpecViewFragment()
+            JobSpecUpdateFragmentDirections.actionJobSpecUpdateFragmentToJobSpecViewFragment()
         )
     }
 
     private fun gotoWorkOrderUpdateFragment() {
         mView.findNavController().navigate(
-            JobSpecUpdateFragmentDirections
-                .actionJobSpecUpdateFragmentToWorkOrderUpdateFragment()
+            JobSpecUpdateFragmentDirections.actionJobSpecUpdateFragmentToWorkOrderUpdateFragment()
         )
     }
 

@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.timesheet.workdate
+package ms.mattschlenkrich.paycalculator.ui.workdate
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -65,8 +65,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
     private val nf = NumberFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWorkDateAddBinding.inflate(
             inflater, container, false
@@ -100,8 +99,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
 
     private fun populateWorkDateLists() {
         payDayViewModel.getWorkDateListUsed(
-            payPeriod!!.ppEmployerId,
-            payPeriod!!.ppCutoffDate
+            payPeriod!!.ppEmployerId, payPeriod!!.ppCutoffDate
         ).observe(viewLifecycleOwner) { list ->
             usedWorkDatesList.clear()
             workDatesList.clear()
@@ -169,22 +167,17 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
         binding.apply {
             val curDateAll = curDateString.split("-")
             val datePickerDialog = DatePickerDialog(
-                requireContext(),
-                { _, year, monthOfYear, dayOfMonth ->
+                requireContext(), { _, year, monthOfYear, dayOfMonth ->
                     val month = monthOfYear + 1
                     val display = "$year-${
-                        month.toString()
-                            .padStart(2, '0')
+                        month.toString().padStart(2, '0')
                     }-${
                         dayOfMonth.toString().padStart(2, '0')
                     }"
                     curDateString = display
                     tvWorkDate.text = df.getDisplayDate(curDateString)
 
-                },
-                curDateAll[0].toInt(),
-                curDateAll[1].toInt() - 1,
-                curDateAll[2].toInt()
+                }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
             )
             datePickerDialog.setTitle(getString(R.string.choose_a_work_date))
             datePickerDialog.show()
@@ -278,12 +271,10 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
                 curDateString,
                 if (etHours.text.isNullOrBlank()) 0.0 else etHours.text.toString().trim()
                     .toDouble(),
-                if (etOt.text.isNullOrBlank()) 0.0 else etOt.text.toString().trim()
-                    .toDouble(),
+                if (etOt.text.isNullOrBlank()) 0.0 else etOt.text.toString().trim().toDouble(),
                 if (etDblOt.text.isNullOrBlank()) 0.0 else etDblOt.text.toString().trim()
                     .toDouble(),
-                if (etStat.text.isNullOrBlank()) 0.0 else etStat.text.toString().trim()
-                    .toDouble(),
+                if (etStat.text.isNullOrBlank()) 0.0 else etStat.text.toString().trim().toDouble(),
                 if (etNote.text.isNullOrBlank()) null else etNote.text.toString().trim(),
                 false,
                 df.getCurrentTimeAsString()
@@ -303,16 +294,12 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
     }
 
     private fun confirmOverwriteUsedDate(date: WorkDates, fragment: String) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(getString(R.string.this_date_is_already_used))
+        AlertDialog.Builder(mView.context).setTitle(getString(R.string.this_date_is_already_used))
             .setMessage(
                 getString(R.string.would_you_like_to_replace_the_old_information_for_this_work_date)
-            )
-            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+            ).setPositiveButton(getString(R.string.yes)) { _, _ ->
                 overWriteWorkDate(date, fragment)
-            }
-            .setNegativeButton(getString(R.string.no), null)
-            .show()
+            }.setNegativeButton(getString(R.string.no), null).show()
     }
 
     private fun overWriteWorkDate(date: WorkDates, goBackTo: String) {
@@ -327,8 +314,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
     }
 
     private fun goBackToFragment(
-        goBackTo: String,
-        workDate: WorkDates
+        goBackTo: String, workDate: WorkDates
     ) {
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
@@ -403,8 +389,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
 
     private fun gotoWorkOrderHistoryAddFragment() {
         mView.findNavController().navigate(
-            WorkDateAddFragmentDirections
-                .actionWorkDateAddFragmentToWorkOrderHistoryAddFragment()
+            WorkDateAddFragmentDirections.actionWorkDateAddFragmentToWorkOrderHistoryAddFragment()
         )
     }
 
@@ -415,15 +400,13 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
 
     private fun gotoWorkDateUpdateFragment() {
         mView.findNavController().navigate(
-            WorkDateAddFragmentDirections
-                .actionWorkDateAddFragmentToWorkDateUpdateFragment()
+            WorkDateAddFragmentDirections.actionWorkDateAddFragmentToWorkDateUpdateFragment()
         )
     }
 
     private fun gotoTimeSheetFragment() {
         mView.findNavController().navigate(
-            WorkDateAddFragmentDirections
-                .actionGlobalTimeSheetFragment()
+            WorkDateAddFragmentDirections.actionGlobalTimeSheetFragment()
         )
     }
 

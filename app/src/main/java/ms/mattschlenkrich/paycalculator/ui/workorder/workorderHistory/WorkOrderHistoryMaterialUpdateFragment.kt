@@ -49,8 +49,7 @@ class WorkOrderHistoryMaterialUpdateFragment :
     private val nf = NumberFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWorkOrderHistoryMaterialBinding.inflate(
             inflater, container, false
@@ -108,9 +107,7 @@ class WorkOrderHistoryMaterialUpdateFragment :
             val materialListNames = ArrayList<String>()
             list.listIterator().forEach { materialListNames.add(it.mName) }
             val mAdapter = ArrayAdapter(
-                mView.context,
-                R.layout.spinner_item_normal,
-                materialListNames
+                mView.context, R.layout.spinner_item_normal, materialListNames
             )
             binding.acMaterials.setAdapter(mAdapter)
         }
@@ -118,20 +115,17 @@ class WorkOrderHistoryMaterialUpdateFragment :
 
     private fun populateFromHistory() {
         binding.apply {
-            var display = getString(R.string.original_material__) +
-                    materialInSequence.mName
+            var display = getString(R.string.original_material__) + materialInSequence.mName
             lblMaterials.text = display
             acMaterials.setText(materialInSequence.mName)
-            display = getString(R.string.original_quantity__) +
-                    nf.getNumberFromDouble(materialInSequence.mQty)
+            display =
+                getString(R.string.original_quantity__) + nf.getNumberFromDouble(materialInSequence.mQty)
             lblQuantity.text = display
             etQuantity.setText(nf.getNumberFromDouble(materialInSequence.mQty))
-            display = getString(R.string.update_material_used_on) +
-                    "${originalWorkOrderHistoryWithDates.workDate.wdDate}\n" +
-                    getString(R.string.for_work_order) +
-                    "${originalWorkOrderHistoryWithDates.workOrder.woNumber} @ " +
-                    "${originalWorkOrderHistoryWithDates.workOrder.woAddress} \n " +
-                    originalWorkOrderHistoryWithDates.workOrder.woDescription
+            display =
+                getString(R.string.update_material_used_on) + "${originalWorkOrderHistoryWithDates.workDate.wdDate}\n" + getString(
+                    R.string.for_work_order
+                ) + "${originalWorkOrderHistoryWithDates.workOrder.woNumber} @ " + "${originalWorkOrderHistoryWithDates.workOrder.woAddress} \n " + originalWorkOrderHistoryWithDates.workOrder.woDescription
             tvInfo.text = display
         }
     }
@@ -148,10 +142,9 @@ class WorkOrderHistoryMaterialUpdateFragment :
     private fun updateMaterialInHistoryIfValid() {
         binding.apply {
             if (etQuantity.text.isNullOrBlank()) etQuantity.setText("1")
-            if (acMaterials.text.toString().trim() ==
-                originalWorkOrderHistoryMaterialCombined.material.mName &&
-                etQuantity.text.toString().toDouble() ==
-                originalWorkOrderHistoryMaterialCombined.workOrderHistoryMaterial.wohmQuantity
+            if (acMaterials.text.toString()
+                    .trim() == originalWorkOrderHistoryMaterialCombined.material.mName && etQuantity.text.toString()
+                    .toDouble() == originalWorkOrderHistoryMaterialCombined.workOrderHistoryMaterial.wohmQuantity
             ) {
                 gotoWorkOrderHistoryUpdate()
             } else {
@@ -193,9 +186,9 @@ class WorkOrderHistoryMaterialUpdateFragment :
                 return getString(R.string.choose_a_valid_material)
             }
             for (material in existingMaterialsInHistory) {
-                if (material.mName == acMaterials.text.toString().trim() &&
-                    acMaterials.text.toString().trim() !=
-                    originalWorkOrderHistoryMaterialCombined.material.mName
+                if (material.mName == acMaterials.text.toString()
+                        .trim() && acMaterials.text.toString()
+                        .trim() != originalWorkOrderHistoryMaterialCombined.material.mName
                 ) {
                     return getString(R.string.this_material_has_already_been_used_for_this_work_order_history)
                 }
@@ -229,9 +222,7 @@ class WorkOrderHistoryMaterialUpdateFragment :
                 return true
             } else {
                 for (material in materialListForAutoComplete) {
-                    if (acMaterials.text.toString() == material.mName &&
-                        !acMaterials.text.isNullOrBlank()
-                    ) {
+                    if (acMaterials.text.toString() == material.mName && !acMaterials.text.isNullOrBlank()) {
                         curMaterial = material
                         return true
                     }
@@ -253,8 +244,7 @@ class WorkOrderHistoryMaterialUpdateFragment :
 
     private fun gotoWorkOrderHistoryUpdate() {
         mView.findNavController().navigate(
-            WorkOrderHistoryMaterialUpdateFragmentDirections
-                .actionWorkOrderHistoryMaterialUpdateFragmentToWorkOrderHistoryUpdateFragment()
+            WorkOrderHistoryMaterialUpdateFragmentDirections.actionWorkOrderHistoryMaterialUpdateFragmentToWorkOrderHistoryUpdateFragment()
         )
     }
 

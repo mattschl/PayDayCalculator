@@ -36,8 +36,7 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
     private var curTaxRule: WorkTaxRules? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentTaxRuleUpdateBinding.inflate(
             inflater, container, false
@@ -135,20 +134,21 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
 
     private fun validateTaxRule(): String {
         binding.apply {
-            if (etPercentage.text.isNullOrBlank() ||
-                nf.getDoubleFromDollarOrPercentString(etPercentage.text.toString()) == 0.0
+            if (etPercentage.text.isNullOrBlank() || nf.getDoubleFromDollarOrPercentString(
+                    etPercentage.text.toString()
+                ) == 0.0
             ) {
                 return getString(R.string.there_should_be_a_percentage_here)
             }
-            if ((etExemption.text.isNullOrBlank() ||
-                        nf.getDoubleFromDollarOrPercentString(etExemption.text.toString()) == 0.0) &&
-                chkExemption.isChecked
+            if ((etExemption.text.isNullOrBlank() || nf.getDoubleFromDollarOrPercentString(
+                    etExemption.text.toString()
+                ) == 0.0) && chkExemption.isChecked
             ) {
                 return getString(R.string.an_exemption_is_indicated_but_no_amount_was_entered)
             }
-            if ((etUpperLimit.text.isNullOrBlank() ||
-                        nf.getDoubleFromDollarOrPercentString(etUpperLimit.text.toString()) == 0.0) &&
-                chkUpperLimit.isChecked
+            if ((etUpperLimit.text.isNullOrBlank() || nf.getDoubleFromDollarOrPercentString(
+                    etUpperLimit.text.toString()
+                ) == 0.0) && chkUpperLimit.isChecked
             ) {
                 return getString(R.string.an_upper_limit_is_indicated_but_no_amount_was_entered)
             }
@@ -189,8 +189,7 @@ class TaxRuleUpdateFragment : Fragment(R.layout.fragment_tax_rule_update) {
 
     private fun gotoTaxRulesFragment() {
         mView.findNavController().navigate(
-            TaxRuleUpdateFragmentDirections
-                .actionTaxRuleUpdateFragmentToTaxRulesFragment()
+            TaxRuleUpdateFragmentDirections.actionTaxRuleUpdateFragmentToTaxRulesFragment()
         )
     }
 

@@ -12,7 +12,7 @@ import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_UPDATE
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkDateExtraItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.timesheet.workdate.IWorkDateAddFragment
+import ms.mattschlenkrich.paycalculator.ui.workdate.IWorkDateAddFragment
 
 class WorkDateDefaultExtraAdapter(
     val mainActivity: MainActivity,

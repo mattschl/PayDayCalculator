@@ -19,8 +19,7 @@ import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.adapter.WorkOrder
 
 //private const val TAG = FRAG_WORK_ORDER_LOOKUP
 
-class WorkOrderLookupFragment :
-    Fragment(R.layout.fragment_work_order_view) {
+class WorkOrderLookupFragment : Fragment(R.layout.fragment_work_order_view) {
 
     private var _binding: FragmentWorkOrderViewBinding? = null
     private val binding get() = _binding!!
@@ -32,8 +31,7 @@ class WorkOrderLookupFragment :
     private var workOrderAdapter: WorkOrderLookupAdapter? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWorkOrderViewBinding.inflate(
             inflater, container, false
@@ -90,10 +88,7 @@ class WorkOrderLookupFragment :
         binding.apply {
             etWorkOrder.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
+                    s: CharSequence?, start: Int, count: Int, after: Int
                 ) {
 //                    null
                 }
@@ -118,9 +113,7 @@ class WorkOrderLookupFragment :
     }
 
     private fun searchWorkOrders(query: String) {
-        if (workOrderAdapter != null &&
-            curEmployer != null
-        ) {
+        if (workOrderAdapter != null && curEmployer != null) {
             val searchQuery = "%$query%"
             workOrderViewModel.searchWorkOrders(curEmployer!!.employerId, searchQuery).observe(
                 viewLifecycleOwner
@@ -132,15 +125,13 @@ class WorkOrderLookupFragment :
 
     fun gotoWorkOrderHistoryAddFragment() {
         mView.findNavController().navigate(
-            WorkOrderLookupFragmentDirections
-                .actionWorkOrderLookupFragmentToWorkOrderHistoryAddFragment()
+            WorkOrderLookupFragmentDirections.actionWorkOrderLookupFragmentToWorkOrderHistoryAddFragment()
         )
     }
 
     fun gotoWorkOrderHistoryUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderLookupFragmentDirections
-                .actionWorkOrderLookupFragmentToWorkOrderHistoryUpdateFragment()
+            WorkOrderLookupFragmentDirections.actionWorkOrderLookupFragmentToWorkOrderHistoryUpdateFragment()
         )
     }
 

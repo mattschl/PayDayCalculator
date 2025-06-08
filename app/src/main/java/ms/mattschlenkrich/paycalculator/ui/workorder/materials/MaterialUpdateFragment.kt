@@ -18,8 +18,7 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentMaterialUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
-class MaterialUpdateFragment
-    : Fragment(R.layout.fragment_material_update) {
+class MaterialUpdateFragment : Fragment(R.layout.fragment_material_update) {
 
     private var _binding: FragmentMaterialUpdateBinding? = null
     private val binding get() = _binding!!
@@ -34,8 +33,7 @@ class MaterialUpdateFragment
     private val nf = NumberFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMaterialUpdateBinding.inflate(
             inflater, container, false
@@ -59,8 +57,7 @@ class MaterialUpdateFragment
         if (mainViewModel.getMaterial() != null) {
             oldMaterial = mainViewModel.getMaterial()!!
             binding.apply {
-                val display = getString(R.string.update_) +
-                        oldMaterial.mName
+                val display = getString(R.string.update_) + oldMaterial.mName
                 tvTitle.text = display
                 etMaterial.setText(oldMaterial.mName)
                 etPrice.setText(nf.displayDollars(oldMaterial.mPrice))
@@ -70,13 +67,12 @@ class MaterialUpdateFragment
     }
 
     private fun populateMaterialListForValidation() {
-        workOrderViewModel.getMaterialsList()
-            .observe(viewLifecycleOwner) { list ->
-                materialList.clear()
-                for (material in list.listIterator()) {
-                    materialList.add(material)
-                }
+        workOrderViewModel.getMaterialsList().observe(viewLifecycleOwner) { list ->
+            materialList.clear()
+            for (material in list.listIterator()) {
+                materialList.add(material)
             }
+        }
     }
 
     private fun setClickActions() {
@@ -116,15 +112,13 @@ class MaterialUpdateFragment
                 return getString(R.string.there_needs_to_be_a_price_including_zero)
             }
             for (material in materialList) {
-                if (material.mName == etMaterial.text.toString().trim() &&
-                    etMaterial.text.toString().trim() != oldMaterial.mName
+                if (material.mName == etMaterial.text.toString()
+                        .trim() && etMaterial.text.toString().trim() != oldMaterial.mName
                 ) {
                     return getString(R.string.this_material_already_exists)
                 }
             }
-            if (nf.getDoubleFromDollars(etCost.text.toString()) >
-                nf.getDoubleFromDollars(etPrice.text.toString())
-            ) {
+            if (nf.getDoubleFromDollars(etCost.text.toString()) > nf.getDoubleFromDollars(etPrice.text.toString())) {
                 return getString(R.string.the_cost_is_greater_than_the_price)
             }
         }
@@ -151,8 +145,7 @@ class MaterialUpdateFragment
     private fun gotoCallingFragment() {
         mainViewModel.apply {
             setMaterial(null)
-            if (getCallingFragment()!!.contains(FRAG_MATERIAL_VIEW)
-            ) {
+            if (getCallingFragment()!!.contains(FRAG_MATERIAL_VIEW)) {
                 gotoMaterialViewFragment()
             } else {
                 gotoWorkOrderHistoryUpdateFragment()
@@ -162,15 +155,13 @@ class MaterialUpdateFragment
 
     private fun gotoMaterialViewFragment() {
         mView.findNavController().navigate(
-            MaterialUpdateFragmentDirections
-                .actionMaterialUpdateFragmentToMaterialViewFragment()
+            MaterialUpdateFragmentDirections.actionMaterialUpdateFragmentToMaterialViewFragment()
         )
     }
 
     private fun gotoWorkOrderHistoryUpdateFragment() {
         mView.findNavController().navigate(
-            MaterialUpdateFragmentDirections
-                .actionMaterialUpdateFragmentToWorkOrderHistoryUpdateFragment()
+            MaterialUpdateFragmentDirections.actionMaterialUpdateFragmentToWorkOrderHistoryUpdateFragment()
         )
     }
 

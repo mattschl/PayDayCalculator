@@ -35,8 +35,7 @@ import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderCommonFunctions
 
 private const val TAG = FRAG_WORK_ORDER_HISTORY_ADD
 
-class WorkOrderHistoryAddFragment :
-    Fragment(R.layout.fragment_work_order_history) {
+class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_history) {
 
     private var _binding: FragmentWorkOrderHistoryBinding? = null
     private val binding get() = _binding!!
@@ -54,8 +53,7 @@ class WorkOrderHistoryAddFragment :
     private lateinit var commonFunctions: WorkOrderCommonFunctions
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWorkOrderHistoryBinding.inflate(
             inflater, container, false
@@ -106,8 +104,7 @@ class WorkOrderHistoryAddFragment :
     private fun populateCurrentEmployer() {
         curEmployer = commonFunctions.getEmployer()
         if (curEmployer != null) {
-            binding.tvEmployers.text =
-                curEmployer!!.employerName
+            binding.tvEmployers.text = curEmployer!!.employerName
         }
     }
 
@@ -216,10 +213,7 @@ class WorkOrderHistoryAddFragment :
             }
             acWorkOrder.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
+                    s: CharSequence?, start: Int, count: Int, after: Int
                 ) {
 //                    null
                 }
@@ -244,16 +238,13 @@ class WorkOrderHistoryAddFragment :
                 .setTitle(getString(R.string.create_work_order_) + "${binding.acWorkOrder.text}?")
                 .setMessage(getString(R.string.this_work_order_does_not_exist))
                 .setPositiveButton(getString(R.string.yes)) { _, _ -> gotoWorkOrderAdd() }
-                .setNegativeButton(getString(R.string.no), null)
-                .show()
+                .setNegativeButton(getString(R.string.no), null).show()
         }
     }
 
     private fun validateWorkOrderHistory(): String {
         binding.apply {
-            if (curWorkOrder == null &&
-                acWorkOrder.text.isNullOrBlank()
-            ) {
+            if (curWorkOrder == null && acWorkOrder.text.isNullOrBlank()) {
                 return getString(R.string.there_is_no_work_order_selected)
             }
             convertNumberStringsToDoubles()
@@ -316,14 +307,11 @@ class WorkOrderHistoryAddFragment :
                 nf.generateRandomIdAsLong(),
                 workOrderId,
                 workDateObject!!.workDateId,
-                if (etRegHours.text.isNullOrBlank())
-                    0.0 else etRegHours.text.toString().toDouble(),
-                if (etOtHours.text.isNullOrBlank())
-                    0.0 else etOtHours.text.toString().toDouble(),
-                if (etDblOtHours.text.isNullOrBlank())
-                    0.0 else etDblOtHours.text.toString().toDouble(),
-                if (etNote.text.isNullOrBlank())
-                    null else etNote.text.toString(),
+                if (etRegHours.text.isNullOrBlank()) 0.0 else etRegHours.text.toString().toDouble(),
+                if (etOtHours.text.isNullOrBlank()) 0.0 else etOtHours.text.toString().toDouble(),
+                if (etDblOtHours.text.isNullOrBlank()) 0.0 else etDblOtHours.text.toString()
+                    .toDouble(),
+                if (etNote.text.isNullOrBlank()) null else etNote.text.toString(),
                 false,
                 df.getCurrentTimeAsString()
             )
@@ -331,20 +319,17 @@ class WorkOrderHistoryAddFragment :
     }
 
     private fun chooseToGotoUpdate() {
-        AlertDialog.Builder(mView.context)
-            .setTitle(getString(R.string.choose_the_next_step))
+        AlertDialog.Builder(mView.context).setTitle(getString(R.string.choose_the_next_step))
             .setMessage(getString(R.string.would_you_like_to_add_work_performed_or_materials_to_this_history_))
             .setPositiveButton(getString(R.string.yes)) { _, _ -> saveHistoryIfValid(true) }
-            .setNegativeButton(getString(R.string.no)) { _, _ -> saveHistoryIfValid(false) }
-            .show()
+            .setNegativeButton(getString(R.string.no)) { _, _ -> saveHistoryIfValid(false) }.show()
     }
 
     private fun setCurWorkOrder() {
         binding.apply {
             if (acWorkOrder.text.isNullOrBlank()) {
                 displayMessage(
-                    getString(R.string.error_) +
-                            getString(R.string.please_enter_a_valid_work_order_before_adding_work_performed)
+                    getString(R.string.error_) + getString(R.string.please_enter_a_valid_work_order_before_adding_work_performed)
                 )
             }
             if (doesWorkOrderExist()) {
@@ -365,27 +350,23 @@ class WorkOrderHistoryAddFragment :
         binding.apply {
             mainViewModel.setTempWorkOrderHistoryInfo(
                 TempWorkOrderHistoryInfo(
-                    if (acWorkOrder.text.isNullOrBlank())
-                        "000" else acWorkOrder.text.toString(),
+                    if (acWorkOrder.text.isNullOrBlank()) "000" else acWorkOrder.text.toString(),
                     lblDate.text.toString(),
-                    if (etRegHours.text.isNullOrBlank())
-                        0.0 else etRegHours.text.toString().trim().toDouble(),
-                    if (etOtHours.text.isNullOrBlank())
-                        0.0 else etOtHours.text.toString().trim().toDouble(),
-                    if (etDblOtHours.text.isNullOrBlank())
-                        0.0 else etDblOtHours.text.toString().trim().toDouble(),
-                    if (etNote.text.isNullOrBlank())
-                        "" else etNote.text.toString(),
-                    if (acWorkPerformed.text.isNullOrBlank())
-                        "" else acWorkPerformed.text.toString().trim(),
-                    if (acArea.text.isNullOrBlank())
-                        "" else acArea.text.toString().trim(),
-                    if (etWorkPerformedNote.text.isNullOrBlank())
-                        "" else etWorkPerformedNote.text.toString().trim(),
-                    if (etMaterialQty.text.isNullOrBlank())
-                        0.0 else etMaterialQty.text.toString().trim().toDouble(),
-                    if (acMaterials.text.isNullOrBlank())
-                        "" else acMaterials.text.toString().trim()
+                    if (etRegHours.text.isNullOrBlank()) 0.0 else etRegHours.text.toString().trim()
+                        .toDouble(),
+                    if (etOtHours.text.isNullOrBlank()) 0.0 else etOtHours.text.toString().trim()
+                        .toDouble(),
+                    if (etDblOtHours.text.isNullOrBlank()) 0.0 else etDblOtHours.text.toString()
+                        .trim().toDouble(),
+                    if (etNote.text.isNullOrBlank()) "" else etNote.text.toString(),
+                    if (acWorkPerformed.text.isNullOrBlank()) "" else acWorkPerformed.text.toString()
+                        .trim(),
+                    if (acArea.text.isNullOrBlank()) "" else acArea.text.toString().trim(),
+                    if (etWorkPerformedNote.text.isNullOrBlank()) "" else etWorkPerformedNote.text.toString()
+                        .trim(),
+                    if (etMaterialQty.text.isNullOrBlank()) 0.0 else etMaterialQty.text.toString()
+                        .trim().toDouble(),
+                    if (acMaterials.text.isNullOrBlank()) "" else acMaterials.text.toString().trim()
                 )
             )
         }
@@ -409,8 +390,7 @@ class WorkOrderHistoryAddFragment :
 
     private fun gotoWorkOrderLookupFragment() {
         mView.findNavController().navigate(
-            WorkOrderHistoryAddFragmentDirections
-                .actionWorkOrderHistoryAddFragmentToWorkOrderLookupFragment()
+            WorkOrderHistoryAddFragmentDirections.actionWorkOrderHistoryAddFragmentToWorkOrderLookupFragment()
         )
     }
 
@@ -422,8 +402,7 @@ class WorkOrderHistoryAddFragment :
 
     private fun gotoWorkOrderAddFragment() {
         mView.findNavController().navigate(
-            WorkOrderHistoryAddFragmentDirections
-                .actionWorkOrderHistoryAddFragmentToWorkOrderAddFragment()
+            WorkOrderHistoryAddFragmentDirections.actionWorkOrderHistoryAddFragmentToWorkOrderAddFragment()
         )
     }
 
@@ -433,8 +412,7 @@ class WorkOrderHistoryAddFragment :
 
     private fun gotoWorkDateUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderHistoryAddFragmentDirections
-                .actionWorkOrderHistoryAddFragmentToWorkDateUpdateFragment()
+            WorkOrderHistoryAddFragmentDirections.actionWorkOrderHistoryAddFragmentToWorkDateUpdateFragment()
         )
     }
 
@@ -445,8 +423,7 @@ class WorkOrderHistoryAddFragment :
 
     private fun gotoWorkOrderHistoryUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderHistoryAddFragmentDirections
-                .actionWorkOrderHistoryAddFragmentToWorkOrderHistoryUpdateFragment()
+            WorkOrderHistoryAddFragmentDirections.actionWorkOrderHistoryAddFragmentToWorkOrderHistoryUpdateFragment()
         )
     }
 
@@ -459,8 +436,7 @@ class WorkOrderHistoryAddFragment :
 
     private fun gotoWorkOrderUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderHistoryAddFragmentDirections
-                .actionWorkOrderHistoryAddFragmentToWorkOrderUpdateFragment()
+            WorkOrderHistoryAddFragmentDirections.actionWorkOrderHistoryAddFragmentToWorkOrderUpdateFragment()
         )
     }
 

@@ -22,9 +22,7 @@ import ms.mattschlenkrich.paycalculator.ui.workorder.area.adapter.AreaViewAdapte
 
 private const val TAG = FRAG_AREA_VIEW
 
-class AreaViewFragment :
-    Fragment(R.layout.fragment_recycler_view),
-    SearchView.OnQueryTextListener,
+class AreaViewFragment : Fragment(R.layout.fragment_recycler_view), SearchView.OnQueryTextListener,
     MenuProvider {
     private var _binding: FragmentRecyclerViewBinding? = null
     private val binding get() = _binding!!
@@ -34,9 +32,7 @@ class AreaViewFragment :
     private lateinit var areaViewAdapter: AreaViewAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentRecyclerViewBinding.inflate(
             inflater, container, false
@@ -63,8 +59,7 @@ class AreaViewFragment :
         )
         binding.rvRecycler.apply {
             layoutManager = StaggeredGridLayoutManager(
-                2,
-                StaggeredGridLayoutManager.VERTICAL
+                2, StaggeredGridLayoutManager.VERTICAL
             )
             setHasFixedSize(true)
             adapter = areaViewAdapter
@@ -120,17 +115,15 @@ class AreaViewFragment :
 
     private fun searchAreas(query: String) {
         val searchQuery = "%$query%"
-        workOrderViewModel.searchAreas(searchQuery)
-            .observe(viewLifecycleOwner) { list ->
-                areaViewAdapter.differ.submitList(list)
-                updateUI(list)
-            }
+        workOrderViewModel.searchAreas(searchQuery).observe(viewLifecycleOwner) { list ->
+            areaViewAdapter.differ.submitList(list)
+            updateUI(list)
+        }
     }
 
     fun gotoAreaUpdateFragment() {
         mView.findNavController().navigate(
-            AreaViewFragmentDirections
-                .actionAreaViewFragmentToAreaUpdateFragment()
+            AreaViewFragmentDirections.actionAreaViewFragmentToAreaUpdateFragment()
         )
 
     }

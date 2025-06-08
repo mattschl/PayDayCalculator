@@ -28,8 +28,7 @@ import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.adapter.WorkOrder
 
 private const val TAG = FRAG_WORK_ORDERS
 
-class WorkOrderViewFragment :
-    Fragment(R.layout.fragment_work_order_view) {
+class WorkOrderViewFragment : Fragment(R.layout.fragment_work_order_view) {
 
     private var _binding: FragmentWorkOrderViewBinding? = null
     private val binding get() = _binding!!
@@ -42,8 +41,7 @@ class WorkOrderViewFragment :
     private var workOrderAdapter: WorkOrderViewAdapter? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWorkOrderViewBinding.inflate(
             inflater, container, false
@@ -65,8 +63,7 @@ class WorkOrderViewFragment :
 
     private fun populateEmployers() {
         val employerAdapter = ArrayAdapter<String>(
-            mView.context,
-            R.layout.spinner_item_bold
+            mView.context, R.layout.spinner_item_bold
         )
         employerViewModel.getEmployers().observe(
             viewLifecycleOwner
@@ -84,36 +81,30 @@ class WorkOrderViewFragment :
 
     private fun onSelectEmployer() {
         binding.apply {
-            spEmployers.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        if (spEmployers.selectedItem.toString() !=
-                            getString(R.string.add_new_employer)
-                        ) {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                curEmployer = employerViewModel.findEmployer(
-                                    spEmployers.selectedItem.toString()
-                                )
-                            }
-                            CoroutineScope(Dispatchers.Main).launch {
-                                delay(WAIT_250)
-                                mainViewModel.setEmployer(curEmployer)
-                                populateWorkOrders(curEmployer!!.employerId)
-                            }
-                        } else {
-                            gotoEmployerAdd()
+            spEmployers.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
+                ) {
+                    if (spEmployers.selectedItem.toString() != getString(R.string.add_new_employer)) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            curEmployer = employerViewModel.findEmployer(
+                                spEmployers.selectedItem.toString()
+                            )
                         }
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-//                        fillEmployers()
+                        CoroutineScope(Dispatchers.Main).launch {
+                            delay(WAIT_250)
+                            mainViewModel.setEmployer(curEmployer)
+                            populateWorkOrders(curEmployer!!.employerId)
+                        }
+                    } else {
+                        gotoEmployerAdd()
                     }
                 }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+//                        fillEmployers()
+                }
+            }
         }
     }
 
@@ -127,8 +118,7 @@ class WorkOrderViewFragment :
             workOrderAdapter!!.differ.submitList(list)
         }
         binding.rvWorkOrders.apply {
-            layoutManager =
-                LinearLayoutManager(mView.context)
+            layoutManager = LinearLayoutManager(mView.context)
             adapter = workOrderAdapter!!
         }
     }
@@ -143,8 +133,7 @@ class WorkOrderViewFragment :
 
     private fun gotoEmployerAddFragment() {
         mView.findNavController().navigate(
-            WorkOrderViewFragmentDirections
-                .actionWorkOrderViewFragmentToEmployerAddFragment()
+            WorkOrderViewFragmentDirections.actionWorkOrderViewFragmentToEmployerAddFragment()
         )
     }
 
@@ -156,10 +145,7 @@ class WorkOrderViewFragment :
             }
             etWorkOrder.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
+                    s: CharSequence?, start: Int, count: Int, after: Int
                 ) {
 //                    null
                 }
@@ -184,9 +170,7 @@ class WorkOrderViewFragment :
     }
 
     private fun searchWorkOrders(query: String) {
-        if (workOrderAdapter != null &&
-            curEmployer != null
-        ) {
+        if (workOrderAdapter != null && curEmployer != null) {
             val searchQuery = "%$query%"
             workOrderViewModel.searchWorkOrders(curEmployer!!.employerId, searchQuery)
                 .observe(viewLifecycleOwner) { list ->
@@ -202,15 +186,13 @@ class WorkOrderViewFragment :
 
     private fun gotoWorkOrderAddFragment() {
         mView.findNavController().navigate(
-            WorkOrderViewFragmentDirections
-                .actionWorkOrderViewFragmentToWorkOrderAddFragment()
+            WorkOrderViewFragmentDirections.actionWorkOrderViewFragmentToWorkOrderAddFragment()
         )
     }
 
     fun gotoWorkOrderUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderViewFragmentDirections
-                .actionWorkOrderViewFragmentToWorkOrderUpdateFragment()
+            WorkOrderViewFragmentDirections.actionWorkOrderViewFragmentToWorkOrderUpdateFragment()
         )
     }
 

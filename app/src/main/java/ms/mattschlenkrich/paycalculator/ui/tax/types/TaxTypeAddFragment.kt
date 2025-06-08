@@ -49,8 +49,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     private lateinit var taxTypeList: List<TaxTypes>
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentTaxTypeAddBinding.inflate(
             inflater, container, false
@@ -86,7 +85,8 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     private fun populateSpinner() {
         binding.apply {
             val basedOnAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
+                mView.context,
+                R.layout.spinner_item_bold,
                 resources.getStringArray(R.array.tax_based_on)
             )
             basedOnAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
@@ -173,25 +173,19 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     }
 
     private fun chooseNextStep(taxType: TaxTypes) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                getString(R.string.choose_next_steps_for) +
-                        taxType.taxType
-            )
-            .setMessage(
-                getString(R.string.the_tax_type_has_been_added_but_there_are_no_rules_yet_)
-            )
-            .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                mainViewModel.setTaxType(taxType)
-                mainViewModel.setTaxTypeString(taxType.taxType)
-                gotoTaxRulesFragment()
-            }
-            .setNegativeButton(getString(R.string.no)) { _, _ ->
-                mainViewModel.setTaxType(taxType)
-                mainViewModel.setTaxTypeString(taxType.taxType)
-                gotoCallingFragment()
-            }
-            .show()
+        AlertDialog.Builder(mView.context).setTitle(
+            getString(R.string.choose_next_steps_for) + taxType.taxType
+        ).setMessage(
+            getString(R.string.the_tax_type_has_been_added_but_there_are_no_rules_yet_)
+        ).setPositiveButton(getString(R.string.yes)) { _, _ ->
+            mainViewModel.setTaxType(taxType)
+            mainViewModel.setTaxTypeString(taxType.taxType)
+            gotoTaxRulesFragment()
+        }.setNegativeButton(getString(R.string.no)) { _, _ ->
+            mainViewModel.setTaxType(taxType)
+            mainViewModel.setTaxTypeString(taxType.taxType)
+            gotoCallingFragment()
+        }.show()
     }
 
     private fun attachTaxTypeToEmployers(taxType: TaxTypes) {
@@ -212,8 +206,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
 
     private fun gotoTaxRulesFragment() {
         mView.findNavController().navigate(
-            TaxTypeAddFragmentDirections
-                .actionTaxTypeAddFragmentToTaxRulesFragment()
+            TaxTypeAddFragmentDirections.actionTaxTypeAddFragmentToTaxRulesFragment()
         )
     }
 
@@ -232,15 +225,13 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
 
     private fun gotoEmployerUpdateFragment() {
         mView.findNavController().navigate(
-            TaxTypeAddFragmentDirections
-                .actionTaxTypeAddFragmentToEmployerUpdateFragment()
+            TaxTypeAddFragmentDirections.actionTaxTypeAddFragmentToEmployerUpdateFragment()
         )
     }
 
     private fun gotoTaxTypeFragment() {
         mView.findNavController().navigate(
-            TaxTypeAddFragmentDirections
-                .actionTaxTypeAddFragmentToTaxTypeFragment()
+            TaxTypeAddFragmentDirections.actionTaxTypeAddFragmentToTaxTypeFragment()
         )
     }
 

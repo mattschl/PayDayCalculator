@@ -44,8 +44,7 @@ import ms.mattschlenkrich.paycalculator.ui.workorder.workorder.adapter.WorkOrder
 
 private const val TAG = FRAG_WORK_ORDER_UPDATE
 
-class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
-    IWorkOrderUpdateFragment {
+class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrderUpdateFragment {
 
     private var _binding: FragmentWorkOrderBinding? = null
     private val binding get() = _binding!!
@@ -66,8 +65,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
     private val nf = NumberFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWorkOrderBinding.inflate(
             inflater, container, false
@@ -158,12 +156,9 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
 
     private fun populateJobSpecsInAutoComplete(jobSpecNameList: ArrayList<String>) {
         binding.apply {
-            val jsAdapter =
-                ArrayAdapter(
-                    mView.context,
-                    R.layout.spinner_item_normal,
-                    jobSpecNameList
-                )
+            val jsAdapter = ArrayAdapter(
+                mView.context, R.layout.spinner_item_normal, jobSpecNameList
+            )
             acJobSpec.setAdapter(jsAdapter)
         }
     }
@@ -180,12 +175,9 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
         ) { list ->
             calculateHistoryTotals(list)
             val histories = list.sortedBy { it.workDate.wdDate }
-            val workOrderHistoryAdapter =
-                WorkOrderHistoryAdapter(
-                    mainActivity,
-                    mView,
-                    this@WorkOrderUpdateFragment
-                )
+            val workOrderHistoryAdapter = WorkOrderHistoryAdapter(
+                mainActivity, mView, this@WorkOrderUpdateFragment
+            )
             workOrderHistoryAdapter.differ.submitList(histories)
             binding.rvHistory.apply {
                 layoutManager = LinearLayoutManager(mView.context)
@@ -216,37 +208,29 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
                     counter--
                     if (curMaterial == "") {
                         curMaterial = it.material.mName
-                        curMaterialAndQuantity =
-                            MaterialAndQuantity(
-                                curMaterial,
-                                it.workOrderHistoryMaterial.wohmQuantity
-                            )
+                        curMaterialAndQuantity = MaterialAndQuantity(
+                            curMaterial, it.workOrderHistoryMaterial.wohmQuantity
+                        )
                         if (counter == 0) materials.add(curMaterialAndQuantity!!)
                     } else if (curMaterial != it.material.mName) {
                         materials.add(curMaterialAndQuantity!!)
                         curMaterial = it.material.mName
-                        curMaterialAndQuantity =
-                            MaterialAndQuantity(
-                                curMaterial,
-                                it.workOrderHistoryMaterial.wohmQuantity
-                            )
+                        curMaterialAndQuantity = MaterialAndQuantity(
+                            curMaterial, it.workOrderHistoryMaterial.wohmQuantity
+                        )
                     } else {
-                        curMaterialAndQuantity!!.quantity +=
-                            it.workOrderHistoryMaterial.wohmQuantity
+                        curMaterialAndQuantity!!.quantity += it.workOrderHistoryMaterial.wohmQuantity
                         if (counter == 0) materials.add(curMaterialAndQuantity!!)
                     }
                 }
                 val materialsAndCount = materials.sortedBy { it.name }
-                val materialAdapter =
-                    MaterialCountAdapter(
-                        materialsAndCount,
-                        mView
-                    )
+                val materialAdapter = MaterialCountAdapter(
+                    materialsAndCount, mView
+                )
                 binding.rvMaterials.apply {
 //                    layoutManager = LinearLayoutManager(mView.context)
                     layoutManager = StaggeredGridLayoutManager(
-                        2,
-                        StaggeredGridLayoutManager.VERTICAL
+                        2, StaggeredGridLayoutManager.VERTICAL
                     )
                     setHasFixedSize(true)
                     adapter = materialAdapter
@@ -302,8 +286,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
                 if (acJobSpec.text.isNullOrBlank()) {
                     if (showError) {
                         displayMessage(
-                            getString(R.string.error_) +
-                                    getString(R.string.add_a_description_first)
+                            getString(R.string.error_) + getString(R.string.add_a_description_first)
                         )
                     }
                 } else {
@@ -342,9 +325,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
         jobSpec: JobSpec, area: Areas?, showError: Boolean
     ): Boolean {
         for (combinedJobSpec in jobSpecCombinedList) {
-            if (jobSpec.jsName == combinedJobSpec.jobSpec.jsName &&
-                area?.areaName == combinedJobSpec.area?.areaName
-            ) {
+            if (jobSpec.jsName == combinedJobSpec.jobSpec.jsName && area?.areaName == combinedJobSpec.area?.areaName) {
                 if (showError) {
                     displayMessage(getString(R.string.error_) + getString(R.string.this_job_spec_has_already_been_entered_for_this_area))
                 }
@@ -367,13 +348,12 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
 
 
     private fun insertJobSpecIntoDatabase(): JobSpec {
-        val newJobSpec =
-            JobSpec(
-                nf.generateRandomIdAsLong(),
-                binding.acJobSpec.text.toString().trim(),
-                false,
-                df.getCurrentTimeAsString()
-            )
+        val newJobSpec = JobSpec(
+            nf.generateRandomIdAsLong(),
+            binding.acJobSpec.text.toString().trim(),
+            false,
+            df.getCurrentTimeAsString()
+        )
         workOrderViewModel.insertJobSpec(
             newJobSpec
         )
@@ -421,12 +401,12 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
             if (acArea.text.isNullOrBlank()) {
                 return false
             } else {
-                for (area in areaListForAutoComplete)
-                    if (area.areaName == acArea.text.toString().trim()
-                    ) {
-                        curArea = area
-                        return true
-                    }
+                for (area in areaListForAutoComplete) if (area.areaName == acArea.text.toString()
+                        .trim()
+                ) {
+                    curArea = area
+                    return true
+                }
             }
         }
         return false
@@ -445,16 +425,11 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
 
     private fun populateJobSpecRecycler(jobSpecList: List<WorkOrderJobSpecCombined>) {
         val workOrderJobSpecAdapter = WorkOrderJobSpecAdapter(
-            mainActivity,
-            this@WorkOrderUpdateFragment,
-            curWorkOrder,
-            TAG,
-            mView
+            mainActivity, this@WorkOrderUpdateFragment, curWorkOrder, TAG, mView
         )
         binding.rvJobSpecs.apply {
             layoutManager = StaggeredGridLayoutManager(
-                2,
-                StaggeredGridLayoutManager.VERTICAL
+                2, StaggeredGridLayoutManager.VERTICAL
             )
             adapter = workOrderJobSpecAdapter
         }
@@ -493,8 +468,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
                 return false
             } else {
                 for (jobSpec in jobSpecListForAutoComplete) {
-                    if (jobSpec.jsName == binding.acJobSpec.text.toString().trim()
-                    ) {
+                    if (jobSpec.jsName == binding.acJobSpec.text.toString().trim()) {
                         curJobSpec = jobSpec
                         return true
                     }
@@ -539,26 +513,22 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
 
     private fun onSelectEmployer() {
         binding.apply {
-            spEmployers.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            curEmployer = mainActivity.employerViewModel.findEmployer(
-                                spEmployers.selectedItem.toString()
-                            )
-                        }
-                        populateWorkOrderListForValidation()
+            spEmployers.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
+                ) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        curEmployer = mainActivity.employerViewModel.findEmployer(
+                            spEmployers.selectedItem.toString()
+                        )
                     }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        //not needed
-                    }
+                    populateWorkOrderListForValidation()
                 }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    //not needed
+                }
+            }
         }
     }
 
@@ -582,11 +552,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
                 return getString(R.string.please_enter_a_valid_work_order_number)
             }
             for (workOrder in workOrderList) {
-                if (workOrder.woNumber ==
-                    etWorkOrderNumber.text.toString() &&
-                    etWorkOrderNumber.text.toString() !=
-                    curWorkOrder.woNumber
-                ) {
+                if (workOrder.woNumber == etWorkOrderNumber.text.toString() && etWorkOrderNumber.text.toString() != curWorkOrder.woNumber) {
                     return getString(R.string.this_work_order_has_been_used)
                 }
             }
@@ -618,50 +584,43 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order),
 
     override fun gotoWorkOrdersFragment() {
         mView.findNavController().navigate(
-            WorkOrderUpdateFragmentDirections
-                .actionWorkOrderUpdateFragmentToWorkOrdersFragment()
+            WorkOrderUpdateFragmentDirections.actionWorkOrderUpdateFragmentToWorkOrdersFragment()
         )
     }
 
     override fun gotoWorkOrderHistoryUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderUpdateFragmentDirections
-                .actionWorkOrderUpdateFragmentToWorkOrderHistoryUpdateFragment()
+            WorkOrderUpdateFragmentDirections.actionWorkOrderUpdateFragmentToWorkOrderHistoryUpdateFragment()
         )
     }
 
     override fun gotoWorkOrderHistoryAddFragment() {
         mView.findNavController().navigate(
-            WorkOrderUpdateFragmentDirections
-                .actionWorkOrderUpdateFragmentToWorkOrderHistoryAddFragment()
+            WorkOrderUpdateFragmentDirections.actionWorkOrderUpdateFragmentToWorkOrderHistoryAddFragment()
         )
     }
 
     override fun gotoJobSpecUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderUpdateFragmentDirections
-                .actionWorkOrderUpdateFragmentToJobSpecUpdateFragment()
+            WorkOrderUpdateFragmentDirections.actionWorkOrderUpdateFragmentToJobSpecUpdateFragment()
         )
     }
 
     override fun gotoWorkOrderJobSpecUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderUpdateFragmentDirections
-                .actionWorkOrderUpdateFragmentToWorkOrderJobSpecUpdateFragment()
+            WorkOrderUpdateFragmentDirections.actionWorkOrderUpdateFragmentToWorkOrderJobSpecUpdateFragment()
         )
     }
 
     override fun gotoAreaUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderUpdateFragmentDirections
-                .actionWorkOrderUpdateFragmentToAreaUpdateFragment()
+            WorkOrderUpdateFragmentDirections.actionWorkOrderUpdateFragmentToAreaUpdateFragment()
         )
     }
 
     override fun gotoWorkOrderHistoryFragment() {
         mView.findNavController().navigate(
-            WorkOrderUpdateFragmentDirections
-                .actionWorkOrderUpdateFragmentToWorkOrderHistoryUpdateFragment()
+            WorkOrderUpdateFragmentDirections.actionWorkOrderUpdateFragmentToWorkOrderHistoryUpdateFragment()
         )
     }
 

@@ -51,8 +51,8 @@ import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater.Wo
 
 private const val TAG = FRAG_WORK_ORDER_HISTORY_UPDATE
 
-class WorkOrderHistoryUpdateFragment :
-    Fragment(R.layout.fragment_work_order_history), IWorkOrderHistoryUpdateFragment {
+class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_history),
+    IWorkOrderHistoryUpdateFragment {
 
     private var _binding: FragmentWorkOrderHistoryBinding? = null
     private val binding get() = _binding!!
@@ -66,8 +66,7 @@ class WorkOrderHistoryUpdateFragment :
     private lateinit var curHistoryDetailed: WorkOrderHistoryWithDates
     private var curWorkOrder: WorkOrder? = null
     private lateinit var workPerformedListForAutoComplete: List<WorkPerformed>
-    private lateinit var existingWorkPerformedListForValidation:
-            List<WorkOrderHistoryWorkPerformedCombined>
+    private lateinit var existingWorkPerformedListForValidation: List<WorkOrderHistoryWorkPerformedCombined>
     private lateinit var materialListForAutoComplete: List<Material>
     private lateinit var areaListForAutoComplete: List<Areas>
     private var curWorkPerformed: WorkPerformed? = null
@@ -80,8 +79,7 @@ class WorkOrderHistoryUpdateFragment :
     private val nf = NumberFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWorkOrderHistoryBinding.inflate(
             inflater, container, false
@@ -139,8 +137,7 @@ class WorkOrderHistoryUpdateFragment :
     private fun populateWorkDate() {
         if (commonFunctions.getWorkDateObject() != null) {
             workDateObject = commonFunctions.getWorkDateObject()!!
-            binding.lblDate.text =
-                df.getDisplayDate(workDateObject!!.wdDate)
+            binding.lblDate.text = df.getDisplayDate(workDateObject!!.wdDate)
         }
     }
 
@@ -157,9 +154,7 @@ class WorkOrderHistoryUpdateFragment :
             val materialListNames = ArrayList<String>()
             list.listIterator().forEach { materialListNames.add(it.mName) }
             val mAdapter = ArrayAdapter(
-                mView.context,
-                R.layout.spinner_item_normal,
-                materialListNames
+                mView.context, R.layout.spinner_item_normal, materialListNames
             )
             binding.acMaterials.setAdapter(mAdapter)
         }
@@ -171,9 +166,7 @@ class WorkOrderHistoryUpdateFragment :
             val areaNameList = ArrayList<String>()
             list.listIterator().forEach { areaNameList.add(it.areaName) }
             val mAdapter = ArrayAdapter(
-                mView.context,
-                R.layout.spinner_item_normal,
-                areaNameList
+                mView.context, R.layout.spinner_item_normal, areaNameList
             )
             binding.acArea.setAdapter(mAdapter)
         }
@@ -197,8 +190,7 @@ class WorkOrderHistoryUpdateFragment :
                 list.listIterator().forEach { workOrderListForAutocomplete.add(it.woNumber) }
                 binding.apply {
                     val woAdapter = ArrayAdapter(
-                        mView.context, R.layout.spinner_item_normal,
-                        workOrderListForAutocomplete
+                        mView.context, R.layout.spinner_item_normal, workOrderListForAutocomplete
                     )
                     acWorkOrder.setAdapter(woAdapter)
                 }
@@ -211,9 +203,7 @@ class WorkOrderHistoryUpdateFragment :
             val workPerformedDescriptions = ArrayList<String>()
             list.listIterator().forEach { workPerformedDescriptions.add(it.wpDescription) }
             val wpAdapter = ArrayAdapter(
-                mView.context,
-                R.layout.spinner_item_normal,
-                workPerformedDescriptions
+                mView.context, R.layout.spinner_item_normal, workPerformedDescriptions
             )
             binding.acWorkPerformed.setAdapter(wpAdapter)
         }
@@ -221,32 +211,31 @@ class WorkOrderHistoryUpdateFragment :
 
     private fun populateFromHistory() {
         val historyId = commonFunctions.getWorkOrderHistory()!!.woHistoryId
-        workOrderViewModel.getWorkOrderHistory(historyId)
-            .observe(viewLifecycleOwner) { history ->
-                curHistoryDetailed = history
-                binding.apply {
-                    acWorkOrder.setText(history.workOrder.woNumber)
-                    workOrderViewModel.getWorkOrder(history.workOrder.woNumber)
-                        .observe(viewLifecycleOwner) { workOrder ->
-                            curWorkOrder = workOrder
-                            populateWorkPerformedLists()
-                            populateMaterials()
-                        }
-                    etRegHours.setText(nf.getNumberFromDouble(history.history.woHistoryRegHours))
-                    etOtHours.setText(nf.getNumberFromDouble(history.history.woHistoryOtHours))
-                    etDblOtHours.setText(nf.getNumberFromDouble(history.history.woHistoryDblOtHours))
-                    etNote.setText(history.history.woHistoryNote)
-                    btnWorkOrder.text = getString(R.string.edit)
-                }
-                if (mainViewModel.getWorkOrderNumber() != null) {
-                    workOrderViewModel.getWorkOrder(
-                        curHistoryDetailed.history.woHistoryWorkOrderId
-                    ).observe(viewLifecycleOwner) { workOrder ->
+        workOrderViewModel.getWorkOrderHistory(historyId).observe(viewLifecycleOwner) { history ->
+            curHistoryDetailed = history
+            binding.apply {
+                acWorkOrder.setText(history.workOrder.woNumber)
+                workOrderViewModel.getWorkOrder(history.workOrder.woNumber)
+                    .observe(viewLifecycleOwner) { workOrder ->
                         curWorkOrder = workOrder
-                        setCurWorkOrder()
+                        populateWorkPerformedLists()
+                        populateMaterials()
                     }
+                etRegHours.setText(nf.getNumberFromDouble(history.history.woHistoryRegHours))
+                etOtHours.setText(nf.getNumberFromDouble(history.history.woHistoryOtHours))
+                etDblOtHours.setText(nf.getNumberFromDouble(history.history.woHistoryDblOtHours))
+                etNote.setText(history.history.woHistoryNote)
+                btnWorkOrder.text = getString(R.string.edit)
+            }
+            if (mainViewModel.getWorkOrderNumber() != null) {
+                workOrderViewModel.getWorkOrder(
+                    curHistoryDetailed.history.woHistoryWorkOrderId
+                ).observe(viewLifecycleOwner) { workOrder ->
+                    curWorkOrder = workOrder
+                    setCurWorkOrder()
                 }
             }
+        }
     }
 
     private fun populateFromTempValues() {
@@ -283,8 +272,7 @@ class WorkOrderHistoryUpdateFragment :
         binding.apply {
             if (acWorkOrder.text.isNullOrBlank()) {
                 displayMessage(
-                    getString(R.string.error_) +
-                            getString(R.string.please_enter_a_valid_work_order_before_adding_work_performed)
+                    getString(R.string.error_) + getString(R.string.please_enter_a_valid_work_order_before_adding_work_performed)
                 )
             }
             if (doesWorkOrderExist()) {
@@ -362,10 +350,7 @@ class WorkOrderHistoryUpdateFragment :
         materialActualList: ArrayList<MaterialInSequence>
     ) {
         val materialAdapter = WorkOrderHistoryMaterialAdapter(
-            mainActivity,
-            mView,
-            TAG,
-            this@WorkOrderHistoryUpdateFragment
+            mainActivity, mView, TAG, this@WorkOrderHistoryUpdateFragment
         )
         binding.rvMaterials.apply {
             layoutManager = LinearLayoutManager(mView.context)
@@ -404,10 +389,7 @@ class WorkOrderHistoryUpdateFragment :
             }
             acWorkOrder.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
+                    s: CharSequence?, start: Int, count: Int, after: Int
                 ) {
 //                    null
                 }
@@ -432,8 +414,7 @@ class WorkOrderHistoryUpdateFragment :
                 .setTitle(getString(R.string.create_work_order_) + "${binding.acWorkOrder.text}?")
                 .setMessage(getString(R.string.this_work_order_does_not_exist))
                 .setPositiveButton(getString(R.string.yes)) { _, _ -> gotoWorkOrderAdd() }
-                .setNegativeButton(getString(R.string.no), null)
-                .show()
+                .setNegativeButton(getString(R.string.no), null).show()
         }
     }
 
@@ -445,8 +426,7 @@ class WorkOrderHistoryUpdateFragment :
 
     private fun gotoWorkOrderLookupFragment() {
         mView.findNavController().navigate(
-            WorkOrderHistoryUpdateFragmentDirections
-                .actionWorkOrderHistoryUpdateFragmentToWorkOrderLookupFragment()
+            WorkOrderHistoryUpdateFragmentDirections.actionWorkOrderHistoryUpdateFragmentToWorkOrderLookupFragment()
         )
     }
 
@@ -483,11 +463,9 @@ class WorkOrderHistoryUpdateFragment :
             }
             gotoCallingFragment()
         } catch (e: SQLiteConstraintException) {
-            AlertDialog.Builder(mView.context)
-                .setTitle(getString(R.string.something_went_wrong))
+            AlertDialog.Builder(mView.context).setTitle(getString(R.string.something_went_wrong))
                 .setMessage(getString(R.string.an_unknown_error_occurred_error_was) + e.toString())
-                .setNeutralButton(getString(R.string.ok), null)
-                .show()
+                .setNeutralButton(getString(R.string.ok), null).show()
         }
     }
 
@@ -518,9 +496,7 @@ class WorkOrderHistoryUpdateFragment :
     private fun setCurMaterial(): Boolean {
         binding.apply {
             for (material in materialListForAutoComplete) {
-                if (acMaterials.text.toString() == material.mName &&
-                    !acMaterials.text.isNullOrBlank()
-                ) {
+                if (acMaterials.text.toString() == material.mName && !acMaterials.text.isNullOrBlank()) {
                     curMaterial = material
                     return true
                 }
@@ -530,12 +506,10 @@ class WorkOrderHistoryUpdateFragment :
     }
 
     private fun addMaterialToWorkOrderIfValid(showError: Boolean) {
-        if (binding.acMaterials.text.isNullOrBlank()
-        ) {
+        if (binding.acMaterials.text.isNullOrBlank()) {
             if (showError) {
                 displayMessage(
-                    getString(R.string.error_) +
-                            getString(R.string.please_enter_a_valid_material_description_to_add_it)
+                    getString(R.string.error_) + getString(R.string.please_enter_a_valid_material_description_to_add_it)
                 )
             }
         } else if (setCurMaterial()) {
@@ -558,8 +532,8 @@ class WorkOrderHistoryUpdateFragment :
                         nf.generateRandomIdAsLong(),
                         curHistoryDetailed.history.woHistoryId,
                         material.materialId,
-                        if (etMaterialQty.text.isNullOrBlank()) 1.0 else
-                            etMaterialQty.text.toString().trim().toDouble(),
+                        if (etMaterialQty.text.isNullOrBlank()) 1.0 else etMaterialQty.text.toString()
+                            .trim().toDouble(),
                         materialSequence,
                         false,
                         df.getCurrentTimeAsString()
@@ -570,13 +544,9 @@ class WorkOrderHistoryUpdateFragment :
                 etMaterialQty.text.clear()
             } catch (e: SQLiteConstraintException) {
                 AlertDialog.Builder(mView.context)
-                    .setTitle(getString(R.string.something_went_wrong))
-                    .setMessage(
-                        getString(R.string.check_to_see_if_this_material_has_already_been_added_) +
-                                " " + e.toString()
-                    )
-                    .setNeutralButton(getString(R.string.ok), null)
-                    .show()
+                    .setTitle(getString(R.string.something_went_wrong)).setMessage(
+                        getString(R.string.check_to_see_if_this_material_has_already_been_added_) + " " + e.toString()
+                    ).setNeutralButton(getString(R.string.ok), null).show()
             }
         }
     }
@@ -600,8 +570,7 @@ class WorkOrderHistoryUpdateFragment :
                 if (acWorkPerformed.text.isNullOrBlank()) {
                     if (showError) {
                         displayMessage(
-                            getString(R.string.error_) +
-                                    getString(R.string.please_enter_a_valid_description_of_work_performed_to_add_it)
+                            getString(R.string.error_) + getString(R.string.please_enter_a_valid_description_of_work_performed_to_add_it)
                         )
                     }
                 } else {
@@ -642,13 +611,10 @@ class WorkOrderHistoryUpdateFragment :
         workPerformed: WorkPerformed, area: Areas?, showError: Boolean
     ): Boolean {
         for (combinedWorkPerformed in existingWorkPerformedListForValidation) {
-            if (workPerformed.wpDescription == combinedWorkPerformed.workPerformed.wpDescription &&
-                area?.areaName == combinedWorkPerformed.area?.areaName
-            ) {
+            if (workPerformed.wpDescription == combinedWorkPerformed.workPerformed.wpDescription && area?.areaName == combinedWorkPerformed.area?.areaName) {
                 if (showError) {
                     displayMessage(
-                        getString(R.string.error_) +
-                                getString(R.string.this_work_description_and_area_is_already_used)
+                        getString(R.string.error_) + getString(R.string.this_work_description_and_area_is_already_used)
                     )
                 }
                 return false
@@ -686,33 +652,25 @@ class WorkOrderHistoryUpdateFragment :
                 )
             } catch (e: SQLiteConstraintException) {
                 AlertDialog.Builder(mView.context)
-                    .setTitle(getString(R.string.something_went_wrong))
-                    .setMessage(
-                        getString(R.string.check_to_see_if_this_work_was_already_entered_) +
-                                " " + e.toString()
-                    )
-                    .setNeutralButton(getString(R.string.ok), null)
-                    .show()
+                    .setTitle(getString(R.string.something_went_wrong)).setMessage(
+                        getString(R.string.check_to_see_if_this_work_was_already_entered_) + " " + e.toString()
+                    ).setNeutralButton(getString(R.string.ok), null).show()
             }
             resetWorkPerformedValues()
         }
     }
 
-    private suspend fun resetWorkPerformedValues() =
-        withContext(Dispatchers.Main) {
-            curWorkPerformed = null
-            binding.apply {
-                acWorkPerformed.text.clear()
-                etWorkPerformedNote.text.clear()
-            }
+    private suspend fun resetWorkPerformedValues() = withContext(Dispatchers.Main) {
+        curWorkPerformed = null
+        binding.apply {
+            acWorkPerformed.text.clear()
+            etWorkPerformedNote.text.clear()
         }
+    }
 
     private fun insertAreaIntoDatabase(areaName: String): Areas {
         val newArea = Areas(
-            nf.generateRandomIdAsLong(),
-            areaName,
-            false,
-            df.getCurrentTimeAsString()
+            nf.generateRandomIdAsLong(), areaName, false, df.getCurrentTimeAsString()
         )
         mainActivity.workOrderViewModel.insertArea(newArea)
         return newArea
@@ -737,9 +695,7 @@ class WorkOrderHistoryUpdateFragment :
         binding.apply {
             if (!acWorkPerformed.text.isNullOrBlank()) {
                 for (workPerformed in workPerformedListForAutoComplete) {
-                    if (acWorkPerformed.text.toString().trim() ==
-                        workPerformed.wpDescription
-                    ) {
+                    if (acWorkPerformed.text.toString().trim() == workPerformed.wpDescription) {
                         curWorkPerformed = workPerformed
                         return true
                     }
@@ -753,10 +709,7 @@ class WorkOrderHistoryUpdateFragment :
     private fun setCurArea(): Boolean {
         binding.apply {
             for (area in areaListForAutoComplete) {
-                if (acArea.text.toString() ==
-                    area.areaName &&
-                    !acArea.text.isNullOrBlank()
-                ) {
+                if (acArea.text.toString() == area.areaName && !acArea.text.isNullOrBlank()) {
                     curArea = area
                     return true
                 }
@@ -769,27 +722,24 @@ class WorkOrderHistoryUpdateFragment :
         binding.apply {
             mainViewModel.setTempWorkOrderHistoryInfo(
                 TempWorkOrderHistoryInfo(
-                    if (acWorkOrder.text.isNullOrBlank())
-                        "0" else acWorkOrder.text.toString().trim(),
+                    if (acWorkOrder.text.isNullOrBlank()) "0" else acWorkOrder.text.toString()
+                        .trim(),
                     lblDate.text.toString(),
-                    if (etRegHours.text.isNullOrBlank())
-                        0.0 else etRegHours.text.toString().toDouble(),
-                    if (etOtHours.text.isNullOrBlank())
-                        0.0 else etOtHours.text.toString().toDouble(),
-                    if (etDblOtHours.text.isNullOrBlank())
-                        0.0 else etDblOtHours.text.toString().toDouble(),
-                    if (etNote.text.isNullOrBlank())
-                        "" else etNote.text.toString(),
-                    if (acWorkPerformed.text.isNullOrBlank())
-                        "" else acWorkPerformed.text.toString().trim(),
-                    if (acArea.text.isNullOrBlank())
-                        "" else acArea.text.toString().trim(),
-                    if (etWorkPerformedNote.text.isNullOrBlank())
-                        "" else etWorkPerformedNote.text.toString().trim(),
-                    if (etMaterialQty.text.isNullOrBlank())
-                        0.0 else etMaterialQty.text.toString().trim().toDouble(),
-                    if (acMaterials.text.isNullOrBlank())
-                        "" else acMaterials.text.toString().trim()
+                    if (etRegHours.text.isNullOrBlank()) 0.0 else etRegHours.text.toString()
+                        .toDouble(),
+                    if (etOtHours.text.isNullOrBlank()) 0.0 else etOtHours.text.toString()
+                        .toDouble(),
+                    if (etDblOtHours.text.isNullOrBlank()) 0.0 else etDblOtHours.text.toString()
+                        .toDouble(),
+                    if (etNote.text.isNullOrBlank()) "" else etNote.text.toString(),
+                    if (acWorkPerformed.text.isNullOrBlank()) "" else acWorkPerformed.text.toString()
+                        .trim(),
+                    if (acArea.text.isNullOrBlank()) "" else acArea.text.toString().trim(),
+                    if (etWorkPerformedNote.text.isNullOrBlank()) "" else etWorkPerformedNote.text.toString()
+                        .trim(),
+                    if (etMaterialQty.text.isNullOrBlank()) 0.0 else etMaterialQty.text.toString()
+                        .trim().toDouble(),
+                    if (acMaterials.text.isNullOrBlank()) "" else acMaterials.text.toString().trim()
                 )
             )
         }
@@ -801,14 +751,11 @@ class WorkOrderHistoryUpdateFragment :
                 curHistoryDetailed.history.woHistoryId,
                 curWorkOrder!!.workOrderId,
                 workDateObject!!.workDateId,
-                if (etRegHours.text.isNullOrBlank())
-                    0.0 else etRegHours.text.toString().toDouble(),
-                if (etOtHours.text.isNullOrBlank())
-                    0.0 else etOtHours.text.toString().toDouble(),
-                if (etDblOtHours.text.isNullOrBlank())
-                    0.0 else etDblOtHours.text.toString().toDouble(),
-                if (etNote.text.isNullOrBlank())
-                    null else etNote.text.toString(),
+                if (etRegHours.text.isNullOrBlank()) 0.0 else etRegHours.text.toString().toDouble(),
+                if (etOtHours.text.isNullOrBlank()) 0.0 else etOtHours.text.toString().toDouble(),
+                if (etDblOtHours.text.isNullOrBlank()) 0.0 else etDblOtHours.text.toString()
+                    .toDouble(),
+                if (etNote.text.isNullOrBlank()) null else etNote.text.toString(),
                 false,
                 df.getCurrentTimeAsString()
             )
@@ -818,9 +765,8 @@ class WorkOrderHistoryUpdateFragment :
     private fun validateHistory(): String {
         binding.apply {
             convertNumberStringsToDoubles()
-            if (etRegHours.text.toString().toDouble() == 0.0
-                && etOtHours.text.toString().toDouble() == 0.0
-                && etDblOtHours.text.toString().toDouble() == 0.0
+            if (etRegHours.text.toString().toDouble() == 0.0 && etOtHours.text.toString()
+                    .toDouble() == 0.0 && etDblOtHours.text.toString().toDouble() == 0.0
             ) {
                 return getString(R.string.there_was_no_time_entered_please_enter_some_time)
             }
@@ -860,15 +806,13 @@ class WorkOrderHistoryUpdateFragment :
 
     private fun gotoWorkDateUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderHistoryUpdateFragmentDirections
-                .actionWorkOrderHistoryUpdateFragmentToWorkDateUpdateFragment()
+            WorkOrderHistoryUpdateFragmentDirections.actionWorkOrderHistoryUpdateFragmentToWorkDateUpdateFragment()
         )
     }
 
     private fun gotoWorkOrderUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderHistoryUpdateFragmentDirections
-                .actionWorkOrderHistoryUpdateFragmentToWorkOrderUpdateFragment()
+            WorkOrderHistoryUpdateFragmentDirections.actionWorkOrderHistoryUpdateFragmentToWorkOrderUpdateFragment()
         )
     }
 
@@ -880,50 +824,43 @@ class WorkOrderHistoryUpdateFragment :
 
     private fun gotoWorkOrderAddFragment() {
         mView.findNavController().navigate(
-            WorkOrderHistoryUpdateFragmentDirections
-                .actionWorkOrderHistoryUpdateFragmentToWorkOrderAddFragment()
+            WorkOrderHistoryUpdateFragmentDirections.actionWorkOrderHistoryUpdateFragmentToWorkOrderAddFragment()
         )
     }
 
     fun gotoWorkOrderHistoryWorkPerformedUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderHistoryUpdateFragmentDirections
-                .actionWorkOrderHistoryUpdateFragmentToWorkOrderHistoryWorkPerformedUpdateFragment()
+            WorkOrderHistoryUpdateFragmentDirections.actionWorkOrderHistoryUpdateFragmentToWorkOrderHistoryWorkPerformedUpdateFragment()
         )
     }
 
     fun gotoAreaUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderHistoryUpdateFragmentDirections
-                .actionWorkOrderHistoryUpdateFragmentToAreaUpdateFragment()
+            WorkOrderHistoryUpdateFragmentDirections.actionWorkOrderHistoryUpdateFragmentToAreaUpdateFragment()
         )
     }
 
     fun gotoWorkPerformedUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderHistoryUpdateFragmentDirections
-                .actionWorkOrderHistoryUpdateFragmentToWorkPerformedUpdateFragment()
+            WorkOrderHistoryUpdateFragmentDirections.actionWorkOrderHistoryUpdateFragmentToWorkPerformedUpdateFragment()
         )
     }
 
     override fun gotoMaterialUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderHistoryUpdateFragmentDirections
-                .actionWorkOrderHistoryUpdateFragmentToMaterialUpdateFragment()
+            WorkOrderHistoryUpdateFragmentDirections.actionWorkOrderHistoryUpdateFragmentToMaterialUpdateFragment()
         )
     }
 
     override fun gotoMaterialQuantityUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderHistoryUpdateFragmentDirections
-                .actionWorkOrderHistoryUpdateFragmentToMaterialQuantityUpdateFragment()
+            WorkOrderHistoryUpdateFragmentDirections.actionWorkOrderHistoryUpdateFragmentToMaterialQuantityUpdateFragment()
         )
     }
 
     override fun gotoWorkOrderHistoryMaterialUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderHistoryUpdateFragmentDirections
-                .actionWorkOrderHistoryUpdateFragmentToWorkOrderHistoryMaterialUpdateFragment()
+            WorkOrderHistoryUpdateFragmentDirections.actionWorkOrderHistoryUpdateFragmentToWorkOrderHistoryMaterialUpdateFragment()
         )
     }
 

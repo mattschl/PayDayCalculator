@@ -41,8 +41,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
     private val nf = NumberFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWorkOrderBinding.inflate(
             inflater, container, false
@@ -143,37 +142,31 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
     }
 
     private fun chooseToGotoUpdate() {
-        AlertDialog.Builder(mView.context)
-            .setTitle(getString(R.string.choose_the_next_step))
+        AlertDialog.Builder(mView.context).setTitle(getString(R.string.choose_the_next_step))
             .setMessage(getString(R.string.would_you_like_to_update_job_specs_for_this_work_order))
             .setPositiveButton(getString(R.string.yes)) { _, _ -> gotoWorkOrderUpdate() }
             .setNegativeButton(getString(R.string.no)) { _, _ -> gotoCallingFragment() }
-            .setNeutralButton(getString(R.string.cancel), null)
-            .show()
+            .setNeutralButton(getString(R.string.cancel), null).show()
     }
 
     private fun onSelectEmployer() {
         binding.apply {
-            spEmployers.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            curEmployer = mainActivity.employerViewModel.findEmployer(
-                                spEmployers.selectedItem.toString()
-                            )
-                        }
-                        populateWorkOrderListForValidation()
+            spEmployers.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
+                ) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        curEmployer = mainActivity.employerViewModel.findEmployer(
+                            spEmployers.selectedItem.toString()
+                        )
                     }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        //not needed
-                    }
+                    populateWorkOrderListForValidation()
                 }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    //not needed
+                }
+            }
         }
     }
 
@@ -183,9 +176,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
                 return getString(R.string.please_enter_a_work_order_number)
             }
             for (workOrder in workOrderList) {
-                if (workOrder.woNumber ==
-                    etWorkOrderNumber.text.toString()
-                ) {
+                if (workOrder.woNumber == etWorkOrderNumber.text.toString()) {
                     return getString(R.string.this_work_order_has_been_used)
                 }
             }
@@ -214,15 +205,13 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
 
     private fun gotoWorkOrderUpdateFragment() {
         mView.findNavController().navigate(
-            WorkOrderAddFragmentDirections
-                .actionWorkOrderAddFragmentToWorkOrderUpdateFragment()
+            WorkOrderAddFragmentDirections.actionWorkOrderAddFragmentToWorkOrderUpdateFragment()
         )
     }
 
     private fun gotoTimeSheetAddWorkOrderFragment() {
         mView.findNavController().navigate(
-            WorkOrderAddFragmentDirections
-                .actionWorkOrderAddFragmentToWorkOrderHistoryAddFragment()
+            WorkOrderAddFragmentDirections.actionWorkOrderAddFragmentToWorkOrderHistoryAddFragment()
         )
     }
 

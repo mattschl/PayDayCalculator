@@ -37,8 +37,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     private val df = DateFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentTaxTypeUpdateBinding.inflate(inflater, container, false)
         mView = binding.root
@@ -70,7 +69,8 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     private fun populateSpinner() {
         binding.apply {
             val basedOnAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold,
+                mView.context,
+                R.layout.spinner_item_bold,
                 resources.getStringArray(R.array.tax_based_on)
             )
             basedOnAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
@@ -148,9 +148,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
             }
             if (taxTypeList.isNotEmpty()) {
                 for (taxType in taxTypeList) {
-                    if (taxType.taxType == etTaxType.text.toString() &&
-                        taxType.taxType != curTaxType.taxType
-                    ) {
+                    if (taxType.taxType == etTaxType.text.toString() && taxType.taxType != curTaxType.taxType) {
                         return getString(R.string.this_tax_type_already_exists)
                     }
 
@@ -163,7 +161,8 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     private fun getCurrentTaxType(): TaxTypes {
         binding.apply {
             return TaxTypes(
-                curTaxType.taxTypeId, etTaxType.text.toString(),
+                curTaxType.taxTypeId,
+                etTaxType.text.toString(),
                 spBasedOn.selectedItemPosition,
                 false,
                 df.getCurrentTimeAsString()
@@ -193,15 +192,13 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
 
     private fun gotoTaxRulesFragment() {
         mView.findNavController().navigate(
-            TaxTypeUpdateFragmentDirections
-                .actionTaxTypeUpdateFragmentToTaxRulesFragment()
+            TaxTypeUpdateFragmentDirections.actionTaxTypeUpdateFragmentToTaxRulesFragment()
         )
     }
 
     private fun gotoTaxTypesFragment() {
         mView.findNavController().navigate(
-            TaxTypeUpdateFragmentDirections
-                .actionTaxTypeUpdateFragmentToTaxTypeFragment()
+            TaxTypeUpdateFragmentDirections.actionTaxTypeUpdateFragmentToTaxTypeFragment()
         )
     }
 

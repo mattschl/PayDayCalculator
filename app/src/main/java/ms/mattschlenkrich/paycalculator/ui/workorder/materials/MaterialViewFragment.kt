@@ -23,10 +23,8 @@ import ms.mattschlenkrich.paycalculator.ui.workorder.materials.adapter.MaterialV
 
 private const val TAG = FRAG_MATERIAL_VIEW
 
-class MaterialViewFragment :
-    Fragment(R.layout.fragment_recycler_view),
-    SearchView.OnQueryTextListener,
-    MenuProvider {
+class MaterialViewFragment : Fragment(R.layout.fragment_recycler_view),
+    SearchView.OnQueryTextListener, MenuProvider {
 
     private var _binding: FragmentRecyclerViewBinding? = null
     private val binding get() = _binding!!
@@ -36,8 +34,7 @@ class MaterialViewFragment :
     private var materialViewAdapter: MaterialViewAdapter? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentRecyclerViewBinding.inflate(
             inflater, container, false
@@ -69,8 +66,7 @@ class MaterialViewFragment :
         materialViewAdapter = MaterialViewAdapter(mainActivity, mView, TAG)
         binding.rvRecycler.apply {
             layoutManager = StaggeredGridLayoutManager(
-                2,
-                StaggeredGridLayoutManager.VERTICAL
+                2, StaggeredGridLayoutManager.VERTICAL
             )
             setHasFixedSize(true)
             adapter = materialViewAdapter

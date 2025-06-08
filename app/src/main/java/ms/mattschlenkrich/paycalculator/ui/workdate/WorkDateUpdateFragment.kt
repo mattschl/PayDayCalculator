@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.timesheet.workdate
+package ms.mattschlenkrich.paycalculator.ui.workdate
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -31,7 +31,7 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkDateUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.timesheet.timesheetadapter.WorkDateUpdateCustomExtraAdapter
-import ms.mattschlenkrich.paycalculator.ui.timesheet.workdate.adapter.WorkDateWorkOrderHistoryAdapter
+import ms.mattschlenkrich.paycalculator.ui.workdate.adapter.WorkDateWorkOrderHistoryAdapter
 import kotlin.math.round
 
 private const val TAG = FRAG_WORK_DATE_UPDATE
@@ -60,8 +60,7 @@ class WorkDateUpdateFragment : Fragment(
     private val nf = NumberFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWorkDateUpdateBinding.inflate(
             inflater, container, false
@@ -115,8 +114,7 @@ class WorkDateUpdateFragment : Fragment(
 
     private fun populateUsedWorkDateList() {
         payDayViewModel.getWorkDateList(
-            currentWorkDateObject.wdEmployerId,
-            currentWorkDateObject.wdCutoffDate
+            currentWorkDateObject.wdEmployerId, currentWorkDateObject.wdCutoffDate
         ).observe(viewLifecycleOwner) { list ->
             usedWorkDatesList.clear()
             list.listIterator().forEach {
@@ -137,11 +135,10 @@ class WorkDateUpdateFragment : Fragment(
                     btnTransfer.visibility = View.GONE
                     tvWorkOrderSummary.visibility = View.GONE
                 }
-                val workOrderAdapter =
-                    WorkDateWorkOrderHistoryAdapter(
-                        list as ArrayList, mainActivity, mView,
-                        this@WorkDateUpdateFragment,
-                    )
+                val workOrderAdapter = WorkDateWorkOrderHistoryAdapter(
+                    list as ArrayList, mainActivity, mView,
+                    this@WorkDateUpdateFragment,
+                )
                 rvHistory.apply {
                     layoutManager = LinearLayoutManager(mView.context)
                     adapter = workOrderAdapter
@@ -157,24 +154,19 @@ class WorkDateUpdateFragment : Fragment(
                 }
                 var display = ""
                 if (regHours != 0.0) {
-                    display += getString(R.string.reg_) +
-                            nf.getNumberFromDouble(regHours)
+                    display += getString(R.string.reg_) + nf.getNumberFromDouble(regHours)
                 }
                 if (otHours != 0.0) {
-                    if (display != ""
-                    ) {
+                    if (display != "") {
                         display += getString(R.string.pipe)
                     }
-                    display += getString(R.string.ot_) +
-                            nf.getNumberFromDouble(otHours)
+                    display += getString(R.string.ot_) + nf.getNumberFromDouble(otHours)
                 }
                 if (dblOtHours != 0.0) {
-                    if (display != ""
-                    ) {
+                    if (display != "") {
                         display += getString(R.string.pipe)
                     }
-                    display += getString(R.string.dbl_ot_) +
-                            nf.getNumberFromDouble(dblOtHours)
+                    display += getString(R.string.dbl_ot_) + nf.getNumberFromDouble(dblOtHours)
                 }
                 tvWorkOrderSummary.text = display
             }
@@ -196,8 +188,7 @@ class WorkDateUpdateFragment : Fragment(
             binding.apply {
                 activity?.let {
                     workExtraViewModel.getExtraTypesAndDefByDaily(
-                        currentWorkDateObject.wdEmployerId,
-                        currentWorkDateObject.wdCutoffDate
+                        currentWorkDateObject.wdEmployerId, currentWorkDateObject.wdCutoffDate
                     ).observe(viewLifecycleOwner) { extras ->
                         extras.listIterator().forEach {
                             val tempExtra = WorkDateExtras(
@@ -282,10 +273,7 @@ class WorkDateUpdateFragment : Fragment(
     }
 
     private fun updateWorkDateTotals() {
-        if (regHours > currentWorkDateObject.wdRegHours ||
-            otHours > currentWorkDateObject.wdOtHours ||
-            dblOtHours > currentWorkDateObject.wdDblOtHours
-        ) {
+        if (regHours > currentWorkDateObject.wdRegHours || otHours > currentWorkDateObject.wdOtHours || dblOtHours > currentWorkDateObject.wdDblOtHours) {
             transferWorkOrderTotals()
         }
     }
@@ -308,22 +296,17 @@ class WorkDateUpdateFragment : Fragment(
         binding.apply {
             val curDateAll = curDateString.split("-")
             val datePickerDialog = DatePickerDialog(
-                requireContext(),
-                { _, year, monthOfYear, dayOfMonth ->
+                requireContext(), { _, year, monthOfYear, dayOfMonth ->
                     val month = monthOfYear + 1
                     val display = "$year-${
-                        month.toString()
-                            .padStart(2, '0')
+                        month.toString().padStart(2, '0')
                     }-${
                         dayOfMonth.toString().padStart(2, '0')
                     }"
                     curDateString = display
                     tvWorkDate.text = df.getDisplayDate(display)
 
-                },
-                curDateAll[0].toInt(),
-                curDateAll[1].toInt() - 1,
-                curDateAll[2].toInt()
+                }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
             )
             datePickerDialog.setTitle(getString(R.string.choose_a_work_date))
             datePickerDialog.show()
@@ -337,8 +320,7 @@ class WorkDateUpdateFragment : Fragment(
 
     private fun gotoTimeSheetFragment() {
         mView.findNavController().navigate(
-            WorkDateUpdateFragmentDirections
-                .actionGlobalTimeSheetFragment()
+            WorkDateUpdateFragmentDirections.actionGlobalTimeSheetFragment()
         )
     }
 
@@ -358,16 +340,12 @@ class WorkDateUpdateFragment : Fragment(
     }
 
     private fun confirmOverwriteUsedDate(fragment: String) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(getString(R.string.this_date_is_already_used))
+        AlertDialog.Builder(mView.context).setTitle(getString(R.string.this_date_is_already_used))
             .setMessage(
                 getString(R.string.would_you_like_to_replace_the_old_information_for_this_work_date)
-            )
-            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+            ).setPositiveButton(getString(R.string.yes)) { _, _ ->
                 updateWorkDate(fragment)
-            }
-            .setNegativeButton(getString(R.string.no), null)
-            .show()
+            }.setNegativeButton(getString(R.string.no), null).show()
     }
 
     private fun getCurrentWorkDate(): WorkDates {
@@ -381,8 +359,7 @@ class WorkDateUpdateFragment : Fragment(
                     curDateString,
                     if (etHours.text.isNullOrBlank()) 0.0 else etHours.text.toString().trim()
                         .toDouble(),
-                    if (etOt.text.isNullOrBlank()) 0.0 else etOt.text.toString().trim()
-                        .toDouble(),
+                    if (etOt.text.isNullOrBlank()) 0.0 else etOt.text.toString().trim().toDouble(),
                     if (etDblOt.text.isNullOrBlank()) 0.0 else etDblOt.text.toString().trim()
                         .toDouble(),
                     if (etStat.text.isNullOrBlank()) 0.0 else etStat.text.toString().trim()
@@ -413,8 +390,7 @@ class WorkDateUpdateFragment : Fragment(
 
     private fun gotoWorkOrderHistoryAddFragment() {
         mView.findNavController().navigate(
-            WorkDateUpdateFragmentDirections
-                .actionWorkDateUpdateFragmentToWorkOrderHistoryAddFragment()
+            WorkDateUpdateFragmentDirections.actionWorkDateUpdateFragmentToWorkOrderHistoryAddFragment()
         )
     }
 
@@ -428,23 +404,20 @@ class WorkDateUpdateFragment : Fragment(
 
     private fun gotoWorkDateExtraAddFragment() {
         mView.findNavController().navigate(
-            WorkDateUpdateFragmentDirections
-                .actionWorkDateUpdateFragmentToWorkDateExtraAddFragment()
+            WorkDateUpdateFragmentDirections.actionWorkDateUpdateFragmentToWorkDateExtraAddFragment()
         )
     }
 
     fun gotoWorkDateExtraUpdateFragment() {
         mView.findNavController().navigate(
-            WorkDateUpdateFragmentDirections
-                .actionWorkDateUpdateFragmentToWorkDateExtraUpdateFragment()
+            WorkDateUpdateFragmentDirections.actionWorkDateUpdateFragmentToWorkDateExtraUpdateFragment()
 
         )
     }
 
     fun gotoWorkOrderHistoryUpdateFragment() {
         mView.findNavController().navigate(
-            WorkDateUpdateFragmentDirections
-                .actionWorkDateUpdateFragmentToWorkOrderHistoryUpdateFragment()
+            WorkDateUpdateFragmentDirections.actionWorkDateUpdateFragmentToWorkOrderHistoryUpdateFragment()
         )
     }
 
