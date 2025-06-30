@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteConstraintException
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -115,9 +116,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
             delay(WAIT_250)
             if (commonFunctions.getWorkOrderHistory() != null) {
                 populateFromHistory()
-            }
-            delay(WAIT_100)
-            if (mainViewModel.getTempWorkOrderHistoryInfo() != null) {
+            } else if (mainViewModel.getTempWorkOrderHistoryInfo() != null) {
                 populateFromTempValues()
             }
         }
@@ -687,6 +686,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
             workOrderViewModel.insertWorkPerformed(workPerformed)
             return workPerformed
         } catch (e: SQLiteConstraintException) {
+            Log.d(TAG, "error is ${e.toString()}")
             return null
         }
     }
