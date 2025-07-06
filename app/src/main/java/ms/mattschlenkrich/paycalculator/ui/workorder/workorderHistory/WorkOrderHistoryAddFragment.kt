@@ -244,9 +244,9 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
 
     private fun validateWorkOrderHistory(): String {
         binding.apply {
-            if (curWorkOrder == null && acWorkOrder.text.isNullOrBlank()) {
-                return getString(R.string.there_is_no_work_order_selected)
-            }
+//            if (curWorkOrder == null && acWorkOrder.text.isNullOrBlank()) {
+//                return getString(R.string.there_is_no_work_order_selected)
+//            }
             convertNumberStringsToDoubles()
         }
         return ANSWER_OK

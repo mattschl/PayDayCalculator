@@ -765,11 +765,11 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
     private fun validateHistory(): String {
         binding.apply {
             convertNumberStringsToDoubles()
-            if (etRegHours.text.toString().toDouble() == 0.0 && etOtHours.text.toString()
-                    .toDouble() == 0.0 && etDblOtHours.text.toString().toDouble() == 0.0
-            ) {
-                return getString(R.string.there_was_no_time_entered_please_enter_some_time)
-            }
+//            if (etRegHours.text.toString().toDouble() == 0.0 && etOtHours.text.toString()
+//                    .toDouble() == 0.0 && etDblOtHours.text.toString().toDouble() == 0.0
+//            ) {
+//                return getString(R.string.there_was_no_time_entered_please_enter_some_time)
+//            }
         }
         return ANSWER_OK
     }

@@ -29,7 +29,7 @@ android {
     defaultConfig {
         applicationId = "ms.mattschlenkrich.paycalculator"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 2
         versionName = "v1.0"
         ksp {
@@ -65,6 +65,7 @@ android {
         //noinspection DataBindingWithoutKapt
         dataBinding = true
     }
+    buildToolsVersion = "36.0.0"
 }
 
 dependencies {
