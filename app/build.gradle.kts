@@ -32,9 +32,9 @@ android {
         targetSdk = 36
         versionCode = 2
         versionName = "v1.0"
-        ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
-        }
+//        ksp {
+//            arg("room.schemaLocation", "$projectDir/schemas")
+//        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         signingConfig = signingConfigs.getByName("release")
@@ -64,8 +64,12 @@ android {
     buildFeatures {
         //noinspection DataBindingWithoutKapt
         dataBinding = true
+        viewBinding = true
     }
     buildToolsVersion = "36.0.0"
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+    }
 }
 
 dependencies {
