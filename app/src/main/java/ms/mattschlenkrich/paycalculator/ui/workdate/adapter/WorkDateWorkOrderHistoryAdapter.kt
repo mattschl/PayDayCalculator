@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.paycalculator.ui.workdate.adapter
 
 import android.app.AlertDialog
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistor
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkOrderHistoryItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateUpdateFragment
+import java.util.Random
 
 class WorkDateWorkOrderHistoryAdapter(
     private val workOrderHistory: ArrayList<WorkOrderHistoryWithDates>,
@@ -69,6 +71,11 @@ class WorkDateWorkOrderHistoryAdapter(
                 )
             }
             tvDetails.text = display
+            val random = Random()
+            val color = Color.argb(
+                255, random.nextInt(256), random.nextInt(256), random.nextInt(256)
+            )
+            vSpacer.setBackgroundColor(color)
             holder.itemView.setOnClickListener {
                 chooseOptions(history)
             }

@@ -47,6 +47,7 @@ class EmployerPayRatesFragment : Fragment(R.layout.fragment_employer_pay_rates) 
         mainActivity = (activity as MainActivity)
         mainActivity.title = getString(R.string.view_or_edit_wages)
         mainViewModel = mainActivity.mainViewModel
+        employerViewModel = mainActivity.employerViewModel
         return mView
     }
 

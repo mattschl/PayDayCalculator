@@ -21,4 +21,5 @@
     <dimen name="dimen_50dp">50dp</dimen>
     <dimen name="text_box_super_wide">300dp</dimen>
     <dimen name="dimen_100dp">100dp</dimen>
+    <dimen name="dimen_225dp">225dp</dimen>
 </resources>

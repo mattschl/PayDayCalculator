@@ -4,12 +4,15 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_5dp">
 
         <TextView
             android:id="@+id/tvAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxWidth="@dimen/text_box_wide"
+            android:maxLines="2"
             android:paddingStart="@dimen/dimen_8dp"
             android:paddingEnd="@dimen/dimen_8dp"
             android:text="@string/address"
@@ -46,6 +49,13 @@
             android:textStyle="italic"
             app:layout_constraintBaseline_toBaselineOf="@id/tvAddress"
             app:layout_constraintStart_toEndOf="@id/tvWorkOrder" />
+
+        <View
+            android:id="@+id/vSpacer"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvDetails" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
