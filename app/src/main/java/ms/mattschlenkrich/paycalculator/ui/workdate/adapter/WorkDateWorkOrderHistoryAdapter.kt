@@ -73,7 +73,7 @@ class WorkDateWorkOrderHistoryAdapter(
             tvDetails.text = display
             val random = Random()
             val color = Color.argb(
-                255, random.nextInt(256), random.nextInt(256), random.nextInt(256)
+                60, random.nextInt(256), random.nextInt(256), random.nextInt(256)
             )
             vSpacer.setBackgroundColor(color)
             holder.itemView.setOnClickListener {
