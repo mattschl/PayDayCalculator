@@ -450,5 +450,6 @@
     <string name="original_quantity__">"Original Quantity: "</string>
     <string name="choose_a_valid_material">Choose a valid material!</string>
     <string name="this_material_has_already_been_used_for_this_work_order_history">This Material has already been used for this work order history!</string>
+    <string name="hourly_details">Hourly Details</string>
 
 </resources>

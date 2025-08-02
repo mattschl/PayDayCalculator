@@ -12,49 +12,45 @@
             android:layout_width="match_parent"
             android:layout_height="3dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvDetails" />
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tvAddress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxWidth="@dimen/text_box_wide"
-            android:maxLines="10"
-            android:paddingStart="@dimen/dimen_8dp"
-            android:paddingEnd="@dimen/dimen_8dp"
-            android:text="@string/address"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_size_medium"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/tvWorkOrder"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/vSpacer" />
 
         <TextView
             android:id="@+id/tvWorkOrder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/dimen_8dp"
-            android:paddingEnd="@dimen/dimen_8dp"
             android:text="@string/work_order"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_medium"
             android:textStyle="bold|italic"
             app:layout_constraintBaseline_toBaselineOf="@id/tvAddress"
-            app:layout_constraintEnd_toStartOf="@id/tvDetails"
-            app:layout_constraintStart_toEndOf="@id/tvAddress" />
+            app:layout_constraintEnd_toStartOf="@id/tvAddress"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/tvDetails"
+            android:id="@+id/tvAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/dimen_8dp"
-            android:paddingEnd="@dimen/dimen_8dp"
-            android:text="@string/details"
+            android:layout_marginStart="@dimen/dimen_5dp"
+            android:maxWidth="@dimen/text_box_extra_wide"
+            android:maxLines="5"
+            android:text="@string/address"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_medium"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvWorkOrder"
+            app:layout_constraintTop_toBottomOf="@id/vSpacer" />
+
+        <TextView
+            android:id="@+id/tvHourDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hourly_details"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_medium"
             android:textStyle="italic"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvAddress"
-            app:layout_constraintStart_toEndOf="@id/tvWorkOrder" />
+            app:layout_constraintStart_toStartOf="@+id/tvWorkOrder"
+            app:layout_constraintTop_toBottomOf="@id/tvAddress" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

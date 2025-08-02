@@ -69,7 +69,7 @@ class WorkDateWorkOrderHistoryAdapter(
                     history.history.woHistoryDblOtHours
                 )
             }
-            tvDetails.text = display
+            tvHourDetails.text = display
             val visualsFunctions = VisualsFunctions()
             val color = visualsFunctions.getRandomColorInt()
             vSpacer.setBackgroundColor(color)
