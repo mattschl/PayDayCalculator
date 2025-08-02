@@ -6,6 +6,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <View
+            android:id="@+id/vSpacer"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_4dp"
+            android:layout_marginStart="@dimen/dimen_25dp"
+            android:layout_marginEnd="@dimen/dimen_25dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
         <TextView
             android:id="@+id/tvWorkOrderNumber"
             android:layout_width="wrap_content"
@@ -16,15 +26,17 @@
             android:textSize="@dimen/text_size_large"
             android:textStyle="bold|italic"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/vSpacer" />
 
         <TextView
             android:id="@+id/tvAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxWidth="@dimen/text_box_extra_wide"
+            android:maxLines="5"
             android:text="@string/address"
             android:textColor="@color/black"
-            android:textSize="@dimen/text_size_large"
+            android:textSize="@dimen/text_size_medium"
             android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@id/tvWorkOrderNumber"
             app:layout_constraintEnd_toEndOf="parent"
@@ -36,13 +48,13 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dimen_20dp"
             android:layout_marginEnd="@dimen/dimen_20dp"
-            android:maxLines="3"
+            android:maxLines="5"
             android:text="@string/description"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_medium"
             android:textStyle="italic"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvWorkOrderNumber" />
+            app:layout_constraintTop_toBottomOf="@id/tvAddress" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.VisualsFunctions
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkOrderItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
@@ -54,6 +55,9 @@ class WorkOrderViewAdapter(
             tvWorkOrderNumber.text = workOrder.woNumber
             tvAddress.text = workOrder.woAddress
             tvDescription.text = workOrder.woDescription
+            val visualsFunctions = VisualsFunctions()
+            val color = visualsFunctions.getRandomColorInt()
+            vSpacer.setBackgroundColor(color)
         }
         holder.itemView.setOnClickListener {
             chooseOptions(workOrder)
