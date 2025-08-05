@@ -24,6 +24,7 @@ import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.PayPeriods
+import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
@@ -249,9 +250,75 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
             }
             payDayViewModel.getWorkDateList(curEmployer!!.employerId, curCutOff)
                 .observe(viewLifecycleOwner) { workDates ->
+                    populateWeekTotals(workDates)
                     workDateAdapter!!.differ.submitList(workDates)
                     updateUI(workDates)
                 }
+        }
+    }
+
+    private fun populateWeekTotals(workDates: List<WorkDates>) {
+        binding.apply {
+            val week1EndDate = LocalDate.parse(curCutOff).minusDays(7).toString()
+            var wk1RegHours = 0.0
+            var wk1OtHours = 0.0
+            var wk1DblOtHours = 0.0
+            var wk1StatHours = 0.0
+            var wk2RegHours = 0.0
+            var wk2OtHours = 0.0
+            var wk2DblOtHours = 0.0
+            var wk2StatHours = 0.0
+            for (wDate in workDates) {
+                if (wDate.wdDate <= week1EndDate) {
+                    wk1RegHours += wDate.wdRegHours
+                    wk1OtHours += wDate.wdOtHours
+                    wk1DblOtHours += wDate.wdDblOtHours
+                    wk1StatHours += wDate.wdStatHours
+                } else {
+                    wk2RegHours += wDate.wdRegHours
+                    wk2OtHours += wDate.wdOtHours
+                    wk2DblOtHours += wDate.wdDblOtHours
+                    wk2StatHours += wDate.wdStatHours
+                }
+            }
+            var display = ""
+            if (wk1RegHours != 0.0) {
+                display += nf.getNumberFromDouble(wk1RegHours) + " " + getString(R.string.hr)
+            }
+            if (wk1OtHours != 0.0) {
+                if (display != "") display += getString(R.string.pipe)
+                display += nf.getNumberFromDouble(wk1OtHours) + " " + getString(R.string.ot)
+            }
+            if (wk1DblOtHours != 0.0) {
+                if (display != "") display += getString(R.string.pipe)
+                display += nf.getNumberFromDouble(wk1DblOtHours) + " " + getString(R.string.dbl_ot)
+            }
+            if (wk1StatHours != 0.0) {
+                if (display != "") display += getString(R.string.pipe)
+                display += nf.getNumberFromDouble(wk1StatHours) + " " + getString(R.string.stat_hours)
+            }
+            display = getString(R.string.week_1_) +
+                    if (display == "") getString(R.string._0_hr) else display
+            tvWeek1.text = display
+            display = ""
+            if (wk2RegHours != 0.0) {
+                display += nf.getNumberFromDouble(wk2RegHours) + " " + getString(R.string.hr)
+            }
+            if (wk2OtHours != 0.0) {
+                if (display != "") display += getString(R.string.pipe)
+                display += nf.getNumberFromDouble(wk2OtHours) + " " + getString(R.string.ot)
+            }
+            if (wk2DblOtHours != 0.0) {
+                if (display != "") display += getString(R.string.pipe)
+                display += nf.getNumberFromDouble(wk2DblOtHours) + " " + getString(R.string.dbl_ot)
+            }
+            if (wk2StatHours != 0.0) {
+                if (display != "") display += getString(R.string.pipe)
+                display += nf.getNumberFromDouble(wk2StatHours) + " " + getString(R.string.stat_hours)
+            }
+            display = getString(R.string.week_2_) +
+                    if (display == "") getString(R.string._0_hr) else display
+            tvWeek2.text = display
         }
     }
 
@@ -296,6 +363,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
                         payCalculations.getHoursStat()
                     )
                 }
+                display = getString(R.string.totals) + " " + display
                 tvHours.text = display
                 fabAddDate.visibility = View.VISIBLE
             }

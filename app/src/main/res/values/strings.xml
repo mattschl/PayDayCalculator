@@ -367,7 +367,7 @@
     <string name="total_debits">Total Debits</string>
     <string name="total_deductions">Total Deductions</string>
     <string name="total_hourly">Total Hourly</string>
-    <string name="total">Total</string>
+    <string name="total">Total </string>
     <string name="transfer_totals">Transfer Totals</string>
     <string name="transfer">Transfer</string>
     <string name="type_number_or_address_search">Type number or address search</string>
@@ -451,5 +451,9 @@
     <string name="choose_a_valid_material">Choose a valid material!</string>
     <string name="this_material_has_already_been_used_for_this_work_order_history">This Material has already been used for this work order history!</string>
     <string name="hourly_details">Hourly Details</string>
+    <string name="week_1_">"Week 1: "</string>
+    <string name="week_2_">"Week 2: "</string>
+    <string name="_0_hr">0 Hr</string>
+    <string name="totals">Totals: </string>
 
 </resources>

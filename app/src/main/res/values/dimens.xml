@@ -22,4 +22,5 @@
     <dimen name="text_box_super_wide">300dp</dimen>
     <dimen name="dimen_100dp">100dp</dimen>
     <dimen name="dimen_225dp">225dp</dimen>
+    <dimen name="text_size_small">16sp</dimen>
 </resources>
