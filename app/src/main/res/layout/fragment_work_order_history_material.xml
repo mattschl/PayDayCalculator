@@ -3,114 +3,119 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/frameLayout2"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:context=".ui.workorder.workorderHistory.WorkOrderHistoryMaterialUpdateFragment">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tvInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dimen_10dp"
-            android:padding="@dimen/dimen_8dp"
-            android:text="@string/material"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_size_medium"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/vSpacer"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/dimen_8dp"
-            android:backgroundTint="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvInfo" />
-
-        <TextView
-            android:id="@+id/lblMaterials"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dimen_25dp"
-            android:layout_marginTop="@dimen/dimen_25dp"
-            android:text="@string/update_material_used"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_size_medium"
-            android:textStyle="italic"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/vSpacer" />
-
-        <AutoCompleteTextView
-            android:id="@+id/acMaterials"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/material_name"
-            android:importantForAutofill="no"
-            android:inputType="textMultiLine|textCapSentences"
-            android:maxWidth="@dimen/text_box_extra_wide"
-            android:minHeight="@dimen/minimum_touch_height"
-            android:paddingStart="@dimen/dimen_20dp"
-            android:paddingEnd="@dimen/dimen_20dp"
-            android:selectAllOnFocus="true"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lblMaterials"
-            tools:ignore="DuplicateSpeakableTextCheck" />
-
-        <TextView
-            android:id="@+id/lblQuantity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dimen_25dp"
-            android:text="@string/update_quantity"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_size_medium"
-            android:textStyle="italic"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/acMaterials" />
-
-        <EditText
-            android:id="@+id/etQuantity"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="@string/update_quantity"
-            android:importantForAutofill="no"
-            android:inputType="numberDecimal"
-            android:maxWidth="@dimen/layout_width_wide"
-            android:minHeight="@dimen/minimum_touch_height"
-            android:paddingStart="@dimen/dimen_20dp"
-            android:paddingEnd="@dimen/dimen_20dp"
-            android:selectAllOnFocus="true"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lblQuantity"
-            tools:ignore="VisualLintTextFieldSize" />
-
-        <View
-            android:id="@+id/vBlankSpace"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/frameLayout2"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dimen_100dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etQuantity" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabDone"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/dimen_25dp"
-            android:layout_marginBottom="@dimen/dimen_25dp"
-            android:backgroundTint="@color/dark_green"
-            android:contentDescription="@string/done"
-            android:src="@drawable/ic_done"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            tools:context=".ui.workorder.workorderHistory.WorkOrderHistoryMaterialUpdateFragment">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/tvInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/dimen_10dp"
+                android:padding="@dimen/dimen_8dp"
+                android:text="@string/material"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_medium"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/vSpacer"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dimen_8dp"
+                android:backgroundTint="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvInfo" />
+
+            <TextView
+                android:id="@+id/lblMaterials"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen_25dp"
+                android:layout_marginTop="@dimen/dimen_25dp"
+                android:text="@string/update_material_used"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_medium"
+                android:textStyle="italic"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/vSpacer" />
+
+            <AutoCompleteTextView
+                android:id="@+id/acMaterials"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/material_name"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxWidth="@dimen/text_box_extra_wide"
+                android:minHeight="@dimen/minimum_touch_height"
+                android:paddingStart="@dimen/dimen_20dp"
+                android:paddingEnd="@dimen/dimen_20dp"
+                android:selectAllOnFocus="true"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lblMaterials"
+                tools:ignore="DuplicateSpeakableTextCheck" />
+
+            <TextView
+                android:id="@+id/lblQuantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen_25dp"
+                android:text="@string/update_quantity"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_medium"
+                android:textStyle="italic"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/acMaterials" />
+
+            <EditText
+                android:id="@+id/etQuantity"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/update_quantity"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal"
+                android:maxWidth="@dimen/layout_width_wide"
+                android:minHeight="@dimen/minimum_touch_height"
+                android:paddingStart="@dimen/dimen_20dp"
+                android:paddingEnd="@dimen/dimen_20dp"
+                android:selectAllOnFocus="true"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lblQuantity"
+                tools:ignore="VisualLintTextFieldSize" />
+
+            <View
+                android:id="@+id/vBlankSpace"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen_100dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etQuantity" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabDone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dimen_25dp"
+                android:layout_marginBottom="@dimen/dimen_25dp"
+                android:backgroundTint="@color/dark_green"
+                android:contentDescription="@string/done"
+                android:src="@drawable/ic_done"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </layout>

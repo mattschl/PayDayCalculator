@@ -429,7 +429,7 @@ interface WorkOrderDao {
                 "ORDER BY woHistoryUpdateTime) " +
                 "ON woHistoryId = wohmHistoryId " +
                 "WHERE wohmIsDeleted = 0 " +
-                "ORDER By wohmSequence"
+                "ORDER By wohmMaterialId"
     )
     fun getMaterialsHistoryByWorkOrderId(workOrderId: Long):
             LiveData<List<WorkOrderHistoryMaterialCombined>>

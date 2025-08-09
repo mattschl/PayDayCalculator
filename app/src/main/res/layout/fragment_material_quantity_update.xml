@@ -3,73 +3,78 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/coordinatorLayout"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:context=".ui.workorder.materials.MaterialQuantityUpdateFragment">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tvDetails"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/coordinatorLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLines="4"
-            android:text="@string/details"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_size_large"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            tools:context=".ui.workorder.materials.MaterialQuantityUpdateFragment">
 
-        <TextView
-            android:id="@+id/lblQuantity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/enter_new_quantity"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="italic"
-            app:layout_constraintBaseline_toBaselineOf="@id/etNewQuantity"
-            app:layout_constraintEnd_toStartOf="@id/etNewQuantity"
-            app:layout_constraintStart_toStartOf="parent" />
+            <TextView
+                android:id="@+id/tvDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="4"
+                android:text="@string/details"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_large"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/etNewQuantity"
-            android:layout_width="@dimen/text_box_small"
-            android:layout_height="@dimen/minimum_touch_height"
-            android:layout_marginBottom="@dimen/dimen_50dp"
-            android:hint="@string/zero_double"
-            android:importantForAutofill="no"
-            android:inputType="numberDecimal"
-            android:minHeight="48dp"
-            android:selectAllOnFocus="true"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/lblQuantity"
-            app:layout_constraintTop_toBottomOf="@id/tvDetails"
-            tools:ignore="DuplicateSpeakableTextCheck" />
+            <TextView
+                android:id="@+id/lblQuantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/enter_new_quantity"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="italic"
+                app:layout_constraintBaseline_toBaselineOf="@id/etNewQuantity"
+                app:layout_constraintEnd_toStartOf="@id/etNewQuantity"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        <View
-            android:id="@+id/spacer"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dimen_100dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etNewQuantity" />
+            <EditText
+                android:id="@+id/etNewQuantity"
+                android:layout_width="@dimen/text_box_small"
+                android:layout_height="@dimen/minimum_touch_height"
+                android:layout_marginBottom="@dimen/dimen_50dp"
+                android:hint="@string/zero_double"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal"
+                android:minHeight="48dp"
+                android:selectAllOnFocus="true"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/lblQuantity"
+                app:layout_constraintTop_toBottomOf="@id/tvDetails"
+                tools:ignore="DuplicateSpeakableTextCheck" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabDone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dimen_25dp"
-            android:layout_marginEnd="@dimen/dimen_25dp"
-            android:backgroundTint="@color/dark_green"
-            android:contentDescription="@string/done"
-            android:src="@drawable/ic_done"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <View
+                android:id="@+id/spacer"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen_100dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etNewQuantity" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabDone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_25dp"
+                android:layout_marginEnd="@dimen/dimen_25dp"
+                android:backgroundTint="@color/dark_green"
+                android:contentDescription="@string/done"
+                android:src="@drawable/ic_done"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </layout>

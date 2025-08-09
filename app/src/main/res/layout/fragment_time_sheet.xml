@@ -138,7 +138,8 @@
                         android:maxLines="5"
                         android:text="@string/hours"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/text_size_medium" />
+                        android:textSize="@dimen/text_size_medium"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tvWeek1"
@@ -147,7 +148,7 @@
                         android:layout_marginEnd="@dimen/dimen_8dp"
                         android:maxLines="5"
                         android:text="@string/week_1"
-                        android:textColor="@color/black"
+                        android:textColor="@color/deep_red"
                         android:textSize="@dimen/text_size_small"
                         app:layout_constraintEnd_toStartOf="@id/tvWeek2"
                         app:layout_constraintStart_toStartOf="parent"
@@ -160,7 +161,7 @@
                         android:layout_marginEnd="@dimen/dimen_8dp"
                         android:maxLines="5"
                         android:text="@string/week_2"
-                        android:textColor="@color/black"
+                        android:textColor="@color/dark_green"
                         android:textSize="@dimen/text_size_small"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/tvWeek1"
