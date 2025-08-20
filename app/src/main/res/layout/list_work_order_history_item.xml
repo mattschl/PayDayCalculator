@@ -5,7 +5,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dimen_5dp">
+        android:layout_marginTop="@dimen/dimen_5dp"
+        android:paddingStart="@dimen/dimen_10dp"
+        android:paddingEnd="@dimen/dimen_10dp">
 
         <View
             android:id="@+id/vSpacer"
@@ -17,14 +19,13 @@
 
         <TextView
             android:id="@+id/tvWorkOrder"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/text_box_narrow"
             android:layout_height="wrap_content"
             android:text="@string/work_order"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_medium"
             android:textStyle="bold|italic"
             app:layout_constraintBaseline_toBaselineOf="@id/tvAddress"
-            app:layout_constraintEnd_toStartOf="@id/tvAddress"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
@@ -38,7 +39,6 @@
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_medium"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tvWorkOrder"
             app:layout_constraintTop_toBottomOf="@id/vSpacer" />
 
