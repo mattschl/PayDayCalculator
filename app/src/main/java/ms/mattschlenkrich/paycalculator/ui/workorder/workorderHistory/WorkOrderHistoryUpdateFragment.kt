@@ -175,7 +175,9 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         workOrderViewModel.getWorkPerformedCombinedByWorkOrderHistory(
             curHistoryDetailed.history.woHistoryId
         ).observe(viewLifecycleOwner) { list ->
-            populateWorkPerformedRecycler(list)
+            val listSorted =
+                list.sortedBy { workPerformedCombined -> workPerformedCombined.area?.areaName }
+            populateWorkPerformedRecycler(listSorted)
             existingWorkPerformedListForValidation = list
             determineWorkPerformedSequence(list)
         }

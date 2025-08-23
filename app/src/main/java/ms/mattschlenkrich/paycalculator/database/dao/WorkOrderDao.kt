@@ -316,10 +316,25 @@ interface WorkOrderDao {
         "SELECT * FROM workOrderHistoryWorkPerformed " +
                 "WHERE wowpIsDeleted = 0 " +
                 "AND wowpHistoryId = :historyId " +
-                "ORDER BY wowpSequence, " +
+                "ORDER BY wowpAreaId, wowpSequence, " +
                 "wowpUpdateTime"
     )
     fun getWorkPerformedByWorkOrderHistory(historyId: Long):
+            LiveData<List<WorkOrderHistoryWorkPerformedCombined>>
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT * FROM workOrderHistoryWorkPerformed as wp, areas as ar " +
+                "INNER JOIN " +
+                "(SELECT * FROM areas )" +
+                "ON ar.areaId = wp.wowpAreaId " +
+                "WHERE wp.wowpIsDeleted = 0 " +
+                "AND wp.wowpHistoryId = :historyId " +
+                "ORDER BY ar.areaName, wp.wowpSequence, " +
+                "wp.wowpUpdateTime"
+    )
+    fun getWorkPerformedByWorkOrderHistory2(historyId: Long):
             LiveData<List<WorkOrderHistoryWorkPerformedCombined>>
 
     @RewriteQueriesToDropUnusedColumns
