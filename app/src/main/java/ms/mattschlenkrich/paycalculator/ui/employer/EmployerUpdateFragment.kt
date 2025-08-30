@@ -165,12 +165,10 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
                 layoutManager = LinearLayoutManager(mView.context)
                 adapter = employerTaxTypeAdapter
             }
-            activity.let {
-                workTaxViewModel.getEmployerTaxTypes(
-                    employerId
-                ).observe(viewLifecycleOwner) { employerTaxType ->
-                    employerTaxTypeAdapter.differ.submitList(employerTaxType)
-                }
+            workTaxViewModel.getEmployerTaxTypes(
+                employerId
+            ).observe(viewLifecycleOwner) { employerTaxType ->
+                employerTaxTypeAdapter.differ.submitList(employerTaxType)
             }
         }
     }
