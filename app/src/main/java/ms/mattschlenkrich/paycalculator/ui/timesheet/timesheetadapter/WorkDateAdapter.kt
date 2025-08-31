@@ -129,7 +129,7 @@ class WorkDateAdapter(
             mView.context.getString(R.string.choose_an_action_for) + df.getDisplayDate(workDate.wdDate)
         ).setItems(
             arrayOf(
-                mView.context.getString(R.string.edit_this_date),
+                mView.context.getString(R.string.open_this_date),
                 mView.context.getString(R.string.delete_this_date)
             )
         ) { _, pos ->

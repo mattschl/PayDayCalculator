@@ -250,6 +250,8 @@
     <string name="old_area_of_work">"Old Area of work: "</string>
     <string name="old_work_description">"Old Work Description: "</string>
     <string name="open">Open</string>
+    <string name="open_caps">OPEN</string>
+    <string name="open_this_date">Open this date</string>
     <string name="original_job_spec">"Original Job Spec: "</string>
     <string name="original_material__">"Original Material: "</string>
     <string name="original_quantity__">"Original Quantity: "</string>

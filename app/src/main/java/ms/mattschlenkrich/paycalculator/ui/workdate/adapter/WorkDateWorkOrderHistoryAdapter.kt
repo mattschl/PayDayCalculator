@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.VisualsFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
@@ -25,7 +26,7 @@ class WorkDateWorkOrderHistoryAdapter(
     private val workDateUpdateFragment: WorkDateUpdateFragment,
 ) : RecyclerView.Adapter<WorkDateWorkOrderHistoryAdapter.ViewHolder>() {
 
-    //    private val df = DateFunctions()
+    private val df = DateFunctions()
     private val nf = NumberFunctions()
     private val mainViewModel = mainActivity.mainViewModel
     private val workOrderViewModel = mainActivity.workOrderViewModel
@@ -81,8 +82,10 @@ class WorkDateWorkOrderHistoryAdapter(
 
     private fun chooseOptions(history: WorkOrderHistoryWithDates) {
         AlertDialog.Builder(mView.context).setTitle(
-            mView.context.getString(R.string.choose_option_for_wo) + history.workOrder.woNumber
-        ).setPositiveButton(mView.context.getString(R.string.edit)) { _, _ ->
+            mView.context.getString(R.string.choose_option_for_wo) + history.workOrder.woNumber +
+                    mView.context.getString(R.string._on_) +
+                    df.getDisplayDate(history.workDate.wdDate)
+        ).setPositiveButton(mView.context.getString(R.string.open_caps)) { _, _ ->
             gotoWorkOrderHistoryUpdate(history)
         }.setNegativeButton(mView.context.getString(R.string.delete)) { _, _ ->
             confirmDeleteWorkOrderHistory(history)

@@ -101,7 +101,7 @@ class WorkOrderHistoryAdapter(
                     history.workDate.wdDate
                 )
             }"
-        ).setPositiveButton(mView.context.getString(R.string.edit)) { _, _ ->
+        ).setPositiveButton(mView.context.getString(R.string.open_caps)) { _, _ ->
             gotoEditWorkOrderHistory(
                 history
             )
