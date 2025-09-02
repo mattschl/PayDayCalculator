@@ -13,6 +13,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -41,6 +42,7 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
     private lateinit var workTaxViewModel: WorkTaxViewModel
     private val df = DateFunctions()
     private val cf = NumberFunctions()
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -62,10 +64,11 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
         setClickActions()
     }
 
+
     private fun populateValues() {
         populateTaxTypes()
         populateEffectiveDates()
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             delay(WAIT_1000)
             binding.apply {
                 if (mainViewModel.getTaxTypeString() != null) {
@@ -145,7 +148,7 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun populateTaxRuleList() {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             delay(WAIT_250)
             binding.apply {
                 if (spTaxType.adapter.count > 1 && spEffectiveDate.adapter.count > 1) {
@@ -303,6 +306,11 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
         mView.findNavController().navigate(
             TaxRulesFragmentDirections.actionTaxRulesFragmentToTaxRuleUpdateFragment()
         )
+    }
+
+    override fun onStop() {
+        mainScope.cancel()
+        super.onStop()
     }
 
     override fun onDestroy() {

@@ -12,6 +12,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -55,6 +56,8 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
     private val df = DateFunctions()
     private var workDateAdapter: WorkDateAdapter? = null
     private lateinit var payCalculations: PayCalculationsAsync
+    private val defaultScope = CoroutineScope(Dispatchers.Default)
+    private val mainScope = CoroutineScope(Dispatchers.Main)
     private var valuesFilled = false
 
     override fun onCreateView(
@@ -113,6 +116,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
         }
     }
 
+
     private fun onSelectEmployer() {
         binding.apply {
             spEmployers.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -120,12 +124,12 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
                     parent: AdapterView<*>?, view: View?, position: Int, id: Long
                 ) {
                     if (spEmployers.selectedItem.toString() != getString(R.string.add_new_employer)) {
-                        CoroutineScope(Dispatchers.Default).launch {
+                        defaultScope.launch {
                             curEmployer = employerViewModel.findEmployer(
                                 spEmployers.selectedItem.toString()
                             )
                         }
-                        CoroutineScope(Dispatchers.Main).launch {
+                        mainScope.launch {
                             delay(WAIT_100)
                             mainViewModel.setEmployer(curEmployer)
                             mainActivity.title =
@@ -196,13 +200,13 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
                 ) {
                     if (spCutOff.adapter.count > 0) {
                         if (spCutOff.selectedItem.toString() != getString(R.string.generate_a_new_cut_off)) {
-                            CoroutineScope(Dispatchers.Default).launch {
+                            defaultScope.launch {
                                 curCutOff = spCutOff.selectedItem.toString()
                                 if (valuesFilled) mainViewModel.setCutOffDate(curCutOff)
                                 populatePayDayDate()
                                 populatePayDetails()
                             }
-                            CoroutineScope(Dispatchers.Main).launch {
+                            mainScope.launch {
                                 delay(WAIT_1000)
                                 populateExistingWorkDates()
                             }
@@ -222,7 +226,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
     }
 
     private fun populatePayDayDate() {
-        if (curCutOff != "" && curEmployer != null) {
+        if (curCutOff.isNotBlank() && curEmployer != null) {
             binding.apply {
                 val display = getString(R.string.pay_day_is_) + df.getDisplayDate(
                     LocalDate.parse(curCutOff).plusDays(curEmployer!!.cutoffDaysBefore.toLong())
@@ -323,7 +327,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
     }
 
     override fun populatePayDetails() {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             getSelectedPayPeriodObject()
             delay(WAIT_250)
             payCalculations = PayCalculationsAsync(
@@ -373,7 +377,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
     private fun populateFromHistory() {
         if (!valuesFilled) {
             binding.apply {
-                CoroutineScope(Dispatchers.Main).launch {
+                mainScope.launch {
                     delay(WAIT_500)
                     if (mainViewModel.getEmployer() != null) {
                         curEmployer = mainViewModel.getEmployer()!!
@@ -483,6 +487,8 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
             setEmployer(curEmployer)
             setCutOffDate(curCutOff)
         }
+        mainScope.cancel()
+        defaultScope.cancel()
         super.onStop()
     }
 

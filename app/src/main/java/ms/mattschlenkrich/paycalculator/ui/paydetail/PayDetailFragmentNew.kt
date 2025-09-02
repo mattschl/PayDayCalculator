@@ -18,6 +18,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -68,6 +69,8 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
     private var valuesFilled = false
     private val nf = NumberFunctions()
     private val df = DateFunctions()
+    private val defaultScope = CoroutineScope(Dispatchers.Default)
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -173,6 +176,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
         }.setNegativeButton(getString(R.string.cancel), null).show()
     }
 
+
     private fun onSelectEmployer() {
         binding.apply {
             spEmployers.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -180,12 +184,12 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
                     parent: AdapterView<*>?, view: View?, position: Int, id: Long
                 ) {
                     if (spEmployers.selectedItem.toString() != getString(R.string.add_new_employer)) {
-                        CoroutineScope(Dispatchers.IO).launch {
+                        defaultScope.launch {
                             curEmployer = employerViewModel.findEmployer(
                                 spEmployers.selectedItem.toString()
                             )
                         }
-                        CoroutineScope(Dispatchers.Main).launch {
+                        mainScope.launch {
                             delay(WAIT_100)
                             mainViewModel.setEmployer(curEmployer)
                             mainActivity.title =
@@ -267,7 +271,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
     }
 
     override fun populatePayDetails() {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             getCurrentPayPeriodObject()
             delay(WAIT_250)
             val payCalculations = PayCalculationsAsync(
@@ -341,7 +345,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
     }
 
     private fun populateExtras(payCalculations: IPayCalculations) {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             val extrasList = processExtras(payCalculations)
             val creditList = payCalculations.getCredits()
             delay(WAIT_250)
@@ -353,7 +357,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
 
     private fun processExtras(payCalculations: IPayCalculations): ArrayList<WorkPayPeriodExtras> {
         val extraList = mutableListOf<WorkPayPeriodExtras>()
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             delay(WAIT_250)
             payDayViewModel.getPayPeriodExtras(curPayPeriod!!.payPeriodId).observe(
                 viewLifecycleOwner
@@ -386,7 +390,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
     }
 
     private fun populateCredits(creditList: List<ExtraContainer>) {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             delay(WAIT_250)
             val creditListAdapter = PayDetailExtraContainerAdapter(
                 mainActivity, mView, curPayPeriod!!, creditList, this@PayDetailFragmentNew
@@ -406,7 +410,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
 //            payCalculations, extraList
 //        )
         val debitList = payCalculations.getDebits()
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             binding.apply {
                 delay(WAIT_500)
                 val deductionListAdapter = PayDetailExtraContainerAdapter(
@@ -582,7 +586,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
     private fun populateFromHistory() {
         if (!valuesFilled) {
             binding.apply {
-                CoroutineScope(Dispatchers.Main).launch {
+                mainScope.launch {
                     delay(WAIT_500)
                     if (mainViewModel.getEmployer() != null) {
                         curEmployer = mainViewModel.getEmployer()!!
@@ -692,6 +696,8 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
             setEmployer(curEmployer)
             setCutOffDate(curCutOff)
         }
+        defaultScope.cancel()
+        mainScope.cancel()
         super.onStop()
     }
 

@@ -10,7 +10,6 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.Material
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryMaterial
-import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryMaterialCombined
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
@@ -245,21 +244,30 @@ class WorkOrderViewModel(
     fun getMaterialsHistoryByWorkOrderId(workOrderId: Long) =
         workOrderRepository.getMaterialsHistoryByWorkOrderId(workOrderId)
 
-    fun getWorkOrderHistoryMaterialCombined(woHistoryMaterialId: Long):
-            WorkOrderHistoryMaterialCombined =
+    fun getWorkOrderHistoryMaterialCombined(woHistoryMaterialId: Long) =
         workOrderRepository.getWorkOrderHistoryMaterialCombined(woHistoryMaterialId)
 
-    fun insertArea(area: Areas) = viewModelScope.launch {
-        workOrderRepository.insertArea(area)
-    }
+    fun insertArea(area: Areas) = viewModelScope.launch { workOrderRepository.insertArea(area) }
 
     fun updateArea(area: Areas) = viewModelScope.launch { workOrderRepository.updateArea(area) }
 
+    /**
+     * @return LiveData(List(Areas))
+     */
     fun getAreasList() = workOrderRepository.getAreasList()
 
+    /**
+     * @return LiveData(Areas)
+     */
     fun getArea(areaId: Long) = workOrderRepository.getArea(areaId)
 
+    /**
+     * @return LiveData(Areas)
+     */
     fun getArea(areaName: String) = workOrderRepository.getArea(areaName)
 
+    /**
+     * @return LiveData(List(Areas))
+     */
     fun searchAreas(query: String) = workOrderRepository.searchAreas(query)
 }

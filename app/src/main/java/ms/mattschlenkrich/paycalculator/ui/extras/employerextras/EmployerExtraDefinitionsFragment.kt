@@ -14,6 +14,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -66,10 +67,12 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         setClickActions()
     }
 
+    private val mainScope = CoroutineScope(Dispatchers.Main)
+
     private fun populateValues() {
         populateEmployersSpinner()
         mainViewModel.removeCallingFragment(TAG)
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             binding.apply {
                 delay(WAIT_250)
                 setSelectionToEmployerFoundInList()
@@ -369,6 +372,11 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         mView.findNavController().navigate(
             EmployerExtraDefinitionsFragmentDirections.actionEmployerExtraDefinitionsFragmentToEmployerExtraDefinitionUpdateFragment()
         )
+    }
+
+    override fun onStop() {
+        mainScope.cancel()
+        super.onStop()
     }
 
     override fun onDestroy() {

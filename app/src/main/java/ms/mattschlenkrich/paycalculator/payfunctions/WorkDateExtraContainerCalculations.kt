@@ -22,8 +22,10 @@ class WorkDateExtraContainerCalculations(
     private lateinit var extraDefinitionAndTypeList: List<ExtraDefinitionAndType>
     private var extraContainers = ArrayList<ExtraContainer>()
 
+    private val defaultScope = CoroutineScope(Dispatchers.Default)
+
     init {
-        CoroutineScope(Dispatchers.Default).launch {
+        defaultScope.launch {
             getCustomWorkDateExtrasFromDb()
             getDefaultExtraTypeAndDefFromDb()
             sortIntoSingleExtraContainerList()
@@ -31,7 +33,7 @@ class WorkDateExtraContainerCalculations(
     }
 
     private fun sortIntoSingleExtraContainerList() {
-        CoroutineScope(Dispatchers.Default).launch {
+        defaultScope.launch {
             if (workDateExtraList.isNotEmpty()) {
                 for (extra in workDateExtraList) {
                     if (!extra.wdeIsDeleted) {

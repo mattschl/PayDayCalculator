@@ -17,6 +17,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -85,11 +86,13 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
         setClickActions()
     }
 
+    private val mainScope = CoroutineScope(Dispatchers.Main)
+
     private fun populateValues() {
         if (mainViewModel.getPayPeriod() != null) {
             payPeriod = mainViewModel.getPayPeriod()
             populateWorkDateLists()
-            CoroutineScope(Dispatchers.Main).launch {
+            mainScope.launch {
                 delay(WAIT_250)
                 populateDate()
                 populateExtras()
@@ -205,7 +208,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
     private fun setStatHoursEstimate() {
         binding.apply {
             etStat.setText("")
-            CoroutineScope(Dispatchers.Main).launch {
+            mainScope.launch {
                 val holidayPayCalculator = HolidayPayCalculator(
                     mainActivity, payPeriod!!.ppEmployerId, curDateString
                 )
@@ -283,7 +286,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
     }
 
     private fun saveWorkDate(goBackTo: String) {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             val workDate = getCurWorkDate()
             payDayViewModel.insertWorkDate(workDate)
             mainViewModel.setWorkDateObject(workDate)
@@ -303,7 +306,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
     }
 
     private fun overWriteWorkDate(date: WorkDates, goBackTo: String) {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             val workDate = getUpdatedWorkDate(date)
             payDayViewModel.updateWorkDate(workDate)
             mainViewModel.setWorkDateObject(workDate)
@@ -316,7 +319,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
     private fun goBackToFragment(
         goBackTo: String, workDate: WorkDates
     ) {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             delay(WAIT_500)
             if (goBackTo == FRAG_TIME_SHEET) {
                 gotoTimeSheetFragment()
@@ -381,7 +384,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
             setCallingFragment(TAG)
             setWorkDateObject(workDate)
         }
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             delay(WAIT_100)
             gotoWorkOrderHistoryAddFragment()
         }
@@ -408,6 +411,11 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
         mView.findNavController().navigate(
             WorkDateAddFragmentDirections.actionGlobalTimeSheetFragment()
         )
+    }
+
+    override fun onStop() {
+        mainScope.cancel()
+        super.onStop()
     }
 
     override fun onDestroy() {

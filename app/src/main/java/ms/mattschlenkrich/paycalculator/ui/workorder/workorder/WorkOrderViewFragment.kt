@@ -13,6 +13,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -39,6 +40,8 @@ class WorkOrderViewFragment : Fragment(R.layout.fragment_work_order_view) {
     private lateinit var employerViewModel: EmployerViewModel
     private var curEmployer: Employers? = null
     private var workOrderAdapter: WorkOrderViewAdapter? = null
+    private val defaultScope = CoroutineScope(Dispatchers.Default)
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -79,6 +82,7 @@ class WorkOrderViewFragment : Fragment(R.layout.fragment_work_order_view) {
         binding.spEmployers.adapter = employerAdapter
     }
 
+
     private fun onSelectEmployer() {
         binding.apply {
             spEmployers.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -86,12 +90,12 @@ class WorkOrderViewFragment : Fragment(R.layout.fragment_work_order_view) {
                     parent: AdapterView<*>?, view: View?, position: Int, id: Long
                 ) {
                     if (spEmployers.selectedItem.toString() != getString(R.string.add_new_employer)) {
-                        CoroutineScope(Dispatchers.IO).launch {
+                        defaultScope.launch {
                             curEmployer = employerViewModel.findEmployer(
                                 spEmployers.selectedItem.toString()
                             )
                         }
-                        CoroutineScope(Dispatchers.Main).launch {
+                        mainScope.launch {
                             delay(WAIT_250)
                             mainViewModel.setEmployer(curEmployer)
                             populateWorkOrders(curEmployer!!.employerId)
@@ -194,6 +198,12 @@ class WorkOrderViewFragment : Fragment(R.layout.fragment_work_order_view) {
         mView.findNavController().navigate(
             WorkOrderViewFragmentDirections.actionWorkOrderViewFragmentToWorkOrderUpdateFragment()
         )
+    }
+
+    override fun onStop() {
+        defaultScope.cancel()
+        mainScope.cancel()
+        super.onStop()
     }
 
     override fun onDestroy() {

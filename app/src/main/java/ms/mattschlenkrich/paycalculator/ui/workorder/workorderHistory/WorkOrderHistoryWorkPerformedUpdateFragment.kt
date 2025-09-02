@@ -13,6 +13,7 @@ import androidx.navigation.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -51,6 +52,8 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
     private var curWorkPerformed: WorkPerformed? = null
     private val nf = NumberFunctions()
     private val df = DateFunctions()
+    private val mainScope = CoroutineScope(Dispatchers.Main)
+    private val defaultScope = CoroutineScope(Dispatchers.Default)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -72,8 +75,9 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
         setClickActions()
     }
 
+
     private fun populateInitialValues() {
-        CoroutineScope(Dispatchers.Default).launch {
+        defaultScope.launch {
             populateWorkPerformedObject()
             delay(WAIT_100)
             populateHistoryObject()
@@ -204,9 +208,10 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
         }
     }
 
+
     private fun updateWorkPerformedInHistoryIfValid() {
         binding.apply {
-            CoroutineScope(Dispatchers.Main).launch {
+            mainScope.launch {
                 if (acWorkPerformed.text.isNullOrBlank()) {
                     displayMessage(
                         getString(R.string.error_) + getString(R.string.please_enter_a_valid_work_performed_description)
@@ -264,7 +269,7 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
     }
 
     private fun updateWorkHistory(workPerformedId: Long, areaId: Long?) {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             val note: String? = getNote()
             delay(WAIT_250)
             try {
@@ -355,6 +360,12 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
         mView.findNavController().navigate(
             WorkOrderHistoryWorkPerformedUpdateFragmentDirections.actionWorkOrderHistoryWorkPerformedUpdateFragmentToWorkOrderHistoryUpdateFragment()
         )
+    }
+
+    override fun onStop() {
+        mainScope.cancel()
+        defaultScope.cancel()
+        super.onStop()
     }
 
     override fun onDestroy() {

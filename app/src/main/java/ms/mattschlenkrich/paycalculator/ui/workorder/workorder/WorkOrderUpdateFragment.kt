@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -63,6 +64,8 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
     private var jobSpecSequence = 0
     private val df = DateFunctions()
     private val nf = NumberFunctions()
+    private val mainScope = CoroutineScope(Dispatchers.Main)
+    private val defaultScope = CoroutineScope(Dispatchers.Default)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -211,7 +214,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
                         curMaterialAndQuantity = MaterialAndQuantity(
                             curMaterial, it.workOrderHistoryMaterial.wohmQuantity
                         )
-                        if (counter == 0) materials.add(curMaterialAndQuantity!!)
+                        if (counter == 0) materials.add(curMaterialAndQuantity)
                     } else if (curMaterial != it.material.mName) {
                         materials.add(curMaterialAndQuantity!!)
                         curMaterial = it.material.mName
@@ -220,7 +223,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
                         )
                     } else {
                         curMaterialAndQuantity!!.quantity += it.workOrderHistoryMaterial.wohmQuantity
-                        if (counter == 0) materials.add(curMaterialAndQuantity!!)
+                        if (counter == 0) materials.add(curMaterialAndQuantity)
                     }
                 }
                 val materialsAndCount = materials.sortedBy { it.name }
@@ -280,8 +283,9 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
         }
     }
 
+
     private fun addJobSpecToWorkOrderIfValid(showError: Boolean) {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             binding.apply {
                 if (acJobSpec.text.isNullOrBlank()) {
                     if (showError) {
@@ -360,8 +364,9 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
         return newJobSpec
     }
 
+
     private fun addJobSpecToWorkOrder(jobSpec: JobSpec, area: Areas?) {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             binding.apply {
                 val note: String? = if (etWorkPerformedNote.text.isNullOrBlank()) {
                     null
@@ -371,7 +376,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
                 val areaId: Long? = area?.areaId
                 delay(WAIT_250)
                 jobSpecSequence++
-                CoroutineScope(Dispatchers.Default).launch {
+                defaultScope.launch {
                     workOrderViewModel.insertWorkOrderJobSpec(
                         WorkOrderJobSpec(
                             nf.generateRandomIdAsLong(),
@@ -479,7 +484,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
     }
 
     private fun prepareToUpdate() {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             addJobSpecToWorkOrderIfValid(false)
             delay(WAIT_500)
             val answer = validateWorkOrder()
@@ -517,7 +522,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
                 override fun onItemSelected(
                     parent: AdapterView<*>?, view: View?, position: Int, id: Long
                 ) {
-                    CoroutineScope(Dispatchers.IO).launch {
+                    defaultScope.launch {
                         curEmployer = mainActivity.employerViewModel.findEmployer(
                             spEmployers.selectedItem.toString()
                         )
@@ -622,6 +627,12 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
         mView.findNavController().navigate(
             WorkOrderUpdateFragmentDirections.actionWorkOrderUpdateFragmentToWorkOrderHistoryUpdateFragment()
         )
+    }
+
+    override fun onStop() {
+        defaultScope.cancel()
+        mainScope.cancel()
+        super.onStop()
     }
 
     override fun onDestroy() {

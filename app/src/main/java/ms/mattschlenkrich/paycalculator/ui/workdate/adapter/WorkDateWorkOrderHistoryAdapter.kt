@@ -101,8 +101,10 @@ class WorkDateWorkOrderHistoryAdapter(
             }.setNeutralButton(mView.context.getString(R.string.cancel), null).show()
     }
 
+    private val mainScope = CoroutineScope(Dispatchers.Main)
+
     private fun deleteWorkOrderHistory(historyId: Long) {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             workOrderViewModel.removeAllWorkPerformedFromWorkOderHistory(
                 historyId
             )

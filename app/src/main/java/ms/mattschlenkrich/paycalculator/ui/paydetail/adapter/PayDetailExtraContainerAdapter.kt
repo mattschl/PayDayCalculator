@@ -35,6 +35,8 @@ class PayDetailExtraContainerAdapter(
     private val df = DateFunctions()
     private val mainViewModel = mainActivity.mainViewModel
     private val payDayViewModel = mainActivity.payDayViewModel
+    private val defaultScope = CoroutineScope(Dispatchers.Default)
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     class ExtraViewHolder(val itemBinding: ListPayDetailExtraItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -50,6 +52,7 @@ class PayDetailExtraContainerAdapter(
     override fun getItemCount(): Int {
         return extraContainerList.size
     }
+
 
     override fun onBindViewHolder(holder: ExtraViewHolder, position: Int) {
         val extraContainer = extraContainerList[position]
@@ -87,7 +90,7 @@ class PayDetailExtraContainerAdapter(
             }
             chActive.setOnClickListener {
                 insertOrUpdateExtraOnChange(extraContainer, !chActive.isChecked)
-                CoroutineScope(Dispatchers.Main).launch {
+                mainScope.launch {
                     delay(WAIT_500)
                     parentFragment.populatePayDetails()
                 }
@@ -117,10 +120,11 @@ class PayDetailExtraContainerAdapter(
         }
     }
 
+
     private fun insertOrUpdateExtraOnChange(
         extraContainer: ExtraContainer, delete: Boolean
     ): ExtraContainer {
-        CoroutineScope(Dispatchers.Default).launch {
+        defaultScope.launch {
             if (extraContainer.payPeriodExtra != null) {
                 val payPeriodExtra = extraContainer.payPeriodExtra!!
                 val newExtra = WorkPayPeriodExtras(

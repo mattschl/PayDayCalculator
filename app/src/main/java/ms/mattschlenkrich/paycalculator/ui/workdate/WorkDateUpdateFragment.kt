@@ -11,6 +11,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -75,11 +76,13 @@ class WorkDateUpdateFragment : Fragment(
         return mView
     }
 
+    private val mainScope = CoroutineScope(Dispatchers.Main)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         populateValues()
         setClickActions()
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             delay(WAIT_250)
             updateWorkDateTotals()
         }
@@ -183,7 +186,7 @@ class WorkDateUpdateFragment : Fragment(
                     customWorkDateExtras.add(it)
                 }
             }
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             delay(WAIT_250)
             binding.apply {
                 activity?.let {
@@ -260,7 +263,7 @@ class WorkDateUpdateFragment : Fragment(
     private fun setStatHoursEstimate() {
         binding.apply {
             etStat.setText("")
-            CoroutineScope(Dispatchers.Main).launch {
+            mainScope.launch {
                 val holidayPayCalculator = HolidayPayCalculator(
                     mainActivity, currentWorkDateObject.wdEmployerId, curDateString
                 )
@@ -419,6 +422,11 @@ class WorkDateUpdateFragment : Fragment(
         mView.findNavController().navigate(
             WorkDateUpdateFragmentDirections.actionWorkDateUpdateFragmentToWorkOrderHistoryUpdateFragment()
         )
+    }
+
+    override fun onStop() {
+        mainScope.cancel()
+        super.onStop()
     }
 
     override fun onDestroy() {

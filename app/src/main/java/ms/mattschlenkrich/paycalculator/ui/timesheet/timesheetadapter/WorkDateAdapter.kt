@@ -40,6 +40,7 @@ class WorkDateAdapter(
     private val mainViewModel = mainActivity.mainViewModel
     private val payDayViewModel = mainActivity.payDayViewModel
     private val workOrderViewModel = mainActivity.workOrderViewModel
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     class WorkDateViewHolder(val itemBinding: ListWorkDateBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -65,6 +66,7 @@ class WorkDateAdapter(
     override fun getItemCount(): Int {
         return differ.currentList.size
     }
+
 
     override fun onBindViewHolder(holder: WorkDateViewHolder, position: Int) {
         val workDate = differ.currentList[position]
@@ -106,7 +108,7 @@ class WorkDateAdapter(
             }
             tvHours.text = display
 //            val extrasAdapter = TimeSheetWorkDateExtraAdapter(mView)
-            CoroutineScope(Dispatchers.Main).launch {
+            mainScope.launch {
                 val extrasAdapter = WorkDateExtraContainerAdapter(
                     calculations.getExtraContainerList(), mView
                 )

@@ -298,13 +298,15 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         }
     }
 
+    private val mainScope = CoroutineScope(Dispatchers.Main)
+
     private fun chooseToSaveAndContinue(curEmployer: Employers) {
         AlertDialog.Builder(mView.context).setTitle(
             getString(R.string.choose_next_steps_for) + curEmployer.employerName
         ).setMessage(
             getString(R.string.would_you_like_to_go_to_the_next_step)
         ).setPositiveButton(getString(R.string.yes)) { _, _ ->
-            CoroutineScope(Dispatchers.Main).launch {
+            mainScope.launch {
                 saveEmployer(curEmployer)
                 delay(WAIT_250)
                 addEmployerTaxRules(curEmployer.employerId)

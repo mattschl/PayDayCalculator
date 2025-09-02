@@ -11,6 +11,7 @@ import androidx.navigation.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,6 +46,8 @@ class WorkOrderJobSpecUpdateFragment : Fragment(R.layout.fragment_work_order_job
     private var curArea: Areas? = null
     private val nf = NumberFunctions()
     private val df = DateFunctions()
+    private val defaultScope = CoroutineScope(Dispatchers.Default)
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -66,8 +69,9 @@ class WorkOrderJobSpecUpdateFragment : Fragment(R.layout.fragment_work_order_job
         setClickActions()
     }
 
+
     private fun populateInitialValues() {
-        CoroutineScope(Dispatchers.Default).launch {
+        defaultScope.launch {
             populateJobSpecListForAutoComplete()
             populateAreaListForAutoComplete()
             populateJobSpecValues()
@@ -196,7 +200,7 @@ class WorkOrderJobSpecUpdateFragment : Fragment(R.layout.fragment_work_order_job
     }
 
     private fun insertJobSpecIntoDbAndContinueToUpdate() {
-        CoroutineScope(Dispatchers.Default).launch {
+        defaultScope.launch {
             val jobSpecId = async {
                 insertJobSpecIntoDb(binding.acJobSpec.text.toString().trim())
             }
@@ -212,8 +216,9 @@ class WorkOrderJobSpecUpdateFragment : Fragment(R.layout.fragment_work_order_job
         return newJobSpec.jobSpecId
     }
 
+
     private fun updateJobSpecInWorkOrderAndAddDetails(jobSpecId: Long) {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             delay(WAIT_250)
             binding.apply {
                 if (acArea.text.isNullOrBlank()) {
@@ -238,7 +243,7 @@ class WorkOrderJobSpecUpdateFragment : Fragment(R.layout.fragment_work_order_job
     }
 
     private fun updateWorkOrderJobSpecAndGotoCallingFragment(jobSpecId: Long, areaId: Long?) {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             val note: String? = getNote()
             delay(WAIT_250)
             originalJobSpec.workOrderJobSpec.apply {
@@ -279,6 +284,12 @@ class WorkOrderJobSpecUpdateFragment : Fragment(R.layout.fragment_work_order_job
         mView.findNavController().navigate(
             WorkOrderJobSpecUpdateFragmentDirections.actionWorkOrderJobSpecUpdateFragmentToWorkOrderUpdateFragment()
         )
+    }
+
+    override fun onStop() {
+        mainScope.cancel()
+        defaultScope.cancel()
+        super.onStop()
     }
 
     override fun onDestroy() {

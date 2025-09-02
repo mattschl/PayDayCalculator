@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.NavGraphDirections
@@ -20,6 +21,7 @@ class StartFragment : Fragment(R.layout.fragment_start) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -33,8 +35,9 @@ class StartFragment : Fragment(R.layout.fragment_start) {
         return mView
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             delay(1500)
             gotoTimeSheetFragment()
         }
@@ -44,6 +47,11 @@ class StartFragment : Fragment(R.layout.fragment_start) {
         findNavController().navigate(
             NavGraphDirections.actionGlobalTimeSheetFragment()
         )
+    }
+
+    override fun onStop() {
+        mainScope.cancel()
+        super.onStop()
     }
 
     override fun onDestroy() {

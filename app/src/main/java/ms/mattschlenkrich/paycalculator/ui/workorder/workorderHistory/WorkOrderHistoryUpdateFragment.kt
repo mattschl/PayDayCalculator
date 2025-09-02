@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -78,6 +79,8 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
     private lateinit var commonFunctions: WorkOrderCommonFunctions
     private val df = DateFunctions()
     private val nf = NumberFunctions()
+    private val mainScope = CoroutineScope(Dispatchers.Main)
+    private val defaultScope = CoroutineScope(Dispatchers.Default)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -100,8 +103,9 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         setClickActions()
     }
 
+
     private fun populateInitialValues() {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             removeFragmentReferenceFromBackStack()
             populateWorkPerformedListForAutoComplete()
             populateMaterialListForAutoComplete()
@@ -360,6 +364,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         materialAdapter.differ.submitList(materialActualList)
     }
 
+
     private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener { validateWorkOrderNumberAndPrepareToUpdate() }
@@ -378,11 +383,11 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
                 true
             }
             acWorkPerformed.setOnItemClickListener { _, _, _, _ ->
-                CoroutineScope(Dispatchers.Default).launch { setCurWorkPerformed() }
+                defaultScope.launch { setCurWorkPerformed() }
             }
             acMaterials.setOnItemClickListener { _, _, _, _ -> setCurMaterial() }
             acArea.setOnItemClickListener { _, _, _, _ ->
-                CoroutineScope(Dispatchers.Default).launch { setCurArea() }
+                defaultScope.launch { setCurArea() }
             }
             btnAddWorkPerformed.setOnClickListener { addWorkPerformedToWorkOrderIfValid(true) }
             btnAddMaterial.setOnClickListener {
@@ -434,7 +439,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
     private fun updateHistoryIfValid() {
         val answer = validateHistory()
         if (answer == ANSWER_OK) {
-            CoroutineScope(Dispatchers.Main).launch {
+            mainScope.launch {
                 addWorkPerformedToWorkOrderIfValid(false)
                 addMaterialToWorkOrderIfValid(false)
                 delay(WAIT_500)
@@ -516,7 +521,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         } else if (setCurMaterial()) {
             addMaterialToHistory(curMaterial!!)
         } else if (!binding.acMaterials.text.isNullOrBlank()) {
-            CoroutineScope(Dispatchers.Main).launch {
+            mainScope.launch {
                 val material = insertNewMaterialIntoDatabase()
                 delay(WAIT_250)
                 addMaterialToHistory(material)
@@ -566,7 +571,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
     }
 
     private fun addWorkPerformedToWorkOrderIfValid(showError: Boolean) {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             binding.apply {
                 if (acWorkPerformed.text.isNullOrBlank()) {
                     if (showError) {
@@ -864,6 +869,12 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         mView.findNavController().navigate(
             WorkOrderHistoryUpdateFragmentDirections.actionWorkOrderHistoryUpdateFragmentToWorkOrderHistoryMaterialUpdateFragment()
         )
+    }
+
+    override fun onStop() {
+        mainScope.cancel()
+        defaultScope.cancel()
+        super.onStop()
     }
 
     override fun onDestroy() {

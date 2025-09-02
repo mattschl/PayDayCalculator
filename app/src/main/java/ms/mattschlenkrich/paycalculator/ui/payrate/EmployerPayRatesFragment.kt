@@ -12,6 +12,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -36,6 +37,7 @@ class EmployerPayRatesFragment : Fragment(R.layout.fragment_employer_pay_rates) 
     private lateinit var employerViewModel: EmployerViewModel
     private lateinit var employerList: List<Employers>
     private var curEmployer: Employers? = null
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -82,9 +84,10 @@ class EmployerPayRatesFragment : Fragment(R.layout.fragment_employer_pay_rates) 
         }
     }
 
+
     private fun getEmployerFromHistory() {
         binding.apply {
-            CoroutineScope(Dispatchers.Main).launch {
+            mainScope.launch {
                 delay(WAIT_250)
                 if (mainViewModel.getEmployer() != null) {
                     curEmployer = mainViewModel.getEmployer()
@@ -197,6 +200,11 @@ class EmployerPayRatesFragment : Fragment(R.layout.fragment_employer_pay_rates) 
         mView.findNavController().navigate(
             EmployerPayRatesFragmentDirections.actionEmployerPayRatesFragmentToEmployerWageUpdateFragment()
         )
+    }
+
+    override fun onStop() {
+        mainScope.cancel()
+        super.onStop()
     }
 
     override fun onDestroy() {

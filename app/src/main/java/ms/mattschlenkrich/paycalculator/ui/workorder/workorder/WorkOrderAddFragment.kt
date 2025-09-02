@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
@@ -39,6 +40,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
     private lateinit var curWorkOrder: WorkOrder
     private val df = DateFunctions()
     private val nf = NumberFunctions()
+    private val defaultScope = CoroutineScope(Dispatchers.Default)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -149,13 +151,14 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
             .setNeutralButton(getString(R.string.cancel), null).show()
     }
 
+
     private fun onSelectEmployer() {
         binding.apply {
             spEmployers.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
                     parent: AdapterView<*>?, view: View?, position: Int, id: Long
                 ) {
-                    CoroutineScope(Dispatchers.IO).launch {
+                    defaultScope.launch {
                         curEmployer = mainActivity.employerViewModel.findEmployer(
                             spEmployers.selectedItem.toString()
                         )
@@ -227,6 +230,11 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
                 df.getCurrentTimeAsString()
             )
         }
+    }
+
+    override fun onStop() {
+        defaultScope.cancel()
+        super.onStop()
     }
 
     override fun onDestroy() {

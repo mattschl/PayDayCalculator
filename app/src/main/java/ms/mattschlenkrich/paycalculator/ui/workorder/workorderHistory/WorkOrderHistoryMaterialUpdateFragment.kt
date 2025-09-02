@@ -11,6 +11,7 @@ import androidx.navigation.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -47,6 +48,8 @@ class WorkOrderHistoryMaterialUpdateFragment :
     private lateinit var originalWorkOrderHistoryWithDates: WorkOrderHistoryWithDates
     private val df = DateFunctions()
     private val nf = NumberFunctions()
+    private val defaultScope = CoroutineScope(Dispatchers.Default)
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -68,8 +71,9 @@ class WorkOrderHistoryMaterialUpdateFragment :
         setClickActions()
     }
 
+
     private fun populateInitialValues() {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             populateMaterialListForAutoComplete()
             getMaterialVariables()
             delay(WAIT_250)
@@ -130,11 +134,12 @@ class WorkOrderHistoryMaterialUpdateFragment :
         }
     }
 
+
     private fun setClickActions() {
         binding.apply {
             fabDone.setOnClickListener { updateMaterialInHistoryIfValid() }
             acMaterials.setOnItemClickListener { _, _, _, _ ->
-                CoroutineScope(Dispatchers.Default).launch { setCurMaterial() }
+                defaultScope.launch { setCurMaterial() }
             }
         }
     }
@@ -150,7 +155,7 @@ class WorkOrderHistoryMaterialUpdateFragment :
             } else {
                 val answer = validateMaterial()
                 if (answer == ANSWER_OK) {
-                    CoroutineScope(Dispatchers.Default).launch {
+                    defaultScope.launch {
                         if (setCurMaterial()) {
                             updateMaterialInHistory(curMaterial!!)
                         } else {
@@ -248,8 +253,15 @@ class WorkOrderHistoryMaterialUpdateFragment :
         )
     }
 
+
     override fun onStop() {
+        mainScope.cancel()
+        defaultScope.cancel()
         super.onStop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         _binding = null
     }
 }

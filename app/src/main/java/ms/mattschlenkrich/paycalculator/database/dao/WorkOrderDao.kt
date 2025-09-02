@@ -47,6 +47,10 @@ interface WorkOrderDao {
         updateTime: String,
     )
 
+
+    /**
+     * Sets the value of isDeleted to *true*
+     */
     @Query(
         "UPDATE workOrders " +
                 "SET woDeleted = 1, " +
@@ -130,6 +134,9 @@ interface WorkOrderDao {
     )
     suspend fun deleteWorkOrderHistory(historyID: Long, updateTime: String)
 
+    /**
+     * Deletes the entry in the database
+     */
     @Query(
         "DELETE FROM workOrderHistory " +
                 "WHERE woHistoryId = :historyId"

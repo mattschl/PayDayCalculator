@@ -18,6 +18,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -52,6 +53,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
     private lateinit var employerList: List<Employers>
     private var curEmployer: Employers? = null
     private var startDate = ""
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -105,11 +107,12 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
         }
     }
 
+
     private fun populateUIValues() {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             delay(WAIT_500)
             if (mainViewModel.getEmployer() != null) {
-                CoroutineScope(Dispatchers.Main).launch {
+                mainScope.launch {
                     curEmployer = mainActivity.mainViewModel.getEmployer()!!
                     ifPayRateNotExistsGotoPayRate(curEmployer!!.employerId)
                     binding.apply {
@@ -454,6 +457,11 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
         mView.findNavController().navigate(
             EmployerUpdateFragmentDirections.actionEmployerUpdateFragmentToEmployerExtraDefinitionUpdateFragment()
         )
+    }
+
+    override fun onStop() {
+        mainScope.cancel()
+        super.onStop()
     }
 
     override fun onDestroy() {

@@ -17,6 +17,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -46,6 +47,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
 
     private val df = DateFunctions()
     private val nf = NumberFunctions()
+    private val mainScope = CoroutineScope(Dispatchers.Main)
     private lateinit var taxTypeList: List<TaxTypes>
 
     override fun onCreateView(
@@ -120,12 +122,13 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
+
     private fun saveTaxTypeIfValidAndAttachToEmployers() {
         val message = validateTaxType()
         if (message == ANSWER_OK) {
             val taxType = getCurrentTaxType()
             saveTaxType(taxType)
-            CoroutineScope(Dispatchers.Main).launch {
+            mainScope.launch {
                 delay(WAIT_500)
                 attachTaxTypeToEmployers(taxType)
                 delay(WAIT_500)
@@ -233,6 +236,11 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         mView.findNavController().navigate(
             TaxTypeAddFragmentDirections.actionTaxTypeAddFragmentToTaxTypeFragment()
         )
+    }
+
+    override fun onStop() {
+        mainScope.cancel()
+        super.onStop()
     }
 
     override fun onDestroy() {

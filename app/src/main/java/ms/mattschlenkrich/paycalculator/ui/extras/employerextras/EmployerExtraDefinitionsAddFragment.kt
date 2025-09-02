@@ -18,6 +18,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -48,6 +49,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     private lateinit var curEmployer: Employers
     private val df = DateFunctions()
     private val nf = NumberFunctions()
+    private val mainScope = CoroutineScope(Dispatchers.Main)
     private lateinit var extraList: List<WorkExtraTypes>
 
     override fun onCreateView(
@@ -70,11 +72,12 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         setClickActions()
     }
 
+
     private fun populateValues() {
         populateSpinners()
         binding.apply {
             tvEffectiveDate.text = df.getCurrentDateAsString()
-            CoroutineScope(Dispatchers.Main).launch {
+            mainScope.launch {
                 delay(WAIT_250)
                 tvEmployer.text = curEmployer.employerName
                 if (mainViewModel.getWorkExtraType() != null) {
@@ -339,6 +342,11 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         mView.findNavController().navigate(
             EmployerExtraDefinitionsAddFragmentDirections.actionEmployerExtraDefinitionsAddFragmentToWorkExtraTypeAddFragment()
         )
+    }
+
+    override fun onStop() {
+        mainScope.cancel()
+        super.onStop()
     }
 
     override fun onDestroy() {

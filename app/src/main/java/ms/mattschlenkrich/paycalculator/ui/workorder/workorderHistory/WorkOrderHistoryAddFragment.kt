@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -45,6 +46,7 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
     private lateinit var workOrderViewModel: WorkOrderViewModel
     private val df = DateFunctions()
     private val nf = NumberFunctions()
+    private val mainScope = CoroutineScope(Dispatchers.Main)
     private lateinit var workOrderList: List<WorkOrder>
     private var workDateObject: WorkDates? = null
     private var curEmployer: Employers? = null
@@ -73,8 +75,9 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         setClickActions()
     }
 
+
     private fun populateValues() {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             hideMaterialAndWorkPerformed()
             populateWorkDate()
             if (workDateObject != null) {
@@ -438,6 +441,11 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         mView.findNavController().navigate(
             WorkOrderHistoryAddFragmentDirections.actionWorkOrderHistoryAddFragmentToWorkOrderUpdateFragment()
         )
+    }
+
+    override fun onStop() {
+        mainScope.cancel()
+        super.onStop()
     }
 
     override fun onDestroy() {
