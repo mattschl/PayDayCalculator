@@ -425,11 +425,11 @@ class WorkDateUpdateFragment : Fragment(
     }
 
     override fun onStop() {
-        mainScope.cancel()
         super.onStop()
     }
 
     override fun onDestroy() {
+        mainScope.cancel()
         super.onDestroy()
         _binding = null
     }

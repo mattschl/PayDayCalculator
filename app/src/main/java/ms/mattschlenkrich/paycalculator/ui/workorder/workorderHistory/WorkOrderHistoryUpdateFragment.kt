@@ -26,7 +26,6 @@ import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
@@ -115,7 +114,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
             if (workDateObject != null) {
                 populateCurrentEmployer()
             }
-            delay(WAIT_100)
+            delay(WAIT_250)
             populateWorkOrderListForAutoComplete()
             delay(WAIT_250)
             if (commonFunctions.getWorkOrderHistory() != null) {

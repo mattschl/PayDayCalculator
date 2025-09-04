@@ -203,11 +203,11 @@ class EmployerPayRatesFragment : Fragment(R.layout.fragment_employer_pay_rates) 
     }
 
     override fun onStop() {
-        mainScope.cancel()
         super.onStop()
     }
 
     override fun onDestroy() {
+        mainScope.cancel()
         super.onDestroy()
         _binding = null
     }

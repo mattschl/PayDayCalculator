@@ -375,11 +375,11 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
     }
 
     override fun onStop() {
-        mainScope.cancel()
         super.onStop()
     }
 
     override fun onDestroy() {
+        mainScope.cancel()
         super.onDestroy()
         _binding = null
     }

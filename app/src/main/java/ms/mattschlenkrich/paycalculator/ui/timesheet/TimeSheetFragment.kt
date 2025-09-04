@@ -487,12 +487,12 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
             setEmployer(curEmployer)
             setCutOffDate(curCutOff)
         }
-        mainScope.cancel()
-        defaultScope.cancel()
         super.onStop()
     }
 
     override fun onDestroy() {
+        mainScope.cancel()
+        defaultScope.cancel()
         super.onDestroy()
         _binding = null
     }

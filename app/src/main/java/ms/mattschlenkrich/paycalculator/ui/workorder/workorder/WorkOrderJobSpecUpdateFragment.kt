@@ -287,12 +287,12 @@ class WorkOrderJobSpecUpdateFragment : Fragment(R.layout.fragment_work_order_job
     }
 
     override fun onStop() {
-        mainScope.cancel()
-        defaultScope.cancel()
         super.onStop()
     }
 
     override fun onDestroy() {
+        mainScope.cancel()
+        defaultScope.cancel()
         super.onDestroy()
         _binding = null
     }

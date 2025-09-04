@@ -269,30 +269,26 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
     }
 
     private fun updateWorkHistory(workPerformedId: Long, areaId: Long?) {
-        mainScope.launch {
-            val note: String? = getNote()
-            delay(WAIT_250)
-            try {
-                originalWorkPerformedHistory.workOrderHistoryWorkPerformed.apply {
-                    workOrderViewModel.updateWorkOrderHistoryWorkPerformed(
-                        WorkOrderHistoryWorkPerformed(
-                            workOrderHistoryWorkPerformedId,
-                            wowpHistoryId,
-                            workPerformedId,
-                            areaId,
-                            note,
-                            wowpSequence,
-                            false,
-                            df.getCurrentTimeAsString()
-                        )
+        try {
+            originalWorkPerformedHistory.workOrderHistoryWorkPerformed.apply {
+                workOrderViewModel.updateWorkOrderHistoryWorkPerformed(
+                    WorkOrderHistoryWorkPerformed(
+                        workOrderHistoryWorkPerformedId,
+                        wowpHistoryId,
+                        workPerformedId,
+                        areaId,
+                        getNote(),
+                        wowpSequence,
+                        false,
+                        df.getCurrentTimeAsString()
                     )
-                }
-            } catch (e: SQLiteException) {
-                AlertDialog.Builder(mView.context)
-                    .setTitle(getString(R.string.something_went_wrong))
-                    .setMessage(getString(R.string.check_to_see_if_this_work_was_already_entered_) + " " + e.toString())
-                    .setNeutralButton(getString(R.string.ok), null).show()
+                )
             }
+        } catch (e: SQLiteException) {
+            AlertDialog.Builder(mView.context)
+                .setTitle(getString(R.string.something_went_wrong))
+                .setMessage(getString(R.string.check_to_see_if_this_work_was_already_entered_) + " " + e.toString())
+                .setNeutralButton(getString(R.string.ok), null).show()
         }
     }
 
@@ -363,12 +359,12 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
     }
 
     override fun onStop() {
-        mainScope.cancel()
-        defaultScope.cancel()
         super.onStop()
     }
 
     override fun onDestroy() {
+        mainScope.cancel()
+        defaultScope.cancel()
         super.onDestroy()
         _binding = null
     }

@@ -309,11 +309,11 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
     }
 
     override fun onStop() {
-        mainScope.cancel()
         super.onStop()
     }
 
     override fun onDestroy() {
+        mainScope.cancel()
         super.onDestroy()
         _binding = null
     }

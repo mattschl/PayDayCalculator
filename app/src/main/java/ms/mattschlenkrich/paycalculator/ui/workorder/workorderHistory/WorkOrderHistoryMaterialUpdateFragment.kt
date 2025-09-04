@@ -255,12 +255,12 @@ class WorkOrderHistoryMaterialUpdateFragment :
 
 
     override fun onStop() {
-        mainScope.cancel()
-        defaultScope.cancel()
         super.onStop()
     }
 
     override fun onDestroy() {
+        mainScope.cancel()
+        defaultScope.cancel()
         super.onDestroy()
         _binding = null
     }
