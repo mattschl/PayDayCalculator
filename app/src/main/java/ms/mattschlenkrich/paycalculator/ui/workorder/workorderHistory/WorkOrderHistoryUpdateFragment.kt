@@ -521,9 +521,8 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
             addMaterialToHistory(curMaterial!!)
         } else if (!binding.acMaterials.text.isNullOrBlank()) {
             mainScope.launch {
-                val material = insertNewMaterialIntoDatabase()
-                delay(WAIT_250)
-                addMaterialToHistory(material)
+                val material = async { insertNewMaterialIntoDatabase() }
+                addMaterialToHistory(material.await())
             }
         }
     }
@@ -592,20 +591,18 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
                         } else if (acArea.text.isNullOrBlank()) {
                             null
                         } else {
-                            insertAreaIntoDatabase(
-                                acArea.text.toString().trim()
-                            )
+                            insertAreaIntoDatabase(acArea.text.toString().trim())
                         }
                     }
                     val combinedWorkPerformedIsUnique = async {
                         isCombinedWorkPerformedUnique(
-                            workPerformed.await(), area.await(), showError
+                            workPerformed.await(),
+                            area.await(),
+                            showError
                         )
                     }
                     if (combinedWorkPerformedIsUnique.await()) {
-                        addWorkPerformedToHistory(
-                            workPerformed.await(), area.await()
-                        )
+                        addWorkPerformedToHistory(workPerformed.await(), area.await())
                     }
                 }
             }
