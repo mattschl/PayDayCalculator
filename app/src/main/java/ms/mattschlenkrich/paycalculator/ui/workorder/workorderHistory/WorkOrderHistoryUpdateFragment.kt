@@ -22,12 +22,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.ExceptionUnknown
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
-import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paycalculator.database.model.workorder.Areas
@@ -366,7 +365,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
 
     private fun setClickActions() {
         binding.apply {
-            fabDone.setOnClickListener { validateWorkOrderNumberAndPrepareToUpdate() }
+            fabDone.setOnClickListener { validateAllInfoAndUpdate() }
             btnWorkOrder.setOnClickListener {
                 if (btnWorkOrder.text.toString() == getString(R.string.edit)) {
                     setOnWorkOrderSelected(acWorkOrder.text.toString())
@@ -388,10 +387,8 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
             acArea.setOnItemClickListener { _, _, _, _ ->
                 defaultScope.launch { setCurArea() }
             }
-            btnAddWorkPerformed.setOnClickListener { addWorkPerformedToWorkOrderIfValid(true) }
-            btnAddMaterial.setOnClickListener {
-                addMaterialToWorkOrderIfValid(true)
-            }
+            btnAddWorkPerformed.setOnClickListener { addWorkPerformedToHistoryIfNotBlank() }
+            btnAddMaterial.setOnClickListener { addMaterialToHistoryIfNotBlank() }
             acWorkOrder.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
                     s: CharSequence?, start: Int, count: Int, after: Int
@@ -411,15 +408,54 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         }
     }
 
-    private fun validateWorkOrderNumberAndPrepareToUpdate() {
+    private fun addWorkPerformedToHistoryIfNotBlank() {
+        if (binding.acWorkPerformed.text.isNullOrBlank()) {
+            displayMessage(
+                getString(R.string.error_) + getString(R.string.please_enter_a_valid_description_of_work_performed_to_add_it)
+            )
+        } else {
+            addWorkPerformedToHistoryIfPresent()
+        }
+    }
+
+    private fun addMaterialToHistoryIfNotBlank() {
+        if (binding.acMaterials.text.isNullOrBlank()) {
+            displayMessage(
+                getString(R.string.error_) + getString(R.string.please_enter_a_valid_material_description_to_add_it)
+            )
+        } else {
+            addMaterialToHistoryIfValid()
+        }
+    }
+
+    private fun validateAllInfoAndUpdate() {
+        binding.apply {
+            mainScope.launch {
+                convertNumberStringsToDoubles()
+                val isWorkOrderValid = async { validateWorkOrderNumber() }
+                val isWorkPerformedValid = async { addWorkPerformedToHistoryIfPresent() }
+                val isMaterialValid = async { addMaterialToHistoryIfValid() }
+                if (isWorkOrderValid.await() && isWorkPerformedValid.await() && isMaterialValid.await()) {
+                    updateHistory()
+                    delay(WAIT_250)
+                    gotoCallingFragment()
+                } else {
+                    displayMessage(getString(R.string.error_) + " " + getString(R.string.something_went_wrong))
+                }
+            }
+        }
+    }
+
+    private fun validateWorkOrderNumber(): Boolean {
         if (doesWorkOrderExist()) {
-            updateHistoryIfValid()
+            return true
         } else {
             AlertDialog.Builder(mView.context)
                 .setTitle(getString(R.string.create_work_order_) + "${binding.acWorkOrder.text}?")
                 .setMessage(getString(R.string.this_work_order_does_not_exist))
                 .setPositiveButton(getString(R.string.yes)) { _, _ -> gotoWorkOrderAdd() }
                 .setNegativeButton(getString(R.string.no), null).show()
+            return false
         }
     }
 
@@ -433,20 +469,6 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         mView.findNavController().navigate(
             WorkOrderHistoryUpdateFragmentDirections.actionWorkOrderHistoryUpdateFragmentToWorkOrderLookupFragment()
         )
-    }
-
-    private fun updateHistoryIfValid() {
-        val answer = validateHistory()
-        if (answer == ANSWER_OK) {
-            mainScope.launch {
-                addWorkPerformedToWorkOrderIfValid(false)
-                addMaterialToWorkOrderIfValid(false)
-                delay(WAIT_500)
-                updateHistory()
-            }
-        } else {
-            displayMessage(getString(R.string.error_) + answer)
-        }
     }
 
     private fun updateHistory() {
@@ -466,7 +488,6 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
                     df.getCurrentTimeAsString()
                 )
             }
-            gotoCallingFragment()
         } catch (e: SQLiteConstraintException) {
             AlertDialog.Builder(mView.context).setTitle(getString(R.string.something_went_wrong))
                 .setMessage(getString(R.string.an_unknown_error_occurred_error_was) + e.toString())
@@ -510,21 +531,30 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         return false
     }
 
-    private fun addMaterialToWorkOrderIfValid(showError: Boolean) {
-        if (binding.acMaterials.text.isNullOrBlank()) {
-            if (showError) {
-                displayMessage(
-                    getString(R.string.error_) + getString(R.string.please_enter_a_valid_material_description_to_add_it)
-                )
+    private fun addMaterialToHistoryIfValid(): Boolean {
+        if (setCurMaterial()) {
+            try {
+                addMaterialToHistory(curMaterial!!)
+                Log.d(TAG, "material ${curMaterial?.mName} was added to the history ")
+            } catch (e: ExceptionUnknown) {
+                Log.d("ExceptionUnknown", "Exception is $e")
+                return false
             }
-        } else if (setCurMaterial()) {
-            addMaterialToHistory(curMaterial!!)
+            return true
         } else if (!binding.acMaterials.text.isNullOrBlank()) {
-            mainScope.launch {
-                val material = async { insertNewMaterialIntoDatabase() }
-                addMaterialToHistory(material.await())
+            try {
+                mainScope.launch {
+                    val material = async { insertNewMaterialIntoDatabase() }
+                    addMaterialToHistory(material.await())
+                    Log.d(TAG, "material ${curMaterial?.mName} was added to the history ")
+                }
+            } catch (e: ExceptionUnknown) {
+                Log.d("ExceptionUnknown", "Exception is $e")
+                return false
             }
+            return true
         }
+        return true
     }
 
     private fun addMaterialToHistory(material: Material) {
@@ -568,57 +598,60 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         return material
     }
 
-    private fun addWorkPerformedToWorkOrderIfValid(showError: Boolean) {
-        mainScope.launch {
-            binding.apply {
-                if (acWorkPerformed.text.isNullOrBlank()) {
-                    if (showError) {
-                        displayMessage(
-                            getString(R.string.error_) + getString(R.string.please_enter_a_valid_description_of_work_performed_to_add_it)
-                        )
-                    }
-                } else {
-                    val workPerformed = async {
-                        return@async if (setCurWorkPerformed()) {
-                            curWorkPerformed!!
+    private fun addWorkPerformedToHistoryIfPresent(): Boolean {
+        binding.apply {
+            if (!acWorkPerformed.text.isNullOrBlank()) {
+                try {
+                    mainScope.launch {
+                        val workPerformed = async {
+                            return@async if (setCurWorkPerformed()) {
+                                curWorkPerformed!!
+                            } else {
+                                insertNewWorkPerformedIntoDatabase()!!
+                            }
+                        }
+                        val area = async {
+                            return@async if (setCurArea()) {
+                                curArea!!
+                            } else if (acArea.text.isNullOrBlank()) {
+                                null
+                            } else {
+                                insertAreaIntoDatabase(acArea.text.toString().trim())
+                            }
+                        }
+                        val combinedWorkPerformedIsUnique = async {
+                            isCombinedWorkPerformedUnique(
+                                workPerformed.await(),
+                                area.await(),
+                            )
+                        }
+                        if (combinedWorkPerformedIsUnique.await()) {
+                            addWorkPerformedToHistory(workPerformed.await(), area.await())
+                            Log.d(
+                                TAG,
+                                "work performed: ${workPerformed.await().wpDescription} was added to the history"
+                            )
                         } else {
-                            insertNewWorkPerformedIntoDatabase()!!
+                            throw ExceptionUnknown("Something went wrong!")
                         }
                     }
-                    val area = async {
-                        return@async if (setCurArea()) {
-                            curArea!!
-                        } else if (acArea.text.isNullOrBlank()) {
-                            null
-                        } else {
-                            insertAreaIntoDatabase(acArea.text.toString().trim())
-                        }
-                    }
-                    val combinedWorkPerformedIsUnique = async {
-                        isCombinedWorkPerformedUnique(
-                            workPerformed.await(),
-                            area.await(),
-                            showError
-                        )
-                    }
-                    if (combinedWorkPerformedIsUnique.await()) {
-                        addWorkPerformedToHistory(workPerformed.await(), area.await())
-                    }
+                } catch (e: ExceptionUnknown) {
+                    Log.d("ExceptionUnknown", "Exception is $e")
+                    return false
                 }
             }
         }
+        return true
     }
 
     private fun isCombinedWorkPerformedUnique(
-        workPerformed: WorkPerformed, area: Areas?, showError: Boolean
+        workPerformed: WorkPerformed, area: Areas?
     ): Boolean {
         for (combinedWorkPerformed in existingWorkPerformedListForValidation) {
             if (workPerformed.wpDescription == combinedWorkPerformed.workPerformed.wpDescription && area?.areaName == combinedWorkPerformed.area?.areaName) {
-                if (showError) {
-                    displayMessage(
-                        getString(R.string.error_) + getString(R.string.this_work_description_and_area_is_already_used)
-                    )
-                }
+                displayMessage(
+                    getString(R.string.error_) + getString(R.string.this_work_description_and_area_is_already_used)
+                )
                 return false
             }
         }
@@ -763,18 +796,6 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
                 df.getCurrentTimeAsString()
             )
         }
-    }
-
-    private fun validateHistory(): String {
-        binding.apply {
-            convertNumberStringsToDoubles()
-//            if (etRegHours.text.toString().toDouble() == 0.0 && etOtHours.text.toString()
-//                    .toDouble() == 0.0 && etDblOtHours.text.toString().toDouble() == 0.0
-//            ) {
-//                return getString(R.string.there_was_no_time_entered_please_enter_some_time)
-//            }
-        }
-        return ANSWER_OK
     }
 
     private fun convertNumberStringsToDoubles() {
