@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.paycalculator.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -38,6 +39,9 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistor
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
+import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.JobSpecMerged
+import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.MaterialMerged
+import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.WorkPerformedMerged
 
 @Database(
     entities = [
@@ -63,9 +67,13 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
         Material::class,
         WorkOrderHistoryMaterial::class,
         Areas::class,
+        JobSpecMerged::class,
+        MaterialMerged::class,
+        WorkPerformedMerged::class,
     ],
     views = [ExtraDefinitionAndType::class,
         ExtraTypeAndDefByDay::class],
+    autoMigrations = [AutoMigration(9, 10)],
     version = PAY_DB_VERSION,
 )
 abstract class PayDatabase : RoomDatabase() {

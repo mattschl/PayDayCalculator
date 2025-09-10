@@ -3,7 +3,7 @@
 package ms.mattschlenkrich.paycalculator.common
 
 const val PAY_DB_NAME = "pay.db"
-const val PAY_DB_VERSION = 9
+const val PAY_DB_VERSION = 10
 
 const val PAY_PERIODS_LIMIT = 15
 
@@ -151,7 +151,7 @@ const val WAIT_1000 = 1000L
 const val WAIT_1500 = 1500L
 //const val WAIT_2000 = 2000L
 
-const val FRAG_EMPLOYERS = "Employers"
+//const val FRAG_EMPLOYERS = "Employers"
 const val FRAG_EMPLOYER_UPDATE = "EmployerUpdate"
 const val FRAG_TAX_RULES = "TaxRules"
 
