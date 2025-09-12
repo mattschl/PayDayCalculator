@@ -16,31 +16,46 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-
-        <TextView
-            android:id="@+id/tvWorkOrder"
-            android:layout_width="@dimen/text_box_narrow"
+        <LinearLayout
+            android:id="@+id/llInfo"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/work_order"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_size_medium"
-            android:textStyle="bold|italic"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvAddress"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vSpacer">
 
-        <TextView
-            android:id="@+id/tvAddress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dimen_5dp"
-            android:maxWidth="@dimen/text_box_extra_wide"
-            android:maxLines="5"
-            android:text="@string/address"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_size_medium"
-            android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/tvWorkOrder"
-            app:layout_constraintTop_toBottomOf="@id/vSpacer" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tvWorkOrder"
+                    android:layout_width="@dimen/text_box_narrow"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/dimen_100dp"
+                    android:text="@string/work_order"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textStyle="bold|italic"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_5dp"
+                    android:layout_weight="5"
+                    android:maxWidth="@dimen/text_box_extra_wide"
+                    android:maxLines="5"
+                    android:text="@string/address"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/tvWorkOrder"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvHourDetails"
@@ -50,7 +65,7 @@
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_medium"
             android:textStyle="italic"
-            app:layout_constraintStart_toStartOf="@+id/tvWorkOrder"
-            app:layout_constraintTop_toBottomOf="@id/tvAddress" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llInfo" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
