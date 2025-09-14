@@ -14,13 +14,13 @@ import ms.mattschlenkrich.paycalculator.common.FRAG_JOB_SPEC_VIEW
 import ms.mattschlenkrich.paycalculator.database.model.workorder.JobSpec
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
-import ms.mattschlenkrich.paycalculator.databinding.FragmentJobSpecBinding
+import ms.mattschlenkrich.paycalculator.databinding.FragmentSingleItemUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
 
-class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
+class JobSpecUpdateFragment : Fragment(R.layout.fragment_single_item_update) {
 
-    private var _binding: FragmentJobSpecBinding? = null
+    private var _binding: FragmentSingleItemUpdateBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
@@ -34,7 +34,7 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentJobSpecBinding.inflate(
+        _binding = FragmentSingleItemUpdateBinding.inflate(
             inflater, container, false
         )
         mView = binding.root
@@ -58,7 +58,7 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
             binding.apply {
                 val display = getString(R.string.update_) + oldJobSpec.jsName
                 tvTitle.text = display
-                etJobSpec.setText(oldJobSpec.jsName)
+                etItem.setText(oldJobSpec.jsName)
             }
         }
     }
@@ -101,11 +101,11 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
 
     private fun validateJobSpec(): String {
         binding.apply {
-            if (etJobSpec.text.isNullOrBlank()) {
+            if (etItem.text.isNullOrBlank()) {
                 return getString(R.string.please_enter_a_valid_job_spec)
             }
             for (jobSpec in jobSpecList) {
-                if (jobSpec.jsName == binding.etJobSpec.text.toString()
+                if (jobSpec.jsName == binding.etItem.text.toString()
                         .trim() && jobSpec.jsName != oldJobSpec.jsName
                 ) {
                     return getString(R.string.this_job_spec_already_exists)
@@ -119,7 +119,7 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_job_spec) {
         mainActivity.workOrderViewModel.updateJobSpec(
             JobSpec(
                 oldJobSpec.jobSpecId,
-                binding.etJobSpec.text.toString().trim(),
+                binding.etItem.text.toString().trim(),
                 false,
                 df.getCurrentTimeAsString()
             )

@@ -27,13 +27,13 @@ import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_ADD
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_EXTRA_ADD
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_UPDATE
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
-import ms.mattschlenkrich.paycalculator.common.HolidayPayCalculator
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtraTypes
+import ms.mattschlenkrich.paycalculator.database.model.payperiod.HolidayPayCalculator
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.PayPeriods
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
@@ -411,10 +411,6 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
         mView.findNavController().navigate(
             WorkDateAddFragmentDirections.actionGlobalTimeSheetFragment()
         )
-    }
-
-    override fun onStop() {
-        super.onStop()
     }
 
     override fun onDestroy() {

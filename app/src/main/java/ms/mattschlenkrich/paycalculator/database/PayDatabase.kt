@@ -5,6 +5,7 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_VERSION
 import ms.mattschlenkrich.paycalculator.database.dao.EmployerDao
@@ -104,7 +105,7 @@ abstract class PayDatabase : RoomDatabase() {
                 PayDatabase::class.java,
                 PAY_DB_NAME
             )
-//                .createFromAsset(context.getString(R.string.db_name))
+                .createFromAsset(context.getString(R.string.db_name))
 //                .fallbackToDestructiveMigration(false)
                 .build()
         }

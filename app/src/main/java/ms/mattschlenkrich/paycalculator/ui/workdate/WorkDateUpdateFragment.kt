@@ -19,10 +19,10 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_TIME_SHEET
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_UPDATE
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
-import ms.mattschlenkrich.paycalculator.common.HolidayPayCalculator
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
+import ms.mattschlenkrich.paycalculator.database.model.payperiod.HolidayPayCalculator
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
@@ -59,6 +59,7 @@ class WorkDateUpdateFragment : Fragment(
     private var dblOtHours = 0.0
     private val df = DateFunctions()
     private val nf = NumberFunctions()
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -76,7 +77,6 @@ class WorkDateUpdateFragment : Fragment(
         return mView
     }
 
-    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -422,10 +422,6 @@ class WorkDateUpdateFragment : Fragment(
         mView.findNavController().navigate(
             WorkDateUpdateFragmentDirections.actionWorkDateUpdateFragmentToWorkOrderHistoryUpdateFragment()
         )
-    }
-
-    override fun onStop() {
-        super.onStop()
     }
 
     override fun onDestroy() {

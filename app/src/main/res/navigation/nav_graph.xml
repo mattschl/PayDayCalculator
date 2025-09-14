@@ -803,7 +803,7 @@
     <!--    workPerformedViewFragment-->
     <fragment
         android:id="@+id/workPerformedViewFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workPerforrmed.WorkPerformedViewFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workPerformed.WorkPerformedViewFragment"
         android:label="WorkPerformedViewFragment"
         tools:layout="@layout/fragment_recycler_view">
         <action
@@ -814,7 +814,7 @@
     <!--    workPerformedUpdateFragment-->
     <fragment
         android:id="@+id/workPerformedUpdateFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workPerforrmed.WorkPerformedUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workPerformed.WorkPerformedUpdateFragment"
         android:label="WorkPerformedUpdateFragment"
         tools:layout="@layout/fragment_single_item_update">
         <action

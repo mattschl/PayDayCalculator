@@ -888,13 +888,9 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         )
     }
 
-    override fun onStop() {
+    override fun onDestroy() {
         mainScope.cancel()
         defaultScope.cancel()
-        super.onStop()
-    }
-
-    override fun onDestroy() {
         super.onDestroy()
         _binding = null
     }

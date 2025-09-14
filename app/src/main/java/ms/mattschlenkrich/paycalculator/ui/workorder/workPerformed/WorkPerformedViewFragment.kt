@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.workorder.workPerforrmed
+package ms.mattschlenkrich.paycalculator.ui.workorder.workPerformed
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,7 +19,7 @@ import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_PERFORMED_VIEW
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentRecyclerViewBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.workorder.workPerforrmed.adapter.WorkPerformedAdapter
+import ms.mattschlenkrich.paycalculator.ui.workorder.workPerformed.adapter.WorkPerformedAdapter
 
 private const val TAG = FRAG_WORK_PERFORMED_VIEW
 

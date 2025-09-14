@@ -253,11 +253,6 @@ class WorkOrderHistoryMaterialUpdateFragment :
         )
     }
 
-
-    override fun onStop() {
-        super.onStop()
-    }
-
     override fun onDestroy() {
         mainScope.cancel()
         defaultScope.cancel()

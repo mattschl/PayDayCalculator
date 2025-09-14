@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.workorder.workPerforrmed.adapter
+package ms.mattschlenkrich.paycalculator.ui.workorder.workPerformed.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -11,7 +11,7 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
 import ms.mattschlenkrich.paycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.workorder.workPerforrmed.WorkPerformedViewFragment
+import ms.mattschlenkrich.paycalculator.ui.workorder.workPerformed.WorkPerformedViewFragment
 
 class WorkPerformedAdapter(
     val mainActivity: MainActivity,
@@ -65,8 +65,13 @@ class WorkPerformedAdapter(
             tvDisplay.text = display
         }
         holder.itemView.setOnClickListener {
-            gotoWorkPerformedUpdate(workPerformed.workPerformedId)
+            chooseOptions(workPerformed)
+
         }
+    }
+
+    private fun chooseOptions(workPerformed: WorkPerformed) {
+        gotoWorkPerformedUpdate(workPerformed.workPerformedId)
     }
 
     private fun gotoWorkPerformedUpdate(workPerformedId: Long) {

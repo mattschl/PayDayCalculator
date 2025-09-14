@@ -1,11 +1,11 @@
-package ms.mattschlenkrich.paycalculator.common
+package ms.mattschlenkrich.paycalculator.database.model.payperiod
 
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
+import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import java.time.DayOfWeek
 import java.time.LocalDate

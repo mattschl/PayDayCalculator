@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.workorder.workPerforrmed
+package ms.mattschlenkrich.paycalculator.ui.workorder.workPerformed
 
 import android.app.AlertDialog
 import android.database.sqlite.SQLiteConstraintException
