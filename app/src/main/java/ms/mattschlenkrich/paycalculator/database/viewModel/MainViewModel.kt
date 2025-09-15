@@ -50,6 +50,7 @@ class MainViewModel(
     private var jobSpec: JobSpec? = null
     private var workOrderJobSpecId: Long? = null
     private var workPerformedId: Long? = null
+    private var workPerformedIsMaster: Boolean = false
     private var workPerformedHistoryId: Long? = null
     private var material: Material? = null
     private var materialInSequence: MaterialInSequence? = null
@@ -70,6 +71,14 @@ class MainViewModel(
 
     fun getWorkPerformedHistoryId(): Long? {
         return workPerformedHistoryId
+    }
+
+    fun setWorkPerformedIsMaster(isMaster: Boolean) {
+        workPerformedIsMaster = isMaster
+    }
+
+    fun getWorkPPerformedIsMaster(): Boolean {
+        return workPerformedIsMaster
     }
 
     fun setAreaId(newAreaId: Long?) {

@@ -3,15 +3,21 @@ package ms.mattschlenkrich.paycalculator.ui.workorder.workPerformed
 import android.app.AlertDialog
 import android.database.sqlite.SQLiteConstraintException
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.ExceptionUnknown
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_PERFORMED_UPDATE
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_PERFORMED_VIEW
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
@@ -19,6 +25,7 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentSingleItemUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
+private const val TAG = FRAG_WORK_PERFORMED_UPDATE
 
 class WorkPerformedUpdateFragment : Fragment(R.layout.fragment_single_item_update) {
 
@@ -31,6 +38,7 @@ class WorkPerformedUpdateFragment : Fragment(R.layout.fragment_single_item_updat
     private val df = DateFunctions()
     private val workPerformedList = ArrayList<WorkPerformed>()
     private lateinit var oldWorkPerformed: WorkPerformed
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -59,10 +67,12 @@ class WorkPerformedUpdateFragment : Fragment(R.layout.fragment_single_item_updat
                 .observe(viewLifecycleOwner) { work ->
                     oldWorkPerformed = work
                     binding.apply {
-                        val display =
+                        var display =
                             getString(R.string.update_work_description_) + oldWorkPerformed.wpDescription
                         tvTitle.text = display
                         etItem.setText(oldWorkPerformed.wpDescription)
+                        display = "Merge " + oldWorkPerformed.wpDescription
+                        btnUpdate.text = display
                     }
                 }
 
@@ -80,15 +90,66 @@ class WorkPerformedUpdateFragment : Fragment(R.layout.fragment_single_item_updat
 
     private fun setClickActions() {
         binding.apply {
-            btnUpdate.setOnClickListener { updateWorkPerformedIfValid() }
+            btnUpdate.setOnClickListener { updateWorkPerformedIfValid(true) }
             btnCancel.setOnClickListener { gotoCallingFragment() }
+            btnMerge.setOnClickListener { chooseMergeOptions() }
         }
     }
 
-    private fun updateWorkPerformedIfValid() {
+    private fun chooseMergeOptions() {
+        AlertDialog.Builder(mView.context)
+            .setTitle(
+                getString(
+                    R.string.choose_merge_option_for,
+                    binding.etItem.text.toString().trim()
+                )
+            )
+            .setItems(
+                arrayOf(
+                    "Make this a master description and add children",
+                    "Add this to another description as a child",
+                    "*Note: This will attempt to save the current Work Performed description."
+                )
+            ) { _, pos ->
+                when (pos) {
+                    0 -> {
+                        setOptionsForMergeAndGotoMerge(true)
+                    }
+
+                    1 -> {
+                        setOptionsForMergeAndGotoMerge(false)
+                    }
+                }
+            }
+            .setNeutralButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun setOptionsForMergeAndGotoMerge(isMaster: Boolean) {
+        mainScope.launch {
+            try {
+                updateWorkPerformedIfValid(false)
+                mainViewModel.setWorkPerformedId(oldWorkPerformed.workPerformedId)
+                mainViewModel.setWorkPerformedIsMaster(isMaster)
+                mainViewModel.addCallingFragment(TAG)
+                gotoWorkPerformedMergeFragment()
+            } catch (e: ExceptionUnknown) {
+                Log.d(TAG, "exception is ${e.toString()}")
+            }
+
+        }
+    }
+
+    private fun gotoWorkPerformedMergeFragment() {
+        mView.findNavController().navigate(
+            WorkPerformedUpdateFragmentDirections.actionWorkPerformedUpdateFragmentToWorkPerformedMergeFragment()
+        )
+    }
+
+    private fun updateWorkPerformedIfValid(gotoCallingFragment: Boolean) {
         val answer = validateWorkPerformed()
         if (answer == ANSWER_OK) {
-            updateWorkPerformed()
+            updateWorkPerformed(gotoCallingFragment)
         } else {
             displayError(answer)
         }
@@ -114,7 +175,7 @@ class WorkPerformedUpdateFragment : Fragment(R.layout.fragment_single_item_updat
         return ANSWER_OK
     }
 
-    private fun updateWorkPerformed() {
+    private fun updateWorkPerformed(gotoCallingFragment: Boolean) {
         try {
             workOrderViewModel.updateWorkPerformed(
                 WorkPerformed(
@@ -124,12 +185,13 @@ class WorkPerformedUpdateFragment : Fragment(R.layout.fragment_single_item_updat
                     df.getCurrentTimeAsString()
                 )
             )
-            gotoCallingFragment()
+            if (gotoCallingFragment) gotoCallingFragment()
         } catch (e: SQLiteConstraintException) {
             AlertDialog.Builder(mView.context).setTitle(getString(R.string.something_went_wrong))
                 .setMessage(
                     getString(R.string.check_to_see_if_this_work_was_already_entered_) + " " + e.toString()
                 ).setNeutralButton(getString(R.string.ok), null).show()
+            throw ExceptionUnknown("Could not complete action")
         }
     }
 

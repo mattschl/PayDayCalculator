@@ -176,6 +176,7 @@ const val FRAG_JOB_SPEC_VIEW = "JobSpecView"
 const val FRAG_WORK_ORDER_UPDATE = "WorkOrderUpdate"
 const val FRAG_MATERIAL_VIEW = "MaterialView"
 const val FRAG_WORK_PERFORMED_VIEW = "WorkPerformedView"
+const val FRAG_WORK_PERFORMED_UPDATE = "WorkPerformedUpdate"
 const val FRAG_AREA_VIEW = "AreaViewFragment"
 
 //const val FRAG_WORK_ORDER_LOOKUP = "WorkOrderLookup"

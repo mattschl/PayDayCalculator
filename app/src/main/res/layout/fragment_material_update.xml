@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dimen_20dp"
             android:layout_marginEnd="@dimen/dimen_20dp"
-            android:hint="@string/work_performed"
+            android:hint="@string/material"
             android:importantForAutofill="no"
             android:inputType="text|textCapSentences"
             android:minHeight="@dimen/minimum_touch_height"
@@ -63,7 +63,8 @@
             android:textColor="@color/black"
             app:layout_constraintEnd_toStartOf="@id/lblCost"
             app:layout_constraintStart_toEndOf="@id/lblPrice"
-            app:layout_constraintTop_toBottomOf="@id/etMaterial" />
+            app:layout_constraintTop_toBottomOf="@id/etMaterial"
+            tools:ignore="DuplicateSpeakableTextCheck" />
 
         <TextView
             android:id="@+id/lblCost"
@@ -129,6 +130,16 @@
             app:layout_constraintStart_toEndOf="@id/btnUpdate"
             app:layout_constraintTop_toBottomOf="@id/tvDisclaimer"
             tools:ignore="TextContrastCheck" />
+
+        <Button
+            android:id="@+id/btnMerge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/deep_red"
+            android:text="@string/merge"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnUpdate" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

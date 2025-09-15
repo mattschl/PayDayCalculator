@@ -825,6 +825,9 @@
             android:id="@+id/action_workPerformedUpdateFragment_to_workPerformedViewFragment"
             app:destination="@id/workPerformedViewFragment"
             app:popUpTo="@id/workPerformedViewFragment" />
+        <action
+            android:id="@+id/action_workPerformedUpdateFragment_to_workPerformedMergeFragment"
+            app:destination="@id/workPerformedMergeFragment" />
     </fragment>
 
     <!--    action_global_areaViewFragment-->
@@ -875,5 +878,15 @@
         <action
             android:id="@+id/action_workOrderHistoryMaterialUpdateFragment_to_workOrderHistoryUpdateFragment"
             app:destination="@id/workOrderHistoryUpdateFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/workPerformedMergeFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workPerformed.WorkPerformedMergeFragment"
+        android:label="WorkPerformedMergeFragment">
+        <action
+            android:id="@+id/action_workPerformedMergeFragment_to_workPerformedUpdateFragment"
+            app:destination="@id/workPerformedUpdateFragment"
+            app:popUpTo="@id/workPerformedUpdateFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

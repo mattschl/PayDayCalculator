@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_PERFORMED_MERGE
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentEntityMergeBinding
@@ -24,6 +26,7 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var workOrderViewModel: WorkOrderViewModel
+    private lateinit var workPerformedList: List<WorkPerformed>
     private val df = DateFunctions()
     private val nf = NumberFunctions()
 
@@ -47,6 +50,24 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
     }
 
     private fun populateValues() {
+        populateWorkPerformedLists()
+        populateFromCache()
+    }
+
+    private fun populateWorkPerformedLists() {
+        workOrderViewModel.getWorkPerformedAll().observe(viewLifecycleOwner) { list ->
+            workPerformedList = list
+            val wpAdapter = ArrayAdapter(
+                mView.context, R.layout.list_single_item, list
+            )
+            binding.apply {
+                acMaster.setAdapter(wpAdapter)
+                acChild.setAdapter(wpAdapter)
+            }
+        }
+    }
+
+    private fun populateFromCache() {
         TODO("Not yet implemented")
     }
 

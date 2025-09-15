@@ -464,6 +464,7 @@
     <string name="merge">merge</string>
     <string name="list">List</string>
     <string name="merge_work_performed">Merge Work Performed</string>
+    <string name="choose_merge_option_for">Choose merge option for %1$s</string>
 
 
 </resources>
