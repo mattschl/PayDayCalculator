@@ -10,14 +10,14 @@ android {
     signingConfigs {
         getByName("debug") {
             storeFile =
-                file("/mnt/02D83355D83345E7/project/AndroidProject/keystore/matt__new_signing.jks")
+                file("C:\\Users\\matt_\\OneDrive\\projects\\AndroidProject\\keystore\\matt__new_signing.jks")
             storePassword = "!935Gr8t"
             keyPassword = "!935Gr8t"
             keyAlias = "key0"
         }
         create("release") {
             storeFile =
-                file("/mnt/02D83355D83345E7/project/AndroidProject/keystore/matt__new_signing.jks")
+                file("C:\\Users\\matt_\\OneDrive\\projects\\AndroidProject\\keystore\\matt_signing.jks")
             storePassword = "!935Gr8t"
             keyAlias = "key0"
             keyPassword = "!935Gr8t"
@@ -76,9 +76,9 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.17.0")
     implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("com.google.android.material:material:1.12.0")
+    implementation("com.google.android.material:material:1.13.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
-    implementation("org.mockito:mockito-core:5.19.0")
+    implementation("org.mockito:mockito-core:5.20.0")
     implementation("org.mockito.kotlin:mockito-kotlin:6.0.0")
     implementation("io.mockk:mockk:1.14.5")
     implementation("androidx.recyclerview:recyclerview:1.4.0")
@@ -88,7 +88,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
 
-    val roomVersion = "2.7.2"
+    val roomVersion = "2.8.0"
     implementation("androidx.room:room-runtime:$roomVersion")
     // To use Kotlin symbol processing tool (ksp)id("androidx.navigation.safeargs.kotlin")
     ksp("androidx.room:room-compiler:$roomVersion")
@@ -97,7 +97,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     implementation("androidx.room:room-ktx:$roomVersion")
 
-    val navVersion = "2.9.3"
+    val navVersion = "2.9.4"
     // Kotlin Navigation
     implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
     implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
@@ -105,7 +105,7 @@ dependencies {
 //    implementation("androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version")
 
     //Lifecycle architecture
-    val lifecycleVersion = "2.9.3"
+    val lifecycleVersion = "2.9.4"
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
     // LiveData
