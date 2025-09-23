@@ -78,7 +78,7 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
 
     private fun populateValues() {
         mainScope.launch {
-            hideMaterialAndWorkPerformed()
+            hideUnusedElements()
             populateWorkDate()
             if (workDateObject != null) {
                 populateCurrentEmployer()
@@ -90,8 +90,9 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         }
     }
 
-    private fun hideMaterialAndWorkPerformed() {
+    private fun hideUnusedElements() {
         binding.apply {
+            clTimeEntered.visibility = View.GONE
             crdMaterials.visibility = View.GONE
             crdWorkPerformed.visibility = View.GONE
         }

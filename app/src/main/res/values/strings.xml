@@ -465,6 +465,13 @@
     <string name="list">List</string>
     <string name="merge_work_performed">Merge Work Performed</string>
     <string name="choose_merge_option_for">Choose merge option for %1$s</string>
+    <string name="start_time">Start Time</string>
+    <string name="end_time">End Time</string>
+    <string name="work_order_history_info">work order history info</string>
+    <string name="enter_time">enter time</string>
+    <string name="enter_work_time">Enter Work Time</string>
+    <string name="add_time">Add Time</string>
+    <string name="_break">Break</string>
 
 
 </resources>

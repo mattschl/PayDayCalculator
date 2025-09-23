@@ -389,6 +389,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
             }
             btnAddWorkPerformed.setOnClickListener { addWorkPerformedToHistoryIfNotBlank() }
             btnAddMaterial.setOnClickListener { addMaterialToHistoryIfNotBlank() }
+            btnAddTime.setOnClickListener { gotoWorkOrderHistoryTime() }
             acWorkOrder.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
                     s: CharSequence?, start: Int, count: Int, after: Int
@@ -406,6 +407,16 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
 
             })
         }
+    }
+
+    private fun gotoWorkOrderHistoryTime() {
+        gotWorkOrderHistoryTimeFragment()
+    }
+
+    private fun gotWorkOrderHistoryTimeFragment() {
+        mView.findNavController().navigate(
+            WorkOrderHistoryUpdateFragmentDirections.actionWorkOrderHistoryUpdateFragmentToWorkOrderHistoryTime()
+        )
     }
 
     private fun addWorkPerformedToHistoryIfNotBlank() {

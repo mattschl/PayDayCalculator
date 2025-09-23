@@ -25,4 +25,16 @@ class DateFunctions {
             dateChecker.parse(date)!!
         )
     }
+
+    fun get12HourDisplay(time: Calendar): String {
+        return SimpleDateFormat("h:mm a", Locale.getDefault()).format(time.time)
+    }
+
+    fun get12HourIntOfHour(time: Calendar): Int {
+        return SimpleDateFormat("HH", Locale.getDefault()).format(time.time).toInt()
+    }
+
+    fun get12HourIntOfMinute(time: Calendar): Int {
+        return SimpleDateFormat("mm", Locale.getDefault()).format(time.time).toInt()
+    }
 }

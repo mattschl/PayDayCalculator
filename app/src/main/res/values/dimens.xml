@@ -24,4 +24,5 @@
     <dimen name="text_size_small">16sp</dimen>
     <dimen name="view_height_small">75dp</dimen>
     <dimen name="dimen_350dp">350dp</dimen>
+    <dimen name="dimen_75dp">75dp</dimen>
 </resources>

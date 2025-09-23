@@ -104,6 +104,56 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/acWorkOrder" />
 
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/clTimeEntered"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/acWorkOrder">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/clTimeSummary"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <TextView
+                                android:id="@+id/tvTimeSummary"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/no_time_entered"
+                                android:textColor="@color/black"
+                                android:textSize="20sp"
+                                android:textStyle="italic"
+                                app:layout_constraintBaseline_toBaselineOf="@id/btnAddTime"
+                                app:layout_constraintEnd_toStartOf="@id/btnAddTime"
+                                app:layout_constraintStart_toStartOf="parent" />
+
+                            <Button
+                                android:id="@+id/btnAddTime"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:backgroundTint="@color/green"
+                                android:maxWidth="@dimen/text_box_wide"
+                                android:maxLines="3"
+                                android:minHeight="@dimen/minimum_touch_height"
+                                android:text="@string/add_time"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@id/tvTimeSummary"
+                                app:layout_constraintTop_toTopOf="parent"
+                                tools:ignore="TextContrastCheck" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvTimeEntered"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/clTimeSummary" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
                     <TextView
                         android:id="@+id/tvDescription"
                         android:layout_width="wrap_content"
@@ -116,7 +166,7 @@
                         android:visibility="gone"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/acWorkOrder" />
+                        app:layout_constraintTop_toBottomOf="@id/clTimeEntered" />
 
                     <TextView
                         android:id="@+id/lblRegHours"
