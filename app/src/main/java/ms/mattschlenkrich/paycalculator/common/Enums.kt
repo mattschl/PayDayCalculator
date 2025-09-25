@@ -22,9 +22,16 @@ enum class TaxBasedOn(val value: Int) {
 }
 
 enum class PayRateBasedOn(val value: Int) {
-    Hourly(0),
+    HOURLY(0),
     Daily(1),
     Weekly(2),
     BiWeekly(3),
     Monthly(4)
+}
+
+enum class WorkOrderHistoryTimeWorkedTypes(val value: Int) {
+    BREAK(0),
+    REG_HOURS(1),
+    OT_HOURS(2),
+    DBL_OT_HOURS(3)
 }

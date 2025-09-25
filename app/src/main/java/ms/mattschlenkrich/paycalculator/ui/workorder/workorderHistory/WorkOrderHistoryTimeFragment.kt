@@ -16,12 +16,13 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryCombined
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderHistoryTimeBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import java.util.Calendar
 
-class WorkOrderHistoryTime : Fragment(R.layout.fragment_work_order_history_time) {
+class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_history_time) {
 
     private var _binding: FragmentWorkOrderHistoryTimeBinding? = null
     private val binding get() = _binding!!
@@ -30,6 +31,8 @@ class WorkOrderHistoryTime : Fragment(R.layout.fragment_work_order_history_time)
     private lateinit var mainViewModel: MainViewModel
     private lateinit var startTime: Calendar
     private lateinit var endTime: Calendar
+    private lateinit var curDate: String
+    private lateinit var curWorkOrderHistory: WorkOrderHistoryCombined
     private val df = DateFunctions()
     private val nf = NumberFunctions()
     private val defaultScope = CoroutineScope(Dispatchers.Default)
@@ -58,10 +61,15 @@ class WorkOrderHistoryTime : Fragment(R.layout.fragment_work_order_history_time)
 
     private fun populateInitialValues() {
         mainScope.launch {
+            populateVariables()
             populateWorkOrderInfo()
             delay(WAIT_250)
             populateTime()
         }
+    }
+
+    private fun populateVariables() {
+        val tempDate = mainViewModel.getWorkDateString()
     }
 
     private fun populateWorkOrderInfo() {
@@ -76,13 +84,13 @@ class WorkOrderHistoryTime : Fragment(R.layout.fragment_work_order_history_time)
                 if (tempHistory.woHistoryRegHours > 0.0)
                     display =
                         getString(R.string.reg_hrs_) + nf.getNumberFromDouble(tempHistory.woHistoryRegHours)
-                if (display != "") display += getString(R.string.pipe)
+                if (display.isBlank()) display += getString(R.string.pipe)
                 if (tempHistory.woHistoryOtHours > 0.0)
                     display += getString(R.string.ot_hrs_) + nf.getNumberFromDouble(tempHistory.woHistoryOtHours)
-                if (display != "") display += getString(R.string.pipe)
+                if (display.isBlank()) display += getString(R.string.pipe)
                 if (tempHistory.woHistoryDblOtHours > 0.0)
                     display += getString(R.string.dbl_ot_) + nf.getNumberFromDouble(tempHistory.woHistoryDblOtHours)
-                if (display == "") display = getString(R.string.no_time_entered)
+                if (display.isBlank()) display = getString(R.string.no_time_entered)
                 tvHours.text = display
             }
         }
@@ -90,6 +98,7 @@ class WorkOrderHistoryTime : Fragment(R.layout.fragment_work_order_history_time)
     }
 
     private fun populateTime() {
+
         startTime.set(Calendar.HOUR_OF_DAY, 8)
         startTime.set(Calendar.MINUTE, 30)
         binding.apply {
@@ -102,7 +111,6 @@ class WorkOrderHistoryTime : Fragment(R.layout.fragment_work_order_history_time)
         binding.apply {
             setStartTimeActions()
             setEndTimeAction()
-            setRadioButtonActions()
             fabDone.setOnClickListener { gotoWorkOrderHistoryUpdate() }
         }
     }
@@ -147,34 +155,9 @@ class WorkOrderHistoryTime : Fragment(R.layout.fragment_work_order_history_time)
         }
     }
 
-    private fun setRadioButtonActions() {
-        binding.apply {
-            radRegHours.setOnClickListener {
-                radOtHours.isSelected = false
-                radDblOt.isSelected = false
-                radBreak.isSelected = false
-            }
-            radOtHours.setOnClickListener {
-                radRegHours.isSelected = false
-                radDblOt.isSelected = false
-                radBreak.isSelected = false
-            }
-            radDblOt.setOnClickListener {
-                radRegHours.isSelected = false
-                radOtHours.isSelected = false
-                radBreak.isSelected = false
-            }
-            radBreak.setOnClickListener {
-                radRegHours.isSelected = false
-                radOtHours.isSelected = false
-                radDblOt.isSelected = false
-            }
-        }
-    }
-
     private fun gotoWorkOrderHistoryUpdate() {
         mView.findNavController().navigate(
-            WorkOrderHistoryTimeDirections.actionWorkOrderHistoryTimeToWorkOrderHistoryUpdateFragment()
+            WorkOrderHistoryTimeFragmentDirections.actionWorkOrderHistoryTimeToWorkOrderHistoryUpdateFragment()
         )
     }
 

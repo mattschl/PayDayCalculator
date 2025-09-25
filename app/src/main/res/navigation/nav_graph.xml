@@ -593,7 +593,7 @@
     <!--    fragment_work_order_history_time-->
     <fragment
         android:id="@+id/workOrderHistoryTime"
-        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderHistoryTime"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderHistoryTimeFragment"
         android:label="WorkOrderHistoryTime"
         tools:layout="@layout/fragment_work_order_history_time">
         <action

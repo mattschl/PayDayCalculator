@@ -584,7 +584,7 @@ class PayCalculationsAsync(
 
     private fun fixRateByInterval(rate: EmployerPayRates): Double {
         when (rate.eprPerPeriod) {
-            PayRateBasedOn.Hourly.value -> return rate.eprPayRate
+            PayRateBasedOn.HOURLY.value -> return rate.eprPayRate
 
             PayRateBasedOn.Daily.value -> return rate.eprPayRate / 8
 

@@ -21,8 +21,7 @@ import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
         childColumns = ["woHistoryWorkDateId"]
     )],
     indices = [Index(
-        value = ["woHistoryWorkOrderId", "woHistoryWorkDateId"],
-        unique = true
+        value = ["woHistoryWorkOrderId", "woHistoryWorkDateId"], unique = true
     )]
 )
 @Parcelize

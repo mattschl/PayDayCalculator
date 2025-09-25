@@ -35,6 +35,7 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.Material
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryMaterial
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
@@ -69,10 +70,11 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.WorkPerf
         JobSpecMerged::class,
         MaterialMerged::class,
         WorkPerformedMerged::class,
+        WorkOrderHistoryTimeWorked::class,
     ],
     views = [ExtraDefinitionAndType::class,
         ExtraTypeAndDefByDay::class],
-    autoMigrations = [AutoMigration(9, 10)],
+    autoMigrations = [AutoMigration(9, 10), AutoMigration(10, 11)],
     exportSchema = true,
     version = PAY_DB_VERSION,
 )

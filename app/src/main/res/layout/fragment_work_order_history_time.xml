@@ -40,6 +40,17 @@
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvInfo" />
+
+                <TextView
+                    android:id="@+id/tvTimeWorkedPrevious"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/label_text_size"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvHours" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -151,28 +162,32 @@
                         android:layout_height="@dimen/minimum_touch_height"
                         android:checked="true"
                         android:text="@string/reg_hours"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:value="1" />
 
                     <RadioButton
                         android:id="@+id/radOtHours"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/minimum_touch_height"
                         android:text="@string/ot_hrs"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:value="2" />
 
                     <RadioButton
                         android:id="@+id/radDblOt"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/minimum_touch_height"
                         android:text="@string/dbl_ot_hrs"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:value="3" />
 
                     <RadioButton
                         android:id="@+id/radBreak"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/minimum_touch_height"
                         android:text="@string/_break"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:value="0" />
                 </RadioGroup>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
