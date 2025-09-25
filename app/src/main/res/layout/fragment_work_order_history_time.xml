@@ -22,10 +22,10 @@
                     android:id="@+id/tvInfo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:maxWidth="@dimen/text_box_extra_wide"
+                    android:maxLines="3"
                     android:text="@string/work_order_history_info"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_large"
+                    android:textSize="@dimen/label_text_size"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -34,14 +34,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/dimen_15dp"
-                    android:maxWidth="@dimen/text_box_narrow"
                     android:text="@string/_0_hr"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_large"
+                    android:textSize="@dimen/label_text_size"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/tvInfo"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvInfo" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout

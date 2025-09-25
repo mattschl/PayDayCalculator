@@ -58,9 +58,6 @@ class WorkOrderHistoryTime : Fragment(R.layout.fragment_work_order_history_time)
 
     private fun populateInitialValues() {
         mainScope.launch {
-            binding.apply {
-                radRegHours.isSelected = true
-            }
             populateWorkOrderInfo()
             delay(WAIT_250)
             populateTime()
@@ -69,7 +66,25 @@ class WorkOrderHistoryTime : Fragment(R.layout.fragment_work_order_history_time)
 
     private fun populateWorkOrderInfo() {
         binding.apply {
-//        TODO("Not yet implemented")
+            if (mainViewModel.getTempWorkOrderHistoryInfo() != null) {
+                val tempHistory = mainViewModel.getTempWorkOrderHistoryInfo()!!
+                var display =
+                    getString(R.string.set_time_for_wo) + tempHistory.woHistoryWorkOrderNumber +
+                            getString(R.string._on_) + tempHistory.woHistoryWorkDate
+                tvInfo.text = display
+                display = ""
+                if (tempHistory.woHistoryRegHours > 0.0)
+                    display =
+                        getString(R.string.reg_hrs_) + nf.getNumberFromDouble(tempHistory.woHistoryRegHours)
+                if (display != "") display += getString(R.string.pipe)
+                if (tempHistory.woHistoryOtHours > 0.0)
+                    display += getString(R.string.ot_hrs_) + nf.getNumberFromDouble(tempHistory.woHistoryOtHours)
+                if (display != "") display += getString(R.string.pipe)
+                if (tempHistory.woHistoryDblOtHours > 0.0)
+                    display += getString(R.string.dbl_ot_) + nf.getNumberFromDouble(tempHistory.woHistoryDblOtHours)
+                if (display == "") display = getString(R.string.no_time_entered)
+                tvHours.text = display
+            }
         }
 
     }

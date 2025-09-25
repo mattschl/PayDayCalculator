@@ -472,6 +472,7 @@
     <string name="enter_work_time">Enter Work Time</string>
     <string name="add_time">Add Time</string>
     <string name="_break">Break</string>
+    <string name="set_time_for_wo">"Set Time for wo: "</string>
 
 
 </resources>

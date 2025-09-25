@@ -409,16 +409,6 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         }
     }
 
-    private fun gotoWorkOrderHistoryTime() {
-        gotWorkOrderHistoryTimeFragment()
-    }
-
-    private fun gotWorkOrderHistoryTimeFragment() {
-        mView.findNavController().navigate(
-            WorkOrderHistoryUpdateFragmentDirections.actionWorkOrderHistoryUpdateFragmentToWorkOrderHistoryTime()
-        )
-    }
-
     private fun addWorkPerformedToHistoryIfNotBlank() {
         if (binding.acWorkPerformed.text.isNullOrBlank()) {
             displayMessage(
@@ -475,6 +465,13 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         mainViewModel.addCallingFragment(TAG)
         gotoWorkOrderLookupFragment()
     }
+
+    private fun gotoWorkOrderHistoryTime() {
+        setTempWorkOrderHistoryInfo()
+        mainViewModel.addCallingFragment(TAG)
+        gotWorkOrderHistoryTimeFragment()
+    }
+
 
     private fun gotoWorkOrderLookupFragment() {
         mView.findNavController().navigate(
@@ -896,6 +893,12 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
     override fun gotoWorkOrderHistoryMaterialUpdateFragment() {
         mView.findNavController().navigate(
             WorkOrderHistoryUpdateFragmentDirections.actionWorkOrderHistoryUpdateFragmentToWorkOrderHistoryMaterialUpdateFragment()
+        )
+    }
+
+    private fun gotWorkOrderHistoryTimeFragment() {
+        mView.findNavController().navigate(
+            WorkOrderHistoryUpdateFragmentDirections.actionWorkOrderHistoryUpdateFragmentToWorkOrderHistoryTime()
         )
     }
 
