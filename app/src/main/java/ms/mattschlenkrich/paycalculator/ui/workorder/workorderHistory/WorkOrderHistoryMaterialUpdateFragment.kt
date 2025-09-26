@@ -95,7 +95,7 @@ class WorkOrderHistoryMaterialUpdateFragment :
                 }
                 originalWorkOrderHistoryMaterialCombined = workOrderHistoryMaterialDefer.await()
                 originalWorkOrderHistoryWithDates =
-                    workOrderViewModel.getWorkOrderHistoryCombinedById(
+                    workOrderViewModel.getWorkOrderHistoryWithDateById(
                         workOrderHistoryMaterialDefer.await().workOrderHistoryMaterial.wohmHistoryId
                     )
                 existingMaterialsInHistory = workOrderViewModel.getMaterialsFromHistoryId(

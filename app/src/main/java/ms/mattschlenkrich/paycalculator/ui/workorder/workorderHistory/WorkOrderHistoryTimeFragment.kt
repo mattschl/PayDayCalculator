@@ -10,17 +10,21 @@ import androidx.navigation.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_TIME
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryCombined
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderHistoryTimeBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
+import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater.TimeWorkedAdapter
 import java.util.Calendar
+
+private const val TAG = FRAG_WORK_ORDER_HISTORY_TIME
 
 class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_history_time) {
 
@@ -29,10 +33,13 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
+    private lateinit var workOrderViewModel: WorkOrderViewModel
+    private lateinit var curDateString: String
     private lateinit var startTime: Calendar
     private lateinit var endTime: Calendar
-    private lateinit var curDate: String
     private lateinit var curWorkOrderHistory: WorkOrderHistoryCombined
+    private val timeWorkedByDay = ArrayList<WorkOrderHistoryTimeWorkedCombined>()
+    private val timeWorkedByHistory = ArrayList<WorkOrderHistoryTimeWorkedCombined>()
     private val df = DateFunctions()
     private val nf = NumberFunctions()
     private val defaultScope = CoroutineScope(Dispatchers.Default)
@@ -47,6 +54,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
         mView = binding.root
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
+        workOrderViewModel = mainActivity.workOrderViewModel
         startTime = Calendar.getInstance()
         endTime = Calendar.getInstance()
         mainActivity.title = getString(R.string.enter_work_time)
@@ -61,58 +69,93 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
 
     private fun populateInitialValues() {
         mainScope.launch {
-            populateVariables()
-            populateWorkOrderInfo()
-            delay(WAIT_250)
-            populateTime()
+            populateVariablesAndValues()
         }
     }
 
-    private fun populateVariables() {
-        val tempDate = mainViewModel.getWorkDateString()
+    private fun populateVariablesAndValues() {
+        if (mainViewModel.getWorkOrderHistory() != null) {
+            workOrderViewModel.getWorkOrderHistoryCombined(mainViewModel.getWorkOrderHistory()!!.woHistoryId)
+                .observe(viewLifecycleOwner) { historyCombined ->
+                    curWorkOrderHistory = historyCombined
+                    binding.apply {
+                        curDateString = historyCombined.workDate.wdDate
+                        populateWorkOrderInfo(historyCombined)
+                        populateStartTimeTimeFromDate(historyCombined)
+                        populateExistingTimesFromWorkOrderHistory(historyCombined)
+                    }
+                }
+        }
     }
 
-    private fun populateWorkOrderInfo() {
+    private fun populateWorkOrderInfo(historyCombined: WorkOrderHistoryCombined) {
         binding.apply {
-            if (mainViewModel.getTempWorkOrderHistoryInfo() != null) {
-                val tempHistory = mainViewModel.getTempWorkOrderHistoryInfo()!!
-                var display =
-                    getString(R.string.set_time_for_wo) + tempHistory.woHistoryWorkOrderNumber +
-                            getString(R.string._on_) + tempHistory.woHistoryWorkDate
-                tvInfo.text = display
-                display = ""
-                if (tempHistory.woHistoryRegHours > 0.0)
-                    display =
-                        getString(R.string.reg_hrs_) + nf.getNumberFromDouble(tempHistory.woHistoryRegHours)
-                if (display.isBlank()) display += getString(R.string.pipe)
-                if (tempHistory.woHistoryOtHours > 0.0)
-                    display += getString(R.string.ot_hrs_) + nf.getNumberFromDouble(tempHistory.woHistoryOtHours)
-                if (display.isBlank()) display += getString(R.string.pipe)
-                if (tempHistory.woHistoryDblOtHours > 0.0)
-                    display += getString(R.string.dbl_ot_) + nf.getNumberFromDouble(tempHistory.woHistoryDblOtHours)
-                if (display.isBlank()) display = getString(R.string.no_time_entered)
-                tvHours.text = display
-            }
+            var display =
+                "${getString(R.string.set_time_for_wo)} ${historyCombined.workOrder.woNumber} " +
+                        "${getString(R.string.at_)} ${historyCombined.workOrder.woAddress} " +
+                        "${getString(R.string._on_)} ${df.getDisplayDate(historyCombined.workDate.wdDate)}"
+            tvInfo.text = display
+            display = ""
+            if (historyCombined.workOrderHistory.woHistoryRegHours > 0.0)
+                display =
+                    getString(R.string.reg_hrs_) + nf.getNumberFromDouble(historyCombined.workOrderHistory.woHistoryRegHours)
+            if (display != "") display += getString(R.string.pipe)
+            if (historyCombined.workOrderHistory.woHistoryOtHours > 0.0)
+                display += getString(R.string.ot_hrs_) + nf.getNumberFromDouble(historyCombined.workOrderHistory.woHistoryOtHours)
+            if (display != "") display += getString(R.string.pipe)
+            if (historyCombined.workOrderHistory.woHistoryDblOtHours > 0.0)
+                display += getString(R.string.dbl_ot_) + nf.getNumberFromDouble(historyCombined.workOrderHistory.woHistoryDblOtHours)
+            if (display != "") display = getString(R.string.no_time_entered)
+            tvHours.text = display
         }
-
     }
 
-    private fun populateTime() {
-
+    private fun populateStartTimeTimeFromDate(historyCombined: WorkOrderHistoryCombined) {
         startTime.set(Calendar.HOUR_OF_DAY, 8)
         startTime.set(Calendar.MINUTE, 30)
-        binding.apply {
-            clkStartTime.text = df.get12HourDisplay(startTime)
-            clkEndTime.text = df.get12HourDisplay(endTime)
-        }
+        workOrderViewModel.getTimeWorkedPerDay(historyCombined.workDate.workDateId)
+            .observe(viewLifecycleOwner) { timeWorkedHistory ->
+                for (time in timeWorkedHistory) {
+                    timeWorkedByDay.add(time)
+                }
+                if (timeWorkedHistory.isNotEmpty()) {
+                    val tempStartTime =
+                        timeWorkedHistory.last().workDate.wdDate
+                            .replace("$curDateString ", "")
+                            .split(":")
+                    startTime.set(Calendar.HOUR_OF_DAY, tempStartTime[0].toInt())
+                    startTime.set(Calendar.MINUTE, tempStartTime[1].toInt())
+                }
+                binding.apply {
+                    clkStartTime.text = df.get12HourDisplay(startTime)
+                    clkEndTime.text = df.get12HourDisplay(endTime)
+                }
+            }
+    }
+
+    private fun populateExistingTimesFromWorkOrderHistory(historyCombined: WorkOrderHistoryCombined) {
+        workOrderViewModel.getTimeWorkedForWorkOrderHistory(historyCombined.workOrderHistory.woHistoryId)
+            .observe(viewLifecycleOwner) { timeWorkedOnHistory ->
+                for (time in timeWorkedOnHistory) {
+                    timeWorkedByHistory.add(time)
+                }
+                val timeWorkedAdapter =
+                    TimeWorkedAdapter(mainActivity, mView, TAG, this)
+                timeWorkedAdapter.differ.submitList(timeWorkedOnHistory)
+            }
     }
 
     private fun setClickActions() {
         binding.apply {
             setStartTimeActions()
             setEndTimeAction()
+            btnEnterTime.setOnClickListener { insertTimeIntoWorkOrderHistory() }
             fabDone.setOnClickListener { gotoWorkOrderHistoryUpdate() }
         }
+    }
+
+    private fun insertTimeIntoWorkOrderHistory() {
+        // TODO: Set time
     }
 
     private fun setStartTimeActions() {

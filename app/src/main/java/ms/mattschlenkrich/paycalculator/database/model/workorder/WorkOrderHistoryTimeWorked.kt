@@ -20,7 +20,7 @@ import kotlinx.parcelize.Parcelize
     ],
     indices = [
         Index(value = ["wohtDateId", "wohtStartTime"], unique = true),
-        Index(value = ["wohtDateId", "wohtEndTimme"], unique = true)
+        Index(value = ["wohtDateId", "wohtEndTime"], unique = true)
     ]
 )
 @Parcelize
@@ -34,7 +34,7 @@ data class WorkOrderHistoryTimeWorked(
     @ColumnInfo(index = true)
     var wohtStartTime: String,
     @ColumnInfo(index = true)
-    var wohtEndTimme: String,
+    var wohtEndTime: String,
     var wohtTimeType: Int,
     val wohtIsDeleted: Boolean,
     val wohtUpdateTime: String,

@@ -10,6 +10,7 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.Material
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryMaterial
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
@@ -88,8 +89,20 @@ class WorkOrderViewModel(
     fun getWorkOrderHistoriesById(historyId: Long) =
         workOrderRepository.getWorkOrderHistoriesById(historyId)
 
-    fun getWorkOrderHistoryCombinedById(historyID: Long) =
-        workOrderRepository.getWorkOrderHistoryCombinedById(historyID)
+    fun getWorkOrderHistoryWithDateById(historyID: Long) =
+        workOrderRepository.getWorkOrderHistoryWithDatedById(historyID)
+
+    fun getWorkOrderHistoryCombined(historyId: Long) =
+        workOrderRepository.getWorkOrderHistoryCombined(historyId)
+
+    fun insertTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
+        viewModelScope.launch { workOrderRepository.insertTimeWorked(timeWorked) }
+
+    fun getTimeWorkedPerDay(workDateId: Long) =
+        workOrderRepository.getTimeWorkedPerDay(workDateId)
+
+    fun getTimeWorkedForWorkOrderHistory(historyId: Long) =
+        workOrderRepository.getTimeWorkedForWorkOrderHistory(historyId)
 
     fun getWorkPerformedHistoryById(historyWorkPerformedId: Long) =
         workOrderRepository.getWorkPerformedHistoryById(historyWorkPerformedId)

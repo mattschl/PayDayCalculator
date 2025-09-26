@@ -3,7 +3,7 @@
 package ms.mattschlenkrich.paycalculator.common
 
 const val PAY_DB_NAME = "pay.db"
-const val PAY_DB_VERSION = 11
+const val PAY_DB_VERSION = 12
 
 const val PAY_PERIODS_LIMIT = 15
 
@@ -181,3 +181,4 @@ const val FRAG_AREA_VIEW = "AreaViewFragment"
 
 //const val FRAG_WORK_ORDER_LOOKUP = "WorkOrderLookup"
 const val FRAG_WORK_PERFORMED_MERGE = "WorkPerformedMerge"
+const val FRAG_WORK_ORDER_HISTORY_TIME = "WorkOrderHistoryTime"

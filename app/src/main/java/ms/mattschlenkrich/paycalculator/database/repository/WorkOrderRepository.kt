@@ -8,6 +8,7 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryMaterialCombined
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
@@ -81,8 +82,20 @@ class WorkOrderRepository(private val db: PayDatabase) {
     fun getWorkOrderHistoriesById(historyId: Long) =
         db.getWorkOrderDao().getWorkOrderHistoriesById(historyId)
 
-    fun getWorkOrderHistoryCombinedById(historyID: Long) =
-        db.getWorkOrderDao().getWorkOrderHistoryCombinedById(historyID)
+    fun getWorkOrderHistoryWithDatedById(historyID: Long) =
+        db.getWorkOrderDao().getWorkOrderHistoryWithDateById(historyID)
+
+    fun getWorkOrderHistoryCombined(historyId: Long) =
+        db.getWorkOrderDao().getWorkOrderHistoryCombined(historyId)
+
+    suspend fun insertTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
+        db.getWorkOrderDao().insertTimeWorked(timeWorked)
+
+    fun getTimeWorkedPerDay(workDateId: Long) =
+        db.getWorkOrderDao().getTimeWorkedPerDay(workDateId)
+
+    fun getTimeWorkedForWorkOrderHistory(historyId: Long) =
+        db.getWorkOrderDao().getTimeWorkedForWorkOrderHistory(historyId)
 
     fun getWorkOrderHistoriesByWorkOrder(workOrderId: Long) =
         db.getWorkOrderDao().getWorkOrderHistoriesByWorkOrder(workOrderId)

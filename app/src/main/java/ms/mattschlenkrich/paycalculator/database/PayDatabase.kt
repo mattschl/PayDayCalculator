@@ -74,7 +74,8 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.WorkPerf
     ],
     views = [ExtraDefinitionAndType::class,
         ExtraTypeAndDefByDay::class],
-    autoMigrations = [AutoMigration(9, 10), AutoMigration(10, 11)],
+    autoMigrations =
+        [AutoMigration(9, 10), AutoMigration(10, 11), AutoMigration(11, 12)],
     exportSchema = true,
     version = PAY_DB_VERSION,
 )

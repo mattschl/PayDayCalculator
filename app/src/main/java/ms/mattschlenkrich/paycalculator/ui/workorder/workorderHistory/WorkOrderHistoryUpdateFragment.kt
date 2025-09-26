@@ -116,10 +116,10 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
             delay(WAIT_250)
             populateWorkOrderListForAutoComplete()
             delay(WAIT_250)
-            if (commonFunctions.getWorkOrderHistory() != null) {
-                populateFromHistory()
-            } else if (mainViewModel.getTempWorkOrderHistoryInfo() != null) {
+            if (mainViewModel.getTempWorkOrderHistoryInfo() != null) {
                 populateFromTempValues()
+            } else if (commonFunctions.getWorkOrderHistory() != null) {
+                populateFromHistory()
             }
         }
     }

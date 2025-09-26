@@ -13,8 +13,11 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.JobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.Material
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryCombined
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryMaterialCombined
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorked
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformedCombined
@@ -186,7 +189,15 @@ interface WorkOrderDao {
         "SELECT * FROM workOrderHistory " +
                 "WHERE woHistoryId = :historyID"
     )
-    fun getWorkOrderHistoryCombinedById(historyID: Long): WorkOrderHistoryWithDates
+    fun getWorkOrderHistoryWithDateById(historyID: Long): WorkOrderHistoryWithDates
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT * FROM workOrderHistory " +
+                "WHERE woHistoryId = :historyId"
+    )
+    fun getWorkOrderHistoryCombined(historyId: Long): LiveData<WorkOrderHistoryCombined>
 
     @Query(
         "UPDATE workOrderHistory " +
@@ -195,6 +206,30 @@ interface WorkOrderDao {
                 "WHERE woHistoryWorkDateId = :workDateId"
     )
     suspend fun deleteWorkOrderHistoryByWorkDateId(workDateId: Long, updateTime: String)
+
+
+    @Insert
+    suspend fun insertTimeWorked(timeWorked: WorkOrderHistoryTimeWorked)
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT * FROM workOrderHistoryTimeWorked " +
+                "WHERE wohtDateId = :workDateId  " +
+                "AND wohtIsDeleted = 0 " +
+                "order BY wohtStartTime, wohtEndTime"
+    )
+    fun getTimeWorkedPerDay(workDateId: Long): LiveData<List<WorkOrderHistoryTimeWorkedCombined>>
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT * FROM workOrderHistoryTimeWorked " +
+                "WHERE wohtHistoryId = :historyId " +
+                "AND wohtIsDeleted = 0 " +
+                "order BY wohtStartTime, wohtEndTime"
+    )
+    fun getTimeWorkedForWorkOrderHistory(historyId: Long): LiveData<List<WorkOrderHistoryTimeWorkedCombined>>
 
     @Insert
     suspend fun insertJobSpec(jobSpec: JobSpec)

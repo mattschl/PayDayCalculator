@@ -15,7 +15,7 @@ data class WorkOrderHistoryTimeWorkedCombined(
         parentColumn = "wohtHistoryId",
         entityColumn = "woHistoryId"
     )
-    var workOrderHistory: WorkOrderHistory,
+    var workOrderHistory: WorkOrderHistoryCombined,
     @Relation(
         entity = WorkDates::class,
         parentColumn = "wohtDateId",

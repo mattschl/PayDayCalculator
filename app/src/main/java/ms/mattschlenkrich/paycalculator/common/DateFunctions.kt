@@ -30,6 +30,19 @@ class DateFunctions {
         return SimpleDateFormat("h:mm a", Locale.getDefault()).format(time.time)
     }
 
+    fun get12HourDisplay(time: String): String {
+        val tempTime = time.split(":")
+        return if (tempTime[0].toInt() == 0) {
+            "12:${tempTime[1]} AM"
+        } else if (tempTime[0].toInt() < 12) {
+            "${tempTime[0]}:${tempTime[1]} AM"
+        } else if (tempTime[0].toInt() == 12) {
+            "12:${tempTime[1]} PM"
+        } else {
+            "${tempTime[0].toInt() - 12}:${tempTime[1]} PM"
+        }
+    }
+
     fun get12HourIntOfHour(time: Calendar): Int {
         return SimpleDateFormat("HH", Locale.getDefault()).format(time.time).toInt()
     }
