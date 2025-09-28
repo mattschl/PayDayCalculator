@@ -85,6 +85,7 @@ class WorkOrderLookupAdapter(
                 val history = getTempWorkOrderHistoryInfo()!!
                 setTempWorkOrderHistoryInfo(
                     TempWorkOrderHistoryInfo(
+                        history.woHistoryId,
                         workOrder.woNumber,
                         history.woHistoryWorkDate,
                         history.woHistoryRegHours,

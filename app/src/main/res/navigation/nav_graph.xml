@@ -16,7 +16,8 @@
     <action
         android:id="@+id/action_global_timeSheetFragment"
         app:destination="@id/timeSheetFragment"
-        app:popUpTo="@id/timeSheetFragment" />
+        app:popUpTo="@id/timeSheetFragment"
+        app:popUpToInclusive="false" />
 
     <!--    timeSheetFragment-->
     <fragment
@@ -26,10 +27,12 @@
         tools:layout="@layout/fragment_time_sheet">
         <action
             android:id="@+id/action_timeSheetFragment_to_employerAddFragment"
-            app:destination="@id/employerAddFragment" />
+            app:destination="@id/employerAddFragment"
+            app:popUpTo="@id/timeSheetFragment" />
         <action
             android:id="@+id/action_timeSheetFragment_to_workDateAddFragment"
-            app:destination="@id/workDateAddFragment" />
+            app:destination="@id/workDateAddFragment"
+            app:popUpTo="@id/timeSheetFragment" />
         <action
             android:id="@+id/action_timeSheetFragment_to_workDateUpdateFragment"
             app:destination="@id/workDateUpdateFragment" />
@@ -50,7 +53,7 @@
         <action
             android:id="@+id/action_workDateAddFragment_to_workOrderHistoryAddFragment"
             app:destination="@id/workOrderHistoryAddFragment"
-            app:popUpTo="@id/workOrderHistoryAddFragment" />
+            app:popUpTo="@id/workDateAddFragment" />
 
     </fragment>
 
@@ -65,7 +68,8 @@
             app:destination="@id/employerExtraDefinitionsFragment" />
         <action
             android:id="@+id/action_workDateUpdateFragment_to_workDateExtraAddFragment"
-            app:destination="@id/workDateExtraAddFragment" />
+            app:destination="@id/workDateExtraAddFragment"
+            app:popUpTo="@id/workDateUpdateFragment" />
         <action
             android:id="@+id/action_workDateUpdateFragment_to_workDateExtraUpdateFragment"
             app:destination="@id/workDateExtraUpdateFragment" />
@@ -75,7 +79,8 @@
             app:popUpTo="@id/workOrderUpdateFragment" />
         <action
             android:id="@+id/action_workDateUpdateFragment_to_workOrderHistoryAddFragment"
-            app:destination="@id/workOrderHistoryAddFragment" />
+            app:destination="@id/workOrderHistoryAddFragment"
+            app:popUpTo="@id/workDateUpdateFragment" />
         <action
             android:id="@+id/action_workDateUpdateFragment_to_workOrderHistoryUpdateFragment"
             app:destination="@id/workOrderHistoryUpdateFragment" />
@@ -95,7 +100,8 @@
         tools:layout="@layout/fragment_tax_type">
         <action
             android:id="@+id/action_taxTypeFragment_to_taxTypeAddFragment"
-            app:destination="@id/taxTypeAddFragment" />
+            app:destination="@id/taxTypeAddFragment"
+            app:popUpTo="@id/taxTypeFragment" />
         <action
             android:id="@+id/action_taxTypeFragment_to_taxTypeUpdateFragment"
             app:destination="@id/taxTypeUpdateFragment" />
@@ -150,13 +156,15 @@
         tools:layout="@layout/fragment_tax_rules">
         <action
             android:id="@+id/action_taxRulesFragment_to_taxRuleAddFragment"
-            app:destination="@id/taxRuleAddFragment" />
+            app:destination="@id/taxRuleAddFragment"
+            app:popUpTo="@id/taxRulesFragment" />
         <action
             android:id="@+id/action_taxRulesFragment_to_taxRuleUpdateFragment"
             app:destination="@id/taxRuleUpdateFragment" />
         <action
             android:id="@+id/action_taxRulesFragment_to_taxTypeAddFragment"
-            app:destination="@id/taxTypeAddFragment" />
+            app:destination="@id/taxTypeAddFragment"
+            app:popUpTo="@id/taxRulesFragment" />
         <action
             android:id="@+id/action_taxRulesFragment_to_employerUpdateFragment"
             app:destination="@id/employerUpdateFragment"

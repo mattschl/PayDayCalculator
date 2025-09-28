@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.paycalculator.database.model.workorder
 
 data class TempWorkOrderHistoryInfo(
+    val woHistoryId: Long,
     val woHistoryWorkOrderNumber: String,
     val woHistoryWorkDate: String,
     var woHistoryRegHours: Double,

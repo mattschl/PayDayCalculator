@@ -475,6 +475,12 @@
     <string name="_break">Break</string>
     <string name="set_time_for_wo">"Set Time for wo: "</string>
     <string name="time_summary">Time Summary</string>
+    <string name="end_time_before_start_time">The end Time must not be before the start time</string>
+    <string name="end_time_same_as_start_time">There is no time to enter</string>
+    <string name="total_time">"Total Time: "</string>
+    <string name="total_hours">"Total hours: "</string>
+    <string name="select_end_time">Select End Time</string>
+    <string name="select_start_time">Select Start Time</string>
 
 
 </resources>

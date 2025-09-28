@@ -3,8 +3,9 @@ package ms.mattschlenkrich.paycalculator.common
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.round
 
-//private const val TAG = "DateFunctions"
+private const val TAG = "DateFunctions"
 
 class DateFunctions {
     private val dateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
@@ -49,5 +50,51 @@ class DateFunctions {
 
     fun get12HourIntOfMinute(time: Calendar): Int {
         return SimpleDateFormat("mm", Locale.getDefault()).format(time.time).toInt()
+    }
+
+    fun roundTimeTo15Minutes(hour: Int, minute: Int): Pair<Int, Int> {
+        val roundedMinute = (round(minute.toDouble() / 15) * 15).toInt()
+        if (roundedMinute == 60) {
+            return Pair(hour.toInt() + 1, 0)
+        }
+        return Pair(hour, roundedMinute)
+    }
+
+    fun getDateFromCalendarAsString(time: Calendar): String {
+        return timeFormatter.format(time.time)
+    }
+
+    fun splitTimeFromDateTime(time: String): List<String> {
+        return time.split(" ").last().split(":")
+    }
+
+    fun getTimeWorked(startTime: String, endTime: String): Double {
+        val tempStart = splitTimeFromDateTime(startTime)
+        val tempEnd = splitTimeFromDateTime(endTime)
+        val hoursStart = tempStart[0].toDouble() * 60 + tempStart[1].toDouble()
+        val hoursEnd = tempEnd[0].toDouble() * 60 + tempEnd[1].toDouble()
+        return (hoursEnd - hoursStart) / 60
+    }
+
+    fun getTimeWorked(startTime: Calendar, endTime: Calendar): Double {
+        val hoursStart =
+            startTime.get(Calendar.HOUR_OF_DAY).toDouble() * 60 + startTime.get(Calendar.MINUTE)
+                .toDouble()
+        val hoursEnd =
+            endTime.get(Calendar.HOUR_OF_DAY).toDouble() * 60 + endTime.get(Calendar.MINUTE)
+                .toDouble()
+        return (hoursEnd - hoursStart) / 60
+    }
+
+    fun getCalendarFromString(timeString: String): Calendar {
+        val tempDateTime = timeString.split(" ")
+        val tempDate = tempDateTime[0].split("-")
+        val tempTime = tempDateTime[1].split(":")
+        val cal = Calendar.getInstance()
+        cal.set(tempDate[0].toInt(), tempDate[1].toInt(), tempDate[2].toInt())
+        cal.set(Calendar.HOUR_OF_DAY, tempTime[0].toInt())
+        cal.set(Calendar.MINUTE, tempTime[1].toInt())
+        cal.set(Calendar.SECOND, 0)
+        return cal
     }
 }

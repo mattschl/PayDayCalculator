@@ -64,21 +64,23 @@ class TimeWorkedAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val history = differ.currentList[position]
         holder.itemBinding.apply {
-            val tempStart = history.timeWorked.wohtStartTime
-                .split(" ")[1]
-                .split(":")
+            val tempStart = df.splitTimeFromDateTime(history.timeWorked.wohtStartTime)
             val startTime = df.get12HourDisplay("${tempStart[0]}:${tempStart[1]}")
-            val tempEnd = history.timeWorked.wohtEndTime
-                .split(" ")[1]
-                .split(":")
+            val tempEnd = df.splitTimeFromDateTime(history.timeWorked.wohtEndTime)
             val endTime = df.get12HourDisplay("${tempEnd[0]}:${tempEnd[1]}")
             var display = "$startTime  to $endTime"
             val hours =
-                (tempEnd[0].toDouble() * 12 + tempEnd[1].toDouble() - tempStart[0].toDouble() * 12 - tempStart[1].toDouble()) / 12
+                df.getTimeWorked(history.timeWorked.wohtStartTime, history.timeWorked.wohtEndTime)
+
             display += when (history.timeWorked.wohtTimeType) {
-                1 -> "${mView.context.getString(R.string.reg_hrs_)} ${nf.getNumberFromDouble(hours)}"
-                2 -> "${mView.context.getString(R.string.ot_hrs_)} ${nf.getNumberFromDouble(hours)}"
-                3 -> "${mView.context.getString(R.string.dblot_hrs_)} ${nf.getNumberFromDouble(hours)}"
+                1 -> " - ${mView.context.getString(R.string.reg_hrs_)}${nf.getNumberFromDouble(hours)}"
+                2 -> " - ${mView.context.getString(R.string.ot_hrs_)}${nf.getNumberFromDouble(hours)}"
+                3 -> " - ${mView.context.getString(R.string.dblot_hrs_)}${
+                    nf.getNumberFromDouble(
+                        hours
+                    )
+                }"
+
                 else -> {
                     " Break time"
                 }

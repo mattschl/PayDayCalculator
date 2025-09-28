@@ -64,6 +64,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
     private var workDateObject: WorkDates? = null
     private lateinit var curEmployer: Employers
     private lateinit var curHistoryDetailed: WorkOrderHistoryWithDates
+    private var curHistory: WorkOrderHistory? = null
     private var curWorkOrder: WorkOrder? = null
     private lateinit var workPerformedListForAutoComplete: List<WorkPerformed>
     private lateinit var existingWorkPerformedListForValidation: List<WorkOrderHistoryWorkPerformedCombined>
@@ -116,10 +117,10 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
             delay(WAIT_250)
             populateWorkOrderListForAutoComplete()
             delay(WAIT_250)
-            if (mainViewModel.getTempWorkOrderHistoryInfo() != null) {
-                populateFromTempValues()
-            } else if (commonFunctions.getWorkOrderHistory() != null) {
+            if (commonFunctions.getWorkOrderHistory() != null) {
                 populateFromHistory()
+            } else if (mainViewModel.getTempWorkOrderHistoryInfo() != null) {
+                populateFromTempValues()
             }
         }
     }
@@ -246,6 +247,10 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         workOrderViewModel.getWorkOrder(tempWorkOrderInfo.woHistoryWorkOrderNumber)
             .observe(viewLifecycleOwner) { workOrder ->
                 curWorkOrder = workOrder
+            }
+        workOrderViewModel.getWorkOrderHistory(tempWorkOrderInfo.woHistoryId)
+            .observe(viewLifecycleOwner) { history ->
+                curHistoryDetailed = history
             }
         binding.apply {
             acWorkOrder.setText(tempWorkOrderInfo.woHistoryWorkOrderNumber)
@@ -766,6 +771,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         binding.apply {
             mainViewModel.setTempWorkOrderHistoryInfo(
                 TempWorkOrderHistoryInfo(
+                    curHistoryDetailed.history.woHistoryId,
                     if (acWorkOrder.text.isNullOrBlank()) "0" else acWorkOrder.text.toString()
                         .trim(),
                     lblDate.text.toString(),

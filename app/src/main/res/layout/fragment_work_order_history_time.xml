@@ -69,7 +69,7 @@
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_large"
                     android:textStyle="bold"
-                    app:layout_constraintBaseline_toBaselineOf="@id/btnEnterStartTime"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tvTotalTime"
                     app:layout_constraintEnd_toStartOf="@id/clkStartTime"
                     app:layout_constraintStart_toStartOf="parent" />
 
@@ -80,17 +80,18 @@
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_large"
                     android:textStyle="bold"
-                    app:layout_constraintBaseline_toBaselineOf="@id/btnEnterStartTime"
-                    app:layout_constraintEnd_toStartOf="@id/btnEnterStartTime"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tvTotalTime"
+                    app:layout_constraintEnd_toStartOf="@id/tvTotalTime"
                     app:layout_constraintStart_toEndOf="@id/lblStartTime" />
 
-                <Button
-                    android:id="@+id/btnEnterStartTime"
+                <TextView
+                    android:id="@+id/tvTotalTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/dark_green"
-                    android:text="@string/enter_time"
-                    android:visibility="invisible"
+                    android:text="@string/total_time"
+                    android:textColor="@color/deep_red"
+                    android:textSize="@dimen/text_size_small"
+                    android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/clkStartTime"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -174,7 +175,7 @@
                         android:value="2" />
 
                     <RadioButton
-                        android:id="@+id/radDblOt"
+                        android:id="@+id/radDblOtHours"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/minimum_touch_height"
                         android:text="@string/dbl_ot_hrs"
@@ -193,7 +194,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvTimes"
+                android:id="@+id/rvTimeWorked"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/dimen_15dp"
@@ -205,7 +206,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dimen_75dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rvTimes" />
+                app:layout_constraintTop_toBottomOf="@id/rvTimeWorked" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabDone"
