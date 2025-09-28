@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,14 +73,8 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        populateInitialValues()
+        populateVariablesAndValues()
         setClickActions()
-    }
-
-    private fun populateInitialValues() {
-        mainScope.launch {
-            populateVariablesAndValues()
-        }
     }
 
     private fun populateVariablesAndValues() {
@@ -104,18 +99,6 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                         "${getString(R.string.at_)} ${historyCombined.workOrder.woAddress} " +
                         "${getString(R.string._on_)} ${df.getDisplayDate(historyCombined.workDate.wdDate)}"
             tvInfo.text = display
-//            display = ""
-//            if (historyCombined.workOrderHistory.woHistoryRegHours > 0.0)
-//                display =
-//                    getString(R.string.reg_hrs_) + nf.getNumberFromDouble(historyCombined.workOrderHistory.woHistoryRegHours)
-//            if (display != "") display += getString(R.string.pipe)
-//            if (historyCombined.workOrderHistory.woHistoryOtHours > 0.0)
-//                display += getString(R.string.ot_hrs_) + nf.getNumberFromDouble(historyCombined.workOrderHistory.woHistoryOtHours)
-//            if (display != "") display += getString(R.string.pipe)
-//            if (historyCombined.workOrderHistory.woHistoryDblOtHours > 0.0)
-//                display += getString(R.string.dbl_ot_) + nf.getNumberFromDouble(historyCombined.workOrderHistory.woHistoryDblOtHours)
-//            if (display != "") display = getString(R.string.no_time_entered)
-//            tvHours.text = display
         }
     }
 
@@ -351,6 +334,12 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
     private fun gotoWorkOrderHistoryUpdate() {
         mView.findNavController().navigate(
             WorkOrderHistoryTimeFragmentDirections.actionWorkOrderHistoryTimeToWorkOrderHistoryUpdateFragment()
+        )
+    }
+
+    fun gotoWorkOrderHistoryTimeUpdate() {
+        findNavController().navigate(
+            WorkOrderHistoryTimeFragmentDirections.actionWorkOrderHistoryTimeToWorkOrderHistoryTimeUpdateFragment()
         )
     }
 

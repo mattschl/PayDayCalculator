@@ -481,6 +481,7 @@
     <string name="total_hours">"Total hours: "</string>
     <string name="select_end_time">Select End Time</string>
     <string name="select_start_time">Select Start Time</string>
+    <string name="update_work_time">Update Work Time</string>
 
 
 </resources>

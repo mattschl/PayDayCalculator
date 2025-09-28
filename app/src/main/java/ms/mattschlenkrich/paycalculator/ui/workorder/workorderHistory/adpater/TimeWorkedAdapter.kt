@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,10 +17,13 @@ import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderH
 
 class TimeWorkedAdapter(
     val mainActivity: MainActivity,
-    val mView: View,
+    private val mView: View,
     private val parentFragment: String,
     private val workOrderHistoryTimeFragment: WorkOrderHistoryTimeFragment
 ) : RecyclerView.Adapter<TimeWorkedAdapter.ViewHolder>() {
+
+    val mainViewModel = mainActivity.mainViewModel
+    val workOrderViewModel = mainActivity.workOrderViewModel
     private val df = DateFunctions()
     private val nf = NumberFunctions()
 
@@ -86,8 +90,46 @@ class TimeWorkedAdapter(
                 }
             }
             tvDisplay.text = display
-
+            holder.itemView.setOnClickListener {
+                choosOptions(history)
+            }
         }
     }
 
+    private fun choosOptions(history: WorkOrderHistoryTimeWorkedCombined) {
+        AlertDialog.Builder(mView.context)
+            .setTitle(
+                "${mView.context.getString(R.string.choose_option_for_wo)} ${history.workOrderHistory.workOrder.woNumber}${
+                    mView.context.getString(
+                        R.string._on_
+                    )
+                } ${df.getDisplayDate(history.workDate.wdDate)}"
+            )
+            .setItems(
+                arrayOf(
+                    mView.context.getString(R.string.edit),
+                    mView.context.getString(R.string.delete)
+                )
+            ) { _, position ->
+                when (position) {
+                    0 -> gotoWorkOrderHistoryTimeEdit(history)
+                    1 -> deleteTimeWorked(history)
+                }
+            }
+            .setNegativeButton(mView.context.getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun deleteTimeWorked(history: WorkOrderHistoryTimeWorkedCombined) {
+        workOrderViewModel.deleteTimeWorked(
+            history.timeWorked.woHistoryTimeWorkedId, df.getCurrentTimeAsString()
+        )
+    }
+
+    private fun gotoWorkOrderHistoryTimeEdit(history: WorkOrderHistoryTimeWorkedCombined) {
+        mainViewModel.setWorkOrderHistory(history.workOrderHistory.workOrderHistory)
+        mainViewModel.addCallingFragment(parentFragment)
+        workOrderHistoryTimeFragment.gotoWorkOrderHistoryTimeUpdate()
+    }
 }
+

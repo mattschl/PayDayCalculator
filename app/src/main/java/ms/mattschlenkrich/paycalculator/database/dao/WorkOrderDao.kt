@@ -211,6 +211,17 @@ interface WorkOrderDao {
     @Insert
     suspend fun insertTimeWorked(timeWorked: WorkOrderHistoryTimeWorked)
 
+    @Update
+    suspend fun updateTimeWorked(timeWorked: WorkOrderHistoryTimeWorked)
+
+    @Query(
+        "UPDATE workOrderHistoryTimeWorked " +
+                "SET wohtIsDeleted = 1, " +
+                "wohtUpdateTime = :updateTime " +
+                "WHERE woHistoryTimeWorkedId = :timeWorkedId"
+    )
+    suspend fun deleteTimeWorked(timeWorkedId: Long, updateTime: String)
+
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(

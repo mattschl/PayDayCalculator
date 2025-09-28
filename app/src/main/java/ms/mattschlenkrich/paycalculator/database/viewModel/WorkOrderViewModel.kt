@@ -98,6 +98,12 @@ class WorkOrderViewModel(
     fun insertTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
         viewModelScope.launch { workOrderRepository.insertTimeWorked(timeWorked) }
 
+    fun updateTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
+        viewModelScope.launch { workOrderRepository.updateTimeWorked(timeWorked) }
+
+    fun deleteTimeWorked(timeWorkedId: Long, updateTime: String) =
+        viewModelScope.launch { workOrderRepository.deleteTimeWorked(timeWorkedId, updateTime) }
+
     fun getTimeWorkedPerDay(workDateId: Long) =
         workOrderRepository.getTimeWorkedPerDay(workDateId)
 

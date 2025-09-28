@@ -64,7 +64,6 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
     private var workDateObject: WorkDates? = null
     private lateinit var curEmployer: Employers
     private lateinit var curHistoryDetailed: WorkOrderHistoryWithDates
-    private var curHistory: WorkOrderHistory? = null
     private var curWorkOrder: WorkOrder? = null
     private lateinit var workPerformedListForAutoComplete: List<WorkPerformed>
     private lateinit var existingWorkPerformedListForValidation: List<WorkOrderHistoryWorkPerformedCombined>

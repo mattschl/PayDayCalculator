@@ -91,6 +91,12 @@ class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun insertTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
         db.getWorkOrderDao().insertTimeWorked(timeWorked)
 
+    suspend fun updateTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
+        db.getWorkOrderDao().updateTimeWorked(timeWorked)
+
+    suspend fun deleteTimeWorked(timeWorkedId: Long, updateTime: String) =
+        db.getWorkOrderDao().deleteTimeWorked(timeWorkedId, updateTime)
+
     fun getTimeWorkedPerDay(workDateId: Long) =
         db.getWorkOrderDao().getTimeWorkedPerDay(workDateId)
 
