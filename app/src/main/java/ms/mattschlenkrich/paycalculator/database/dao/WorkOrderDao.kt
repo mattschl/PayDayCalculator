@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paycalculator.database.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -104,6 +105,8 @@ interface WorkOrderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkOrderHistory(history: WorkOrderHistory)
 
+    @Update
+    suspend fun updateWorkOrderHistory(history: WorkOrderHistory)
 
     @Query(
         "Update workOrderHistory " +
@@ -222,13 +225,16 @@ interface WorkOrderDao {
     )
     suspend fun deleteTimeWorked(timeWorkedId: Long, updateTime: String)
 
+    @Delete
+    suspend fun deleteTimeWorked(timeWorked: WorkOrderHistoryTimeWorked)
+
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistoryTimeWorked " +
                 "WHERE wohtDateId = :workDateId  " +
                 "AND wohtIsDeleted = 0 " +
-                "order BY wohtStartTime, wohtEndTime"
+                "order BY wohtStartTime"
     )
     fun getTimeWorkedPerDay(workDateId: Long): LiveData<List<WorkOrderHistoryTimeWorkedCombined>>
 
@@ -238,7 +244,7 @@ interface WorkOrderDao {
         "SELECT * FROM workOrderHistoryTimeWorked " +
                 "WHERE wohtHistoryId = :historyId " +
                 "AND wohtIsDeleted = 0 " +
-                "order BY wohtStartTime, wohtEndTime"
+                "order BY wohtStartTime"
     )
     fun getTimeWorkedForWorkOrderHistory(historyId: Long): LiveData<List<WorkOrderHistoryTimeWorkedCombined>>
 

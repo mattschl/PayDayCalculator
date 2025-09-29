@@ -19,6 +19,7 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.MaterialInSeque
 import ms.mattschlenkrich.paycalculator.database.model.workorder.TempWorkOrderHistoryInfo
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorkedCombined
 
 class MainViewModel(
     app: Application,
@@ -56,9 +57,15 @@ class MainViewModel(
     private var materialInSequence: MaterialInSequence? = null
     private var extraContainer: ExtraContainer? = null
     private var areaId: Long? = null
+    private var workOrderHistoryTimeWorkedCombined: WorkOrderHistoryTimeWorkedCombined? = null
 
-    fun setWorkOrderJobSpecId(newId: Long?) {
-        workOrderJobSpecId = newId
+    fun setWorkOrderHistoryTimeWorkedCombined(newWorkOrderHistoryTimeWorkedCombined: WorkOrderHistoryTimeWorkedCombined?) {
+        workOrderHistoryTimeWorkedCombined = newWorkOrderHistoryTimeWorkedCombined
+    }
+
+    fun getWorkOrderHistoryTimeWorkedCombined(): WorkOrderHistoryTimeWorkedCombined? {
+        return workOrderHistoryTimeWorkedCombined
+
     }
 
     fun getWorkOrderJobSpecId(): Long? {
@@ -342,3 +349,4 @@ class MainViewModel(
         return taxRule
     }
 }
+

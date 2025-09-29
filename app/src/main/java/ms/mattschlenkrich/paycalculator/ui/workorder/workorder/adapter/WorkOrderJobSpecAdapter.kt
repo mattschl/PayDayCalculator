@@ -122,11 +122,12 @@ class WorkOrderJobSpecAdapter(
     }
 
     private fun gotoJobSpecUpdate(workOrderJobSpecId: Long) {
-        mainViewModel.apply {
-            setWorkOrderJobSpecId(workOrderJobSpecId)
-            setWorkOrder(workOrder)
-        }
-        workOrderUpdateFragment.gotoWorkOrderJobSpecUpdateFragment()
+//        TODO("Not yet implemented")
+//        mainViewModel.apply {
+//            setWorkOrderJobSpecId(workOrderJobSpecId)
+//            setWorkOrder(workOrder)
+//        }
+//        workOrderUpdateFragment.gotoWorkOrderJobSpecUpdateFragment()
     }
 
     private fun removeJobSpecFromWorkOrder(woJobSpec: WorkOrderJobSpecCombined) {

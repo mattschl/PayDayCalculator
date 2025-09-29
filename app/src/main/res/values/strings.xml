@@ -482,6 +482,10 @@
     <string name="select_end_time">Select End Time</string>
     <string name="select_start_time">Select Start Time</string>
     <string name="update_work_time">Update Work Time</string>
+    <string name="original_time">"Original time is "</string>
+    <string name="_to_">" to "</string>
+    <string name="time_worked_too_long">The time entered is more than 8 hours</string>
+    <string name="edit_times">edit\ntimes</string>
 
 
 </resources>

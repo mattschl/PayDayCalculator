@@ -919,7 +919,8 @@
     <fragment
         android:id="@+id/workOrderHistoryTimeUpdateFragment"
         android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderHistoryTimeUpdateFragment"
-        android:label="WorkOrderHistoryTimeUpdateFragment">
+        android:label="WorkOrderHistoryTimeUpdateFragment"
+        tools:layout="@layout/fragment_work_order_history_time">
         <action
             android:id="@+id/action_workOrderHistoryTimeUpdateFragment_to_workOrderHistoryTime"
             app:destination="@id/workOrderHistoryTime"

@@ -47,6 +47,9 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
     private lateinit var startTime: Calendar
     private lateinit var endTime: Calendar
     private lateinit var curWorkOrderHistory: WorkOrderHistoryCombined
+    private var totalRegHours = 0.0
+    private var totalOtHours = 0.0
+    private var totalDblOtHours = 0.0
     private val timeWorkedByDay = ArrayList<WorkOrderHistoryTimeWorkedCombined>()
     private val timeWorkedByDayAsCalendarPairs = ArrayList<Pair<Calendar, Calendar>>()
     private val timeWorkedByHistory = ArrayList<WorkOrderHistoryTimeWorkedCombined>()
@@ -85,7 +88,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                     binding.apply {
                         curDateString = historyCombined.workDate.wdDate
                         populateWorkOrderInfo(historyCombined)
-                        populateTimesFromDate(historyCombined)
+                        populateTimesFromHistory(historyCombined)
                         populateExistingTimesRecycler(historyCombined)
                     }
                 }
@@ -102,7 +105,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
         }
     }
 
-    private fun populateTimesFromDate(historyCombined: WorkOrderHistoryCombined) {
+    private fun populateTimesFromHistory(historyCombined: WorkOrderHistoryCombined) {
         val tempDate = historyCombined.workDate.wdDate.split("-")
         startTime.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
         endTime.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
@@ -149,43 +152,38 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                 } "
                 tvTotalTime.text = display
                 delay(WAIT_250)
-                var regHours = 0.0
-                var otHours = 0.0
-                var dblOtHours = 0.0
+                totalRegHours = 0.0
+                totalOtHours = 0.0
+                totalDblOtHours = 0.0
                 for (time in timeWorkedByHistory) {
-                    Log.d(
-                        TAG,
-                        "Type: ${time.timeWorked.wohtTimeType} Time: ${time.timeWorked.wohtStartTime} - ${time.timeWorked.wohtEndTime}"
-                    )
                     when (time.timeWorked.wohtTimeType) {
-                        1 -> regHours += df.getTimeWorked(
+                        1 -> totalRegHours += df.getTimeWorked(
                             time.timeWorked.wohtStartTime,
                             time.timeWorked.wohtEndTime
                         )
 
-                        2 -> otHours += df.getTimeWorked(
+                        2 -> totalOtHours += df.getTimeWorked(
                             time.timeWorked.wohtStartTime,
                             time.timeWorked.wohtEndTime
                         )
 
-                        3 -> dblOtHours += df.getTimeWorked(
+                        3 -> totalDblOtHours += df.getTimeWorked(
                             time.timeWorked.wohtStartTime,
                             time.timeWorked.wohtEndTime
                         )
                     }
                 }
-                Log.d(TAG, "regHours: $regHours")
                 display = ""
-                if (regHours > 0.0)
+                if (totalRegHours > 0.0)
                     display =
-                        getString(R.string.reg_hrs_) + nf.getNumberFromDouble(regHours)
-                if (otHours > 0.0) {
+                        getString(R.string.reg_hrs_) + nf.getNumberFromDouble(totalRegHours)
+                if (totalOtHours > 0.0) {
                     if (display != "") display += getString(R.string.pipe)
-                    display += getString(R.string.ot_hrs_) + nf.getNumberFromDouble(otHours)
+                    display += getString(R.string.ot_hrs_) + nf.getNumberFromDouble(totalOtHours)
                 }
-                if (dblOtHours > 0.0) {
+                if (totalDblOtHours > 0.0) {
                     if (display != "") display += getString(R.string.pipe)
-                    display += getString(R.string.dbl_ot_) + nf.getNumberFromDouble(dblOtHours)
+                    display += getString(R.string.dbl_ot_) + nf.getNumberFromDouble(totalDblOtHours)
                 }
                 if (display == "") display = getString(R.string.no_time_entered)
                 tvHours.text = display
@@ -215,7 +213,9 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
             setStartTimeActions()
             setEndTimeAction()
             btnEnterTime.setOnClickListener { insertTime() }
-            fabDone.setOnClickListener { gotoWorkOrderHistoryUpdate() }
+            fabDone.setOnClickListener {
+                gotoWorkOrderHistoryUpdate()
+            }
         }
     }
 
@@ -278,7 +278,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
         }
     }
 
-    private fun insertTime() {
+    private fun insertTime(): Boolean {
         val answer = validateTimeWorked()
         if (answer == ANSWER_OK) {
             binding.apply {
@@ -294,6 +294,8 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                     }
                 try {
                     mainScope.launch {
+                        startTime = df.roundCalendarTimeTo15Minutes(startTime)
+                        endTime = df.roundCalendarTimeTo15Minutes(endTime)
                         workOrderViewModel.insertTimeWorked(
                             WorkOrderHistoryTimeWorked(
                                 nf.generateRandomIdAsLong(),
@@ -309,11 +311,16 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                         delay(WAIT_250)
                         setDatesToCorrectTimes(curWorkOrderHistory)
                     }
+                    return true
                 } catch (e: SQLiteConstraintException) {
                     showMessage(getString(R.string.error_) + e.message)
                     Log.d(TAG, e.message.toString())
+                    return false
                 }
             }
+        } else {
+            showMessage("${getString(R.string.error_)} $answer")
+            return false
         }
     }
 
@@ -327,6 +334,9 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
         }
         if (endTime.timeInMillis == startTime.timeInMillis) {
             return getString(R.string.end_time_same_as_start_time)
+        }
+        if (df.getTimeWorked(startTime, endTime) > 8.0) {
+            return getString(R.string.time_worked_too_long)
         }
         return ANSWER_OK
     }

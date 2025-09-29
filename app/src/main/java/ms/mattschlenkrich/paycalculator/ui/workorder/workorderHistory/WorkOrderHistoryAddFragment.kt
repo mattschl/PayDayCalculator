@@ -354,7 +354,7 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         binding.apply {
             mainViewModel.setTempWorkOrderHistoryInfo(
                 TempWorkOrderHistoryInfo(
-                    curHistory.woHistoryId,
+                    0,
                     if (acWorkOrder.text.isNullOrBlank()) "000" else acWorkOrder.text.toString(),
                     lblDate.text.toString(),
                     if (etRegHours.text.isNullOrBlank()) 0.0 else etRegHours.text.toString().trim()

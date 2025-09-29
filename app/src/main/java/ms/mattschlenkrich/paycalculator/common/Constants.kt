@@ -182,3 +182,5 @@ const val FRAG_AREA_VIEW = "AreaViewFragment"
 //const val FRAG_WORK_ORDER_LOOKUP = "WorkOrderLookup"
 const val FRAG_WORK_PERFORMED_MERGE = "WorkPerformedMerge"
 const val FRAG_WORK_ORDER_HISTORY_TIME = "WorkOrderHistoryTime"
+
+const val FRAG_WORK_ORDER_HISTORY_TIME_UPDATE = "WorkOrderHistoryTimeUpdate"

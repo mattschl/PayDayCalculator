@@ -111,39 +111,37 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/acWorkOrder">
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
+                        <LinearLayout
                             android:id="@+id/clTimeSummary"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:weightSum="6"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
+                            
 
-                            <TextView
-                                android:id="@+id/tvTimeSummary"
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvTimesWorked"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/no_time_entered"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/text_size_medium"
-                                android:textStyle="italic"
-                                app:layout_constraintBaseline_toBaselineOf="@id/btnAddTime"
-                                app:layout_constraintEnd_toStartOf="@id/btnAddTime"
-                                app:layout_constraintStart_toStartOf="parent" />
+                                android:layout_weight="5"
+                                android:maxWidth="@dimen/text_box_wide"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
 
                             <Button
                                 android:id="@+id/btnAddTime"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="1"
                                 android:backgroundTint="@color/green"
                                 android:maxWidth="@dimen/text_box_wide"
-                                android:maxLines="3"
                                 android:minHeight="@dimen/minimum_touch_height"
-                                android:text="@string/add_time"
+                                android:text="@string/edit_times"
                                 app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toEndOf="@id/tvTimeSummary"
                                 app:layout_constraintTop_toTopOf="parent"
                                 tools:ignore="TextContrastCheck" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
+                        </LinearLayout>
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvTimeEntered"

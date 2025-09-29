@@ -37,6 +37,7 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryMaterialCombined
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformedCombined
@@ -47,6 +48,7 @@ import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderHistoryBind
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderCommonFunctions
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater.WorKOrderHistoryWorkPerformedAdapter
+import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater.WorOrderHistoryTimeWorkedAdapter
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater.WorkOrderHistoryMaterialAdapter
 
 private const val TAG = FRAG_WORK_ORDER_HISTORY_UPDATE
@@ -54,6 +56,7 @@ private const val TAG = FRAG_WORK_ORDER_HISTORY_UPDATE
 class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_history),
     IWorkOrderHistoryUpdateFragment {
 
+    private var timeWorkedList: List<WorkOrderHistoryTimeWorkedCombined>? = null
     private var _binding: FragmentWorkOrderHistoryBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View
@@ -100,7 +103,6 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         populateInitialValues()
         setClickActions()
     }
-
 
     private fun populateInitialValues() {
         mainScope.launch {
@@ -224,20 +226,62 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
                         populateWorkPerformedLists()
                         populateMaterials()
                     }
-                etRegHours.setText(nf.getNumberFromDouble(history.history.woHistoryRegHours))
-                etOtHours.setText(nf.getNumberFromDouble(history.history.woHistoryOtHours))
-                etDblOtHours.setText(nf.getNumberFromDouble(history.history.woHistoryDblOtHours))
+                workOrderViewModel.getTimeWorkedForWorkOrderHistory(historyId)
+                    .observe(viewLifecycleOwner) { list ->
+                        timeWorkedList = list
+                        if (list.isEmpty()) {
+                            btnAddTime.text = getString(R.string.add_time)
+                        } else {
+                            btnAddTime.text = getString(R.string.edit_times)
+                        }
+                        var regHours = 0.0
+                        var otHours = 0.0
+                        var dblOtHours = 0.0
+                        for (timeWorked in list) {
+                            when (timeWorked.timeWorked.wohtTimeType) {
+                                1 -> regHours += df.getTimeWorked(
+                                    timeWorked.timeWorked.wohtStartTime,
+                                    timeWorked.timeWorked.wohtEndTime
+                                )
+
+                                2 -> otHours += df.getTimeWorked(
+                                    timeWorked.timeWorked.wohtStartTime,
+                                    timeWorked.timeWorked.wohtEndTime
+                                )
+
+                                3 -> dblOtHours += df.getTimeWorked(
+                                    timeWorked.timeWorked.wohtStartTime,
+                                    timeWorked.timeWorked.wohtEndTime
+                                )
+                            }
+                        }
+                        etRegHours.setText(nf.getNumberFromDouble(regHours))
+                        etOtHours.setText(nf.getNumberFromDouble(otHours))
+                        etDblOtHours.setText(nf.getNumberFromDouble(dblOtHours))
+                        populateTimeWorkedRecycler()
+                    }
                 etNote.setText(history.history.woHistoryNote)
                 btnWorkOrder.text = getString(R.string.edit)
-            }
-            if (mainViewModel.getWorkOrderNumber() != null) {
-                workOrderViewModel.getWorkOrder(
-                    curHistoryDetailed.history.woHistoryWorkOrderId
-                ).observe(viewLifecycleOwner) { workOrder ->
-                    curWorkOrder = workOrder
-                    setCurWorkOrder()
+                if (mainViewModel.getWorkOrderNumber() != null) {
+                    workOrderViewModel.getWorkOrder(
+                        curHistoryDetailed.history.woHistoryWorkOrderId
+                    ).observe(viewLifecycleOwner) { workOrder ->
+                        curWorkOrder = workOrder
+                        setCurWorkOrder()
+                    }
                 }
             }
+        }
+    }
+
+    private fun populateTimeWorkedRecycler() {
+        if (timeWorkedList != null) {
+            val timeWorkedAdapter = WorOrderHistoryTimeWorkedAdapter(mView)
+            binding.rvTimeEntered.apply {
+                layoutManager = LinearLayoutManager(mView.context)
+                adapter = timeWorkedAdapter
+            }
+            timeWorkedAdapter.differ.submitList((timeWorkedList))
         }
     }
 

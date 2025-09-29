@@ -121,13 +121,11 @@ class TimeWorkedAdapter(
     }
 
     private fun deleteTimeWorked(history: WorkOrderHistoryTimeWorkedCombined) {
-        workOrderViewModel.deleteTimeWorked(
-            history.timeWorked.woHistoryTimeWorkedId, df.getCurrentTimeAsString()
-        )
+        workOrderViewModel.deleteTimeWorked(history.timeWorked)
     }
 
     private fun gotoWorkOrderHistoryTimeEdit(history: WorkOrderHistoryTimeWorkedCombined) {
-        mainViewModel.setWorkOrderHistory(history.workOrderHistory.workOrderHistory)
+        mainViewModel.setWorkOrderHistoryTimeWorkedCombined(history)
         mainViewModel.addCallingFragment(parentFragment)
         workOrderHistoryTimeFragment.gotoWorkOrderHistoryTimeUpdate()
     }

@@ -91,10 +91,17 @@ class DateFunctions {
         val tempDate = tempDateTime[0].split("-")
         val tempTime = tempDateTime[1].split(":")
         val cal = Calendar.getInstance()
-        cal.set(tempDate[0].toInt(), tempDate[1].toInt(), tempDate[2].toInt())
+        cal.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
         cal.set(Calendar.HOUR_OF_DAY, tempTime[0].toInt())
         cal.set(Calendar.MINUTE, tempTime[1].toInt())
         cal.set(Calendar.SECOND, 0)
         return cal
+    }
+
+    fun roundCalendarTimeTo15Minutes(time: Calendar): Calendar {
+        val roundedMinute = (round(time.get(Calendar.MINUTE).toDouble() / 15) * 15).toInt()
+        time.set(Calendar.MINUTE, roundedMinute)
+        time.set(Calendar.SECOND, 0)
+        return time
     }
 }
