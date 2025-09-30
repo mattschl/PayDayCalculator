@@ -255,6 +255,27 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
                                 )
                             }
                         }
+                        if (mainViewModel.getTempWorkOrderHistoryInfo() != null) {
+                            val historyInfo = mainViewModel.getTempWorkOrderHistoryInfo()!!
+                            if (historyInfo.woHistoryRegHours > regHours) {
+                                regHours = historyInfo.woHistoryRegHours
+                            }
+                            if (historyInfo.woHistoryOtHours > otHours) {
+                                otHours = historyInfo.woHistoryOtHours
+                            }
+                            if (historyInfo.woHistoryDblOtHours > dblOtHours) {
+                                dblOtHours = historyInfo.woHistoryDblOtHours
+                            }
+                        }
+                        if (history.history.woHistoryRegHours > regHours) {
+                            regHours = history.history.woHistoryRegHours
+                        }
+                        if (history.history.woHistoryOtHours > otHours) {
+                            otHours = history.history.woHistoryOtHours
+                        }
+                        if (history.history.woHistoryDblOtHours > dblOtHours) {
+                            dblOtHours = history.history.woHistoryDblOtHours
+                        }
                         etRegHours.setText(nf.getNumberFromDouble(regHours))
                         etOtHours.setText(nf.getNumberFromDouble(otHours))
                         etDblOtHours.setText(nf.getNumberFromDouble(dblOtHours))

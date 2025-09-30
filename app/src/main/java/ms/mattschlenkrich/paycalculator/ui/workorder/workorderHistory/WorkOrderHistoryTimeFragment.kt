@@ -332,7 +332,9 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
         if (endTime.timeInMillis < startTime.timeInMillis) {
             return getString(R.string.end_time_before_start_time)
         }
-        if (endTime.timeInMillis == startTime.timeInMillis) {
+        if (endTime.get(Calendar.HOUR_OF_DAY) == startTime.get(Calendar.HOUR_OF_DAY) &&
+            endTime.get(Calendar.MINUTE) == startTime.get(Calendar.MINUTE)
+        ) {
             return getString(R.string.end_time_same_as_start_time)
         }
         if (df.getTimeWorked(startTime, endTime) > 8.0) {
