@@ -95,6 +95,12 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
             clTimeEntered.visibility = View.GONE
             crdMaterials.visibility = View.GONE
             crdWorkPerformed.visibility = View.GONE
+            etRegHours.visibility = View.GONE
+            etOtHours.visibility = View.GONE
+            etDblOtHours.visibility = View.GONE
+            lblRegHours.visibility = View.GONE
+            lblOtHours.visibility = View.GONE
+            lblDblOtHours.visibility = View.GONE
         }
     }
 

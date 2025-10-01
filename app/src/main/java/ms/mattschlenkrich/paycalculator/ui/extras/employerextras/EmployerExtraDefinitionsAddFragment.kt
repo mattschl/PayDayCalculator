@@ -221,7 +221,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                         getString(R.string.debit)
                     }
                     display += getString(R.string.__calculated) + resources.getStringArray(
-                        R.array.attach_to_frequencies
+                        R.array.applies_to_frequencies
                     )[extra.wetAppliesTo] + getString(R.string.period_space) + getString(R.string._attaches_to_) + resources.getStringArray(
                         R.array.attach_to_frequencies
                     )[extra.wetAttachTo] + getString(R.string.period_hyphen)
