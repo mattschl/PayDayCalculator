@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paycalculator.ui.timesheet
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -131,7 +132,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
                         }
                         mainScope.launch {
                             delay(WAIT_100)
-                            mainViewModel.setEmployer(curEmployer)
+//                            mainViewModel.setEmployer(curEmployer)
                             mainActivity.title =
                                 getString(R.string.time_sheet) + " for " + spEmployers.selectedItem.toString()
                             populateCutOffDates()
@@ -202,7 +203,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
                         if (spCutOff.selectedItem.toString() != getString(R.string.generate_a_new_cut_off)) {
                             defaultScope.launch {
                                 curCutOff = spCutOff.selectedItem.toString()
-                                if (valuesFilled) mainViewModel.setCutOffDate(curCutOff)
+//                                if (valuesFilled) mainViewModel.setCutOffDate(curCutOff)
                                 populatePayDayDate()
                                 populatePayDetails()
                             }
@@ -375,33 +376,34 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
     }
 
     private fun populateFromHistory() {
-        if (!valuesFilled) {
-            binding.apply {
-                mainScope.launch {
+//        if (!valuesFilled) {
+        binding.apply {
+            mainScope.launch {
+                delay(WAIT_500)
+                if (mainViewModel.getEmployer() != null) {
+                    curEmployer = mainViewModel.getEmployer()!!
+                    for (i in 0 until spEmployers.adapter.count) {
+                        Log.d(TAG, "populateFromHistory: " + curEmployer!!.employerName)
+                        if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
+                            spEmployers.setSelection(i)
+                            break
+                        }
+                    }
                     delay(WAIT_500)
-                    if (mainViewModel.getEmployer() != null) {
-                        curEmployer = mainViewModel.getEmployer()!!
-                        for (i in 0 until spEmployers.adapter.count) {
-                            if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
-                                spEmployers.setSelection(i)
+                    if (mainViewModel.getCutOffDate() != null) {
+                        curCutOff = mainViewModel.getCutOffDate()!!
+                        for (i in 0 until spCutOff.adapter.count) {
+                            if (spCutOff.getItemAtPosition(i).toString() == curCutOff) {
+                                spCutOff.setSelection(i)
+                                populatePayDetails()
                                 break
                             }
                         }
-                        delay(WAIT_500)
-                        if (mainViewModel.getCutOffDate() != null) {
-                            curCutOff = mainViewModel.getCutOffDate()!!
-                            for (i in 0 until spCutOff.adapter.count) {
-                                if (spCutOff.getItemAtPosition(i).toString() == curCutOff) {
-                                    spCutOff.setSelection(i)
-                                    populatePayDetails()
-                                    break
-                                }
-                            }
-                        }
-                        valuesFilled = true
                     }
+                    valuesFilled = true
                 }
             }
+//            }
         }
     }
 
@@ -438,11 +440,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
     }
 
     private fun gotoWorkDateAdd() {
-        mainViewModel.apply {
-            setPayPeriod(getSelectedPayPeriod())
-            setCutOffDate(curCutOff)
-            setEmployer(curEmployer)
-        }
+        setCurrentVariables()
         gotoWorkDateAddFragment()
     }
 
@@ -453,11 +451,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
     }
 
     private fun gotoEmployerAdd() {
-        mainViewModel.apply {
-            setCallingFragment(TAG)
-            setEmployer(null)
-            setCutOffDate(null)
-        }
+        setCurrentVariables()
         gotoEmployerAddFragment()
     }
 
@@ -468,11 +462,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
     }
 
     private fun gotoPayDetails() {
-        mainViewModel.apply {
-            setPayPeriod(getSelectedPayPeriod())
-            setCutOffDate(curCutOff)
-            setEmployer(curEmployer)
-        }
+        setCurrentVariables()
         gotoPayDetailFragment()
     }
 
@@ -483,11 +473,17 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
     }
 
     override fun onStop() {
+        setCurrentVariables()
+        super.onStop()
+    }
+
+    private fun setCurrentVariables() {
         mainViewModel.apply {
+            setPayPeriod(getSelectedPayPeriod())
             setEmployer(curEmployer)
             setCutOffDate(curCutOff)
+            Log.d(TAG, "setCurrentVariables: " + curEmployer?.employerName)
         }
-        super.onStop()
     }
 
     override fun onDestroy() {

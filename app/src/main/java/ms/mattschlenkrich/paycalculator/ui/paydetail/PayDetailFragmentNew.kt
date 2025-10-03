@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paycalculator.ui.paydetail
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -191,7 +192,8 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
                         }
                         mainScope.launch {
                             delay(WAIT_100)
-                            mainViewModel.setEmployer(curEmployer)
+                            Log.d(TAG, "onSelectEmployer: ${curEmployer?.employerName}")
+//                            mainViewModel.setEmployer(curEmployer)
                             mainActivity.title =
                                 getString(R.string.pay_details) + getString(R.string._for_) + spEmployers.selectedItem
                             populateCutOffDates(curEmployer)
@@ -236,7 +238,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
                 ) {
                     if (curCutOff != spCutOff.selectedItem.toString()) {
                         curCutOff = spCutOff.selectedItem.toString()
-                        if (valuesFilled) mainActivity.mainViewModel.setCutOffDate(curCutOff)
+//                        if (valuesFilled) mainActivity.mainViewModel.setCutOffDate(curCutOff)
                         getCurrentPayPeriodObject()
                         populatePayDayDate()
                         populatePayDetails()
@@ -584,18 +586,24 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
     }
 
     private fun populateFromHistory() {
-        if (!valuesFilled) {
-            binding.apply {
-                mainScope.launch {
-                    delay(WAIT_500)
-                    if (mainViewModel.getEmployer() != null) {
-                        curEmployer = mainViewModel.getEmployer()!!
-                        for (i in 0 until spEmployers.adapter.count) {
-                            if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
-                                spEmployers.setSelection(i)
-                                populatePayDetails()
-                                break
-                            }
+//        if (!valuesFilled) {
+        binding.apply {
+            mainScope.launch {
+                delay(WAIT_500)
+                if (mainViewModel.getEmployer() != null) {
+                    curEmployer = mainViewModel.getEmployer()!!
+                    Log.d("TAG", "populateFromHistory: ${curEmployer!!.employerName}")
+                    Log.d("TAG", "populateFromHistory: number in loop ${spEmployers.adapter.count}")
+                    for (i in 0 until spEmployers.adapter.count) {
+                        Log.d("TAG", "populateFromHistory: ${spEmployers.getItemAtPosition(i)}")
+                        if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
+                            Log.d(
+                                "TAG",
+                                "populateFromHistory: in loop ${spEmployers.getItemAtPosition(i)}"
+                            )
+                            spEmployers.setSelection(i)
+                            populatePayDetails()
+                            break
                         }
                     }
                     delay(WAIT_250)
@@ -609,9 +617,10 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
                             }
                         }
                     }
-                    valuesFilled = true
                 }
+                valuesFilled = true
             }
+//            }
         }
     }
 
