@@ -2,7 +2,6 @@ package ms.mattschlenkrich.paycalculator.ui.paydetail
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -192,7 +191,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
                         }
                         mainScope.launch {
                             delay(WAIT_100)
-                            Log.d(TAG, "onSelectEmployer: ${curEmployer?.employerName}")
+//                            Log.d(TAG, "onSelectEmployer: ${curEmployer?.employerName}")
 //                            mainViewModel.setEmployer(curEmployer)
                             mainActivity.title =
                                 getString(R.string.pay_details) + getString(R.string._for_) + spEmployers.selectedItem
@@ -592,15 +591,15 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
                 delay(WAIT_500)
                 if (mainViewModel.getEmployer() != null) {
                     curEmployer = mainViewModel.getEmployer()!!
-                    Log.d("TAG", "populateFromHistory: ${curEmployer!!.employerName}")
-                    Log.d("TAG", "populateFromHistory: number in loop ${spEmployers.adapter.count}")
+//                    Log.d("TAG", "populateFromHistory: ${curEmployer!!.employerName}")
+//                    Log.d("TAG", "populateFromHistory: number in loop ${spEmployers.adapter.count}")
                     for (i in 0 until spEmployers.adapter.count) {
-                        Log.d("TAG", "populateFromHistory: ${spEmployers.getItemAtPosition(i)}")
+//                        Log.d("TAG", "populateFromHistory: ${spEmployers.getItemAtPosition(i)}")
                         if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
-                            Log.d(
-                                "TAG",
-                                "populateFromHistory: in loop ${spEmployers.getItemAtPosition(i)}"
-                            )
+//                            Log.d(
+//                                "TAG",
+//                                "populateFromHistory: in loop ${spEmployers.getItemAtPosition(i)}"
+//                            )
                             spEmployers.setSelection(i)
                             populatePayDetails()
                             break

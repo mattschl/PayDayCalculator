@@ -2,7 +2,6 @@ package ms.mattschlenkrich.paycalculator.ui.timesheet
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -383,7 +382,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
                 if (mainViewModel.getEmployer() != null) {
                     curEmployer = mainViewModel.getEmployer()!!
                     for (i in 0 until spEmployers.adapter.count) {
-                        Log.d(TAG, "populateFromHistory: " + curEmployer!!.employerName)
+//                        Log.d(TAG, "populateFromHistory: " + curEmployer!!.employerName)
                         if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
                             spEmployers.setSelection(i)
                             break
@@ -482,7 +481,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
             setPayPeriod(getSelectedPayPeriod())
             setEmployer(curEmployer)
             setCutOffDate(curCutOff)
-            Log.d(TAG, "setCurrentVariables: " + curEmployer?.employerName)
+//            Log.d(TAG, "setCurrentVariables: " + curEmployer?.employerName)
         }
     }
 

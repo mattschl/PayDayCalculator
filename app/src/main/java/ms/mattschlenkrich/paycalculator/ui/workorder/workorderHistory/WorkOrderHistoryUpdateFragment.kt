@@ -237,6 +237,21 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
                         var regHours = 0.0
                         var otHours = 0.0
                         var dblOtHours = 0.0
+//                        if (mainViewModel.getTempWorkOrderHistoryInfo() != null) {
+//                            val historyInfo = mainViewModel.getTempWorkOrderHistoryInfo()!!
+//                            regHours = historyInfo.woHistoryRegHours
+//                            otHours = historyInfo.woHistoryOtHours
+//                            dblOtHours = historyInfo.woHistoryDblOtHours
+//                        }
+//                        if (history.history.woHistoryRegHours > regHours) {
+//                            regHours = history.history.woHistoryRegHours
+//                        }
+//                        if (history.history.woHistoryOtHours > otHours) {
+//                            otHours = history.history.woHistoryOtHours
+//                        }
+//                        if (history.history.woHistoryDblOtHours > dblOtHours) {
+//                            dblOtHours = history.history.woHistoryDblOtHours
+//                        }
                         for (timeWorked in list) {
                             when (timeWorked.timeWorked.wohtTimeType) {
                                 1 -> regHours += df.getTimeWorked(
@@ -255,31 +270,10 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
                                 )
                             }
                         }
-                        if (mainViewModel.getTempWorkOrderHistoryInfo() != null) {
-                            val historyInfo = mainViewModel.getTempWorkOrderHistoryInfo()!!
-                            if (historyInfo.woHistoryRegHours > regHours) {
-                                regHours = historyInfo.woHistoryRegHours
-                            }
-                            if (historyInfo.woHistoryOtHours > otHours) {
-                                otHours = historyInfo.woHistoryOtHours
-                            }
-                            if (historyInfo.woHistoryDblOtHours > dblOtHours) {
-                                dblOtHours = historyInfo.woHistoryDblOtHours
-                            }
-                        }
-                        if (history.history.woHistoryRegHours > regHours) {
-                            regHours = history.history.woHistoryRegHours
-                        }
-                        if (history.history.woHistoryOtHours > otHours) {
-                            otHours = history.history.woHistoryOtHours
-                        }
-                        if (history.history.woHistoryDblOtHours > dblOtHours) {
-                            dblOtHours = history.history.woHistoryDblOtHours
-                        }
                         etRegHours.setText(nf.getNumberFromDouble(regHours))
                         etOtHours.setText(nf.getNumberFromDouble(otHours))
                         etDblOtHours.setText(nf.getNumberFromDouble(dblOtHours))
-                        populateTimeWorkedRecycler()
+//                        populateTimeWorkedRecycler()
                     }
                 etNote.setText(history.history.woHistoryNote)
                 btnWorkOrder.text = getString(R.string.edit)
@@ -612,7 +606,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         if (setCurMaterial()) {
             try {
                 addMaterialToHistory(curMaterial!!)
-                Log.d(TAG, "material ${curMaterial?.mName} was added to the history ")
+//                Log.d(TAG, "material ${curMaterial?.mName} was added to the history ")
             } catch (e: ExceptionUnknown) {
                 Log.d("ExceptionUnknown", "Exception is $e")
                 return false
@@ -623,7 +617,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
                 mainScope.launch {
                     val material = async { insertNewMaterialIntoDatabase() }
                     addMaterialToHistory(material.await())
-                    Log.d(TAG, "material ${curMaterial?.mName} was added to the history ")
+//                    Log.d(TAG, "material ${curMaterial?.mName} was added to the history ")
                 }
             } catch (e: ExceptionUnknown) {
                 Log.d("ExceptionUnknown", "Exception is $e")
@@ -704,10 +698,10 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
                         }
                         if (combinedWorkPerformedIsUnique.await()) {
                             addWorkPerformedToHistory(workPerformed.await(), area.await())
-                            Log.d(
-                                TAG,
-                                "work performed: ${workPerformed.await().wpDescription} was added to the history"
-                            )
+//                            Log.d(
+//                                TAG,
+//                                "work performed: ${workPerformed.await().wpDescription} was added to the history"
+//                            )
                         } else {
                             throw ExceptionUnknown("Something went wrong!")
                         }
