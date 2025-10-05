@@ -49,7 +49,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
     private lateinit var curWorkOrderHistory: WorkOrderHistoryCombined
     private var totalRegHours = 0.0
     private var totalOtHours = 0.0
-    var totalDblOtHours = 0.0
+    private var totalDblOtHours = 0.0
     private var totalRegHoursForDay = 0.0
     private var totalOtHoursForDay = 0.0
     private var totalDblOtHoursForDay = 0.0
