@@ -60,6 +60,22 @@ class DateFunctions {
         return Pair(hour, roundedMinute)
     }
 
+    fun roundTimeUpTo15Minutes(hour: Int, minute: Int): Pair<Int, Int> {
+        val roundedMinute = (round((minute.toDouble() + 6.5) / 15) * 15).toInt()
+        if (roundedMinute == 60) {
+            return Pair(hour.toInt() + 1, 0)
+        }
+        return Pair(hour, roundedMinute)
+    }
+
+    fun roundTimeDownTo15Minutes(hour: Int, minute: Int): Pair<Int, Int> {
+        val roundedMinute = (round((minute.toDouble() - 6.5) / 15) * 15).toInt()
+        if (roundedMinute == 60) {
+            return Pair(hour.toInt() + 1, 0)
+        }
+        return Pair(hour, roundedMinute)
+    }
+
     fun getDateFromCalendarAsString(time: Calendar): String {
         return timeFormatter.format(time.time)
     }
@@ -103,5 +119,24 @@ class DateFunctions {
         time.set(Calendar.MINUTE, roundedMinute)
         time.set(Calendar.SECOND, 0)
         return time
+    }
+
+    fun roundCalendarTimeUpTo15Minutes(time: Calendar): Calendar {
+        val roundedMinute = (round(time.get(Calendar.MINUTE).toDouble() / 15 + 6.5) * 15).toInt()
+        time.set(Calendar.MINUTE, roundedMinute)
+        time.set(Calendar.SECOND, 0)
+        return time
+    }
+
+    fun getHourFromStringAsInt(timeString: String): Int {
+        var tempTime = timeString.split(" ")
+        tempTime = tempTime[1].split(":")
+        return tempTime[0].toInt()
+    }
+
+    fun getMinuteFromStringAsInt(timeString: String): Int {
+        var tempTime = timeString.split(" ")
+        tempTime = tempTime[1].split(":")
+        return tempTime[1].toInt()
     }
 }

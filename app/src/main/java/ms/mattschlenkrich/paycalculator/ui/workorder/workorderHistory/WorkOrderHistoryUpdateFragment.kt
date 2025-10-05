@@ -48,7 +48,6 @@ import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderHistoryBind
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderCommonFunctions
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater.WorKOrderHistoryWorkPerformedAdapter
-import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater.WorOrderHistoryTimeWorkedAdapter
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater.WorkOrderHistoryMaterialAdapter
 
 private const val TAG = FRAG_WORK_ORDER_HISTORY_UPDATE
@@ -94,7 +93,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
         commonFunctions = WorkOrderCommonFunctions(mainActivity)
-        mainActivity.title = getString(R.string.add_time_to_work_order)
+        mainActivity.title = getString(R.string.add_work_performed_to_workorder_history)
         return mView
     }
 
@@ -289,16 +288,16 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         }
     }
 
-    private fun populateTimeWorkedRecycler() {
-        if (timeWorkedList != null) {
-            val timeWorkedAdapter = WorOrderHistoryTimeWorkedAdapter(mView)
-            binding.rvTimeEntered.apply {
-                layoutManager = LinearLayoutManager(mView.context)
-                adapter = timeWorkedAdapter
-            }
-            timeWorkedAdapter.differ.submitList((timeWorkedList))
-        }
-    }
+//    private fun populateTimeWorkedRecycler() {
+//        if (timeWorkedList != null) {
+//            val timeWorkedAdapter = WorOrderHistoryTimeWorkedAdapter(mView)
+//            binding.rvTimeEntered.apply {
+//                layoutManager = LinearLayoutManager(mView.context)
+//                adapter = timeWorkedAdapter
+//            }
+//            timeWorkedAdapter.differ.submitList((timeWorkedList))
+//        }
+//    }
 
     private fun populateFromTempValues() {
         val tempWorkOrderInfo = mainViewModel.getTempWorkOrderHistoryInfo()!!
