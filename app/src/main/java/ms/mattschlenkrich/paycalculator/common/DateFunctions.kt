@@ -55,7 +55,7 @@ class DateFunctions {
     fun roundTimeTo15Minutes(hour: Int, minute: Int): Pair<Int, Int> {
         val roundedMinute = (round(minute.toDouble() / 15) * 15).toInt()
         if (roundedMinute == 60) {
-            return Pair(hour.toInt() + 1, 0)
+            return Pair(hour + 1, 0)
         }
         return Pair(hour, roundedMinute)
     }
@@ -63,7 +63,7 @@ class DateFunctions {
     fun roundTimeUpTo15Minutes(hour: Int, minute: Int): Pair<Int, Int> {
         val roundedMinute = (round((minute.toDouble() + 6.5) / 15) * 15).toInt()
         if (roundedMinute == 60) {
-            return Pair(hour.toInt() + 1, 0)
+            return Pair(hour + 1, 0)
         }
         return Pair(hour, roundedMinute)
     }
@@ -71,7 +71,7 @@ class DateFunctions {
     fun roundTimeDownTo15Minutes(hour: Int, minute: Int): Pair<Int, Int> {
         val roundedMinute = (round((minute.toDouble() - 6.5) / 15) * 15).toInt()
         if (roundedMinute == 60) {
-            return Pair(hour.toInt() + 1, 0)
+            return Pair(hour + 1, 0)
         }
         return Pair(hour, roundedMinute)
     }
