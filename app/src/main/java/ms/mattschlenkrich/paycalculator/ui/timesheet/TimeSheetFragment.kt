@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paycalculator.ui.timesheet
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -92,6 +93,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
             employerAdapter.notifyDataSetChanged()
             employers.listIterator().forEach {
                 employerAdapter.add(it.employerName)
+                Log.d(TAG, "populateEmployers: " + it.employerName)
             }
             employerAdapter.add(getString(R.string.add_new_employer))
             if (employers.isNotEmpty()) {
@@ -150,7 +152,8 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
 
     private fun generateNewCutOff() {
         val nextCutOff = projections.generateNextCutOff(
-            curEmployer!!, if (cutOffs.isEmpty()) "" else cutOffs[0]
+            curEmployer!!,
+            if (cutOffs.isEmpty()) "" else cutOffs[0]
         )
         payDayViewModel.insertPayPeriod(
             PayPeriods(
@@ -418,6 +421,9 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
 
     private fun getSelectedPayPeriod(): PayPeriods {
         binding.apply {
+            if (curPayPeriod == null) {
+                generateNewCutOff()
+            }
             return PayPeriods(
                 nf.generateRandomIdAsLong(),
                 spCutOff.selectedItem.toString(),
