@@ -210,21 +210,26 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
 
     private fun populateCutOffDates(employer: Employers?) {
         if (employer != null) {
-            binding.apply {
-                val cutOffAdapter = ArrayAdapter<Any>(
-                    mView.context, R.layout.spinner_item_bold
-                )
-                payDayViewModel.getCutOffDates(employer.employerId).observe(
-                    viewLifecycleOwner
-                ) { dates ->
-                    cutOffs.clear()
-                    cutOffAdapter.clear()
-                    dates.listIterator().forEach {
-                        cutOffAdapter.add(it.ppCutoffDate)
+            mainScope.launch {
+                binding.apply {
+                    val cutOffAdapter = ArrayAdapter<Any>(
+                        mView.context, R.layout.spinner_item_bold
+                    )
+                    payDayViewModel.getCutOffDates(employer.employerId).observe(
+                        viewLifecycleOwner
+                    ) { dates ->
+                        cutOffs.clear()
+                        cutOffAdapter.clear()
+                        dates.listIterator().forEach {
+                            cutOffAdapter.add(it.ppCutoffDate)
+                        }
                     }
-                    nextStepsIfDateListIsEmpty(dates)
+                    delay(WAIT_250)
+                    if (cutOffAdapter.isEmpty) {
+                        nextStepsIfDateListIsEmpty()
+                    }
+                    spCutOff.adapter = cutOffAdapter
                 }
-                spCutOff.adapter = cutOffAdapter
             }
         }
     }
@@ -334,15 +339,13 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
         }
     }
 
-    private fun nextStepsIfDateListIsEmpty(dates: List<PayPeriods>) {
-        if (dates.isEmpty()) {
-            AlertDialog.Builder(mView.context).setTitle(getString(R.string.no_pay_days_to_view))
-                .setMessage(
-                    getString(R.string.since_there_are_no_pay_periods_set_you_will_be_sent_to_the_time_sheet_to_create_a_new_one)
-                ).setPositiveButton(getString(R.string.ok)) { _, _ ->
-                    gotoTimeSheetFragment()
-                }.show()
-        }
+    private fun nextStepsIfDateListIsEmpty() {
+        AlertDialog.Builder(mView.context).setTitle(getString(R.string.no_pay_days_to_view))
+            .setMessage(
+                getString(R.string.since_there_are_no_pay_periods_set_you_will_be_sent_to_the_time_sheet_to_create_a_new_one)
+            ).setPositiveButton(getString(R.string.ok)) { _, _ ->
+                gotoTimeSheetFragment()
+            }.show()
     }
 
     private fun populateExtras(payCalculations: IPayCalculations) {
