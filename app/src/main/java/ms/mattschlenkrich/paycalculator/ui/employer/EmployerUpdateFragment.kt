@@ -343,7 +343,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
                 binding.tvStartDate.text = df.getDisplayDate(startDate)
             }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
         )
-        datePickerDialog.setTitle(getString(R.string.choose_the_first_date))
+        datePickerDialog.setTitle(getString(R.string.choose_first_check_date))
         datePickerDialog.show()
     }
 

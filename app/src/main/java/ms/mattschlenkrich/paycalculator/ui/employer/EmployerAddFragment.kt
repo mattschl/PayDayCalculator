@@ -20,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.paycalculator.Objects.EmployerObject
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
@@ -46,6 +47,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     private lateinit var mainViewModel: MainViewModel
     private lateinit var employerViewModel: EmployerViewModel
     private lateinit var workTaxViewModel: WorkTaxViewModel
+    private lateinit var employerObj: EmployerObject
     private val df = DateFunctions()
     private val nf = NumberFunctions()
     private lateinit var employerList: List<Employers>
@@ -59,6 +61,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
         )
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        employerObj = EmployerObject(mainActivity = mainActivity)
         employerViewModel = mainActivity.employerViewModel
         workTaxViewModel = mainActivity.workTaxViewModel
         mainViewModel = mainActivity.mainViewModel
@@ -73,13 +76,18 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun setInitialValues() {
+        createEmployerObject()
         populateEmployerListForValidation()
         populateSpinners()
         populateCheckStartDate()
     }
 
+    private fun createEmployerObject() {
+        employerObj = EmployerObject(mainActivity = mainActivity)
+    }
+
     private fun populateEmployerListForValidation() {
-        employerViewModel.getEmployers().observe(viewLifecycleOwner) { employers ->
+        employerObj.getAllEmployers().observe(viewLifecycleOwner) { employers ->
             employerList = employers
         }
     }
@@ -232,7 +240,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun saveEmployer(curEmployer: Employers) {
-        employerViewModel.insertEmployer(
+        employerObj.addEmployer(
             curEmployer
         )
     }

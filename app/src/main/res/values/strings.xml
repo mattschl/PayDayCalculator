@@ -492,5 +492,6 @@
     <string name="this_will_exceed_24_hours">This exceeds 24 hours and needs to be spreads over 2 days.</string>
     <string name="time_has_been_adjusted_to_8_hours">Time has automatically been adjusted to not exceed 8 hours</string>
     <string name="time_has_been_adjusted_to_12_hours">Time worked Exceeds 12 hours. Time has been automatically adjusted to not exceed 12 hours.</string>
+    <string name="choose_first_check_date">Choose the first pay date</string>
 
 </resources>

@@ -21,6 +21,15 @@ interface EmployerDao {
     suspend fun updateEmployer(employers: Employers)
 
     @Query(
+        "UPDATE $TABLE_EMPLOYERS " +
+                "SET employerIsDeleted = 1," +
+                "employerUpdateTime = :updateTime " +
+                "WHERE employerId = :employerId"
+    )
+    suspend fun deleteEmployer(employerId: Long, updateTime: String)
+
+
+    @Query(
         "SELECT * FROM $TABLE_EMPLOYERS " +
                 "WHERE employerId = :employerId"
     )
