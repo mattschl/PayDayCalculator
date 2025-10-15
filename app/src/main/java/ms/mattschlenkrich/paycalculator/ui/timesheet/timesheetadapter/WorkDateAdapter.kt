@@ -21,7 +21,7 @@ import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkDateBinding
-import ms.mattschlenkrich.paycalculator.payfunctions.WorkDateExtraContainerCalculations
+import ms.mattschlenkrich.paycalculator.logic.payfunctions.WorkDateExtraContainerCalculations
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.timesheet.ITimeSheetFragment
 import ms.mattschlenkrich.paycalculator.ui.timesheet.TimeSheetFragmentDirections

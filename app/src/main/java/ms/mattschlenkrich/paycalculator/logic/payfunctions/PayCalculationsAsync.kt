@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.payfunctions
+package ms.mattschlenkrich.paycalculator.logic.payfunctions
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

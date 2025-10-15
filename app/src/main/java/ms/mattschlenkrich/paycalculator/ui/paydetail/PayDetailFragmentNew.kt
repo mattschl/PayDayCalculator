@@ -42,8 +42,8 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentPayDetailsBinding
-import ms.mattschlenkrich.paycalculator.payfunctions.IPayCalculations
-import ms.mattschlenkrich.paycalculator.payfunctions.PayCalculationsAsync
+import ms.mattschlenkrich.paycalculator.logic.payfunctions.IPayCalculations
+import ms.mattschlenkrich.paycalculator.logic.payfunctions.PayCalculationsAsync
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.paydetail.adapter.PayDetailExtraContainerAdapter
 import ms.mattschlenkrich.paycalculator.ui.paydetail.adapter.PayDetailTaxAdapter

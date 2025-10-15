@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.PayPeriods
-import ms.mattschlenkrich.paycalculator.payfunctions.PayCalculationsAsync
+import ms.mattschlenkrich.paycalculator.logic.payfunctions.PayCalculationsAsync
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import org.junit.Test
 import org.junit.runner.RunWith

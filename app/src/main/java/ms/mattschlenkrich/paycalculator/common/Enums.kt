@@ -35,3 +35,20 @@ enum class WorkOrderHistoryTimeWorkedTypes(val value: Int) {
     OT_HOURS(2),
     DBL_OT_HOURS(3)
 }
+
+enum class WorkDayOfWeek(val value: Int, val day: String) {
+    FRIDAY(0, "Friday"),
+    SATURDAY(1, "Saturday"),
+    SUNDAY(2, "Sunday"),
+    MONDAY(3, "Monday"),
+    TUESDAY(4, "Tuesday"),
+    WEDNESDAY(5, "Wednesday"),
+    THURSDAY(6, "Thursday"),
+    WEEK_DAY(7, "Week Day"),
+    ANY_DAY(8, "Any Day")
+}
+
+enum class PayDayFrequencies(val value: Int, val frequency: String) {
+    BI_WEEKLY(0, "Bi-Weekly"),
+    WEEKLY(1, "Weekly"),
+}
