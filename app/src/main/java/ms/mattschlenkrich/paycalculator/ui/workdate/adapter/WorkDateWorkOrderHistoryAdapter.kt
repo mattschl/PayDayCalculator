@@ -75,7 +75,11 @@ class WorkDateWorkOrderHistoryAdapter(
             val color = visualsFunctions.getRandomColorInt()
             vSpacer.setBackgroundColor(color)
             holder.itemView.setOnClickListener {
+                gotoWorkOrderHistoryUpdate(history)
+            }
+            holder.itemView.setOnLongClickListener {
                 chooseOptions(history)
+                true
             }
         }
     }

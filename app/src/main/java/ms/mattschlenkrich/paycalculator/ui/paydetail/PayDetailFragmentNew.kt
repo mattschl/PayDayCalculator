@@ -442,7 +442,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
         var sum = 0.0
         payCalculations.apply {
             when (workPayPeriodExtras.ppeAppliesTo) {
-                AppliesToFrequencies.Hourly.value -> {
+                AppliesToFrequencies.HOURLY.value -> {
                     sum = if (workPayPeriodExtras.ppeIsFixed) {
                         getHoursWorked() * workPayPeriodExtras.ppeValue
                     } else {
@@ -450,7 +450,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
                     }
                 }
 
-                AppliesToFrequencies.Daily.value -> {
+                AppliesToFrequencies.DAILY.value -> {
                     sum = if (workPayPeriodExtras.ppeIsFixed) {
                         getDaysWorked() * workPayPeriodExtras.ppeValue
                     } else {
@@ -458,7 +458,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
                     }
                 }
 
-                AppliesToFrequencies.PerPayForHourlyWages.value -> {
+                AppliesToFrequencies.PER_PAY_FOR_HOURLY_WAGES.value -> {
                     sum = if (workPayPeriodExtras.ppeIsFixed) {
                         payCalculations.getDaysWorked() * workPayPeriodExtras.ppeValue
                     } else {

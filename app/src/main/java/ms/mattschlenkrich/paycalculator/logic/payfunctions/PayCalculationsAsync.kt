@@ -139,16 +139,16 @@ class PayCalculationsAsync(
                     0.0
                 } else if (extra.ppeIsFixed) {
                     when (extra.ppeAppliesTo) {
-                        AttachToFrequencies.Hourly.value -> getHoursWorked() * extra.ppeValue
-                        AttachToFrequencies.Daily.value -> getDaysWorked() * extra.ppeValue
-                        AttachToFrequencies.PerPay.value -> extra.ppeValue
+                        AttachToFrequencies.HOURLY.value -> getHoursWorked() * extra.ppeValue
+                        AttachToFrequencies.DAILY.value -> getDaysWorked() * extra.ppeValue
+                        AttachToFrequencies.PER_PAY.value -> extra.ppeValue
                         else -> extra.ppeValue
                     }
                 } else {
                     when (extra.ppeAppliesTo) {
-                        AttachToFrequencies.Hourly.value -> getPayTimeWorked() * extra.ppeValue
-                        AttachToFrequencies.Daily.value -> getPayTimeWorked() * extra.ppeValue
-                        AttachToFrequencies.PerPay.value -> getPayAllHourly() * extra.ppeValue
+                        AttachToFrequencies.HOURLY.value -> getPayTimeWorked() * extra.ppeValue
+                        AttachToFrequencies.DAILY.value -> getPayTimeWorked() * extra.ppeValue
+                        AttachToFrequencies.PER_PAY.value -> getPayAllHourly() * extra.ppeValue
                         else -> extra.ppeValue
                     }
                 }
@@ -187,9 +187,9 @@ class PayCalculationsAsync(
                 var subTotal = 0.0
                 var runningRemainder =
                     when (type.ttBasedOn) {
-                        TaxBasedOn.TimeWorkedOnly.value -> getPayTimeWorked()
-                        TaxBasedOn.TimeWorkedAndStat.value -> getPayAllHourly()
-                        TaxBasedOn.TimeWorkedStatsAndExtras.value -> getPayGross()
+                        TaxBasedOn.TIME_WORKED_ONLY.value -> getPayTimeWorked()
+                        TaxBasedOn.TIME_WORK_AND_STATS.value -> getPayAllHourly()
+                        TaxBasedOn.TIME_WORKED_STATS_AND_EXTRAS.value -> getPayGross()
                         else -> 0.0
                     }
 //                Log.d(TAG, "\n------------------------------------------------------")
@@ -446,7 +446,7 @@ class PayCalculationsAsync(
                         workingExtra = currentExtra.wdeName
                         subTotal = 0.0
                     }
-                    if (currentExtra.wdeAppliesTo == AppliesToFrequencies.Hourly.value &&
+                    if (currentExtra.wdeAppliesTo == AppliesToFrequencies.HOURLY.value &&
                         currentExtra.wdeIsFixed
                     ) {
                         for (date in workDates) {
@@ -455,8 +455,8 @@ class PayCalculationsAsync(
                                         (date.wdRegHours + date.wdOtHours + date.wdDblOtHours)
                             }
                         }
-                    } else if ((currentExtra.wdeAppliesTo == AppliesToFrequencies.Hourly.value ||
-                                currentExtra.wdeAppliesTo == AppliesToFrequencies.Daily.value) &&
+                    } else if ((currentExtra.wdeAppliesTo == AppliesToFrequencies.HOURLY.value ||
+                                currentExtra.wdeAppliesTo == AppliesToFrequencies.DAILY.value) &&
                         !currentExtra.wdeIsFixed
                     ) {
                         for (date in workDates) {
@@ -465,7 +465,7 @@ class PayCalculationsAsync(
                                         (date.wdRegHours + date.wdOtHours + date.wdDblOtHours)
                             }
                         }
-                    } else if (currentExtra.wdeAppliesTo == AppliesToFrequencies.Daily.value
+                    } else if (currentExtra.wdeAppliesTo == AppliesToFrequencies.DAILY.value
                     ) {
                         subTotal += currentExtra.wdeValue
                     }
@@ -510,19 +510,19 @@ class PayCalculationsAsync(
                 }
                 if (!excludeAsDuplicate) {
                     when (extra.extraType.wetAppliesTo) {
-                        AppliesToFrequencies.Hourly.value -> {
+                        AppliesToFrequencies.HOURLY.value -> {
                             defaultExtrasByHour.add(extra)
                         }
 
-                        AppliesToFrequencies.Daily.value -> {
+                        AppliesToFrequencies.DAILY.value -> {
                             defaultExtrasByDay.add(extra)
                         }
 
-                        AppliesToFrequencies.PerPayForHourlyWages.value -> {
+                        AppliesToFrequencies.PER_PAY_FOR_HOURLY_WAGES.value -> {
                             defaultExtrasByPay.add(extra)
                         }
 
-                        AppliesToFrequencies.PerPayPercentageOfAll.value -> {
+                        AppliesToFrequencies.PER_PAY_PERCENTAGE_OF_ALL.value -> {
                             defaultExtrasByPercentageOfAll.add(extra)
                         }
                     }
@@ -586,13 +586,13 @@ class PayCalculationsAsync(
         when (rate.eprPerPeriod) {
             PayRateBasedOn.HOURLY.value -> return rate.eprPayRate
 
-            PayRateBasedOn.Daily.value -> return rate.eprPayRate / 8
+            PayRateBasedOn.DAILY.value -> return rate.eprPayRate / 8
 
-            PayRateBasedOn.Weekly.value -> return rate.eprPayRate / 40
+            PayRateBasedOn.WEEKLY.value -> return rate.eprPayRate / 40
 
-            PayRateBasedOn.BiWeekly.value -> return rate.eprPayRate / 80
+            PayRateBasedOn.BI_WEEKLY.value -> return rate.eprPayRate / 80
 
-            PayRateBasedOn.Monthly.value -> return rate.eprPayRate / (365 / 12) / 8
+            PayRateBasedOn.MONTHLY.value -> return rate.eprPayRate / (365 / 12) / 8
         }
         return 0.0
     }

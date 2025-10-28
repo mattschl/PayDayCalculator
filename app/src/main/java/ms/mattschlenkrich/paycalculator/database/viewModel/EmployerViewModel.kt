@@ -10,14 +10,11 @@ import ms.mattschlenkrich.paycalculator.database.repository.EmployerRepository
 import ms.mattschlenkrich.paycalculator.logic.employer.EmployerLogicViewModel
 
 class EmployerViewModel(
-    app: Application,
+    val app: Application,
     private val employerRepository: EmployerRepository
 ) : AndroidViewModel(app) {
-    var employerLogicViewModel: EmployerLogicViewModel
-
-    init {
-        employerLogicViewModel = EmployerLogicViewModel(this)
-    }
+    val employerLogicViewModel: EmployerLogicViewModel =
+        EmployerLogicViewModel(app, this)
 
     fun insertEmployer(employers: Employers) =
         viewModelScope.launch {

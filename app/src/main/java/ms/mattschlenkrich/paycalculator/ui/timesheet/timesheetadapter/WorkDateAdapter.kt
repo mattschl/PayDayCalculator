@@ -121,7 +121,11 @@ class WorkDateAdapter(
                 }
             }
             holder.itemView.setOnClickListener {
+                gotoWorkDateUpdate(workDate)
+            }
+            holder.itemView.setOnLongClickListener {
                 chooseOptionsForDate(workDate)
+                true
             }
         }
     }

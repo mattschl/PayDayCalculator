@@ -2,7 +2,6 @@ package ms.mattschlenkrich.paycalculator.ui.timesheet
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -86,22 +85,16 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
         val employerAdapter = ArrayAdapter<String>(
             mView.context, R.layout.spinner_item_bold
         )
-        employerViewModel.getEmployers().observe(
-            viewLifecycleOwner
-        ) { employers ->
-            employerAdapter.clear()
-            employerAdapter.notifyDataSetChanged()
-            employers.listIterator().forEach {
-                employerAdapter.add(it.employerName)
-                Log.d(TAG, "populateEmployers: " + it.employerName)
-            }
-            employerAdapter.add(getString(R.string.add_new_employer))
-            if (employers.isNotEmpty()) {
-                curEmployer = employers.first()
-            } else {
-                gotoEmployerAdd()
-            }
+        val employerList = employerViewModel.employerLogicViewModel.getEmployerList()
+        employerList.listIterator().forEach {
+            employerAdapter.add(it.employerName)
         }
+        if (employerList.isEmpty()) {
+            gotoEmployerAdd()
+        } else {
+            curEmployer = employerList.first()
+        }
+        employerAdapter.add(getString(R.string.add_new_employer))
         binding.spEmployers.adapter = employerAdapter
     }
 

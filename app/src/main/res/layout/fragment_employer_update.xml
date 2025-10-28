@@ -4,9 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.employer.EmployerUpdateFragment">
 
+    <data>
+
+        <variable
+            name="viewModel"
+            type="ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
 
         <ScrollView
             android:id="@+id/scrollView"
@@ -42,6 +50,7 @@
                     android:maxWidth="@dimen/text_box_wide"
                     android:minHeight="@dimen/minimum_touch_height"
                     android:selectAllOnFocus="true"
+                    android:text="@={viewModel.employerLogicViewModel.currentEmployerObj.employerName}"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_large"
                     app:layout_constraintEnd_toEndOf="@+id/spFrequency"
@@ -62,6 +71,7 @@
                     android:id="@+id/spFrequency"
                     android:layout_width="@dimen/text_box_wide"
                     android:layout_height="@dimen/minimum_touch_height"
+                    android:selectedItemPosition="@{viewModel.employerLogicViewModel.currentEmployerObj.payFrequencyId}"
                     app:layout_constraintEnd_toEndOf="@+id/tvStartDate"
                     app:layout_constraintStart_toStartOf="@+id/tvStartDate"
                     app:layout_constraintTop_toBottomOf="@id/etName" />
@@ -103,6 +113,7 @@
                     android:id="@+id/spDayOfWeek"
                     android:layout_width="@dimen/text_box_wide"
                     android:layout_height="@dimen/minimum_touch_height"
+                    android:selectedItemPosition="@={viewModel.employerLogicViewModel.currentEmployerObj.payFrequencyId}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/lblDayOfWeek"
                     app:layout_constraintTop_toBottomOf="@id/tvStartDate" />
@@ -124,13 +135,14 @@
                     android:importantForAutofill="no"
                     android:inputType="number"
                     android:selectAllOnFocus="true"
-                    android:text="@string/zero"
+                    android:text="@={viewModel.employerLogicViewModel.currentEmployerObj.cutoffDaysBefore}"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_large"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/lblDaysBefore"
-                    app:layout_constraintTop_toBottomOf="@id/spDayOfWeek" />
+                    app:layout_constraintTop_toBottomOf="@id/spDayOfWeek"
+                    tools:ignore="SpeakableTextPresentCheck" />
 
                 <TextView
                     android:id="@+id/lblMidMonthDate"
@@ -149,14 +161,14 @@
                     android:importantForAutofill="no"
                     android:inputType="number"
                     android:selectAllOnFocus="true"
-                    android:text="@string/fifteen"
+                    android:text="@={viewModel.employerLogicViewModel.currentEmployerObj.midMonthlyDate}"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_large"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/lblMidMonthDate"
                     app:layout_constraintTop_toBottomOf="@id/etDaysBefore"
-                    tools:ignore="TextFields" />
+                    tools:ignore="TextFields,SpeakableTextPresentCheck" />
 
                 <TextView
                     android:id="@+id/lblMainMonthDate"
@@ -175,14 +187,14 @@
                     android:importantForAutofill="no"
                     android:inputType="number"
                     android:selectAllOnFocus="true"
-                    android:text="@string/thirty_one"
+                    android:text="@={viewModel.employerLogicViewModel.currentEmployerObj.mainMonthlyDate}"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_large"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/lblMainMonthDate"
                     app:layout_constraintTop_toBottomOf="@id/etMidMonthDate"
-                    tools:ignore="TextFields" />
+                    tools:ignore="TextFields,SpeakableTextPresentCheck" />
 
                 <TextView
                     android:id="@+id/lblWage"

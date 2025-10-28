@@ -27,7 +27,9 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_EMPLOYER_UPDATE
 import ms.mattschlenkrich.paycalculator.common.INTERVAL_MONTHLY
 import ms.mattschlenkrich.paycalculator.common.INTERVAL_SEMI_MONTHLY
+import ms.mattschlenkrich.paycalculator.common.PayDayFrequencies
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
+import ms.mattschlenkrich.paycalculator.common.WorkDayOfWeek
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
@@ -92,17 +94,15 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
             val frequencyAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.pay_day_frequencies)
+                PayDayFrequencies.entries
             )
-            frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spFrequency.adapter = frequencyAdapter
 
             val dayOfWeekAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.pay_days)
+                WorkDayOfWeek.entries
             )
-            dayOfWeekAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spDayOfWeek.adapter = dayOfWeekAdapter
         }
     }

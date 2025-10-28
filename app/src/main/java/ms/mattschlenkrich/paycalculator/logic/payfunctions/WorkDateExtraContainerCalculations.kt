@@ -39,11 +39,11 @@ class WorkDateExtraContainerCalculations(
                     if (!extra.wdeIsDeleted) {
                         val amount: Double = if (extra.wdeIsFixed) {
                             when (extra.wdeAppliesTo) {
-                                AppliesToFrequencies.Hourly.value -> {
+                                AppliesToFrequencies.HOURLY.value -> {
                                     extra.wdeValue * (workDate.wdRegHours + workDate.wdOtHours + workDate.wdDblOtHours)
                                 }
 
-                                AppliesToFrequencies.Daily.value -> {
+                                AppliesToFrequencies.DAILY.value -> {
                                     extra.wdeValue
                                 }
 
@@ -71,11 +71,11 @@ class WorkDateExtraContainerCalculations(
                     if (!extra.extraType.wetIsDeleted && !extra.definition.weIsDeleted && extra.extraType.wetIsDefault) {
                         val amount: Double = if (extra.definition.weIsFixed) {
                             when (extra.extraType.wetAppliesTo) {
-                                AppliesToFrequencies.Hourly.value -> {
+                                AppliesToFrequencies.HOURLY.value -> {
                                     extra.definition.weValue * (workDate.wdRegHours + workDate.wdOtHours + workDate.wdDblOtHours)
                                 }
 
-                                AppliesToFrequencies.Daily.value -> {
+                                AppliesToFrequencies.DAILY.value -> {
                                     extra.definition.weValue
                                 }
 
@@ -108,7 +108,7 @@ class WorkDateExtraContainerCalculations(
 
     private fun getExtraTypeAndDefByDay(): List<ExtraDefinitionAndType> {
         return mainActivity.payDetailViewModel.getExtraTypeAndDefBy(
-            workDate.wdEmployerId, workDate.wdCutoffDate, AttachToFrequencies.Daily.value
+            workDate.wdEmployerId, workDate.wdCutoffDate, AttachToFrequencies.DAILY.value
         )
     }
 
