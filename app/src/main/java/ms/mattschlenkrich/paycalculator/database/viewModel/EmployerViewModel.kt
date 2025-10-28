@@ -26,6 +26,11 @@ class EmployerViewModel(
             employerRepository.updateEmployer(employers)
         }
 
+    fun deleteEmployer(employerId: Long, updateTime: String) = viewModelScope.launch {
+        employerRepository.deleteEmployer(employerId, updateTime)
+    }
+
+
     fun getEmployer(employerId: Long) =
         employerRepository.getEmployer(employerId)
 
