@@ -16,6 +16,14 @@ class EmployerViewModel(
     val employerLogicViewModel: EmployerLogicViewModel =
         EmployerLogicViewModel(app, this)
 
+    fun getCurrentEmployer(): Employers {
+        return employerLogicViewModel.currentEmployerObj.getEmployer()
+    }
+
+    fun getEmployerList(): List<Employers> {
+        return employerLogicViewModel.getEmployerList()
+    }
+
     fun insertEmployer(employers: Employers) =
         viewModelScope.launch {
             employerRepository.insertEmployer(employers)

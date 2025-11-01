@@ -207,6 +207,10 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
             fabDone.setOnClickListener {
                 validateWorkOrderNumberAndSaveHistoryIfValid()
             }
+            fabDone.setOnLongClickListener {
+                validateWorkOrderNumberAndSaveHistoryIfValid(true)
+                true
+            }
             btnWorkOrder.setOnClickListener {
                 if (btnWorkOrder.text.toString() == getString(R.string.edit)) {
                     gotoWorkOrderUpdate()
@@ -240,9 +244,15 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         }
     }
 
-    private fun validateWorkOrderNumberAndSaveHistoryIfValid() {
+    private fun validateWorkOrderNumberAndSaveHistoryIfValid(chooseNextSteps: Boolean = false) {
+        validateWorkOrderHistory()
         if (doesWorkOrderExist()) {
-            chooseToGotoUpdate()
+            if (chooseNextSteps) {
+                chooseToGotoUpdate()
+            } else {
+                saveHistoryIfValid(true)
+                displayMessage(getString(R.string.work_order_has_been_added_to_date))
+            }
         } else {
             AlertDialog.Builder(mView.context)
                 .setTitle(getString(R.string.create_work_order_) + "${binding.acWorkOrder.text}?")

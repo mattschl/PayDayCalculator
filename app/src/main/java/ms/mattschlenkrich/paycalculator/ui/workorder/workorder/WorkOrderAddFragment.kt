@@ -118,29 +118,39 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
     }
 
     private fun setClickActions() {
-        binding.fabDone.setOnClickListener {
-            saveWorkOrderAndAddJobSpecIfValid()
-            onSelectEmployer()
+        onSelectEmployer()
+        binding.apply {
+            fabDone.setOnClickListener {
+                saveWorkOrderAndAddJobSpecIfValid()
+            }
+            fabDone.setOnLongClickListener {
+                saveWorkOrderAndAddJobSpecIfValid(true)
+                true
+            }
         }
     }
 
-    private fun saveWorkOrderAndAddJobSpecIfValid() {
+    private fun saveWorkOrderAndAddJobSpecIfValid(gotoNextStep: Boolean = false) {
         val answer = validateWorkOrder()
         if (answer == ANSWER_OK) {
-            saveWorkOrderAndAChooseNextSteps()
+            saveWorkOrderAndAChooseNextSteps(gotoNextStep)
         } else {
             displayMessage(getString(R.string.error_) + answer)
         }
     }
 
-    private fun saveWorkOrderAndAChooseNextSteps() {
+    private fun saveWorkOrderAndAChooseNextSteps(gotoNextStep: Boolean = false) {
         curWorkOrder = getCurrentWorkOrder()
         workOrderViewModel.insertWorkOrder(curWorkOrder)
         mainViewModel.apply {
             setWorkOrder(curWorkOrder)
             setWorkOrderNumber(curWorkOrder.woNumber)
         }
-        chooseToGotoUpdate()
+        if (gotoNextStep) {
+            chooseToGotoUpdate()
+        } else {
+            gotoCallingFragment()
+        }
     }
 
     private fun chooseToGotoUpdate() {

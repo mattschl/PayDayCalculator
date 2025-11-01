@@ -26,7 +26,9 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.INTERVAL_MONTHLY
 import ms.mattschlenkrich.paycalculator.common.INTERVAL_SEMI_MONTHLY
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.PayDayFrequencies
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
+import ms.mattschlenkrich.paycalculator.common.WorkDayOfWeek
 import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerTaxTypes
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
@@ -47,6 +49,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     private lateinit var employerViewModel: EmployerViewModel
     private lateinit var workTaxViewModel: WorkTaxViewModel
     private val df = DateFunctions()
+
     private val nf = NumberFunctions()
     private lateinit var employerList: List<Employers>
     private var startDate = ""
@@ -79,25 +82,34 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun populateEmployerListForValidation() {
-        employerViewModel.getEmployers().observe(viewLifecycleOwner) { employers ->
-            employerList = employers
-        }
+        employerList = employerViewModel.getEmployerList()
     }
 
     private fun populateSpinners() {
         binding.apply {
+//            val frequencyAdapter = ArrayAdapter(
+//                mView.context,
+//                R.layout.spinner_item_bold,
+//                resources.getStringArray(R.array.pay_day_frequencies)
+//            )
             val frequencyAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.pay_day_frequencies)
+                PayDayFrequencies.toArray()
+
             )
             frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spFrequency.adapter = frequencyAdapter
 
+//            val dayOfWeekAdapter = ArrayAdapter(
+//                mView.context,
+//                R.layout.spinner_item_bold,
+//                resources.getStringArray(R.array.pay_days)
+//            )
             val dayOfWeekAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.pay_days)
+                WorkDayOfWeek.toArray()
             )
             dayOfWeekAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spDayOfWeek.adapter = dayOfWeekAdapter
@@ -224,7 +236,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
             val message = validateEmployer()
             if (message == ANSWER_OK) {
                 val curEmployer = getCurrentEmployer()
-                chooseToSaveAndContinue(curEmployer)
+                confirmSaveAndContinue(curEmployer)
             } else {
                 displayMessage(getString(R.string.error_) + message)
             }
@@ -282,6 +294,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun getCurrentEmployer(): Employers {
+//        return employerViewModel.getCurrentEmployer()
         binding.apply {
             return Employers(
                 nf.generateRandomIdAsLong(),
@@ -300,7 +313,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
 
     private val mainScope = CoroutineScope(Dispatchers.Main)
 
-    private fun chooseToSaveAndContinue(curEmployer: Employers) {
+    private fun confirmSaveAndContinue(curEmployer: Employers) {
         AlertDialog.Builder(mView.context).setTitle(
             getString(R.string.choose_next_steps_for) + curEmployer.employerName
         ).setMessage(

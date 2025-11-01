@@ -50,6 +50,12 @@ enum class WorkDayOfWeek(val value: Int, val day: String) {
     override fun toString(): String {
         return day
     }
+
+    companion object {
+        fun toArray(): Array<String> {
+            return WorkDayOfWeek.entries.map { it.day }.toTypedArray()
+        }
+    }
 }
 
 enum class PayDayFrequencies(val value: Int, val frequency: String) {
@@ -59,4 +65,11 @@ enum class PayDayFrequencies(val value: Int, val frequency: String) {
     override fun toString(): String {
         return frequency
     }
+
+    companion object {
+        fun toArray(): Array<String> {
+            return PayDayFrequencies.entries.map { it.frequency }.toTypedArray()
+        }
+    }
+
 }
