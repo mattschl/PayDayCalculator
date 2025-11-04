@@ -79,16 +79,18 @@ dependencies {
     implementation("com.google.android.material:material:1.13.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation("org.mockito:mockito-core:5.20.0")
-    implementation("org.mockito.kotlin:mockito-kotlin:6.0.0")
-    implementation("io.mockk:mockk:1.14.5")
+    implementation("org.mockito.kotlin:mockito-kotlin:6.1.0")
+    implementation("io.mockk:mockk:1.14.6")
     implementation("androidx.recyclerview:recyclerview:1.4.0")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.9.4")
-    implementation("androidx.navigation:navigation-ui-ktx:2.9.4")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.9.5")
+    implementation("androidx.navigation:navigation-ui-ktx:2.9.5")
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:6.0.1")
+//    testImplementation("junit:junit:4.12")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
 
-    val roomVersion = "2.8.0"
+    val roomVersion = "2.8.3"
     implementation("androidx.room:room-runtime:$roomVersion")
     // To use Kotlin symbol processing tool (ksp)id("androidx.navigation.safeargs.kotlin")
     ksp("androidx.room:room-compiler:$roomVersion")
@@ -97,7 +99,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     implementation("androidx.room:room-ktx:$roomVersion")
 
-    val navVersion = "2.9.4"
+    val navVersion = "2.9.5"
     // Kotlin Navigation
     implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
     implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
@@ -113,7 +115,7 @@ dependencies {
     // Annotation processor
     ksp("androidx.room:room-compiler:$roomVersion")
 
-    val material3Version = "1.3.2"
+    val material3Version = "1.4.0"
 
     implementation("androidx.compose.material3:material3:$material3Version")
 

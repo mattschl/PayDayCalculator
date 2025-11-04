@@ -34,14 +34,14 @@ import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkTaxViewModel
-import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerAddBinding
+import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
-//private const val TAG = "EmployerAddFragment"
+private const val TAG = "EmployerAddFragment"
 
-class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
+class EmployerAddFragment : Fragment(R.layout.fragment_employer_update) {
 
-    private var _binding: FragmentEmployerAddBinding? = null
+    private var _binding: FragmentEmployerUpdateBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
@@ -49,15 +49,16 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     private lateinit var employerViewModel: EmployerViewModel
     private lateinit var workTaxViewModel: WorkTaxViewModel
     private val df = DateFunctions()
-
     private val nf = NumberFunctions()
     private lateinit var employerList: List<Employers>
-    private var startDate = ""
+    private var startDate = df.getCurrentDateAsString()
+
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentEmployerAddBinding.inflate(
+        _binding = FragmentEmployerUpdateBinding.inflate(
             inflater, container, false
         )
         mView = binding.root
@@ -76,9 +77,36 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun setInitialValues() {
-        populateEmployerListForValidation()
-        populateSpinners()
-        populateCheckStartDate()
+        mainScope.launch {
+            populateEmployerListForValidation()
+            populateSpinners()
+            delay(WAIT_250)
+            populateCheckStartDate()
+            hideUnusedElements()
+            populateDefaultValues()
+        }
+    }
+
+    private fun hideUnusedElements() {
+        binding.apply {
+            crdTaxes.visibility = View.GONE
+            crdExtras.visibility = View.GONE
+            lblWage.visibility = View.GONE
+            btnWage.visibility = View.GONE
+            fabDone.visibility = View.GONE
+            lblMidMonthDate.visibility = View.GONE
+            etMidMonthDate.visibility = View.GONE
+            lblMainMonthDate.visibility = View.GONE
+            etMainMonthDate.visibility = View.GONE
+        }
+    }
+
+    private fun populateDefaultValues() {
+        binding.apply {
+            etDaysBefore.setText(getString(R.string._6))
+            etMidMonthDate.setText(getString(R.string._15))
+            etMainMonthDate.setText(getString(R.string._31))
+        }
     }
 
     private fun populateEmployerListForValidation() {
@@ -87,11 +115,6 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
 
     private fun populateSpinners() {
         binding.apply {
-//            val frequencyAdapter = ArrayAdapter(
-//                mView.context,
-//                R.layout.spinner_item_bold,
-//                resources.getStringArray(R.array.pay_day_frequencies)
-//            )
             val frequencyAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
@@ -100,12 +123,6 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
             )
             frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spFrequency.adapter = frequencyAdapter
-
-//            val dayOfWeekAdapter = ArrayAdapter(
-//                mView.context,
-//                R.layout.spinner_item_bold,
-//                resources.getStringArray(R.array.pay_days)
-//            )
             val dayOfWeekAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
@@ -236,7 +253,10 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
             val message = validateEmployer()
             if (message == ANSWER_OK) {
                 val curEmployer = getCurrentEmployer()
-                confirmSaveAndContinue(curEmployer)
+                employerViewModel.employerLogicViewModel.currentEmployerObj.setEmployer(curEmployer)
+                employerViewModel.employerLogicViewModel.previousEmployerObj.setEmployer(curEmployer)
+                displayMessage(curEmployer.toString())
+//                confirmSaveAndContinue(curEmployer)
             } else {
                 displayMessage(getString(R.string.error_) + message)
             }
@@ -294,7 +314,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
     }
 
     private fun getCurrentEmployer(): Employers {
-//        return employerViewModel.getCurrentEmployer()
+//        return employerObject.getEmployer()
         binding.apply {
             return Employers(
                 nf.generateRandomIdAsLong(),
@@ -310,8 +330,6 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_add) {
             )
         }
     }
-
-    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     private fun confirmSaveAndContinue(curEmployer: Employers) {
         AlertDialog.Builder(mView.context).setTitle(

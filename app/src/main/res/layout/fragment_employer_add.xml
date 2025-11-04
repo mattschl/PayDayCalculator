@@ -4,13 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.employer.EmployerAddFragment">
 
-    <data>
-
-        <variable
-            name="employerViewModel"
-            type="ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel" />
-    </data>
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -39,7 +32,6 @@
                 android:inputType="textMultiLine|textCapWords"
                 android:maxWidth="@dimen/text_box_wide"
                 android:minHeight="@dimen/minimum_touch_height"
-                android:text="@={employerViewModel.employerLogicViewModel.currentEmployerObj.employerName}"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_size_large"
                 app:layout_constraintEnd_toEndOf="@+id/spFrequency"
@@ -60,7 +52,6 @@
                 android:id="@+id/spFrequency"
                 android:layout_width="@dimen/text_box_wide"
                 android:layout_height="@dimen/minimum_touch_height"
-                android:selectedItemPosition="@{employerViewModel.employerLogicViewModel.currentEmployerObj.payFrequencyId}"
                 app:layout_constraintEnd_toEndOf="@+id/tvStartDate"
                 app:layout_constraintStart_toStartOf="@+id/tvStartDate"
                 app:layout_constraintTop_toBottomOf="@id/etName" />
@@ -79,7 +70,6 @@
                 android:id="@+id/tvStartDate"
                 android:layout_width="@dimen/text_box_wide"
                 android:layout_height="@dimen/minimum_touch_height"
-                android:text="@={employerViewModel.employerLogicViewModel.currentEmployerObj.startDate}"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_size_large"
@@ -102,7 +92,6 @@
                 android:id="@+id/spDayOfWeek"
                 android:layout_width="@dimen/text_box_wide"
                 android:layout_height="@dimen/minimum_touch_height"
-                android:selectedItemPosition="@{employerViewModel.employerLogicViewModel.currentEmployerObj.dayOfWeekId}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblDayOfWeek"
                 app:layout_constraintTop_toBottomOf="@id/tvStartDate" />
@@ -124,7 +113,6 @@
                 android:importantForAutofill="no"
                 android:inputType="number"
                 android:selectAllOnFocus="true"
-                android:text="@={employerViewModel.employerLogicViewModel.currentEmployerObj.cutoffDaysBefore}"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_size_large"

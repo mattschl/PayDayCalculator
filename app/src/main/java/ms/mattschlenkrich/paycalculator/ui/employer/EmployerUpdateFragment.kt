@@ -94,14 +94,14 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
             val frequencyAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
-                PayDayFrequencies.entries
+                PayDayFrequencies.toArray()
             )
             spFrequency.adapter = frequencyAdapter
 
             val dayOfWeekAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
-                WorkDayOfWeek.entries
+                WorkDayOfWeek.toArray()
             )
             spDayOfWeek.adapter = dayOfWeekAdapter
         }
@@ -126,7 +126,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
                             }
                         }
                         startDate = curEmployer!!.startDate
-                        tvStartDate.text = df.getDisplayDate(startDate)
+                        tvStartDate.setText(df.getDisplayDate(startDate))
                         for (i in 0 until spDayOfWeek.adapter.count) {
                             if (spDayOfWeek.getItemAtPosition(i) == curEmployer!!.dayOfWeek) {
                                 spDayOfWeek.setSelection(i)
@@ -340,7 +340,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
                     dayOfMonth.toString().padStart(2, '0')
                 }"
                 startDate = display
-                binding.tvStartDate.text = df.getDisplayDate(startDate)
+                binding.tvStartDate.setText(df.getDisplayDate(startDate))
             }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
         )
         datePickerDialog.setTitle(getString(R.string.choose_first_check_date))

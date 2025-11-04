@@ -7,8 +7,8 @@
     <data>
 
         <variable
-            name="viewModel"
-            type="ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel" />
+            name="employerObj"
+            type="ms.mattschlenkrich.paycalculator.database.model.employer.EmployerObj" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -50,7 +50,6 @@
                     android:maxWidth="@dimen/text_box_wide"
                     android:minHeight="@dimen/minimum_touch_height"
                     android:selectAllOnFocus="true"
-                    android:text="@={viewModel.employerLogicViewModel.currentEmployerObj.employerName}"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_large"
                     app:layout_constraintEnd_toEndOf="@+id/spFrequency"
@@ -71,7 +70,6 @@
                     android:id="@+id/spFrequency"
                     android:layout_width="@dimen/text_box_wide"
                     android:layout_height="@dimen/minimum_touch_height"
-                    android:selectedItemPosition="@{viewModel.employerLogicViewModel.currentEmployerObj.payFrequencyId}"
                     app:layout_constraintEnd_toEndOf="@+id/tvStartDate"
                     app:layout_constraintStart_toStartOf="@+id/tvStartDate"
                     app:layout_constraintTop_toBottomOf="@id/etName" />
@@ -90,7 +88,6 @@
                     android:id="@+id/tvStartDate"
                     android:layout_width="@dimen/text_box_wide"
                     android:layout_height="@dimen/minimum_touch_height"
-                    android:text="@string/choose_date"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_large"
@@ -113,7 +110,6 @@
                     android:id="@+id/spDayOfWeek"
                     android:layout_width="@dimen/text_box_wide"
                     android:layout_height="@dimen/minimum_touch_height"
-                    android:selectedItemPosition="@={viewModel.employerLogicViewModel.currentEmployerObj.payFrequencyId}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/lblDayOfWeek"
                     app:layout_constraintTop_toBottomOf="@id/tvStartDate" />
@@ -135,7 +131,6 @@
                     android:importantForAutofill="no"
                     android:inputType="number"
                     android:selectAllOnFocus="true"
-                    android:text="@={viewModel.employerLogicViewModel.currentEmployerObj.cutoffDaysBefore}"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_large"
@@ -161,7 +156,6 @@
                     android:importantForAutofill="no"
                     android:inputType="number"
                     android:selectAllOnFocus="true"
-                    android:text="@={viewModel.employerLogicViewModel.currentEmployerObj.midMonthlyDate}"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_large"
@@ -187,7 +181,6 @@
                     android:importantForAutofill="no"
                     android:inputType="number"
                     android:selectAllOnFocus="true"
-                    android:text="@={viewModel.employerLogicViewModel.currentEmployerObj.mainMonthlyDate}"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_large"

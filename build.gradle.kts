@@ -6,7 +6,7 @@ buildscript {
         google()
     }
     dependencies {
-        val navVersion = "2.9.4"
+        val navVersion = "2.9.5"
         classpath("androidx.navigation:navigation-safe-args-gradle-plugin:$navVersion")
     }
 }
@@ -19,8 +19,8 @@ plugins {
     // kotlin("multiplatform") version "2.1.0"
 
     id("com.android.application") version "8.13.0" apply false
-    id("org.jetbrains.kotlin.android") version "2.2.20" apply false
+    id("org.jetbrains.kotlin.android") version "2.2.21" apply false
     id("com.android.library") version "8.13.0" apply false
-    id("com.google.devtools.ksp") version "2.2.20-2.0.2" apply false
-    id("com.google.dagger.hilt.android") version "2.57.1" apply false
+    id("com.google.devtools.ksp") version "2.2.21-2.0.4" apply false
+    id("com.google.dagger.hilt.android") version "2.57.2" apply false
 }
