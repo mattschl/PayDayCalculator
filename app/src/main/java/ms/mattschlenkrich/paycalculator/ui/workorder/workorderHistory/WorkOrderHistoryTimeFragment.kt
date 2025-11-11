@@ -218,6 +218,9 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                 }
                 if (display == "") display = getString(R.string.no_time_entered)
                 tvHours.text = display
+                if (radBreak.isChecked) {
+                    radHourType.check(R.id.radRegHours)
+                }
                 if (totalRegHoursForDay >= 8.0) {
                     radHourType.check(R.id.radOtHours)
                 }
