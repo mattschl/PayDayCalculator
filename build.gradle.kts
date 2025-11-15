@@ -12,9 +12,9 @@ buildscript {
 }
 plugins {
     // Replace `<...>` with the plugin name appropriate for your target environment
-    kotlin("jvm") version "1.9.0"
+//    kotlin("jvm") version "1.9.0"
     // For example, if your target environment is JVM:
-    // kotlin("jvm") version "2.1.0"
+    kotlin("jvm") version "2.1.0"
     // If your target is Kotlin Multiplatform:
     // kotlin("multiplatform") version "2.1.0"
 
