@@ -460,8 +460,11 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
     }
 
     private fun gotoPayDetails() {
-        setCurrentVariables()
-        gotoPayDetailFragment()
+        mainScope.launch {
+            setCurrentVariables()
+            delay(WAIT_250)
+            gotoPayDetailFragment()
+        }
     }
 
     private fun gotoPayDetailFragment() {

@@ -91,8 +91,8 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         populateEmployers()
-        setClickActions()
         populateFromHistory()
+        setClickActions()
     }
 
     private fun populateEmployers() {
