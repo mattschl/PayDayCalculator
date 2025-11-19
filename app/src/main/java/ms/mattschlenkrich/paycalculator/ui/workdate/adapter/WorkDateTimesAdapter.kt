@@ -1,7 +1,5 @@
-package ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater
+package ms.mattschlenkrich.paycalculator.ui.workdate.adapter
 
-import android.app.AlertDialog
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -11,23 +9,20 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorkedCombined
-import ms.mattschlenkrich.paycalculator.databinding.ListSingleItemBinding
+import ms.mattschlenkrich.paycalculator.databinding.ListWorkDateTimeBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderHistoryTimeFragment
 
-class TimeWorkedAdapter(
+class WorkDateTimesAdapter(
     val mainActivity: MainActivity,
     private val mView: View,
-    private val parentFragment: String,
-    private val workOrderHistoryTimeFragment: WorkOrderHistoryTimeFragment
-) : RecyclerView.Adapter<TimeWorkedAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<WorkDateTimesAdapter.ViewHolder>() {
 
     val mainViewModel = mainActivity.mainViewModel
     val workOrderViewModel = mainActivity.workOrderViewModel
     private val df = DateFunctions()
     private val nf = NumberFunctions()
 
-    class ViewHolder(val itemBinding: ListSingleItemBinding) :
+    class ViewHolder(val itemBinding: ListWorkDateTimeBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCallback =
@@ -44,8 +39,8 @@ class TimeWorkedAdapter(
                 newItem: WorkOrderHistoryTimeWorkedCombined
             ): Boolean {
                 return oldItem.timeWorked == newItem.timeWorked &&
-                        oldItem.workDate == newItem.workDate &&
-                        oldItem.workOrderHistory == newItem.workOrderHistory
+                        oldItem.workOrderHistory == newItem.workOrderHistory &&
+                        oldItem.workDate == newItem.workDate
             }
         }
 
@@ -56,8 +51,10 @@ class TimeWorkedAdapter(
         viewType: Int
     ): ViewHolder {
         return ViewHolder(
-            ListSingleItemBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
+            ListWorkDateTimeBinding.inflate(
+                mainActivity.layoutInflater,
+                parent,
+                false
             )
         )
     }
@@ -66,7 +63,10 @@ class TimeWorkedAdapter(
         return differ.currentList.size
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int
+    ) {
         val history = differ.currentList[position]
         holder.itemBinding.apply {
             val tempStart = df.splitTimeFromDateTime(history.timeWorked.wohtStartTime)
@@ -74,10 +74,10 @@ class TimeWorkedAdapter(
             val tempEnd = df.splitTimeFromDateTime(history.timeWorked.wohtEndTime)
             val endTime = df.get12HourDisplay("${tempEnd[0]}:${tempEnd[1]}")
             var display = "$startTime  to $endTime"
+            tvHours.text = display
             val hours =
                 df.getTimeWorked(history.timeWorked.wohtStartTime, history.timeWorked.wohtEndTime)
-
-            display += when (history.timeWorked.wohtTimeType) {
+            display = when (history.timeWorked.wohtTimeType) {
                 1 -> " - ${mView.context.getString(R.string.reg_hrs_)}${nf.getNumberFromDouble(hours)}"
                 2 -> " - ${mView.context.getString(R.string.ot_hrs_)}${nf.getNumberFromDouble(hours)}"
                 3 -> " - ${mView.context.getString(R.string.dblot_hrs_)}${
@@ -90,7 +90,8 @@ class TimeWorkedAdapter(
                     " Break time"
                 }
             }
-            tvDisplay.text = display
+            tvHours.text = display
+            tvWorkOrderNum.text = history.workOrderHistory.workOrder.woNumber
             holder.itemView.setOnClickListener {
                 choosOptions(history)
             }
@@ -98,37 +99,6 @@ class TimeWorkedAdapter(
     }
 
     private fun choosOptions(history: WorkOrderHistoryTimeWorkedCombined) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                "${mView.context.getString(R.string.choose_option_for_wo)} ${history.workOrderHistory.workOrder.woNumber}${
-                    mView.context.getString(
-                        R.string._on_
-                    )
-                } ${df.getDisplayDate(history.workDate.wdDate)}"
-            )
-            .setItems(
-                arrayOf(
-                    mView.context.getString(R.string.edit),
-                    mView.context.getString(R.string.delete)
-                )
-            ) { _, position ->
-                when (position) {
-                    0 -> gotoWorkOrderHistoryTimeEdit(history)
-                    1 -> deleteTimeWorked(history)
-                }
-            }
-            .setNegativeButton(mView.context.getString(R.string.cancel), null)
-            .show()
-    }
 
-    private fun deleteTimeWorked(history: WorkOrderHistoryTimeWorkedCombined) {
-        workOrderViewModel.deleteTimeWorked(history.timeWorked)
-    }
-
-    private fun gotoWorkOrderHistoryTimeEdit(history: WorkOrderHistoryTimeWorkedCombined) {
-        mainViewModel.setWorkOrderHistoryTimeWorkedCombined(history)
-        mainViewModel.addCallingFragment(parentFragment)
-        workOrderHistoryTimeFragment.gotoWorkOrderHistoryTimeUpdate()
     }
 }
-

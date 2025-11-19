@@ -14,7 +14,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -65,7 +64,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentWorkOrderHistoryTimeBinding.inflate(inflater, container, false)
         mView = binding.root
         mainActivity = (activity as MainActivity)
@@ -464,12 +463,5 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
         findNavController().navigate(
             WorkOrderHistoryTimeFragmentDirections.actionWorkOrderHistoryTimeToWorkOrderHistoryTimeUpdateFragment()
         )
-    }
-
-    override fun onDestroy() {
-        mainScope.cancel()
-        defaultScope.cancel()
-        super.onDestroy()
-        _binding = null
     }
 }
