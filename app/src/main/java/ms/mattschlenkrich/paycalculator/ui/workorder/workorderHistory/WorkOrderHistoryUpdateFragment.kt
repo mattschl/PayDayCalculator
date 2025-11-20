@@ -93,7 +93,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
         commonFunctions = WorkOrderCommonFunctions(mainActivity)
-        mainActivity.title = getString(R.string.add_work_performed_to_workorder_history)
+        mainActivity.topMenuBar.title = getString(R.string.add_work_performed_to_workorder_history)
         return mView
     }
 

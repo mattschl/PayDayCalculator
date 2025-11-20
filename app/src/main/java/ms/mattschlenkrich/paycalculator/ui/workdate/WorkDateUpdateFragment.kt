@@ -73,7 +73,7 @@ class WorkDateUpdateFragment : Fragment(
         payDayViewModel = mainActivity.payDayViewModel
         workExtraViewModel = mainActivity.workExtraViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.title = getString(R.string.update_this_work_date)
+        mainActivity.topMenuBar.title = getString(R.string.update_this_work_date)
         return mView
     }
 

@@ -44,7 +44,7 @@ class TaxTypeFragment : Fragment(R.layout.fragment_tax_type), SearchView.OnQuery
         mainActivity = (activity as MainActivity)
         workTaxViewModel = mainActivity.workTaxViewModel
         mainViewModel = mainActivity.mainViewModel
-        mainActivity.title = getString(R.string.choose_a_tax_type)
+        mainActivity.topMenuBar.title = getString(R.string.choose_a_tax_type)
         return mView
     }
 
@@ -75,7 +75,7 @@ class TaxTypeFragment : Fragment(R.layout.fragment_tax_type), SearchView.OnQuery
     }
 
     private fun setClickActions() {
-        val menuHost: MenuHost = requireActivity()
+        val menuHost: MenuHost = mainActivity.topMenuBar
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         binding.apply {
             fabNew.setOnClickListener {

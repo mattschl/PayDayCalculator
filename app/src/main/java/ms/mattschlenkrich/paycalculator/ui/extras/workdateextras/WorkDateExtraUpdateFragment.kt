@@ -51,7 +51,7 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
         mainViewModel = mainActivity.mainViewModel
         employerViewModel = mainActivity.employerViewModel
         payDayViewModel = mainActivity.payDayViewModel
-        mainActivity.title = getString(R.string.update_this_extra)
+//        mainActivity.title = getString(R.string.update_this_extra)
         return mView
     }
 
@@ -71,7 +71,8 @@ class WorkDateExtraUpdateFragment : Fragment(R.layout.fragment_work_date_extra_u
         if (mainViewModel.getWorkDateObject() != null && mainViewModel.getWorkDateExtra() != null && mainViewModel.getWorkDateString() != null) {
             curDateObject = mainViewModel.getWorkDateObject()!!
             oldWorkDateExtra = mainViewModel.getWorkDateExtra()!!
-            mainActivity.title = getString(R.string.update_extra_) + oldWorkDateExtra.wdeName
+            mainActivity.topMenuBar.title =
+                getString(R.string.update_extra_) + oldWorkDateExtra.wdeName
             binding.apply {
                 var display = getString(R.string.date_) + df.getDisplayDate(
                     mainViewModel.getWorkDateString()!!

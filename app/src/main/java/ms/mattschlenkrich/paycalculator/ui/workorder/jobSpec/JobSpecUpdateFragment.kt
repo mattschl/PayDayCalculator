@@ -41,7 +41,7 @@ class JobSpecUpdateFragment : Fragment(R.layout.fragment_single_item_update) {
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.title = getString(R.string.update_job_spec)
+        mainActivity.topMenuBar.title = getString(R.string.update_job_spec)
         return mView
     }
 

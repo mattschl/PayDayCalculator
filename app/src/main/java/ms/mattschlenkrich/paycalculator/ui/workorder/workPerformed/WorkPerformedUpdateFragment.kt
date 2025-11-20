@@ -50,7 +50,7 @@ class WorkPerformedUpdateFragment : Fragment(R.layout.fragment_single_item_updat
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.title = getString(R.string.update_work_performed_description)
+        mainActivity.topMenuBar.title = getString(R.string.update_work_performed_description)
         return mView
     }
 

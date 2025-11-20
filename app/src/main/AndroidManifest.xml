@@ -10,7 +10,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_pay_calculator_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.PayCalculator"
+        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
         tools:targetApi="31">
         <activity
             android:name="ms.mattschlenkrich.paycalculator.ui.MainActivity"

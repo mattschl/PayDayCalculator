@@ -59,7 +59,7 @@ class WorkOrderViewFragment : Fragment(R.layout.fragment_work_order_view) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mainActivity.title = getString(R.string.work_orders)
+        mainActivity.topMenuBar.title = getString(R.string.work_orders)
         populateEmployers()
         setClickActions()
     }

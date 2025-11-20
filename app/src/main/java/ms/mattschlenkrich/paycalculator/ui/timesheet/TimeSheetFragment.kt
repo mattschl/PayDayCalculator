@@ -127,7 +127,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
                         mainScope.launch {
                             delay(WAIT_100)
 //                            mainViewModel.setEmployer(curEmployer)
-                            mainActivity.title =
+                            mainActivity.topMenuBar.title =
                                 getString(R.string.time_sheet) + " for " + spEmployers.selectedItem.toString()
                             populateCutOffDates()
                         }

@@ -40,13 +40,13 @@ class AreaViewFragment : Fragment(R.layout.fragment_recycler_view), SearchView.O
         mView = binding.root
         mainActivity = (activity as MainActivity)
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.title = getString(R.string.view_areas_list)
+        mainActivity.topMenuBar.title = getString(R.string.view_areas_list)
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         populateAreaList()
-        val menuHost = requireActivity()
+        val menuHost = mainActivity.topMenuBar
         menuHost.addMenuProvider(
             this, viewLifecycleOwner, Lifecycle.State.RESUMED
         )

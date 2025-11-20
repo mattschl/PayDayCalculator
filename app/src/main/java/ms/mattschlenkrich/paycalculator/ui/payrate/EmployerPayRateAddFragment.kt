@@ -49,7 +49,7 @@ class EmployerPayRateAddFragment : Fragment(R.layout.fragment_employer_pay_rate_
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         employerViewModel = mainActivity.employerViewModel
-        mainActivity.title = getString(R.string.add_a_pay_rate)
+        mainActivity.topMenuBar.title = getString(R.string.add_a_pay_rate)
         return mView
     }
 

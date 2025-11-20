@@ -2,11 +2,9 @@ package ms.mattschlenkrich.paycalculator.ui
 
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.MenuProvider
+import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -49,6 +47,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var workOrderViewModel: WorkOrderViewModel
     lateinit var payDetailViewModel: PayDetailViewModel
     lateinit var payCalculationsViewModel: PayCalculationsViewModel
+    lateinit var topMenuBar: Toolbar
 //    private val df = DateFunctions()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +55,7 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         mView = binding.root
+        topMenuBar = binding.topMenu
         setContentView(mView)
         setupMainViewModel()
         setupEmployerViewModel()
@@ -110,36 +110,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun fillTopMenuAndActions() {
-        addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-//                                menu.add(getString(R.string.review_tax_types))
-                //                menu.add(getString(R.string.review_extra_credits_deductions))
-                //                menu.add(getString(R.string.review_work_extra_frequencies))
-                //                menu.add(getString(R.string.update_future_pay_dates))
-                menu.add(getString(R.string.view_work_order_list))
-                menu.add(getString(R.string.view_job_spec_list))
-                menu.add(getString(R.string.view_areas_list))
-                menu.add(getString(R.string.view_work_performed_list))
-                menu.add(getString(R.string.view_material_list))
-                menu.add(resources.getString(R.string.app_name))
-            }
+        topMenuBar.apply {
+            menu.add(getString(R.string.view_work_order_list))
+            menu.add(getString(R.string.view_job_spec_list))
+            menu.add(getString(R.string.view_areas_list))
+            menu.add(getString(R.string.view_work_performed_list))
+            menu.add(getString(R.string.view_material_list))
+            menu.add(resources.getString(R.string.app_name))
 
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.title) {
-//                    getString(R.string.review_tax_types) -> {
-//                        gotoTaxTypes()
-//                        true
-//                    }
+            setOnMenuItemClickListener { menuItem ->
+                when (menuItem.title) {
 
                     getString(R.string.view_work_order_list) -> {
                         gotoWorkOrders()
                         true
                     }
-//
-//                    getString(R.string.review_extra_credits_deductions) -> {
-//                        gotoExtras()
-//                        true
-//                    }
 
                     getString(R.string.view_work_performed_list) -> {
                         gotoWorkPerformedView()
@@ -165,9 +150,8 @@ class MainActivity : AppCompatActivity() {
                         false
                     }
                 }
-
             }
-        })
+        }
     }
 
     private fun gotoAreasView() {
@@ -233,11 +217,6 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-//    private fun gotoTaxTypes() {
-//        findNavController(R.id.nav_host_fragment_container).navigate(
-//            NavGraphDirections.actionGlobalTaxTypeFragment()
-//        )
-//    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         return super.onCreateOptionsMenu(menu)

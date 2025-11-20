@@ -42,7 +42,7 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
         mView = binding.root
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
-        mainActivity.title = getString(R.string.add_tax_rule)
+        mainActivity.topMenuBar.title = getString(R.string.add_tax_rule)
         return mView
     }
 
@@ -83,7 +83,7 @@ class TaxRuleAddFragment : Fragment(R.layout.fragment_tax_rule_add) {
     }
 
     private fun setMenuActions() {
-        val menuHost: MenuHost = requireActivity()
+        val menuHost: MenuHost = mainActivity.topMenuBar
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.save_menu, menu)

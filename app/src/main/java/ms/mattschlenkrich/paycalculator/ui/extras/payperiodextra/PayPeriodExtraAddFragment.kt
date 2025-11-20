@@ -58,7 +58,7 @@ class PayPeriodExtraAddFragment : Fragment(R.layout.fragment_pay_period_extra_ad
         mainViewModel = mainActivity.mainViewModel
         payDayViewModel = mainActivity.payDayViewModel
         workExtraViewModel = mainActivity.workExtraViewModel
-        mainActivity.title = getString(R.string.add_an_extra_to_this_pay_period)
+        mainActivity.topMenuBar.title = getString(R.string.add_an_extra_to_this_pay_period)
         return mView
     }
 
@@ -128,7 +128,7 @@ class PayPeriodExtraAddFragment : Fragment(R.layout.fragment_pay_period_extra_ad
     }
 
     private fun setMenuActions() {
-        val menuHost: MenuHost = requireActivity()
+        val menuHost: MenuHost = mainActivity.topMenuBar
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.save_menu, menu)

@@ -73,7 +73,7 @@ class WorkOrderHistoryTimeUpdateFragment :
         context = mView.context
 //        startTime = Calendar.getInstance()
 //        endTime = Calendar.getInstance()
-        mainActivity.title = getString(R.string.update_work_time)
+        mainActivity.topMenuBar.title = getString(R.string.update_work_time)
         return mView
     }
 

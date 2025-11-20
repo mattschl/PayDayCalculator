@@ -66,7 +66,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_update) {
         employerViewModel = mainActivity.employerViewModel
         workTaxViewModel = mainActivity.workTaxViewModel
         mainViewModel = mainActivity.mainViewModel
-        mainActivity.title = getString(R.string.add_an_employer)
+        mainActivity.topMenuBar.title = getString(R.string.add_an_employer)
         return mView
     }
 
@@ -187,7 +187,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_update) {
     }
 
     private fun setMenuActions() {
-        mainActivity.addMenuProvider(object : MenuProvider {
+        mainActivity.topMenuBar.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.save_menu, menu)
             }

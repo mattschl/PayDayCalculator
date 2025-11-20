@@ -58,7 +58,7 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workExtraViewModel = mainActivity.workExtraViewModel
-        mainActivity.title = getString(R.string.update_extra_for_this_pay_period)
+//        mainActivity.topMenuBar.title = getString(R.string.update_extra_for_this_pay_period)
         return mView
     }
 
@@ -82,7 +82,8 @@ class PayPeriodExtraUpdateFragment : Fragment(R.layout.fragment_pay_period_extra
         if (mainViewModel.getPayPeriodExtra() != null) {
             oldPayPeriodExtra = mainViewModel.getPayPeriodExtra()!!
             binding.apply {
-                mainActivity.title = getString(R.string.update_extra_) + oldPayPeriodExtra.ppeName
+                mainActivity.topMenuBar.title =
+                    getString(R.string.update_extra_) + oldPayPeriodExtra.ppeName
                 var display =
                     getString(R.string.pay_cutoff_) + curPayPeriod.ppCutoffDate + getString(R.string.employer_) + curEmployer.employerName
                 lblPayInfo.text = display

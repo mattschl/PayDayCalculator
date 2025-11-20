@@ -116,7 +116,7 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
                     curEmployer = mainActivity.mainViewModel.getEmployer()!!
                     ifPayRateNotExistsGotoPayRate(curEmployer!!.employerId)
                     binding.apply {
-                        mainActivity.title =
+                        mainActivity.topMenuBar.title =
                             getString(R.string.update) + " " + curEmployer!!.employerName
                         etName.setText(curEmployer!!.employerName)
                         for (i in 0 until spFrequency.adapter.count) {

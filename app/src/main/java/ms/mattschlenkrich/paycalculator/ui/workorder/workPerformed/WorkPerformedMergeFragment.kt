@@ -39,7 +39,7 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.title = getString(R.string.merge_work_performed)
+        mainActivity.topMenuBar.title = getString(R.string.merge_work_performed)
         return mView
     }
 

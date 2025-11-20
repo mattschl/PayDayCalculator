@@ -59,7 +59,7 @@ class WorkOrderJobSpecUpdateFragment : Fragment(R.layout.fragment_work_order_job
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.title = getString(R.string.edit_job_spec)
+        mainActivity.topMenuBar.title = getString(R.string.edit_job_spec)
         return mView
     }
 

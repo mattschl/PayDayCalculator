@@ -52,7 +52,7 @@ class WorkExtraTypeAddFragment : Fragment(
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workExtraViewModel = mainActivity.workExtraViewModel
-        mainActivity.title = getString(R.string.add_extra_type)
+        mainActivity.topMenuBar.title = getString(R.string.add_extra_type)
         return mView
     }
 
@@ -113,7 +113,7 @@ class WorkExtraTypeAddFragment : Fragment(
     }
 
     private fun setMenuActions() {
-        val menuHost: MenuHost = requireActivity()
+        val menuHost: MenuHost = mainActivity.topMenuBar
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.save_menu, menu)

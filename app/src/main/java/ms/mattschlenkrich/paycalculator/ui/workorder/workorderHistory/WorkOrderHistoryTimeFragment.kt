@@ -72,7 +72,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
         workOrderViewModel = mainActivity.workOrderViewModel
         startTime = Calendar.getInstance()
         endTime = Calendar.getInstance()
-        mainActivity.title = getString(R.string.enter_work_time)
+        mainActivity.topMenuBar.title = getString(R.string.enter_work_time)
         return mView
     }
 

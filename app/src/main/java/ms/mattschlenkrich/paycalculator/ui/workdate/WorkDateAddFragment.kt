@@ -76,7 +76,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
         mainViewModel = mainActivity.mainViewModel
         payDayViewModel = mainActivity.payDayViewModel
         workExtraViewModel = mainActivity.workExtraViewModel
-        mainActivity.title = getString(R.string.add_a_new_work_date)
+        mainActivity.topMenuBar.title = getString(R.string.add_a_new_work_date)
         return mView
     }
 

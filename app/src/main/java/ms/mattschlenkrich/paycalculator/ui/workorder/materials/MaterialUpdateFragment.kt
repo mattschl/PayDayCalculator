@@ -42,7 +42,7 @@ class MaterialUpdateFragment : Fragment(R.layout.fragment_material_update) {
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.title = getString(R.string.update_material_description)
+        mainActivity.topMenuBar.title = getString(R.string.update_material_description)
         return mView
     }
 

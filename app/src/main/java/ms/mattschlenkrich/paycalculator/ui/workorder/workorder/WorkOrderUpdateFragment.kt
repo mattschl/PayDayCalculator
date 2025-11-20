@@ -77,7 +77,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.title = getString(R.string.update_work_order)
+        mainActivity.topMenuBar.title = getString(R.string.update_work_order)
         return mView
     }
 

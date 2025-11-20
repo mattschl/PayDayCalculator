@@ -57,7 +57,7 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
         employerViewModel = mainActivity.employerViewModel
         mainViewModel = mainActivity.mainViewModel
         workExtraViewModel = mainActivity.workExtraViewModel
-        mainActivity.title = getString(R.string.view_extra_pay_items)
+        mainActivity.topMenuBar.title = getString(R.string.view_extra_pay_items)
         return mView
     }
 

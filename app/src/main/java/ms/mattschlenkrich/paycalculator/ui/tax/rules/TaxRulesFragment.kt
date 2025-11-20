@@ -54,7 +54,7 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workTaxViewModel = mainActivity.workTaxViewModel
-        mainActivity.title = getString(R.string.view_universal_tax_rules)
+        mainActivity.topMenuBar.title = getString(R.string.view_universal_tax_rules)
         return mView
     }
 

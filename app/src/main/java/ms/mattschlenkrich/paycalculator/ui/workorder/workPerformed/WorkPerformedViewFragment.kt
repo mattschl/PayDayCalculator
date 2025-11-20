@@ -42,13 +42,13 @@ class WorkPerformedViewFragment : Fragment(R.layout.fragment_recycler_view),
         mView = binding.root
         mainActivity = (activity as MainActivity)
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.title = getString(R.string.view_work_performed_list)
+        mainActivity.topMenuBar.title = getString(R.string.view_work_performed_list)
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         populateWorkPerformedList()
-        val menuHost: MenuHost = requireActivity()
+        val menuHost: MenuHost = mainActivity.topMenuBar
         menuHost.addMenuProvider(
             this, viewLifecycleOwner, Lifecycle.State.RESUMED
         )

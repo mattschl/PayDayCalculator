@@ -40,13 +40,13 @@ class EmployerFragment : Fragment(R.layout.fragment_employer), SearchView.OnQuer
         mView = binding.root
         mainActivity = (activity as MainActivity)
         employerViewModel = mainActivity.employerViewModel
-        mainActivity.title = getString(R.string.view_employers)
+        mainActivity.topMenuBar.title = getString(R.string.view_employers)
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         populateEmployers()
-        val menuHost: MenuHost = requireActivity()
+        val menuHost: MenuHost = mainActivity.topMenuBar
         menuHost.addMenuProvider(
             this, viewLifecycleOwner, Lifecycle.State.RESUMED
         )

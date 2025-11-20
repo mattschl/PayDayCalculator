@@ -65,7 +65,7 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.title = getString(R.string.edit_the_work_performed)
+        mainActivity.topMenuBar.title = getString(R.string.edit_the_work_performed)
         return mView
     }
 

@@ -62,7 +62,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workExtraViewModel = mainActivity.workExtraViewModel
-        mainActivity.title = getString(R.string.add_a_definition)
+        mainActivity.topMenuBar.title = getString(R.string.add_a_definition)
         return mView
     }
 
@@ -126,7 +126,7 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
     }
 
     private fun setMenuActions() {
-        val menuHost: MenuHost = requireActivity()
+        val menuHost: MenuHost = mainActivity.topMenuBar
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.save_menu, menu)

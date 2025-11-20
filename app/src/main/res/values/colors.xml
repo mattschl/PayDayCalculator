@@ -12,4 +12,7 @@
     <color name="yellow">#ffff00</color>
     <color name="green">#00a86b</color>
     <color name="dark_green">#0b8441</color>
+    <color name="deep_blue">#073763</color>
+    <color name="light_grey">#c8c5c5</color>
+
 </resources>

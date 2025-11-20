@@ -53,7 +53,7 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
         employerViewModel = mainActivity.employerViewModel
-        mainActivity.title = getString(R.string.add_new_work_order)
+        mainActivity.topMenuBar.title = getString(R.string.add_new_work_order)
         return mView
     }
 

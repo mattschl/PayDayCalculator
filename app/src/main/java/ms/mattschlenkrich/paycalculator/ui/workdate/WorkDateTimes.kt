@@ -48,7 +48,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
         workOrderViewModel = mainActivity.workOrderViewModel
         startTime = Calendar.getInstance()
         endTime = Calendar.getInstance()
-        mainActivity.title = getString(R.string.enter_work_time)
+        mainActivity.topMenuBar.title = getString(R.string.enter_work_time)
         return mView
     }
 

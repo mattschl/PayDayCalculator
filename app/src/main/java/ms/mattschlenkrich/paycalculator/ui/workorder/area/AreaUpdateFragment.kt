@@ -42,7 +42,7 @@ class AreaUpdateFragment : Fragment(R.layout.fragment_single_item_update) {
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.title = getString(R.string.update_area_description)
+        mainActivity.topMenuBar.title = getString(R.string.update_area_description)
         return mView
     }
 

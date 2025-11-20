@@ -44,7 +44,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workTaxViewModel = mainActivity.workTaxViewModel
-        mainActivity.title = getString(R.string.update_tax_type)
+        mainActivity.topMenuBar.title = getString(R.string.update_tax_type)
         return mView
     }
 

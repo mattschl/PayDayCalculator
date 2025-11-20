@@ -61,7 +61,7 @@ class WorkOrderHistoryMaterialUpdateFragment :
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.title = getString(R.string.update_material_in_history)
+        mainActivity.topMenuBar.title = getString(R.string.update_material_in_history)
         return mView
     }
 

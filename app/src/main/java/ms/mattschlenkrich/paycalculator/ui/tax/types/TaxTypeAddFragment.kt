@@ -61,7 +61,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
         workTaxViewModel = mainActivity.workTaxViewModel
         employerViewModel = mainActivity.employerViewModel
         mainViewModel = mainActivity.mainViewModel
-        mainActivity.title = getString(R.string.add_a_new_tax_type)
+        mainActivity.topMenuBar.title = getString(R.string.add_a_new_tax_type)
         return mView
     }
 
@@ -101,7 +101,7 @@ class TaxTypeAddFragment : Fragment(R.layout.fragment_tax_type_add) {
     }
 
     private fun setMenuActions() {
-        val menuHost: MenuHost = requireActivity()
+        val menuHost: MenuHost = mainActivity.topMenuBar
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.save_menu, menu)

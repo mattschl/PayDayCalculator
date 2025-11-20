@@ -40,7 +40,7 @@ class WorkOrderLookupFragment : Fragment(R.layout.fragment_work_order_view) {
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.title = getString(R.string.choose_a_work_order)
+        mainActivity.topMenuBar.title = getString(R.string.choose_a_work_order)
         return mView
     }
 

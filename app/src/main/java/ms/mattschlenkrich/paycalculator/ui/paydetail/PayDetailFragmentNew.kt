@@ -84,7 +84,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
         employerViewModel = mainActivity.employerViewModel
         payDayViewModel = mainActivity.payDayViewModel
         workExtraViewModel = mainActivity.workExtraViewModel
-        mainActivity.title = getString(R.string.pay_details)
+//        mainActivity.title = getString(R.string.pay_details)
         return mView
     }
 
@@ -193,7 +193,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
                             delay(WAIT_100)
 //                            Log.d(TAG, "onSelectEmployer: ${curEmployer?.employerName}")
 //                            mainViewModel.setEmployer(curEmployer)
-                            mainActivity.title =
+                            mainActivity.topMenuBar.title =
                                 getString(R.string.pay_details) + getString(R.string._for_) + spEmployers.selectedItem
                             populateCutOffDates(curEmployer)
                         }

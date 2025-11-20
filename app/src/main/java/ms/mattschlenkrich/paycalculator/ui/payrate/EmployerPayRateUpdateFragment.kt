@@ -51,7 +51,7 @@ class EmployerPayRateUpdateFragment : Fragment(R.layout.fragment_employer_wage_u
         employerViewModel = mainActivity.employerViewModel
         val display =
             getString(R.string.edit_pay_rate_for) + mainViewModel.getEmployer()!!.employerName
-        mainActivity.title = display
+        mainActivity.topMenuBar.title = display
         return mView
     }
 

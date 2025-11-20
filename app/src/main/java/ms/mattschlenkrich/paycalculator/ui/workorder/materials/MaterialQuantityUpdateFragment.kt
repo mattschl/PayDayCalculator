@@ -40,7 +40,7 @@ class MaterialQuantityUpdateFragment : Fragment(R.layout.fragment_material_quant
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.title = getString(R.string.update_quantity)
+        mainActivity.topMenuBar.title = getString(R.string.update_quantity)
         return mView
     }
 

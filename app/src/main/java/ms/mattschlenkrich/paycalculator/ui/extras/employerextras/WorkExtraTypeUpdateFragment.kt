@@ -50,7 +50,7 @@ class WorkExtraTypeUpdateFragment : Fragment(
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workExtraViewModel = mainActivity.workExtraViewModel
-        mainActivity.title = getString(R.string.update_extra_type)
+        mainActivity.topMenuBar.title = getString(R.string.update_extra_type)
         return mView
     }
 
