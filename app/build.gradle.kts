@@ -10,14 +10,16 @@ android {
     signingConfigs {
         getByName("debug") {
             storeFile =
-                file("/media/matt/047353E96D6DD7F2/Projects/AndroidProject/keystore/matt__new_signing.jks")
+                file("C:\\Users\\matt_\\OneDrive\\projects\\AndroidProject\\keystore\\matt__new_signing.jks")
+//                file("/mnt/047353E96D6DD7F2//Projects/AndroidProject/keystore/matt__new_signing.jks")
             storePassword = "!935Gr8t"
             keyPassword = "!935Gr8t"
             keyAlias = "key0"
         }
         create("release") {
             storeFile =
-                file("/media/matt/047353E96D6DD7F2/Projects/AndroidProject/keystore/matt_signing.jks")
+                file("C:\\Users\\matt_\\OneDrive\\projects\\AndroidProject\\keystore\\matt_signing.jks")
+            // file("/mnt/02D83355D83345E7/project/AndroidProject/keystore/matt__new_signing.jks")
             storePassword = "!935Gr8t"
             keyAlias = "key0"
             keyPassword = "!935Gr8t"

@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import androidx.room.RoomWarnings
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paycalculator.database.model.workorder.Areas
@@ -382,6 +383,7 @@ interface WorkOrderDao {
             LiveData<List<WorkOrderHistoryWorkPerformedCombined>>
 
     @RewriteQueriesToDropUnusedColumns
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistoryWorkPerformed as wp, areas as ar " +
