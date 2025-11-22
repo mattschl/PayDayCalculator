@@ -10,16 +10,16 @@ android {
     signingConfigs {
         getByName("debug") {
             storeFile =
-                file("C:\\Users\\matt_\\OneDrive\\projects\\AndroidProject\\keystore\\matt__new_signing.jks")
-//                file("/mnt/047353E96D6DD7F2//Projects/AndroidProject/keystore/matt__new_signing.jks")
+//                file("C:\\Users\\matt_\\OneDrive\\projects\\AndroidProject\\keystore\\matt__new_signing.jks")
+                file("/mnt/047353E96D6DD7F2//Projects/AndroidProject/keystore/matt__new_signing.jks")
             storePassword = "!935Gr8t"
             keyPassword = "!935Gr8t"
             keyAlias = "key0"
         }
         create("release") {
             storeFile =
-                file("C:\\Users\\matt_\\OneDrive\\projects\\AndroidProject\\keystore\\matt_signing.jks")
-            // file("/mnt/02D83355D83345E7/project/AndroidProject/keystore/matt__new_signing.jks")
+//                file("C:\\Users\\matt_\\OneDrive\\projects\\AndroidProject\\keystore\\matt_signing.jks")
+                file("/mnt/02D83355D83345E7/project/AndroidProject/keystore/matt__new_signing.jks")
             storePassword = "!935Gr8t"
             keyAlias = "key0"
             keyPassword = "!935Gr8t"
@@ -55,10 +55,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
-    kotlinOptions {
-        jvmTarget = "21"
-//        jvmTarget.set(JavaVersion.VERSION_17.toString())
-    }
+
     packaging {
         resources {
             excludes.add("META-INF/*")
@@ -70,6 +67,9 @@ android {
         viewBinding = true
     }
     buildToolsVersion = "36.0.0"
+//    kotlinOptions {
+//        jvmTarget = JavaVersion.VERSION_17
+//    }
     ksp {
         arg("room.schemaLocation", "$projectDir/schemas")
     }
@@ -122,4 +122,10 @@ dependencies {
 
     implementation("androidx.compose.material3:material3:$material3Version")
 
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+    }
 }

@@ -11,8 +11,10 @@ import kotlinx.coroutines.cancel
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorkedCombined
+import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkDateTimeBinding
@@ -27,6 +29,8 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var workOrderViewModel: WorkOrderViewModel
+    private lateinit var employerViewModel: EmployerViewModel
+    private lateinit var curEmployer: Employers
     private lateinit var curDate: WorkDates
     private lateinit var existingHistories: List<WorkOrderHistoryTimeWorkedCombined>
     private lateinit var startTime: Calendar
@@ -46,6 +50,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
+        employerViewModel = mainActivity.employerViewModel
         startTime = Calendar.getInstance()
         endTime = Calendar.getInstance()
         mainActivity.topMenuBar.title = getString(R.string.enter_work_time)
@@ -64,13 +69,28 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
             workOrderViewModel.getTimeWorkedPerDay(curDate.workDateId)
                 .observe(viewLifecycleOwner) { histories ->
                     existingHistories = histories
-
+                    employerViewModel.getEmployer(curDate.wdEmployerId)
+                        .observe(viewLifecycleOwner) { employer ->
+                            curEmployer = employer
+                            populateUI()
+                        }
                 }
         }
     }
 
+    private fun populateUI() {
+        binding.apply {
+            var display = ""
+            display = "Employer: ${curEmployer.employerName}\n}"
+            display += "Date: ${df.getDisplayDate(curDate.wdDate)}\n"
+
+            tvInfo.text = display
+
+        }
+    }
+
     private fun setClickActions() {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
     }
 
 

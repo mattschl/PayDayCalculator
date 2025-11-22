@@ -927,5 +927,10 @@
             app:popUpTo="@id/workOrderHistoryTimeUpdateFragment"
             app:popUpToInclusive="true" />
     </fragment>
+    <fragment
+        android:id="@+id/workDateTimes"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateTimes"
+        android:label="WorkDateTimes"
+        tools:layout="fragment_work_date_times" />
 
 </navigation>
