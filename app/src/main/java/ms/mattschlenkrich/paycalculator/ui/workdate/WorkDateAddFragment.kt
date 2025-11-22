@@ -25,6 +25,7 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_TIME_SHEET
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_ADD
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_EXTRA_ADD
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_TIME
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_UPDATE
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
@@ -202,6 +203,18 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
             lblStat.setOnClickListener {
                 setStatHoursEstimate()
             }
+            etHours.setOnLongClickListener {
+                saveWorkDate(FRAG_WORK_DATE_TIME)
+                true
+            }
+            etOt.setOnLongClickListener {
+                saveWorkDate(FRAG_WORK_DATE_TIME)
+                true
+            }
+            etDblOt.setOnLongClickListener {
+                saveWorkDate(FRAG_WORK_DATE_TIME)
+                true
+            }
         }
     }
 
@@ -285,14 +298,14 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
         }
     }
 
-    private fun saveWorkDate(goBackTo: String) {
+    private fun saveWorkDate(fragmentToGotTo: String) {
         mainScope.launch {
             val workDate = getCurWorkDate()
             payDayViewModel.insertWorkDate(workDate)
             mainViewModel.setWorkDateObject(workDate)
             delay(WAIT_250)
             saveExtras(workDate)
-            goBackToFragment(goBackTo, workDate)
+            gotoFragment(fragmentToGotTo, workDate)
         }
     }
 
@@ -305,29 +318,32 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
             }.setNegativeButton(getString(R.string.no), null).show()
     }
 
-    private fun overWriteWorkDate(date: WorkDates, goBackTo: String) {
+    private fun overWriteWorkDate(date: WorkDates, fragmentToGoTo: String) {
         mainScope.launch {
             val workDate = getUpdatedWorkDate(date)
             payDayViewModel.updateWorkDate(workDate)
             mainViewModel.setWorkDateObject(workDate)
             delay(WAIT_250)
             saveExtras(workDate)
-            goBackToFragment(goBackTo, workDate)
+            gotoFragment(fragmentToGoTo, workDate)
         }
     }
 
-    private fun goBackToFragment(
-        goBackTo: String, workDate: WorkDates
+    private fun gotoFragment(
+        fragmentToGoTo: String, workDate: WorkDates
     ) {
         mainScope.launch {
             delay(WAIT_500)
-            if (goBackTo == FRAG_TIME_SHEET) {
+            if (fragmentToGoTo == FRAG_TIME_SHEET) {
                 gotoTimeSheetFragment()
             }
-            if (goBackTo == FRAG_WORK_DATE_UPDATE) {
-                gotoWorkDateUpdate(workDate)
+            if (fragmentToGoTo == FRAG_WORK_DATE_UPDATE) {
+                gotoWorkDateUpdateFragment()
             }
-            if (goBackTo == FRAG_WORK_ORDER_HISTORY_ADD) {
+            if (fragmentToGoTo == FRAG_WORK_DATE_TIME) {
+                gotoWorkDateTimes()
+            }
+            if (fragmentToGoTo == FRAG_WORK_ORDER_HISTORY_ADD) {
                 gotoTimeSheetAddWorkOrder(workDate)
             }
         }
@@ -380,10 +396,7 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
     }
 
     private fun gotoTimeSheetAddWorkOrder(workDate: WorkDates) {
-        mainViewModel.apply {
-            setCallingFragment(TAG)
-            setWorkDateObject(workDate)
-        }
+        mainViewModel.setCallingFragment(TAG)
         mainScope.launch {
             delay(WAIT_100)
             gotoWorkOrderHistoryAddFragment()
@@ -396,14 +409,20 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
         )
     }
 
-    private fun gotoWorkDateUpdate(workDate: WorkDates) {
-        mainViewModel.setWorkDateObject(workDate)
-        gotoWorkDateUpdateFragment()
+    private fun gotoWorkDateTimes() {
+        mainViewModel.setCallingFragment(FRAG_WORK_DATE_UPDATE)
+        gotoWorkDateTimesFragment()
     }
 
     private fun gotoWorkDateUpdateFragment() {
         mView.findNavController().navigate(
             WorkDateAddFragmentDirections.actionWorkDateAddFragmentToWorkDateUpdateFragment()
+        )
+    }
+
+    private fun gotoWorkDateTimesFragment() {
+        mView.findNavController().navigate(
+            WorkDateAddFragmentDirections.actionWorkDateAddFragmentToWorkDateTimes()
         )
     }
 

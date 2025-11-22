@@ -99,6 +99,7 @@
                         android:id="@+id/btnWorkOrder"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:backgroundTint="@color/dark_green"
                         android:text="@string/create"
                         app:layout_constraintBaseline_toBaselineOf="@id/acWorkOrder"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -118,7 +119,7 @@
                             android:weightSum="6"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
-                            
+
 
                             <androidx.recyclerview.widget.RecyclerView
                                 android:id="@+id/rvTimesWorked"

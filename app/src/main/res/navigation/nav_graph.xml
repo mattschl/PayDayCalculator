@@ -54,6 +54,9 @@
             android:id="@+id/action_workDateAddFragment_to_workOrderHistoryAddFragment"
             app:destination="@id/workOrderHistoryAddFragment"
             app:popUpTo="@id/workDateAddFragment" />
+        <action
+            android:id="@+id/action_workDateAddFragment_to_workDateTimes"
+            app:destination="@id/workDateTimes" />
 
     </fragment>
 
@@ -84,6 +87,12 @@
         <action
             android:id="@+id/action_workDateUpdateFragment_to_workOrderHistoryUpdateFragment"
             app:destination="@id/workOrderHistoryUpdateFragment" />
+        <action
+            android:id="@+id/action_workDateUpdateFragment_to_workDateAddFragment"
+            app:destination="@id/workDateAddFragment" />
+        <action
+            android:id="@+id/action_workDateUpdateFragment_to_workDateTimes"
+            app:destination="@id/workDateTimes" />
     </fragment>
 
     <!--    action_global_taxTypeFragment-->
@@ -714,6 +723,11 @@
             android:id="@+id/action_workOrderLookupFragment_to_workOrderHistoryUpdateFragment"
             app:destination="@id/workOrderHistoryUpdateFragment"
             app:popUpTo="@id/workOrderHistoryUpdateFragment" />
+        <action
+            android:id="@+id/action_workOrderLookupFragment_to_workDateTimes"
+            app:destination="@id/workDateTimes"
+            app:popUpTo="@id/workDateTimes"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <!--    WorkOrderJobSpecUpdateFragment-->
@@ -931,6 +945,15 @@
         android:id="@+id/workDateTimes"
         android:name="ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateTimes"
         android:label="WorkDateTimes"
-        tools:layout="fragment_work_date_times" />
+        tools:layout="fragment_work_date_times">
+        <action
+            android:id="@+id/action_workDateTimes_to_workDateUpdateFragment"
+            app:destination="@id/workDateUpdateFragment"
+            app:popUpTo="@id/workDateUpdateFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_workDateTimes_to_workOrderLookupFragment"
+            app:destination="@id/workOrderLookupFragment" />
+    </fragment>
 
 </navigation>

@@ -363,9 +363,9 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
 
     private fun populateWorkOrderInfo() {
         val display = curWorkOrder!!.woAddress + " | " + curWorkOrder!!.woDescription
-        binding.apply {
-            tvDescription.text = display
-            tvDescription.visibility = View.VISIBLE
+        binding.tvDescription.apply {
+            text = display
+            visibility = View.VISIBLE
         }
     }
 

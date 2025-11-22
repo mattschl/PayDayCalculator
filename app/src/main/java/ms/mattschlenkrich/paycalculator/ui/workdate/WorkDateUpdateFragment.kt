@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_TIME_SHEET
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_TIME
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_UPDATE
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
@@ -257,6 +258,18 @@ class WorkDateUpdateFragment : Fragment(
             lblStat.setOnClickListener {
                 setStatHoursEstimate()
             }
+            etHours.setOnLongClickListener {
+                updateWorkDate(FRAG_WORK_DATE_TIME)
+                true
+            }
+            etOt.setOnLongClickListener {
+                updateWorkDate(FRAG_WORK_DATE_TIME)
+                true
+            }
+            etDblOt.setOnLongClickListener {
+                updateWorkDate(FRAG_WORK_DATE_TIME)
+                true
+            }
         }
     }
 
@@ -381,6 +394,9 @@ class WorkDateUpdateFragment : Fragment(
         } else if (fragment == FRAG_TIME_SHEET) {
             gotoTimeSheetFragment()
         }
+        if (fragment == FRAG_WORK_DATE_TIME) {
+            gotoWorkDateTimes()
+        }
     }
 
     private fun gotoWorkOrderHistoryAdd() {
@@ -403,6 +419,21 @@ class WorkDateUpdateFragment : Fragment(
             setCallingFragment(TAG)
         }
         gotoWorkDateExtraAddFragment()
+    }
+
+    private fun gotoWorkDateTimes() {
+        mainViewModel.apply {
+            setWorkDateObject(getCurrentWorkDate())
+            setCallingFragment(FRAG_WORK_DATE_UPDATE)
+        }
+        gotoWorkDateTimesFragment()
+
+    }
+
+    private fun gotoWorkDateTimesFragment() {
+        mView.findNavController().navigate(
+            WorkDateUpdateFragmentDirections.actionWorkDateUpdateFragmentToWorkDateTimes()
+        )
     }
 
     private fun gotoWorkDateExtraAddFragment() {

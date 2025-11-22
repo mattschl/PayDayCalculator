@@ -135,6 +135,12 @@ class WorkOrderLookupFragment : Fragment(R.layout.fragment_work_order_view) {
         )
     }
 
+    fun gotoWorkDateTimesFragment() {
+        mView.findNavController().navigate(
+            WorkOrderLookupFragmentDirections.actionWorkOrderLookupFragmentToWorkDateTimes()
+        )
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null

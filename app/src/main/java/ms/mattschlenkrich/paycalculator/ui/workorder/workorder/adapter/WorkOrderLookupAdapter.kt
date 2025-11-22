@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_TIME
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
 import ms.mattschlenkrich.paycalculator.database.model.workorder.TempWorkOrderHistoryInfo
@@ -111,23 +112,23 @@ class WorkOrderLookupAdapter(
         if (callingFragment.contains(FRAG_WORK_ORDER_HISTORY_ADD)) {
             gotoWorkOrderAdd()
         }
+        if (callingFragment.contains(FRAG_WORK_DATE_TIME)) {
+            gotoWorkOrderTimes()
+        }
+    }
+
+    private fun gotoWorkOrderTimes() {
+        mainViewModel.removeCallingFragment(FRAG_WORK_DATE_TIME)
+        workOrderLookupFragment.gotoWorkDateTimesFragment()
     }
 
     private fun gotoWorkOrderHistoryUpdate() {
-        mainActivity.mainViewModel.setCallingFragment(
-            mainActivity.mainViewModel.getCallingFragment()!!.replace(
-                ", $FRAG_WORK_ORDER_HISTORY_UPDATE", ""
-            )
-        )
+        mainViewModel.removeCallingFragment(FRAG_WORK_ORDER_HISTORY_UPDATE)
         workOrderLookupFragment.gotoWorkOrderHistoryUpdateFragment()
     }
 
     private fun gotoWorkOrderAdd() {
-        mainActivity.mainViewModel.setCallingFragment(
-            mainActivity.mainViewModel.getCallingFragment()!!.replace(
-                ", $FRAG_WORK_ORDER_HISTORY_ADD", ""
-            )
-        )
+        mainViewModel.removeCallingFragment(FRAG_WORK_ORDER_HISTORY_ADD)
         workOrderLookupFragment.gotoWorkOrderHistoryAddFragment()
     }
 
