@@ -498,5 +498,8 @@
     <string name="_6">6</string>
     <string name="_15">15</string>
     <string name="_31">31</string>
+    <string name="time_entered_for_date">"Time entered for Date: "</string>
+    <string name="time_entered_from_work_orders">"Time entered from work orders: "</string>
+    <string name="added_automatically">*Added Automatically.</string>
 
 </resources>

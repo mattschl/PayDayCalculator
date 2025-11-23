@@ -10,6 +10,35 @@ import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
 
 @Dao
 interface PayDetailDao {
+
+    @Query(
+        "SELECT SUM(wdRegHours) FROM workDates " +
+                "WHERE workDateId = :workDateId " +
+                "AND wdIsDeleted = 0"
+    )
+    fun getHoursReg(workDateId: Long): Double
+
+    @Query(
+        "SELECT SUM(wdOtHours) FROM workDates " +
+                "WHERE workDateId = :workDateId " +
+                "AND wdIsDeleted = 0"
+    )
+    fun getHoursOt(workDateId: Long): Double
+
+    @Query(
+        "SELECT SUM(wdDblOtHours) FROM workDates " +
+                "WHERE workDateId = :workDateId " +
+                "AND wdIsDeleted = 0"
+    )
+    fun getHoursDblOt(workDateId: Long): Double
+
+    @Query(
+        "SELECT SUM(wdStatHours) FROM workDates " +
+                "WHERE workDateId = :workDateId " +
+                "AND wdIsDeleted = 0"
+    )
+    fun getHoursStat(workDateId: Long): Double
+
     @Query(
         "SELECT SUM(wdRegHours) FROM workDates " +
                 "WHERE wdEmployerId = :employerId " +

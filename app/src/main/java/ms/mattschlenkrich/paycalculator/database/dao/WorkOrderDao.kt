@@ -359,6 +359,15 @@ interface WorkOrderDao {
     )
 
     @Query(
+        "SELECT * FROM workOrderHistory " +
+                "WHERE woHistoryWorkOrderId = :workOrderId " +
+                "AND woHistoryWorkDateId = :workDateId " +
+                "AND woHistoryDeleted = 0"
+    )
+    fun getWorkOrderHistory(workOrderId: Long, workDateId: Long): WorkOrderHistory?
+
+
+    @Query(
         "DELETE FROM workOrderHistoryWorkPerformed  " +
                 "WHERE wowpHistoryId = :historyId"
     )

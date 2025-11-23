@@ -29,7 +29,7 @@ enum class PayRateBasedOn(val value: Int, val type: String) {
     MONTHLY(4, "Monthly"),
 }
 
-enum class WorkOrderHistoryTimeWorkedTypes(val value: Int, val timeWorkedType: String) {
+enum class TimeWorkedTypes(val value: Int, val timeWorkedType: String) {
     BREAK(0, "Break"),
     REG_HOURS(1, "Reg Hours"),
     OT_HOURS(2, "Ot Hours"),

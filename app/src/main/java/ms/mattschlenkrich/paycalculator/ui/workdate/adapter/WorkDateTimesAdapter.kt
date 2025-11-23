@@ -73,8 +73,8 @@ class WorkDateTimesAdapter(
             val startTime = df.get12HourDisplay("${tempStart[0]}:${tempStart[1]}")
             val tempEnd = df.splitTimeFromDateTime(history.timeWorked.wohtEndTime)
             val endTime = df.get12HourDisplay("${tempEnd[0]}:${tempEnd[1]}")
-            var display = "$startTime  to $endTime"
-            tvHours.text = display
+            var display = "$startTime to $endTime"
+            tvTimes.text = display
             val hours =
                 df.getTimeWorked(history.timeWorked.wohtStartTime, history.timeWorked.wohtEndTime)
             display = when (history.timeWorked.wohtTimeType) {

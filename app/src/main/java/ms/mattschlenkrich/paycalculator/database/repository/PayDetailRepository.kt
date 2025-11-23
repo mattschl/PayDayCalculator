@@ -3,6 +3,19 @@ package ms.mattschlenkrich.paycalculator.database.repository
 import ms.mattschlenkrich.paycalculator.database.PayDatabase
 
 class PayDetailRepository(private val db: PayDatabase) {
+
+    fun getHoursReg(workDateId: Long) =
+        db.getPayDetailDao().getHoursReg(workDateId)
+
+    fun getHoursOt(workDateId: Long) =
+        db.getPayDetailDao().getHoursOt(workDateId)
+
+    fun getHoursDblOt(workDateId: Long) =
+        db.getPayDetailDao().getHoursDblOt(workDateId)
+
+    fun getHoursStat(workDateId: Long) =
+        db.getPayDetailDao().getHoursStat(workDateId)
+
     fun getHoursReg(employerId: Long, cutoffDate: String) =
         db.getPayDetailDao().getHoursReg(employerId, cutoffDate)
 

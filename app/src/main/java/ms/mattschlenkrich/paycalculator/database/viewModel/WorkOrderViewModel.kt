@@ -60,6 +60,10 @@ class WorkOrderViewModel(
         workOrderRepository.updateWorkOrderHistory(history)
     }
 
+    fun getWorkOrderHistory(workOrderId: Long, workDateId: Long) =
+        workOrderRepository.getWorkOrderHistory(workOrderId, workDateId)
+
+
     fun updateWorkOrderHistory(
         historyID: Long,
         workOrderId: Long,
