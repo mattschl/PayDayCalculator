@@ -259,8 +259,22 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
         payDayViewModel.getPayPeriod(curCutOff, curEmployer!!.employerId).observe(
             viewLifecycleOwner
         ) { payPeriod ->
-            curPayPeriod = payPeriod
-            mainActivity.mainViewModel.setPayPeriod(payPeriod)
+            if (payPeriod != null) {
+                curPayPeriod = payPeriod
+                mainActivity.mainViewModel.setPayPeriod(payPeriod)
+            } else {
+                payDayViewModel.getCutOffDates(curEmployer!!.employerId).observe(
+                    viewLifecycleOwner
+                ) { dates ->
+                    payDayViewModel.getPayPeriod(
+                        dates.first().ppCutoffDate, curEmployer!!.employerId
+                    ).observe(viewLifecycleOwner) { payPeriod ->
+                        curPayPeriod = payPeriod
+                        mainActivity.mainViewModel.setPayPeriod(payPeriod)
+
+                    }
+                }
+            }
         }
     }
 

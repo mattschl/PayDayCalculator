@@ -26,8 +26,14 @@ enum class PayRateBasedOn(val value: Int, val type: String) {
     DAILY(1, "Daily"),
     WEEKLY(2, "Weekly"),
     BI_WEEKLY(3, "Bi-Weekly"),
-    MONTHLY(4, "Monthly"),
+    MONTHLY(4, "Monthly"), ;
+
+    override fun toString(): String {
+        return type
+    }
+
 }
+
 
 enum class TimeWorkedTypes(val value: Int, val timeWorkedType: String) {
     BREAK(0, "Break"),

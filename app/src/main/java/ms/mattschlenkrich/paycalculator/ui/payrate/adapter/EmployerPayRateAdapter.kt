@@ -9,8 +9,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.PayRateBasedOn
 import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.databinding.ListWagesItemBinding
@@ -27,6 +27,7 @@ class EmployerPayRateAdapter(
 
     private val cf = NumberFunctions()
     private val mainViewModel = mainActivity.mainViewModel
+
 
     private inline var TextView.strike: Boolean
         set(visible) {
@@ -82,10 +83,9 @@ class EmployerPayRateAdapter(
             }
             tvEffectiveDate.text = wage.eprEffectiveDate
             tvWage.text = cf.displayDollars(wage.eprPayRate)
-            tvPerFrequency.text = mView.resources.getStringArray(
-                R.array.pay_day_frequencies
-            )[wage.eprPerPeriod]
-            holder.itemView.setOnClickListener {
+            tvPerFrequency.text = PayRateBasedOn.values()[wage.eprPerPeriod].type
+            root.setOnClickListener {
+                mainViewModel.setPayRate(wage)
                 gotoWageUpdate(wage)
             }
         }
