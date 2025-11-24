@@ -133,7 +133,7 @@ class EmployerExtraDefinitionUpdateFragment :
     }
 
     private fun setMenuActions() {
-        mainActivity.addMenuProvider(object : MenuProvider {
+        mainActivity.topMenuBar.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_delete, menu)
             }

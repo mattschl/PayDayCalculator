@@ -122,7 +122,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
     }
 
     private fun setMenuAction() {
-        mainActivity.addMenuProvider(object : MenuProvider {
+        mainActivity.topMenuBar.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_delete, menu)
             }
