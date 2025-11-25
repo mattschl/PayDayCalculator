@@ -88,6 +88,13 @@ interface WorkOrderDao {
 
     @Query(
         "SELECT * FROM workOrders " +
+                "WHERE woNumber = :workOrderNum " +
+                "AND woDeleted = :employerId"
+    )
+    fun findWorkOrder(workOrderNum: String, employerId: Long): WorkOrder?
+
+    @Query(
+        "SELECT * FROM workOrders " +
                 "WHERE woEmployerId = :employerId " +
                 "AND woDeleted = 0 " +
                 "ORDER BY woNumber"

@@ -46,6 +46,10 @@ class WorkOrderViewModel(
 
     fun getWorkOrder(workOrderNum: String) = workOrderRepository.getWorkOrder(workOrderNum)
 
+    fun findWorkOrder(workOrderNum: String, employerId: Long) =
+        workOrderRepository.findWorkOrder(workOrderNum, employerId)
+
+
     fun getWorkOrdersByEmployerId(employerId: Long) =
         workOrderRepository.getWorkOrdersByEmployerId(employerId)
 

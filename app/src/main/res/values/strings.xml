@@ -501,5 +501,6 @@
     <string name="time_entered_for_date">"Time entered for Date: "</string>
     <string name="time_entered_from_work_orders">"Time entered from work orders: "</string>
     <string name="added_automatically">*Added Automatically.</string>
+    <string name="enter_time_before_wo">Enter time before work order</string>
 
 </resources>

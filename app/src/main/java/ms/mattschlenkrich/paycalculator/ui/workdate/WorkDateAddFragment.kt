@@ -215,6 +215,9 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
                 saveWorkDate(FRAG_WORK_DATE_TIME)
                 true
             }
+            btnEnterTime.setOnClickListener {
+                saveWorkDate(FRAG_WORK_DATE_TIME)
+            }
         }
     }
 

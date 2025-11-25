@@ -137,6 +137,16 @@
             app:layout_constraintStart_toEndOf="@id/lblStat"
             tools:ignore="LabelFor" />
 
+        <Button
+            android:id="@+id/btnEnterTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/dark_green"
+            android:text="@string/enter_time_before_wo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etStat" />
+
         <EditText
             android:id="@+id/etNote"
             android:layout_width="0dp"
@@ -150,7 +160,7 @@
             android:textSize="@dimen/text_size_large"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etStat"
+            app:layout_constraintTop_toBottomOf="@id/btnEnterTime"
             tools:ignore="LabelFor,VisualLintTextFieldSize" />
 
         <androidx.cardview.widget.CardView

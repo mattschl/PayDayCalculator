@@ -270,6 +270,9 @@ class WorkDateUpdateFragment : Fragment(
                 updateWorkDate(FRAG_WORK_DATE_TIME)
                 true
             }
+            btnEnterTime.setOnClickListener {
+                updateWorkDate(FRAG_WORK_DATE_TIME)
+            }
         }
     }
 
