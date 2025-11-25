@@ -413,6 +413,8 @@ class WorkDateAddFragment : Fragment(R.layout.fragment_work_date_add), IWorkDate
     }
 
     private fun gotoWorkDateTimes() {
+        mainViewModel.setWorkOrderNumber(null)
+        mainViewModel.setWorkOrder(null)
         mainViewModel.setCallingFragment(FRAG_WORK_DATE_UPDATE)
         gotoWorkDateTimesFragment()
     }

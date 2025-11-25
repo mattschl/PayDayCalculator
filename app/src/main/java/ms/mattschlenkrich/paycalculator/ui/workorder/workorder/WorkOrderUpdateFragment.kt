@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_TIME
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDERS
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
@@ -572,18 +573,15 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
     }
 
     private fun gotoCallingFragment() {
-        when (mainActivity.mainViewModel.getCallingFragment()) {
-            FRAG_WORK_ORDER_HISTORY_ADD -> {
-                gotoWorkOrderHistoryAddFragment()
-            }
-
-            FRAG_WORK_ORDER_HISTORY_UPDATE -> {
-                gotoWorkOrderHistoryUpdateFragment()
-            }
-
-            FRAG_WORK_ORDERS -> {
-                gotoWorkOrdersFragment()
-            }
+        val frag = mainViewModel.getCallingFragment()!!
+        if (frag.contains(FRAG_WORK_ORDER_HISTORY_ADD)) {
+            gotoWorkOrderHistoryAddFragment()
+        } else if (frag.contains(FRAG_WORK_ORDER_HISTORY_UPDATE)) {
+            gotoWorkOrderHistoryUpdateFragment()
+        } else if (frag.contains(FRAG_WORK_ORDERS)) {
+            gotoWorkOrdersFragment()
+        } else if (frag.contains(FRAG_WORK_DATE_TIME)) {
+            gotoWorkDateTimesFragment()
         }
     }
 
@@ -626,6 +624,12 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
     override fun gotoWorkOrderHistoryFragment() {
         mView.findNavController().navigate(
             WorkOrderUpdateFragmentDirections.actionWorkOrderUpdateFragmentToWorkOrderHistoryUpdateFragment()
+        )
+    }
+
+    private fun gotoWorkDateTimesFragment() {
+        mView.findNavController().navigate(
+            WorkOrderUpdateFragmentDirections.actionWorkOrderUpdateFragmentToWorkDateTimes()
         )
     }
 

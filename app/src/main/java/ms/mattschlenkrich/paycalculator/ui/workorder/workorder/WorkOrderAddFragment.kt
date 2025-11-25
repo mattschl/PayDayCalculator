@@ -17,6 +17,8 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_TIME
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
@@ -213,7 +215,18 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
     }
 
     private fun gotoCallingFragment() {
-        gotoTimeSheetAddWorkOrderFragment()
+        val frag = mainViewModel.getCallingFragment()!!
+        if (frag.contains(FRAG_WORK_DATE_TIME)) {
+            gotoWorkDateTimesFragment()
+        } else if (frag.contains(FRAG_WORK_ORDER_HISTORY_ADD)) {
+            gotoTimeSheetAddWorkOrderFragment()
+        }
+    }
+
+    private fun gotoWorkDateTimesFragment() {
+        mView.findNavController().navigate(
+            WorkOrderAddFragmentDirections.actionWorkOrderAddFragmentToWorkDateTimes()
+        )
     }
 
     private fun gotoWorkOrderUpdateFragment() {

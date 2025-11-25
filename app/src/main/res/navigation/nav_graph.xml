@@ -671,6 +671,11 @@
         <action
             android:id="@+id/action_workOrderAddFragment_to_jobSpecUpdateFragment"
             app:destination="@id/jobSpecUpdateFragment" />
+        <action
+            android:id="@+id/action_workOrderAddFragment_to_workDateTimes"
+            app:destination="@id/workDateTimes"
+            app:popUpTo="@id/workDateTimes"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <!--    workOrderUpdateFragment-->
@@ -707,6 +712,11 @@
         <action
             android:id="@+id/action_workOrderUpdateFragment_to_areaUpdateFragment"
             app:destination="@id/areaUpdateFragment" />
+        <action
+            android:id="@+id/action_workOrderUpdateFragment_to_workDateTimes"
+            app:destination="@id/workDateTimes"
+            app:popUpTo="@id/workDateTimes"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <!--    workOrderLookupFragment-->
@@ -954,6 +964,12 @@
         <action
             android:id="@+id/action_workDateTimes_to_workOrderLookupFragment"
             app:destination="@id/workOrderLookupFragment" />
+        <action
+            android:id="@+id/action_workDateTimes_to_workOrderUpdateFragment"
+            app:destination="@id/workOrderUpdateFragment" />
+        <action
+            android:id="@+id/action_workDateTimes_to_workOrderAddFragment"
+            app:destination="@id/workOrderAddFragment" />
     </fragment>
 
 </navigation>

@@ -84,7 +84,7 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
                 populateCurrentEmployer()
             }
             delay(WAIT_100)
-            populateWorkOrderLists()
+            populateWorkOrderListForAutoComplete()
             delay(WAIT_250)
             populateTempWorkOrderInfo()
         }
@@ -172,7 +172,7 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
         }
     }
 
-    private fun populateWorkOrderLists() {
+    private fun populateWorkOrderListForAutoComplete() {
         if (workDateObject != null) {
             workOrderViewModel.getWorkOrdersByEmployerId(workDateObject!!.wdEmployerId).observe(
                 viewLifecycleOwner
@@ -204,20 +204,6 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
 
     private fun setClickActions() {
         binding.apply {
-            fabDone.setOnClickListener {
-                validateWorkOrderNumberAndSaveHistoryIfValid()
-            }
-            fabDone.setOnLongClickListener {
-                validateWorkOrderNumberAndSaveHistoryIfValid(true)
-                true
-            }
-            btnWorkOrder.setOnClickListener {
-                if (btnWorkOrder.text.toString() == getString(R.string.edit)) {
-                    gotoWorkOrderUpdate()
-                } else {
-                    gotoWorkOrderAdd()
-                }
-            }
             acWorkOrder.setOnItemClickListener { _, _, _, _ ->
                 setCurWorkOrder()
             }
@@ -241,6 +227,20 @@ class WorkOrderHistoryAddFragment : Fragment(R.layout.fragment_work_order_histor
                 }
 
             })
+            btnWorkOrder.setOnClickListener {
+                if (btnWorkOrder.text.toString() == getString(R.string.edit)) {
+                    gotoWorkOrderUpdate()
+                } else {
+                    gotoWorkOrderAdd()
+                }
+            }
+            fabDone.setOnClickListener {
+                validateWorkOrderNumberAndSaveHistoryIfValid()
+            }
+            fabDone.setOnLongClickListener {
+                validateWorkOrderNumberAndSaveHistoryIfValid(true)
+                true
+            }
         }
     }
 

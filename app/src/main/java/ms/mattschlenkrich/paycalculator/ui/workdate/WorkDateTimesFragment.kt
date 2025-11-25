@@ -1,8 +1,11 @@
 package ms.mattschlenkrich.paycalculator.ui.workdate
 
+import android.app.AlertDialog
 import android.app.TimePickerDialog
 import android.database.sqlite.SQLiteConstraintException
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -24,8 +27,10 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_TIME
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_UPDATE
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
+import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
@@ -36,6 +41,7 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistor
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkDateTimeBinding
@@ -55,6 +61,8 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
     private lateinit var workOrderViewModel: WorkOrderViewModel
     private lateinit var employerViewModel: EmployerViewModel
     private lateinit var payDetailViewModel: PayDetailViewModel
+
+    private lateinit var payDayViewModel: PayDayViewModel
     private lateinit var curEmployer: Employers
     private lateinit var curDate: WorkDates
     private var curWorkOrder: WorkOrder? = null
@@ -83,6 +91,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
         workOrderViewModel = mainActivity.workOrderViewModel
         employerViewModel = mainActivity.employerViewModel
         payDetailViewModel = mainActivity.payDetailViewModel
+        payDayViewModel = mainActivity.payDayViewModel
         startTime = Calendar.getInstance()
         endTime = Calendar.getInstance()
         mainActivity.topMenuBar.title = getString(R.string.enter_work_time)
@@ -122,6 +131,11 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
         startTime.set(Calendar.HOUR_OF_DAY, 8)
         startTime.set(Calendar.MINUTE, 30)
         startTime.set(Calendar.SECOND, 0)
+        if (endTime < startTime) {
+            endTime.set(Calendar.HOUR_OF_DAY, 8)
+            endTime.set(Calendar.MINUTE, 30)
+            endTime.set(Calendar.SECOND, 0)
+        }
         setDatesToCorrectedTimes()
     }
 
@@ -253,6 +267,17 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                     totalRegHoursForDay = hrsRegByTimeEntered
                     totalOtHoursForDay = hrsOtByTimeEntered
                     totalDblOtHoursForDay = hrsDblOtByTimeEntered
+                    if (hrsReg < hrsRegByTimeEntered || hrsOt < hrsOtByTimeEntered || hrsDblOt < hrsDblOtByTimeEntered) {
+                        hrsReg = hrsRegByTimeEntered
+                        hrsOt = hrsOtByTimeEntered
+                        hrsDblOt = hrsDblOtByTimeEntered
+                        updateWorkDateHours(
+                            hrsReg,
+                            hrsOt,
+                            hrsDblOt,
+                            hrsStat
+                        )
+                    }
 
                     populateHoursInDisplay(
                         hrsReg,
@@ -266,6 +291,30 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
 
                 }
         }
+    }
+
+    private fun updateWorkDateHours(
+        hrsReg: Double,
+        hrsOt: Double,
+        hrsDblOt: Double,
+        hrsStat: Double
+    ) {
+        payDayViewModel.updateWorkDate(
+            WorkDates(
+                curDate.workDateId,
+                curDate.wdPayPeriodId,
+                curDate.wdEmployerId,
+                curDate.wdCutoffDate,
+                curDate.wdDate,
+                hrsReg,
+                hrsOt,
+                hrsDblOt,
+                hrsStat,
+                curDate.wdNote,
+                false,
+                df.getCurrentTimeAsString()
+            )
+        )
     }
 
     private fun populateHoursInDisplay(
@@ -318,17 +367,51 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                 gotoWorkOrderLookup()
                 true
             }
+            acWorkOrder.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?, start: Int, count: Int, after: Int
+                ) {
+//                    null
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                    setCurWorkOrder()
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    setCurWorkOrder()
+                }
+
+            })
+            btnWorkOrder.setOnClickListener {
+                if (btnWorkOrder.text.toString() == getString(R.string.edit)) {
+                    gotoWorkOrderUpdate()
+                } else {
+                    gotoWorkOrderAdd()
+                }
+            }
             btnEnterTime.setOnClickListener {
                 insertTime()
-                populateTimesRecycler()
             }
             fabDone.setOnClickListener {
-                //go back
-
+                gotoCallingFragment()
             }
         }
         setStartTimeActions()
         setEndTimeActions()
+    }
+
+    private fun validateWorkOrderNumberAndSaveHistoryIfValid() {
+        if (doesWorkOrderExist()) {
+
+            displayMessage(getString(R.string.work_order_has_been_added_to_date))
+        } else {
+            AlertDialog.Builder(mView.context)
+                .setTitle(getString(R.string.create_work_order_) + "${binding.acWorkOrder.text}?")
+                .setMessage(getString(R.string.this_work_order_does_not_exist))
+                .setPositiveButton(getString(R.string.yes)) { _, _ -> gotoWorkOrderAdd() }
+                .setNegativeButton(getString(R.string.no), null).show()
+        }
     }
 
     private fun setStartTimeActions() {
@@ -470,6 +553,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                         setDatesToCorrectedTimes()
                         populateTimesRecycler()
                         populateWorkOrderInfo()
+                        updateWorkOrderHistoryInDb(workOrderHistoryDeferred.await())
                     }
                     return true
                 } catch (e: SQLiteConstraintException) {
@@ -482,6 +566,54 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
             displayMessage("${getString(R.string.error_)} $answer")
             return false
         }
+    }
+
+    private fun updateWorkOrderHistoryInDb(workOrderHistory: WorkOrderHistory) {
+        workOrderViewModel.getTimeWorkedForWorkOrderHistory(workOrderHistory.woHistoryId)
+            .observe(viewLifecycleOwner) { timesList ->
+                var hrsReg = 0.0
+                var hrsOt = 0.0
+                var hrsDblOt = 0.0
+                for (time in timesList) {
+                    hrsReg += if (time.timeWorked.wohtTimeType == TimeWorkedTypes.REG_HOURS.value) {
+                        df.getTimeWorked(
+                            time.timeWorked.wohtStartTime,
+                            time.timeWorked.wohtEndTime,
+                        )
+                    } else {
+                        0.0
+                    }
+                    hrsOt += if (time.timeWorked.wohtTimeType == TimeWorkedTypes.OT_HOURS.value) {
+                        df.getTimeWorked(
+                            time.timeWorked.wohtStartTime,
+                            time.timeWorked.wohtEndTime,
+                        )
+                    } else {
+                        0.0
+                    }
+                    hrsDblOt += if (time.timeWorked.wohtTimeType == TimeWorkedTypes.DBL_OT_HOURS.value) {
+                        df.getTimeWorked(
+                            time.timeWorked.wohtStartTime,
+                            time.timeWorked.wohtEndTime,
+                        )
+                    } else {
+                        0.0
+                    }
+                }
+                workOrderViewModel.updateWorkOrderHistory(
+                    WorkOrderHistory(
+                        workOrderHistory.woHistoryId,
+                        workOrderHistory.woHistoryWorkOrderId,
+                        curDate.workDateId,
+                        hrsReg,
+                        hrsOt,
+                        hrsDblOt,
+                        workOrderHistory.woHistoryNote,
+                        false,
+                        df.getCurrentTimeAsString()
+                    )
+                )
+            }
     }
 
     private suspend fun getOrCreateWorkOrderHistory(): WorkOrderHistory {
@@ -533,10 +665,16 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
     }
 
     private suspend fun getOrCreateWorkOrder(): WorkOrder {
-        val wo = workOrderViewModel.findWorkOrder("break", curEmployer.employerId)
-        if (wo != null) {
-            curWorkOrder = wo
-        } else {
+        var wo: WorkOrder? = null
+        defaultScope.launch {
+            wo = workOrderViewModel.findWorkOrder("break", curEmployer.employerId)
+        }
+        delay(WAIT_100)
+        try {
+            Log.d(TAG, "getOrCreateWorkOrder: Work order was found $wo")
+            curWorkOrder = wo!!
+        } catch (e: Exception) {
+            Log.d(TAG, "getOrCreateWorkOrder: error was $e")
             curWorkOrder = WorkOrder(
                 nf.generateRandomIdAsLong(),
                 "break",
@@ -547,9 +685,12 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                 df.getCurrentTimeAsString()
             )
             workOrderViewModel.insertWorkOrder(curWorkOrder!!)
+            Log.d(
+                TAG,
+                "getOrCreateWorkOrder: ${curWorkOrder?.woNumber} & ${curWorkOrder?.workOrderId}"
+            )
         }
         delay(WAIT_250)
-        Log.d(TAG, "getOrCreateWorkOrder: ${curWorkOrder?.woNumber} & ${curWorkOrder?.workOrderId}")
         return curWorkOrder!!
     }
 
@@ -642,6 +783,50 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
         }
         return false
     }
+
+    private fun gotoCallingFragment() {
+        if (mainViewModel.getCallingFragment() != null) {
+            val frag = mainViewModel.getCallingFragment()!!
+            if (frag.contains(FRAG_WORK_DATE_UPDATE)) {
+                gotoWorkDateUpdateFragment()
+            } else {
+                //do nothing
+            }
+        }
+    }
+
+
+    private fun gotoWorkOrderAdd() {
+        mainViewModel.setWorkOrderNumber(binding.acWorkOrder.text.toString())
+        mainViewModel.addCallingFragment(TAG)
+        gotoWorkOrderAddFragment()
+    }
+
+    private fun gotoWorkOrderUpdate() {
+        mainViewModel.setWorkOrderNumber(binding.acWorkOrder.text.toString())
+        mainViewModel.setWorkOrder(curWorkOrder)
+        mainViewModel.addCallingFragment(TAG)
+        gotoWorkOrderUpdateFragment()
+    }
+
+    private fun gotoWorkDateUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkDateTimesDirections.actionWorkDateTimesToWorkDateUpdateFragment()
+        )
+    }
+
+    private fun gotoWorkOrderAddFragment() {
+        mView.findNavController().navigate(
+            WorkDateTimesDirections.actionWorkDateTimesToWorkOrderAddFragment()
+        )
+    }
+
+    private fun gotoWorkOrderUpdateFragment() {
+        mView.findNavController().navigate(
+            WorkDateTimesDirections.actionWorkDateTimesToWorkOrderUpdateFragment()
+        )
+    }
+
 
     private fun gotoWorkOrderLookup() {
         mainViewModel.setWorkOrder(curWorkOrder)
