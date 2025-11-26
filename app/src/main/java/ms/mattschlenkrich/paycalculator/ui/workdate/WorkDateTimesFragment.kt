@@ -116,8 +116,10 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
             setCorrectedTimes()
             calculateHoursAndDisplay()
             calculateAdjustmentsForRegAndOt(Calendar.getInstance())
+            delay(WAIT_500)
             populateWorkOrderFromDb()
             populateTimesRecycler()
+            adjustWorkTimeTypes()
         }
     }
 
@@ -129,7 +131,6 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
     }
 
     private fun populateExistingHistories() {
-        Log.d(TAG, "populateExistingHistories: started")
         workOrderViewModel.getTimeWorkedPerDay(curDate.workDateId)
             .observe(viewLifecycleOwner) { histories ->
                 existingHistories = histories
@@ -143,7 +144,6 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
     }
 
     private fun populateTimeVariables() {
-        Log.d(TAG, "populateTimeVariables: started")
         val tempDate = curDate.wdDate.split("-")
         startTime.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
         endTime.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
@@ -156,17 +156,14 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
     }
 
     private fun populateBasicInfo() {
-        Log.d(TAG, "populateBasicInfo: started")
         binding.apply {
             var display = "Employer: ${curEmployer.employerName}\n"
             display += "Date: ${df.getDisplayDate(curDate.wdDate)}\n"
             tvInfo.text = display
         }
-        Log.d(TAG, "populateBasicInfo: ended")
     }
 
     private fun calculateHoursAndDisplay() {
-        Log.d(TAG, "calculateHoursAndDisplay: started")
         mainScope.launch {
             var hrsReg = 0.0
             var hrsOt = 0.0
@@ -273,7 +270,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
 
     private fun calculateAdjustmentsForRegAndOt(time: Calendar) {
         binding.apply {
-            val timeNow = time.clone() as Calendar
+            val timeNow: Calendar = time.clone() as Calendar
             val tempDate = curDate.wdDate.split("-")
             timeNow.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
             if (df.getTimeWorked(startTime, endTime) < 0.0) {
@@ -441,7 +438,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                 }
             }
             btnEnterTime.setOnClickListener {
-                insertTime()
+                validateWorkOrderNumberAndSaveHistoryIfValid()
             }
             fabDone.setOnClickListener {
                 gotoCallingFragment()
@@ -453,8 +450,8 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
 
     private fun validateWorkOrderNumberAndSaveHistoryIfValid() {
         if (doesWorkOrderExist()) {
-
             displayMessage(getString(R.string.work_order_has_been_added_to_date))
+            insertTime()
         } else {
             AlertDialog.Builder(mView.context)
                 .setTitle(getString(R.string.create_work_order_) + "${binding.acWorkOrder.text}?")
@@ -467,7 +464,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
     private fun setStartTimeActions() {
         binding.apply {
             val timeSetListener =
-                TimePickerDialog.OnTimeSetListener { timePicker, hourOfDay, minute ->
+                TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
                     val tempStartTime =
                         df.roundTimeDownTo15Minutes(hourOfDay, minute)
                     startTime.set(Calendar.HOUR_OF_DAY, tempStartTime.first)
@@ -492,7 +489,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
     private fun setEndTimeActions() {
         binding.apply {
             val timeSetListener =
-                TimePickerDialog.OnTimeSetListener { timePicker, hourOfDay, minute ->
+                TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
                     mainScope.launch {
                         val tempEndTime = hourOfDay * 60 + minute
                         val tempStartTime =
@@ -525,6 +522,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
         }
     }
 
+    @Suppress("UNNECESSARY_SAFE_CALL")
     private fun insertTime(): Boolean {
         val answer = validateTimeWorked()
         if (answer == ANSWER_OK) {
@@ -568,6 +566,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                     Log.d(TAG, e.message.toString())
                     return false
                 }
+
             }
         } else {
             displayMessage("${getString(R.string.error_)} $answer")
@@ -575,13 +574,43 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
         }
     }
 
-    private suspend fun repopulateUi() {
+    private fun repopulateUi() {
 //        populateExistingHistories()
         setCorrectedTimes()
+        adjustWorkTimeTypes()
         populateTimesRecycler()
         populateWorkOrderInfo()
+        calculateAdjustmentsForRegAndOt(endTime)
         calculateHoursAndDisplay()
         updateTimesDisplayed()
+    }
+
+    private fun adjustWorkTimeTypes() {
+        binding.apply {
+            Log.d(TAG, "adjustWorkTimeTypes: started: Total time for day is $totalRegHoursForDay")
+            if (radBreak.isChecked) {
+                Log.d(TAG, "adjustWorkTimeTypes: break")
+                radRegHours.isChecked = true
+                radBreak.isChecked = false
+                radOtHours.isChecked = false
+                radDblOtHours.isChecked = false
+            }
+            if (totalRegHoursForDay >= 8.0) {
+                Log.d(TAG, "adjustWorkTimeTypes: Ot: Total time is $totalRegHoursForDay")
+                radOtHours.isChecked = true
+                radRegHours.isChecked = false
+                radDblOtHours.isChecked = false
+                radBreak.isChecked = false
+            }
+            if (totalOtHoursForDay + totalRegHoursForDay >= 12.0) {
+                Log.d(TAG, "adjustWorkTimeTypes: Dbl Ot: Total time is $totalOtHoursForDay")
+                radDblOtHours.isChecked = true
+                radOtHours.isChecked = false
+                radRegHours.isChecked = false
+                radBreak.isChecked = false
+            }
+            Log.d(TAG, "adjustWorkTimeTypes: ended")
+        }
     }
 
     private fun updateWorkOrderHistoryInDb(workOrderHistory: WorkOrderHistory) {
@@ -641,10 +670,6 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                     when (curWorkOrder) {
                         null if binding.radBreak.isChecked -> {
                             curWorkOrder = getOrCreateWorkOrder()
-                            Log.d(
-                                TAG,
-                                "getOrCreateWorkOrderHistory: curWorkOrder = ${curWorkOrder?.woNumber}"
-                            )
                             workOrderViewModel.getWorkOrderHistory(
                                 curWorkOrder!!.workOrderId,
                                 curDate.workDateId
@@ -652,13 +677,10 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                         }
 
                         null -> {
-                            Log.d(TAG, "getOrCreateWorkOrderHistory: null")
                             return@async null
                         }
 
                         else -> {
-                            Log.d(TAG, "getOrCreateWorkOrderHistory: else")
-
                             workOrderViewModel.getWorkOrderHistory(
                                 curWorkOrder!!.workOrderId,
                                 curDate.workDateId

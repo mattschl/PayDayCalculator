@@ -88,7 +88,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                 .observe(viewLifecycleOwner) { historyCombined ->
                     curWorkOrderHistory = historyCombined
                     binding.apply {
-                        curDateString = historyCombined.workDate.wdDate
+                        curDateString = curWorkOrderHistory.workDate.wdDate
                         populateWorkOrderInfo(historyCombined)
                         populateTimesFromHistory(historyCombined)
                         populateExistingTimesRecycler(historyCombined)
@@ -276,7 +276,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
     private fun setStartTimeActions() {
         binding.apply {
             val timeSetListener =
-                TimePickerDialog.OnTimeSetListener { timePicker, hourOfDay, minute ->
+                TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
                     val tempStartTime =
                         df.roundTimeDownTo15Minutes(hourOfDay, minute)
                     startTime.set(Calendar.HOUR_OF_DAY, tempStartTime.first)
@@ -301,7 +301,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
     private fun setEndTimeAction() {
         binding.apply {
             val timeSetListener =
-                TimePickerDialog.OnTimeSetListener { timePicker, hourOfDay, minute ->
+                TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
                     mainScope.launch {
                         val tempEndTime = hourOfDay * 60 + minute
                         val tempStartTime =

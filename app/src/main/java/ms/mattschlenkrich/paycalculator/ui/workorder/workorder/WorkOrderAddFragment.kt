@@ -79,6 +79,9 @@ class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
                 tvEmployer.visibility = View.INVISIBLE
                 populateEmployers()
             }
+            if (mainViewModel.getWorkOrderNumber() != null) {
+                etWorkOrderNumber.setText(mainViewModel.getWorkOrderNumber()!!)
+            }
             if (mainViewModel.getTempWorkOrderHistoryInfo() != null) {
                 populateValuesFromHistory()
 //                mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
