@@ -491,7 +491,7 @@
     <string name="this_will_exceed_12_hours">This exceeds 12 hours. The extra should be Dbl Ot.</string>
     <string name="this_will_exceed_24_hours">This exceeds 24 hours and needs to be spreads over 2 days.</string>
     <string name="time_has_been_adjusted_to_8_hours">Time has automatically been adjusted to not exceed 8 hours</string>
-    <string name="time_has_been_adjusted_to_12_hours">Time worked Exceeds 12 hours. Time has been automatically adjusted to not exceed 12 hours.</string>
+    <string name="time_has_been_adjusted_to_12_hours">Time has been automatically adjusted to not exceed 12 hours.</string>
     <string name="choose_first_check_date">Choose the first pay date</string>
     <string name="work_order_has_been_added_to_date">The Work Order has been automatically added to the Date.</string>
     <string name="click_to_change_date">Click to change date</string>

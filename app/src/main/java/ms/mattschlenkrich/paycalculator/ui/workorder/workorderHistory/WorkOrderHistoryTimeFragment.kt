@@ -115,6 +115,9 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
         startTime.set(Calendar.HOUR_OF_DAY, 8)
         startTime.set(Calendar.MINUTE, 30)
         startTime.set(Calendar.SECOND, 0)
+        if (endTime < startTime) {
+            endTime = startTime
+        }
         setDatesToCorrectTimes(historyCombined)
     }
 
@@ -304,7 +307,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                         val tempStartTime =
                             startTime.get(Calendar.HOUR_OF_DAY) * 60 + startTime.get(Calendar.MINUTE)
                         if (tempEndTime < tempStartTime) {
-                            showMessage(getString(R.string.end_time_before_start_time))
+                            displayMessage(getString(R.string.end_time_before_start_time))
                             endTime.set(Calendar.HOUR_OF_DAY, startTime.get(Calendar.HOUR_OF_DAY))
                             endTime.set(Calendar.MINUTE, startTime.get(Calendar.MINUTE))
                             endTime.set(Calendar.SECOND, 0)
@@ -333,7 +336,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                                 endTime.set(Calendar.MINUTE, tempHoursAndMinutes.second)
                                 endTime.set(Calendar.SECOND, 0)
 //                                binding.clkEndTime.text = df.get12HourDisplay(endTime)
-                                showMessage(getString(R.string.time_has_been_adjusted_to_8_hours))
+                                displayMessage(getString(R.string.time_has_been_adjusted_to_8_hours))
 //                                radHourType.check(R.id.radOtHours)
                             }
                         }
@@ -352,7 +355,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                                 endTime.set(Calendar.HOUR_OF_DAY, tempHoursAndMinutes.first)
                                 endTime.set(Calendar.MINUTE, tempHoursAndMinutes.second)
                                 endTime.set(Calendar.SECOND, 0)
-                                showMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
+                                displayMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
                             }
                         }
                         displayTimesAndHours()
@@ -409,18 +412,18 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                     }
                     return true
                 } catch (e: SQLiteConstraintException) {
-                    showMessage(getString(R.string.error_) + e.message)
+                    displayMessage(getString(R.string.error_) + e.message)
                     Log.d(TAG, e.message.toString())
                     return false
                 }
             }
         } else {
-            showMessage("${getString(R.string.error_)} $answer")
+            displayMessage("${getString(R.string.error_)} $answer")
             return false
         }
     }
 
-    private fun showMessage(message: String) {
+    private fun displayMessage(message: String) {
         Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 

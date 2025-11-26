@@ -1,8 +1,10 @@
 package ms.mattschlenkrich.paycalculator.common
 
+import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.pow
 import kotlin.math.round
 
 private const val TAG = "DateFunctions"
@@ -115,17 +117,29 @@ class DateFunctions {
     }
 
     fun roundCalendarTimeTo15Minutes(time: Calendar): Calendar {
-        val roundedMinute = (round(time.get(Calendar.MINUTE).toDouble() / 15) * 15).toInt()
-        time.set(Calendar.MINUTE, roundedMinute)
-        time.set(Calendar.SECOND, 0)
-        return time
+        val tempTime = time.clone() as Calendar
+        val minutes = tempTime.get(Calendar.MINUTE)
+        val divided = minutes / 15.0
+        val roundedInt = round(divided)
+        val roundedMinute = (roundedInt * 15).toInt()
+        tempTime.set(Calendar.MINUTE, roundedMinute)
+        tempTime.set(Calendar.SECOND, 0)
+        return tempTime
+    }
+
+
+    fun roundToDecimalPlacesNumerical(number: Double, decimalPlaces: Int): Double {
+        val factor = 10.0.pow(decimalPlaces)
+        return round(number * factor) / factor
     }
 
     fun roundCalendarTimeUpTo15Minutes(time: Calendar): Calendar {
-        val roundedMinute = (round(time.get(Calendar.MINUTE).toDouble() / 15 + 6.5) * 15).toInt()
-        time.set(Calendar.MINUTE, roundedMinute)
-        time.set(Calendar.SECOND, 0)
-        return time
+        val tempTime = time.clone() as Calendar
+        val roundedMinute =
+            (round(tempTime.get(Calendar.MINUTE).toDouble() / 15 + 6.5) * 15).toInt()
+        tempTime.set(Calendar.MINUTE, roundedMinute)
+        tempTime.set(Calendar.SECOND, 0)
+        return tempTime
     }
 
     fun getHourFromStringAsInt(timeString: String): Int {
@@ -138,5 +152,23 @@ class DateFunctions {
         var tempTime = timeString.split(" ")
         tempTime = tempTime[1].split(":")
         return tempTime[1].toInt()
+    }
+
+    fun addHoursToCalendar(time: Calendar, hours: Double): Calendar {
+        val tempTime = time.clone() as Calendar
+        Log.d(TAG, "addHoursToCalendar: started with time = ${tempTime.time} and hours = $hours")
+        tempTime.add(Calendar.HOUR_OF_DAY, hours.toInt())
+        Log.d(
+            TAG,
+            "addHoursToCalendar: after add hours with time = ${tempTime.time} modulo is ${hours % 1}"
+        )
+        tempTime.add(Calendar.MINUTE, ((hours % 1) * 60).toInt())
+        Log.d(
+            TAG,
+            "addHoursToCalendar: after add minutes with time = ${tempTime.time} and the modulus is ${((hours % 1) * 60).toInt()}"
+        )
+        tempTime.set(Calendar.SECOND, 0)
+        roundCalendarTimeTo15Minutes(tempTime)
+        return tempTime
     }
 }

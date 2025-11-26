@@ -110,91 +110,12 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
             populateWorkOrderListForAutoComplete()
             delay(WAIT_250)
             populateWorkOrderFromDb()
-            populateTimeVariables()
             populateTimesRecycler()
         }
     }
 
-    private fun populateTimesRecycler() {
-        val workDateTimesAdapter = WorkDateTimesAdapter(mainActivity, mView)
-        binding.rvTimeWorked.apply {
-            layoutManager = LinearLayoutManager(mView.context)
-            adapter = workDateTimesAdapter
-        }
-        workDateTimesAdapter.differ.submitList(existingHistories)
-    }
-
-    private fun populateTimeVariables() {
-        val tempDate = curDate.wdDate.split("-")
-        startTime.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
-        endTime.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
-        startTime.set(Calendar.HOUR_OF_DAY, 8)
-        startTime.set(Calendar.MINUTE, 30)
-        startTime.set(Calendar.SECOND, 0)
-        if (endTime < startTime) {
-            endTime.set(Calendar.HOUR_OF_DAY, 8)
-            endTime.set(Calendar.MINUTE, 30)
-            endTime.set(Calendar.SECOND, 0)
-        }
-        setDatesToCorrectedTimes()
-    }
-
-    private fun setDatesToCorrectedTimes() {
-        timeWorkedByDayAsCalendarPairs.clear()
-        for (time in existingHistories) {
-            val start = df.getCalendarFromString(time.timeWorked.wohtStartTime)
-            val end = df.getCalendarFromString(time.timeWorked.wohtEndTime)
-            timeWorkedByDayAsCalendarPairs.add(Pair(start, end))
-        }
-        if (existingHistories.isNotEmpty()) {
-            val tempStartTime =
-                df.splitTimeFromDateTime(existingHistories.last().timeWorked.wohtEndTime)
-            startTime.set(Calendar.HOUR_OF_DAY, tempStartTime[0].toInt())
-            startTime.set(Calendar.MINUTE, tempStartTime[1].toInt())
-            startTime.set(Calendar.SECOND, 0)
-        }
-        updateTimesDisplayed()
-    }
-
-    private fun updateTimesDisplayed() {
-        binding.apply {
-            clkStartTime.text = df.get12HourDisplay(startTime)
-            // automatically set the end time to not exceed the next block of time
-            clkEndTime.text = df.get12HourDisplay(endTime)
-            val display = nf.getNumberFromDouble(
-                df.getTimeWorked(
-                    startTime,
-                    endTime
-                )
-            ) + " " + getString(R.string.hours)
-            tvTotalTime.text = display
-        }
-    }
-
-    private fun populateWorkOrderFromDb() {
-        if (mainViewModel.getWorkOrder() != null) {
-            curWorkOrder = mainViewModel.getWorkOrder()
-            binding.acWorkOrder.setText(curWorkOrder!!.woNumber)
-            setCurWorkOrder()
-        }
-    }
-
-    private fun populateWorkOrderListForAutoComplete() {
-        workOrderViewModel.getWorkOrdersByEmployerId(curEmployer.employerId)
-            .observe(viewLifecycleOwner) { list ->
-                workOrderList = list
-                val workOrderListForAutocomplete = ArrayList<String>()
-                list.listIterator().forEach { workOrderListForAutocomplete.add(it.woNumber) }
-                binding.apply {
-                    val woAdapter = ArrayAdapter(
-                        mView.context, R.layout.spinner_item_normal, workOrderListForAutocomplete
-                    )
-                    acWorkOrder.setAdapter(woAdapter)
-                }
-            }
-    }
-
     private fun populateWorkDateAndEmployer() {
+        Log.d(TAG, "populateWorkDateAndEmployer: Started")
         if (mainViewModel.getEmployer() != null) {
             curEmployer = mainViewModel.getEmployer()!!
         }
@@ -206,19 +127,41 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
 
                 }
         }
+        Log.d(
+            TAG,
+            "populateWorkDateAndEmployer: curEmployer = ${curEmployer.employerName}, curDate = ${curDate.wdDate}"
+        )
+        populateTimeVariables()
         populateBasicInfo()
     }
 
+    private fun populateTimeVariables() {
+        Log.d(TAG, "populateTimeVariables: started")
+        val tempDate = curDate.wdDate.split("-")
+        startTime.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
+        endTime.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
+        startTime.set(Calendar.HOUR_OF_DAY, 8)
+        startTime.set(Calendar.MINUTE, 30)
+        startTime.set(Calendar.SECOND, 0)
+        if (endTime < startTime) {
+            endTime = startTime.clone() as Calendar
+        }
+    }
+
     private fun populateBasicInfo() {
-        calculateHoursAndDisplay()
+        Log.d(TAG, "populateBasicInfo: started")
         binding.apply {
             var display = "Employer: ${curEmployer.employerName}\n"
             display += "Date: ${df.getDisplayDate(curDate.wdDate)}\n"
             tvInfo.text = display
         }
+        Log.d(TAG, "populateBasicInfo: ended")
+        calculateHoursAndDisplay()
+        calculateAdjustmentsForRegAndOt(Calendar.getInstance())
     }
 
     private fun calculateHoursAndDisplay() {
+        Log.d(TAG, "calculateHoursAndDisplay: started")
         mainScope.launch {
             var hrsReg = 0.0
             var hrsOt = 0.0
@@ -291,6 +234,104 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
 
                 }
         }
+    }
+
+    private fun populateTimesRecycler() {
+        val workDateTimesAdapter = WorkDateTimesAdapter(mainActivity, mView)
+        binding.rvTimeWorked.apply {
+            layoutManager = LinearLayoutManager(mView.context)
+            adapter = workDateTimesAdapter
+        }
+        workDateTimesAdapter.differ.submitList(existingHistories)
+    }
+
+    private fun setDatesToCorrectedTimes() {
+        timeWorkedByDayAsCalendarPairs.clear()
+        for (time in existingHistories) {
+            val start = df.getCalendarFromString(time.timeWorked.wohtStartTime)
+            val end = df.getCalendarFromString(time.timeWorked.wohtEndTime)
+            timeWorkedByDayAsCalendarPairs.add(Pair(start, end))
+        }
+        if (existingHistories.isNotEmpty()) {
+            val tempStartTime =
+                df.splitTimeFromDateTime(existingHistories.last().timeWorked.wohtEndTime)
+            startTime.set(Calendar.HOUR_OF_DAY, tempStartTime[0].toInt())
+            startTime.set(Calendar.MINUTE, tempStartTime[1].toInt())
+            startTime.set(Calendar.SECOND, 0)
+
+        }
+
+    }
+
+    private fun calculateAdjustmentsForRegAndOt(time: Calendar) {
+        binding.apply {
+            val timeNow = time.clone() as Calendar
+            val tempDate = curDate.wdDate.split("-")
+            timeNow.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
+            if (df.getTimeWorked(startTime, endTime) < 0.0) {
+                endTime = startTime.clone() as Calendar
+                if (timeNow > endTime) {
+                    endTime = df.roundCalendarTimeUpTo15Minutes(timeNow)
+                }
+            }
+            if (totalRegHoursForDay + df.getTimeWorked(
+                    startTime,
+                    endTime
+                ) > 8.0 && radRegHours.isChecked
+            ) {
+                val timeToAdjust = 8 - totalRegHoursForDay
+                endTime = df.addHoursToCalendar(startTime, timeToAdjust)
+                displayMessage(getString(R.string.time_has_been_adjusted_to_8_hours))
+            }
+            if (totalOtHoursForDay + df.getTimeWorked(
+                    startTime,
+                    endTime
+                ) > 12.0 && radOtHours.isChecked
+            ) {
+                val timeToAdjust = 12 - totalOtHoursForDay - totalRegHoursForDay
+                endTime = df.addHoursToCalendar(startTime, timeToAdjust)
+                displayMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
+            }
+            updateTimesDisplayed()
+        }
+    }
+
+    private fun updateTimesDisplayed() {
+        binding.apply {
+            clkStartTime.text = df.get12HourDisplay(startTime)
+            // automatically set the end time to not exceed the next block of time
+            clkEndTime.text = df.get12HourDisplay(endTime)
+            val display = nf.getNumberFromDouble(
+                df.getTimeWorked(
+                    startTime,
+                    endTime
+                )
+            ) + " " + getString(R.string.hours)
+            tvTotalTime.text = display
+        }
+    }
+
+    private fun populateWorkOrderFromDb() {
+        if (mainViewModel.getWorkOrder() != null) {
+            curWorkOrder = mainViewModel.getWorkOrder()
+            binding.acWorkOrder.setText(curWorkOrder!!.woNumber)
+            setCurWorkOrder()
+        }
+    }
+
+    private fun populateWorkOrderListForAutoComplete() {
+        workOrderViewModel.getWorkOrdersByEmployerId(curEmployer.employerId)
+            .observe(viewLifecycleOwner) { list ->
+                workOrderList = list
+                val workOrderListForAutocomplete = ArrayList<String>()
+                list.listIterator().forEach { workOrderListForAutocomplete.add(it.woNumber) }
+                binding.apply {
+                    val woAdapter = ArrayAdapter(
+                        mView.context, R.layout.spinner_item_normal, workOrderListForAutocomplete
+                    )
+                    acWorkOrder.setAdapter(woAdapter)
+                }
+            }
     }
 
     private fun updateWorkDateHours(
@@ -458,48 +499,50 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                             endTime.set(Calendar.MINUTE, tempHoursAndMin.second)
                             endTime.set(Calendar.SECOND, 0)
                         }
-                        var tempTimeWorked =
-                            (tempEndTime.toDouble() - tempStartTime.toDouble()) / 60
-                        if (radRegHours.isChecked) {
-                            if ((tempTimeWorked + totalRegHoursForDay) > 8.0) {
-                                tempTimeWorked = 8 - totalRegHoursForDay
-                                val tempEndTimeCombined = existingHistories.last()
-                                var tempHour =
-                                    df.getHourFromStringAsInt(tempEndTimeCombined.timeWorked.wohtEndTime)
-                                var tempMinute =
-                                    df.getMinuteFromStringAsInt(tempEndTimeCombined.timeWorked.wohtEndTime)
-                                tempHour += tempTimeWorked.toInt()
+                        populateValues()
 
-                                tempMinute += ((tempTimeWorked - tempTimeWorked.toInt()) * 60).toInt()
-                                val tempHoursAndMinutes =
-                                    df.roundTimeTo15Minutes(tempHour, tempMinute)
-                                endTime.set(Calendar.HOUR_OF_DAY, tempHoursAndMinutes.first)
-                                endTime.set(Calendar.MINUTE, tempHoursAndMinutes.second)
-                                endTime.set(Calendar.SECOND, 0)
-//                                binding.clkEndTime.text = df.get12HourDisplay(endTime)
-                                displayMessage(getString(R.string.time_has_been_adjusted_to_8_hours))
-//                                radHourType.check(R.id.radOtHours)
-                            }
-                        }
-                        if (radOtHours.isChecked) {
-                            if ((tempTimeWorked + totalOtHoursForDay + totalOtHoursForDay) > 12.0) {
-                                tempTimeWorked = 12 - totalOtHoursForDay - totalRegHoursForDay
-                                val tempEndTimeCombined = existingHistories.last()
-                                var tempHour =
-                                    df.getHourFromStringAsInt(tempEndTimeCombined.timeWorked.wohtEndTime)
-                                var tempMinute =
-                                    df.getMinuteFromStringAsInt(tempEndTimeCombined.timeWorked.wohtEndTime)
-                                tempHour += tempTimeWorked.toInt()
-                                tempMinute += ((tempTimeWorked - tempTimeWorked.toInt()) * 60).toInt()
-                                val tempHoursAndMinutes =
-                                    df.roundTimeTo15Minutes(tempHour, tempMinute)
-                                endTime.set(Calendar.HOUR_OF_DAY, tempHoursAndMinutes.first)
-                                endTime.set(Calendar.MINUTE, tempHoursAndMinutes.second)
-                                endTime.set(Calendar.SECOND, 0)
-                                displayMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
-                            }
-                        }
-                        updateTimesDisplayed()
+//                        var tempTimeWorked =
+//                            (tempEndTime.toDouble() - tempStartTime.toDouble()) / 60
+//                        if (radRegHours.isChecked) {
+//                            if ((tempTimeWorked + totalRegHoursForDay) > 8.0) {
+//                                tempTimeWorked = 8 - totalRegHoursForDay
+//                                val tempEndTimeCombined = existingHistories.last()
+//                                var tempHour =
+//                                    df.getHourFromStringAsInt(tempEndTimeCombined.timeWorked.wohtEndTime)
+//                                var tempMinute =
+//                                    df.getMinuteFromStringAsInt(tempEndTimeCombined.timeWorked.wohtEndTime)
+//                                tempHour += tempTimeWorked.toInt()
+//
+//                                tempMinute += ((tempTimeWorked - tempTimeWorked.toInt()) * 60).toInt()
+//                                val tempHoursAndMinutes =
+//                                    df.roundTimeTo15Minutes(tempHour, tempMinute)
+//                                endTime.set(Calendar.HOUR_OF_DAY, tempHoursAndMinutes.first)
+//                                endTime.set(Calendar.MINUTE, tempHoursAndMinutes.second)
+//                                endTime.set(Calendar.SECOND, 0)
+////                                binding.clkEndTime.text = df.get12HourDisplay(endTime)
+//                                displayMessage(getString(R.string.time_has_been_adjusted_to_8_hours))
+////                                radHourType.check(R.id.radOtHours)
+//                            }
+//                        }
+//                        if (radOtHours.isChecked) {
+//                            if ((tempTimeWorked + totalOtHoursForDay + totalOtHoursForDay) > 12.0) {
+//                                tempTimeWorked = 12 - totalOtHoursForDay - totalRegHoursForDay
+//                                val tempEndTimeCombined = existingHistories.last()
+//                                var tempHour =
+//                                    df.getHourFromStringAsInt(tempEndTimeCombined.timeWorked.wohtEndTime)
+//                                var tempMinute =
+//                                    df.getMinuteFromStringAsInt(tempEndTimeCombined.timeWorked.wohtEndTime)
+//                                tempHour += tempTimeWorked.toInt()
+//                                tempMinute += ((tempTimeWorked - tempTimeWorked.toInt()) * 60).toInt()
+//                                val tempHoursAndMinutes =
+//                                    df.roundTimeTo15Minutes(tempHour, tempMinute)
+//                                endTime.set(Calendar.HOUR_OF_DAY, tempHoursAndMinutes.first)
+//                                endTime.set(Calendar.MINUTE, tempHoursAndMinutes.second)
+//                                endTime.set(Calendar.SECOND, 0)
+//                                displayMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
+//                            }
+//                        }
+//                        updateTimesDisplayed()
                     }
                 }
             clkEndTime.setOnClickListener {
