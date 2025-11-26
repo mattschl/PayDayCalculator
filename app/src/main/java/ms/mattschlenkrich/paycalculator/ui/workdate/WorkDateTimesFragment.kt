@@ -106,33 +106,40 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
 
     private fun populateValues() {
         mainScope.launch {
-            populateWorkDateAndEmployer()
+            populateEmployer()
+            populateWorkDate()
+            populateBasicInfo()
+            populateTimeVariables()
             populateWorkOrderListForAutoComplete()
+            populateExistingHistories()
             delay(WAIT_250)
+            setCorrectedTimes()
+            calculateHoursAndDisplay()
+            calculateAdjustmentsForRegAndOt(Calendar.getInstance())
             populateWorkOrderFromDb()
             populateTimesRecycler()
         }
     }
 
-    private fun populateWorkDateAndEmployer() {
+    private fun populateEmployer() {
         Log.d(TAG, "populateWorkDateAndEmployer: Started")
         if (mainViewModel.getEmployer() != null) {
             curEmployer = mainViewModel.getEmployer()!!
         }
+    }
+
+    private fun populateExistingHistories() {
+        Log.d(TAG, "populateExistingHistories: started")
+        workOrderViewModel.getTimeWorkedPerDay(curDate.workDateId)
+            .observe(viewLifecycleOwner) { histories ->
+                existingHistories = histories
+            }
+    }
+
+    private fun populateWorkDate() {
         if (mainViewModel.getWorkDateObject() != null) {
             curDate = mainViewModel.getWorkDateObject()!!
-            workOrderViewModel.getTimeWorkedPerDay(curDate.workDateId)
-                .observe(viewLifecycleOwner) { histories ->
-                    existingHistories = histories
-
-                }
         }
-        Log.d(
-            TAG,
-            "populateWorkDateAndEmployer: curEmployer = ${curEmployer.employerName}, curDate = ${curDate.wdDate}"
-        )
-        populateTimeVariables()
-        populateBasicInfo()
     }
 
     private fun populateTimeVariables() {
@@ -156,8 +163,6 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
             tvInfo.text = display
         }
         Log.d(TAG, "populateBasicInfo: ended")
-        calculateHoursAndDisplay()
-        calculateAdjustmentsForRegAndOt(Calendar.getInstance())
     }
 
     private fun calculateHoursAndDisplay() {
@@ -245,22 +250,25 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
         workDateTimesAdapter.differ.submitList(existingHistories)
     }
 
-    private fun setDatesToCorrectedTimes() {
+    private fun setCorrectedTimes() {
+        populateTimWorkedCalendarPairs()
+        if (existingHistories.isNotEmpty()) {
+            val tempStartTime =
+                df.splitTimeFromDateTime(existingHistories.last().timeWorked.wohtEndTime)
+            Log.d(TAG, "setCorrectedTimes: started ${tempStartTime[0]}:${tempStartTime[1]}")
+            startTime.set(Calendar.HOUR_OF_DAY, tempStartTime[0].toInt())
+            startTime.set(Calendar.MINUTE, tempStartTime[1].toInt())
+            startTime.set(Calendar.SECOND, 0)
+        }
+    }
+
+    private fun populateTimWorkedCalendarPairs() {
         timeWorkedByDayAsCalendarPairs.clear()
         for (time in existingHistories) {
             val start = df.getCalendarFromString(time.timeWorked.wohtStartTime)
             val end = df.getCalendarFromString(time.timeWorked.wohtEndTime)
             timeWorkedByDayAsCalendarPairs.add(Pair(start, end))
         }
-        if (existingHistories.isNotEmpty()) {
-            val tempStartTime =
-                df.splitTimeFromDateTime(existingHistories.last().timeWorked.wohtEndTime)
-            startTime.set(Calendar.HOUR_OF_DAY, tempStartTime[0].toInt())
-            startTime.set(Calendar.MINUTE, tempStartTime[1].toInt())
-            startTime.set(Calendar.SECOND, 0)
-
-        }
-
     }
 
     private fun calculateAdjustmentsForRegAndOt(time: Calendar) {
@@ -293,6 +301,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                 displayMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
             }
             updateTimesDisplayed()
+
         }
     }
 
@@ -499,50 +508,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                             endTime.set(Calendar.MINUTE, tempHoursAndMin.second)
                             endTime.set(Calendar.SECOND, 0)
                         }
-                        populateValues()
-
-//                        var tempTimeWorked =
-//                            (tempEndTime.toDouble() - tempStartTime.toDouble()) / 60
-//                        if (radRegHours.isChecked) {
-//                            if ((tempTimeWorked + totalRegHoursForDay) > 8.0) {
-//                                tempTimeWorked = 8 - totalRegHoursForDay
-//                                val tempEndTimeCombined = existingHistories.last()
-//                                var tempHour =
-//                                    df.getHourFromStringAsInt(tempEndTimeCombined.timeWorked.wohtEndTime)
-//                                var tempMinute =
-//                                    df.getMinuteFromStringAsInt(tempEndTimeCombined.timeWorked.wohtEndTime)
-//                                tempHour += tempTimeWorked.toInt()
-//
-//                                tempMinute += ((tempTimeWorked - tempTimeWorked.toInt()) * 60).toInt()
-//                                val tempHoursAndMinutes =
-//                                    df.roundTimeTo15Minutes(tempHour, tempMinute)
-//                                endTime.set(Calendar.HOUR_OF_DAY, tempHoursAndMinutes.first)
-//                                endTime.set(Calendar.MINUTE, tempHoursAndMinutes.second)
-//                                endTime.set(Calendar.SECOND, 0)
-////                                binding.clkEndTime.text = df.get12HourDisplay(endTime)
-//                                displayMessage(getString(R.string.time_has_been_adjusted_to_8_hours))
-////                                radHourType.check(R.id.radOtHours)
-//                            }
-//                        }
-//                        if (radOtHours.isChecked) {
-//                            if ((tempTimeWorked + totalOtHoursForDay + totalOtHoursForDay) > 12.0) {
-//                                tempTimeWorked = 12 - totalOtHoursForDay - totalRegHoursForDay
-//                                val tempEndTimeCombined = existingHistories.last()
-//                                var tempHour =
-//                                    df.getHourFromStringAsInt(tempEndTimeCombined.timeWorked.wohtEndTime)
-//                                var tempMinute =
-//                                    df.getMinuteFromStringAsInt(tempEndTimeCombined.timeWorked.wohtEndTime)
-//                                tempHour += tempTimeWorked.toInt()
-//                                tempMinute += ((tempTimeWorked - tempTimeWorked.toInt()) * 60).toInt()
-//                                val tempHoursAndMinutes =
-//                                    df.roundTimeTo15Minutes(tempHour, tempMinute)
-//                                endTime.set(Calendar.HOUR_OF_DAY, tempHoursAndMinutes.first)
-//                                endTime.set(Calendar.MINUTE, tempHoursAndMinutes.second)
-//                                endTime.set(Calendar.SECOND, 0)
-//                                displayMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
-//                            }
-//                        }
-//                        updateTimesDisplayed()
+                        calculateAdjustmentsForRegAndOt(endTime)
                     }
                 }
             clkEndTime.setOnClickListener {
@@ -593,10 +559,8 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                             )
                         )
                         delay(WAIT_250)
-                        setDatesToCorrectedTimes()
-                        populateTimesRecycler()
-                        populateWorkOrderInfo()
                         updateWorkOrderHistoryInDb(workOrderHistoryDeferred.await())
+                        repopulateUi()
                     }
                     return true
                 } catch (e: SQLiteConstraintException) {
@@ -609,6 +573,15 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
             displayMessage("${getString(R.string.error_)} $answer")
             return false
         }
+    }
+
+    private suspend fun repopulateUi() {
+//        populateExistingHistories()
+        setCorrectedTimes()
+        populateTimesRecycler()
+        populateWorkOrderInfo()
+        calculateHoursAndDisplay()
+        updateTimesDisplayed()
     }
 
     private fun updateWorkOrderHistoryInDb(workOrderHistory: WorkOrderHistory) {
