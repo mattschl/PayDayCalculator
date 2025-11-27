@@ -124,7 +124,6 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
     }
 
     private fun populateEmployer() {
-        Log.d(TAG, "populateWorkDateAndEmployer: Started")
         if (mainViewModel.getEmployer() != null) {
             curEmployer = mainViewModel.getEmployer()!!
         }
@@ -252,7 +251,6 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
         if (existingHistories.isNotEmpty()) {
             val tempStartTime =
                 df.splitTimeFromDateTime(existingHistories.last().timeWorked.wohtEndTime)
-            Log.d(TAG, "setCorrectedTimes: started ${tempStartTime[0]}:${tempStartTime[1]}")
             startTime.set(Calendar.HOUR_OF_DAY, tempStartTime[0].toInt())
             startTime.set(Calendar.MINUTE, tempStartTime[1].toInt())
             startTime.set(Calendar.SECOND, 0)
@@ -542,7 +540,6 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                         val workOrderHistoryDeferred =
                             async { getOrCreateWorkOrderHistory() }
                         startTime = df.roundCalendarTimeTo15Minutes(startTime)
-//                        Log.d(TAG, "insertTime: End time is ${df.get12HourDisplay(endTime)}")
                         endTime = df.roundCalendarTimeTo15Minutes(endTime)
                         workOrderViewModel.insertTimeWorked(
                             WorkOrderHistoryTimeWorked(
@@ -587,29 +584,24 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
 
     private fun adjustWorkTimeTypes() {
         binding.apply {
-            Log.d(TAG, "adjustWorkTimeTypes: started: Total time for day is $totalRegHoursForDay")
             if (radBreak.isChecked) {
-                Log.d(TAG, "adjustWorkTimeTypes: break")
                 radRegHours.isChecked = true
                 radBreak.isChecked = false
                 radOtHours.isChecked = false
                 radDblOtHours.isChecked = false
             }
             if (totalRegHoursForDay >= 8.0) {
-                Log.d(TAG, "adjustWorkTimeTypes: Ot: Total time is $totalRegHoursForDay")
                 radOtHours.isChecked = true
                 radRegHours.isChecked = false
                 radDblOtHours.isChecked = false
                 radBreak.isChecked = false
             }
             if (totalOtHoursForDay + totalRegHoursForDay >= 12.0) {
-                Log.d(TAG, "adjustWorkTimeTypes: Dbl Ot: Total time is $totalOtHoursForDay")
                 radDblOtHours.isChecked = true
                 radOtHours.isChecked = false
                 radRegHours.isChecked = false
                 radBreak.isChecked = false
             }
-            Log.d(TAG, "adjustWorkTimeTypes: ended")
         }
     }
 
@@ -690,10 +682,8 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                 }
 
             tempWorkOrderHistory = if (tempWorkOrderHistoryDeferred.await() == null) {
-                Log.d(TAG, "getOrCreateWorkOrderHistory: null")
                 insertNewWorkOrderHistory()
             } else {
-                Log.d(TAG, "getOrCreateWorkOrderHistory: else")
                 tempWorkOrderHistoryDeferred.await()
             }
         }
@@ -709,10 +699,8 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
         }
         delay(WAIT_100)
         try {
-            Log.d(TAG, "getOrCreateWorkOrder: Work order was found $wo")
             curWorkOrder = wo!!
         } catch (e: Exception) {
-            Log.d(TAG, "getOrCreateWorkOrder: error was $e")
             curWorkOrder = WorkOrder(
                 nf.generateRandomIdAsLong(),
                 "break",
@@ -723,10 +711,6 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                 df.getCurrentTimeAsString()
             )
             workOrderViewModel.insertWorkOrder(curWorkOrder!!)
-            Log.d(
-                TAG,
-                "getOrCreateWorkOrder: ${curWorkOrder?.woNumber} & ${curWorkOrder?.workOrderId}"
-            )
         }
         delay(WAIT_250)
         return curWorkOrder!!
@@ -734,7 +718,6 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
 
 
     private fun insertNewWorkOrderHistory(): WorkOrderHistory {
-        Log.d(TAG, "insertNewWorkOrderHistory: ")
         val tempWorkOrderHistory = WorkOrderHistory(
             nf.generateRandomIdAsLong(),
             curWorkOrder!!.workOrderId,
