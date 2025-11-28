@@ -79,38 +79,50 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //TODO: Refactor file
-        populateVariablesAndValues()
+        populatedValues()
         setClickActions()
     }
 
-    private fun populateVariablesAndValues() {
+    private fun populatedValues() {
+        mainScope.launch {
+            populateWorkOrderHistory()
+            delay(WAIT_250)
+            populateWorkOrderInfo()
+            populateTimesFromHistory()
+            resetTimeDisplay()
+        }
+    }
+
+    private fun resetTimeDisplay() {
+        setDatesToCorrectTimes()
+        displayTimesAndHours()
+        populateExistingTimesRecycler()
+    }
+
+    private fun populateWorkOrderHistory() {
         if (mainViewModel.getWorkOrderHistory() != null) {
             workOrderViewModel.getWorkOrderHistoryCombined(mainViewModel.getWorkOrderHistory()!!.woHistoryId)
                 .observe(viewLifecycleOwner) { historyCombined ->
                     curWorkOrderHistory = historyCombined
-                    binding.apply {
-                        curDateString = curWorkOrderHistory.workDate.wdDate
-                        populateWorkOrderInfo(historyCombined)
-                        populateTimesFromHistory(historyCombined)
-                        populateExistingTimesRecycler(historyCombined)
-                    }
+
+                    curDateString = curWorkOrderHistory.workDate.wdDate
+
                 }
         }
-
     }
 
-    private fun populateWorkOrderInfo(historyCombined: WorkOrderHistoryCombined) {
+    private fun populateWorkOrderInfo() {
         binding.apply {
             val display =
-                "${getString(R.string.set_time_for_wo)} ${historyCombined.workOrder.woNumber} " +
-                        "${getString(R.string.at_)} ${historyCombined.workOrder.woAddress} " +
-                        "${getString(R.string._on_)} ${df.getDisplayDate(historyCombined.workDate.wdDate)}"
+                "${getString(R.string.set_time_for_wo)} ${curWorkOrderHistory.workOrder.woNumber} " +
+                        "${getString(R.string.at_)} ${curWorkOrderHistory.workOrder.woAddress} " +
+                        "${getString(R.string._on_)} ${df.getDisplayDate(curWorkOrderHistory.workDate.wdDate)}"
             tvInfo.text = display
         }
     }
 
-    private fun populateTimesFromHistory(historyCombined: WorkOrderHistoryCombined) {
-        val tempDate = historyCombined.workDate.wdDate.split("-")
+    private fun populateTimesFromHistory() {
+        val tempDate = curWorkOrderHistory.workDate.wdDate.split("-")
         startTime.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
         endTime.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
         startTime.set(Calendar.HOUR_OF_DAY, 8)
@@ -119,11 +131,10 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
         if (endTime < startTime) {
             endTime = startTime
         }
-        setDatesToCorrectTimes(historyCombined)
     }
 
-    private fun setDatesToCorrectTimes(historyCombined: WorkOrderHistoryCombined) {
-        workOrderViewModel.getTimeWorkedPerDay(historyCombined.workDate.workDateId)
+    private fun setDatesToCorrectTimes() {
+        workOrderViewModel.getTimeWorkedPerDay(curWorkOrderHistory.workDate.workDateId)
             .observe(viewLifecycleOwner) { timeWorkedHistory ->
                 timeWorkedByDay.clear()
                 timeWorkedByDayAsCalendarPairs.clear()
@@ -140,7 +151,6 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                     startTime.set(Calendar.MINUTE, tempStartTime[1].toInt())
                     startTime.set(Calendar.SECOND, 0)
                 }
-                displayTimesAndHours()
             }
     }
 
@@ -245,8 +255,8 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
     }
 
 
-    private fun populateExistingTimesRecycler(historyCombined: WorkOrderHistoryCombined) {
-        workOrderViewModel.getTimeWorkedForWorkOrderHistory(historyCombined.workOrderHistory.woHistoryId)
+    private fun populateExistingTimesRecycler() {
+        workOrderViewModel.getTimeWorkedForWorkOrderHistory(curWorkOrderHistory.workOrderHistory.woHistoryId)
             .observe(viewLifecycleOwner) { timeWorkedOnHistory ->
                 timeWorkedByHistory.clear()
                 for (time in timeWorkedOnHistory) {
@@ -409,7 +419,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                             )
                         )
                         delay(WAIT_250)
-                        setDatesToCorrectTimes(curWorkOrderHistory)
+                        resetTimeDisplay()
                     }
                     return true
                 } catch (e: SQLiteConstraintException) {

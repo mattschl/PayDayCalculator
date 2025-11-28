@@ -711,6 +711,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                 df.getCurrentTimeAsString()
             )
             workOrderViewModel.insertWorkOrder(curWorkOrder!!)
+            Log.d(TAG, "getOrCreateWorkOrder: $e")
         }
         delay(WAIT_250)
         return curWorkOrder!!
