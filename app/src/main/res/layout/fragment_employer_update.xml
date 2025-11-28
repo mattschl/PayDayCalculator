@@ -214,7 +214,7 @@
                     android:id="@+id/crdTaxes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/dimen_15dp"
+                    android:layout_margin="@dimen/dimen_10dp"
                     android:backgroundTint="@color/white"
                     android:elevation="10dp"
                     app:cardCornerRadius="10dp"
@@ -261,7 +261,8 @@
                             android:id="@+id/rvTaxes"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:layout_weight="1" />
+                            android:layout_weight="1"
+                            android:padding="@dimen/dimen_15dp" />
 
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>

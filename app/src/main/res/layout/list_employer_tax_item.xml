@@ -9,7 +9,7 @@
 
         <CheckBox
             android:id="@+id/chkEmployerTax"
-            android:layout_width="@dimen/text_box_extra_wide"
+            android:layout_width="@dimen/text_box_wide"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dimen_10dp"
             android:text="@string/tax_type"
