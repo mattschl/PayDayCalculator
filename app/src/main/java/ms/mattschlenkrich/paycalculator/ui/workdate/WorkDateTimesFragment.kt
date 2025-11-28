@@ -113,14 +113,26 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
             populateWorkOrderListForAutoComplete()
             populateExistingHistories()
             delay(WAIT_250)
-            setCorrectedTimes()
-            calculateHoursAndDisplay()
+//            setCorrectedTimes()
+//            calculateHoursAndDisplay()
             calculateAdjustmentsForRegAndOt(Calendar.getInstance())
             delay(WAIT_500)
             populateWorkOrderFromDb()
-            populateTimesRecycler()
-            adjustWorkTimeTypes()
+//            populateTimesRecycler()
+//            adjustWorkTimeTypes()
+            populateUi()
         }
+    }
+
+    private fun populateUi() {
+//        populateExistingHistories()
+        setCorrectedTimes()
+        adjustWorkTimeTypes()
+        populateTimesRecycler()
+//        populateWorkOrderInfo()
+//        calculateAdjustmentsForRegAndOt(endTime)
+        calculateHoursAndDisplay()
+        updateTimesDisplayed()
     }
 
     private fun populateEmployer() {
@@ -286,7 +298,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                 endTime = df.addHoursToCalendar(startTime, timeToAdjust)
                 displayMessage(getString(R.string.time_has_been_adjusted_to_8_hours))
             }
-            if (totalOtHoursForDay + df.getTimeWorked(
+            if (totalOtHoursForDay + totalRegHoursForDay + df.getTimeWorked(
                     startTime,
                     endTime
                 ) > 12.0 && radOtHours.isChecked
@@ -296,7 +308,6 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                 displayMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
             }
             updateTimesDisplayed()
-
         }
     }
 
@@ -555,7 +566,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                         )
                         delay(WAIT_250)
                         updateWorkOrderHistoryInDb(workOrderHistoryDeferred.await())
-                        repopulateUi()
+                        populateUi()
                     }
                     return true
                 } catch (e: SQLiteConstraintException) {
@@ -571,20 +582,9 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
         }
     }
 
-    private fun repopulateUi() {
-//        populateExistingHistories()
-        setCorrectedTimes()
-        adjustWorkTimeTypes()
-        populateTimesRecycler()
-        populateWorkOrderInfo()
-        calculateAdjustmentsForRegAndOt(endTime)
-        calculateHoursAndDisplay()
-        updateTimesDisplayed()
-    }
-
     private fun adjustWorkTimeTypes() {
         binding.apply {
-            if (radBreak.isChecked) {
+            if (radBreak.isChecked && totalRegHoursForDay < 8.0) {
                 radRegHours.isChecked = true
                 radBreak.isChecked = false
                 radOtHours.isChecked = false
