@@ -20,6 +20,7 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_TAX_RULES
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.TaxBasedOn
 import ms.mattschlenkrich.paycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.database.model.tax.TaxEffectiveDates
@@ -112,7 +113,7 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
                 viewLifecycleOwner
             ) { type ->
                 val display =
-                    "${getString(R.string.base_on)} " + resources.getStringArray(R.array.tax_based_on)[type.ttBasedOn]
+                    "${getString(R.string.base_on)} " + TaxBasedOn.entries[type.ttBasedOn].basedOn
                 tvTaxSummary.text = display
             }
         }

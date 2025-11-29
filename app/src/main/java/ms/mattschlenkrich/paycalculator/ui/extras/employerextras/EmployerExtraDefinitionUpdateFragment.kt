@@ -16,6 +16,8 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
+import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraDefTypeAndEmployer
@@ -87,9 +89,9 @@ class EmployerExtraDefinitionUpdateFragment :
             } else {
                 getString(R.string.debit)
             }
-            display += " " + getString(R.string.calculated) + resources.getStringArray(R.array.applies_to_frequencies)[curExtraDefinitionFull.extraType.wetAppliesTo] + getString(
+            display += " " + getString(R.string.calculated) + ExtraAppliesToFrequencies.entries[curExtraDefinitionFull.extraType.wetAppliesTo].frequency + getString(
                 R.string.period_space
-            ) + getString(R.string._attaches_to_) + resources.getStringArray(R.array.attach_to_frequencies)[curExtraDefinitionFull.extraType.wetAttachTo] + getString(
+            ) + getString(R.string._attaches_to_) + ExtraAttachToFrequencies.entries[curExtraDefinitionFull.extraType.wetAttachTo].frequency + getString(
                 R.string.period_hyphen
             )
             display += if (curExtraDefinitionFull.extraType.wetIsDefault) {

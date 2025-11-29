@@ -118,7 +118,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_update) {
             val frequencyAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
-                PayDayFrequencies.toArray()
+                PayDayFrequencies.entries
 
             )
             frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
@@ -126,7 +126,7 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_update) {
             val dayOfWeekAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
-                WorkDayOfWeek.toArray()
+                WorkDayOfWeek.entries
             )
             dayOfWeekAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spDayOfWeek.adapter = dayOfWeekAdapter
@@ -255,8 +255,8 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_update) {
                 val curEmployer = getCurrentEmployer()
                 employerViewModel.employerLogicViewModel.currentEmployerObj.setEmployer(curEmployer)
                 employerViewModel.employerLogicViewModel.previousEmployerObj.setEmployer(curEmployer)
-                displayMessage(curEmployer.toString())
-//                confirmSaveAndContinue(curEmployer)
+//                displayMessage(curEmployer.toString())
+                confirmSaveAndContinue(curEmployer)
             } else {
                 displayMessage(getString(R.string.error_) + message)
             }

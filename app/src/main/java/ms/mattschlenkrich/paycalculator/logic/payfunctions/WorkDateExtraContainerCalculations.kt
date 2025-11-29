@@ -5,8 +5,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ms.mattschlenkrich.paycalculator.common.AppliesToFrequencies
-import ms.mattschlenkrich.paycalculator.common.AttachToFrequencies
+import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
+import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
 import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraContainer
 import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraDefinitionAndType
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDateExtras
@@ -39,11 +39,11 @@ class WorkDateExtraContainerCalculations(
                     if (!extra.wdeIsDeleted) {
                         val amount: Double = if (extra.wdeIsFixed) {
                             when (extra.wdeAppliesTo) {
-                                AppliesToFrequencies.HOURLY.value -> {
+                                ExtraAppliesToFrequencies.HOURLY.value -> {
                                     extra.wdeValue * (workDate.wdRegHours + workDate.wdOtHours + workDate.wdDblOtHours)
                                 }
 
-                                AppliesToFrequencies.DAILY.value -> {
+                                ExtraAppliesToFrequencies.DAILY.value -> {
                                     extra.wdeValue
                                 }
 
@@ -71,11 +71,11 @@ class WorkDateExtraContainerCalculations(
                     if (!extra.extraType.wetIsDeleted && !extra.definition.weIsDeleted && extra.extraType.wetIsDefault) {
                         val amount: Double = if (extra.definition.weIsFixed) {
                             when (extra.extraType.wetAppliesTo) {
-                                AppliesToFrequencies.HOURLY.value -> {
+                                ExtraAppliesToFrequencies.HOURLY.value -> {
                                     extra.definition.weValue * (workDate.wdRegHours + workDate.wdOtHours + workDate.wdDblOtHours)
                                 }
 
-                                AppliesToFrequencies.DAILY.value -> {
+                                ExtraAppliesToFrequencies.DAILY.value -> {
                                     extra.definition.weValue
                                 }
 
@@ -108,7 +108,7 @@ class WorkDateExtraContainerCalculations(
 
     private fun getExtraTypeAndDefByDay(): List<ExtraDefinitionAndType> {
         return mainActivity.payDetailViewModel.getExtraTypeAndDefBy(
-            workDate.wdEmployerId, workDate.wdCutoffDate, AttachToFrequencies.DAILY.value
+            workDate.wdEmployerId, workDate.wdCutoffDate, ExtraAttachToFrequencies.DAILY.value
         )
     }
 

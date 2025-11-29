@@ -94,14 +94,14 @@ class EmployerUpdateFragment : Fragment(R.layout.fragment_employer_update),
             val frequencyAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
-                PayDayFrequencies.toArray()
+                PayDayFrequencies.entries
             )
             spFrequency.adapter = frequencyAdapter
 
             val dayOfWeekAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
-                WorkDayOfWeek.toArray()
+                WorkDayOfWeek.entries
             )
             spDayOfWeek.adapter = dayOfWeekAdapter
         }

@@ -22,8 +22,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.AppliesToFrequencies
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
 import ms.mattschlenkrich.paycalculator.common.FRAG_PAY_DETAILS
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_100
@@ -456,7 +456,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
         var sum = 0.0
         payCalculations.apply {
             when (workPayPeriodExtras.ppeAppliesTo) {
-                AppliesToFrequencies.HOURLY.value -> {
+                ExtraAppliesToFrequencies.HOURLY.value -> {
                     sum = if (workPayPeriodExtras.ppeIsFixed) {
                         getHoursWorked() * workPayPeriodExtras.ppeValue
                     } else {
@@ -464,7 +464,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
                     }
                 }
 
-                AppliesToFrequencies.DAILY.value -> {
+                ExtraAppliesToFrequencies.DAILY.value -> {
                     sum = if (workPayPeriodExtras.ppeIsFixed) {
                         getDaysWorked() * workPayPeriodExtras.ppeValue
                     } else {
@@ -472,7 +472,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
                     }
                 }
 
-                AppliesToFrequencies.PER_PAY_FOR_HOURLY_WAGES.value -> {
+                ExtraAppliesToFrequencies.PER_PAY_FOR_HOURLY_WAGES.value -> {
                     sum = if (workPayPeriodExtras.ppeIsFixed) {
                         payCalculations.getDaysWorked() * workPayPeriodExtras.ppeValue
                     } else {

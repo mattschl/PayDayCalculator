@@ -19,6 +19,8 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
+import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtraTypes
@@ -85,14 +87,14 @@ class WorkExtraTypeAddFragment : Fragment(
             val appliesToAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.applies_to_frequencies)
+                ExtraAppliesToFrequencies.entries
             )
             appliesToAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spAppliesTo.adapter = appliesToAdapter
             val attachToAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.attach_to_frequencies)
+                ExtraAttachToFrequencies.entries
             )
             attachToAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spAttachTo.adapter = attachToAdapter
@@ -167,30 +169,20 @@ class WorkExtraTypeAddFragment : Fragment(
 
     private fun validateExtraType(): String {
         binding.apply {
-            var nameFound = false
-            var appliesToAllFound = false
-            if (extraTypeList.isNotEmpty()) {
-                for (extra in extraTypeList) {
-                    if (extra.wetName == etExtraName.text.toString().trim()) {
-                        nameFound = true
-                        break
-                    }
-                    if (extra.wetAppliesTo == 4 && extra.wetName != etExtraName.text.toString()
-                            .trim()
-                    ) {
-                        appliesToAllFound = true
-                        break
-                    }
+            for (extra in extraTypeList) {
+                if (extra.wetName == etExtraName.text.toString().trim()) {
+                    return getString(R.string.this_extra_type_already_exists)
+                }
+                if (extra.wetAppliesTo == ExtraAppliesToFrequencies.PER_PAY_PERCENTAGE_OF_ALL.value &&
+                    extra.wetName != etExtraName.text.toString().trim() &&
+                    spAppliesTo.selectedItemPosition == ExtraAppliesToFrequencies.PER_PAY_PERCENTAGE_OF_ALL.value
+                ) {
+
+                    return getString(R.string.there_can_only_be_one_extra_that_uses_the_sum_that_includes_other_extras)
                 }
             }
             if (etExtraName.text.isNullOrBlank()) {
                 return getString(R.string.the_extra_must_have_a_name)
-            }
-            if (appliesToAllFound) {
-                return getString(R.string.there_can_only_be_one_extra_that_uses_the_sum_that_includes_other_extras)
-            }
-            if (nameFound) {
-                return getString(R.string.this_extra_type_already_exists)
             }
             return ANSWER_OK
         }

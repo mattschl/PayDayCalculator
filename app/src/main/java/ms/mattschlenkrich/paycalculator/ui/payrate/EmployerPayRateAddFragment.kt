@@ -20,6 +20,7 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_EMPLOYER_UPDATE
 import ms.mattschlenkrich.paycalculator.common.FRAG_PAY_RATES
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.PayRateBasedOn
 import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.viewModel.EmployerViewModel
@@ -71,7 +72,7 @@ class EmployerPayRateAddFragment : Fragment(R.layout.fragment_employer_pay_rate_
         val frequencyAdapter = ArrayAdapter(
             mView.context,
             R.layout.spinner_item_bold,
-            resources.getStringArray(R.array.pay_rate_based_on)
+            PayRateBasedOn.entries
         )
         frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
         binding.spPerFrequency.adapter = frequencyAdapter

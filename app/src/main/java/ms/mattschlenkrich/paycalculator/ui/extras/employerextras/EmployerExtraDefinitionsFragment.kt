@@ -18,6 +18,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
+import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
 import ms.mattschlenkrich.paycalculator.common.FRAG_EXTRA_DEFINITIONS
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
@@ -96,13 +98,11 @@ class EmployerExtraDefinitionsFragment : Fragment(R.layout.fragment_employer_ext
                     tvAttachTo.visibility = View.VISIBLE
                     tvDefault.visibility = View.VISIBLE
                     tvCredit.visibility = View.VISIBLE
-                    var display = getString(R.string.calculated) + resources.getStringArray(
-                        R.array.applies_to_frequencies
-                    )[curExtraType!!.wetAppliesTo]
+                    var display =
+                        getString(R.string.calculated) + ExtraAppliesToFrequencies.entries[curExtraType!!.wetAppliesTo].frequency
                     tvAppliesTo.text = display
-                    display = getString(R.string.attaches_to) + resources.getStringArray(
-                        R.array.attach_to_frequencies
-                    )[curExtraType!!.wetAttachTo]
+                    display =
+                        getString(R.string.attaches_to) + ExtraAttachToFrequencies.entries[curExtraType!!.wetAttachTo].frequency
                     tvAttachTo.text = display
                     display = getString(R.string.this_is_a) + if (curExtraType!!.wetIsCredit) {
                         getString(R.string.credit)

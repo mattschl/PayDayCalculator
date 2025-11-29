@@ -18,6 +18,8 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
+import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.extras.WorkExtraTypes
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
@@ -87,14 +89,14 @@ class WorkExtraTypeUpdateFragment : Fragment(
             val appliesToAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.applies_to_frequencies)
+                ExtraAppliesToFrequencies.entries
             )
             appliesToAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spAppliesTo.adapter = appliesToAdapter
             val attachToAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.attach_to_frequencies)
+                ExtraAttachToFrequencies.entries
             )
             attachToAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spAttachTo.adapter = attachToAdapter

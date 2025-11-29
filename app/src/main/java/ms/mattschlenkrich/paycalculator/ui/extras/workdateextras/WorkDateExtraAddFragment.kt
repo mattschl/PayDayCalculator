@@ -16,6 +16,7 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
@@ -79,14 +80,9 @@ class WorkDateExtraAddFragment : Fragment(R.layout.fragment_work_date_extra_add)
 
     private fun populateSpinners() {
         binding.apply {
-            val frequencies = ArrayList<String>()
-            for (i in 0..1) {
-                frequencies.add(
-                    resources.getStringArray(R.array.attach_to_frequencies)[i]
-                )
-            }
+
             val frequencyAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_bold, frequencies
+                mView.context, R.layout.spinner_item_bold, ExtraAppliesToFrequencies.entries
             )
             frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spAppliesTo.adapter = frequencyAdapter

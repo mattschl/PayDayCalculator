@@ -18,6 +18,7 @@ import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_TAX_RULES
 import ms.mattschlenkrich.paycalculator.common.FRAG_TAX_TYPE
+import ms.mattschlenkrich.paycalculator.common.TaxBasedOn
 import ms.mattschlenkrich.paycalculator.database.model.tax.TaxTypes
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkTaxViewModel
@@ -71,7 +72,7 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
             val basedOnAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.tax_based_on)
+                TaxBasedOn.entries
             )
             basedOnAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spBasedOn.adapter = basedOnAdapter

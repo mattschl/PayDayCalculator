@@ -6,8 +6,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ms.mattschlenkrich.paycalculator.common.AppliesToFrequencies
-import ms.mattschlenkrich.paycalculator.common.AttachToFrequencies
+import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
+import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
 import ms.mattschlenkrich.paycalculator.common.PayRateBasedOn
 import ms.mattschlenkrich.paycalculator.common.TaxBasedOn
 import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerPayRates
@@ -139,16 +139,16 @@ class PayCalculationsAsync(
                     0.0
                 } else if (extra.ppeIsFixed) {
                     when (extra.ppeAppliesTo) {
-                        AttachToFrequencies.HOURLY.value -> getHoursWorked() * extra.ppeValue
-                        AttachToFrequencies.DAILY.value -> getDaysWorked() * extra.ppeValue
-                        AttachToFrequencies.PER_PAY.value -> extra.ppeValue
+                        ExtraAttachToFrequencies.HOURLY.value -> getHoursWorked() * extra.ppeValue
+                        ExtraAttachToFrequencies.DAILY.value -> getDaysWorked() * extra.ppeValue
+                        ExtraAttachToFrequencies.PER_PAY.value -> extra.ppeValue
                         else -> extra.ppeValue
                     }
                 } else {
                     when (extra.ppeAppliesTo) {
-                        AttachToFrequencies.HOURLY.value -> getPayTimeWorked() * extra.ppeValue
-                        AttachToFrequencies.DAILY.value -> getPayTimeWorked() * extra.ppeValue
-                        AttachToFrequencies.PER_PAY.value -> getPayAllHourly() * extra.ppeValue
+                        ExtraAttachToFrequencies.HOURLY.value -> getPayTimeWorked() * extra.ppeValue
+                        ExtraAttachToFrequencies.DAILY.value -> getPayTimeWorked() * extra.ppeValue
+                        ExtraAttachToFrequencies.PER_PAY.value -> getPayAllHourly() * extra.ppeValue
                         else -> extra.ppeValue
                     }
                 }
@@ -446,7 +446,7 @@ class PayCalculationsAsync(
                         workingExtra = currentExtra.wdeName
                         subTotal = 0.0
                     }
-                    if (currentExtra.wdeAppliesTo == AppliesToFrequencies.HOURLY.value &&
+                    if (currentExtra.wdeAppliesTo == ExtraAppliesToFrequencies.HOURLY.value &&
                         currentExtra.wdeIsFixed
                     ) {
                         for (date in workDates) {
@@ -455,8 +455,8 @@ class PayCalculationsAsync(
                                         (date.wdRegHours + date.wdOtHours + date.wdDblOtHours)
                             }
                         }
-                    } else if ((currentExtra.wdeAppliesTo == AppliesToFrequencies.HOURLY.value ||
-                                currentExtra.wdeAppliesTo == AppliesToFrequencies.DAILY.value) &&
+                    } else if ((currentExtra.wdeAppliesTo == ExtraAppliesToFrequencies.HOURLY.value ||
+                                currentExtra.wdeAppliesTo == ExtraAppliesToFrequencies.DAILY.value) &&
                         !currentExtra.wdeIsFixed
                     ) {
                         for (date in workDates) {
@@ -465,7 +465,7 @@ class PayCalculationsAsync(
                                         (date.wdRegHours + date.wdOtHours + date.wdDblOtHours)
                             }
                         }
-                    } else if (currentExtra.wdeAppliesTo == AppliesToFrequencies.DAILY.value
+                    } else if (currentExtra.wdeAppliesTo == ExtraAppliesToFrequencies.DAILY.value
                     ) {
                         subTotal += currentExtra.wdeValue
                     }
@@ -510,19 +510,19 @@ class PayCalculationsAsync(
                 }
                 if (!excludeAsDuplicate) {
                     when (extra.extraType.wetAppliesTo) {
-                        AppliesToFrequencies.HOURLY.value -> {
+                        ExtraAppliesToFrequencies.HOURLY.value -> {
                             defaultExtrasByHour.add(extra)
                         }
 
-                        AppliesToFrequencies.DAILY.value -> {
+                        ExtraAppliesToFrequencies.DAILY.value -> {
                             defaultExtrasByDay.add(extra)
                         }
 
-                        AppliesToFrequencies.PER_PAY_FOR_HOURLY_WAGES.value -> {
+                        ExtraAppliesToFrequencies.PER_PAY_FOR_HOURLY_WAGES.value -> {
                             defaultExtrasByPay.add(extra)
                         }
 
-                        AppliesToFrequencies.PER_PAY_PERCENTAGE_OF_ALL.value -> {
+                        ExtraAppliesToFrequencies.PER_PAY_PERCENTAGE_OF_ALL.value -> {
                             defaultExtrasByPercentageOfAll.add(extra)
                         }
                     }

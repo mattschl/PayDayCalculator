@@ -24,6 +24,8 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
+import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
 import ms.mattschlenkrich.paycalculator.common.FRAG_EXTRA_DEFINITIONS
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
@@ -220,11 +222,11 @@ class EmployerExtraDefinitionsAddFragment : Fragment(
                     } else {
                         getString(R.string.debit)
                     }
-                    display += getString(R.string.__calculated) + resources.getStringArray(
-                        R.array.applies_to_frequencies
-                    )[extra.wetAppliesTo] + getString(R.string.period_space) + getString(R.string._attaches_to_) + resources.getStringArray(
-                        R.array.attach_to_frequencies
-                    )[extra.wetAttachTo] + getString(R.string.period_hyphen)
+                    display += getString(R.string.__calculated) + ExtraAppliesToFrequencies.entries[extra.wetAppliesTo].frequency +
+                            getString(R.string.period_space) + getString(R.string._attaches_to_) +
+                            ExtraAttachToFrequencies.entries[extra.wetAttachTo].frequency + getString(
+                        R.string.period_hyphen
+                    )
                     display += if (extra.wetIsDefault) getString(R.string.is_automatic)
                     else getString(R.string.added_manually)
                     tvDescription.text = display

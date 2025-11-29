@@ -18,6 +18,7 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.extras.ExtraDefinitionAndType
@@ -92,7 +93,7 @@ class PayPeriodExtraAddFragment : Fragment(R.layout.fragment_pay_period_extra_ad
             val frequencyAdapter = ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_bold,
-                resources.getStringArray(R.array.attach_to_frequencies)
+                ExtraAttachToFrequencies.entries
             )
             frequencyAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
             spAppliesTo.adapter = frequencyAdapter
