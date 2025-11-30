@@ -268,7 +268,7 @@ class WorkOrderHistoryTimeUpdateFragment :
                         val tempStartTime =
                             startTime.get(Calendar.HOUR_OF_DAY) * 60 + startTime.get(Calendar.MINUTE)
                         if (tempEndTime < tempStartTime) {
-                            showMessage(getString(R.string.end_time_before_start_time))
+                            dispayMessage(getString(R.string.end_time_before_start_time))
                             endTime.set(Calendar.HOUR_OF_DAY, startTime.get(Calendar.HOUR_OF_DAY))
                             endTime.set(Calendar.MINUTE, startTime.get(Calendar.MINUTE))
                             endTime.set(Calendar.SECOND, 0)
@@ -297,7 +297,7 @@ class WorkOrderHistoryTimeUpdateFragment :
                                 endTime.set(Calendar.MINUTE, tempHoursAndMinutes.second)
                                 endTime.set(Calendar.SECOND, 0)
 //                                binding.clkEndTime.text = df.get12HourDisplay(endTime)
-                                showMessage(getString(R.string.time_has_been_adjusted_to_8_hours))
+                                dispayMessage(getString(R.string.time_has_been_adjusted_to_8_hours))
 //                                radHourType.check(R.id.radOtHours)
                             }
                         }
@@ -316,7 +316,7 @@ class WorkOrderHistoryTimeUpdateFragment :
                                 endTime.set(Calendar.HOUR_OF_DAY, tempHoursAndMinutes.first)
                                 endTime.set(Calendar.MINUTE, tempHoursAndMinutes.second)
                                 endTime.set(Calendar.SECOND, 0)
-                                showMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
+                                dispayMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
                             }
                         }
                         displayTimesAndHours()
@@ -367,14 +367,14 @@ class WorkOrderHistoryTimeUpdateFragment :
                         gotoCallingFragment()
                     }
                 } catch (e: SQLiteConstraintException) {
-                    showMessage(getString(R.string.error_) + e.message)
+                    dispayMessage(getString(R.string.error_) + e.message)
                     Log.d(TAG, e.message.toString())
                 }
             }
         }
     }
 
-    private fun showMessage(message: String) {
+    private fun dispayMessage(message: String) {
         Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 

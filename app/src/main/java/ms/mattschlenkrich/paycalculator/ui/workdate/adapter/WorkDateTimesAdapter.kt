@@ -5,9 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkDateTimeBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
@@ -77,19 +77,12 @@ class WorkDateTimesAdapter(
             tvTimes.text = display
             val hours =
                 df.getTimeWorked(history.timeWorked.wohtStartTime, history.timeWorked.wohtEndTime)
-            display = when (history.timeWorked.wohtTimeType) {
-                1 -> " - ${mView.context.getString(R.string.reg_hrs_)}${nf.getNumberFromDouble(hours)}"
-                2 -> " - ${mView.context.getString(R.string.ot_hrs_)}${nf.getNumberFromDouble(hours)}"
-                3 -> " - ${mView.context.getString(R.string.dblot_hrs_)}${
+            display =
+                " - ${TimeWorkedTypes.entries[history.timeWorked.wohtTimeType].type}: ${
                     nf.getNumberFromDouble(
                         hours
                     )
                 }"
-
-                else -> {
-                    " Break time"
-                }
-            }
             tvHours.text = display
             tvWorkOrderNum.text = history.workOrderHistory.workOrder.woNumber
             holder.itemView.setOnClickListener {

@@ -1,0 +1,30 @@
+package ms.mattschlenkrich.paycalculator.database.viewModel
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorked
+import ms.mattschlenkrich.paycalculator.database.repository.WorkTimeRepository
+
+class WorkTimeViewModel(
+    app: Application,
+    private val workTimeRepository: WorkTimeRepository
+) : AndroidViewModel(app) {
+    suspend fun insertWorkTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked) =
+        workTimeRepository.insertWorkTime(workOrderHistoryTimeWorked)
+
+    suspend fun deleteWorkTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked) =
+        workTimeRepository.deleteWorkTime(workOrderHistoryTimeWorked)
+
+    suspend fun updateWorkTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked) =
+        workTimeRepository.updateWorkTime(workOrderHistoryTimeWorked)
+
+    suspend fun getExistingHistories(workDateId: Long) =
+        workTimeRepository.getExistingHistories(workDateId)
+
+    suspend fun getExistingHistoriesWithTimes(workDateId: Long) =
+        workTimeRepository.getExistingHistoriesWithTimes(workDateId)
+
+    suspend fun getWorkOrders(employerId: Long) =
+        workTimeRepository.getWorkOrders(employerId)
+
+}

@@ -92,11 +92,11 @@ class MaterialQuantityUpdateFragment : Fragment(R.layout.fragment_material_quant
             }
             gotoWorkOrderHistoryUpdate()
         } else {
-            showMessage(getString(R.string.error_) + answer)
+            displayMessage(getString(R.string.error_) + answer)
         }
     }
 
-    private fun showMessage(message: String) {
+    private fun displayMessage(message: String) {
         Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 

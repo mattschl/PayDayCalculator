@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.databinding.ListSingleItemBinding
 
@@ -64,24 +65,14 @@ class WorOrderHistoryTimeWorkedAdapter(
             val tempEnd = df.splitTimeFromDateTime(history.timeWorked.wohtEndTime)
             val endTime = df.get12HourDisplay("${tempEnd[0]}:${tempEnd[1]}")
             var display = "$startTime to $endTime"
-//            val hours =
-//                df.getTimeWorked(history.timeWorked.wohtStartTime, history.timeWorked.wohtEndTime)
-//
-//            display += when (history.timeWorked.wohtTimeType) {
-//                1 -> " - ${mView.context.getString(R.string.reg_hrs_)}${nf.getNumberFromDouble(hours)}"
-//                2 -> " - ${mView.context.getString(R.string.ot_hrs_)}${nf.getNumberFromDouble(hours)}"
-//                3 -> " - ${mView.context.getString(R.string.dblot_hrs_)}${
-//                    nf.getNumberFromDouble(
-//                        hours
-//                    )
-//                }"
-//
-//                else -> {
-//                    " Break time"
-//                }
-//            }
+            val hours =
+                df.getTimeWorked(history.timeWorked.wohtStartTime, history.timeWorked.wohtEndTime)
+            display += " - ${TimeWorkedTypes.entries[history.timeWorked.wohtTimeType].type}: ${
+                nf.getNumberFromDouble(
+                    hours
+                )
+            }"
             tvDisplay.text = display
         }
     }
 }
-

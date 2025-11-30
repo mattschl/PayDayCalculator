@@ -14,6 +14,7 @@ import ms.mattschlenkrich.paycalculator.database.dao.PayDetailDao
 import ms.mattschlenkrich.paycalculator.database.dao.WorkExtraDao
 import ms.mattschlenkrich.paycalculator.database.dao.WorkOrderDao
 import ms.mattschlenkrich.paycalculator.database.dao.WorkTaxDao
+import ms.mattschlenkrich.paycalculator.database.dao.WorkTimeDao
 import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.database.model.employer.EmployerTaxTypes
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
@@ -88,6 +89,7 @@ abstract class PayDatabase : RoomDatabase() {
     abstract fun getWorkOrderDao(): WorkOrderDao
     abstract fun getPayDetailDao(): PayDetailDao
     abstract fun getPayCalculationsDao(): PayCalculationsDao
+    abstract fun getWorkTimeDao(): WorkTimeDao
 
     companion object {
         @Volatile

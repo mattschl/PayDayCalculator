@@ -48,9 +48,9 @@ enum class PayRateBasedOn(val value: Int, val type: String) {
 
 enum class TimeWorkedTypes(val value: Int, val type: String) {
     BREAK(0, "Break"),
-    REG_HOURS(1, "Reg Hours"),
-    OT_HOURS(2, "Ot Hours"),
-    DBL_OT_HOURS(3, "Double Ot Hours"), ;
+    REG_HOURS(1, "Reg Hrs"),
+    OT_HOURS(2, "Ot Hrs"),
+    DBL_OT_HOURS(3, "Dbl Ot Hrs"), ;
 
     override fun toString(): String {
         return type
