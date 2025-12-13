@@ -81,9 +81,9 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("com.google.android.material:material:1.13.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
-    implementation("org.mockito:mockito-core:5.20.0")
+    implementation("org.mockito:mockito-core:5.21.0")
     implementation("org.mockito.kotlin:mockito-kotlin:6.1.0")
-    implementation("io.mockk:mockk:1.14.6")
+    implementation("io.mockk:mockk:1.14.7")
     implementation("androidx.recyclerview:recyclerview:1.4.0")
     implementation("androidx.navigation:navigation-fragment-ktx:2.9.6")
     implementation("androidx.navigation:navigation-ui-ktx:2.9.6")
@@ -94,7 +94,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
 
-    val roomVersion = "2.8.3"
+    val roomVersion = "2.8.4"
     implementation("androidx.room:room-runtime:$roomVersion")
     // To use Kotlin symbol processing tool (ksp)id("androidx.navigation.safeargs.kotlin")
     ksp("androidx.room:room-compiler:$roomVersion")
@@ -111,7 +111,7 @@ dependencies {
 //    implementation("androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version")
 
     //Lifecycle architecture
-    val lifecycleVersion = "2.9.4"
+    val lifecycleVersion = "2.10.0"
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
     // LiveData
