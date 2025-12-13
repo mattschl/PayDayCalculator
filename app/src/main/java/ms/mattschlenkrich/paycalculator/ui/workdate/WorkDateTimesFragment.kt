@@ -30,7 +30,6 @@ import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_TIME
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_UPDATE
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
-import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
@@ -45,13 +44,14 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkDateTimeBinding
+import ms.mattschlenkrich.paycalculator.logic.worktime.WorkTimes
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workdate.adapter.WorkDateTimesAdapter
 import java.util.Calendar
 
 private const val TAG = FRAG_WORK_DATE_TIME
 
-class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
+class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
 
     private var _binding: FragmentWorkDateTimeBinding? = null
     private val binding get() = _binding!!
@@ -69,6 +69,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
     private lateinit var workOrderList: List<WorkOrder>
     private lateinit var existingHistories: List<WorkOrderHistoryTimeWorkedCombined>
     private val timeWorkedByDayAsCalendarPairs = ArrayList<Pair<Calendar, Calendar>>()
+    private lateinit var workTimes: WorkTimes
     private lateinit var startTime: Calendar
     private lateinit var endTime: Calendar
     private var totalRegHoursForDay = 0.0
@@ -100,37 +101,44 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         populateValues()
         setClickActions()
     }
 
     private fun populateValues() {
         mainScope.launch {
-            populateEmployer()
-            populateWorkDate()
-            populateBasicInfo()
-            populateTimeVariables()
-            populateWorkOrderListForAutoComplete()
-            populateExistingHistories()
+            async {
+                populateEmployer()
+                populateWorkDate()
+            }.await()
             delay(WAIT_250)
-//            setCorrectedTimes()
-//            calculateHoursAndDisplay()
-            calculateAdjustmentsForRegAndOt(Calendar.getInstance())
+            async {
+                workTimes = WorkTimes(
+                    mainActivity,
+                    curEmployer.employerId,
+                    curDate.workDateId,
+                    this@WorkDateTimesFragment
+                )
+            }.await()
+            async {
+                populateBasicInfo()
+                populateTimeVariables()
+                populateWorkOrderListForAutoComplete()
+                populateExistingHistories()
+            }.await()
             delay(WAIT_500)
-            populateWorkOrderFromDb()
-//            populateTimesRecycler()
-//            adjustWorkTimeTypes()
+            async { calculateAdjustmentsForRegAndOt(Calendar.getInstance()) }.await()
+            async { populateWorkOrdersFromDb() }.await()
             populateUi()
         }
     }
 
     private fun populateUi() {
-//        populateExistingHistories()
+        populateTimWorkedCalendarPairs()
         setCorrectedTimes()
         adjustWorkTimeTypes()
         populateTimesRecycler()
-//        populateWorkOrderInfo()
-//        calculateAdjustmentsForRegAndOt(endTime)
         calculateHoursAndDisplay()
         updateTimesDisplayed()
     }
@@ -250,7 +258,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
     }
 
     private fun populateTimesRecycler() {
-        val workDateTimesAdapter = WorkDateTimesAdapter(mainActivity, mView)
+        val workDateTimesAdapter = WorkDateTimesAdapter(mainActivity, this@WorkDateTimesFragment)
         binding.rvTimeWorked.apply {
             layoutManager = LinearLayoutManager(mView.context)
             adapter = workDateTimesAdapter
@@ -259,7 +267,6 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
     }
 
     private fun setCorrectedTimes() {
-        populateTimWorkedCalendarPairs()
         if (existingHistories.isNotEmpty()) {
             val tempStartTime =
                 df.splitTimeFromDateTime(existingHistories.last().timeWorked.wohtEndTime)
@@ -326,7 +333,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
         }
     }
 
-    private fun populateWorkOrderFromDb() {
+    private fun populateWorkOrdersFromDb() {
         if (mainViewModel.getWorkOrder() != null) {
             curWorkOrder = mainViewModel.getWorkOrder()
             binding.acWorkOrder.setText(curWorkOrder!!.woNumber)
@@ -450,7 +457,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
                 validateWorkOrderNumberAndSaveHistoryIfValid()
             }
             fabDone.setOnClickListener {
-                gotoCallingFragment()
+                chooseToSaveOrDiscard()
             }
         }
         setStartTimeActions()
@@ -697,7 +704,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
         defaultScope.launch {
             wo = workOrderViewModel.findWorkOrder("break", curEmployer.employerId)
         }
-        delay(WAIT_100)
+        delay(WAIT_250)
         try {
             curWorkOrder = wo!!
         } catch (e: Exception) {
@@ -806,6 +813,25 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
         return false
     }
 
+    private fun chooseToSaveOrDiscard() {
+        if (df.getTimeWorked(startTime, endTime) > 0.0) {
+            AlertDialog.Builder(mView.context)
+                .setTitle(getString(R.string.confirm_leave))
+                .setMessage(getString(R.string.would_you_like_to_save_time_entered))
+                .setPositiveButton(getString(R.string.enter_time)) { _, _ ->
+                    insertTime()
+                    gotoCallingFragment()
+                }
+                .setNegativeButton(getString(R.string.no)) { _, _ ->
+                    gotoCallingFragment()
+                }
+                .setNeutralButton(getString(R.string.go_back), null)
+                .show()
+        } else {
+            gotoCallingFragment()
+        }
+    }
+
     private fun gotoCallingFragment() {
         if (mainViewModel.getCallingFragment() != null) {
             val frag = mainViewModel.getCallingFragment()!!
@@ -833,19 +859,19 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
 
     private fun gotoWorkDateUpdateFragment() {
         mView.findNavController().navigate(
-            WorkDateTimesDirections.actionWorkDateTimesToWorkDateUpdateFragment()
+            WorkDateTimesFragmentDirections.actionWorkDateTimesToWorkDateUpdateFragment()
         )
     }
 
     private fun gotoWorkOrderAddFragment() {
         mView.findNavController().navigate(
-            WorkDateTimesDirections.actionWorkDateTimesToWorkOrderAddFragment()
+            WorkDateTimesFragmentDirections.actionWorkDateTimesToWorkOrderAddFragment()
         )
     }
 
     private fun gotoWorkOrderUpdateFragment() {
         mView.findNavController().navigate(
-            WorkDateTimesDirections.actionWorkDateTimesToWorkOrderUpdateFragment()
+            WorkDateTimesFragmentDirections.actionWorkDateTimesToWorkOrderUpdateFragment()
         )
     }
 
@@ -858,7 +884,7 @@ class WorkDateTimes : Fragment(R.layout.fragment_work_date_time) {
 
     private fun gotoWorkOrderLookupFragment() {
         mView.findNavController().navigate(
-            WorkDateTimesDirections.actionWorkDateTimesToWorkOrderLookupFragment()
+            WorkDateTimesFragmentDirections.actionWorkDateTimesToWorkOrderLookupFragment()
         )
     }
 

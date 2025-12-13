@@ -56,7 +56,7 @@
             app:popUpTo="@id/workDateAddFragment" />
         <action
             android:id="@+id/action_workDateAddFragment_to_workDateTimes"
-            app:destination="@id/workDateTimes" />
+            app:destination="@id/workDateTimesFragment" />
 
     </fragment>
 
@@ -92,7 +92,7 @@
             app:destination="@id/workDateAddFragment" />
         <action
             android:id="@+id/action_workDateUpdateFragment_to_workDateTimes"
-            app:destination="@id/workDateTimes" />
+            app:destination="@id/workDateTimesFragment" />
     </fragment>
 
     <!--    action_global_taxTypeFragment-->
@@ -673,8 +673,8 @@
             app:destination="@id/jobSpecUpdateFragment" />
         <action
             android:id="@+id/action_workOrderAddFragment_to_workDateTimes"
-            app:destination="@id/workDateTimes"
-            app:popUpTo="@id/workDateTimes"
+            app:destination="@id/workDateTimesFragment"
+            app:popUpTo="@id/workDateTimesFragment"
             app:popUpToInclusive="true" />
     </fragment>
 
@@ -714,8 +714,8 @@
             app:destination="@id/areaUpdateFragment" />
         <action
             android:id="@+id/action_workOrderUpdateFragment_to_workDateTimes"
-            app:destination="@id/workDateTimes"
-            app:popUpTo="@id/workDateTimes"
+            app:destination="@id/workDateTimesFragment"
+            app:popUpTo="@id/workDateTimesFragment"
             app:popUpToInclusive="true" />
     </fragment>
 
@@ -735,8 +735,8 @@
             app:popUpTo="@id/workOrderHistoryUpdateFragment" />
         <action
             android:id="@+id/action_workOrderLookupFragment_to_workDateTimes"
-            app:destination="@id/workDateTimes"
-            app:popUpTo="@id/workDateTimes"
+            app:destination="@id/workDateTimesFragment"
+            app:popUpTo="@id/workDateTimesFragment"
             app:popUpToInclusive="true" />
     </fragment>
 
@@ -952,8 +952,8 @@
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
-        android:id="@+id/workDateTimes"
-        android:name="ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateTimes"
+        android:id="@+id/workDateTimesFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateTimesFragment"
         android:label="WorkDateTimes"
         tools:layout="fragment_work_date_times">
         <action

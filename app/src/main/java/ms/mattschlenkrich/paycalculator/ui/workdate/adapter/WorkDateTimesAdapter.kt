@@ -1,7 +1,7 @@
 package ms.mattschlenkrich.paycalculator.ui.workdate.adapter
 
-import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +14,7 @@ import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
 class WorkDateTimesAdapter(
     val mainActivity: MainActivity,
-    private val mView: View,
+    val parent: Fragment
 ) : RecyclerView.Adapter<WorkDateTimesAdapter.ViewHolder>() {
 
     val mainViewModel = mainActivity.mainViewModel

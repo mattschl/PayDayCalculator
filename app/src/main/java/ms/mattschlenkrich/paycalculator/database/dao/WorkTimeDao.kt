@@ -4,6 +4,8 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.RewriteQueriesToDropUnusedColumns
+import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryCombined
@@ -21,6 +23,8 @@ interface WorkTimeDao {
     @Update()
     suspend fun updateWorkTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked)
 
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
     @Query(
         "SELECT * FROM workOrderHistory " +
                 "WHERE woHistoryWorkDateId = :workDateId " +
@@ -30,11 +34,16 @@ interface WorkTimeDao {
         workDateId: Long
     ): List<WorkOrderHistoryCombined>
 
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
     @Query(
-        "SELECT * FROM workOrderHistoryTimeWorked " +
+        "SELECT * FROM workOrderHistory " +
+                "INNER JOIN(" +
+                "SELECT * FROM workOrderHistoryTimeWorked " +
                 "WHERE wohtDateId = :workDateId " +
-                "AND wohtIsDeleted = 0 " +
-                "ORDER BY wohtStartTime"
+                ") ON woHistoryId = wohtHistoryId " +
+                "WHERE woHistoryDeleted = 0 " +
+                "ORDER BY wohtStartTime "
     )
     suspend fun getExistingHistoriesWithTimes(workDateId: Long): List<WorkOrderHistoryTimeWorkedCombined>
 
@@ -43,4 +52,5 @@ interface WorkTimeDao {
                 "WHERE woEmployerId = :employerId "
     )
     suspend fun getWorkOrders(employerId: Long): List<WorkOrder>
+
 }

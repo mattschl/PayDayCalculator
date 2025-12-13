@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory
 
+import android.app.AlertDialog
 import android.app.TimePickerDialog
 import android.database.sqlite.SQLiteConstraintException
 import android.os.Bundle
@@ -14,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -33,6 +35,7 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderHistoryTimeBinding
+import ms.mattschlenkrich.paycalculator.logic.worktime.WorkTimes
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater.TimeWorkedAdapter
 import java.util.Calendar
@@ -52,6 +55,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
     private lateinit var startTime: Calendar
     private lateinit var endTime: Calendar
     private lateinit var curWorkOrderHistory: WorkOrderHistoryCombined
+    private lateinit var workTimes: WorkTimes
     private var totalRegHours = 0.0
     private var totalOtHours = 0.0
     private var totalDblOtHours = 0.0
@@ -93,12 +97,23 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
 
     private fun populatedValues() {
         mainScope.launch {
-            populateWorkOrderHistory()
+            async { populateWorkOrderHistory() }.await()
             delay(WAIT_250)
-            populateExistingHistoriesForDay()
-            populateExistingHistoriesForWorkOrder()
-            populateWorkOrderInfo()
-            populateTimesFromHistory()
+            async {
+                workTimes =
+                    WorkTimes(
+                        mainActivity,
+                        curWorkOrderHistory.workOrder.woEmployerId,
+                        curWorkOrderHistory.workDate.workDateId,
+                        this@WorkOrderHistoryTimeFragment
+                    )
+            }.await()
+            async {
+                populateExistingHistoriesForDay()
+                populateExistingHistoriesForWorkOrder()
+                populateWorkOrderInfo()
+                populateTimesFromHistory()
+            }.await()
             delay(WAIT_500)
             updateUi()
         }
@@ -622,6 +637,25 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
             }
         }
         return ANSWER_OK
+    }
+
+    private fun chooseToSaveOrDiscard() {
+        if (df.getTimeWorked(startTime, endTime) > 0.0) {
+            AlertDialog.Builder(mView.context)
+                .setTitle(getString(R.string.confirm_leave))
+                .setMessage(getString(R.string.would_you_like_to_save_time_entered))
+                .setPositiveButton(getString(R.string.enter_time)) { _, _ ->
+                    insertTime()
+                    gotoWorkOrderHistoryUpdate()
+                }
+                .setNegativeButton(getString(R.string.no)) { _, _ ->
+                    gotoWorkOrderHistoryUpdate()
+                }
+                .setNeutralButton(getString(R.string.go_back), null)
+                .show()
+        } else {
+            gotoWorkOrderHistoryUpdate()
+        }
     }
 
     private fun gotoWorkOrderHistoryUpdate() {
