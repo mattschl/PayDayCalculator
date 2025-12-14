@@ -950,6 +950,10 @@
             app:destination="@id/workOrderHistoryTime"
             app:popUpTo="@id/workOrderHistoryTimeUpdateFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_workOrderHistoryTimeUpdateFragment_to_workDateTimesFragment"
+            app:destination="@id/workDateTimesFragment"
+            app:popUpTo="@id/workDateTimesFragment" />
     </fragment>
     <fragment
         android:id="@+id/workDateTimesFragment"
@@ -970,6 +974,9 @@
         <action
             android:id="@+id/action_workDateTimes_to_workOrderAddFragment"
             app:destination="@id/workOrderAddFragment" />
+        <action
+            android:id="@+id/action_workDateTimesFragment_to_workOrderHistoryTimeUpdateFragment"
+            app:destination="@id/workOrderHistoryTimeUpdateFragment" />
     </fragment>
 
 </navigation>

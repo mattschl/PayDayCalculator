@@ -15,12 +15,12 @@ import ms.mattschlenkrich.paycalculator.databinding.ListSingleItemBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderHistoryTimeFragment
 
-class TimeWorkedAdapter(
+class WorkOrderHistoryTimeWorkedAdapter(
     val mainActivity: MainActivity,
     private val mView: View,
     private val parentFragment: String,
     private val workOrderHistoryTimeFragment: WorkOrderHistoryTimeFragment
-) : RecyclerView.Adapter<TimeWorkedAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<WorkOrderHistoryTimeWorkedAdapter.ViewHolder>() {
 
     val mainViewModel = mainActivity.mainViewModel
     val workOrderViewModel = mainActivity.workOrderViewModel
@@ -127,8 +127,6 @@ class TimeWorkedAdapter(
 
     private fun gotoWorkOrderHistoryTimeEdit(history: WorkOrderHistoryTimeWorkedCombined) {
         mainViewModel.setWorkOrderHistoryTimeWorkedCombined(history)
-        mainViewModel.addCallingFragment(parentFragment)
         workOrderHistoryTimeFragment.gotoWorkOrderHistoryTimeUpdate()
     }
 }
-

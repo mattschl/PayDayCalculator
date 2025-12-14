@@ -427,7 +427,7 @@ class WorkDateUpdateFragment : Fragment(
     private fun gotoWorkDateTimes() {
         mainViewModel.apply {
             setWorkDateObject(getCurrentWorkDate())
-            setCallingFragment(FRAG_WORK_DATE_UPDATE)
+            addCallingFragment(FRAG_WORK_DATE_UPDATE)
         }
         gotoWorkDateTimesFragment()
 

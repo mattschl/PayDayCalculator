@@ -505,6 +505,8 @@
     <string name="confirm_leave">Confirm leaving Time Worked Worksheet</string>
     <string name="would_you_like_to_save_time_entered">Would you like to add the time entered or go back before leaving?</string>
     <string name="save_time">Enter Time</string>
+    <string name="unsaved_time">Unsaved Time</string>
+    <string name="would_you_like_to_save_the_time_entered">Would you like to save the time entered?</string>
 
 
 </resources>

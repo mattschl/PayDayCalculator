@@ -17,6 +17,8 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_TIME
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_TIME
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryCombined
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorked
@@ -64,7 +66,7 @@ class WorkOrderHistoryTimeUpdateFragment :
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentWorkOrderHistoryTimeBinding.inflate(inflater, container, false)
         mView = binding.root
         mainActivity = (activity as MainActivity)
@@ -268,7 +270,7 @@ class WorkOrderHistoryTimeUpdateFragment :
                         val tempStartTime =
                             startTime.get(Calendar.HOUR_OF_DAY) * 60 + startTime.get(Calendar.MINUTE)
                         if (tempEndTime < tempStartTime) {
-                            dispayMessage(getString(R.string.end_time_before_start_time))
+                            displayMessage(getString(R.string.end_time_before_start_time))
                             endTime.set(Calendar.HOUR_OF_DAY, startTime.get(Calendar.HOUR_OF_DAY))
                             endTime.set(Calendar.MINUTE, startTime.get(Calendar.MINUTE))
                             endTime.set(Calendar.SECOND, 0)
@@ -297,7 +299,7 @@ class WorkOrderHistoryTimeUpdateFragment :
                                 endTime.set(Calendar.MINUTE, tempHoursAndMinutes.second)
                                 endTime.set(Calendar.SECOND, 0)
 //                                binding.clkEndTime.text = df.get12HourDisplay(endTime)
-                                dispayMessage(getString(R.string.time_has_been_adjusted_to_8_hours))
+                                displayMessage(getString(R.string.time_has_been_adjusted_to_8_hours))
 //                                radHourType.check(R.id.radOtHours)
                             }
                         }
@@ -316,7 +318,7 @@ class WorkOrderHistoryTimeUpdateFragment :
                                 endTime.set(Calendar.HOUR_OF_DAY, tempHoursAndMinutes.first)
                                 endTime.set(Calendar.MINUTE, tempHoursAndMinutes.second)
                                 endTime.set(Calendar.SECOND, 0)
-                                dispayMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
+                                displayMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
                             }
                         }
                         displayTimesAndHours()
@@ -367,14 +369,14 @@ class WorkOrderHistoryTimeUpdateFragment :
                         gotoCallingFragment()
                     }
                 } catch (e: SQLiteConstraintException) {
-                    dispayMessage(getString(R.string.error_) + e.message)
+                    displayMessage(getString(R.string.error_) + e.message)
                     Log.d(TAG, e.message.toString())
                 }
             }
         }
     }
 
-    private fun dispayMessage(message: String) {
+    private fun displayMessage(message: String) {
         Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
@@ -390,8 +392,27 @@ class WorkOrderHistoryTimeUpdateFragment :
 
     private fun gotoCallingFragment() {
         mainViewModel.setWorkOrderHistoryTimeWorkedCombined(null)
+        if (mainViewModel.getCallingFragment() != null) {
+            val callingFragment = mainViewModel.getCallingFragment()!!
+            if (callingFragment.contains(FRAG_WORK_ORDER_HISTORY_TIME)) {
+                gotoWorkOrderHistoryTimeFragment()
+            } else if (callingFragment.contains(FRAG_WORK_DATE_TIME)) {
+                gotoWorkDateTimesFragment()
+            }
+        }
+    }
+
+    private fun gotoWorkOrderHistoryTimeFragment() {
+        mainViewModel.setCallingFragment(null)
         findNavController().navigate(
             WorkOrderHistoryTimeUpdateFragmentDirections.actionWorkOrderHistoryTimeUpdateFragmentToWorkOrderHistoryTime()
+        )
+    }
+
+    private fun gotoWorkDateTimesFragment() {
+        mainViewModel.setCallingFragment(null)
+        findNavController().navigate(
+            WorkOrderHistoryTimeUpdateFragmentDirections.actionWorkOrderHistoryTimeUpdateFragmentToWorkDateTimesFragment()
         )
     }
 }

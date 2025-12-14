@@ -12,9 +12,9 @@ import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.databinding.ListSingleItemBinding
 
-class WorOrderHistoryTimeWorkedAdapter(
+class WorkOrderHistoryTimeWorkedAdapterBkp(
     val mView: View
-) : RecyclerView.Adapter<WorOrderHistoryTimeWorkedAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<WorkOrderHistoryTimeWorkedAdapterBkp.ViewHolder>() {
 
     private val df = DateFunctions()
     private val nf = NumberFunctions()

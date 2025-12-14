@@ -20,6 +20,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -108,28 +109,35 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
 
     private fun populateValues() {
         mainScope.launch {
-            async {
+            val basics = async {
                 populateEmployer()
                 populateWorkDate()
-            }.await()
+            }
+            awaitAll(basics)
             delay(WAIT_250)
-            async {
+            val workTimesDeferred = async {
                 workTimes = WorkTimes(
                     mainActivity,
                     curEmployer.employerId,
                     curDate.workDateId,
                     this@WorkDateTimesFragment
                 )
-            }.await()
-            async {
+            }
+            awaitAll(workTimesDeferred)
+            val populateBasicInfoDeferred = async {
                 populateBasicInfo()
                 populateTimeVariables()
                 populateWorkOrderListForAutoComplete()
                 populateExistingHistories()
-            }.await()
+            }
+            awaitAll(populateBasicInfoDeferred)
             delay(WAIT_500)
-            async { calculateAdjustmentsForRegAndOt(Calendar.getInstance()) }.await()
-            async { populateWorkOrdersFromDb() }.await()
+            val calculateAdjustmentsForRegAndOtDeferred =
+                async { calculateAdjustmentsForRegAndOt(Calendar.getInstance()) }
+            awaitAll(calculateAdjustmentsForRegAndOtDeferred)
+            val populateWorkOrdersDeferred = async { populateWorkOrdersFromDb() }
+            awaitAll(populateWorkOrdersDeferred)
+            delay(WAIT_250)
             populateUi()
         }
     }
@@ -258,7 +266,9 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
     }
 
     private fun populateTimesRecycler() {
-        val workDateTimesAdapter = WorkDateTimesAdapter(mainActivity, this@WorkDateTimesFragment)
+        val workDateTimesAdapter = WorkDateTimesAdapter(
+            mainActivity, mView, TAG, this@WorkDateTimesFragment
+        )
         binding.rvTimeWorked.apply {
             layoutManager = LinearLayoutManager(mView.context)
             adapter = workDateTimesAdapter
@@ -819,13 +829,16 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
                 .setTitle(getString(R.string.confirm_leave))
                 .setMessage(getString(R.string.would_you_like_to_save_time_entered))
                 .setPositiveButton(getString(R.string.enter_time)) { _, _ ->
-                    insertTime()
-                    gotoCallingFragment()
+                    mainScope.launch {
+                        insertTime()
+                        delay(WAIT_250)
+                        gotoCallingFragment()
+                    }
                 }
+                .setNeutralButton(getString(R.string.go_back), null)
                 .setNegativeButton(getString(R.string.no)) { _, _ ->
                     gotoCallingFragment()
                 }
-                .setNeutralButton(getString(R.string.go_back), null)
                 .show()
         } else {
             gotoCallingFragment()
@@ -833,6 +846,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
     }
 
     private fun gotoCallingFragment() {
+        Log.d(TAG, "gotoCallingFragment: ${mainViewModel.getCallingFragment()}")
         if (mainViewModel.getCallingFragment() != null) {
             val frag = mainViewModel.getCallingFragment()!!
             if (frag.contains(FRAG_WORK_DATE_UPDATE)) {
@@ -885,6 +899,13 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
     private fun gotoWorkOrderLookupFragment() {
         mView.findNavController().navigate(
             WorkDateTimesFragmentDirections.actionWorkDateTimesToWorkOrderLookupFragment()
+        )
+    }
+
+    fun gotoWorkOrderHistoryTimeUpdateFragment() {
+        mainViewModel.addCallingFragment(TAG)
+        mView.findNavController().navigate(
+            WorkDateTimesFragmentDirections.actionWorkDateTimesFragmentToWorkOrderHistoryTimeUpdateFragment()
         )
     }
 

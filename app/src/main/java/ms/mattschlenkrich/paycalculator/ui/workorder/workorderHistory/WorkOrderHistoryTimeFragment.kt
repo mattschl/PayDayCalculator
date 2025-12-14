@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -37,7 +38,7 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderHistoryTimeBinding
 import ms.mattschlenkrich.paycalculator.logic.worktime.WorkTimes
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater.TimeWorkedAdapter
+import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater.WorkOrderHistoryTimeWorkedAdapter
 import java.util.Calendar
 
 private const val TAG = FRAG_WORK_ORDER_HISTORY_TIME
@@ -97,9 +98,10 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
 
     private fun populatedValues() {
         mainScope.launch {
-            async { populateWorkOrderHistory() }.await()
+            val populateWorkOrderHistoryDeferred = async { populateWorkOrderHistory() }
+            awaitAll(populateWorkOrderHistoryDeferred)
             delay(WAIT_250)
-            async {
+            val populateWorkTimesDeferred = async {
                 workTimes =
                     WorkTimes(
                         mainActivity,
@@ -107,13 +109,15 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                         curWorkOrderHistory.workDate.workDateId,
                         this@WorkOrderHistoryTimeFragment
                     )
-            }.await()
-            async {
+            }
+            awaitAll(populateWorkTimesDeferred)
+            val populateExistingHistoriesDeferred = async {
                 populateExistingHistoriesForDay()
                 populateExistingHistoriesForWorkOrder()
                 populateWorkOrderInfo()
                 populateTimesFromHistory()
-            }.await()
+            }
+            awaitAll(populateExistingHistoriesDeferred)
             delay(WAIT_500)
             updateUi()
         }
@@ -126,15 +130,20 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
             }
     }
 
-    private suspend fun updateUi() {
-        populateExistingHistoryCalendarPairs()
-        calculateAdjustmentsForRegAndOt(endTime)
-        delay(WAIT_250)
-        adjustStartTimeToLastTimeWorkedForDay()
-        adjustWorkTimeTypes()
-        calculateTimesToDisplay()
-        updateTimesDisplayed()
-        populateExistingTimesRecycler()
+    private fun updateUi() {
+        mainScope.launch {
+            val populateExistingHistoryCalendarPairsDeferred = async() {
+                populateExistingHistoryCalendarPairs()
+                calculateAdjustmentsForRegAndOt(endTime)
+            }
+            awaitAll(populateExistingHistoryCalendarPairsDeferred)
+            delay(WAIT_250)
+            adjustStartTimeToLastTimeWorkedForDay()
+            adjustWorkTimeTypes()
+            calculateTimesToDisplay()
+            updateTimesDisplayed()
+            populateExistingTimesRecycler()
+        }
     }
 
     private fun populateWorkOrderHistory() {
@@ -142,7 +151,6 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
             workOrderViewModel.getWorkOrderHistoryCombined(mainViewModel.getWorkOrderHistory()!!.woHistoryId)
                 .observe(viewLifecycleOwner) { historyCombined ->
                     curWorkOrderHistory = historyCombined
-
                     curDateString = curWorkOrderHistory.workDate.wdDate
 
                 }
@@ -323,13 +331,13 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
 
 
     private fun populateExistingTimesRecycler() {
-        val timeWorkedAdapter =
-            TimeWorkedAdapter(mainActivity, mView, TAG, this)
+        val workOrderHistoryTimeWorkedAdapter =
+            WorkOrderHistoryTimeWorkedAdapter(mainActivity, mView, TAG, this)
         binding.rvTimeWorked.apply {
             layoutManager = LinearLayoutManager(mView.context)
-            adapter = timeWorkedAdapter
+            adapter = workOrderHistoryTimeWorkedAdapter
         }
-        timeWorkedAdapter.differ.submitList(existingHistoriesForWorkOrder)
+        workOrderHistoryTimeWorkedAdapter.differ.submitList(existingHistoriesForWorkOrder)
     }
 
     private fun populateExistingHistoriesForDay() {
@@ -345,8 +353,30 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
             setEndTimeAction()
             btnEnterTime.setOnClickListener { insertTime() }
             fabDone.setOnClickListener {
-                gotoWorkOrderHistoryUpdate()
+                chooseToSaveOrDiscard()
             }
+        }
+    }
+
+    private fun chooseToSaveOrDiscard() {
+        if (df.getTimeWorked(startTime, endTime) > 0.0) {
+            AlertDialog.Builder(mView.context)
+                .setTitle(getString(R.string.unsaved_time))
+                .setMessage(getString(R.string.would_you_like_to_save_the_time_entered))
+                .setPositiveButton(getString(R.string.end_time)) { _, _ ->
+                    mainScope.launch {
+                        insertTime(false)
+                        delay(WAIT_250)
+                        gotoWorkOrderHistoryUpdate()
+                    }
+                }
+                .setNeutralButton(getString(R.string.go_back), null)
+                .setNegativeButton(getString(R.string.no)) { _, _ ->
+                    gotoWorkOrderHistoryUpdate()
+                }
+                .show()
+        } else {
+            gotoWorkOrderHistoryUpdate()
         }
     }
 
@@ -446,7 +476,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
     }
 
 
-    private fun insertTime(): Boolean {
+    private fun insertTime(updateUi: Boolean = true): Boolean {
         val answer = validateTimeWorked()
         if (answer == ANSWER_OK) {
             binding.apply {
@@ -477,11 +507,13 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                                 df.getCurrentTimeAsString()
                             )
                         )
-                        delay(WAIT_250)
-                        updateWorkOrderHistoryInDb(curWorkOrderHistory.workOrderHistory)
-                        calculateWorkDateHoursAndUpdateDb(curWorkOrderHistory.workDate)
-                        delay(WAIT_250)
-                        updateUi()
+                        if (updateUi) {
+                            delay(WAIT_250)
+                            updateWorkOrderHistoryInDb(curWorkOrderHistory.workOrderHistory)
+                            calculateWorkDateHoursAndUpdateDb(curWorkOrderHistory.workDate)
+                            delay(WAIT_250)
+                            updateUi()
+                        }
                     }
                     return true
                 } catch (e: SQLiteConstraintException) {
@@ -639,25 +671,6 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
         return ANSWER_OK
     }
 
-    private fun chooseToSaveOrDiscard() {
-        if (df.getTimeWorked(startTime, endTime) > 0.0) {
-            AlertDialog.Builder(mView.context)
-                .setTitle(getString(R.string.confirm_leave))
-                .setMessage(getString(R.string.would_you_like_to_save_time_entered))
-                .setPositiveButton(getString(R.string.enter_time)) { _, _ ->
-                    insertTime()
-                    gotoWorkOrderHistoryUpdate()
-                }
-                .setNegativeButton(getString(R.string.no)) { _, _ ->
-                    gotoWorkOrderHistoryUpdate()
-                }
-                .setNeutralButton(getString(R.string.go_back), null)
-                .show()
-        } else {
-            gotoWorkOrderHistoryUpdate()
-        }
-    }
-
     private fun gotoWorkOrderHistoryUpdate() {
         mView.findNavController().navigate(
             WorkOrderHistoryTimeFragmentDirections.actionWorkOrderHistoryTimeToWorkOrderHistoryUpdateFragment()
@@ -665,6 +678,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
     }
 
     fun gotoWorkOrderHistoryTimeUpdate() {
+        mainViewModel.addCallingFragment(TAG)
         findNavController().navigate(
             WorkOrderHistoryTimeFragmentDirections.actionWorkOrderHistoryTimeToWorkOrderHistoryTimeUpdateFragment()
         )
