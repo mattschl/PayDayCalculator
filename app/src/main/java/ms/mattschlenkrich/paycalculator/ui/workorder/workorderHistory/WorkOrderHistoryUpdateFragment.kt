@@ -592,7 +592,9 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
     private fun setCurMaterial(): Boolean {
         binding.apply {
             for (material in materialListForAutoComplete) {
-                if (acMaterials.text.toString() == material.mName && !acMaterials.text.isNullOrBlank()) {
+                if (acMaterials.text.toString()
+                        .trim() == material.mName && !acMaterials.text.isNullOrBlank()
+                ) {
                     curMaterial = material
                     return true
                 }
@@ -815,7 +817,7 @@ class WorkOrderHistoryUpdateFragment : Fragment(R.layout.fragment_work_order_his
     private fun setCurArea(): Boolean {
         binding.apply {
             for (area in areaListForAutoComplete) {
-                if (acArea.text.toString() == area.areaName && !acArea.text.isNullOrBlank()) {
+                if (acArea.text.toString().trim() == area.areaName) {
                     curArea = area
                     return true
                 }
