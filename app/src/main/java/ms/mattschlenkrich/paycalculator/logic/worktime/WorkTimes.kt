@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paycalculator.logic.worktime
 
-import androidx.fragment.app.Fragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.async
@@ -8,6 +7,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
+import ms.mattschlenkrich.paycalculator.database.model.workorder.TimeWorkedByDay
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryCombined
@@ -16,10 +16,9 @@ import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import java.util.Calendar
 
 class WorkTimes(
-    mainActivity: MainActivity,
+    val mainActivity: MainActivity,
     private val employerId: Long,
     private val workDateId: Long,
-    private val callingFragment: Fragment,
 ) {
     private val workTimeViewModel = mainActivity.workTimeViewModel
     private lateinit var workOrderList: List<WorkOrder>
@@ -27,10 +26,14 @@ class WorkTimes(
     private lateinit var existingHistoriesWithTimes: List<WorkOrderHistoryTimeWorkedCombined>
     private val timeWorkedByDayAsCalendarPairs = ArrayList<Pair<Calendar, Calendar>>()
     private lateinit var workOrdersForDay: List<WorkOrder>
-    private var totalRegHoursForDay = 0.0
-    private var totalOtHoursForDay = 0.0
-    private var totalDblOtHoursForDay = 0.0
-    private var totalHoursForDay = 0.0
+    private var regHoursByTimeWorked = 0.0
+    private var otHoursByTimeWorked = 0.0
+    private var dblOtHoursByTimeWorked = 0.0
+    private var hrsRegByDay = 0.0
+    private var hrsOtByDay = 0.0
+    private var hrsDblOtByDay = 0.0
+
+    private var hrsStatByDay = 0.0
     private val df = DateFunctions()
     private val nf = NumberFunctions()
     private val defaultScope = CoroutineScope(Default)
@@ -41,19 +44,19 @@ class WorkTimes(
 
     private fun instantiateVariables() {
         defaultScope.launch {
-            getWorkOrderList()
+            getWorkOrderListFromDb()
             async { getExistingHistoriesWithTimesForDay() }.await()
             async { getExistingWorkTimesForDay() }.await()
             async { getExistingHistoriesForDay() }.await()
             async { getWorkOrdersForDay() }.await()
-            
+
             calculateHourTotals()
 
         }
 
     }
 
-    private fun calculateHoursPerWorkOrderHistory(workOrderId: Long): WorkOrderHistory {
+    fun calculateHoursPerWorkOrderHistory(workOrderId: Long): WorkOrderHistory {
         val histories = existingHistoriesWithTimes.filter {
             it.workOrderHistory.workOrder.workOrderId == workOrderId
         }
@@ -101,32 +104,35 @@ class WorkTimes(
         )
     }
 
-    private fun calculateHourTotals() {
-        for (timePair in timeWorkedByDayAsCalendarPairs) {
-            totalHoursForDay += df.getTimeWorked(timePair.first, timePair.second)
-        }
-        totalRegHoursForDay = 0.0
-        totalOtHoursForDay = 0.0
-        totalDblOtHoursForDay = 0.0
+    private suspend fun calculateHourTotals() {
+        val workDate = workTimeViewModel.getWorkDate(workDateId)
+        hrsRegByDay = workDate.wdRegHours
+        hrsOtByDay = workDate.wdOtHours
+        hrsDblOtByDay = workDate.wdDblOtHours
+        hrsStatByDay = workDate.wdStatHours
+
+        regHoursByTimeWorked = 0.0
+        otHoursByTimeWorked = 0.0
+        dblOtHoursByTimeWorked = 0.0
 
         for (timeWorked in existingHistoriesWithTimes) {
             when (timeWorked.timeWorked.wohtTimeType) {
                 TimeWorkedTypes.REG_HOURS.value -> {
-                    totalRegHoursForDay += df.getTimeWorked(
+                    regHoursByTimeWorked += df.getTimeWorked(
                         timeWorked.timeWorked.wohtStartTime,
                         timeWorked.timeWorked.wohtEndTime
                     )
                 }
 
                 TimeWorkedTypes.OT_HOURS.value -> {
-                    totalOtHoursForDay += df.getTimeWorked(
+                    otHoursByTimeWorked += df.getTimeWorked(
                         timeWorked.timeWorked.wohtStartTime,
                         timeWorked.timeWorked.wohtEndTime
                     )
                 }
 
                 TimeWorkedTypes.DBL_OT_HOURS.value -> {
-                    totalDblOtHoursForDay += df.getTimeWorked(
+                    dblOtHoursByTimeWorked += df.getTimeWorked(
                         timeWorked.timeWorked.wohtStartTime,
                         timeWorked.timeWorked.wohtEndTime
                     )
@@ -147,13 +153,12 @@ class WorkTimes(
         }
     }
 
-    private suspend fun getWorkOrderList() {
+    private suspend fun getWorkOrderListFromDb() {
         workOrderList = workTimeViewModel.getWorkOrders(employerId)
     }
 
     private suspend fun getExistingHistoriesWithTimesForDay() {
-        existingHistoriesWithTimes =
-            workTimeViewModel.getExistingHistoriesWithTimes(workDateId)
+        existingHistoriesWithTimes = workTimeViewModel.getExistingHistoriesWithTimes(workDateId)
 
     }
 
@@ -180,19 +185,24 @@ class WorkTimes(
         }
     }
 
-    fun getTotalHoursForDay(): Double {
-        return totalHoursForDay
+    fun getWorkOrderList(): List<WorkOrder> {
+        return workOrderList
     }
 
-    fun getRegHoursForDay(): Double {
-        return totalRegHoursForDay
+    fun getWorkOrderHistoryTimeWorkedList(): List<WorkOrderHistoryTimeWorkedCombined> {
+        return existingHistoriesWithTimes
+
     }
 
-    fun getOtHoursForDay(): Double {
-        return totalOtHoursForDay
-    }
-
-    fun getDblOtHoursForDay(): Double {
-        return totalDblOtHoursForDay
+    fun getTimeWorkedByDay(): TimeWorkedByDay {
+        return TimeWorkedByDay(
+            hrsRegByDay,
+            hrsOtByDay,
+            hrsDblOtByDay,
+            hrsStatByDay,
+            regHoursByTimeWorked,
+            otHoursByTimeWorked,
+            dblOtHoursByTimeWorked,
+        )
     }
 }

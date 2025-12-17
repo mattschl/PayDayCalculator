@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Update
+import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryCombined
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorked
@@ -53,4 +54,9 @@ interface WorkTimeDao {
     )
     suspend fun getWorkOrders(employerId: Long): List<WorkOrder>
 
+    @Query(
+        "SELECT * FROM workDates " +
+                "WHERE workDateId = :workDateId"
+    )
+    suspend fun getWorkDate(workDateId: Long): WorkDates
 }

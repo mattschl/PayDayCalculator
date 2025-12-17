@@ -31,10 +31,12 @@ import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_TIME
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_UPDATE
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
+import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
+import ms.mattschlenkrich.paycalculator.database.model.workorder.TimeWorkedByDay
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorked
@@ -73,9 +75,11 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
     private lateinit var workTimes: WorkTimes
     private lateinit var startTime: Calendar
     private lateinit var endTime: Calendar
-    private var totalRegHoursForDay = 0.0
-    private var totalOtHoursForDay = 0.0
-    private var totalDblOtHoursForDay = 0.0
+
+    //    private var totalRegHoursForDay = 0.0
+//    private var totalOtHoursForDay = 0.0
+//    private var totalDblOtHoursForDay = 0.0
+    private lateinit var timeWorkedByDay: TimeWorkedByDay
     private val df = DateFunctions()
     private val nf = NumberFunctions()
     private val defaultScope = CoroutineScope(Default)
@@ -114,20 +118,27 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
                 populateWorkDate()
             }
             awaitAll(basics)
-            delay(WAIT_250)
+            delay(WAIT_100)
+            populateUi()
+        }
+    }
+
+    private fun populateUi() {
+        mainScope.launch {
             val workTimesDeferred = async {
                 workTimes = WorkTimes(
                     mainActivity,
                     curEmployer.employerId,
                     curDate.workDateId,
-                    this@WorkDateTimesFragment
                 )
             }
             awaitAll(workTimesDeferred)
+            delay(WAIT_250)
             val populateBasicInfoDeferred = async {
                 populateBasicInfo()
                 populateTimeVariables()
                 populateWorkOrderListForAutoComplete()
+                timeWorkedByDay = workTimes.getTimeWorkedByDay()
                 populateExistingHistories()
             }
             awaitAll(populateBasicInfoDeferred)
@@ -138,17 +149,13 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
             val populateWorkOrdersDeferred = async { populateWorkOrdersFromDb() }
             awaitAll(populateWorkOrdersDeferred)
             delay(WAIT_250)
-            populateUi()
+            populateTimWorkedCalendarPairs()
+            setCorrectedTimes()
+            adjustWorkTimeTypes()
+            populateTimesRecycler()
+            calculateHoursAndDisplay()
+            updateTimesDisplayed()
         }
-    }
-
-    private fun populateUi() {
-        populateTimWorkedCalendarPairs()
-        setCorrectedTimes()
-        adjustWorkTimeTypes()
-        populateTimesRecycler()
-        calculateHoursAndDisplay()
-        updateTimesDisplayed()
     }
 
     private fun populateEmployer() {
@@ -158,10 +165,11 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
     }
 
     private fun populateExistingHistories() {
-        workOrderViewModel.getTimeWorkedPerDay(curDate.workDateId)
-            .observe(viewLifecycleOwner) { histories ->
-                existingHistories = histories
-            }
+//        workOrderViewModel.getTimeWorkedPerDay(curDate.workDateId)
+//            .observe(viewLifecycleOwner) { histories ->
+//                existingHistories = histories
+//            }
+        existingHistories = workTimes.getWorkOrderHistoryTimeWorkedList()
     }
 
     private fun populateWorkDate() {
@@ -191,78 +199,76 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
     }
 
     private fun calculateHoursAndDisplay() {
-        mainScope.launch {
-            var hrsReg = 0.0
-            var hrsOt = 0.0
-            var hrsDblOt = 0.0
-            var hrsStat = 0.0
+//        mainScope.launch {
+//            var hrsReg = 0.0
+//            var hrsOt = 0.0
+//            var hrsDblOt = 0.0
+//            var hrsStat = 0.0
+//
+//            defaultScope.launch {
+//                hrsReg = payDetailViewModel.getHoursReg(curDate.workDateId)
+//                hrsOt = payDetailViewModel.getHoursOt(curDate.workDateId)
+//                hrsDblOt = payDetailViewModel.getHoursDblOt(curDate.workDateId)
+//                hrsStat = payDetailViewModel.getHoursStat(curDate.workDateId)
+//            }
+//            delay(WAIT_250)
+////            workOrderViewModel.getTimeWorkedPerDay(curDate.workDateId)
+////                .observe(viewLifecycleOwner) { histories ->
+//            existingHistories = workTimes.getWorkOrderHistoryTimeWorkedList()
+//            var hrsRegByTimeEntered = 0.0
+//            var hrsOtByTimeEntered = 0.0
+//            var hrsDblOtByTimeEntered = 0.0
+//            for (history in existingHistories) {
+//                hrsRegByTimeEntered += if (history.timeWorked.wohtTimeType == TimeWorkedTypes.REG_HOURS.value) {
+//                    df.getTimeWorked(
+//                        history.timeWorked.wohtStartTime,
+//                        history.timeWorked.wohtEndTime
+//                    )
+//                } else {
+//                    0.0
+//                }
+//                hrsOtByTimeEntered += if (history.timeWorked.wohtTimeType == TimeWorkedTypes.OT_HOURS.value) {
+//                    df.getTimeWorked(
+//                        history.timeWorked.wohtStartTime,
+//                        history.timeWorked.wohtEndTime
+//                    )
+//                } else {
+//                    0.0
+//                }
+//                hrsDblOtByTimeEntered += if (history.timeWorked.wohtTimeType == TimeWorkedTypes.DBL_OT_HOURS.value) {
+//                    df.getTimeWorked(
+//                        history.timeWorked.wohtStartTime,
+//                        history.timeWorked.wohtEndTime
+//                    )
+//                } else {
+//                    0.0
+//                }
+//            }
+//            totalRegHoursForDay = hrsRegByTimeEntered
+//            totalOtHoursForDay = hrsOtByTimeEntered
+//            totalDblOtHoursForDay = hrsDblOtByTimeEntered
+//            if (hrsReg < hrsRegByTimeEntered || hrsOt < hrsOtByTimeEntered || hrsDblOt < hrsDblOtByTimeEntered) {
+//                hrsReg = hrsRegByTimeEntered
+//                hrsOt = hrsOtByTimeEntered
+//                hrsDblOt = hrsDblOtByTimeEntered
+//                updateWorkDateHours(
+//                    hrsReg,
+//                    hrsOt,
+//                    hrsDblOt,
+//                    hrsStat
+//                )
+//            }
 
-            defaultScope.launch {
-                hrsReg = payDetailViewModel.getHoursReg(curDate.workDateId)
-                hrsOt = payDetailViewModel.getHoursOt(curDate.workDateId)
-                hrsDblOt = payDetailViewModel.getHoursDblOt(curDate.workDateId)
-                hrsStat = payDetailViewModel.getHoursStat(curDate.workDateId)
-            }
-            delay(WAIT_250)
-            workOrderViewModel.getTimeWorkedPerDay(curDate.workDateId)
-                .observe(viewLifecycleOwner) { histories ->
-                    existingHistories = histories
-                    var hrsRegByTimeEntered = 0.0
-                    var hrsOtByTimeEntered = 0.0
-                    var hrsDblOtByTimeEntered = 0.0
-                    for (history in histories) {
-                        hrsRegByTimeEntered += if (history.timeWorked.wohtTimeType == TimeWorkedTypes.REG_HOURS.value) {
-                            df.getTimeWorked(
-                                history.timeWorked.wohtStartTime,
-                                history.timeWorked.wohtEndTime
-                            )
-                        } else {
-                            0.0
-                        }
-                        hrsOtByTimeEntered += if (history.timeWorked.wohtTimeType == TimeWorkedTypes.OT_HOURS.value) {
-                            df.getTimeWorked(
-                                history.timeWorked.wohtStartTime,
-                                history.timeWorked.wohtEndTime
-                            )
-                        } else {
-                            0.0
-                        }
-                        hrsDblOtByTimeEntered += if (history.timeWorked.wohtTimeType == TimeWorkedTypes.DBL_OT_HOURS.value) {
-                            df.getTimeWorked(
-                                history.timeWorked.wohtStartTime,
-                                history.timeWorked.wohtEndTime
-                            )
-                        } else {
-                            0.0
-                        }
-                    }
-                    totalRegHoursForDay = hrsRegByTimeEntered
-                    totalOtHoursForDay = hrsOtByTimeEntered
-                    totalDblOtHoursForDay = hrsDblOtByTimeEntered
-                    if (hrsReg < hrsRegByTimeEntered || hrsOt < hrsOtByTimeEntered || hrsDblOt < hrsDblOtByTimeEntered) {
-                        hrsReg = hrsRegByTimeEntered
-                        hrsOt = hrsOtByTimeEntered
-                        hrsDblOt = hrsDblOtByTimeEntered
-                        updateWorkDateHours(
-                            hrsReg,
-                            hrsOt,
-                            hrsDblOt,
-                            hrsStat
-                        )
-                    }
 
-                    populateHoursInDisplay(
-                        hrsReg,
-                        hrsOt,
-                        hrsDblOt,
-                        hrsStat,
-                        hrsRegByTimeEntered,
-                        hrsOtByTimeEntered,
-                        hrsDblOtByTimeEntered
-                    )
-
-                }
-        }
+        populateHoursInDisplay(
+            timeWorkedByDay.hrsReg,
+            timeWorkedByDay.hrsOt,
+            timeWorkedByDay.hrsDblOt,
+            timeWorkedByDay.hrsStat,
+            timeWorkedByDay.hrsRegByTimeEntered,
+            timeWorkedByDay.hrsOtByTimeEntered,
+            timeWorkedByDay.hrsDblOtByTimeEntered
+        )
     }
 
     private fun populateTimesRecycler() {
@@ -306,21 +312,22 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
                     endTime = df.roundCalendarTimeUpTo15Minutes(timeNow)
                 }
             }
-            if (totalRegHoursForDay + df.getTimeWorked(
+            if (timeWorkedByDay.hrsRegByTimeEntered + df.getTimeWorked(
                     startTime,
                     endTime
                 ) > 8.0 && radRegHours.isChecked
             ) {
-                val timeToAdjust = 8 - totalRegHoursForDay
+                val timeToAdjust = 8 - timeWorkedByDay.hrsRegByTimeEntered
                 endTime = df.addHoursToCalendar(startTime, timeToAdjust)
                 displayMessage(getString(R.string.time_has_been_adjusted_to_8_hours))
             }
-            if (totalOtHoursForDay + totalRegHoursForDay + df.getTimeWorked(
+            if (timeWorkedByDay.hrsOtByTimeEntered + timeWorkedByDay.hrsRegByTimeEntered + df.getTimeWorked(
                     startTime,
                     endTime
                 ) > 12.0 && radOtHours.isChecked
             ) {
-                val timeToAdjust = 12 - totalOtHoursForDay - totalRegHoursForDay
+                val timeToAdjust =
+                    12 - (timeWorkedByDay.hrsOtByTimeEntered + timeWorkedByDay.hrsRegByTimeEntered)
                 endTime = df.addHoursToCalendar(startTime, timeToAdjust)
                 displayMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
             }
@@ -352,18 +359,25 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
     }
 
     private fun populateWorkOrderListForAutoComplete() {
-        workOrderViewModel.getWorkOrdersByEmployerId(curEmployer.employerId)
-            .observe(viewLifecycleOwner) { list ->
-                workOrderList = list
-                val workOrderListForAutocomplete = ArrayList<String>()
-                list.listIterator().forEach { workOrderListForAutocomplete.add(it.woNumber) }
-                binding.apply {
-                    val woAdapter = ArrayAdapter(
-                        mView.context, R.layout.spinner_item_normal, workOrderListForAutocomplete
-                    )
-                    acWorkOrder.setAdapter(woAdapter)
-                }
-            }
+//        workOrderViewModel.getWorkOrdersByEmployerId(curEmployer.employerId)
+//            .observe(viewLifecycleOwner) { list ->
+//                workOrderList = list
+//                val workOrderListForAutocomplete = ArrayList<String>()
+//                list.listIterator().forEach { workOrderListForAutocomplete.add(it.woNumber) }
+//                binding.apply {
+//                    val woAdapter = ArrayAdapter(
+//                        mView.context, R.layout.spinner_item_normal, workOrderListForAutocomplete
+//                    )
+//                    acWorkOrder.setAdapter(woAdapter)
+//                }
+//            }
+        workOrderList = workTimes.getWorkOrderList()
+        val workOrderListForAutocomplete = ArrayList<String>()
+        workOrderList.listIterator().forEach { workOrderListForAutocomplete.add(it.woNumber) }
+        val woAdapter = ArrayAdapter(
+            mView.context, R.layout.spinner_item_normal, workOrderListForAutocomplete
+        )
+        binding.acWorkOrder.setAdapter(woAdapter)
     }
 
     private fun updateWorkDateHours(
@@ -601,19 +615,19 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
 
     private fun adjustWorkTimeTypes() {
         binding.apply {
-            if (radBreak.isChecked && totalRegHoursForDay < 8.0) {
+            if (radBreak.isChecked && timeWorkedByDay.hrsRegByTimeEntered < 8.0) {
                 radRegHours.isChecked = true
                 radBreak.isChecked = false
                 radOtHours.isChecked = false
                 radDblOtHours.isChecked = false
             }
-            if (totalRegHoursForDay >= 8.0) {
+            if (timeWorkedByDay.hrsRegByTimeEntered >= 8.0) {
                 radOtHours.isChecked = true
                 radRegHours.isChecked = false
                 radDblOtHours.isChecked = false
                 radBreak.isChecked = false
             }
-            if (totalOtHoursForDay + totalRegHoursForDay >= 12.0) {
+            if (timeWorkedByDay.hrsOtByTimeEntered + timeWorkedByDay.hrsRegByTimeEntered >= 12.0) {
                 radDblOtHours.isChecked = true
                 radOtHours.isChecked = false
                 radRegHours.isChecked = false
@@ -757,17 +771,29 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
                 return getString(R.string.please_enter_a_work_order_number)
             }
             if (radRegHours.isChecked) {
-                if (totalRegHoursForDay + df.getTimeWorked(startTime, endTime) > 8.0) {
+                if (timeWorkedByDay.hrsRegByTimeEntered + df.getTimeWorked(
+                        startTime,
+                        endTime
+                    ) > 8.0
+                ) {
                     return getString(R.string.this_will_exceed_8_hours)
                 }
             }
             if (radOtHours.isChecked) {
-                if (totalOtHoursForDay + df.getTimeWorked(startTime, endTime) > 12.0) {
+                if (timeWorkedByDay.hrsRegByTimeEntered + timeWorkedByDay.hrsOtByTimeEntered + df.getTimeWorked(
+                        startTime,
+                        endTime
+                    ) > 12.0
+                ) {
                     return getString(R.string.this_will_exceed_12_hours)
                 }
             }
             if (radDblOtHours.isChecked) {
-                if (totalDblOtHoursForDay + df.getTimeWorked(startTime, endTime) > 18.0) {
+                if (timeWorkedByDay.hrsRegByTimeEntered + timeWorkedByDay.hrsOtByTimeEntered + timeWorkedByDay.hrsDblOtByTimeEntered + df.getTimeWorked(
+                        startTime,
+                        endTime
+                    ) > 18.0
+                ) {
                     return getString(R.string.this_will_exceed_24_hours)
                 }
             }

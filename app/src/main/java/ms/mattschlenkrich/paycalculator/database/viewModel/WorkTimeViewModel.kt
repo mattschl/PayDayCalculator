@@ -27,4 +27,7 @@ class WorkTimeViewModel(
     suspend fun getWorkOrders(employerId: Long) =
         workTimeRepository.getWorkOrders(employerId)
 
+    suspend fun getWorkDate(workDateId: Long) =
+        workTimeRepository.getWorkDate(workDateId)
+
 }

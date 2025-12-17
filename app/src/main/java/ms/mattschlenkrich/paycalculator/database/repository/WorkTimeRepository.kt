@@ -22,4 +22,6 @@ class WorkTimeRepository(private val db: PayDatabase) {
     suspend fun getWorkOrders(employerId: Long) =
         db.getWorkTimeDao().getWorkOrders(employerId)
 
+    suspend fun getWorkDate(workDateId: Long) =
+        db.getWorkTimeDao().getWorkDate(workDateId)
 }
