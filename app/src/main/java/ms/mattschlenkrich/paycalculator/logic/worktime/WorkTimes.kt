@@ -3,14 +3,19 @@ package ms.mattschlenkrich.paycalculator.logic.worktime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
+import ms.mattschlenkrich.paycalculator.common.WAIT_100
+import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paycalculator.database.model.workorder.TimeWorkedByDay
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryCombined
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import java.util.Calendar
@@ -45,18 +50,96 @@ class WorkTimes(
     private fun instantiateVariables() {
         defaultScope.launch {
             getWorkOrderListFromDb()
-            async { getExistingHistoriesWithTimesForDay() }.await()
-            async { getExistingWorkTimesForDay() }.await()
-            async { getExistingHistoriesForDay() }.await()
-            async { getWorkOrdersForDay() }.await()
+            val op1 = async { getExistingHistoriesWithTimesForDay() }
+            val op2 = async { getExistingHistoriesForDay() }
+            awaitAll(op1, op2)
+            delay(WAIT_100)
+            val op3 = async { getExistingWorkTimesForDay() }
+            val op4 = async { getWorkOrdersForDay() }
+            awaitAll(op3, op4)
 
-            calculateHourTotals()
+            calculateHourTotalsForDay()
 
         }
-
     }
 
-    fun calculateHoursPerWorkOrderHistory(workOrderId: Long): WorkOrderHistory {
+    private suspend fun getExistingHistoriesWithTimesForDay() {
+        existingHistoriesWithTimes = workTimeViewModel.getExistingHistoriesWithTimes(workDateId)
+    }
+
+    private suspend fun getExistingHistoriesForDay() {
+        existingHistories = workTimeViewModel.getExistingHistories(workDateId)
+    }
+
+    private fun getExistingWorkTimesForDay() {
+        for (timWorked in existingHistoriesWithTimes) {
+            val startTime = df.getCalendarFromString(timWorked.timeWorked.wohtStartTime)
+            val endTime = df.getCalendarFromString(timWorked.timeWorked.wohtEndTime)
+            timeWorkedByDayAsCalendarPairs.add(Pair(startTime, endTime))
+        }
+    }
+
+    private fun getWorkOrdersForDay() {
+        val historiesForDay = existingHistoriesWithTimes.groupBy {
+            it.workOrderHistory.workOrder.workOrderId
+        }
+        val workOrderArrayList = ArrayList<WorkOrder>()
+        for (history in historiesForDay) {
+            workOrderArrayList.add(history.value.first().workOrderHistory.workOrder)
+        }
+        for (history in existingHistories) {
+            workOrderArrayList.add(history.workOrder)
+        }
+
+        workOrdersForDay = workOrderArrayList.toList().groupBy {
+            it.workOrderId
+        }.map {
+            it.value.first()
+        }
+    }
+
+    private suspend fun calculateHourTotalsForDay() {
+        val workDate = workTimeViewModel.getWorkDate(workDateId)
+        hrsRegByDay = workDate.wdRegHours
+        hrsOtByDay = workDate.wdOtHours
+        hrsDblOtByDay = workDate.wdDblOtHours
+        hrsStatByDay = workDate.wdStatHours
+
+        regHoursByTimeWorked = 0.0
+        otHoursByTimeWorked = 0.0
+        dblOtHoursByTimeWorked = 0.0
+
+        for (timeWorked in existingHistoriesWithTimes) {
+            when (timeWorked.timeWorked.wohtTimeType) {
+                TimeWorkedTypes.REG_HOURS.value -> {
+                    regHoursByTimeWorked += df.getTimeWorked(
+                        timeWorked.timeWorked.wohtStartTime,
+                        timeWorked.timeWorked.wohtEndTime
+                    )
+                }
+
+                TimeWorkedTypes.OT_HOURS.value -> {
+                    otHoursByTimeWorked += df.getTimeWorked(
+                        timeWorked.timeWorked.wohtStartTime,
+                        timeWorked.timeWorked.wohtEndTime
+                    )
+                }
+
+                TimeWorkedTypes.DBL_OT_HOURS.value -> {
+                    dblOtHoursByTimeWorked += df.getTimeWorked(
+                        timeWorked.timeWorked.wohtStartTime,
+                        timeWorked.timeWorked.wohtEndTime
+                    )
+                }
+
+                else -> {
+                    // Break time
+                }
+            }
+        }
+    }
+
+    fun getWorkOrderHistoryTimeWorkedList(workOrderId: Long): WorkOrderHistory {
         val histories = existingHistoriesWithTimes.filter {
             it.workOrderHistory.workOrder.workOrderId == workOrderId
         }
@@ -104,85 +187,8 @@ class WorkTimes(
         )
     }
 
-    private suspend fun calculateHourTotals() {
-        val workDate = workTimeViewModel.getWorkDate(workDateId)
-        hrsRegByDay = workDate.wdRegHours
-        hrsOtByDay = workDate.wdOtHours
-        hrsDblOtByDay = workDate.wdDblOtHours
-        hrsStatByDay = workDate.wdStatHours
-
-        regHoursByTimeWorked = 0.0
-        otHoursByTimeWorked = 0.0
-        dblOtHoursByTimeWorked = 0.0
-
-        for (timeWorked in existingHistoriesWithTimes) {
-            when (timeWorked.timeWorked.wohtTimeType) {
-                TimeWorkedTypes.REG_HOURS.value -> {
-                    regHoursByTimeWorked += df.getTimeWorked(
-                        timeWorked.timeWorked.wohtStartTime,
-                        timeWorked.timeWorked.wohtEndTime
-                    )
-                }
-
-                TimeWorkedTypes.OT_HOURS.value -> {
-                    otHoursByTimeWorked += df.getTimeWorked(
-                        timeWorked.timeWorked.wohtStartTime,
-                        timeWorked.timeWorked.wohtEndTime
-                    )
-                }
-
-                TimeWorkedTypes.DBL_OT_HOURS.value -> {
-                    dblOtHoursByTimeWorked += df.getTimeWorked(
-                        timeWorked.timeWorked.wohtStartTime,
-                        timeWorked.timeWorked.wohtEndTime
-                    )
-                }
-
-                else -> {
-                    // Break time
-                }
-            }
-        }
-    }
-
-    private fun getExistingWorkTimesForDay() {
-        for (timWorked in existingHistoriesWithTimes) {
-            val startTime = df.getCalendarFromString(timWorked.timeWorked.wohtStartTime)
-            val endTime = df.getCalendarFromString(timWorked.timeWorked.wohtEndTime)
-            timeWorkedByDayAsCalendarPairs.add(Pair(startTime, endTime))
-        }
-    }
-
     private suspend fun getWorkOrderListFromDb() {
         workOrderList = workTimeViewModel.getWorkOrders(employerId)
-    }
-
-    private suspend fun getExistingHistoriesWithTimesForDay() {
-        existingHistoriesWithTimes = workTimeViewModel.getExistingHistoriesWithTimes(workDateId)
-
-    }
-
-    private suspend fun getExistingHistoriesForDay() {
-        existingHistories = workTimeViewModel.getExistingHistories(workDateId)
-    }
-
-    private fun getWorkOrdersForDay() {
-        val historiesForDay = existingHistoriesWithTimes.groupBy {
-            it.workOrderHistory.workOrder.workOrderId
-        }
-        val workOrderArrayList = ArrayList<WorkOrder>()
-        for (history in historiesForDay) {
-            workOrderArrayList.add(history.value.first().workOrderHistory.workOrder)
-        }
-        for (history in existingHistories) {
-            workOrderArrayList.add(history.workOrder)
-        }
-
-        workOrdersForDay = workOrderArrayList.toList().groupBy {
-            it.workOrderId
-        }.map {
-            it.value.first()
-        }
     }
 
     fun getWorkOrderList(): List<WorkOrder> {
@@ -204,5 +210,24 @@ class WorkTimes(
             otHoursByTimeWorked,
             dblOtHoursByTimeWorked,
         )
+    }
+
+    fun updateWorkDate(workDate: WorkDates) {
+        defaultScope.launch {
+            workTimeViewModel.updateWorkDate(workDate)
+        }
+    }
+
+    fun updateWorkOrderHistory(workOrderHistory: WorkOrderHistory) {
+        defaultScope.launch {
+            workTimeViewModel.updateWorkOrderHistory(workOrderHistory)
+        }
+    }
+
+    fun insertWorkDateTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked) {
+        defaultScope.launch {
+            workTimeViewModel.insertWorkTime(workOrderHistoryTimeWorked)
+        }
+
     }
 }

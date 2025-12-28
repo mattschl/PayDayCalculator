@@ -1,6 +1,8 @@
 package ms.mattschlenkrich.paycalculator.database.repository
 
 import ms.mattschlenkrich.paycalculator.database.PayDatabase
+import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorked
 
 class WorkTimeRepository(private val db: PayDatabase) {
@@ -12,6 +14,12 @@ class WorkTimeRepository(private val db: PayDatabase) {
 
     suspend fun updateWorkTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked) =
         db.getWorkTimeDao().updateWorkTime(workOrderHistoryTimeWorked)
+
+    suspend fun updateWorkDate(workDates: WorkDates) =
+        db.getWorkTimeDao().updateWorkDate(workDates)
+
+    suspend fun updateWorkOrderHistory(workOrderHistory: WorkOrderHistory) =
+        db.getWorkTimeDao().updateWorkOrderHistory(workOrderHistory)
 
     suspend fun getExistingHistories(workDateId: Long) =
         db.getWorkTimeDao().getExistingHistories(workDateId)

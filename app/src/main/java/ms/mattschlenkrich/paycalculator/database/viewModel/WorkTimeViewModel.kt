@@ -2,6 +2,8 @@ package ms.mattschlenkrich.paycalculator.database.viewModel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.database.repository.WorkTimeRepository
 
@@ -17,6 +19,12 @@ class WorkTimeViewModel(
 
     suspend fun updateWorkTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked) =
         workTimeRepository.updateWorkTime(workOrderHistoryTimeWorked)
+
+    suspend fun updateWorkDate(workDates: WorkDates) =
+        workTimeRepository.updateWorkDate(workDates)
+
+    suspend fun updateWorkOrderHistory(workOrderHistory: WorkOrderHistory) =
+        workTimeRepository.updateWorkOrderHistory(workOrderHistory)
 
     suspend fun getExistingHistories(workDateId: Long) =
         workTimeRepository.getExistingHistories(workDateId)

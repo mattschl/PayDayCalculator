@@ -36,6 +36,7 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderHistoryTimeBinding
+import ms.mattschlenkrich.paycalculator.logic.worktime.IWorkTimesFragment
 import ms.mattschlenkrich.paycalculator.logic.worktime.WorkTimes
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater.WorkOrderHistoryTimeWorkedAdapter
@@ -43,7 +44,8 @@ import java.util.Calendar
 
 private const val TAG = FRAG_WORK_ORDER_HISTORY_TIME
 
-class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_history_time) {
+class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_history_time),
+    IWorkTimesFragment {
 
     private var _binding: FragmentWorkOrderHistoryTimeBinding? = null
     private val binding get() = _binding!!
@@ -92,11 +94,11 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        populatedValues()
+        populateValues()
         setClickActions()
     }
 
-    private fun populatedValues() {
+    override fun populateValues() {
         mainScope.launch {
             val populateWorkOrderHistoryDeferred = async { populateWorkOrderHistory() }
             awaitAll(populateWorkOrderHistoryDeferred)
@@ -118,7 +120,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
             }
             awaitAll(populateExistingHistoriesDeferred)
             delay(WAIT_500)
-            updateUi()
+            populateUi()
         }
     }
 
@@ -129,9 +131,9 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
             }
     }
 
-    private fun updateUi() {
+    override fun populateUi() {
         mainScope.launch {
-            val populateExistingHistoryCalendarPairsDeferred = async() {
+            val populateExistingHistoryCalendarPairsDeferred = async {
                 populateExistingHistoryCalendarPairs()
                 calculateAdjustmentsForRegAndOt(endTime)
             }
@@ -346,7 +348,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
             }
     }
 
-    private fun setClickActions() {
+    override fun setClickActions() {
         binding.apply {
             setStartTimeActions()
             setEndTimeAction()
@@ -362,7 +364,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
             AlertDialog.Builder(mView.context)
                 .setTitle(getString(R.string.unsaved_time))
                 .setMessage(getString(R.string.would_you_like_to_save_the_time_entered))
-                .setPositiveButton(getString(R.string.end_time)) { _, _ ->
+                .setPositiveButton(getString(R.string.enter_time)) { _, _ ->
                     mainScope.launch {
                         insertTime(false)
                         delay(WAIT_250)
@@ -424,7 +426,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                             endTime.set(Calendar.MINUTE, tempHoursAndMin.second)
                             endTime.set(Calendar.SECOND, 0)
                         }
-                        updateUi()
+                        populateUi()
                     }
                 }
             clkEndTime.setOnClickListener {
@@ -511,7 +513,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                             updateWorkOrderHistoryInDb(curWorkOrderHistory.workOrderHistory)
                             calculateWorkDateHoursAndUpdateDb(curWorkOrderHistory.workDate)
                             delay(WAIT_250)
-                            updateUi()
+                            populateUi()
                         }
                     }
                     return true
@@ -668,6 +670,10 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
             }
         }
         return ANSWER_OK
+    }
+
+    override fun gotoCallingFragment() {
+        TODO("Not yet implemented")
     }
 
     private fun gotoWorkOrderHistoryUpdate() {

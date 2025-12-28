@@ -47,6 +47,7 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkDateTimeBinding
+import ms.mattschlenkrich.paycalculator.logic.worktime.IWorkTimesFragment
 import ms.mattschlenkrich.paycalculator.logic.worktime.WorkTimes
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.workdate.adapter.WorkDateTimesAdapter
@@ -54,7 +55,7 @@ import java.util.Calendar
 
 private const val TAG = FRAG_WORK_DATE_TIME
 
-class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
+class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkTimesFragment {
 
     private var _binding: FragmentWorkDateTimeBinding? = null
     private val binding get() = _binding!!
@@ -106,12 +107,11 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         populateValues()
         setClickActions()
     }
 
-    private fun populateValues() {
+    override fun populateValues() {
         mainScope.launch {
             val basics = async {
                 populateEmployer()
@@ -123,7 +123,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
         }
     }
 
-    private fun populateUi() {
+    override fun populateUi() {
         mainScope.launch {
             val workTimesDeferred = async {
                 workTimes = WorkTimes(
@@ -447,7 +447,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
 
     }
 
-    private fun setClickActions() {
+    override fun setClickActions() {
         binding.apply {
             acWorkOrder.setOnItemClickListener { _, _, _, _ -> setCurWorkOrder() }
             acWorkOrder.setOnLongClickListener {
@@ -871,7 +871,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time) {
         }
     }
 
-    private fun gotoCallingFragment() {
+    override fun gotoCallingFragment() {
         Log.d(TAG, "gotoCallingFragment: ${mainViewModel.getCallingFragment()}")
         if (mainViewModel.getCallingFragment() != null) {
             val frag = mainViewModel.getCallingFragment()!!

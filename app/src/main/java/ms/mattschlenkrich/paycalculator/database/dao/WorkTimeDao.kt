@@ -9,6 +9,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
+import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryCombined
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorkedCombined
@@ -23,6 +24,12 @@ interface WorkTimeDao {
 
     @Update()
     suspend fun updateWorkTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked)
+
+    @Update()
+    suspend fun updateWorkDate(workDates: WorkDates)
+
+    @Update
+    suspend fun updateWorkOrderHistory(workOrderHistory: WorkOrderHistory)
 
     @RewriteQueriesToDropUnusedColumns
     @Transaction
