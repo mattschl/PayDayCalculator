@@ -18,7 +18,6 @@ import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateTimesFragment
 class WorkDateTimesAdapter(
     val mainActivity: MainActivity,
     private val mView: View,
-    private val parentTag: String,
     private val parentFragment: WorkDateTimesFragment,
 ) : RecyclerView.Adapter<WorkDateTimesAdapter.ViewHolder>() {
 
@@ -122,6 +121,7 @@ class WorkDateTimesAdapter(
 
     private fun deleteTimeWorked(history: WorkOrderHistoryTimeWorkedCombined) {
         workOrderViewModel.deleteTimeWorked(history.timeWorked)
+        parentFragment.populateUi()
     }
 
     private fun gotoWorkOrderHistoryTimeEdit(history: WorkOrderHistoryTimeWorkedCombined) {

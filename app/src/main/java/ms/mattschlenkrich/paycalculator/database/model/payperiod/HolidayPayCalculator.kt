@@ -22,13 +22,17 @@ class HolidayPayCalculator(
         CoroutineScope(defaultScope).launch {
             val firstDate = LocalDate.parse(holidayDate).minusDays(31).toString()
             val lastDate = LocalDate.parse(holidayDate).minusDays(1).toString()
-            val workDaeListAsync = async { getWorkDates(employerId, firstDate, lastDate) }
-            val totalHoursAsync = async { calculateHoursTotal(workDaeListAsync.await()) }
+            val workDateListAsync = async { getWorkDates(employerId, firstDate, lastDate) }
+            val totalHoursAsync = async { calculateHoursTotal(workDateListAsync.await()) }
             val totalWorkDaysAsync = async { calculateDaysOfWork(holidayDate) }
-            statHours = totalHoursAsync.await() / totalWorkDaysAsync.await()
+            val daysActuallyWorkedAsync =
+                async { calculateDaysActuallyWorked(workDateListAsync.await()) }
+            statHours =
+                if (daysActuallyWorkedAsync.await() < 15) 0.0 else totalHoursAsync.await() / totalWorkDaysAsync.await()
             Log.d(
                 TABLE_WORK_DATES,
-                "total hours: ${totalHoursAsync.await()} " + "total work days: ${totalWorkDaysAsync.await()}"
+                "total hours: ${totalHoursAsync.await()} " + "total work days: ${totalWorkDaysAsync.await()} " +
+                        "days actually worked: ${daysActuallyWorkedAsync.await()} " + "stat hours: $statHours"
             )
         }
     }
@@ -53,6 +57,16 @@ class HolidayPayCalculator(
             totalHours += workDate.wdDblOtHours * 2
         }
         return totalHours
+    }
+
+    private fun calculateDaysActuallyWorked(workDateList: List<WorkDates>): Int {
+        var dayCount = 0
+        for (workDate in workDateList) {
+            if (workDate.wdRegHours > 0.0 || workDate.wdStatHours > 0.0) {
+                dayCount++
+            }
+        }
+        return dayCount
     }
 
     private fun calculateDaysOfWork(startingDate: String): Int {

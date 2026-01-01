@@ -4,9 +4,7 @@ interface IWorkTimesFragment {
     fun populateValues()
     fun populateUi()
     fun setClickActions()
-
     fun gotoCallingFragment()
-
     fun gotoWorkOrderHistoryTimeUpdateFragment()
 
 }

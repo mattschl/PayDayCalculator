@@ -12,14 +12,13 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.databinding.ListSingleItemBinding
+import ms.mattschlenkrich.paycalculator.logic.worktime.IWorkTimesFragment
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderHistoryTimeFragment
 
 class WorkOrderHistoryTimeWorkedAdapter(
     val mainActivity: MainActivity,
     private val mView: View,
-    private val parentFragment: String,
-    private val workOrderHistoryTimeFragment: WorkOrderHistoryTimeFragment
+    private val parentFragment: IWorkTimesFragment,
 ) : RecyclerView.Adapter<WorkOrderHistoryTimeWorkedAdapter.ViewHolder>() {
 
     val mainViewModel = mainActivity.mainViewModel
@@ -123,10 +122,11 @@ class WorkOrderHistoryTimeWorkedAdapter(
 
     private fun deleteTimeWorked(history: WorkOrderHistoryTimeWorkedCombined) {
         workOrderViewModel.deleteTimeWorked(history.timeWorked)
+        parentFragment.populateUi()
     }
 
     private fun gotoWorkOrderHistoryTimeEdit(history: WorkOrderHistoryTimeWorkedCombined) {
         mainViewModel.setWorkOrderHistoryTimeWorkedCombined(history)
-        workOrderHistoryTimeFragment.gotoWorkOrderHistoryTimeUpdateFragment()
+        parentFragment.gotoWorkOrderHistoryTimeUpdateFragment()
     }
 }

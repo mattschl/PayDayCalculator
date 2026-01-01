@@ -35,15 +35,13 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderHistoryTimeBinding
-import ms.mattschlenkrich.paycalculator.logic.worktime.IWorkTimesFragment
 import ms.mattschlenkrich.paycalculator.logic.worktime.WorkTimes
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import java.util.Calendar
 
 private const val TAG = FRAG_WORK_ORDER_HISTORY_TIME
 
-class WorkOrderHistoryTimeFragmentOld : Fragment(R.layout.fragment_work_order_history_time),
-    IWorkTimesFragment {
+class WorkOrderHistoryTimeFragmentOld : Fragment(R.layout.fragment_work_order_history_time) {
 
     private var _binding: FragmentWorkOrderHistoryTimeBinding? = null
     private val binding get() = _binding!!
@@ -96,7 +94,7 @@ class WorkOrderHistoryTimeFragmentOld : Fragment(R.layout.fragment_work_order_hi
         setClickActions()
     }
 
-    override fun populateValues() {
+    fun populateValues() {
         mainScope.launch {
             val populateWorkOrderHistoryDeferred = async { populateWorkOrderHistory() }
             awaitAll(populateWorkOrderHistoryDeferred)
@@ -129,7 +127,7 @@ class WorkOrderHistoryTimeFragmentOld : Fragment(R.layout.fragment_work_order_hi
             }
     }
 
-    override fun populateUi() {
+    fun populateUi() {
         mainScope.launch {
             val populateExistingHistoryCalendarPairsDeferred = async {
                 populateExistingHistoryCalendarPairs()
@@ -346,7 +344,7 @@ class WorkOrderHistoryTimeFragmentOld : Fragment(R.layout.fragment_work_order_hi
             }
     }
 
-    override fun setClickActions() {
+    fun setClickActions() {
         binding.apply {
             setStartTimeActions()
             setEndTimeAction()
@@ -670,11 +668,11 @@ class WorkOrderHistoryTimeFragmentOld : Fragment(R.layout.fragment_work_order_hi
         return ANSWER_OK
     }
 
-    override fun gotoCallingFragment() {
+    fun gotoCallingFragment() {
         TODO("Not yet implemented")
     }
 
-    override fun gotoWorkOrderHistoryTimeUpdateFragment() {
+    fun gotoWorkOrderHistoryTimeUpdateFragment() {
         TODO("Not yet implemented")
     }
 

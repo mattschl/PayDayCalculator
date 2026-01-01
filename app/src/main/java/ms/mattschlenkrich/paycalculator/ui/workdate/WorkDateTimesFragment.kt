@@ -65,7 +65,6 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
     private lateinit var workOrderViewModel: WorkOrderViewModel
     private lateinit var employerViewModel: EmployerViewModel
     private lateinit var payDetailViewModel: PayDetailViewModel
-
     private lateinit var payDayViewModel: PayDayViewModel
     private lateinit var curEmployer: Employers
     private lateinit var curDate: WorkDates
@@ -273,7 +272,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
 
     private fun populateTimesRecycler() {
         val workDateTimesAdapter = WorkDateTimesAdapter(
-            mainActivity, mView, TAG, this@WorkDateTimesFragment
+            mainActivity, mView, this@WorkDateTimesFragment
         )
         binding.rvTimeWorked.apply {
             layoutManager = LinearLayoutManager(mView.context)
@@ -490,7 +489,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
 
     private fun validateWorkOrderNumberAndSaveHistoryIfValid() {
         if (doesWorkOrderExist()) {
-            displayMessage(getString(R.string.work_order_has_been_added_to_date))
+//            displayMessage(getString(R.string.work_order_has_been_added_to_date))
             insertTime()
         } else {
             AlertDialog.Builder(mView.context)
@@ -872,13 +871,10 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
     }
 
     override fun gotoCallingFragment() {
-        Log.d(TAG, "gotoCallingFragment: ${mainViewModel.getCallingFragment()}")
         if (mainViewModel.getCallingFragment() != null) {
             val frag = mainViewModel.getCallingFragment()!!
             if (frag.contains(FRAG_WORK_DATE_UPDATE)) {
                 gotoWorkDateUpdateFragment()
-            } else {
-                //do nothing
             }
         }
     }

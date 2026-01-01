@@ -7,7 +7,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
-import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.database.model.payperiod.WorkDates
@@ -40,7 +39,8 @@ class WorkTimes(
 
     private var hrsStatByDay = 0.0
     private val df = DateFunctions()
-    private val nf = NumberFunctions()
+
+    //    private val nf = NumberFunctions()
     private val defaultScope = CoroutineScope(Default)
 
     init {

@@ -23,6 +23,7 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_TIME
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
@@ -333,7 +334,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
 
     private fun populateExistingTimesRecycler() {
         val workOrderHistoryTimeWorkedAdapter =
-            WorkOrderHistoryTimeWorkedAdapter(mainActivity, mView, TAG, this)
+            WorkOrderHistoryTimeWorkedAdapter(mainActivity, mView, this)
         binding.rvTimeWorked.apply {
             layoutManager = LinearLayoutManager(mView.context)
             adapter = workOrderHistoryTimeWorkedAdapter
@@ -673,10 +674,15 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
     }
 
     override fun gotoCallingFragment() {
-        TODO("Not yet implemented")
+        if (mainViewModel.getCallingFragment() != null) {
+            val frag = mainViewModel.getCallingFragment()!!
+            if (frag.contains(FRAG_WORK_ORDER_HISTORY_UPDATE)) {
+                gotoWorkOrderHistoryUpdateFragment()
+            }
+        }
     }
 
-    fun gotoWorkOrderHistoryUpdateFragment() {
+    private fun gotoWorkOrderHistoryUpdateFragment() {
         mView.findNavController().navigate(
             WorkOrderHistoryTimeFragmentDirections.actionWorkOrderHistoryTimeToWorkOrderHistoryUpdateFragment()
         )
