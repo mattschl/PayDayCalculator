@@ -674,6 +674,10 @@ class WorkOrderHistoryTimeFragmentOld : Fragment(R.layout.fragment_work_order_hi
         TODO("Not yet implemented")
     }
 
+    override fun gotoWorkOrderHistoryTimeUpdateFragment() {
+        TODO("Not yet implemented")
+    }
+
     private fun gotoWorkOrderHistoryUpdate() {
         mView.findNavController().navigate(
             WorkOrderHistoryTimeFragmentDirections.actionWorkOrderHistoryTimeToWorkOrderHistoryUpdateFragment()

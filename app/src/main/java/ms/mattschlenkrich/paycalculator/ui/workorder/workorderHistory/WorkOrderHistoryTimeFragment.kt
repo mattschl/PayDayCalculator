@@ -368,16 +368,16 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                     mainScope.launch {
                         insertTime(false)
                         delay(WAIT_250)
-                        gotoWorkOrderHistoryUpdate()
+                        gotoWorkOrderHistoryUpdateFragment()
                     }
                 }
                 .setNeutralButton(getString(R.string.go_back), null)
                 .setNegativeButton(getString(R.string.no)) { _, _ ->
-                    gotoWorkOrderHistoryUpdate()
+                    gotoWorkOrderHistoryUpdateFragment()
                 }
                 .show()
         } else {
-            gotoWorkOrderHistoryUpdate()
+            gotoWorkOrderHistoryUpdateFragment()
         }
     }
 
@@ -676,13 +676,13 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
         TODO("Not yet implemented")
     }
 
-    private fun gotoWorkOrderHistoryUpdate() {
+    fun gotoWorkOrderHistoryUpdateFragment() {
         mView.findNavController().navigate(
             WorkOrderHistoryTimeFragmentDirections.actionWorkOrderHistoryTimeToWorkOrderHistoryUpdateFragment()
         )
     }
 
-    fun gotoWorkOrderHistoryTimeUpdate() {
+    override fun gotoWorkOrderHistoryTimeUpdateFragment() {
         mainViewModel.addCallingFragment(TAG)
         findNavController().navigate(
             WorkOrderHistoryTimeFragmentDirections.actionWorkOrderHistoryTimeToWorkOrderHistoryTimeUpdateFragment()

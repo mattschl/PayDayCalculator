@@ -7,4 +7,6 @@ interface IWorkTimesFragment {
 
     fun gotoCallingFragment()
 
+    fun gotoWorkOrderHistoryTimeUpdateFragment()
+
 }

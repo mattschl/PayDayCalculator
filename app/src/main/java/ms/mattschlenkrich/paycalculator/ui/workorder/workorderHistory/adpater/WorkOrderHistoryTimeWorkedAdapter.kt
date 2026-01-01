@@ -127,6 +127,6 @@ class WorkOrderHistoryTimeWorkedAdapter(
 
     private fun gotoWorkOrderHistoryTimeEdit(history: WorkOrderHistoryTimeWorkedCombined) {
         mainViewModel.setWorkOrderHistoryTimeWorkedCombined(history)
-        workOrderHistoryTimeFragment.gotoWorkOrderHistoryTimeUpdate()
+        workOrderHistoryTimeFragment.gotoWorkOrderHistoryTimeUpdateFragment()
     }
 }

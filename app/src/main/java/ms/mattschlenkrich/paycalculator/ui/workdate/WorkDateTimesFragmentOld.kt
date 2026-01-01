@@ -926,7 +926,7 @@ class WorkDateTimesFragmentOld : Fragment(R.layout.fragment_work_date_time), IWo
         )
     }
 
-    fun gotoWorkOrderHistoryTimeUpdateFragment() {
+    override fun gotoWorkOrderHistoryTimeUpdateFragment() {
         mainViewModel.addCallingFragment(TAG)
         mView.findNavController().navigate(
             WorkDateTimesFragmentDirections.actionWorkDateTimesFragmentToWorkOrderHistoryTimeUpdateFragment()
