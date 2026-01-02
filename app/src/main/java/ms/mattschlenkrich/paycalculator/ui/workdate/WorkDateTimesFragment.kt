@@ -330,7 +330,6 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
                 endTime = df.addHoursToCalendar(startTime, timeToAdjust)
                 displayMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
             }
-            updateTimesDisplayed()
         }
     }
 
@@ -545,6 +544,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
                             endTime.set(Calendar.SECOND, 0)
                         }
                         calculateAdjustmentsForRegAndOt(endTime)
+                        populateUi()
                     }
                 }
             clkEndTime.setOnClickListener {

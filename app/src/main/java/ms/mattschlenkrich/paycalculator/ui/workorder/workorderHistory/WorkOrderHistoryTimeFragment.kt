@@ -392,7 +392,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                     startTime.set(Calendar.HOUR_OF_DAY, tempStartTime.first)
                     startTime.set(Calendar.MINUTE, tempStartTime.second)
                     startTime.set(Calendar.SECOND, 0)
-                    calculateTimesToDisplay()
+                    updateTimesDisplayed()
                 }
             clkStartTime.setOnClickListener {
                 val startTimePicker = TimePickerDialog(
@@ -427,6 +427,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                             endTime.set(Calendar.MINUTE, tempHoursAndMin.second)
                             endTime.set(Calendar.SECOND, 0)
                         }
+                        calculateAdjustmentsForRegAndOt(endTime)
                         populateUi()
                     }
                 }
@@ -473,7 +474,6 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                 endTime = df.addHoursToCalendar(startTime, timeToAdjust)
                 displayMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
             }
-            updateTimesDisplayed()
         }
     }
 
