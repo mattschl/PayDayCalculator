@@ -427,8 +427,11 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                             endTime.set(Calendar.MINUTE, tempHoursAndMin.second)
                             endTime.set(Calendar.SECOND, 0)
                         }
-                        calculateAdjustmentsForRegAndOt(endTime)
-                        populateUi()
+                        mainScope.launch {
+                            calculateAdjustmentsForRegAndOt(endTime)
+                            delay(WAIT_250)
+                            populateUi()
+                        }
                     }
                 }
             clkEndTime.setOnClickListener {

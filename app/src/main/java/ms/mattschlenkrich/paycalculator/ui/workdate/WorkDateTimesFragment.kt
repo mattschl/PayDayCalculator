@@ -32,6 +32,7 @@ import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_UPDATE
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.common.WAIT_100
+import ms.mattschlenkrich.paycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.employer.Employers
@@ -118,11 +119,13 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
             }
             awaitAll(basics)
             delay(WAIT_100)
+            populateBasics()
+            delay(WAIT_1000)
             populateUi()
         }
     }
 
-    override fun populateUi() {
+    private fun populateBasics() {
         mainScope.launch {
             val workTimesDeferred = async {
                 workTimes = WorkTimes(
@@ -147,7 +150,11 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
             awaitAll(calculateAdjustmentsForRegAndOtDeferred)
             val populateWorkOrdersDeferred = async { populateWorkOrdersFromDb() }
             awaitAll(populateWorkOrdersDeferred)
-            delay(WAIT_250)
+        }
+    }
+
+    override fun populateUi() {
+        mainScope.launch {
             populateTimWorkedCalendarPairs()
             setCorrectedTimes()
             adjustWorkTimeTypes()
@@ -300,9 +307,9 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         }
     }
 
-    private fun calculateAdjustmentsForRegAndOt(time: Calendar) {
+    private fun calculateAdjustmentsForRegAndOt(tempEndTime: Calendar) {
         binding.apply {
-            val timeNow: Calendar = time.clone() as Calendar
+            val timeNow: Calendar = tempEndTime.clone() as Calendar
             val tempDate = curDate.wdDate.split("-")
             timeNow.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
             if (df.getTimeWorked(startTime, endTime) < 0.0) {
@@ -330,6 +337,8 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
                 endTime = df.addHoursToCalendar(startTime, timeToAdjust)
                 displayMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
             }
+            Log.d(TAG, "calculateAdjustmentsForRegAndOt: $startTime")
+            Log.d(TAG, "calculateAdjustmentsForRegAndOt: $endTime")
         }
     }
 
@@ -543,8 +552,11 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
                             endTime.set(Calendar.MINUTE, tempHoursAndMin.second)
                             endTime.set(Calendar.SECOND, 0)
                         }
-                        calculateAdjustmentsForRegAndOt(endTime)
-                        populateUi()
+                        mainScope.launch {
+                            calculateAdjustmentsForRegAndOt(endTime)
+                            delay(WAIT_250)
+                            populateUi()
+                        }
                     }
                 }
             clkEndTime.setOnClickListener {
