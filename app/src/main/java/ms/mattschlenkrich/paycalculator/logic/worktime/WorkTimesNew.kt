@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.logic.worktime
 
+import android.view.View
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.async
@@ -19,10 +20,11 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistor
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import java.util.Calendar
 
-class WorkTimes(
+class WorkTimesNew(
     val mainActivity: MainActivity,
     private val employerId: Long,
     private val workDateId: Long,
+    mView: View,
 ) {
     private val workTimeViewModel = mainActivity.workTimeViewModel
     private lateinit var workOrderList: List<WorkOrder>
@@ -64,7 +66,7 @@ class WorkTimes(
     }
 
     suspend fun getExistingHistoriesWithTimesForDay() {
-        existingHistoriesWithTimes = workTimeViewModel.getExistingHistoriesWithTimes(workDateId)
+
     }
 
     suspend fun getExistingHistoriesForDay() {

@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.database.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -54,6 +55,19 @@ interface WorkTimeDao {
                 "ORDER BY wohtStartTime "
     )
     suspend fun getExistingHistoriesWithTimes(workDateId: Long): List<WorkOrderHistoryTimeWorkedCombined>
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT * FROM workOrderHistory " +
+                "INNER JOIN(" +
+                "SELECT * FROM workOrderHistoryTimeWorked " +
+                "WHERE wohtDateId = :workDateId " +
+                ") ON woHistoryId = wohtHistoryId " +
+                "WHERE woHistoryDeleted = 0 " +
+                "ORDER BY wohtStartTime "
+    )
+    suspend fun getTimesWorkedByDate(workDateId: Long): LiveData<List<WorkOrderHistoryTimeWorkedCombined>>
 
     @Query(
         "SELECT * FROM workOrders " +
