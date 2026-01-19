@@ -19,7 +19,6 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.TimeWorkedByDay
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrder
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryCombined
-import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import java.util.Calendar
@@ -71,7 +70,7 @@ class WorkTimes(
 //            }
     }
 
-    suspend fun getHistoriesForDayFromDb() {
+    fun getHistoriesForDayFromDb() {
         defaultScope.launch {
             existingHistories = workTimeViewModel.getExistingHistories(workDateId)
         }
@@ -83,10 +82,6 @@ class WorkTimes(
             val endTime = df.getCalendarFromString(timWorked.timeWorked.wohtEndTime)
             timeWorkedByDayAsCalendarPairs.add(Pair(startTime, endTime))
         }
-    }
-
-    fun getTimeWorkedAsCalendarPairs(): List<Pair<Calendar, Calendar>> {
-        return timeWorkedByDayAsCalendarPairs.toList()
     }
 
     private fun getWorkOrdersForDay() {
@@ -248,12 +243,6 @@ class WorkTimes(
     fun updateWorkOrderHistory(workOrderHistory: WorkOrderHistory) {
         defaultScope.launch {
             workTimeViewModel.updateWorkOrderHistory(workOrderHistory)
-        }
-    }
-
-    fun insertWorkDateTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked) {
-        defaultScope.launch {
-            workTimeViewModel.insertWorkTime(workOrderHistoryTimeWorked)
         }
     }
 }

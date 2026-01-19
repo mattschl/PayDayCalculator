@@ -339,72 +339,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         display += (if (hrsDblOt > 0.0) "${nf.getNumberFromDouble(hrsDblOt)} ${getString(R.string.dbl_ot_hrs)} " else "")
         display += (if (hrsStat > 0.0 && display != "") " ${getString(R.string.pipe)} " else "")
         display += (if (hrsStat > 0.0) "${nf.getNumberFromDouble(hrsStat)} ${getString(R.string.stat_hours)} " else "")
-        if (display != "") display = getString(R.string.time_entered_for_date) + " $display"
-//
-//        hrsReg = timeWorkedByDayData.hrsRegByWorkOrderHistory
-//        hrsOt = timeWorkedByDayData.hrsOtByWorkOrderHistory
-//        hrsDblOt = timeWorkedByDayData.hrsDblOtByWorkOrderHistory
-//        var display2 = ""
-//        display2 += (if (hrsReg > 0.0) "${
-//            nf.getNumberFromDouble(
-//                hrsReg
-//            )
-//        } ${
-//            getString(
-//                R.string.reg_hours
-//            )
-//        } " else "")
-//        display2 += (if (hrsOt > 0.0 && display2 != "") " ${getString(R.string.pipe)} " else "")
-//        display2 += (if (hrsOt > 0.0) "${
-//            nf.getNumberFromDouble(
-//                hrsOt
-//            )
-//        } ${
-//            getString(
-//                R.string.ot_hrs
-//            )
-//        } " else "")
-//        display2 += (if (hrsDblOt > 0.0 && display2 != "") " ${getString(R.string.pipe)} " else "")
-//        display2 += (if (hrsDblOt > 0.0) "${
-//            nf.getNumberFromDouble(
-//                hrsDblOt
-//            )
-//        } ${getString(R.string.dbl_ot_hrs)}" else "")
-//        if (display2 != "")
-//            display2 = getString(R.string.time_entered_from_work_orders) + " $display2"
-//        hrsReg = timeWorkedByDayData.hrsRegByTimeEntered
-//        hrsOt = timeWorkedByDayData.hrsOtByTimeEntered
-//        hrsDblOt = timeWorkedByDayData.hrsDblOtByTimeEntered
-//        var display3 = ""
-//        display3 += (if (hrsReg > 0.0) "${
-//            nf.getNumberFromDouble(
-//                hrsReg
-//            )
-//        } ${
-//            getString(
-//                R.string.reg_hours
-//            )
-//        } " else "")
-//        display3 += (if (hrsOt > 0.0 && display3 != "") " ${getString(R.string.pipe)} " else "")
-//        display3 += (if (hrsOt > 0.0) "${
-//            nf.getNumberFromDouble(
-//                hrsOt
-//            )
-//        } ${
-//            getString(
-//                R.string.ot_hrs
-//            )
-//        } " else "")
-//        display3 += (if (hrsDblOt > 0.0 && display3 != "") " ${getString(R.string.pipe)} " else "")
-//        display3 += (if (hrsDblOt > 0.0) "${
-//            nf.getNumberFromDouble(
-//                hrsDblOt
-//            )
-//        } ${getString(R.string.dbl_ot_hrs)}" else "")
-//        if (display3 != "")
-//            display3 = getString(R.string.time_entered_here) + " $display3"
-//        display = (if (display != "") display + "\n" + display2 else display2)
-//        display = (if (display != "") display + "\n" + display3 else display3)
+        if (display != "") display = getString(R.string.time_entered) + " $display"
         binding.tvHours.text = display
     }
 

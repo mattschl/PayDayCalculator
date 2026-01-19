@@ -508,6 +508,7 @@
     <string name="unsaved_time">Unsaved Time</string>
     <string name="would_you_like_to_save_the_time_entered">Would you like to save the time entered?</string>
     <string name="time_entered_here">"Time entered here: "</string>
+    <string name="time_entered">"Time entered: "</string>
 
 
 </resources>
