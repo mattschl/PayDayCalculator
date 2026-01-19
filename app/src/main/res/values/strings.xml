@@ -347,7 +347,7 @@
     <string name="start_time">Start Time</string>
     <string name="start_typing_for_matches">Start typing for matches</string>
     <string name="start">start</string>
-    <string name="stat_hours_">"Stat Hours: "</string>
+    <string name="stat_hours_">"Stat Hrs: "</string>
     <string name="stat_hours">Stat Hours</string>
     <string name="stat_vacation_hrs">" Stat/Vacation hrs"</string>
     <string name="subtotal">Subtotal</string>
@@ -509,6 +509,8 @@
     <string name="would_you_like_to_save_the_time_entered">Would you like to save the time entered?</string>
     <string name="time_entered_here">"Time entered here: "</string>
     <string name="time_entered">"Time entered: "</string>
+    <string name="this_work_order">"This Work Order: "</string>
+    <string name="time_entered_for_work_order">"Time entered for WO: "</string>
 
 
 </resources>

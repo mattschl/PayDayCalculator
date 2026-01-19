@@ -156,52 +156,62 @@ class WorkTimes(
         return true
     }
 
-    fun getWorkOrderHistoryTimeWorkedList(workOrderId: Long): WorkOrderHistory {
+    fun getWorkOrderHistoryWithTimes(workOrderId: Long): List<WorkOrderHistoryTimeWorkedCombined> {
+        return existingHistoriesWithTimes.filter {
+            it.workOrderHistory.workOrder.workOrderId == workOrderId
+        }
+    }
+
+    fun getWorkOrderHistory(workOrderId: Long): WorkOrderHistory? {
         val histories = existingHistoriesWithTimes.filter {
             it.workOrderHistory.workOrder.workOrderId == workOrderId
         }
-        var regHrs = 0.0
-        var otHrs = 0.0
-        var dblOtHrs = 0.0
-        for (history in histories) {
-            when (history.timeWorked.wohtTimeType) {
-                TimeWorkedTypes.REG_HOURS.value -> {
-                    regHrs += df.getTimeWorked(
-                        history.timeWorked.wohtStartTime,
-                        history.timeWorked.wohtEndTime
-                    )
-                }
+        if (histories.isNotEmpty()) {
+            var regHrs = 0.0
+            var otHrs = 0.0
+            var dblOtHrs = 0.0
+            for (history in histories) {
+                when (history.timeWorked.wohtTimeType) {
+                    TimeWorkedTypes.REG_HOURS.value -> {
+                        regHrs += df.getTimeWorked(
+                            history.timeWorked.wohtStartTime,
+                            history.timeWorked.wohtEndTime
+                        )
+                    }
 
-                TimeWorkedTypes.OT_HOURS.value -> {
-                    otHrs += df.getTimeWorked(
-                        history.timeWorked.wohtStartTime,
-                        history.timeWorked.wohtEndTime
-                    )
-                }
+                    TimeWorkedTypes.OT_HOURS.value -> {
+                        otHrs += df.getTimeWorked(
+                            history.timeWorked.wohtStartTime,
+                            history.timeWorked.wohtEndTime
+                        )
+                    }
 
-                TimeWorkedTypes.DBL_OT_HOURS.value -> {
-                    dblOtHrs += df.getTimeWorked(
-                        history.timeWorked.wohtStartTime,
-                        history.timeWorked.wohtEndTime
-                    )
-                }
+                    TimeWorkedTypes.DBL_OT_HOURS.value -> {
+                        dblOtHrs += df.getTimeWorked(
+                            history.timeWorked.wohtStartTime,
+                            history.timeWorked.wohtEndTime
+                        )
+                    }
 
-                else -> {
-                    // no time
+                    else -> {
+                        // no time
+                    }
                 }
             }
+            return WorkOrderHistory(
+                histories.first().workOrderHistory.workOrderHistory.woHistoryId,
+                histories.first().workOrderHistory.workOrderHistory.woHistoryWorkOrderId,
+                histories.first().workOrderHistory.workOrderHistory.woHistoryWorkDateId,
+                regHrs,
+                otHrs,
+                dblOtHrs,
+                histories.first().workOrderHistory.workOrderHistory.woHistoryNote,
+                false,
+                df.getCurrentTimeAsString()
+            )
         }
-        return WorkOrderHistory(
-            histories.first().workOrderHistory.workOrderHistory.woHistoryId,
-            histories.first().workOrderHistory.workOrderHistory.woHistoryWorkOrderId,
-            histories.first().workOrderHistory.workOrderHistory.woHistoryWorkDateId,
-            regHrs,
-            otHrs,
-            dblOtHrs,
-            histories.first().workOrderHistory.workOrderHistory.woHistoryNote,
-            false,
-            df.getCurrentTimeAsString()
-        )
+        return null
+
     }
 
     private fun getWorkOrderListFromDb() {
