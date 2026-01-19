@@ -24,14 +24,18 @@ class WorkTimeRepository(private val db: PayDatabase) {
     suspend fun getExistingHistories(workDateId: Long) =
         db.getWorkTimeDao().getExistingHistories(workDateId)
 
-    suspend fun getExistingHistoriesWithTimes(workDateId: Long) =
+    fun getExistingHistoriesWithTimes(workDateId: Long) =
         db.getWorkTimeDao().getExistingHistoriesWithTimes(workDateId)
 
-    suspend fun getTimesWorkedByDate(workDateId: Long) =
+    fun getTimesWorkedByDate(workDateId: Long) =
         db.getWorkTimeDao().getTimesWorkedByDate(workDateId)
 
     suspend fun getWorkOrders(employerId: Long) =
         db.getWorkTimeDao().getWorkOrders(employerId)
+
+    fun getWorkOrderNumbers(employerId: Long) =
+        db.getWorkTimeDao().getWorkOrderNumbers(employerId)
+
 
     suspend fun getWorkDate(workDateId: Long) =
         db.getWorkTimeDao().getWorkDate(workDateId)

@@ -54,7 +54,7 @@ interface WorkTimeDao {
                 "WHERE woHistoryDeleted = 0 " +
                 "ORDER BY wohtStartTime "
     )
-    suspend fun getExistingHistoriesWithTimes(workDateId: Long): List<WorkOrderHistoryTimeWorkedCombined>
+    fun getExistingHistoriesWithTimes(workDateId: Long): List<WorkOrderHistoryTimeWorkedCombined>
 
     @RewriteQueriesToDropUnusedColumns
     @Transaction
@@ -67,13 +67,23 @@ interface WorkTimeDao {
                 "WHERE woHistoryDeleted = 0 " +
                 "ORDER BY wohtStartTime "
     )
-    suspend fun getTimesWorkedByDate(workDateId: Long): LiveData<List<WorkOrderHistoryTimeWorkedCombined>>
+    fun getTimesWorkedByDate(workDateId: Long): LiveData<List<WorkOrderHistoryTimeWorkedCombined>>
 
     @Query(
         "SELECT * FROM workOrders " +
-                "WHERE woEmployerId = :employerId "
+                "WHERE woEmployerId = :employerId " +
+                "AND woDeleted = 0 " +
+                "ORDER BY woNumber"
     )
     suspend fun getWorkOrders(employerId: Long): List<WorkOrder>
+
+    @Query(
+        "SELECT * FROM workOrders " +
+                "WHERE woEmployerId = :employerId " +
+                "AND woDeleted = 0 " +
+                "ORDER BY woNumber"
+    )
+    fun getWorkOrderNumbers(employerId: Long): LiveData<List<WorkOrder>>
 
     @Query(
         "SELECT * FROM workDates " +

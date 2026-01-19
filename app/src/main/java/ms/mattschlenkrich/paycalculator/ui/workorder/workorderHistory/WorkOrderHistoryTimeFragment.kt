@@ -110,6 +110,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                         mainActivity,
                         curWorkOrderHistory.workOrder.woEmployerId,
                         curWorkOrderHistory.workDate.workDateId,
+                        mView
                     )
             }
             awaitAll(populateWorkTimesDeferred)

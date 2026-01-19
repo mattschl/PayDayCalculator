@@ -47,6 +47,7 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.database.viewModel.WorkTimeViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkDateTimeBinding
 import ms.mattschlenkrich.paycalculator.logic.worktime.IWorkTimesFragment
 import ms.mattschlenkrich.paycalculator.logic.worktime.WorkTimes
@@ -63,6 +64,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
+    private lateinit var workTimeViewModel: WorkTimeViewModel
     private lateinit var workOrderViewModel: WorkOrderViewModel
     private lateinit var employerViewModel: EmployerViewModel
     private lateinit var payDetailViewModel: PayDetailViewModel
@@ -72,8 +74,8 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
     private var curWorkOrder: WorkOrder? = null
     private lateinit var workOrderList: List<WorkOrder>
     private lateinit var existingHistories: List<WorkOrderHistoryTimeWorkedCombined>
-    private val timeWorkedByDayAsCalendarPairs = ArrayList<Pair<Calendar, Calendar>>()
     private lateinit var workTimes: WorkTimes
+    private lateinit var timeWorkedByDayData: TimeWorkedByDay
     private lateinit var startTime: Calendar
     private lateinit var endTime: Calendar
 
@@ -95,6 +97,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         mView = binding.root
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
+        workTimeViewModel = mainActivity.workTimeViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
         employerViewModel = mainActivity.employerViewModel
         payDetailViewModel = mainActivity.payDetailViewModel
@@ -113,12 +116,13 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
 
     override fun populateValues() {
         mainScope.launch {
-            val basics = async {
+            val employerAndDate = async {
                 populateEmployer()
                 populateWorkDate()
             }
-            awaitAll(basics)
+            awaitAll(employerAndDate)
             delay(WAIT_100)
+            populateBasicInfo()
             populateBasics()
             delay(WAIT_1000)
             populateUi()
@@ -131,11 +135,10 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
             awaitAll(workTimesDeferred)
             delay(WAIT_250)
             val populateBasicInfoDeferred = async {
-                populateBasicInfo()
                 populateTimeVariables()
-                populateWorkOrderListForAutoComplete()
+                queryWorkOrderListForAutoComplete()
                 timeWorkedByDay = workTimes.getTimeWorkedByDay()
-                populateExistingHistories()
+                queryExistingHistories()
             }
             awaitAll(populateBasicInfoDeferred)
             delay(WAIT_500)
@@ -147,29 +150,32 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         }
     }
 
+
     private fun CoroutineScope.instantiateWorkTimesObject(): Deferred<Unit> {
         val workTimesDeferred = async {
             workTimes = WorkTimes(
                 mainActivity,
                 curEmployer.employerId,
                 curDate.workDateId,
+                mView,
             )
+            workTimes.instantiateVariables()
         }
         return workTimesDeferred
     }
 
     override fun populateUi() {
         mainScope.launch {
-            instantiateWorkTimesObject()
+            workTimes.instantiateVariables()
             delay(WAIT_500)
-            populateExistingHistories()
+            queryExistingHistories()
             delay(WAIT_250)
-            populateTimWorkedCalendarPairs()
             setCorrectedTimes()
             adjustWorkTimeTypes()
             populateTimesRecycler()
             updateTimesDisplayed()
-            populateHoursAndDisplay()
+            delay(WAIT_250)
+            populateHoursInDisplay()
         }
     }
 
@@ -179,7 +185,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         }
     }
 
-    private fun populateExistingHistories() {
+    private fun queryExistingHistories() {
         existingHistories = workTimes.getWorkOrderHistoryTimeWorkedList()
     }
 
@@ -209,18 +215,6 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         }
     }
 
-    private fun populateHoursAndDisplay() {
-        populateHoursInDisplay(
-            timeWorkedByDay.hrsReg,
-            timeWorkedByDay.hrsOt,
-            timeWorkedByDay.hrsDblOt,
-            timeWorkedByDay.hrsStat,
-            timeWorkedByDay.hrsRegByTimeEntered,
-            timeWorkedByDay.hrsOtByTimeEntered,
-            timeWorkedByDay.hrsDblOtByTimeEntered
-        )
-    }
-
     private fun populateTimesRecycler() {
         val workDateTimesAdapter = WorkDateTimesAdapter(
             mainActivity, mView, this@WorkDateTimesFragment
@@ -239,15 +233,6 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
             startTime.set(Calendar.HOUR_OF_DAY, tempStartTime[0].toInt())
             startTime.set(Calendar.MINUTE, tempStartTime[1].toInt())
             startTime.set(Calendar.SECOND, 0)
-        }
-    }
-
-    private fun populateTimWorkedCalendarPairs() {
-        timeWorkedByDayAsCalendarPairs.clear()
-        for (time in existingHistories) {
-            val start = df.getCalendarFromString(time.timeWorked.wohtStartTime)
-            val end = df.getCalendarFromString(time.timeWorked.wohtEndTime)
-            timeWorkedByDayAsCalendarPairs.add(Pair(start, end))
         }
     }
 
@@ -307,12 +292,10 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         }
     }
 
-    private fun populateWorkOrderListForAutoComplete() {
+    private fun queryWorkOrderListForAutoComplete() {
         workOrderList = workTimes.getWorkOrderList()
-        val workOrderListForAutocomplete = ArrayList<String>()
-        workOrderList.listIterator().forEach { workOrderListForAutocomplete.add(it.woNumber) }
         val woAdapter = ArrayAdapter(
-            mView.context, R.layout.spinner_item_normal, workOrderListForAutocomplete
+            mView.context, R.layout.spinner_item_normal, workTimes.getWorkOrderNumbers()
         )
         binding.acWorkOrder.setAdapter(woAdapter)
     }
@@ -341,15 +324,13 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         )
     }
 
-    private fun populateHoursInDisplay(
-        hrsReg: Double,
-        hrsOt: Double,
-        hrsDblOt: Double,
-        hrsStat: Double,
-        hrsRegByTimeEntered: Double,
-        hrsOtByTimeEntered: Double,
-        hrsDblOtByTimeEntered: Double
-    ) {
+    private fun populateHoursInDisplay() {
+        timeWorkedByDayData = workTimes.getTimeWorkedByDay()
+        Log.d(TAG, "timeWorkedByDayData: $timeWorkedByDayData")
+        val hrsReg = timeWorkedByDayData.hrsReg
+        val hrsOt = timeWorkedByDayData.hrsOt
+        val hrsDblOt = timeWorkedByDayData.hrsDblOt
+        val hrsStat = timeWorkedByDayData.hrsStat
         var display = ""
         display += (if (hrsReg > 0.0) "${nf.getNumberFromDouble(hrsReg)} ${getString(R.string.reg_hours)} " else "")
         display += (if (hrsOt > 0.0 && display != "") " ${getString(R.string.pipe)} " else "")
@@ -359,27 +340,71 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         display += (if (hrsStat > 0.0 && display != "") " ${getString(R.string.pipe)} " else "")
         display += (if (hrsStat > 0.0) "${nf.getNumberFromDouble(hrsStat)} ${getString(R.string.stat_hours)} " else "")
         if (display != "") display = getString(R.string.time_entered_for_date) + " $display"
-        var display2 = ""
-        display2 += (if (hrsRegByTimeEntered > 0.0) "${nf.getNumberFromDouble(hrsRegByTimeEntered)} ${
-            getString(
-                R.string.reg_hours
-            )
-        } " else "")
-        display2 += (if (hrsOtByTimeEntered > 0.0 && display2 != "") " ${getString(R.string.pipe)} " else "")
-        display2 += (if (hrsOtByTimeEntered > 0.0) "${nf.getNumberFromDouble(hrsOtByTimeEntered)} ${
-            getString(
-                R.string.ot_hrs
-            )
-        } " else "")
-        display2 += (if (hrsDblOtByTimeEntered > 0.0 && display2 != "") " ${getString(R.string.pipe)} " else "")
-        display2 += (if (hrsDblOtByTimeEntered > 0.0) "${
-            nf.getNumberFromDouble(
-                hrsDblOtByTimeEntered
-            )
-        } ${getString(R.string.dbl_ot_hrs)}" else "")
-        if (display2 != "")
-            display2 = getString(R.string.time_entered_from_work_orders) + " $display2"
-        display = (if (display != "") display + "\n" + display2 else display2)
+//
+//        hrsReg = timeWorkedByDayData.hrsRegByWorkOrderHistory
+//        hrsOt = timeWorkedByDayData.hrsOtByWorkOrderHistory
+//        hrsDblOt = timeWorkedByDayData.hrsDblOtByWorkOrderHistory
+//        var display2 = ""
+//        display2 += (if (hrsReg > 0.0) "${
+//            nf.getNumberFromDouble(
+//                hrsReg
+//            )
+//        } ${
+//            getString(
+//                R.string.reg_hours
+//            )
+//        } " else "")
+//        display2 += (if (hrsOt > 0.0 && display2 != "") " ${getString(R.string.pipe)} " else "")
+//        display2 += (if (hrsOt > 0.0) "${
+//            nf.getNumberFromDouble(
+//                hrsOt
+//            )
+//        } ${
+//            getString(
+//                R.string.ot_hrs
+//            )
+//        } " else "")
+//        display2 += (if (hrsDblOt > 0.0 && display2 != "") " ${getString(R.string.pipe)} " else "")
+//        display2 += (if (hrsDblOt > 0.0) "${
+//            nf.getNumberFromDouble(
+//                hrsDblOt
+//            )
+//        } ${getString(R.string.dbl_ot_hrs)}" else "")
+//        if (display2 != "")
+//            display2 = getString(R.string.time_entered_from_work_orders) + " $display2"
+//        hrsReg = timeWorkedByDayData.hrsRegByTimeEntered
+//        hrsOt = timeWorkedByDayData.hrsOtByTimeEntered
+//        hrsDblOt = timeWorkedByDayData.hrsDblOtByTimeEntered
+//        var display3 = ""
+//        display3 += (if (hrsReg > 0.0) "${
+//            nf.getNumberFromDouble(
+//                hrsReg
+//            )
+//        } ${
+//            getString(
+//                R.string.reg_hours
+//            )
+//        } " else "")
+//        display3 += (if (hrsOt > 0.0 && display3 != "") " ${getString(R.string.pipe)} " else "")
+//        display3 += (if (hrsOt > 0.0) "${
+//            nf.getNumberFromDouble(
+//                hrsOt
+//            )
+//        } ${
+//            getString(
+//                R.string.ot_hrs
+//            )
+//        } " else "")
+//        display3 += (if (hrsDblOt > 0.0 && display3 != "") " ${getString(R.string.pipe)} " else "")
+//        display3 += (if (hrsDblOt > 0.0) "${
+//            nf.getNumberFromDouble(
+//                hrsDblOt
+//            )
+//        } ${getString(R.string.dbl_ot_hrs)}" else "")
+//        if (display3 != "")
+//            display3 = getString(R.string.time_entered_here) + " $display3"
+//        display = (if (display != "") display + "\n" + display2 else display2)
+//        display = (if (display != "") display + "\n" + display3 else display3)
         binding.tvHours.text = display
     }
 
@@ -483,7 +508,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
                         }
                         mainScope.launch {
                             calculateAdjustmentsForRegAndOt(endTime)
-                            delay(WAIT_250)
+                            delay(WAIT_500)
                             populateUi()
                         }
                     }
@@ -502,11 +527,12 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         }
     }
 
-    @Suppress("UNNECESSARY_SAFE_CALL")
+    //    @Suppress("UNNECESSARY_SAFE_CALL")
     private fun insertTime(): Boolean {
         val answer = validateTimeWorked()
         if (answer == ANSWER_OK) {
             binding.apply {
+                btnEnterTime.isEnabled = false
                 val workTimeType =
                     if (radRegHours.isChecked) {
                         1
@@ -528,7 +554,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
                         workOrderViewModel.insertTimeWorked(
                             WorkOrderHistoryTimeWorked(
                                 nf.generateRandomIdAsLong(),
-                                workOrderHistoryDeferred.await()?.woHistoryId ?: 0,
+                                workOrderHistoryDeferred.await().woHistoryId,
                                 curDate.workDateId,
                                 df.getDateFromCalendarAsString(startTime),
                                 df.getDateFromCalendarAsString(endTime),
@@ -545,13 +571,14 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
                         delay(WAIT_500)
                         populateUi()
                     }
+                    btnEnterTime.isEnabled = true
                     return true
                 } catch (e: SQLiteConstraintException) {
                     displayMessage(getString(R.string.error_) + e.message)
                     Log.d(TAG, e.message.toString())
+                    btnEnterTime.isEnabled = true
                     return false
                 }
-
             }
         } else {
             displayMessage("${getString(R.string.error_)} $answer")
@@ -843,7 +870,6 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         }
     }
 
-
     private fun gotoWorkOrderAdd() {
         mainViewModel.setWorkOrderNumber(binding.acWorkOrder.text.toString())
         mainViewModel.addCallingFragment(TAG)
@@ -875,7 +901,6 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         )
     }
 
-
     private fun gotoWorkOrderLookup() {
         mainViewModel.setWorkOrder(curWorkOrder)
         mainViewModel.addCallingFragment(TAG)
@@ -901,5 +926,4 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         super.onDestroy()
         _binding = null
     }
-
 }
