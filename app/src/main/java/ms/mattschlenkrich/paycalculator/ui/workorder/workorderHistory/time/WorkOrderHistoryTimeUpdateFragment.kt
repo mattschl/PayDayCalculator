@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory
+package ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.time
 
 import android.app.TimePickerDialog
 import android.content.Context

@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory
+package ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.material
 
 import android.os.Bundle
 import android.view.LayoutInflater

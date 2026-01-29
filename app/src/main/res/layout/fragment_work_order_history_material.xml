@@ -11,7 +11,7 @@
             android:id="@+id/frameLayout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context=".ui.workorder.workorderHistory.WorkOrderHistoryMaterialUpdateFragment">
+            tools:context=".ui.workorder.workorderHistory.material.WorkOrderHistoryMaterialUpdateFragment">
 
             <TextView
                 android:id="@+id/tvInfo"

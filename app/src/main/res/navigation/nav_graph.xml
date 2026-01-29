@@ -610,7 +610,7 @@
     <!--    fragment_work_order_history_time-->
     <fragment
         android:id="@+id/workOrderHistoryTime"
-        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderHistoryTimeFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.time.WorkOrderHistoryTimeFragment"
         android:label="WorkOrderHistoryTime"
         tools:layout="@layout/fragment_work_order_history_time">
         <action
@@ -793,7 +793,7 @@
     <!--    fragment_work_order_history_work_performed_update-->
     <fragment
         android:id="@+id/workOrderHistoryWorkPerformedUpdateFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderHistoryWorkPerformedUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.workperformed.WorkOrderHistoryWorkPerformedUpdateFragment"
         android:label="fragment_work_order_history_work_performed_update"
         tools:layout="@layout/fragment_work_order_history_work_performed_update">
         <action
@@ -923,7 +923,7 @@
     </fragment>
     <fragment
         android:id="@+id/workOrderHistoryMaterialUpdateFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderHistoryMaterialUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.material.WorkOrderHistoryMaterialUpdateFragment"
         android:label="WorkOrderHistoryMaterialUpdateFragment"
         tools:layout="@layout/fragment_work_order_history_material">
         <action
@@ -942,7 +942,7 @@
     </fragment>
     <fragment
         android:id="@+id/workOrderHistoryTimeUpdateFragment"
-        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.WorkOrderHistoryTimeUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.time.WorkOrderHistoryTimeUpdateFragment"
         android:label="WorkOrderHistoryTimeUpdateFragment"
         tools:layout="@layout/fragment_work_order_history_time">
         <action

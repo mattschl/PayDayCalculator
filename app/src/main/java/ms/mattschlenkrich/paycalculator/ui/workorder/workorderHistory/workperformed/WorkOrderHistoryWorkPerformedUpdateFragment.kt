@@ -1,8 +1,9 @@
-package ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory
+package ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.workperformed
 
 import android.app.AlertDialog
 import android.database.sqlite.SQLiteException
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,6 +34,7 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderHistoryWorkPerformedUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
 
+private const val TAG = "WorkOrderHistoryWorkPerf"
 
 class WorkOrderHistoryWorkPerformedUpdateFragment :
     Fragment(R.layout.fragment_work_order_history_work_performed_update) {
@@ -329,6 +331,7 @@ class WorkOrderHistoryWorkPerformedUpdateFragment :
         try {
             workOrderViewModel.insertWorkPerformed(newWorkPerformed)
         } catch (e: SQLiteException) {
+            Log.d(TAG, e.toString())
             return null
         }
         return newWorkPerformed
