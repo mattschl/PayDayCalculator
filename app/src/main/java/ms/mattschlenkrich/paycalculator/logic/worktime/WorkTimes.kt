@@ -237,7 +237,6 @@ class WorkTimes(
 
     fun getWorkOrderHistoryTimeWorkedList(): List<WorkOrderHistoryTimeWorkedCombined> {
         return existingHistoriesWithTimes
-
     }
 
     fun getTimeWorkedByDay(): TimeWorkedByDay {
