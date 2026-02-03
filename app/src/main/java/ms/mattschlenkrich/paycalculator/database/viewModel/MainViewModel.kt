@@ -51,7 +51,7 @@ class MainViewModel(
     private var jobSpec: JobSpec? = null
     private var workOrderJobSpecId: Long? = null
     private var workPerformedId: Long? = null
-    private var workPerformedIsMaster: Boolean = false
+    private var workPerformedIsMaster: Boolean = true
     private var workPerformedHistoryId: Long? = null
     private var material: Material? = null
     private var materialInSequence: MaterialInSequence? = null
@@ -84,7 +84,7 @@ class MainViewModel(
         workPerformedIsMaster = isMaster
     }
 
-    fun getWorkPPerformedIsMaster(): Boolean {
+    fun getWorkPerformedIsMaster(): Boolean {
         return workPerformedIsMaster
     }
 
@@ -349,4 +349,3 @@ class MainViewModel(
         return taxRule
     }
 }
-

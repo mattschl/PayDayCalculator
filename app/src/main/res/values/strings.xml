@@ -103,7 +103,7 @@
     <string name="choose_option_for">"Choose option for "</string>
     <string name="choose_the_first_date">Choose the first check date</string>
     <string name="choose_the_next_step">Choose the next step</string>
-    <string name="choose_the_other_descriptions_to_merge">Choose the other descriptions to merge</string>
+    <string name="choose_the_other_description_to_merge">Choose the other description to merge</string>
     <string name="choose_when_this_wage_goes_into_effect">Choose when this wage goes into effect</string>
     <string name="choose_when_this_will_take_effect">Choose when this will take effect</string>
     <string name="choose">"Choose "</string>
@@ -511,6 +511,12 @@
     <string name="time_entered">"Time entered: "</string>
     <string name="this_work_order">"This Work Order: "</string>
     <string name="time_entered_for_work_order">"Time entered for WO: "</string>
+    <string name="parent_work_performed">Parent Work Performed</string>
+    <string name="existing_children">Existing Children</string>
+    <string name="choose_merge_option">Choose Merge Option</string>
+    <string name="either_merge_and_replace_or_merge_">There are 2 options:\nMerge and delete the child and replace all references.\nMerge and keep the child as an alternate description.</string>
+    <string name="merge_and_replace">Merge and replace</string>
+    <string name="merge_and_keep">Merge and Keep</string>
 
 
 </resources>

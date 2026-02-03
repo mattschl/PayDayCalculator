@@ -125,15 +125,12 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
     private fun populateAreaListForAutoComplete() {
         workOrderViewModel.getAreasList().observe(viewLifecycleOwner) { list ->
             areaListForAutoComplete = list
-            val areaNames = ArrayList<String>()
-            list.listIterator().forEach {
-                areaNames.add(it.areaName)
-            }
+            val areaNames = list.map { it.areaName }
             populateAreasInAutoComplete(areaNames)
         }
     }
-
-    private fun populateAreasInAutoComplete(areaNames: ArrayList<String>) {
+    
+    private fun populateAreasInAutoComplete(areaNames: List<String>) {
         val areaAdapter = ArrayAdapter(mView.context, R.layout.spinner_item_normal, areaNames)
         binding.acArea.setAdapter(areaAdapter)
     }

@@ -12,6 +12,7 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistor
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
+import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.WorkPerformedMerged
 
 class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun insertWorkOrder(workOrder: WorkOrder) =
@@ -159,7 +160,29 @@ class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun deleteWorkPerformed(workPerformedId: Long, updateTime: String) =
         db.getWorkOrderDao().deleteWorkPerformed(workPerformedId, updateTime)
 
+    suspend fun deleteWorkPerformed(workPerformed: WorkPerformed) =
+        db.getWorkOrderDao().deleteWorkPerformed(workPerformed)
+
+    suspend fun deleteWorkPerformedMerged(workPerformedId: Long) =
+        db.getWorkOrderDao().deleteWorkPerformedMerged(workPerformedId)
+
+
     fun getWorkPerformedAll() = db.getWorkOrderDao().getWorkPerformedAll()
+
+    fun getWorkPerformedChildren(workPerformedId: Long) =
+        db.getWorkOrderDao().getWorkPerformedChildren(workPerformedId)
+
+    suspend fun insertWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged) =
+        db.getWorkOrderDao().insertWorkPerformedMerged(workPerformedMerged)
+
+    suspend fun updateWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged) =
+        db.getWorkOrderDao().updateWorkPerformedMerged(workPerformedMerged)
+
+    suspend fun deleteWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged) =
+        db.getWorkOrderDao().deleteWorkPerformedMerged(workPerformedMerged)
+
+    suspend fun updateWorkPerformedMerged(oldWorkPerformedId: Long, newWorkPerformedId: Long) =
+        db.getWorkOrderDao().updateWorkPerformedMerged(oldWorkPerformedId, newWorkPerformedId)
 
     fun searchFromWorkPerformed(query: String) = db.getWorkOrderDao().searchFromWorkPerformed(query)
 

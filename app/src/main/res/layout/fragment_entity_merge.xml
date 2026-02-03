@@ -26,11 +26,11 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <AutoCompleteTextView
-                android:id="@+id/acMaster"
+                android:id="@+id/acParent"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:dropDownWidth="match_parent"
-                android:hint="@string/master_work_performed"
+                android:hint="@string/parent_work_performed"
                 android:importantForAutofill="no"
                 android:inputType="textMultiLine|textCapSentences"
                 android:maxWidth="@dimen/text_box_wide"
@@ -47,17 +47,52 @@
                 app:layout_constraintTop_toBottomOf="@id/lblMaster"
                 tools:ignore="VisualLintTextFieldSize" />
 
+            <androidx.cardview.widget.CardView
+                android:id="@+id/crdChildren"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/acParent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/lblChildren"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/existing_children"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="italic"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvChildren"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/lblChildren" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
             <TextView
                 android:id="@+id/lblChild"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/choose_the_other_descriptions_to_merge"
+                android:text="@string/choose_the_other_description_to_merge"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="italic"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/acMaster" />
+                app:layout_constraintTop_toBottomOf="@id/crdChildren" />
 
             <AutoCompleteTextView
                 android:id="@+id/acChild"
@@ -86,20 +121,18 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/dark_green"
                 android:text="@string/merge"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/lblList"
+                app:layout_constraintEnd_toStartOf="@id/btnDone"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/acChild" />
 
-            <TextView
-                android:id="@+id/lblList"
+            <Button
+                android:id="@+id/btnDone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/list"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="italic"
-                app:layout_constraintEnd_toStartOf="@id/btnMerge"
-                app:layout_constraintStart_toStartOf="parent"
+                android:backgroundTint="@color/deep_red"
+                android:text="@string/done"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btnMerge"
                 app:layout_constraintTop_toBottomOf="@id/acChild" />
 
             <androidx.recyclerview.widget.RecyclerView

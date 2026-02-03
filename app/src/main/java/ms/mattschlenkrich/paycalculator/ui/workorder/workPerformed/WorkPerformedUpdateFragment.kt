@@ -71,8 +71,10 @@ class WorkPerformedUpdateFragment : Fragment(R.layout.fragment_single_item_updat
                             getString(R.string.update_work_description_) + oldWorkPerformed.wpDescription
                         tvTitle.text = display
                         etItem.setText(oldWorkPerformed.wpDescription)
-                        display = "Merge " + oldWorkPerformed.wpDescription
+                        display = getString(R.string.update)
                         btnUpdate.text = display
+                        display = getString(R.string.merge_work_performed)
+                        btnMerge.text = display
                     }
                 }
 

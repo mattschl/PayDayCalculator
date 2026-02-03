@@ -20,18 +20,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/etItem"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dimen_20dp"
             android:layout_marginEnd="@dimen/dimen_20dp"
+            android:breakStrategy="balanced"
             android:hint="@string/work_performed"
             android:importantForAutofill="no"
             android:inputType="text|textCapSentences"
             android:minHeight="@dimen/minimum_touch_height"
-            android:paddingStart="@dimen/dimen_50dp"
-            android:paddingEnd="@dimen/dimen_50dp"
+            android:paddingStart="@dimen/dimen_10dp"
+            android:paddingEnd="@dimen/dimen_10dp"
             android:selectAllOnFocus="true"
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"

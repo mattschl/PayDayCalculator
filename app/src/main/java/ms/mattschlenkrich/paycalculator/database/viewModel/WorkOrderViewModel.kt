@@ -14,6 +14,7 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistor
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
+import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.WorkPerformedMerged
 import ms.mattschlenkrich.paycalculator.database.repository.WorkOrderRepository
 
 class WorkOrderViewModel(
@@ -182,7 +183,40 @@ class WorkOrderViewModel(
         workOrderRepository.deleteWorkPerformed(workPerformedId, updateTime)
     }
 
+    fun deleteWorkPerformed(workPerformed: WorkPerformed) = viewModelScope.launch {
+        workOrderRepository.deleteWorkPerformed(workPerformed)
+    }
+
+
     fun getWorkPerformedAll() = workOrderRepository.getWorkPerformedAll()
+
+    fun getWorkPerformedChildren(workPerformedId: Long) =
+        workOrderRepository.getWorkPerformedChildren(workPerformedId)
+
+    fun insertWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged) =
+        viewModelScope.launch {
+            workOrderRepository.insertWorkPerformedMerged(workPerformedMerged)
+        }
+
+    fun updateWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged) =
+        viewModelScope.launch {
+            workOrderRepository.updateWorkPerformedMerged(workPerformedMerged)
+        }
+
+    fun deleteWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged) =
+        viewModelScope.launch {
+            workOrderRepository.deleteWorkPerformedMerged(workPerformedMerged)
+        }
+
+    fun deleteWorkPerformedMerged(workPerformedMergedId: Long) =
+        viewModelScope.launch {
+            workOrderRepository.deleteWorkPerformedMerged(workPerformedMergedId)
+        }
+
+    fun updateWorkPerformedMerged(oldWorkPerformedId: Long, newWorkPerformedId: Long) =
+        viewModelScope.launch {
+            workOrderRepository.updateWorkPerformedMerged(oldWorkPerformedId, newWorkPerformedId)
+        }
 
     fun searchFromWorkPerformed(query: String) = workOrderRepository.searchFromWorkPerformed(query)
 

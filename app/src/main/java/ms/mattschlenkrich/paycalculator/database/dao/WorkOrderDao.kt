@@ -26,6 +26,7 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistor
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
+import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.WorkPerformedMerged
 
 @Dao
 interface WorkOrderDao {
@@ -326,12 +327,49 @@ interface WorkOrderDao {
     )
     suspend fun deleteWorkPerformed(workPerformedId: Long, updateTime: String)
 
+    @Delete
+    suspend fun deleteWorkPerformed(workPerformed: WorkPerformed)
+
+
     @Query(
         "SELECT * FROM workPerformed " +
                 "WHERE wpIsDeleted = 0 " +
                 "ORDER BY wpDescription"
     )
     fun getWorkPerformedAll(): LiveData<List<WorkPerformed>>
+
+    @Query(
+        "SELECT * FROM workPerformed " +
+                "INNER JOIN  " +
+                "(SELECT wpmChildId FROM workPerformedMerged " +
+                "WHERE wpmMasterId = :workPerformedId) " +
+                "ON workPerformed.workPerformedId = " +
+                "wpmChildId "
+    )
+    fun getWorkPerformedChildren(workPerformedId: Long): LiveData<List<WorkPerformed>>
+
+    @Insert
+    suspend fun insertWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged)
+
+    @Update
+    suspend fun updateWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged)
+
+    @Delete
+    suspend fun deleteWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged)
+
+    @Query(
+        "DELETE FROM workPerformedMerged " +
+                "WHERE wpmChildId = :workPerformedId"
+    )
+    suspend fun deleteWorkPerformedMerged(workPerformedId: Long)
+
+
+    @Query(
+        "Update workOrderHistoryWorkPerformed " +
+                "SET wowpWorkPerformedId = :newWorkPerformedId " +
+                "WHERE wowpWorkPerformedId = :oldWorkPerformedId"
+    )
+    suspend fun updateWorkPerformedMerged(oldWorkPerformedId: Long, newWorkPerformedId: Long)
 
     @Query(
         "SELECT * FROM workPerformed " +
