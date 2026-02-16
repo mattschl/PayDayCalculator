@@ -517,6 +517,9 @@
     <string name="either_merge_and_replace_or_merge_">There are 2 options:\nMerge and delete the child and replace all references.\nMerge and keep the child as an alternate description.</string>
     <string name="merge_and_replace">Merge and replace</string>
     <string name="merge_and_keep">Merge and Keep</string>
+    <string name="this_is_required">This is required</string>
+    <string name="add_new_work_performed">Confirm Add new work performed description</string>
+    <string name="this_work_performed_child_already_exists">This work Performed Child already exists</string>
 
 
 </resources>

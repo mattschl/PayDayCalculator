@@ -82,7 +82,7 @@
             android:id="@+id/btnMerge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/deep_red"
+            android:backgroundTint="@color/red"
             android:text="@string/merge"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

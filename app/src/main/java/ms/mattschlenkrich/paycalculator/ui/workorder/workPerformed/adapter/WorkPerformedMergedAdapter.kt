@@ -74,10 +74,10 @@ class WorkPerformedMergedAdapter(
         AlertDialog.Builder(mView.context)
             .setTitle("Choose if this is a parent or child")
             .setPositiveButton("Parent") { _, _ ->
-                workPerformedMergeFragment.chooseToMergeAsParent(workPerformed)
+                workPerformedMergeFragment.chooseAsParent(workPerformed)
             }
             .setNegativeButton("Child") { _, _ ->
-                workPerformedMergeFragment.chooseToMergeAsChild(workPerformed)
+                workPerformedMergeFragment.chooseAsChild(workPerformed)
             }
             .show()
     }

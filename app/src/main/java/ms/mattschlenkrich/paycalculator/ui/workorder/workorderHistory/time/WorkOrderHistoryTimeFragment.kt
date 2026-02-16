@@ -146,9 +146,31 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
         }
     }
 
+
+    override fun updateUi() {
+        mainScope.launch {
+            workTimes.instantiateVariables()
+            delay(WAIT_1000)
+            val populateExistingHistoriesDeferred = async {
+                populateExistingHistoriesForDay()
+                populateExistingHistoriesForWorkOrder()
+                populateWorkOrderInfo()
+                populateTimesFromHistory()
+            }
+            awaitAll(populateExistingHistoriesDeferred)
+            timeWorkedByDayData = workTimes.getTimeWorkedByDay()
+            delay(WAIT_250)
+            adjustStartTimeToLastTimeWorkedForDay()
+            calculateAdjustmentsForRegAndOt(endTime)
+            adjustWorkTimeTypes()
+            calculateTimesToDisplay()
+            updateTimesDisplayed()
+            populateTimesRecycler()
+        }
+    }
+
     private fun populateExistingHistoriesForDay() {
         existingHistoriesForDay = workTimes.getWorkOrderHistoryTimeWorkedList()
-
     }
 
     private fun populateExistingHistoriesForWorkOrder() {
@@ -420,7 +442,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                         mainScope.launch {
                             calculateAdjustmentsForRegAndOt(endTime)
                             delay(WAIT_250)
-                            populateUi()
+                            updateTimesDisplayed()
                         }
                     }
                 }
@@ -464,7 +486,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
                             updateWorkOrderHistoryInDb(curWorkOrderHistory.workOrderHistory)
                             calculateWorkDateHoursAndUpdateDb(curWorkOrderHistory.workDate)
                             delay(WAIT_250)
-                            populateUi()
+                            updateUi()
                         }
                     }
                     return true

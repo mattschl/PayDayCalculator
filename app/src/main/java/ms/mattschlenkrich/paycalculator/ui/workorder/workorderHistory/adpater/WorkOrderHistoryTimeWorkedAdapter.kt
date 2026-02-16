@@ -122,7 +122,7 @@ class WorkOrderHistoryTimeWorkedAdapter(
 
     private fun deleteTimeWorked(history: WorkOrderHistoryTimeWorkedCombined) {
         workOrderViewModel.deleteTimeWorked(history.timeWorked)
-        parentFragment.populateUi()
+        parentFragment.updateUi()
     }
 
     private fun gotoWorkOrderHistoryTimeEdit(history: WorkOrderHistoryTimeWorkedCombined) {

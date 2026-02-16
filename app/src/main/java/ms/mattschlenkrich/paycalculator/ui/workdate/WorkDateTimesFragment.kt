@@ -271,6 +271,21 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         }
     }
 
+    override fun updateUi() {
+        mainScope.launch {
+            workTimes.instantiateVariables()
+            delay(WAIT_500)
+            queryExistingHistories()
+            delay(WAIT_250)
+            setCorrectedTimes()
+            adjustWorkTimeTypes()
+            populateTimesRecycler()
+            updateTimesDisplayed()
+            delay(WAIT_250)
+            populateHoursInDisplay()
+        }
+    }
+
     private fun queryExistingHistories() {
         existingHistories = workTimes.getWorkOrderHistoryTimeWorkedList()
     }
@@ -484,7 +499,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
                         updateWorkOrderHistoryInDb(workOrderHistoryDeferred.await())
                         updateHoursInWorkDate()
                         delay(WAIT_500)
-                        populateUi()
+                        updateUi()
                     }
                     btnEnterTime.isEnabled = true
                     return true
@@ -637,7 +652,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
                         mainScope.launch {
                             calculateAdjustmentsForRegAndOt(endTime)
                             delay(WAIT_500)
-                            populateUi()
+                            updateTimesDisplayed()
                         }
                     }
                 }
