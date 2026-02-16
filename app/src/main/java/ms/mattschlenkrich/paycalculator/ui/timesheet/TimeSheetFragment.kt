@@ -17,7 +17,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
-import ms.mattschlenkrich.paycalculator.common.FRAG_TIME_SHEET
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.common.WAIT_1000
@@ -36,7 +35,7 @@ import ms.mattschlenkrich.paycalculator.ui.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.timesheet.timesheetadapter.WorkDateAdapter
 import java.time.LocalDate
 
-private const val TAG = FRAG_TIME_SHEET
+//private const val TAG = FRAG_TIME_SHEET
 
 class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFragment {
 
@@ -340,9 +339,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
                     payCalculations.getPayGross() - payCalculations.getDebitTotalsByPay() - payCalculations.getAllTaxDeductions()
                 )
                 tvNetPay.text = display
-                display = getString(R.string.gross_) + nf.displayDollars(
-                    payCalculations.getPayGross()
-                )
+                display = nf.displayDollars(payCalculations.getPayGross())
                 tvGrossPay.text = display
                 display = ""
                 if (payCalculations.getHoursReg() != 0.0) {
