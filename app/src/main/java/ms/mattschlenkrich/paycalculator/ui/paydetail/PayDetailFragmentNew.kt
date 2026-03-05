@@ -334,8 +334,7 @@ class PayDetailFragmentNew : Fragment(R.layout.fragment_pay_details), IPayDetail
                     llStatPay.visibility = View.GONE
                 }
                 tvHourlyTotal.text = nf.displayDollars(payCalculations.getPayAllHourly())
-                var display =
-                    getString(R.string.gross_) + nf.displayDollars(payCalculations.getPayGross())
+                var display = nf.displayDollars(payCalculations.getPayGross())
                 tvGrossPay.text = display
                 display = nf.displayDollars(
                     -payCalculations.getDebitTotalsByPay() - payCalculations.getAllTaxDeductions()

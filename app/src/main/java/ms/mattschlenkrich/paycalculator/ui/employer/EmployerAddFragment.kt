@@ -279,10 +279,8 @@ class EmployerAddFragment : Fragment(R.layout.fragment_employer_update) {
                 return getString(R.string.the_employer_must_have_a_name)
             }
             if (employerList.isNotEmpty()) {
-                for (employer in employerList) {
-                    if (employer.employerName == etName.text.toString().trim()) {
-                        return getString(R.string.this_employer_already_exists)
-                    }
+                if (employerList.any { it.employerName == etName.text.toString().trim() }) {
+                    return getString(R.string.this_employer_already_exists)
                 }
             }
             if (etDaysBefore.text.isNullOrBlank()) {

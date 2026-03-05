@@ -109,8 +109,7 @@
                             android:layout_marginEnd="@dimen/dimen_8dp"
                             android:text="@string/gross_pay"
                             android:textColor="@color/black"
-                            android:textSize="@dimen/text_size_medium"
-                            android:textStyle="bold"
+                            android:textSize="@dimen/text_size_small"
                             app:layout_constraintEnd_toStartOf="@id/tvDeductions"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -122,8 +121,7 @@
                             android:layout_marginEnd="@dimen/dimen_8dp"
                             android:text="@string/deductions"
                             android:textColor="@color/black"
-                            android:textSize="@dimen/text_size_medium"
-                            android:textStyle="bold"
+                            android:textSize="@dimen/text_size_small"
                             app:layout_constraintEnd_toStartOf="@id/tvNetPay"
                             app:layout_constraintStart_toEndOf="@id/tvGrossPay"
                             app:layout_constraintTop_toTopOf="parent" />
