@@ -371,7 +371,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         display += (if (hrsDblOt > 0.0 && display != "") " ${getString(R.string.pipe)} " else "")
         display += (if (hrsDblOt > 0.0) "${nf.getNumberFromDouble(hrsDblOt)} ${getString(R.string.dbl_ot_hrs)} " else "")
         display += (if (hrsStat > 0.0 && display != "") " ${getString(R.string.pipe)} " else "")
-        display += (if (hrsStat > 0.0) "${nf.getNumberFromDouble(hrsStat)} ${getString(R.string.stat_hours)} " else "")
+        display += (if (hrsStat > 0.0) "${nf.getNumberFromDouble(hrsStat)} ${getString(R.string.other_hours)} " else "")
         if (display != "") display = getString(R.string.time_entered) + " $display"
         binding.tvHours.text = display
     }

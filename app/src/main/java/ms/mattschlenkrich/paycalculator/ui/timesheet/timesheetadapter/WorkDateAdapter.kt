@@ -97,7 +97,7 @@ class WorkDateAdapter(
             }
             if (workDate.wdStatHours > 0) {
                 if (display.isNotBlank()) display += " | "
-                display += nf.getNumberFromDouble(workDate.wdStatHours) + mView.context.getString(R.string.stat_vacation_hrs)
+                display += nf.getNumberFromDouble(workDate.wdStatHours) + mView.context.getString(R.string.other_hrs)
             }
             if (!workDate.wdNote.isNullOrBlank()) {
                 if (display.isNotBlank()) display += " - "

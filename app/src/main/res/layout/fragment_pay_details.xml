@@ -373,7 +373,7 @@
                                 <TextView
                                     android:layout_width="@dimen/text_box_narrow"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/stat_hours"
+                                    android:text="@string/other_hours"
                                     android:textColor="@color/black"
                                     android:textSize="@dimen/label_text_size"
                                     tools:ignore="TextSizeCheck" />

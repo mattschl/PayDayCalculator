@@ -317,7 +317,7 @@ class WorkOrderHistoryTimeFragment : Fragment(R.layout.fragment_work_order_histo
             }
             if (timeWorkedByDayData.hrsStat > 0.0) {
                 if (display2 != "") display2 += getString(R.string.pipe)
-                display2 += getString(R.string.stat_hours_) + nf.getNumberFromDouble(
+                display2 += getString(R.string.other_hours_) + nf.getNumberFromDouble(
                     timeWorkedByDayData.hrsStat
                 )
             }

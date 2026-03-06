@@ -294,7 +294,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
             }
             if (wk1StatHours != 0.0) {
                 if (display != "") display += getString(R.string.pipe)
-                display += nf.getNumberFromDouble(wk1StatHours) + " " + getString(R.string.stat_hours)
+                display += nf.getNumberFromDouble(wk1StatHours) + " " + getString(R.string.other_hours)
             }
             display = getString(R.string.week_1_) +
                     if (display == "") getString(R.string._0_hr) else display
@@ -313,7 +313,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
             }
             if (wk2StatHours != 0.0) {
                 if (display != "") display += getString(R.string.pipe)
-                display += nf.getNumberFromDouble(wk2StatHours) + " " + getString(R.string.stat_hours)
+                display += nf.getNumberFromDouble(wk2StatHours) + " " + getString(R.string.other_hours)
             }
             display = getString(R.string.week_2_) +
                     if (display == "") getString(R.string._0_hr) else display
@@ -356,7 +356,7 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
                 }
                 if (payCalculations.getHoursStat() != 0.0) {
                     if (display.isNotBlank()) display += getString(R.string.pipe)
-                    display += getString(R.string.stat_hours_) + nf.getNumberFromDouble(
+                    display += getString(R.string.other_hours_) + nf.getNumberFromDouble(
                         payCalculations.getHoursStat()
                     )
                 }

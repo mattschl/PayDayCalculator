@@ -347,9 +347,9 @@
     <string name="start_time">Start Time</string>
     <string name="start_typing_for_matches">Start typing for matches</string>
     <string name="start">start</string>
-    <string name="stat_hours_">"Stat Hrs: "</string>
-    <string name="stat_hours">Stat Hours</string>
-    <string name="stat_vacation_hrs">" Stat/Vacation hrs"</string>
+    <string name="other_hours_">"Other Hrs: "</string>
+    <string name="other_hours">Other Hours</string>
+    <string name="other_hrs">" Other hrs"</string>
     <string name="subtotal">Subtotal</string>
     <string name="subtract_">" subtract "</string>
     <string name="summary">Summary</string>

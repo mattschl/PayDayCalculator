@@ -191,7 +191,7 @@
                 android:id="@+id/lblStat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/stat_hours"
+                android:text="@string/other_hours"
                 android:textSize="@dimen/label_text_size"
                 app:layout_constraintBaseline_toBaselineOf="@id/etDblOt"
                 app:layout_constraintEnd_toStartOf="@id/etStat"

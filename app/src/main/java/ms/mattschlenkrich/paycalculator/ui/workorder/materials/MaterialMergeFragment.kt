@@ -98,7 +98,7 @@ class MaterialMergeFragment : Fragment(R.layout.fragment_entity_merge) {
             if (getMaterialId() != null) {
                 workOrderViewModel.getMaterial(getMaterialId()!!)
                     .observe(viewLifecycleOwner) { material ->
-                        if (getWorkPerformedIsMaster()) {
+                        if (getMaterialIsParent()) {
                             chooseAsParent(material)
                         } else {
                             chooseAsChild(material)
