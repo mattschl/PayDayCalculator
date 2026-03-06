@@ -520,6 +520,8 @@
     <string name="this_is_required">This is required</string>
     <string name="add_new_work_performed">Confirm Add new work performed description</string>
     <string name="this_work_performed_child_already_exists">This work Performed Child already exists</string>
+    <string name="marge_material">Merge Material</string>
+    <string name="add_new_material">Add New Material</string>
 
 
 </resources>

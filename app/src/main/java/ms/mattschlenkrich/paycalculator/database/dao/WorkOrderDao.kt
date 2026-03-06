@@ -26,6 +26,7 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistor
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
+import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.MaterialMerged
 import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.WorkPerformedMerged
 
 @Dao
@@ -476,6 +477,17 @@ interface WorkOrderDao {
 
     @Query(
         "SELECT * FROM materials " +
+                "INNER JOIN " +
+                "(SELECT mmChildId FROM materialMerged " +
+                "WHERE mmMasterId = :materialId)" +
+                "ON materials.materialId = mmChildId " +
+                "ORDER BY mName"
+    )
+    fun getMaterialsChildren(materialId: Long): LiveData<List<Material>>
+
+
+    @Query(
+        "SELECT * FROM materials " +
                 "WHERE mName LIKE :query " +
                 "ORDER BY mName"
     )
@@ -488,12 +500,36 @@ interface WorkOrderDao {
     fun getMaterial(materialId: Long): LiveData<Material>
 
     @Query(
+        "SELECT * FROM materials " +
+                "WHERE mName = :mName"
+    )
+    fun getMaterial(mName: String): LiveData<Material>
+
+    @Query(
+        "UPDATE workOrderHistoryMaterials " +
+                "SET wohmMaterialId = :newMaterialID " +
+                "AND wohmUpdateTime = :updateTime " +
+                "WHERE wohmMaterialId = :oldMaterialID "
+    )
+    suspend fun updateMaterialMerged(oldMaterialID: Long, newMaterialID: Long, updateTime: String)
+
+    @Query(
+        "DELETE FROM materialMerged " +
+                "WHERE mmChildId = :childId"
+    )
+    suspend fun deleteMaterialMerged(childId: Long)
+
+    @Query(
         "UPDATE materials " +
                 "SET mIsDeleted = 1, " +
                 "mUpdateTime = :updateTime " +
                 "WHERE materialId = :materialId"
     )
     suspend fun deleteMaterial(materialId: Long, updateTime: String)
+
+    @Insert
+    suspend fun insertMaterialMerged(materialMerged: MaterialMerged)
+
 
     @Query(
         "DELETE FROM workOrderHistoryMaterials " +

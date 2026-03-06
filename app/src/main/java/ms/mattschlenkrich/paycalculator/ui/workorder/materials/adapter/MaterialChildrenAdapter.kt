@@ -1,0 +1,82 @@
+package ms.mattschlenkrich.paycalculator.ui.workorder.materials.adapter
+
+import android.graphics.Color
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.database.model.workorder.Material
+import ms.mattschlenkrich.paycalculator.databinding.ListSingleItemBinding
+import ms.mattschlenkrich.paycalculator.ui.workorder.materials.MaterialMergeFragment
+
+class MaterialChildrenAdapter(
+    private val mView: View,
+    private val materialMergeFragment: MaterialMergeFragment
+) : RecyclerView.Adapter<MaterialChildrenAdapter.MaterialViewHolder>() {
+
+    class MaterialViewHolder(val itemBinding: ListSingleItemBinding) :
+        RecyclerView.ViewHolder(itemBinding.root)
+
+    private val differCallBack = object : DiffUtil.ItemCallback<Material>() {
+        override fun areItemsTheSame(
+            p0: Material,
+            p1: Material
+        ): Boolean {
+            return p0 == p1
+        }
+
+        override fun areContentsTheSame(
+            p0: Material,
+            p1: Material
+        ): Boolean {
+            return p0.materialId == p1.materialId && p0.mName == p1.mName
+        }
+    }
+
+    val differ = AsyncListDiffer(this, differCallBack)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MaterialViewHolder {
+        return MaterialViewHolder(
+            ListSingleItemBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
+            )
+        )
+    }
+
+    override fun getItemCount(): Int {
+        return differ.currentList.size
+    }
+
+    override fun onBindViewHolder(holder: MaterialViewHolder, position: Int) {
+        val material = differ.currentList[position]
+        holder.itemBinding.apply {
+            var display = material.mName
+            if (material.mIsDeleted) {
+                display += mView.context.getString(R.string._deleted_)
+                tvDisplay.setTextColor(Color.RED)
+            } else {
+                tvDisplay.setTextColor(Color.BLACK)
+            }
+            tvDisplay.text = display
+        }
+        holder.itemView.setOnClickListener {
+            chooseOptions(material)
+
+        }
+    }
+
+    private fun chooseOptions(material: Material) {
+//        AlertDialog.Builder(mView.context)
+//            .setTitle("Choose if this is a parent or child")
+//            .setPositiveButton("Parent") { _, _ ->
+//                workPerformedMergeFragment.chooseToMergeAsParent(workPerformed)
+//            }
+//            .setNegativeButton("Child") { _, _ ->
+//                workPerformedMergeFragment.chooseToMergeAsChild(workPerformed)
+//            }
+//            .show()
+    }
+}

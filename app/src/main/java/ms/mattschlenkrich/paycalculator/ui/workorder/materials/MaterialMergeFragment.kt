@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.workorder.workPerformed
+package ms.mattschlenkrich.paycalculator.ui.workorder.materials
 
 import android.app.AlertDialog
 import android.database.sqlite.SQLiteConstraintException
@@ -19,23 +19,22 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
-import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_PERFORMED_MERGE
+import ms.mattschlenkrich.paycalculator.common.FRAG_MATERIAL_MERGE
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
-import ms.mattschlenkrich.paycalculator.common.WAIT_500
-import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
-import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.WorkPerformedMerged
+import ms.mattschlenkrich.paycalculator.database.model.workorder.Material
+import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.MaterialMerged
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentEntityMergeBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
-import ms.mattschlenkrich.paycalculator.ui.workorder.workPerformed.adapter.WorkPerformedChildrenAdapter
-import ms.mattschlenkrich.paycalculator.ui.workorder.workPerformed.adapter.WorkPerformedMergedAdapter
+import ms.mattschlenkrich.paycalculator.ui.workorder.materials.adapter.MaterialChildrenAdapter
+import ms.mattschlenkrich.paycalculator.ui.workorder.materials.adapter.MaterialMergedAdapter
 
-private const val TAG = FRAG_WORK_PERFORMED_MERGE
+private const val TAG = FRAG_MATERIAL_MERGE
 
-class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
+class MaterialMergeFragment : Fragment(R.layout.fragment_entity_merge) {
 
     private var _binding: FragmentEntityMergeBinding? = null
     private val binding get() = _binding!!
@@ -43,11 +42,11 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var workOrderViewModel: WorkOrderViewModel
-    private lateinit var workPerformedList: List<WorkPerformed>
+    private lateinit var materialList: List<Material>
 
-    private lateinit var chilList: List<WorkPerformed>
-    private lateinit var wpParent: WorkPerformed
-    private lateinit var wpChild: WorkPerformed
+    private lateinit var childList: List<Material>
+    private lateinit var mParent: Material
+    private lateinit var mChild: Material
     private val mainScope = CoroutineScope(Dispatchers.Main)
     private val df = DateFunctions()
     private val nf = NumberFunctions()
@@ -61,7 +60,7 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.topMenuBar.title = getString(R.string.merge_work_performed)
+        mainActivity.topMenuBar.title = getString(R.string.marge_material)
         return mView
     }
 
@@ -72,18 +71,18 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
     }
 
     private fun populateValues() {
-        populateWorkPerformedLists()
+        populateMaterialLists()
         populateFromCache()
     }
 
-    private fun populateWorkPerformedLists() {
-        workOrderViewModel.getWorkPerformedAll().observe(viewLifecycleOwner) { list ->
-            workPerformedList = list
-            val wpDescriptions = list.map { it.wpDescription }
+    private fun populateMaterialLists() {
+        workOrderViewModel.getMaterialsList().observe(viewLifecycleOwner) { list ->
+            materialList = list
+            val mDescriptions = list.map { it.mName }
             val wpDescriptionAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_normal, wpDescriptions
+                mView.context, R.layout.spinner_item_normal, mDescriptions
             )
-            val listAdapter = WorkPerformedMergedAdapter(mainActivity, mView, this)
+            val listAdapter = MaterialMergedAdapter(mainActivity, mView, this)
             listAdapter.differ.submitList(list)
             binding.apply {
                 acParent.setAdapter(wpDescriptionAdapter)
@@ -96,13 +95,13 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
 
     private fun populateFromCache() {
         mainViewModel.apply {
-            if (getWorkPerformedId() != null) {
-                workOrderViewModel.getWorkPerformed(getWorkPerformedId()!!)
-                    .observe(viewLifecycleOwner) { workPerformed ->
+            if (getMaterialId() != null) {
+                workOrderViewModel.getMaterial(getMaterialId()!!)
+                    .observe(viewLifecycleOwner) { material ->
                         if (getWorkPerformedIsMaster()) {
-                            chooseAsParent(workPerformed)
+                            chooseAsParent(material)
                         } else {
-                            chooseAsChild(workPerformed)
+                            chooseAsChild(material)
                         }
                     }
             }
@@ -112,7 +111,7 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
     private fun setClickActions() {
         binding.apply {
             acParent.setOnItemClickListener { _, _, _, _ ->
-                chooseAsParent(workPerformedList.first { it.wpDescription == acParent.text.toString() })
+                chooseAsParent(materialList.first { it.mName == acParent.text.toString() })
             }
             acParent.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
@@ -134,7 +133,7 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
                 }
             })
             acChild.setOnItemClickListener { _, _, _, _ ->
-                chooseAsChild(workPerformedList.first { it.wpDescription == acChild.text.toString() })
+                chooseAsChild(materialList.first { it.mName == acChild.text.toString() })
             }
             acChild.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
@@ -149,7 +148,7 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
 
                 override fun afterTextChanged(s: Editable?) {
                     if (findDescription(acChild.text.toString())) {
-                        if (chilList.any { it.wpDescription == acChild.text.toString() }) {
+                        if (childList.any { it.mName == acChild.text.toString() }) {
                             acChild.error =
                                 getString(R.string.this_work_performed_child_already_exists)
                         }
@@ -185,22 +184,22 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
 
     private fun chooseToAddDescriptionAndMerge(newDescription: String) {
         AlertDialog.Builder(mView.context)
-            .setTitle(getString(R.string.add_new_work_performed))
+            .setTitle(getString(R.string.add_new_material))
             .setPositiveButton(getString(R.string.add)) { _, _ ->
                 mainScope.launch {
-                    insertNewWorkPerformed(newDescription)
+                    insertNewMaterial(newDescription)
                     delay(WAIT_250)
                     binding.apply {
-                        workOrderViewModel.getWorkPerformed(acParent.text.toString())
-                            .observe(viewLifecycleOwner) { wp ->
-                                wpParent = wp
+                        workOrderViewModel.getMaterial(acParent.text.toString())
+                            .observe(viewLifecycleOwner) { mat ->
+                                mParent = mat
                             }
-                        workOrderViewModel.getWorkPerformed(acChild.text.toString())
-                            .observe(viewLifecycleOwner) { wp ->
-                                wpChild = wp
+                        workOrderViewModel.getMaterial(acChild.text.toString())
+                            .observe(viewLifecycleOwner) { mat ->
+                                mChild = mat
                             }
                     }
-                    populateWorkPerformedLists()
+                    populateMaterialLists()
                     chooseOptionsForMerge()
                 }
             }
@@ -208,20 +207,23 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
             .show()
     }
 
-    private fun insertNewWorkPerformed(newDescription: String) {
-        workOrderViewModel.insertWorkPerformed(
-            WorkPerformed(
+    private fun insertNewMaterial(newDescription: String) {
+        workOrderViewModel.insertMaterial(
+            Material(
                 nf.generateRandomIdAsLong(),
                 newDescription,
+                0.0,
+                0.0,
                 false,
                 df.getCurrentTimeAsString()
+
             )
         )
     }
 
-    private fun findDescription(wpDescription: String): Boolean {
+    private fun findDescription(mName: String): Boolean {
         try {
-            return workPerformedList.any { it.wpDescription == wpDescription }
+            return materialList.any { it.mName == mName }
         } catch (e: UninitializedPropertyAccessException) {
             Log.d(TAG, "exception is ${e.toString()}")
             return false
@@ -244,79 +246,94 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
 
     private fun mergeAndReplace() {
         mainScope.launch {
-            Log.d(
-                TAG,
-                "merge and replace called wpParent is ${wpParent.wpDescription} -- wpChild is ${wpChild.wpDescription}"
-            )
+//            Log.d(
+//                TAG,
+//                "merge and replace called wpParent is ${wpParent.wpDescription} -- wpChild is ${wpChild.wpDescription}"
+//            )
             try {
-                workOrderViewModel.updateWorkPerformedMerged(
-                    wpChild.workPerformedId,
-                    wpParent.workPerformedId
+                Log.d(
+                    TAG,
+                    "merge and replace called -- mParent is ${mParent.mName}, mChild is ${mChild.mName}"
                 )
-                delay(WAIT_100)
+                workOrderViewModel.updateMaterialMerged(
+                    mChild.materialId,
+                    mParent.materialId,
+                    df.getCurrentTimeAsString()
+                )
+                delay(WAIT_250)
             } catch (e: SQLiteConstraintException) {
                 Log.d(TAG, e.message.toString())
             } finally {
                 try {
-                    workOrderViewModel.deleteWorkPerformedMerged(
-                        wpChild.workPerformedId,
+                    workOrderViewModel.deleteMaterialMerged(
+                        mChild.materialId,
                     )
-                    workOrderViewModel.deleteWorkPerformed(wpChild)
+                    workOrderViewModel.deleteMaterial(
+                        mChild.materialId,
+                        df.getCurrentTimeAsString()
+                    )
                 } catch (e: Exception) {
                     Log.d(TAG, e.message.toString())
-                    delay(WAIT_500)
-                    workOrderViewModel.deleteWorkPerformedMerged(
-                        wpChild.workPerformedId,
+                    workOrderViewModel.deleteMaterialMerged(
+                        mChild.materialId,
                     )
-                    workOrderViewModel.deleteWorkPerformed(wpChild)
+                    workOrderViewModel.deleteMaterial(
+                        mChild.materialId,
+                        df.getCurrentTimeAsString()
+                    )
                 } finally {
                     populateChildren()
                     binding.apply {
-                        acParent.setText(wpParent.wpDescription)
+                        acParent.setText(mParent.mName)
                         acChild.setText("")
                     }
                 }
             }
-            populateWorkPerformedLists()
+            populateMaterialLists()
         }
     }
 
     private fun mergeAndKeep() {
-        workOrderViewModel.insertWorkPerformedMerged(
-            WorkPerformedMerged(
+        workOrderViewModel.insertMaterialMerged(
+            MaterialMerged(
                 nf.generateRandomIdAsLong(),
-                wpParent.workPerformedId,
-                wpChild.workPerformedId,
+                mParent.materialId,
+                mChild.materialId,
                 false,
                 df.getCurrentTimeAsString()
             )
+
         )
         populateChildren()
         binding.acChild.setText("")
     }
 
-    fun chooseAsParent(workPerformed: WorkPerformed) {
-        binding.apply {
-            wpParent = workPerformed
-            Log.d(TAG, "chooseToMergeAsParent called -- wpParent is ${workPerformed.wpDescription}")
-            mainViewModel.apply {
-                setWorkPerformedId(wpParent.workPerformedId)
-                setWorkPerformedIsMaster(true)
+    fun chooseAsParent(material: Material) {
+        mainScope.launch {
+            binding.apply {
+                mParent = material
+                Log.d(TAG, "chooseToMergeAsParent called -- mParent is ${mParent.mName}")
+                mainViewModel.apply {
+                    setMaterial(mParent)
+                    setMaterialId(mParent.materialId)
+                    setMaterialIsParent(true)
+                }
+                acParent.setText(mParent.mName)
+                delay(WAIT_100)
+                populateChildren()
             }
-            acParent.setText(wpParent.wpDescription)
-            populateChildren()
         }
     }
 
     private fun populateChildren() {
         binding.apply {
-            workOrderViewModel.getWorkPerformedChildren(wpParent.workPerformedId)
+            workOrderViewModel.getMaterialsChildren(mParent.materialId)
                 .observe(viewLifecycleOwner) { list ->
-                    chilList = list
+                    childList = list
                     if (list.isNotEmpty()) {
                         crdChildren.visibility = View.VISIBLE
                         val childAdapter =
-                            WorkPerformedChildrenAdapter(mView, this@WorkPerformedMergeFragment)
+                            MaterialChildrenAdapter(mView, this@MaterialMergeFragment)
                         childAdapter.differ.submitList(list)
                         rvChildren.apply {
                             layoutManager = LinearLayoutManager(mView.context)
@@ -329,20 +346,20 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
         }
     }
 
-    fun chooseAsChild(workPerformed: WorkPerformed) {
+    fun chooseAsChild(material: Material) {
         binding.apply {
-            wpChild = workPerformed
-            acChild.setText(workPerformed.wpDescription)
+            mChild = material
+            acChild.setText(material.mName)
         }
     }
 
     private fun gotoCallingFragment() {
-        gotoWorkPerformedUpdateFragment()
+        gotoMaterialUpdateFragment()
     }
 
-    fun gotoWorkPerformedUpdateFragment() {
+    fun gotoMaterialUpdateFragment() {
         mView.findNavController().navigate(
-            WorkPerformedMergeFragmentDirections.actionWorkPerformedMergeFragmentToWorkPerformedUpdateFragment()
+            MaterialMergeFragmentDirections.actionMaterialMergeFragmentToMaterialUpdateFragment()
         )
     }
 

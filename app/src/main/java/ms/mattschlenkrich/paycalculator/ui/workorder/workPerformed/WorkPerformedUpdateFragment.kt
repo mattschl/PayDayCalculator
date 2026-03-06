@@ -142,12 +142,6 @@ class WorkPerformedUpdateFragment : Fragment(R.layout.fragment_single_item_updat
         }
     }
 
-    private fun gotoWorkPerformedMergeFragment() {
-        mView.findNavController().navigate(
-            WorkPerformedUpdateFragmentDirections.actionWorkPerformedUpdateFragmentToWorkPerformedMergeFragment()
-        )
-    }
-
     private fun updateWorkPerformedIfValid(gotoCallingFragment: Boolean) {
         val answer = validateWorkPerformed()
         if (answer == ANSWER_OK) {
@@ -218,6 +212,12 @@ class WorkPerformedUpdateFragment : Fragment(R.layout.fragment_single_item_updat
     private fun gotoWorkPerformedUpdateFragment() {
         mView.findNavController().navigate(
             WorkPerformedUpdateFragmentDirections.actionWorkPerformedUpdateFragmentToWorkOrderHistoryUpdateFragment()
+        )
+    }
+
+    private fun gotoWorkPerformedMergeFragment() {
+        mView.findNavController().navigate(
+            WorkPerformedUpdateFragmentDirections.actionWorkPerformedUpdateFragmentToWorkPerformedMergeFragment()
         )
     }
 

@@ -14,6 +14,7 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistor
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
+import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.MaterialMerged
 import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.WorkPerformedMerged
 import ms.mattschlenkrich.paycalculator.database.repository.WorkOrderRepository
 
@@ -263,9 +264,31 @@ class WorkOrderViewModel(
 
     fun getMaterialsList() = workOrderRepository.getMaterialsList()
 
+    fun getMaterialsChildren(materialId: Long) =
+        workOrderRepository.getMaterialsChildren(materialId)
+
+
     fun searchMaterials(query: String) = workOrderRepository.searchMaterials(query)
 
     fun getMaterial(materialId: Long) = workOrderRepository.getMaterial(materialId)
+
+    fun getMaterial(mName: String) = workOrderRepository.getMaterial(mName)
+
+    fun updateMaterialMerged(oldMaterialID: Long, newMaterialID: Long, updateTime: String) =
+        viewModelScope.launch {
+            workOrderRepository.updateMaterialMerged(
+                oldMaterialID,
+                newMaterialID,
+                updateTime
+            )
+        }
+
+    fun deleteMaterialMerged(childId: Long) = viewModelScope.launch {
+        workOrderRepository.deleteMaterialMerged(childId)
+    }
+
+    fun insertMaterialMerged(materialMerged: MaterialMerged) =
+        viewModelScope.launch { workOrderRepository.insertMaterialMerged(materialMerged) }
 
     fun deleteMaterial(materialId: Long, updateTime: String) =
         viewModelScope.launch {

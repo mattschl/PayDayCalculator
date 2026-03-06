@@ -12,6 +12,7 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistor
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
+import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.MaterialMerged
 import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.WorkPerformedMerged
 
 class WorkOrderRepository(private val db: PayDatabase) {
@@ -217,9 +218,25 @@ class WorkOrderRepository(private val db: PayDatabase) {
 
     fun getMaterialsList() = db.getWorkOrderDao().getMaterialsList()
 
+    fun getMaterialsChildren(materialId: Long) =
+        db.getWorkOrderDao().getMaterialsChildren(materialId)
+
+
     fun searchMaterials(query: String) = db.getWorkOrderDao().searchMaterials(query)
 
     fun getMaterial(materialId: Long) = db.getWorkOrderDao().getMaterial(materialId)
+
+    fun getMaterial(mName: String) = db.getWorkOrderDao().getMaterial(mName)
+
+    suspend fun updateMaterialMerged(oldMaterialID: Long, newMaterialID: Long, updateTime: String) =
+        db.getWorkOrderDao().updateMaterialMerged(oldMaterialID, newMaterialID, updateTime)
+
+    suspend fun deleteMaterialMerged(childId: Long) =
+        db.getWorkOrderDao().deleteMaterialMerged(childId)
+
+    suspend fun insertMaterialMerged(materialMerged: MaterialMerged) =
+        db.getWorkOrderDao().insertMaterialMerged(materialMerged)
+
 
     suspend fun deleteMaterial(materialId: Long, updateTime: String) =
         db.getWorkOrderDao().deleteMaterial(materialId, updateTime)

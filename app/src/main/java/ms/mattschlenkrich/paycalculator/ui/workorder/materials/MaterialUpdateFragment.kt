@@ -1,15 +1,22 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder.materials
 
+
+import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.ExceptionUnknown
 import ms.mattschlenkrich.paycalculator.common.FRAG_MATERIAL_VIEW
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.database.model.workorder.Material
@@ -17,6 +24,8 @@ import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.databinding.FragmentMaterialUpdateBinding
 import ms.mattschlenkrich.paycalculator.ui.MainActivity
+
+private const val TAG = "MaterialUpdateFragment"
 
 class MaterialUpdateFragment : Fragment(R.layout.fragment_material_update) {
 
@@ -31,6 +40,7 @@ class MaterialUpdateFragment : Fragment(R.layout.fragment_material_update) {
     private lateinit var oldMaterial: Material
     private val df = DateFunctions()
     private val nf = NumberFunctions()
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -83,14 +93,63 @@ class MaterialUpdateFragment : Fragment(R.layout.fragment_material_update) {
             btnCancel.setOnClickListener {
                 gotoCallingFragment()
             }
+            btnMerge.setOnClickListener {
+                chooseMergeOptions()
+            }
         }
     }
 
-    private fun updateMaterialIfValid() {
+    private fun chooseMergeOptions() {
+        AlertDialog.Builder(mView.context)
+            .setTitle(
+                getString(
+                    R.string.choose_merge_option_for,
+                    binding.etMaterial.text.toString().trim()
+                )
+            )
+            .setItems(
+                arrayOf(
+                    "Make this a Parent material and add children",
+                    "Add this to another material as a child",
+                    "*Note: This will attempt to save the current Material."
+                )
+            ) { _, pos ->
+                when (pos) {
+                    0 -> {
+                        setOptionsForMergeAndGotoMerge(true)
+                    }
+
+                    1 -> {
+                        setOptionsForMergeAndGotoMerge(false)
+                    }
+                }
+            }
+            .setNeutralButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun setOptionsForMergeAndGotoMerge(isMaster: Boolean) {
+        mainScope.launch {
+            try {
+                updateMaterialIfValid(false)
+                mainViewModel.setMaterialId(oldMaterial.materialId)
+                mainViewModel.setWorkPerformedIsMaster(isMaster)
+                mainViewModel.addCallingFragment(TAG)
+                gotoMaterialMergeFragment()
+            } catch (e: ExceptionUnknown) {
+                Log.d(
+                    TAG,
+                    "exception is ${e.toString()}"
+                )
+            }
+
+        }
+    }
+
+    private fun updateMaterialIfValid(gotoCallingFragment: Boolean = true) {
         val answer = validateMaterial()
         if (answer == ANSWER_OK) {
-            updateMaterial()
-            gotoCallingFragment()
+            updateMaterial(gotoCallingFragment)
         } else {
             displayMessage(getString(R.string.error_) + answer)
         }
@@ -138,8 +197,9 @@ class MaterialUpdateFragment : Fragment(R.layout.fragment_material_update) {
         }
     }
 
-    private fun updateMaterial() {
+    private fun updateMaterial(gotoCallingFragment: Boolean = true) {
         workOrderViewModel.updateMaterial(getCurMaterial())
+        if (gotoCallingFragment) gotoCallingFragment()
     }
 
     private fun gotoCallingFragment() {
@@ -162,6 +222,12 @@ class MaterialUpdateFragment : Fragment(R.layout.fragment_material_update) {
     private fun gotoWorkOrderHistoryUpdateFragment() {
         mView.findNavController().navigate(
             MaterialUpdateFragmentDirections.actionMaterialUpdateFragmentToWorkOrderHistoryUpdateFragment()
+        )
+    }
+
+    private fun gotoMaterialMergeFragment() {
+        mView.findNavController().navigate(
+            MaterialUpdateFragmentDirections.actionMaterialUpdateFragmentToMaterialMergeFragment()
         )
     }
 

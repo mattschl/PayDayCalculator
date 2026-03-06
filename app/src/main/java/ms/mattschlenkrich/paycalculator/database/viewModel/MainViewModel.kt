@@ -51,13 +51,32 @@ class MainViewModel(
     private var jobSpec: JobSpec? = null
     private var workOrderJobSpecId: Long? = null
     private var workPerformedId: Long? = null
-    private var workPerformedIsMaster: Boolean = true
+    private var workPerformedIsParent: Boolean = true
     private var workPerformedHistoryId: Long? = null
     private var material: Material? = null
+    private var materialId: Long? = null
+    private var materialIsParent: Boolean = true
     private var materialInSequence: MaterialInSequence? = null
     private var extraContainer: ExtraContainer? = null
     private var areaId: Long? = null
     private var workOrderHistoryTimeWorkedCombined: WorkOrderHistoryTimeWorkedCombined? = null
+
+    fun getMaterialIsParent(): Boolean {
+        return materialIsParent
+    }
+
+    fun setMaterialIsParent(isParent: Boolean) {
+        materialIsParent = isParent
+    }
+
+
+    fun setMaterialId(newMaterialId: Long?) {
+        materialId = newMaterialId
+    }
+
+    fun getMaterialId(): Long? {
+        return materialId
+    }
 
     fun setWorkOrderHistoryTimeWorkedCombined(newWorkOrderHistoryTimeWorkedCombined: WorkOrderHistoryTimeWorkedCombined?) {
         workOrderHistoryTimeWorkedCombined = newWorkOrderHistoryTimeWorkedCombined
@@ -81,11 +100,11 @@ class MainViewModel(
     }
 
     fun setWorkPerformedIsMaster(isMaster: Boolean) {
-        workPerformedIsMaster = isMaster
+        workPerformedIsParent = isMaster
     }
 
     fun getWorkPerformedIsMaster(): Boolean {
-        return workPerformedIsMaster
+        return workPerformedIsParent
     }
 
     fun setAreaId(newAreaId: Long?) {

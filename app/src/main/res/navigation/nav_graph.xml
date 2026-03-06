@@ -832,6 +832,18 @@
             android:id="@+id/action_materialUpdateFragment_to_materialViewFragment"
             app:destination="@id/materialViewFragment"
             app:popUpTo="@id/materialViewFragment" />
+        <action
+            android:id="@+id/action_materialUpdateFragment_to_materialMergeFragment"
+            app:destination="@id/materialMergeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/materialMergeFragment"
+        android:name="ms.mattschlenkrich.paycalculator.ui.workorder.materials.MaterialMergeFragment"
+        android:label="MaterialMergeFragment">
+        <action
+            android:id="@+id/action_materialMergeFragment_to_materialUpdateFragment"
+            app:destination="@id/materialUpdateFragment"
+            app:popUpTo="@id/materialMergeFragment" />
     </fragment>
 
     <!--    materialQuantityUpdateFragment-->
