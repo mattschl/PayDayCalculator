@@ -24,6 +24,7 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.database.model.workorder.Material
+import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.MaterialAndChild
 import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.MaterialMerged
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
@@ -44,7 +45,7 @@ class MaterialMergeFragment : Fragment(R.layout.fragment_entity_merge) {
     private lateinit var workOrderViewModel: WorkOrderViewModel
     private lateinit var materialList: List<Material>
 
-    private lateinit var childList: List<Material>
+    private lateinit var childList: List<MaterialAndChild>
     private lateinit var mParent: Material
     private lateinit var mChild: Material
     private val mainScope = CoroutineScope(Dispatchers.Main)
@@ -71,8 +72,16 @@ class MaterialMergeFragment : Fragment(R.layout.fragment_entity_merge) {
     }
 
     private fun populateValues() {
+        populateUI()
         populateMaterialLists()
         populateFromCache()
+    }
+
+    private fun populateUI() {
+        binding.apply {
+            lblMaster.text = getString(R.string.master_material)
+            lblChild.text = getString(R.string.child_material_to_merge)
+        }
     }
 
     private fun populateMaterialLists() {
@@ -148,7 +157,7 @@ class MaterialMergeFragment : Fragment(R.layout.fragment_entity_merge) {
 
                 override fun afterTextChanged(s: Editable?) {
                     if (findDescription(acChild.text.toString())) {
-                        if (childList.any { it.mName == acChild.text.toString() }) {
+                        if (childList.any { it.materialParent.mName == acChild.text.toString() }) {
                             acChild.error =
                                 getString(R.string.this_work_performed_child_already_exists)
                         }
@@ -327,7 +336,7 @@ class MaterialMergeFragment : Fragment(R.layout.fragment_entity_merge) {
 
     private fun populateChildren() {
         binding.apply {
-            workOrderViewModel.getMaterialsChildren(mParent.materialId)
+            workOrderViewModel.getMaterialAndChildList(mParent.materialId)
                 .observe(viewLifecycleOwner) { list ->
                     childList = list
                     if (list.isNotEmpty()) {
@@ -361,6 +370,10 @@ class MaterialMergeFragment : Fragment(R.layout.fragment_entity_merge) {
         mView.findNavController().navigate(
             MaterialMergeFragmentDirections.actionMaterialMergeFragmentToMaterialUpdateFragment()
         )
+    }
+
+    fun removeMaterialAsChild(materialAndChild: MaterialAndChild) {
+        workOrderViewModel.deleteMaterialMerged(materialAndChild.materialMerged.materialMergeId)
     }
 
     override fun onDestroy() {

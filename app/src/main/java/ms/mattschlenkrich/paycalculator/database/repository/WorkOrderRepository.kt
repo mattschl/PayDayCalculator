@@ -173,6 +173,9 @@ class WorkOrderRepository(private val db: PayDatabase) {
     fun getWorkPerformedChildren(workPerformedId: Long) =
         db.getWorkOrderDao().getWorkPerformedChildren(workPerformedId)
 
+    fun getWorkPerformedAndChildList(workPerformedId: Long) =
+        db.getWorkOrderDao().getWorkPerformedAndChildList(workPerformedId)
+
     suspend fun insertWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged) =
         db.getWorkOrderDao().insertWorkPerformedMerged(workPerformedMerged)
 
@@ -221,6 +224,8 @@ class WorkOrderRepository(private val db: PayDatabase) {
     fun getMaterialsChildren(materialId: Long) =
         db.getWorkOrderDao().getMaterialsChildren(materialId)
 
+    fun getMaterialAndChildList(materialId: Long) =
+        db.getWorkOrderDao().getMaterialAndChildList(materialId)
 
     fun searchMaterials(query: String) = db.getWorkOrderDao().searchMaterials(query)
 

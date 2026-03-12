@@ -194,6 +194,9 @@ class WorkOrderViewModel(
     fun getWorkPerformedChildren(workPerformedId: Long) =
         workOrderRepository.getWorkPerformedChildren(workPerformedId)
 
+    fun getWorkPerformedAndChildList(workPerformedId: Long) =
+        workOrderRepository.getWorkPerformedAndChildList(workPerformedId)
+
     fun insertWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged) =
         viewModelScope.launch {
             workOrderRepository.insertWorkPerformedMerged(workPerformedMerged)
@@ -266,6 +269,9 @@ class WorkOrderViewModel(
 
     fun getMaterialsChildren(materialId: Long) =
         workOrderRepository.getMaterialsChildren(materialId)
+
+    fun getMaterialAndChildList(materialId: Long) =
+        workOrderRepository.getMaterialAndChildList(materialId)
 
 
     fun searchMaterials(query: String) = workOrderRepository.searchMaterials(query)

@@ -25,6 +25,7 @@ import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
+import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.WorkPerformedAndChild
 import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.WorkPerformedMerged
 import ms.mattschlenkrich.paycalculator.database.viewModel.MainViewModel
 import ms.mattschlenkrich.paycalculator.database.viewModel.WorkOrderViewModel
@@ -45,7 +46,7 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
     private lateinit var workOrderViewModel: WorkOrderViewModel
     private lateinit var workPerformedList: List<WorkPerformed>
 
-    private lateinit var chilList: List<WorkPerformed>
+    private lateinit var childList: List<WorkPerformedAndChild>
     private lateinit var wpParent: WorkPerformed
     private lateinit var wpChild: WorkPerformed
     private val mainScope = CoroutineScope(Dispatchers.Main)
@@ -149,7 +150,7 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
 
                 override fun afterTextChanged(s: Editable?) {
                     if (findDescription(acChild.text.toString())) {
-                        if (chilList.any { it.wpDescription == acChild.text.toString() }) {
+                        if (childList.any { it.workPerformedChild.wpDescription == acChild.text.toString() }) {
                             acChild.error =
                                 getString(R.string.this_work_performed_child_already_exists)
                         }
@@ -310,9 +311,9 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
 
     private fun populateChildren() {
         binding.apply {
-            workOrderViewModel.getWorkPerformedChildren(wpParent.workPerformedId)
+            workOrderViewModel.getWorkPerformedAndChildList(wpParent.workPerformedId)
                 .observe(viewLifecycleOwner) { list ->
-                    chilList = list
+                    childList = list
                     if (list.isNotEmpty()) {
                         crdChildren.visibility = View.VISIBLE
                         val childAdapter =
@@ -349,5 +350,10 @@ class WorkPerformedMergeFragment : Fragment(R.layout.fragment_entity_merge) {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    fun removeWorkPerformedChild(workPerformedAndChild: WorkPerformedAndChild) {
+        workOrderViewModel.deleteWorkPerformedMerged(workPerformedAndChild.workPerformedMerged.workPerformedMergeId)
+
     }
 }

@@ -8,7 +8,7 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
 
 
 @Parcelize
-data class WorkPerformedAndChildren(
+data class WorkPerformedAndChild(
     @Embedded
     val workPerformedMerged: WorkPerformedMerged,
     @Relation(
@@ -22,5 +22,5 @@ data class WorkPerformedAndChildren(
         parentColumn = "wpmChildId",
         entityColumn = "workPerformedId"
     )
-    val workPerformedChildren: List<WorkPerformed>
+    val workPerformedChild: WorkPerformed
 ) : Parcelable

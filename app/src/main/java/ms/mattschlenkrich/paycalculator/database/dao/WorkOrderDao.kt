@@ -26,7 +26,9 @@ import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderHistor
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paycalculator.database.model.workorder.WorkPerformed
+import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.MaterialAndChild
 import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.MaterialMerged
+import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.WorkPerformedAndChild
 import ms.mattschlenkrich.paycalculator.database.model.workorder.merged.WorkPerformedMerged
 
 @Dao
@@ -339,6 +341,8 @@ interface WorkOrderDao {
     )
     fun getWorkPerformedAll(): LiveData<List<WorkPerformed>>
 
+    @Transaction
+    @RewriteQueriesToDropUnusedColumns
     @Query(
         "SELECT * FROM workPerformed " +
                 "INNER JOIN  " +
@@ -348,6 +352,15 @@ interface WorkOrderDao {
                 "wpmChildId "
     )
     fun getWorkPerformedChildren(workPerformedId: Long): LiveData<List<WorkPerformed>>
+
+    @Transaction
+    @RewriteQueriesToDropUnusedColumns
+    @Query(
+        "SELECT * FROM workPerformedMerged " +
+                "WHERE wpmMasterId = :workPerformedId"
+    )
+    fun getWorkPerformedAndChildList(workPerformedId: Long): LiveData<List<WorkPerformedAndChild>>
+
 
     @Insert
     suspend fun insertWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged)
@@ -360,9 +373,9 @@ interface WorkOrderDao {
 
     @Query(
         "DELETE FROM workPerformedMerged " +
-                "WHERE wpmChildId = :workPerformedId"
+                "WHERE workPerformedMergeId = :workPerformedMergedId"
     )
-    suspend fun deleteWorkPerformedMerged(workPerformedId: Long)
+    suspend fun deleteWorkPerformedMerged(workPerformedMergedId: Long)
 
 
     @Query(
@@ -475,6 +488,8 @@ interface WorkOrderDao {
     )
     fun getMaterialsList(): LiveData<List<Material>>
 
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
     @Query(
         "SELECT * FROM materials " +
                 "INNER JOIN " +
@@ -485,6 +500,14 @@ interface WorkOrderDao {
     )
     fun getMaterialsChildren(materialId: Long): LiveData<List<Material>>
 
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT * FROM materialMerged " +
+                "WHERE mmMasterId = :materialId"
+    )
+    fun getMaterialAndChildList(materialId: Long): LiveData<List<MaterialAndChild>>
 
     @Query(
         "SELECT * FROM materials " +
@@ -515,9 +538,9 @@ interface WorkOrderDao {
 
     @Query(
         "DELETE FROM materialMerged " +
-                "WHERE mmChildId = :childId"
+                "WHERE materialMergeId = :materialMergedId"
     )
-    suspend fun deleteMaterialMerged(childId: Long)
+    suspend fun deleteMaterialMerged(materialMergedId: Long)
 
     @Query(
         "UPDATE materials " +
