@@ -1,0 +1,24 @@
+package ms.mattschlenkrich.paycalculator.data
+
+import android.os.Parcelable
+import androidx.room.Embedded
+import androidx.room.Relation
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class ExtraDefTypeAndEmployer(
+    @Embedded
+    val definition: WorkExtrasDefinitions,
+    @Relation(
+        entity = Employers::class,
+        parentColumn = "weEmployerId",
+        entityColumn = "employerId"
+    )
+    var employer: Employers,
+    @Relation(
+        entity = WorkExtraTypes::class,
+        parentColumn = "weExtraTypeId",
+        entityColumn = "workExtraTypeId"
+    )
+    var extraType: WorkExtraTypes
+) : Parcelable

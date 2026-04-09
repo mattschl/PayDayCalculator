@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.database.model.employer.test
+package ms.mattschlenkrich.paycalculator.data
 
 import org.junit.Test
 

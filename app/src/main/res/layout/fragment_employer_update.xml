@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.employer.EmployerUpdateFragment">
+    tools:context=".employer.EmployerUpdateFragment">
 
     <data>
 
         <variable
             name="employerObj"
-            type="ms.mattschlenkrich.paycalculator.database.model.employer.EmployerObj" />
+            type="ms.mattschlenkrich.paycalculator.data.EmployerObj" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
