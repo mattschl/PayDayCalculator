@@ -524,6 +524,16 @@
     <string name="add_new_material">Add New Material</string>
     <string name="master_material">Master Material</string>
     <string name="child_material_to_merge">Child Material to merge</string>
+    <string name="enter_file_title">enter file title</string>
+    <string name="enter_document_content">enter document contents</string>
+    <string name="query">query</string>
+    <string name="sync_data">Sync Data</string>
+    <string name="return_text">Return</string>
+    <string name="download">Download</string>
+    <string name="upload">Upload</string>
+    <string name="processing">Processing...</string>
+    <string name="default_web_client_id">659552924329-ihbi24aqo9kjitctefhc3lnqgkf9ajg5.apps.googleusercontent.com</string>
+    <string name="debug_sha1">E5:BA:F7:BB:5E:0F:FF:44:7F:56:A2:00:34:16:1F:66:05:7E:1A:46</string>
 
 
 </resources>

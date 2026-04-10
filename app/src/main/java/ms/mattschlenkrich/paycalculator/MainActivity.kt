@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
@@ -36,6 +37,7 @@ import ms.mattschlenkrich.paycalculator.data.WorkTimeRepository
 import ms.mattschlenkrich.paycalculator.data.WorkTimeViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkTimeViewModelFactory
 import ms.mattschlenkrich.paycalculator.databinding.ActivityMainBinding
+import ms.mattschlenkrich.paycalculator.sync.SyncActivity
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -119,6 +121,7 @@ class MainActivity : AppCompatActivity() {
             menu.add(getString(R.string.view_areas_list))
             menu.add(getString(R.string.view_work_performed_list))
             menu.add(getString(R.string.view_material_list))
+            menu.add(getString(R.string.sync_data))
             menu.add(resources.getString(R.string.app_name))
 
             setOnMenuItemClickListener { menuItem ->
@@ -149,12 +152,22 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
 
+                    getString(R.string.sync_data) -> {
+                        gotoSync()
+                        true
+                    }
+
                     else -> {
                         false
                     }
                 }
             }
         }
+    }
+
+    private fun gotoSync() {
+        val intent = Intent(this, SyncActivity::class.java)
+        startActivity(intent)
     }
 
     private fun gotoAreasView() {
