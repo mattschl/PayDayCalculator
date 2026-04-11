@@ -106,93 +106,99 @@ class SyncActivity : AppCompatActivity() {
     }
 
     /**
-     * Finds the latest timestamped backup on Google Drive in the Apps/<app_name> folder
-     * and downloads it to the app's custom databases directory without renaming it.
-     * Also downloads corresponding .wal and .shm files if they exist.
-     * Cancels the download if the main database file already exists locally.
+     * Downloads all backup files found on Google Drive in the Apps/<app_name> folder
+     * to the app's external files directory.
+     * Also ensures the latest database is available in the internal databases directory
+     * for active use.
      */
     fun testDownload() {
-        showProgress("Searching for latest backup...")
         lifecycleScope.launch {
-            try {
-                val helper = mDriveServiceHelper ?: run {
-                    hideProgress()
-                    return@launch
-                }
+            val helper = mDriveServiceHelper ?: return@launch
+            val targetFolderId = getTargetFolderId(helper)
+            performDownload(helper, targetFolderId)
+        }
+    }
 
-                val targetFolderId = getTargetFolderId(helper)
+    private suspend fun performDownload(helper: DriveServiceHelper, targetFolderId: String) {
+        showProgress("Searching for backups...")
+        try {
+            // 1. Query for all files in the target folder
+            val fileList: FileList = helper.queryFiles(targetFolderId)
+            val driveFiles = fileList.files ?: emptyList()
 
-                // 1. Query for all files in the target folder
-                val fileList: FileList = helper.queryFiles(targetFolderId)
-
-                // 2. Find the one with the most recent timestamp in the name (lexicographical order works for yyyyMMdd_HHmmss)
-                val latestFile = fileList.files
-                    ?.filter { it.name.startsWith("pay_") && it.name.endsWith(".db") }
-                    ?.maxByOrNull { it.name }
-
-                if (latestFile == null) {
-                    Toast.makeText(
-                        this@SyncActivity,
-                        "No database backups found on Drive",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@launch
-                }
-
-                val driveFileName = latestFile.name
-
-                // 3. Define the target local path
-                val dbDir = File(applicationInfo.dataDir, "databases")
-                val localFile = File(dbDir, driveFileName)
-
-                // Check if file already exists in internal storage
-                if (localFile.exists()) {
-                    Log.d(TAG, "File $driveFileName already exists locally. Download cancelled.")
-                    Toast.makeText(
-                        this@SyncActivity,
-                        "File already exists locally.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@launch
-                }
-
-                // Ensure parent directory exists
-                dbDir.mkdirs()
-
-                showProgress("Downloading $driveFileName...")
-                helper.downloadBinaryFile(driveFileName, localFile, targetFolderId)
-
-                // Also attempt to download .db-wal and .db-shm files
-                listOf("-wal", "-shm").forEach { suffix ->
-                    val extraFileName = "$driveFileName$suffix"
-                    val extraLocalFile = File(dbDir, extraFileName)
-                    try {
-                        helper.downloadBinaryFile(extraFileName, extraLocalFile, targetFolderId)
-                        Log.d(TAG, "Downloaded extra file: $extraFileName")
-                    } catch (e: Exception) {
-                        Log.d(
-                            TAG,
-                            "Optional file $extraFileName not found or failed to download: ${e.message}"
-                        )
-                    }
-                }
-
-                Log.d(
-                    TAG,
-                    "Latest database $driveFileName and associated files downloaded to ${localFile.absolutePath}"
-                )
+            if (driveFiles.isEmpty()) {
                 Toast.makeText(
                     this@SyncActivity,
-                    "Downloaded latest: $driveFileName",
+                    "No backups found on Drive",
                     Toast.LENGTH_SHORT
                 ).show()
-                mDocContentEditText?.setText("Downloaded $driveFileName to internal storage")
-
-            } catch (e: Exception) {
-                handleError("Failed to download latest database", e)
-            } finally {
-                hideProgress()
+                return
             }
+
+            // 2. Define target directories
+            val externalDir = getExternalFilesDir(null) ?: filesDir
+            val dbDir = File(applicationInfo.dataDir, "databases")
+
+            if (!externalDir.exists()) externalDir.mkdirs()
+            if (!dbDir.exists()) dbDir.mkdirs()
+
+            // 3. Find the latest for internal sync
+            val latestDbFile = driveFiles
+                .filter { it.name.startsWith("pay_") && it.name.endsWith(".db") }
+                .maxByOrNull { it.name }
+
+            var downloadCount = 0
+
+            // 4. Download all matching files to external storage
+            for (driveFile in driveFiles) {
+                if (driveFile.name.startsWith("pay_")) {
+                    val localFile = File(externalDir, driveFile.name)
+
+                    // Download to /files if not already there
+                    if (!localFile.exists()) {
+                        showProgress("Downloading ${driveFile.name} to storage...")
+                        helper.downloadBinaryFile(driveFile.name, localFile, targetFolderId)
+                        downloadCount++
+                    }
+
+                    // Special case: if this is the latest DB or its associates, also ensure it's in /databases
+                    if (latestDbFile != null && driveFile.name.startsWith(
+                            latestDbFile.name.removeSuffix(
+                                ".db"
+                            )
+                        )
+                    ) {
+                        val internalFile = File(dbDir, driveFile.name)
+                        if (!internalFile.exists()) {
+                            showProgress("Syncing ${driveFile.name} to app...")
+                            helper.downloadBinaryFile(driveFile.name, internalFile, targetFolderId)
+                        }
+                    }
+                }
+            }
+
+            if (downloadCount > 0) {
+                Log.d(TAG, "Downloaded $downloadCount new files to ${externalDir.absolutePath}")
+                setResult(RESULT_OK)
+                Toast.makeText(
+                    this@SyncActivity,
+                    "Downloaded $downloadCount files to storage",
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                Toast.makeText(
+                    this@SyncActivity,
+                    "Local backups are already up to date.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            mDocContentEditText?.setText("Files stored in: ${externalDir.absolutePath}")
+
+        } catch (e: Exception) {
+            handleError("Failed to download backups", e)
+        } finally {
+            hideProgress()
         }
     }
 
@@ -247,6 +253,7 @@ class SyncActivity : AppCompatActivity() {
                     TAG,
                     "Successfully uploaded database file as $driveFileName and associated files to Apps folder."
                 )
+                setResult(RESULT_OK)
                 Toast.makeText(
                     this@SyncActivity,
                     "Database upload successful: $driveFileName",
@@ -262,13 +269,12 @@ class SyncActivity : AppCompatActivity() {
     }
 
     /**
-     * Update function:
-     * 1. Keeps only the 3 most recent backups on Google Drive (deletes others).
-     * 2. Keeps only the 3 most recent backups in local storage (deletes others).
-     * 3. Syncs the absolute latest from Drive if not present locally.
+     * Update function (Sync):
+     * 1. Downloads all backups from Google Drive.
+     * 2. Keeps only the 3 most recent backups on Google Drive (deletes others).
+     * 3. Keeps only the 3 most recent backups in local storage (deletes others).
      */
     fun testUpdate() {
-        showProgress("Cleaning up old backups...")
         lifecycleScope.launch {
             try {
                 val helper = mDriveServiceHelper ?: run {
@@ -278,7 +284,11 @@ class SyncActivity : AppCompatActivity() {
 
                 val targetFolderId = getTargetFolderId(helper)
 
-                // 1. Clean up Google Drive: Keep only 3 latest
+                // 1. Download all backups first
+                performDownload(helper, targetFolderId)
+
+                // 2. Clean up Google Drive: Keep only 3 latest
+                showProgress("Cleaning up old backups...")
                 val driveFileList = helper.queryFiles(targetFolderId)
                 val driveBackups = driveFileList.files
                     ?.filter { it.name.startsWith("pay_") && it.name.endsWith(".db") }
@@ -299,7 +309,7 @@ class SyncActivity : AppCompatActivity() {
                     }
                 }
 
-                // 2. Clean up Local Storage: Keep only 3 latest
+                // 3. Clean up Local Storage: Keep only 3 latest
                 val dbDir = File(applicationInfo.dataDir, "databases")
                 val localBackups = dbDir.listFiles { _, name ->
                     name.startsWith("pay_") && name.endsWith(".db")
@@ -318,13 +328,10 @@ class SyncActivity : AppCompatActivity() {
 
                 Toast.makeText(
                     this@SyncActivity,
-                    "Cleanup complete. Syncing latest...",
+                    "Sync and Cleanup complete.",
                     Toast.LENGTH_SHORT
                 ).show()
-
-                // 3. Proceed to sync the latest file
-                hideProgress()
-                testDownload()
+                setResult(RESULT_OK)
 
             } catch (e: Exception) {
                 handleError("Update failed", e)

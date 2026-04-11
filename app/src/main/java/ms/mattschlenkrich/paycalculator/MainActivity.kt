@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
@@ -53,6 +54,14 @@ class MainActivity : AppCompatActivity() {
     lateinit var workTimeViewModel: WorkTimeViewModel
     lateinit var topMenuBar: Toolbar
 //    private val df = DateFunctions()
+
+    private val syncLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            recreate()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -167,7 +176,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun gotoSync() {
         val intent = Intent(this, SyncActivity::class.java)
-        startActivity(intent)
+        syncLauncher.launch(intent)
     }
 
     private fun gotoAreasView() {

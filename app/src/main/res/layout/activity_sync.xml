@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:padding="8dp">
 
     <!-- File Title Input -->
@@ -22,14 +24,31 @@
         android:id="@+id/doc_content_edittext"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="#F5F5F5"
+        android:fontFamily="monospace"
         android:gravity="top"
         android:hint="@string/enter_document_content"
         android:importantForAutofill="no"
         android:inputType="textMultiLine"
-        app:layout_constraintBottom_toTopOf="@+id/error_scrollview"
+        android:padding="8dp"
+        android:scrollbars="vertical"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/sync_progressbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/file_title_edittext" />
+
+    <ProgressBar
+        android:id="@+id/sync_progressbar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:max="26"
+        android:progress="0"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/error_scrollview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <!-- Error Display with ScrollView -->
     <ScrollView
@@ -69,6 +88,29 @@
             android:orientation="horizontal">
 
             <Button
+                android:id="@+id/update_button"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/sync" />
+
+            <Button
+                android:id="@+id/return_button"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/return_text" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
                 android:id="@+id/query_btn"
                 style="?attr/buttonBarButtonStyle"
                 android:layout_width="0dp"
@@ -92,29 +134,6 @@
                 android:layout_weight="1"
                 android:text="@string/download" />
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/update_button"
-                style="?attr/buttonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/update" />
-
-            <Button
-                android:id="@+id/return_button"
-                style="?attr/buttonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/return_text" />
-        </LinearLayout>
-
     </LinearLayout>
 
     <!-- Progress Overlay -->

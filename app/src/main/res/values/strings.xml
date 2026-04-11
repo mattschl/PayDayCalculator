@@ -452,6 +452,7 @@
     <string name="update_work_performed_description">Update Work Performed description</string>
     <string name="update_work_performed_on">"Update Work Performed on "</string>
     <string name="update_work_time">Update Work Time</string>
+    <string name="sync">Sync</string>
     <string name="update">"Update"</string>
     <string name="upper_limit_">Upper Limit: </string>
     <string name="upper_limit">Upper Limit </string>
