@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
@@ -22,17 +23,15 @@ import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
-import ms.mattschlenkrich.paycalculator.data.Employers
-import ms.mattschlenkrich.paycalculator.data.PayPeriods
-import ms.mattschlenkrich.paycalculator.data.WorkDates
 import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.data.Employers
 import ms.mattschlenkrich.paycalculator.data.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.PayDayViewModel
+import ms.mattschlenkrich.paycalculator.data.PayPeriods
+import ms.mattschlenkrich.paycalculator.data.WorkDates
 import ms.mattschlenkrich.paycalculator.databinding.FragmentTimeSheetBinding
 import ms.mattschlenkrich.paycalculator.logic.PayCalculationsAsync
 import ms.mattschlenkrich.paycalculator.logic.PayDateProjections
-import ms.mattschlenkrich.paycalculator.MainActivity
-import ms.mattschlenkrich.paycalculator.timesheet.WorkDateAdapter
 import java.time.LocalDate
 
 //private const val TAG = FRAG_TIME_SHEET
@@ -75,26 +74,32 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        populateEmployers()
-        setClickActions()
-        populateFromHistory()
+        if (populateEmployers()) {
+            setClickActions()
+            populateFromHistory()
+        }
     }
 
-    private fun populateEmployers() {
+    private fun populateEmployers(): Boolean {
         val employerAdapter = ArrayAdapter<String>(
             mView.context, R.layout.spinner_item_bold
         )
         val employerList = employerViewModel.employerLogicViewModel.getEmployerList()
-        employerList.listIterator().forEach {
-            employerAdapter.add(it.employerName)
-        }
         if (employerList.isEmpty()) {
-            gotoEmployerAdd()
+            mView.findNavController().navigate(
+                TimeSheetFragmentDirections.actionTimeSheetFragmentToEmployerAddFragment()
+            )
+            return false
         } else {
+
+            employerList.listIterator().forEach {
+                employerAdapter.add(it.employerName)
+            }
             curEmployer = employerList.first()
+            employerAdapter.add(getString(R.string.add_new_employer))
+            binding.spEmployers.adapter = employerAdapter
+            return true
         }
-        employerAdapter.add(getString(R.string.add_new_employer))
-        binding.spEmployers.adapter = employerAdapter
     }
 
     private fun setClickActions() {
@@ -143,15 +148,17 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
     }
 
     private fun generateNewCutOff() {
+        val employer = curEmployer ?: return
         val nextCutOff = projections.generateNextCutOff(
-            curEmployer!!,
+            employer,
             if (cutOffs.isEmpty()) "" else cutOffs[0]
         )
+        if (nextCutOff.isEmpty()) return
         payDayViewModel.insertPayPeriod(
             PayPeriods(
                 nf.generateRandomIdAsLong(),
                 nextCutOff,
-                curEmployer!!.employerId,
+                employer.employerId,
                 false,
                 df.getCurrentTimeAsString()
             )
@@ -409,15 +416,20 @@ class TimeSheetFragment : Fragment(R.layout.fragment_time_sheet), ITimeSheetFrag
         }
     }
 
-    private fun getSelectedPayPeriod(): PayPeriods {
+    private fun getSelectedPayPeriod(): PayPeriods? {
+        val employer = curEmployer ?: return null
         binding.apply {
             if (curPayPeriod == null) {
                 generateNewCutOff()
             }
+            val selectedItem = spCutOff.selectedItem?.toString() ?: return null
+            if (selectedItem == getString(R.string.generate_a_new_cut_off)) {
+                return null
+            }
             return PayPeriods(
                 nf.generateRandomIdAsLong(),
-                spCutOff.selectedItem.toString(),
-                curEmployer!!.employerId,
+                selectedItem,
+                employer.employerId,
                 false,
                 df.getCurrentTimeAsString()
             )

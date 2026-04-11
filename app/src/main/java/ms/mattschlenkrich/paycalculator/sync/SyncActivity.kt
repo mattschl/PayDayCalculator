@@ -33,6 +33,7 @@ import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.FileList
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.data.PayDatabase
 import java.io.File
 import java.io.FileNotFoundException
 import java.security.MessageDigest
@@ -55,6 +56,7 @@ class SyncActivity : AppCompatActivity() {
 
     private var mProgressOverlay: View? = null
     private var mProgressText: TextView? = null
+    private var mSyncProgressBar: android.widget.ProgressBar? = null
     private var mErrorTextView: TextView? = null
     private var mErrorScrollView: View? = null
 
@@ -72,6 +74,7 @@ class SyncActivity : AppCompatActivity() {
 
         mProgressOverlay = findViewById(R.id.progress_overlay)
         mProgressText = findViewById(R.id.progress_text)
+        mSyncProgressBar = findViewById(R.id.sync_progressbar)
         mErrorTextView = findViewById(R.id.error_textview)
         mErrorScrollView = findViewById(R.id.error_scrollview)
 
@@ -135,54 +138,39 @@ class SyncActivity : AppCompatActivity() {
                 return
             }
 
-            // 2. Define target directories
-            val externalDir = getExternalFilesDir(null) ?: filesDir
+            // 2. Define target directory
             val dbDir = File(applicationInfo.dataDir, "databases")
-
-            if (!externalDir.exists()) externalDir.mkdirs()
             if (!dbDir.exists()) dbDir.mkdirs()
 
-            // 3. Find the latest for internal sync
-            val latestDbFile = driveFiles
+            // 3. Find all database files, sorted oldest to newest
+            val dbFiles = driveFiles
                 .filter { it.name.startsWith("pay_") && it.name.endsWith(".db") }
-                .maxByOrNull { it.name }
+                .sortedBy { it.name } // Oldest first
 
             var downloadCount = 0
 
-            // 4. Download all matching files to external storage
-            for (driveFile in driveFiles) {
-                if (driveFile.name.startsWith("pay_")) {
-                    val localFile = File(externalDir, driveFile.name)
-
-                    // Download to /files if not already there
-                    if (!localFile.exists()) {
-                        showProgress("Downloading ${driveFile.name} to storage...")
-                        helper.downloadBinaryFile(driveFile.name, localFile, targetFolderId)
-                        downloadCount++
-                    }
-
-                    // Special case: if this is the latest DB or its associates, also ensure it's in /databases
-                    if (latestDbFile != null && driveFile.name.startsWith(
-                            latestDbFile.name.removeSuffix(
-                                ".db"
-                            )
-                        )
-                    ) {
+            // 4. Download all database files and their associates to /databases
+            for (dbFile in dbFiles) {
+                val prefix = dbFile.name.removeSuffix(".db")
+                for (driveFile in driveFiles) {
+                    if (driveFile.name.startsWith(prefix)) {
                         val internalFile = File(dbDir, driveFile.name)
                         if (!internalFile.exists()) {
-                            showProgress("Syncing ${driveFile.name} to app...")
+                            showProgress("Downloading ${driveFile.name} to app...")
                             helper.downloadBinaryFile(driveFile.name, internalFile, targetFolderId)
+                            downloadCount++
                         }
                     }
                 }
             }
 
             if (downloadCount > 0) {
-                Log.d(TAG, "Downloaded $downloadCount new files to ${externalDir.absolutePath}")
+                Log.d(TAG, "Downloaded $downloadCount new files to ${dbDir.absolutePath}")
                 setResult(RESULT_OK)
+                PayDatabase.resetInstance()
                 Toast.makeText(
                     this@SyncActivity,
-                    "Downloaded $downloadCount files to storage",
+                    "Downloaded $downloadCount files to app storage",
                     Toast.LENGTH_LONG
                 ).show()
             } else {
@@ -193,7 +181,7 @@ class SyncActivity : AppCompatActivity() {
                 ).show()
             }
 
-            mDocContentEditText?.setText("Files stored in: ${externalDir.absolutePath}")
+            mDocContentEditText?.setText("Files stored in: ${dbDir.absolutePath}")
 
         } catch (e: Exception) {
             handleError("Failed to download backups", e)
@@ -212,6 +200,9 @@ class SyncActivity : AppCompatActivity() {
                 }
 
                 val targetFolderId = getTargetFolderId(helper)
+
+                // Ensure all WAL data is committed to the main DB file
+                PayDatabase.checkpoint(this@SyncActivity)
 
                 // The database is located in the app's custom databases directory: /data/data/<package>/databases/
                 val dbDir = File(applicationInfo.dataDir, "databases")
@@ -271,8 +262,10 @@ class SyncActivity : AppCompatActivity() {
     /**
      * Update function (Sync):
      * 1. Downloads all backups from Google Drive.
-     * 2. Keeps only the 3 most recent backups on Google Drive (deletes others).
-     * 3. Keeps only the 3 most recent backups in local storage (deletes others).
+     * 2. Analyzes the latest backup and provides a summary of new records.
+     * 3. Keeps only the 3 most recent backups on Google Drive (deletes others).
+     * 4. Keeps only the 3 most recent backups in local storage (deletes others).
+     * 5. Uploads a fresh backup of the merged database to Google Drive.
      */
     fun testUpdate() {
         lifecycleScope.launch {
@@ -287,7 +280,53 @@ class SyncActivity : AppCompatActivity() {
                 // 1. Download all backups first
                 performDownload(helper, targetFolderId)
 
-                // 2. Clean up Google Drive: Keep only 3 latest
+                // 2. Analyze and merge each downloaded backup in chronological order
+                val dbDir = File(applicationInfo.dataDir, "databases")
+                val localBackups = dbDir.listFiles { _, name ->
+                    name.startsWith("pay_") && name.endsWith(".db")
+                }?.sortedBy { it.name } ?: emptyList()
+
+                if (localBackups.isNotEmpty()) {
+                    val summaryBuilder = StringBuilder("Sync Analysis Complete:\n\n")
+                    for (localDb in localBackups) {
+                        showProgress("Analyzing ${localDb.name}...")
+                        val mergeHelper = MergeHelper(this@SyncActivity, localDb.absolutePath)
+
+                        showProgress("Applying changes from ${localDb.name}...")
+                        mSyncProgressBar?.visibility = View.VISIBLE
+                        val summary = mergeHelper.applySync { progress, total ->
+                            runOnUiThread {
+                                mSyncProgressBar?.max = total
+                                mSyncProgressBar?.progress = progress
+                                mProgressText?.text =
+                                    "Syncing ${localDb.name}: table ${progress + 1} of $total..."
+                            }
+                        }
+                        summaryBuilder.append("Results for ${localDb.name}:\n$summary\n\n")
+                    }
+
+                    mSyncProgressBar?.visibility = View.GONE
+                    mDocContentEditText?.setText(summaryBuilder.toString())
+                    Log.d(TAG, "Sync Result: ${summaryBuilder.toString()}")
+
+                    // Clean up local storage: delete all backup files used for sync
+                    showProgress("Cleaning up local backups...")
+                    for (localDb in localBackups) {
+                        Log.d(TAG, "Deleting processed local backup: ${localDb.name}")
+                        localDb.delete()
+                        File(localDb.absolutePath + "-wal").delete()
+                        File(localDb.absolutePath + "-shm").delete()
+                    }
+
+                    // Notify Room that the database has changed and reset the instance
+                    val db = PayDatabase(this@SyncActivity)
+                    db.invalidationTracker.refreshVersionsAsync()
+                    PayDatabase.resetInstance()
+                } else {
+                    mDocContentEditText?.setText("No backups found to sync.")
+                }
+
+                // 3. Clean up Google Drive: Keep only 3 latest
                 showProgress("Cleaning up old backups...")
                 val driveFileList = helper.queryFiles(targetFolderId)
                 val driveBackups = driveFileList.files
@@ -309,26 +348,44 @@ class SyncActivity : AppCompatActivity() {
                     }
                 }
 
-                // 3. Clean up Local Storage: Keep only 3 latest
-                val dbDir = File(applicationInfo.dataDir, "databases")
-                val localBackups = dbDir.listFiles { _, name ->
-                    name.startsWith("pay_") && name.endsWith(".db")
-                }?.sortedByDescending { it.name } ?: emptyList()
+                // 4. Local storage was already cleaned up above after sync.
 
-                if (localBackups.size > 3) {
-                    val toDeleteLocal = localBackups.drop(3)
-                    for (file in toDeleteLocal) {
-                        Log.d(TAG, "Deleting old local backup: ${file.name}")
-                        file.delete()
-                        // Delete associated wal/shm if present
-                        File(file.absolutePath + "-wal").delete()
-                        File(file.absolutePath + "-shm").delete()
+                // 5. Upload a fresh backup of the merged database
+                showProgress("Creating fresh backup...")
+                // Flush WAL to disk
+                PayDatabase.checkpoint(this@SyncActivity)
+
+                val dbFile = File(dbDir, "pay.db")
+                if (dbFile.exists()) {
+                    val timestamp =
+                        SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                    val driveFileName = "pay_${timestamp}_merged.db"
+
+                    showProgress("Uploading $driveFileName...")
+                    helper.uploadFile(
+                        localFile = dbFile,
+                        mimeType = "application/x-sqlite3",
+                        driveFileName = driveFileName,
+                        folderId = targetFolderId
+                    )
+
+                    // Also upload .db-wal and .db-shm files if they exist
+                    listOf("-wal", "-shm").forEach { suffix ->
+                        val walShmFile = File(dbDir, "pay.db$suffix")
+                        if (walShmFile.exists()) {
+                            helper.uploadFile(
+                                localFile = walShmFile,
+                                mimeType = "application/octet-stream",
+                                driveFileName = "$driveFileName$suffix",
+                                folderId = targetFolderId
+                            )
+                        }
                     }
                 }
 
                 Toast.makeText(
                     this@SyncActivity,
-                    "Sync and Cleanup complete.",
+                    "Sync, Cleanup, and Backup complete.",
                     Toast.LENGTH_SHORT
                 ).show()
                 setResult(RESULT_OK)

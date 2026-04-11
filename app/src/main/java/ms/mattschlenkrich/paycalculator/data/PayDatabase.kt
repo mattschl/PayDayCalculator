@@ -67,6 +67,27 @@ abstract class PayDatabase : RoomDatabase() {
                 }
             }
 
+        fun resetInstance() {
+            synchronized(LOCK) {
+                instance?.close()
+                instance = null
+            }
+        }
+
+        fun checkpoint(context: Context) {
+            synchronized(LOCK) {
+                try {
+                    val db = instance ?: invoke(context)
+                    db.openHelper.writableDatabase.query(
+                        "PRAGMA wal_checkpoint(FULL)",
+                        emptyArray()
+                    ).close()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
         private fun createDatabase(context: Context): PayDatabase {
             return Room.databaseBuilder(
                 context.applicationContext,
