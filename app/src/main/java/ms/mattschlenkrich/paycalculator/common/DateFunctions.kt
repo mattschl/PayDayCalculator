@@ -171,4 +171,24 @@ class DateFunctions {
         roundCalendarTimeTo15Minutes(tempTime)
         return tempTime
     }
+
+    fun showDatePicker(
+        context: android.content.Context,
+        initialDate: String,
+        onDateSelected: (String) -> Unit
+    ) {
+        val curDateAll = initialDate.split("-")
+        val datePickerDialog = android.app.DatePickerDialog(
+            context, { _, year, monthOfYear, dayOfMonth ->
+                val month = monthOfYear + 1
+                val display = "$year-${
+                    month.toString().padStart(2, '0')
+                }-${
+                    dayOfMonth.toString().padStart(2, '0')
+                }"
+                onDateSelected(display)
+            }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
+        )
+        datePickerDialog.show()
+    }
 }

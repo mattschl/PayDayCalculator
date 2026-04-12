@@ -2,177 +2,103 @@ package ms.mattschlenkrich.paycalculator.tax
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.core.view.MenuProvider
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_TAX_RULES
 import ms.mattschlenkrich.paycalculator.common.FRAG_TAX_TYPE
-import ms.mattschlenkrich.paycalculator.common.TaxBasedOn
-import ms.mattschlenkrich.paycalculator.data.TaxTypes
 import ms.mattschlenkrich.paycalculator.data.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.TaxTypes
 import ms.mattschlenkrich.paycalculator.data.WorkTaxViewModel
-import ms.mattschlenkrich.paycalculator.databinding.FragmentTaxTypeUpdateBinding
-import ms.mattschlenkrich.paycalculator.MainActivity
 
-class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
+class TaxTypeUpdateFragment : Fragment() {
 
-    private var _binding: FragmentTaxTypeUpdateBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var workTaxViewModel: WorkTaxViewModel
-    private lateinit var taxTypeList: List<TaxTypes>
-    private lateinit var curTaxType: TaxTypes
     private val df = DateFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentTaxTypeUpdateBinding.inflate(inflater, container, false)
-        mView = binding.root
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workTaxViewModel = mainActivity.workTaxViewModel
-        mainActivity.topMenuBar.title = getString(R.string.update_tax_type)
-        return mView
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        populateValues()
-        setClickActions()
-    }
-
-    private fun populateValues() {
-        populateSpinner()
-        populateTaxTypeListForValidation()
-        if (mainViewModel.getTaxType() != null) {
-            curTaxType = mainViewModel.getTaxType()!!
-            binding.apply {
-                etTaxType.setText(curTaxType.taxType)
-                spBasedOn.setSelection(curTaxType.ttBasedOn)
+        return ComposeView(requireContext()).apply {
+            setContent {
+                TaxTypeUpdateScreen()
             }
         }
     }
 
-    private fun populateSpinner() {
-        binding.apply {
-            val basedOnAdapter = ArrayAdapter(
-                mView.context,
-                R.layout.spinner_item_bold,
-                TaxBasedOn.entries
-            )
-            basedOnAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
-            spBasedOn.adapter = basedOnAdapter
-        }
-    }
+    @Composable
+    fun TaxTypeUpdateScreen() {
+        val curTaxType = mainViewModel.getTaxType() ?: return
 
-    private fun populateTaxTypeListForValidation() {
-        workTaxViewModel.getTaxTypes().observe(viewLifecycleOwner) { taxTypes ->
-            taxTypeList = taxTypes
-        }
-    }
+        var taxTypeState by remember { mutableStateOf(curTaxType.taxType) }
+        var selectedBasedOn by remember { mutableIntStateOf(curTaxType.ttBasedOn) }
 
-    private fun setClickActions() {
-        setMenuActions()
-        binding.apply {
-            fabDone.setOnClickListener {
-                updateWorkTaxTypeIfValid()
-            }
-        }
-    }
+        val taxTypeList by workTaxViewModel.getTaxTypes().observeAsState(emptyList())
 
-    private fun setMenuActions() {
-        mainActivity.topMenuBar.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.menu_delete, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_delete -> {
-                        deleteTaxType()
-                        true
-                    }
-
-                    else -> {
-                        false
-                    }
+        TaxTypeScreen(
+            taxType = taxTypeState,
+            onTaxTypeChange = { taxTypeState = it },
+            selectedBasedOn = selectedBasedOn,
+            onBasedOnChange = { selectedBasedOn = it },
+            title = getString(R.string.update_tax_type),
+            onSaveClick = {
+                val message = validateTaxType(taxTypeState, curTaxType, taxTypeList)
+                if (message == ANSWER_OK) {
+                    val updatedTaxType = curTaxType.copy(
+                        taxType = taxTypeState,
+                        ttBasedOn = selectedBasedOn,
+                        ttUpdateTime = df.getCurrentTimeAsString()
+                    )
+                    workTaxViewModel.updateWorkTaxType(updatedTaxType)
+                    gotoTaxTypes()
+                } else {
+                    displayError(getString(R.string.error_) + message)
                 }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.CREATED)
-    }
-
-    private fun deleteTaxType() {
-        workTaxViewModel.updateWorkTaxType(
-            TaxTypes(
-                curTaxType.taxTypeId,
-                curTaxType.taxType,
-                curTaxType.ttBasedOn,
-                true,
-                df.getCurrentTimeAsString()
-            )
+            },
+            onDeleteClick = {
+                val deletedTaxType = curTaxType.copy(
+                    ttIsDeleted = true,
+                    ttUpdateTime = df.getCurrentTimeAsString()
+                )
+                workTaxViewModel.updateWorkTaxType(deletedTaxType)
+                gotoTaxTypes()
+            },
+            onBackClick = { findNavController().navigateUp() }
         )
-        gotoTaxTypes()
     }
 
-    private fun updateWorkTaxTypeIfValid() {
-        val message = validateTaxType()
-        if (message == ANSWER_OK) {
-            updateWorkTaxType()
-            gotoTaxTypes()
-        } else {
-            displayError(getString(R.string.error_) + message)
+    private fun validateTaxType(name: String, cur: TaxTypes, list: List<TaxTypes>): String {
+        if (name.isBlank()) {
+            return getString(R.string.the_tax_type_must_have_a_name)
         }
+        if (list.any { it.taxType == name.trim() && it.taxType != cur.taxType }) {
+            return getString(R.string.this_tax_type_already_exists)
+        }
+        return ANSWER_OK
     }
 
     private fun displayError(message: String) {
-        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
-    }
-
-    private fun validateTaxType(): String {
-        binding.apply {
-            if (etTaxType.text.isNullOrBlank()) {
-                getString(R.string.the_tax_type_must_have_a_name)
-            }
-            if (taxTypeList.isNotEmpty()) {
-                for (taxType in taxTypeList) {
-                    if (taxType.taxType == etTaxType.text.toString() && taxType.taxType != curTaxType.taxType) {
-                        return getString(R.string.this_tax_type_already_exists)
-                    }
-
-                }
-            }
-            return ANSWER_OK
-        }
-    }
-
-    private fun getCurrentTaxType(): TaxTypes {
-        binding.apply {
-            return TaxTypes(
-                curTaxType.taxTypeId,
-                etTaxType.text.toString(),
-                spBasedOn.selectedItemPosition,
-                false,
-                df.getCurrentTimeAsString()
-            )
-        }
-    }
-
-    private fun updateWorkTaxType() {
-        mainActivity.workTaxViewModel.updateWorkTaxType(getCurrentTaxType())
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 
     private fun gotoTaxTypes() {
@@ -181,31 +107,23 @@ class TaxTypeUpdateFragment : Fragment(R.layout.fragment_tax_type_update) {
     }
 
     private fun gotoCallingFragment() {
-        mainViewModel.apply {
-            if (getCallingFragment()!!.contains(FRAG_TAX_TYPE)) {
-                gotoTaxTypesFragment()
-            }
-            if (getCallingFragment()!!.contains(FRAG_TAX_RULES)) {
-                gotoTaxRulesFragment()
-            }
+        val callingFragment = mainViewModel.getCallingFragment() ?: return
+        if (callingFragment.contains(FRAG_TAX_TYPE)) {
+            gotoTaxTypesFragment()
+        } else if (callingFragment.contains(FRAG_TAX_RULES)) {
+            gotoTaxRulesFragment()
         }
     }
 
     private fun gotoTaxRulesFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             TaxTypeUpdateFragmentDirections.actionTaxTypeUpdateFragmentToTaxRulesFragment()
         )
     }
 
     private fun gotoTaxTypesFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             TaxTypeUpdateFragmentDirections.actionTaxTypeUpdateFragmentToTaxTypeFragment()
         )
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
-
 }

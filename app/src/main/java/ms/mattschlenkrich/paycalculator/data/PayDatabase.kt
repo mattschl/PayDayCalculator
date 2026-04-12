@@ -74,14 +74,11 @@ abstract class PayDatabase : RoomDatabase() {
             }
         }
 
-        fun checkpoint(context: Context) {
+        suspend fun checkpoint(context: Context) {
             synchronized(LOCK) {
                 try {
                     val db = instance ?: invoke(context)
-                    db.openHelper.writableDatabase.query(
-                        "PRAGMA wal_checkpoint(FULL)",
-                        emptyArray()
-                    ).close()
+                    db.query("PRAGMA wal_checkpoint(FULL)", null).close()
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

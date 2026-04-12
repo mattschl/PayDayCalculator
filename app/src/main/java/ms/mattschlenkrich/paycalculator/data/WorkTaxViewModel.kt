@@ -3,12 +3,8 @@ package ms.mattschlenkrich.paycalculator.data
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ms.mattschlenkrich.paycalculator.data.EmployerTaxTypes
-import ms.mattschlenkrich.paycalculator.data.TaxEffectiveDates
-import ms.mattschlenkrich.paycalculator.data.TaxTypes
-import ms.mattschlenkrich.paycalculator.data.WorkTaxRules
-import ms.mattschlenkrich.paycalculator.data.WorkTaxRepository
 
 class WorkTaxViewModel(
     app: Application,
@@ -19,6 +15,25 @@ class WorkTaxViewModel(
         viewModelScope.launch {
             workTaxRepository.insertTaxType(workTaxType)
         }
+
+    fun insertTaxTypeWithEmployerLinks(
+        taxType: TaxTypes,
+        employers: List<Employers>,
+        currentTime: String
+    ) = viewModelScope.launch(Dispatchers.IO) {
+        workTaxRepository.insertTaxType(taxType)
+        employers.forEach { employer ->
+            workTaxRepository.insertEmployerTaxType(
+                EmployerTaxTypes(
+                    etrEmployerId = employer.employerId,
+                    etrTaxType = taxType.taxType,
+                    etrInclude = false,
+                    etrIsDeleted = false,
+                    etrUpdateTime = currentTime
+                )
+            )
+        }
+    }
 
     fun updateWorkTaxType(workTaxType: TaxTypes) =
         viewModelScope.launch {
@@ -58,6 +73,11 @@ class WorkTaxViewModel(
     fun insertEmployerTaxType(employerTaxTypes: EmployerTaxTypes) =
         viewModelScope.launch {
             workTaxRepository.insertEmployerTaxType(employerTaxTypes)
+        }
+
+    fun updateEmployerTaxType(employerTaxTypes: EmployerTaxTypes) =
+        viewModelScope.launch(Dispatchers.IO) {
+            workTaxRepository.updateEmployerTaxType(employerTaxTypes)
         }
 
     fun updateEmployerTaxIncluded(

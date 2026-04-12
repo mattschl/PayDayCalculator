@@ -45,6 +45,7 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <EditText
+            android:selectAllOnFocus="true"
             android:id="@+id/etName"
             android:layout_width="@dimen/text_box_wide"
             android:layout_height="@dimen/minimum_touch_height"

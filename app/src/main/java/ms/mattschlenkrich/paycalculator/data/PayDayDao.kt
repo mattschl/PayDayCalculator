@@ -40,6 +40,14 @@ interface PayDayDao {
     fun getPayPeriod(cutOff: String, employerId: Long): LiveData<PayPeriods>
 
     @Query(
+        "SELECT * FROM payPeriods " +
+                "WHERE ppCutoffDate = :cutOff " +
+                "AND ppEmployerId = :employerId " +
+                "AND ppIsDeleted = 0"
+    )
+    suspend fun getPayPeriodSync(cutOff: String, employerId: Long): PayPeriods?
+
+    @Query(
         "SELECT * FROM $TABLE_WORK_DATES " +
                 "WHERE wdEmployerId = :employerId " +
                 "AND wdCutoffDate = :cutOff " +

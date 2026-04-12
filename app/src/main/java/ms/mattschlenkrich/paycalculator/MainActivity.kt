@@ -4,11 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import ms.mattschlenkrich.paycalculator.data.EmployerRepository
 import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
@@ -67,6 +70,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -91,38 +95,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun fillBottomNavAndActions() {
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_container) as NavHostFragment
+        val navController = navHostFragment.navController
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
-        bottomNav.setOnItemSelectedListener {
-            when (it.itemId) {
-                R.id.nav_time_sheet -> {
-                    gotoTimeSheet()
-                    true
-                }
+        bottomNav.setupWithNavController(navController)
 
-                R.id.nav_pay_details -> {
-                    gotoPayDetails()
-                    true
-                }
-
-                R.id.nav_employer_view -> {
-                    gotoEmployer()
-                    true
-                }
-
-                R.id.nav_tax_rules -> {
-                    gotoTaxRules()
-                    true
-                }
-
-                R.id.nav_extras -> {
-                    gotoExtras()
-                    true
-                }
-
-                else -> {
-                    false
-                }
-            }
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            topMenuBar.title = destination.label
         }
     }
 

@@ -1,81 +1,253 @@
 package ms.mattschlenkrich.paycalculator.tax
 
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import androidx.navigation.fragment.findNavController
 import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.FRAG_TAX_RULES
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.common.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.common.SimpleDropdownField
+import ms.mattschlenkrich.paycalculator.common.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.common.TaxBasedOn
-import ms.mattschlenkrich.paycalculator.common.WAIT_1000
-import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.data.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.TaxEffectiveDates
+import ms.mattschlenkrich.paycalculator.data.TaxTypes
 import ms.mattschlenkrich.paycalculator.data.WorkTaxRules
 import ms.mattschlenkrich.paycalculator.data.WorkTaxViewModel
-import ms.mattschlenkrich.paycalculator.databinding.FragmentTaxRulesBinding
 
 private const val TAG = FRAG_TAX_RULES
 
-class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
+class TaxRulesFragment : Fragment() {
 
-    private var _binding: FragmentTaxRulesBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var workTaxViewModel: WorkTaxViewModel
     private val df = DateFunctions()
-    private val cf = NumberFunctions()
-    private val mainScope = CoroutineScope(Dispatchers.Main)
+    private val nf = NumberFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentTaxRulesBinding.inflate(
-            inflater, container, false
-        )
-        mView = binding.root
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workTaxViewModel = mainActivity.workTaxViewModel
-        mainActivity.topMenuBar.title = getString(R.string.view_universal_tax_rules)
-        return mView
+
+        return ComposeView(requireContext()).apply {
+            setContent {
+                TaxRulesScreen()
+            }
+        }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        populateValues()
-        setClickActions()
-    }
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun TaxRulesScreen() {
+        val taxTypes by workTaxViewModel.getTaxTypes().observeAsState(emptyList())
+        val effectiveDates by workTaxViewModel.getTaxEffectiveDates().observeAsState(emptyList())
 
+        var selectedTaxType by remember {
+            mutableStateOf<TaxTypes?>(
+                taxTypes.find { it.taxType == mainViewModel.getTaxTypeString() }
+                    ?: taxTypes.firstOrNull()
+            )
+        }
 
-    private fun populateValues() {
-        populateTaxTypes()
-        populateEffectiveDates()
-        mainScope.launch {
-            delay(WAIT_1000)
-            binding.apply {
-                if (mainViewModel.getTaxTypeString() != null) {
-                    for (i in 0 until spTaxType.adapter.count) {
-                        if (spTaxType.getItemAtPosition(i) == mainActivity.mainViewModel.getTaxTypeString()!!) {
-                            spTaxType.setSelection(i)
-                            break
+        // Update selectedTaxType when taxTypes finishes loading if nothing was selected yet
+        if (selectedTaxType == null && taxTypes.isNotEmpty()) {
+            selectedTaxType =
+                taxTypes.find { it.taxType == mainViewModel.getTaxTypeString() } ?: taxTypes.first()
+        }
+
+        var selectedEffectiveDate by remember {
+            mutableStateOf<TaxEffectiveDates?>(
+                effectiveDates.find { it.tdEffectiveDate == mainViewModel.getEffectiveDateString() }
+                    ?: effectiveDates.firstOrNull()
+            )
+        }
+
+        // Same for effectiveDates
+        if (selectedEffectiveDate == null && effectiveDates.isNotEmpty()) {
+            selectedEffectiveDate =
+                effectiveDates.find { it.tdEffectiveDate == mainViewModel.getEffectiveDateString() }
+                    ?: effectiveDates.first()
+        }
+
+        val taxRules by if (selectedTaxType != null && selectedEffectiveDate != null) {
+            workTaxViewModel.getTaxRules(
+                selectedTaxType!!.taxType,
+                selectedEffectiveDate!!.tdEffectiveDate
+            ).observeAsState(emptyList())
+        } else {
+            remember { mutableStateOf(emptyList<WorkTaxRules>()) }
+        }
+
+        Scaffold(
+            topBar = {
+                StandardTopAppBar(
+                    title = stringResource(R.string.view_universal_tax_rules)
+                )
+            },
+            floatingActionButton = {
+                FloatingActionButton(onClick = {
+                    if (selectedTaxType != null && selectedEffectiveDate != null) {
+                        gotoTaxRuleAdd(
+                            selectedTaxType!!.taxType,
+                            selectedEffectiveDate!!.tdEffectiveDate,
+                            taxRules.size
+                        )
+                    }
+                }) {
+                    Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_new))
+                }
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(
+                        horizontal = SCREEN_PADDING_HORIZONTAL,
+                        vertical = SCREEN_PADDING_VERTICAL
+                    ),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Tax Type Dropdown
+                val taxTypeOptions = taxTypes + TaxTypes(
+                    -1L, stringResource(R.string.add_a_new_tax_type), 0, false, ""
+                )
+                SimpleDropdownField(
+                    label = stringResource(R.string.tax_type),
+                    items = taxTypeOptions,
+                    selectedItem = selectedTaxType ?: taxTypeOptions.last(),
+                    onItemSelected = {
+                        if (it.taxTypeId == -1L) {
+                            gotoTaxTypeAdd()
+                        } else {
+                            selectedTaxType = it
+                        }
+                    },
+                    itemToString = { it.taxType },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(ELEMENT_SPACING))
+
+                // Effective Date Dropdown
+                val dateOptions = effectiveDates + TaxEffectiveDates(
+                    stringResource(R.string.add_new_effective_date), -1L, false, ""
+                )
+                SimpleDropdownField(
+                    label = stringResource(R.string.effective_date),
+                    items = dateOptions,
+                    selectedItem = selectedEffectiveDate ?: dateOptions.last(),
+                    onItemSelected = {
+                        if (it.tdEffectiveDateId == -1L) {
+                            chooseNewEffectiveDate()
+                        } else {
+                            selectedEffectiveDate = it
+                        }
+                    },
+                    itemToString = { it.tdEffectiveDate },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(ELEMENT_SPACING))
+
+                // Summary Card
+                selectedTaxType?.let { type ->
+                    if (type.taxTypeId != -1L) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { gotoTaxTypeUpdate(type) },
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                        ) {
+                            Text(
+                                text = "${stringResource(R.string.base_on)} ${TaxBasedOn.entries[type.ttBasedOn].basedOn}",
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxWidth(),
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(ELEMENT_SPACING))
+
+                Text(
+                    text = stringResource(R.string.rates),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                if (taxRules.isEmpty()) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 32.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.no_tax_rules_to_view),
+                            modifier = Modifier.padding(32.dp),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                } else {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(taxRules) { rule ->
+                            TaxRuleItem(rule)
                         }
                     }
                 }
@@ -83,121 +255,52 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
         }
     }
 
-    private fun selectEffectiveDate() {
-        binding.apply {
-            spEffectiveDate.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
-                ) {
-                    if (spEffectiveDate.selectedItem.toString() == getString(R.string.add_new_effective_date) && spTaxType.selectedItem.toString() != getString(
-                            R.string.add_a_new_tax_type
-                        )
-                    ) {
-                        chooseNewEffectiveDate()
-                    } else {
-                        populateTaxRuleList()
-                    }
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    //not needed
-                }
-            }
-        }
-    }
-
-    private fun populateSummary() {
-        binding.apply {
-            workTaxViewModel.findTaxType(spTaxType.selectedItem.toString()).observe(
-                viewLifecycleOwner
-            ) { type ->
-                val display =
-                    "${getString(R.string.base_on)} " + TaxBasedOn.entries[type.ttBasedOn].basedOn
-                tvTaxSummary.text = display
-            }
-        }
-    }
-
-    private fun populateEffectiveDates() {
-        val dateAdapter = ArrayAdapter<Any>(
-            mView.context, R.layout.spinner_item_bold
-        )
-        workTaxViewModel.getTaxEffectiveDates().observe(viewLifecycleOwner) { dates ->
-            dateAdapter.clear()
-            dates.listIterator().forEach {
-                dateAdapter.add(it.tdEffectiveDate)
-            }
-            dateAdapter.add(getString(R.string.add_new_effective_date))
-        }
-        binding.spEffectiveDate.adapter = dateAdapter
-    }
-
-    private fun populateTaxTypes() {
-        val taxTypeAdapter = ArrayAdapter<Any>(
-            mView.context, R.layout.spinner_item_bold
-        )
-        workTaxViewModel.getTaxTypes().observe(viewLifecycleOwner) { types ->
-            taxTypeAdapter.clear()
-            types.listIterator().forEach {
-                taxTypeAdapter.add(it.taxType)
-            }
-            taxTypeAdapter.add(getString(R.string.add_a_new_tax_type))
-        }
-        binding.spTaxType.adapter = taxTypeAdapter
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private fun populateTaxRuleList() {
-        mainScope.launch {
-            delay(WAIT_250)
-            binding.apply {
-                if (spTaxType.adapter.count > 1 && spEffectiveDate.adapter.count > 1) {
-                    val taxRuleAdapter = TaxRuleAdapter(
-                        mainActivity, mView, this@TaxRulesFragment,
+    @Composable
+    fun TaxRuleItem(rule: WorkTaxRules) {
+        Card(
+            modifier = Modifier
+                .padding(4.dp)
+                .fillMaxWidth()
+                .clickable {
+                    mainViewModel.setTaxRule(rule)
+                    findNavController().navigate(
+                        TaxRulesFragmentDirections.actionTaxRulesFragmentToTaxRuleUpdateFragment()
                     )
-                    rvTaxRules.apply {
-                        layoutManager = GridLayoutManager(
-                            mView.context, 2, GridLayoutManager.VERTICAL, false
-                        )
-                        setHasFixedSize(true)
-                        adapter = taxRuleAdapter
-                    }
-                    workTaxViewModel.getTaxRules(
-                        spTaxType.selectedItem.toString(), spEffectiveDate.selectedItem.toString()
-                    ).observe(viewLifecycleOwner) { taxRules ->
-                        rvTaxRules.adapter!!.notifyDataSetChanged()
-                        taxRuleAdapter.differ.submitList(taxRules)
-                        updateUI(taxRules)
-                    }
-                } else {
-                    rvTaxRules.adapter = null
-                    updateUI(null)
+                },
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Column(modifier = Modifier.padding(8.dp)) {
+                Text(
+                    text = "${stringResource(R.string.level)} ${rule.wtLevel}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = nf.getPercentStringFromDouble(rule.wtPercent),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                if (rule.wtHasExemption) {
+                    Text(
+                        text = "${stringResource(R.string.exemption_)} ${
+                            nf.displayDollarsWithoutZeros(
+                                rule.wtExemptionAmount
+                            )
+                        }",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
-            }
-        }
-    }
-
-    private fun updateUI(workTaxRules: List<WorkTaxRules>?) {
-        binding.apply {
-            if (workTaxRules.isNullOrEmpty()) {
-                rvTaxRules.visibility = View.GONE
-                crdNoInfo.visibility = View.VISIBLE
-            } else {
-                rvTaxRules.visibility = View.VISIBLE
-                crdNoInfo.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun setClickActions() {
-        selectTaxType()
-        selectEffectiveDate()
-        binding.apply {
-            fabNew.setOnClickListener {
-                gotoTaxRuleAdd()
-            }
-            crdSummary.setOnClickListener {
-                gotoTaxTypeUpdate()
+                if (rule.wtHasBracket) {
+                    Text(
+                        text = "${stringResource(R.string.upper_limit_)} ${
+                            nf.displayDollarsWithoutZeros(
+                                rule.wtBracketAmount
+                            )
+                        }",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }
@@ -212,109 +315,39 @@ class TaxRulesFragment : Fragment(R.layout.fragment_tax_rules) {
                 }-${
                     dayOfMonth.toString().padStart(2, '0')
                 }"
-                mainActivity.workTaxViewModel.insertEffectiveDate(
+                workTaxViewModel.insertEffectiveDate(
                     TaxEffectiveDates(
-                        display, cf.generateRandomIdAsLong(), false, df.getCurrentTimeAsString()
+                        display, nf.generateRandomIdAsLong(), false, df.getCurrentTimeAsString()
                     )
                 )
-                populateTaxRuleList()
             }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
         )
         datePickerDialog.setTitle(getString(R.string.choose_a_universal_effective_date))
         datePickerDialog.show()
     }
 
-    private fun selectTaxType() {
-        binding.apply {
-            spTaxType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
-                ) {
-                    if (spTaxType.selectedItem.toString() == getString(R.string.add_a_new_tax_type)) {
-                        gotoTaxTypeAdd()
-                    } else {
-                        populateSummary()
-                        populateTaxRuleList()
-                    }
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    //not needed
-                }
-            }
-        }
-    }
-
-    private fun gotoTaxTypeUpdate() {
-        binding.apply {
-            workTaxViewModel.findTaxType(spTaxType.selectedItem.toString()).observe(
-                viewLifecycleOwner
-            ) { type ->
-                mainViewModel.setTaxType(
-                    type
-                )
-            }
-        }
+    private fun gotoTaxTypeUpdate(type: TaxTypes) {
+        mainViewModel.setTaxType(type)
         mainViewModel.setCallingFragment(TAG)
-        gotoTaxTypeUpdateFragment()
-    }
-
-    private fun gotoTaxTypeUpdateFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             TaxRulesFragmentDirections.actionTaxRulesFragmentToTaxTypeUpdateFragment()
         )
     }
 
-    private fun gotoTaxRuleAdd() {
-        binding.apply {
-            mainViewModel.setTaxTypeString(
-                spTaxType.selectedItem.toString()
-            )
-            mainViewModel.setEffectiveDateString(
-                spEffectiveDate.selectedItem.toString()
-            )
-            if (rvTaxRules.adapter != null) {
-                mainViewModel.setTaxLevel(
-                    rvTaxRules.adapter!!.itemCount
-                )
-            } else {
-                mainViewModel.setTaxLevel(0)
-            }
-            mainViewModel.addCallingFragment(TAG)
-        }
-        gotoTaxRuleAddFragment()
-    }
-
-    private fun gotoTaxRuleAddFragment() {
-        mView.findNavController().navigate(
+    private fun gotoTaxRuleAdd(taxType: String, effectiveDate: String, level: Int) {
+        mainViewModel.setTaxTypeString(taxType)
+        mainViewModel.setEffectiveDateString(effectiveDate)
+        mainViewModel.setTaxLevel(level)
+        mainViewModel.addCallingFragment(TAG)
+        findNavController().navigate(
             TaxRulesFragmentDirections.actionTaxRulesFragmentToTaxRuleAddFragment()
         )
     }
 
     private fun gotoTaxTypeAdd() {
         mainViewModel.addCallingFragment(TAG)
-        gotoTaxTypeAddFragment()
-    }
-
-    private fun gotoTaxTypeAddFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             TaxRulesFragmentDirections.actionTaxRulesFragmentToTaxTypeAddFragment()
         )
-    }
-
-    fun gotoTaxRuleUpdateFragment() {
-        mView.findNavController().navigate(
-            TaxRulesFragmentDirections.actionTaxRulesFragmentToTaxRuleUpdateFragment()
-        )
-    }
-
-    override fun onStop() {
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-        mainScope.cancel()
-        super.onDestroy()
-        _binding = null
     }
 }

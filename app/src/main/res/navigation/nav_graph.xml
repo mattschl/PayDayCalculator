@@ -9,7 +9,7 @@
     <fragment
         android:id="@+id/startFragment"
         android:name="ms.mattschlenkrich.paycalculator.StartFragment"
-        android:label="fragment_start"
+        android:label="@string/app_name"
         tools:layout="@layout/fragment_start" />
 
     <!--    action_global_timeSheetFragment-->
@@ -23,7 +23,7 @@
     <fragment
         android:id="@+id/timeSheetFragment"
         android:name="ms.mattschlenkrich.paycalculator.timesheet.TimeSheetFragment"
-        android:label="TimeSheetFragment"
+        android:label="@string/time_sheet"
         tools:layout="@layout/fragment_time_sheet">
         <action
             android:id="@+id/action_timeSheetFragment_to_employerAddFragment"
@@ -105,7 +105,7 @@
     <fragment
         android:id="@+id/taxTypeFragment"
         android:name="ms.mattschlenkrich.paycalculator.tax.TaxTypeFragment"
-        android:label="fragment_tax_type"
+        android:label="@string/choose_a_tax_type"
         tools:layout="@layout/fragment_tax_type">
         <action
             android:id="@+id/action_taxTypeFragment_to_taxTypeAddFragment"
@@ -161,7 +161,7 @@
     <fragment
         android:id="@+id/taxRulesFragment"
         android:name="ms.mattschlenkrich.paycalculator.tax.TaxRulesFragment"
-        android:label="TaxRulesFragment"
+        android:label="@string/view_universal_tax_rules"
         tools:layout="@layout/fragment_tax_rules">
         <action
             android:id="@+id/action_taxRulesFragment_to_taxRuleAddFragment"
@@ -221,7 +221,7 @@
     <fragment
         android:id="@+id/employerFragment"
         android:name="ms.mattschlenkrich.paycalculator.employer.EmployerFragment"
-        android:label="fragment_employer"
+        android:label="@string/view_employers"
         tools:layout="@layout/fragment_employer">
         <action
             android:id="@+id/action_employerFragment_to_employerAddFragment"
@@ -237,7 +237,7 @@
     <!--    employerAddFragment-->
     <fragment
         android:id="@+id/employerAddFragment"
-        android:name="ms.mattschlenkrich.paycalculator.employer.EmployerAddFragment"
+        android:name="ms.mattschlenkrich.paycalculator.employer.EmployerAddFragmentNew"
         android:label="fragment_employer_add"
         tools:layout="@layout/fragment_employer_add">
         <action
@@ -267,7 +267,7 @@
     <!--    employerUpdateFragment-->
     <fragment
         android:id="@+id/employerUpdateFragment"
-        android:name="ms.mattschlenkrich.paycalculator.employer.EmployerUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.employer.EmployerUpdateFragmentNew"
         android:label="fragment_employer_update"
         tools:layout="@layout/fragment_employer_update">
         <action
@@ -306,7 +306,7 @@
     <!--    employerExtraDefinitionsAddFragment-->
     <fragment
         android:id="@+id/employerExtraDefinitionsAddFragment"
-        android:name="ms.mattschlenkrich.paycalculator.extras.EmployerExtraDefinitionsAddFragment"
+        android:name="ms.mattschlenkrich.paycalculator.extras.EmployerExtraDefinitionsAddFragmentNew"
         android:label="fragment_employer_extra_definitions_add"
         tools:layout="@layout/fragment_employer_extra_definitions_add">
         <action
@@ -326,7 +326,7 @@
     <!--    employerExtraDefinitionUpdateFragment-->
     <fragment
         android:id="@+id/employerExtraDefinitionUpdateFragment"
-        android:name="ms.mattschlenkrich.paycalculator.extras.EmployerExtraDefinitionUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.extras.EmployerExtraDefinitionUpdateFragmentNew"
         android:label="EmployerExtraDefinitionUpdateFragment"
         tools:layout="@layout/fragment_employer_extra_definition_update">
         <action
@@ -344,7 +344,7 @@
     <!--    workExtraTypeAddFragment-->
     <fragment
         android:id="@+id/workExtraTypeAddFragment"
-        android:name="ms.mattschlenkrich.paycalculator.extras.WorkExtraTypeAddFragment"
+        android:name="ms.mattschlenkrich.paycalculator.extras.WorkExtraTypeAddFragmentNew"
         android:label="WorkExtraTypeAddFragment"
         tools:layout="@layout/fragment_work_extra_type_add">
         <action
@@ -360,7 +360,7 @@
     <!--    workExtraTypeUpdateFragment-->
     <fragment
         android:id="@+id/workExtraTypeUpdateFragment"
-        android:name="ms.mattschlenkrich.paycalculator.extras.WorkExtraTypeUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.extras.WorkExtraTypeUpdateFragmentNew"
         android:label="fragment_work_extra_type_update"
         tools:layout="@layout/fragment_work_extra_type_update">
         <action
@@ -378,8 +378,8 @@
     <!--    employerExtraDefinitionsFragment-->
     <fragment
         android:id="@+id/employerExtraDefinitionsFragment"
-        android:name="ms.mattschlenkrich.paycalculator.extras.EmployerExtraDefinitionsFragment"
-        android:label="fragment_employer_extra_definitions"
+        android:name="ms.mattschlenkrich.paycalculator.extras.EmployerExtraDefinitionsFragmentNew"
+        android:label="@string/pay_extras"
         tools:layout="@layout/fragment_employer_extra_definitions">
         <action
             android:id="@+id/action_employerExtraDefinitionsFragment_to_workExtraTypeAddFragment"
@@ -464,7 +464,7 @@
     <!--    workDateExtraAddFragment-->
     <fragment
         android:id="@+id/workDateExtraAddFragment"
-        android:name="ms.mattschlenkrich.paycalculator.extras.WorkDateExtraAddFragment"
+        android:name="ms.mattschlenkrich.paycalculator.extras.WorkDateExtraAddFragmentNew"
         android:label="fragment_work_date_extra_add"
         tools:layout="@layout/fragment_work_date_extra_add">
         <action
@@ -476,7 +476,7 @@
     <!--    workDateExtraUpdateFragment-->
     <fragment
         android:id="@+id/workDateExtraUpdateFragment"
-        android:name="ms.mattschlenkrich.paycalculator.extras.WorkDateExtraUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.extras.WorkDateExtraUpdateFragmentNew"
         android:label="WorkDateExtraUpdateFragment"
         tools:layout="@layout/fragment_work_date_extra_update">
         <action
@@ -496,7 +496,7 @@
     <fragment
         android:id="@+id/payDetailFragmentNew"
         android:name="ms.mattschlenkrich.paycalculator.paydetail.PayDetailFragmentNew"
-        android:label="PayDetailFragmentNew"
+        android:label="@string/pay_details"
         tools:layout="@layout/fragment_pay_details">
         <action
             android:id="@+id/action_payDetailFragmentNew_to_payPeriodExtraUpdateFragment"
@@ -515,7 +515,7 @@
     <!--    payPeriodExtraAddFragment-->
     <fragment
         android:id="@+id/payPeriodExtraAddFragment"
-        android:name="ms.mattschlenkrich.paycalculator.extras.PayPeriodExtraAddFragment"
+        android:name="ms.mattschlenkrich.paycalculator.extras.PayPeriodExtraAddFragmentNew"
         android:label="PayPeriodExtraAddFragment"
         tools:layout="@layout/fragment_pay_period_extra_add">
 
@@ -528,7 +528,7 @@
     <!--    payPeriodExtraUpdateFragment-->
     <fragment
         android:id="@+id/payPeriodExtraUpdateFragment"
-        android:name="ms.mattschlenkrich.paycalculator.extras.PayPeriodExtraUpdateFragment"
+        android:name="ms.mattschlenkrich.paycalculator.extras.PayPeriodExtraUpdateFragmentNew"
         android:label="PayPeriodExtraUpdateFragment"
         tools:layout="@layout/fragment_pay_period_extra_update">
 

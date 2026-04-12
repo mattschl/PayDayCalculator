@@ -32,6 +32,7 @@
                 android:inputType="textMultiLine|textCapWords"
                 android:maxWidth="@dimen/text_box_wide"
                 android:minHeight="@dimen/minimum_touch_height"
+                android:selectAllOnFocus="true"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_size_large"
                 app:layout_constraintEnd_toEndOf="@+id/spFrequency"

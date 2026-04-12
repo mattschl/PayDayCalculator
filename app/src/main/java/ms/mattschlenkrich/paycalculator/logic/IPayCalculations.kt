@@ -5,6 +5,7 @@ import ms.mattschlenkrich.paycalculator.data.TaxAndAmount
 
 
 interface IPayCalculations {
+    suspend fun waitForCalculations() {}
     fun getDaysWorked(): Int
     fun getCreditTotalAll(): Double
     fun getHoursWorked(): Double

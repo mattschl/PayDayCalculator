@@ -5,13 +5,16 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
-import android.view.View
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.credentials.Credential
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -35,97 +38,75 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
 import java.io.File
-import java.io.FileNotFoundException
 import java.security.MessageDigest
 import java.security.SecureRandom
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-
 private const val TAG: String = "SyncActivity"
 
-class SyncActivity : AppCompatActivity() {
+class SyncActivity : ComponentActivity() {
 
     private var mDriveServiceHelper: DriveServiceHelper? = null
     private var mCurrentAccount: Account? = null
-    private var mOpenFileId: String? = null
 
-    private var mFileTitleEditText: EditText? = null
-    private var mDocContentEditText: EditText? = null
-
-    private var mProgressOverlay: View? = null
-    private var mProgressText: TextView? = null
-    private var mSyncProgressBar: android.widget.ProgressBar? = null
-    private var mErrorTextView: TextView? = null
-    private var mErrorScrollView: View? = null
+    private var docContent by mutableStateOf("")
+    private var isLoading by mutableStateOf(false)
+    private var progressMessage by mutableStateOf("")
+    private var syncProgress by mutableIntStateOf(0)
+    private var syncMax by mutableIntStateOf(0)
+    private var errorMessage by mutableStateOf<String?>(null)
 
     private lateinit var credentialManager: CredentialManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_sync)
 
         credentialManager = CredentialManager.create(this)
 
-        mFileTitleEditText = findViewById(R.id.file_title_edittext)
-        mDocContentEditText = findViewById(R.id.doc_content_edittext)
-
-        mProgressOverlay = findViewById(R.id.progress_overlay)
-        mProgressText = findViewById(R.id.progress_text)
-        mSyncProgressBar = findViewById(R.id.sync_progressbar)
-        mErrorTextView = findViewById(R.id.error_textview)
-        mErrorScrollView = findViewById(R.id.error_scrollview)
-
-        findViewById<View>(R.id.query_btn).setOnClickListener { query() }
-        findViewById<View>(R.id.up_button).setOnClickListener { testUpload() }
-        findViewById<View>(R.id.down_button).setOnClickListener { testDownload() }
-        findViewById<View>(R.id.update_button).setOnClickListener { testUpdate() }
-        findViewById<View>(R.id.return_button).setOnClickListener { finish() }
-
+        setContent {
+            MaterialTheme {
+                SyncScreen(
+                    docContent = docContent,
+                    isLoading = isLoading,
+                    progressMessage = progressMessage,
+                    syncProgress = syncProgress,
+                    syncMax = syncMax,
+                    errorMessage = errorMessage,
+                    onDocContentChange = { docContent = it },
+                    onQueryClick = { query() },
+                    onSyncClick = { performSync() },
+                    onReturnClick = { finish() }
+                )
+            }
+        }
 
         // Initiate sign-in with Credential Manager
         signInWithCredentialManager()
     }
 
     private fun showProgress(message: String) {
-        mErrorScrollView?.visibility = View.GONE
-        mProgressText?.text = message
-        mProgressOverlay?.visibility = View.VISIBLE
+        errorMessage = null
+        progressMessage = message
+        isLoading = true
     }
 
     private fun hideProgress() {
-        mProgressOverlay?.visibility = View.GONE
+        isLoading = false
     }
 
-    /**
-     * Gets or creates the target folder "Apps/<app_name>" on Google Drive.
-     */
     private suspend fun getTargetFolderId(helper: DriveServiceHelper): String {
         val appsFolderId = helper.getOrCreateFolder("Apps")
         val appName = getString(R.string.app_name)
         return helper.getOrCreateFolder(appName, appsFolderId)
     }
 
-    /**
-     * Downloads all backup files found on Google Drive in the Apps/<app_name> folder
-     * to the app's external files directory.
-     * Also ensures the latest database is available in the internal databases directory
-     * for active use.
-     */
-    fun testDownload() {
-        lifecycleScope.launch {
-            val helper = mDriveServiceHelper ?: return@launch
-            val targetFolderId = getTargetFolderId(helper)
-            performDownload(helper, targetFolderId)
-        }
-    }
 
     private suspend fun performDownload(helper: DriveServiceHelper, targetFolderId: String) {
         showProgress("Searching for backups...")
         try {
-            // 1. Query for all files in the target folder
             val fileList: FileList = helper.queryFiles(targetFolderId)
             val driveFiles = fileList.files ?: emptyList()
 
@@ -138,18 +119,15 @@ class SyncActivity : AppCompatActivity() {
                 return
             }
 
-            // 2. Define target directory
             val dbDir = File(applicationInfo.dataDir, "databases")
             if (!dbDir.exists()) dbDir.mkdirs()
 
-            // 3. Find all database files, sorted oldest to newest
             val dbFiles = driveFiles
                 .filter { it.name.startsWith("pay_") && it.name.endsWith(".db") }
-                .sortedBy { it.name } // Oldest first
+                .sortedBy { it.name }
 
             var downloadCount = 0
 
-            // 4. Download all database files and their associates to /databases
             for (dbFile in dbFiles) {
                 val prefix = dbFile.name.removeSuffix(".db")
                 for (driveFile in driveFiles) {
@@ -181,7 +159,7 @@ class SyncActivity : AppCompatActivity() {
                 ).show()
             }
 
-            mDocContentEditText?.setText("Files stored in: ${dbDir.absolutePath}")
+            docContent = "Files stored in: ${dbDir.absolutePath}"
 
         } catch (e: Exception) {
             handleError("Failed to download backups", e)
@@ -190,8 +168,8 @@ class SyncActivity : AppCompatActivity() {
         }
     }
 
-    fun testUpload() {
-        showProgress("Uploading database...")
+
+    fun performSync() {
         lifecycleScope.launch {
             try {
                 val helper = mDriveServiceHelper ?: run {
@@ -200,87 +178,8 @@ class SyncActivity : AppCompatActivity() {
                 }
 
                 val targetFolderId = getTargetFolderId(helper)
-
-                // Ensure all WAL data is committed to the main DB file
-                PayDatabase.checkpoint(this@SyncActivity)
-
-                // The database is located in the app's custom databases directory: /data/data/<package>/databases/
-                val dbDir = File(applicationInfo.dataDir, "databases")
-                val dbFile = File(dbDir, "pay.db")
-
-                if (!dbFile.exists()) {
-                    throw FileNotFoundException("Database file not found at ${dbFile.absolutePath}")
-                }
-
-                // Generate a timestamped filename for Google Drive
-                val timestamp =
-                    SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-                val driveFileName = "pay_$timestamp.db"
-
-                showProgress("Uploading $driveFileName...")
-                val driveFileId = helper.uploadFile(
-                    localFile = dbFile,
-                    mimeType = "application/x-sqlite3",
-                    driveFileName = driveFileName,
-                    folderId = targetFolderId
-                )
-
-                // Also upload .db-wal and .db-shm files if they exist
-                listOf("-wal", "-shm").forEach { suffix ->
-                    val walShmFile = File(dbDir, "pay.db$suffix")
-                    if (walShmFile.exists()) {
-                        val extraDriveName = "$driveFileName$suffix"
-                        helper.uploadFile(
-                            localFile = walShmFile,
-                            mimeType = "application/octet-stream",
-                            driveFileName = extraDriveName,
-                            folderId = targetFolderId
-                        )
-                        Log.d(TAG, "Uploaded extra file: $extraDriveName")
-                    }
-                }
-
-                Log.d(
-                    TAG,
-                    "Successfully uploaded database file as $driveFileName and associated files to Apps folder."
-                )
-                setResult(RESULT_OK)
-                Toast.makeText(
-                    this@SyncActivity,
-                    "Database upload successful: $driveFileName",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-            } catch (e: Exception) {
-                handleError("Upload failed", e)
-            } finally {
-                hideProgress()
-            }
-        }
-    }
-
-    /**
-     * Update function (Sync):
-     * 1. Downloads all backups from Google Drive.
-     * 2. Analyzes the latest backup and provides a summary of new records.
-     * 3. Keeps only the 3 most recent backups on Google Drive (deletes others).
-     * 4. Keeps only the 3 most recent backups in local storage (deletes others).
-     * 5. Uploads a fresh backup of the merged database to Google Drive.
-     */
-    fun testUpdate() {
-        lifecycleScope.launch {
-            try {
-                val helper = mDriveServiceHelper ?: run {
-                    hideProgress()
-                    return@launch
-                }
-
-                val targetFolderId = getTargetFolderId(helper)
-
-                // 1. Download all backups first
                 performDownload(helper, targetFolderId)
 
-                // 2. Analyze and merge each downloaded backup in chronological order
                 val dbDir = File(applicationInfo.dataDir, "databases")
                 val localBackups = dbDir.listFiles { _, name ->
                     name.startsWith("pay_") && name.endsWith(".db")
@@ -293,23 +192,19 @@ class SyncActivity : AppCompatActivity() {
                         val mergeHelper = MergeHelper(this@SyncActivity, localDb.absolutePath)
 
                         showProgress("Applying changes from ${localDb.name}...")
-                        mSyncProgressBar?.visibility = View.VISIBLE
                         val summary = mergeHelper.applySync { progress, total ->
-                            runOnUiThread {
-                                mSyncProgressBar?.max = total
-                                mSyncProgressBar?.progress = progress
-                                mProgressText?.text =
-                                    "Syncing ${localDb.name}: table ${progress + 1} of $total..."
-                            }
+                            syncMax = total
+                            syncProgress = progress
+                            progressMessage =
+                                "Syncing ${localDb.name}: table ${progress + 1} of $total..."
                         }
                         summaryBuilder.append("Results for ${localDb.name}:\n$summary\n\n")
                     }
 
-                    mSyncProgressBar?.visibility = View.GONE
-                    mDocContentEditText?.setText(summaryBuilder.toString())
-                    Log.d(TAG, "Sync Result: ${summaryBuilder.toString()}")
+                    syncMax = 0
+                    docContent = summaryBuilder.toString()
+                    Log.d(TAG, "Sync Result: $docContent")
 
-                    // Clean up local storage: delete all backup files used for sync
                     showProgress("Cleaning up local backups...")
                     for (localDb in localBackups) {
                         Log.d(TAG, "Deleting processed local backup: ${localDb.name}")
@@ -318,15 +213,13 @@ class SyncActivity : AppCompatActivity() {
                         File(localDb.absolutePath + "-shm").delete()
                     }
 
-                    // Notify Room that the database has changed and reset the instance
                     val db = PayDatabase(this@SyncActivity)
                     db.invalidationTracker.refreshVersionsAsync()
                     PayDatabase.resetInstance()
                 } else {
-                    mDocContentEditText?.setText("No backups found to sync.")
+                    docContent = "No backups found to sync."
                 }
 
-                // 3. Clean up Google Drive: Keep only 3 latest
                 showProgress("Cleaning up old backups...")
                 val driveFileList = helper.queryFiles(targetFolderId)
                 val driveBackups = driveFileList.files
@@ -338,7 +231,6 @@ class SyncActivity : AppCompatActivity() {
                     for (file in toDelete) {
                         Log.d(TAG, "Deleting old backup from Drive: ${file.name}")
                         helper.deleteFile(file.id)
-                        // Also try to delete associated wal/shm files
                         listOf("-wal", "-shm").forEach { suffix ->
                             val extraName = "${file.name}$suffix"
                             driveFileList.files?.find { it.name == extraName }?.let {
@@ -348,11 +240,7 @@ class SyncActivity : AppCompatActivity() {
                     }
                 }
 
-                // 4. Local storage was already cleaned up above after sync.
-
-                // 5. Upload a fresh backup of the merged database
                 showProgress("Creating fresh backup...")
-                // Flush WAL to disk
                 PayDatabase.checkpoint(this@SyncActivity)
 
                 val dbFile = File(dbDir, "pay.db")
@@ -369,7 +257,6 @@ class SyncActivity : AppCompatActivity() {
                         folderId = targetFolderId
                     )
 
-                    // Also upload .db-wal and .db-shm files if they exist
                     listOf("-wal", "-shm").forEach { suffix ->
                         val walShmFile = File(dbDir, "pay.db$suffix")
                         if (walShmFile.exists()) {
@@ -415,8 +302,7 @@ class SyncActivity : AppCompatActivity() {
         }
 
         val fullMessage = "$message: $errorDetail"
-        mErrorTextView?.text = fullMessage
-        mErrorScrollView?.visibility = View.VISIBLE
+        errorMessage = fullMessage
         Toast.makeText(this@SyncActivity, fullMessage, Toast.LENGTH_LONG).show()
     }
 
@@ -426,7 +312,7 @@ class SyncActivity : AppCompatActivity() {
         if (result.resultCode == RESULT_OK) {
             val email = mCurrentAccount?.name
             if (email != null) {
-                mDriveServiceHelper = null // Force re-initialization
+                mDriveServiceHelper = null
                 initializeDriveService(email)
             }
         }
@@ -468,25 +354,12 @@ class SyncActivity : AppCompatActivity() {
             }
 
             is NoCredentialException -> {
-                Log.e(TAG, "No credentials available. Please ensure:")
-                Log.e(TAG, "1. A Google account is signed in on the device/emulator.")
-                Log.e(
-                    TAG,
-                    "2. The SHA-1 fingerprint and package name ($packageName) are registered in Google Cloud Console."
-                )
-                Log.e(TAG, "3. default_web_client_id is a WEB client ID, not an Android client ID.")
+                Log.e(TAG, "No credentials available.")
                 logSHA1Fingerprint()
             }
 
             else -> {
                 Log.e(TAG, "Credential Manager error (${e.javaClass.simpleName}): ${e.message}")
-                if (e.message?.contains("16") == true) {
-                    Log.e(
-                        TAG,
-                        "Developer error (16) usually indicates a SHA-1 or Package Name mismatch."
-                    )
-                    logSHA1Fingerprint()
-                }
             }
         }
     }
@@ -542,7 +415,6 @@ class SyncActivity : AppCompatActivity() {
         }
     }
 
-
     private fun initializeDriveService(email: String) {
         if (email.isBlank()) {
             Log.e(TAG, "Email is blank, cannot initialize Drive service.")
@@ -564,8 +436,6 @@ class SyncActivity : AppCompatActivity() {
                 DRIVE_SCOPES
             )
             credential.selectedAccount = account
-
-            Log.d(TAG, "Credential set with account: ${credential.selectedAccountName}")
 
             val googleDriveService = Drive.Builder(
                 HTTP_TRANSPORT,
@@ -599,21 +469,13 @@ class SyncActivity : AppCompatActivity() {
                 for (file in fileList.files) {
                     builder.append(file.name).append("\n")
                 }
-                mFileTitleEditText?.setText(getString(R.string.query))
-                mDocContentEditText?.setText(builder.toString())
-                setReadOnlyMode()
+                docContent = builder.toString()
             } catch (e: Exception) {
                 handleError("Unable to query.", e)
             } finally {
                 hideProgress()
             }
         }
-    }
-
-    private fun setReadOnlyMode() {
-        mFileTitleEditText?.isEnabled = false
-        mDocContentEditText?.isEnabled = false
-        mOpenFileId = null
     }
 
     companion object {

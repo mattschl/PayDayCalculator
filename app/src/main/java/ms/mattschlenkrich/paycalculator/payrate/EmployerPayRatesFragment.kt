@@ -4,168 +4,268 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemSelectedListener
-import android.widget.ArrayAdapter
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.FRAG_PAY_RATES
-import ms.mattschlenkrich.paycalculator.common.WAIT_250
+import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.PayRateBasedOn
+import ms.mattschlenkrich.paycalculator.data.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.Employers
 import ms.mattschlenkrich.paycalculator.data.MainViewModel
-import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerPayRatesBinding
 
 private const val TAG = FRAG_PAY_RATES
 
-class EmployerPayRatesFragment : Fragment(R.layout.fragment_employer_pay_rates) {
+class EmployerPayRatesFragment : Fragment() {
 
-    private var _binding: FragmentEmployerPayRatesBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var employerViewModel: EmployerViewModel
-    private lateinit var employerList: List<Employers>
-    private var curEmployer: Employers? = null
-    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentEmployerPayRatesBinding.inflate(
-            inflater, container, false
-        )
-        mView = binding.root
         mainActivity = (activity as MainActivity)
         mainActivity.topMenuBar.title = getString(R.string.view_or_edit_wages)
         mainViewModel = mainActivity.mainViewModel
         employerViewModel = mainActivity.employerViewModel
-        return mView
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        populateEmployers()
-        setClickActions()
-    }
-
-    private fun populateEmployers() {
-        binding.apply {
-            val employerAdapter = ArrayAdapter<String>(
-                mView.context, R.layout.spinner_item_bold
-            )
-            employerViewModel.getEmployers().observe(
-                viewLifecycleOwner
-            ) { employers ->
-                employerAdapter.clear()
-                employerAdapter.notifyDataSetChanged()
-                employerList = employers
-                employers.listIterator().forEach {
-                    employerAdapter.add(it.employerName)
-                }
-                employerAdapter.add(getString(R.string.add_new_employer))
-                if (employerList.isNotEmpty()) {
-                    curEmployer = employerList[0]
-                }
-
-            }
-            spEmployers.adapter = employerAdapter
-            getEmployerFromHistory()
-        }
-    }
-
-
-    private fun getEmployerFromHistory() {
-        binding.apply {
-            mainScope.launch {
-                delay(WAIT_250)
-                if (mainViewModel.getEmployer() != null) {
-                    curEmployer = mainViewModel.getEmployer()
-                    for (i in 0 until spEmployers.adapter.count) {
-                        if (spEmployers.getItemAtPosition(i) == curEmployer!!.employerName) {
-                            spEmployers.setSelection(i)
-                            break
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun populatePayRates() {
-        if (curEmployer != null) {
-            binding.apply {
-                val payRateAdapter = EmployerPayRateAdapter(
-                    mainActivity,
-                    mView,
-                    curEmployer!!,
-                    TAG,
-                    this@EmployerPayRatesFragment,
-                )
-                rvWage.apply {
-                    layoutManager = LinearLayoutManager(
-                        mView.context
+        return ComposeView(requireContext()).apply {
+            setContent {
+                MaterialTheme {
+                    EmployerPayRatesContent(
+                        employerViewModel = employerViewModel,
+                        mainViewModel = mainViewModel,
+                        onAddEmployer = { gotoAddEmployer() },
+                        onAddPayRate = { employer -> gotoAddPayRate(employer) },
+                        onUpdatePayRate = { wage, employer -> gotoWageUpdate(wage, employer) }
                     )
-                    adapter = payRateAdapter
-                }
-                activity.let {
-                    employerViewModel.getEmployerPayRates(curEmployer!!.employerId)
-                        .observe(viewLifecycleOwner) { payRates ->
-                            payRateAdapter.differ.submitList(payRates)
-                            updateUI(payRates)
-                        }
                 }
             }
         }
     }
 
-    private fun setClickActions() {
-        onSelectEmployer()
-        binding.apply {
-            fabNew.setOnClickListener {
-                gotoPayRates()
-            }
-        }
-    }
+    @Composable
+    fun EmployerPayRatesContent(
+        employerViewModel: EmployerViewModel,
+        mainViewModel: MainViewModel,
+        onAddEmployer: () -> Unit,
+        onAddPayRate: (Employers?) -> Unit,
+        onUpdatePayRate: (EmployerPayRates, Employers) -> Unit
+    ) {
+        val employers by employerViewModel.getEmployers().observeAsState(emptyList())
+        var selectedEmployer by remember { mutableStateOf<Employers?>(null) }
+        var expanded by remember { mutableStateOf(false) }
 
-    private fun onSelectEmployer() {
-        binding.apply {
-            spEmployers.onItemSelectedListener = object : OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
-                ) {
-                    if (spEmployers.selectedItem.toString() == getString(R.string.add_new_employer)) {
-                        gotoAddEmployer()
+        LaunchedEffect(employers) {
+            if (selectedEmployer == null && employers.isNotEmpty()) {
+                val lastEmployer = mainViewModel.getEmployer()
+                selectedEmployer =
+                    if (lastEmployer != null && employers.any { it.employerId == lastEmployer.employerId }) {
+                        employers.first { it.employerId == lastEmployer.employerId }
                     } else {
-                        curEmployer = employerList[spEmployers.selectedItemPosition]
-                        populatePayRates()
+                        employers.first()
+                    }
+            }
+        }
+
+        val payRates by if (selectedEmployer != null) {
+            employerViewModel.getEmployerPayRates(selectedEmployer!!.employerId)
+                .observeAsState(emptyList())
+        } else {
+            remember { mutableStateOf(emptyList()) }
+        }
+
+        Scaffold(
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { onAddPayRate(selectedEmployer) },
+                    containerColor = colorResource(id = R.color.dark_green),
+                    contentColor = Color.White
+                ) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = stringResource(id = R.string.add_new)
+                    )
+                }
+            }
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.employer),
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Box(modifier = Modifier.weight(1f)) {
+                        OutlinedButton(
+                            onClick = { expanded = true },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = selectedEmployer?.employerName
+                                    ?: stringResource(id = R.string.select_employer)
+                            )
+                            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                        }
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                            modifier = Modifier.fillMaxWidth(0.8f)
+                        ) {
+                            employers.forEach { employer ->
+                                DropdownMenuItem(
+                                    text = { Text(text = employer.employerName) },
+                                    onClick = {
+                                        selectedEmployer = employer
+                                        expanded = false
+                                    }
+                                )
+                            }
+                            HorizontalDivider()
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = stringResource(id = R.string.add_new_employer),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                },
+                                onClick = {
+                                    expanded = false
+                                    onAddEmployer()
+                                }
+                            )
+                        }
                     }
                 }
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    //not needed
+                Spacer(modifier = Modifier.height(16.dp))
+
+                if (payRates.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Card(
+                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                            shape = MaterialTheme.shapes.medium
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.no_wages_have_been_set_for_this_employer),
+                                modifier = Modifier.padding(32.dp),
+                                textAlign = TextAlign.Center,
+                                fontSize = 18.sp
+                            )
+                        }
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(payRates) { wage ->
+                            PayRateItem(wage = wage, onClick = {
+                                if (selectedEmployer != null) {
+                                    onUpdatePayRate(wage, selectedEmployer!!)
+                                }
+                            })
+                        }
+                    }
                 }
             }
         }
     }
 
-    private fun updateUI(payRates: List<Any>) {
-        binding.apply {
-            if (payRates.isNotEmpty()) {
-                rvWage.visibility = View.VISIBLE
-                crdNoInfo.visibility = View.GONE
-            } else {
-                rvWage.visibility = View.GONE
-                crdNoInfo.visibility = View.VISIBLE
+    @Composable
+    fun PayRateItem(wage: EmployerPayRates, onClick: () -> Unit) {
+        val cf = NumberFunctions()
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = wage.eprEffectiveDate,
+                    textDecoration = if (wage.eprIsDeleted) TextDecoration.LineThrough else null,
+                    color = if (wage.eprIsDeleted) Color.Red else Color.Unspecified,
+                    fontSize = 18.sp
+                )
+                Text(
+                    text = cf.displayDollars(wage.eprPayRate),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    textDecoration = if (wage.eprIsDeleted) TextDecoration.LineThrough else null,
+                    color = if (wage.eprIsDeleted) Color.Red else Color.Unspecified
+                )
+                Text(
+                    text = PayRateBasedOn.entries[wage.eprPerPeriod].type,
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
             }
         }
     }
@@ -173,41 +273,32 @@ class EmployerPayRatesFragment : Fragment(R.layout.fragment_employer_pay_rates) 
     private fun gotoAddEmployer() {
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setPayRate(null)
-        gotoEmployerAddFragment()
-    }
-
-    private fun gotoPayRates() {
-        mainViewModel.setEmployer(curEmployer)
-        mainViewModel.setPayRate(null)
-        mainViewModel.setCallingFragment(TAG)
-        gotoEmployerPayRateAddFragment()
-    }
-
-    private fun gotoEmployerAddFragment() {
-        mView.findNavController().navigate(
+        requireView().findNavController().navigate(
             EmployerPayRatesFragmentDirections.actionEmployerPayRatesFragmentToEmployerAddFragment()
         )
     }
 
-    private fun gotoEmployerPayRateAddFragment() {
-        mView.findNavController().navigate(
+    private fun gotoAddPayRate(employer: Employers?) {
+        mainViewModel.setEmployer(employer)
+        mainViewModel.setPayRate(null)
+        mainViewModel.setCallingFragment(TAG)
+        requireView().findNavController().navigate(
             EmployerPayRatesFragmentDirections.actionEmployerPayRatesFragmentToEmployerPayRateAddFragment()
         )
     }
 
-    fun gotoEmployerWageUpdateFragment() {
-        mView.findNavController().navigate(
+    private fun gotoWageUpdate(wage: EmployerPayRates, employer: Employers) {
+        mainViewModel.setPayRate(wage)
+        mainViewModel.setEmployer(employer)
+        mainViewModel.addCallingFragment(TAG)
+        requireView().findNavController().navigate(
             EmployerPayRatesFragmentDirections.actionEmployerPayRatesFragmentToEmployerWageUpdateFragment()
         )
     }
 
-    override fun onStop() {
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-        mainScope.cancel()
-        super.onDestroy()
-        _binding = null
+    fun gotoEmployerWageUpdateFragment() {
+        requireView().findNavController().navigate(
+            EmployerPayRatesFragmentDirections.actionEmployerPayRatesFragmentToEmployerWageUpdateFragment()
+        )
     }
 }

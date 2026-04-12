@@ -17,11 +17,6 @@ import ms.mattschlenkrich.paycalculator.common.WORK_TAX_RULE_EFFECTIVE_DATE
 import ms.mattschlenkrich.paycalculator.common.WORK_TAX_RULE_LEVEL
 import ms.mattschlenkrich.paycalculator.common.WORK_TAX_RULE_TYPE
 import ms.mattschlenkrich.paycalculator.common.WORK_TAX_TYPE
-import ms.mattschlenkrich.paycalculator.data.EmployerTaxTypes
-import ms.mattschlenkrich.paycalculator.data.TaxEffectiveDates
-import ms.mattschlenkrich.paycalculator.data.TaxTypeAndRule
-import ms.mattschlenkrich.paycalculator.data.TaxTypes
-import ms.mattschlenkrich.paycalculator.data.WorkTaxRules
 
 @Dao
 interface WorkTaxDao {
@@ -84,6 +79,9 @@ interface WorkTaxDao {
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertEmployerTaxType(employerTaxTypes: EmployerTaxTypes)
+
+    @Update
+    suspend fun updateEmployerTaxType(employerTaxTypes: EmployerTaxTypes)
 
     @Query(
         "UPDATE $TABLE_EMPLOYER_TAX_TYPES " +

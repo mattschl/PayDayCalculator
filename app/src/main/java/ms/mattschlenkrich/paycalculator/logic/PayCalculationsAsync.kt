@@ -32,6 +32,16 @@ class PayCalculationsAsync(
     private val currentPayPeriod: PayPeriods,
 ) : IPayCalculations {
     private val defaultScope = Dispatchers.Default
+    private val calculationJob = CoroutineScope(defaultScope).launch {
+        getListsFromDb()
+        processExtraContainers()
+        processPayTotals()
+    }
+
+    override suspend fun waitForCalculations() {
+        calculationJob.join()
+    }
+
     private lateinit var workDates: List<WorkDates>
     private lateinit var customWorkDateExtras: List<WorkDateExtras>
     private lateinit var customExtrasByPay: List<WorkPayPeriodExtras>
@@ -58,39 +68,6 @@ class PayCalculationsAsync(
     private var statHours = 0.0
     private var daysWorked = 0
     private var totalBeforePercentageAdjustment = 0.0
-//    private var df = DateFunctions()/
-
-    init {
-        CoroutineScope(defaultScope).launch {
-            getListsFromDb()
-            processExtraContainers()
-            processPayTotals()
-//            var credits = 0.0
-//            for (credit in getCredits()) {
-//                credits += credit.amount
-//                Log.d(TAG, "credit is ${credit.amount} for ${credit.extraName}")
-//            }
-//            Log.d(
-//                TAG, "Total credits is $credits + Total Hourly is ${getPayAllHourly()} for a " +
-//                        "total gross pay of ${credits + getPayAllHourly()}"
-//            )
-//            var debits = 0.0
-//            for (debit in debitExtraContainers) {
-//                Log.d(TAG, "debit is ${debit.amount} for ${debit.extraName}")
-//                debits += debit.amount
-//            }
-//            Log.d(TAG, "Total debits is $debits")
-//            var taxes = 0.0
-//            for (tax in taxAndAmountList) {
-//                Log.d(TAG, "Tax of ${tax.amount} for ${tax.taxType}")
-//                taxes += tax.amount
-//            }
-//            Log.d(TAG, "Total taxes is $taxes")
-//            Log.d(TAG, "NET pay is ${credits + getPayAllHourly() - debits - taxes}")
-//            Log.d(TAG, "***************************************")
-//            //TODO: Find out how to use live data to signal the end
-        }
-    }
 
     private suspend fun getListsFromDb() {
         getPayRateFromDb()

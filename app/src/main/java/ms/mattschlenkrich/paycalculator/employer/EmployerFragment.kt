@@ -2,147 +2,214 @@ package ms.mattschlenkrich.paycalculator.employer
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SearchView
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.navigation.findNavController
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.navigation.fragment.findNavController
 import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.Employers
-import ms.mattschlenkrich.paycalculator.databinding.FragmentEmployerBinding
+import ms.mattschlenkrich.paycalculator.data.MainViewModel
 
-//private const val TAG = FRAG_EMPLOYERS
+class EmployerFragment : Fragment() {
 
-class EmployerFragment : Fragment(R.layout.fragment_employer), SearchView.OnQueryTextListener,
-    MenuProvider {
-
-    private var _binding: FragmentEmployerBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var employerViewModel: EmployerViewModel
-    private var employerAdapter: EmployerAdapter? = null
+    private lateinit var mainViewModel: MainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentEmployerBinding.inflate(inflater, container, false)
-        mView = binding.root
         mainActivity = (activity as MainActivity)
         employerViewModel = mainActivity.employerViewModel
+        mainViewModel = mainActivity.mainViewModel
         mainActivity.topMenuBar.title = getString(R.string.view_employers)
-        return mView
+
+        return ComposeView(requireContext()).apply {
+            setContent {
+                EmployerScreen(
+                    employerViewModel = employerViewModel,
+                    onEmployerClick = { employer ->
+                        mainViewModel.setEmployer(employer)
+                        findNavController().navigate(
+                            EmployerFragmentDirections.actionEmployerFragmentToEmployerUpdateFragment()
+                        )
+                    },
+                    onAddClick = {
+                        findNavController().navigate(
+                            EmployerFragmentDirections.actionEmployerFragmentToEmployerAddFragment()
+                        )
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun EmployerScreen(
+    employerViewModel: EmployerViewModel,
+    onEmployerClick: (Employers) -> Unit,
+    onAddClick: () -> Unit
+) {
+    var searchQuery by remember { mutableStateOf("") }
+    val employers by if (searchQuery.isEmpty()) {
+        employerViewModel.getEmployers().observeAsState(emptyList())
+    } else {
+        employerViewModel.searchEmployers("%$searchQuery%").observeAsState(emptyList())
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        populateEmployers()
-        val menuHost: MenuHost = mainActivity.topMenuBar
-        menuHost.addMenuProvider(
-            this, viewLifecycleOwner, Lifecycle.State.RESUMED
-        )
-        setClickActions()
-    }
-
-    private fun populateEmployers() {
-        employerAdapter = EmployerAdapter(
-            mainActivity,
-            mView,
-            this@EmployerFragment,
-        )
-        binding.rvEmployers.apply {
-            layoutManager = StaggeredGridLayoutManager(
-                2, StaggeredGridLayoutManager.VERTICAL
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddClick,
+                containerColor = colorResource(id = R.color.dark_green),
+                contentColor = Color.White
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(id = R.string.add_new)
+                )
+            }
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            SelectAllOutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                placeholder = { Text(stringResource(R.string.search)) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                singleLine = true
             )
-            setHasFixedSize(true)
-            adapter = employerAdapter
-        }
-        activity?.let {
-            employerViewModel.getEmployers().observe(
-                viewLifecycleOwner
-            ) { employer ->
-                employerAdapter!!.differ.submitList(employer)
-                updateUI(employer)
-            }
-        }
-    }
 
-    private fun updateUI(employer: List<Employers>?) {
-        binding.apply {
-            if (employer!!.isEmpty()) {
-                rvEmployers.visibility = View.GONE
-                crdNoInfo.visibility = View.VISIBLE
+            if (employers.isEmpty()) {
+                NoEmployersView()
             } else {
-                rvEmployers.visibility = View.VISIBLE
-                crdNoInfo.visibility = View.GONE
+                EmployerList(
+                    employers = employers,
+                    onEmployerClick = onEmployerClick
+                )
             }
         }
     }
+}
 
-    private fun setClickActions() {
-        binding.apply {
-            fabNew.setOnClickListener {
-                gotoEmployerAddFragment()
+@Composable
+fun EmployerList(
+    employers: List<Employers>,
+    onEmployerClick: (Employers) -> Unit
+) {
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Fixed(2),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp)
+    ) {
+        items(employers) { employer ->
+            EmployerItem(
+                employer = employer,
+                onClick = { onEmployerClick(employer) }
+            )
+        }
+    }
+}
+
+@Composable
+fun EmployerItem(
+    employer: Employers,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .padding(4.dp)
+            .fillMaxWidth()
+            .clickable { onClick() },
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Column(
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Text(
+                text = employer.employerName,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            val display = if (employer.employerIsDeleted) {
+                stringResource(R.string._deleted_)
+            } else {
+                employer.payFrequency
             }
+            val textColor = if (employer.employerIsDeleted) Color.Red else Color.Black
+            Text(
+                text = display,
+                fontSize = 16.sp,
+                color = textColor,
+                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+            )
         }
     }
+}
 
-    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.search_menu, menu)
-        val mMenuSearch = menu.findItem(R.id.menu_search).actionView as SearchView
-        mMenuSearch.isSubmitButtonEnabled = false
-        mMenuSearch.setOnQueryTextListener(this)
-    }
-
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        return false
-    }
-
-    override fun onQueryTextSubmit(query: String?): Boolean {
-        return false
-    }
-
-    override fun onQueryTextChange(newText: String?): Boolean {
-        if (newText != null) {
-            searchEmployers(newText)
-        }
-        return true
-    }
-
-    private fun searchEmployers(query: String?) {
-        if (employerAdapter != null) {
-            val searchQuery = "%$query%"
-            employerViewModel.searchEmployers(searchQuery).observe(
-                viewLifecycleOwner
-            ) { list ->
-                employerAdapter!!.differ.submitList(list)
-                updateUI(list)
-            }
-        }
-    }
-
-    fun gotoEmployerUpdateFragment() {
-        mView.findNavController().navigate(
-            EmployerFragmentDirections.actionEmployerFragmentToEmployerUpdateFragment()
+@Composable
+fun NoEmployersView() {
+    Card(
+        modifier = Modifier
+            .padding(32.dp)
+            .fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Text(
+            text = stringResource(R.string.no_employers_to_view),
+            modifier = Modifier
+                .padding(50.dp)
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            fontSize = 18.sp,
+            color = Color.Black
         )
-    }
-
-    private fun gotoEmployerAddFragment() {
-        mView.findNavController().navigate(
-            EmployerFragmentDirections.actionEmployerFragmentToEmployerAddFragment()
-        )
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 }

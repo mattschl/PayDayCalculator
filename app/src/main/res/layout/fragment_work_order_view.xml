@@ -75,6 +75,7 @@
                     android:hint="@string/type_number_or_address_search"
                     android:importantForAutofill="no"
                     android:inputType="text"
+                    android:selectAllOnFocus="true"
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@id/btnCancel"

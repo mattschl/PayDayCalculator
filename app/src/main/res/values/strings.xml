@@ -28,7 +28,6 @@
     <string name="add_a_definition">Add a definition</string>
     <string name="add_a_description_first">Add a description first</string>
     <string name="add_a_new_cut_off_date">* Add a new Cut Off date *</string>
-    <string name="add_a_new_employer">* Add a New Employer *</string>
     <string name="add_a_new_extra_frequency">* Add a new Extra Frequency *</string>
     <string name="add_a_new_extra_type">* Add a new Extra Type *</string>
     <string name="add_a_new_tax_type">Add a New tax Type</string>
@@ -161,6 +160,7 @@
     <string name="effective_date">Effective Date</string>
     <string name="employer_">" Employer: "</string>
     <string name="employer_name">Employer Name</string>
+    <string name="select_employer">Select Employer</string>
     <string name="employer">Employer</string>
     <string name="employers">Employers</string>
     <string name="end_time_before_start_time">The end Time must not be before the start time</string>
@@ -211,6 +211,7 @@
     <string name="general_job_description">General Job Description</string>
     <string name="generate_a_new_cut_off">* Generate a new Cut Off</string>
     <string name="go_back">Go Back</string>
+    <string name="fixed_amount">Fixed Amount</string>
     <string name="gross_">"Gross: "</string>
     <string name="gross_pay">Gross Pay</string>
     <string name="has_exemption_amount">Has Exemption Amount</string>
@@ -525,7 +526,6 @@
     <string name="add_new_material">Add New Material</string>
     <string name="master_material">Master Material</string>
     <string name="child_material_to_merge">Child Material to merge</string>
-    <string name="enter_file_title">enter file title</string>
     <string name="enter_document_content">enter document contents</string>
     <string name="query">query</string>
     <string name="sync_data">Sync Data</string>

@@ -1,11 +1,5 @@
 package ms.mattschlenkrich.paycalculator.data
 
-import ms.mattschlenkrich.paycalculator.data.PayDatabase
-import ms.mattschlenkrich.paycalculator.data.EmployerTaxTypes
-import ms.mattschlenkrich.paycalculator.data.TaxEffectiveDates
-import ms.mattschlenkrich.paycalculator.data.TaxTypes
-import ms.mattschlenkrich.paycalculator.data.WorkTaxRules
-
 class WorkTaxRepository(private val db: PayDatabase) {
     suspend fun insertTaxType(workTaxType: TaxTypes) = db.getWorkTaxDao().insertTaxType(workTaxType)
 
@@ -32,6 +26,9 @@ class WorkTaxRepository(private val db: PayDatabase) {
 
     suspend fun insertEmployerTaxType(employerTaxTypes: EmployerTaxTypes) =
         db.getWorkTaxDao().insertEmployerTaxType(employerTaxTypes)
+
+    suspend fun updateEmployerTaxType(employerTaxTypes: EmployerTaxTypes) =
+        db.getWorkTaxDao().updateEmployerTaxType(employerTaxTypes)
 
     suspend fun updateEmployerTaxIncluded(
         employerId: Long, taxType: String, include: Boolean
