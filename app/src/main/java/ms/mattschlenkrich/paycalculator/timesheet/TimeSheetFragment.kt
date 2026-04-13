@@ -100,9 +100,7 @@ class TimeSheetFragment : Fragment(), ITimeSheetFragment {
 
                 LaunchedEffect(cutOffDates, selectedEmployer) {
                     if (selectedEmployer != null) {
-                        if (cutOffDates.isEmpty()) {
-                            generateNewCutOff(selectedEmployer!!)
-                        } else {
+                        if (cutOffDates.isNotEmpty()) {
                             val historyCutOff = mainViewModel.getCutOffDate()
                             val historyEmployerId = mainViewModel.getEmployer()?.employerId
 

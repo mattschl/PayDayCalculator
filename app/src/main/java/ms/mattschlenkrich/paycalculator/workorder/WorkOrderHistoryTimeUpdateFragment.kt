@@ -89,7 +89,8 @@ class WorkOrderHistoryTimeUpdateFragment : Fragment() {
                     },
                     onStartTimeClick = { showStartTimePicker() },
                     onEndTimeClick = { showEndTimePicker() },
-                    onSaveClick = { updateTimesInDatabase() }
+                    onSaveClick = { updateTimesInDatabase() },
+                    onBackClick = { findNavController().popBackStack() }
                 )
             }
         }

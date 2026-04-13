@@ -173,12 +173,14 @@ fun DecimalOutlinedTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     label: @Composable (() -> Unit)? = null,
+    placeholder: @Composable (() -> Unit)? = null,
     singleLine: Boolean = true,
 ) {
     SelectAllOutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = label,
+        placeholder = placeholder,
         modifier = modifier,
         singleLine = singleLine,
         keyboardOptions = KeyboardOptions(
@@ -193,12 +195,14 @@ fun NumberOutlinedTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     label: @Composable (() -> Unit)? = null,
+    placeholder: @Composable (() -> Unit)? = null,
     singleLine: Boolean = true,
 ) {
     SelectAllOutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = label,
+        placeholder = placeholder,
         modifier = modifier,
         singleLine = singleLine,
         keyboardOptions = KeyboardOptions(
@@ -213,12 +217,14 @@ fun CapitalizedOutlinedTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     label: @Composable (() -> Unit)? = null,
+    placeholder: @Composable (() -> Unit)? = null,
     singleLine: Boolean = true,
 ) {
     SelectAllOutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = label,
+        placeholder = placeholder,
         modifier = modifier,
         singleLine = singleLine,
         keyboardOptions = KeyboardOptions(

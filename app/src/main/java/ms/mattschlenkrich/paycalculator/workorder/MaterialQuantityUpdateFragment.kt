@@ -78,7 +78,8 @@ class MaterialQuantityUpdateFragment : Fragment() {
                         } else {
                             Toast.makeText(requireContext(), validation, Toast.LENGTH_LONG).show()
                         }
-                    }
+                    },
+                    onBackClick = { findNavController().popBackStack() }
                 )
             }
         }

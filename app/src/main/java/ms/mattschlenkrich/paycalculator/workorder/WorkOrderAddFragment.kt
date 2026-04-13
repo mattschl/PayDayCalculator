@@ -95,7 +95,8 @@ class WorkOrderAddFragment : Fragment() {
                         } else {
                             displayMessage(getString(R.string.error_) + validationResult)
                         }
-                    }
+                    },
+                    onBackClick = { findNavController().popBackStack() }
                 )
             }
         }

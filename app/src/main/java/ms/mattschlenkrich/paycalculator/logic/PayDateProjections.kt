@@ -20,32 +20,18 @@ class PayDateProjections {
         mostRecent: String,
     ): String {
         var newDate = ""
-        val mostRecentDate = if (mostRecent.isNotEmpty()) {
-            LocalDate.parse(mostRecent)
-        } else (LocalDate.now())
-        val dates: ArrayList<LocalDate> = when (employer.payFrequency) {
-            INTERVAL_WEEKLY -> {
-                projectWeekly(
-                    employer.startDate, LocalDate.now().plusMonths(2).toString(), employer.dayOfWeek
-                )
-            }
+        val dates = projectAll(employer, LocalDate.now().plusMonths(2).toString())
 
-            INTERVAL_BI_WEEKLY -> {
-                projectBiWeekly(
-                    employer.startDate, LocalDate.now().plusMonths(2).toString(), employer.dayOfWeek
-                )
-            }
-
-            else -> {
-                ArrayList()
-            }
+        if (mostRecent.isEmpty()) {
+            return getCutOffForDate(employer, LocalDate.now().toString())
         }
+
+        val mostRecentDate = LocalDate.parse(mostRecent)
+        val mostRecentPayDay = mostRecentDate.plusDays(employer.cutoffDaysBefore.toLong())
+
         if (dates.isNotEmpty()) {
             for (date in dates) {
-                if (date > mostRecentDate.plusDays(
-                        employer.cutoffDaysBefore.toLong()
-                    )
-                ) {
+                if (date > mostRecentPayDay) {
                     newDate = date.minusDays(employer.cutoffDaysBefore.toLong()).toString()
                     break
                 }
@@ -57,18 +43,51 @@ class PayDateProjections {
         return newDate
     }
 
+    fun getCutOffForDate(
+        employer: Employers,
+        date: String
+    ): String {
+        val targetDate = LocalDate.parse(date)
+        val dates = projectAll(employer, targetDate.plusMonths(1).toString())
+
+        for (payDate in dates) {
+            val cutoffDate = payDate.minusDays(employer.cutoffDaysBefore.toLong())
+            if (targetDate <= cutoffDate) {
+                return cutoffDate.toString()
+            }
+        }
+        return ""
+    }
+
+    private fun projectAll(employer: Employers, endDate: String): ArrayList<LocalDate> {
+        return when (employer.payFrequency) {
+            INTERVAL_WEEKLY -> {
+                projectWeekly(
+                    employer.startDate, endDate, employer.dayOfWeek
+                )
+            }
+
+            INTERVAL_BI_WEEKLY -> {
+                projectBiWeekly(
+                    employer.startDate, endDate, employer.dayOfWeek
+                )
+            }
+
+            else -> {
+                ArrayList()
+            }
+        }
+    }
+
     private fun projectWeekly(
         startDate: String, endDate: String, dayOfWeek: String
     ): ArrayList<LocalDate> {
         val dates = ArrayList<LocalDate>()
         var workingDate = LocalDate.parse(startDate)
         workingDate = fixDateToDay(workingDate, dayOfWeek)
-        val curDate = LocalDate.now()
         val lastDate = LocalDate.parse(endDate)
         while (workingDate < lastDate) {
-            if (workingDate >= curDate) {
-                dates.add(workingDate)
-            }
+            dates.add(workingDate)
             workingDate = workingDate.plusWeeks(1)
         }
 
@@ -81,12 +100,9 @@ class PayDateProjections {
         val dates = ArrayList<LocalDate>()
         var workingDate = LocalDate.parse(startDate)
         workingDate = fixDateToDay(workingDate, dayOfWeek)
-        val curDate = LocalDate.now()
         val lastDate = LocalDate.parse(endDate)
         while (workingDate < lastDate) {
-            if (workingDate >= curDate) {
-                dates.add(workingDate)
-            }
+            dates.add(workingDate)
             workingDate = workingDate.plusWeeks(2)
         }
 
