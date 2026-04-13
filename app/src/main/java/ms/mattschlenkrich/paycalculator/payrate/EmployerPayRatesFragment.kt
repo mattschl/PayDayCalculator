@@ -204,13 +204,15 @@ class EmployerPayRatesFragment : Fragment() {
                     ) {
                         Card(
                             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                            shape = MaterialTheme.shapes.medium
+                            shape = MaterialTheme.shapes.medium,
+                            colors = CardDefaults.cardColors(containerColor = Color.White)
                         ) {
                             Text(
                                 text = stringResource(id = R.string.no_wages_have_been_set_for_this_employer),
                                 modifier = Modifier.padding(32.dp),
                                 textAlign = TextAlign.Center,
-                                fontSize = 18.sp
+                                fontSize = 18.sp,
+                                color = Color.Black
                             )
                         }
                     }
@@ -239,7 +241,8 @@ class EmployerPayRatesFragment : Fragment() {
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(onClick = onClick),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
             Row(
                 modifier = Modifier
@@ -251,7 +254,7 @@ class EmployerPayRatesFragment : Fragment() {
                 Text(
                     text = wage.eprEffectiveDate,
                     textDecoration = if (wage.eprIsDeleted) TextDecoration.LineThrough else null,
-                    color = if (wage.eprIsDeleted) Color.Red else Color.Unspecified,
+                    color = if (wage.eprIsDeleted) Color.Red else Color.Black,
                     fontSize = 18.sp
                 )
                 Text(
@@ -259,7 +262,7 @@ class EmployerPayRatesFragment : Fragment() {
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     textDecoration = if (wage.eprIsDeleted) TextDecoration.LineThrough else null,
-                    color = if (wage.eprIsDeleted) Color.Red else Color.Unspecified
+                    color = if (wage.eprIsDeleted) Color.Red else Color.Black
                 )
                 Text(
                     text = PayRateBasedOn.entries[wage.eprPerPeriod].type,
@@ -273,7 +276,7 @@ class EmployerPayRatesFragment : Fragment() {
     private fun gotoAddEmployer() {
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setPayRate(null)
-        requireView().findNavController().navigate(
+        view?.findNavController()?.navigate(
             EmployerPayRatesFragmentDirections.actionEmployerPayRatesFragmentToEmployerAddFragment()
         )
     }
@@ -282,7 +285,7 @@ class EmployerPayRatesFragment : Fragment() {
         mainViewModel.setEmployer(employer)
         mainViewModel.setPayRate(null)
         mainViewModel.setCallingFragment(TAG)
-        requireView().findNavController().navigate(
+        view?.findNavController()?.navigate(
             EmployerPayRatesFragmentDirections.actionEmployerPayRatesFragmentToEmployerPayRateAddFragment()
         )
     }
@@ -291,13 +294,7 @@ class EmployerPayRatesFragment : Fragment() {
         mainViewModel.setPayRate(wage)
         mainViewModel.setEmployer(employer)
         mainViewModel.addCallingFragment(TAG)
-        requireView().findNavController().navigate(
-            EmployerPayRatesFragmentDirections.actionEmployerPayRatesFragmentToEmployerWageUpdateFragment()
-        )
-    }
-
-    fun gotoEmployerWageUpdateFragment() {
-        requireView().findNavController().navigate(
+        view?.findNavController()?.navigate(
             EmployerPayRatesFragmentDirections.actionEmployerPayRatesFragmentToEmployerWageUpdateFragment()
         )
     }

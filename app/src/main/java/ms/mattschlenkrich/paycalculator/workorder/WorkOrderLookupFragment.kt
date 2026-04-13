@@ -1,148 +1,122 @@
 package ms.mattschlenkrich.paycalculator.workorder
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.data.Employers
-import ms.mattschlenkrich.paycalculator.data.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
-import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderViewBinding
+import androidx.navigation.fragment.findNavController
 import ms.mattschlenkrich.paycalculator.MainActivity
-import ms.mattschlenkrich.paycalculator.workorder.WorkOrderLookupAdapter
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_TIME
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
+import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
+import ms.mattschlenkrich.paycalculator.data.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.TempWorkOrderHistoryInfo
+import ms.mattschlenkrich.paycalculator.data.WorkOrder
+import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
 
-//private const val TAG = FRAG_WORK_ORDER_LOOKUP
+class WorkOrderLookupFragment : Fragment() {
 
-class WorkOrderLookupFragment : Fragment(R.layout.fragment_work_order_view) {
-
-    private var _binding: FragmentWorkOrderViewBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var workOrderViewModel: WorkOrderViewModel
-    private var curEmployer: Employers? = null
-    private var workOrderAdapter: WorkOrderLookupAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentWorkOrderViewBinding.inflate(
-            inflater, container, false
-        )
-        mView = binding.root
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.topMenuBar.title = getString(R.string.choose_a_work_order)
-        return mView
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        populateInitialView()
-        setClickActions()
-    }
+        return ComposeView(requireContext()).apply {
+            setContent {
+                val employer = mainViewModel.getEmployer()
+                var searchQuery by remember { mutableStateOf("") }
+                val workOrders by if (employer != null) {
+                    if (searchQuery.isBlank()) {
+                        workOrderViewModel.getWorkOrdersByEmployerId(employer.employerId)
+                            .observeAsState(emptyList())
+                    } else {
+                        workOrderViewModel.searchWorkOrders(employer.employerId, "%$searchQuery%")
+                            .observeAsState(emptyList())
+                    }
+                } else {
+                    remember { mutableStateOf(emptyList<WorkOrder>()) }
+                }
 
-    private fun populateInitialView() {
-        binding.apply {
-            tvEmployer.visibility = View.VISIBLE
-            spEmployers.visibility = View.INVISIBLE
-            fabNew.visibility = View.GONE
-            if (mainActivity.mainViewModel.getEmployer() != null) {
-                populateEmployer()
+                WorkOrderLookupScreen(
+                    employer = employer,
+                    searchQuery = searchQuery,
+                    onSearchQueryChange = { searchQuery = it },
+                    workOrders = workOrders,
+                    onWorkOrderSelected = { workOrder ->
+                        chooseThisWorkOrder(workOrder)
+                    },
+                    onBackClick = { findNavController().navigateUp() }
+                )
             }
         }
     }
 
-    private fun populateEmployer() {
-        binding.apply {
-            curEmployer = mainViewModel.getEmployer()
-            tvEmployer.text = curEmployer?.employerName
-            populateWorkOrders(curEmployer!!.employerId)
-        }
+    private fun chooseThisWorkOrder(workOrder: WorkOrder) {
+        setViewModelValues(workOrder)
+        gotoCallingFragment()
     }
 
-    private fun populateWorkOrders(employerId: Long) {
-        workOrderAdapter = WorkOrderLookupAdapter(
-            mainActivity, mView, this@WorkOrderLookupFragment
-        )
-        workOrderViewModel.getWorkOrdersByEmployerId(employerId).observe(
-            viewLifecycleOwner
-        ) { list ->
-            workOrderAdapter!!.differ.submitList(list)
-        }
-        binding.rvWorkOrders.apply {
-            layoutManager = LinearLayoutManager(mView.context)
-            adapter = workOrderAdapter!!
-        }
-    }
-
-    private fun setClickActions() {
-        binding.apply {
-            etWorkOrder.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?, start: Int, count: Int, after: Int
-                ) {
-//                    null
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                    null
-                }
-
-                override fun afterTextChanged(s: Editable?) {
-                    searchWorkOrders(etWorkOrder.text.toString())
-                }
-            })
-            btnCancel.setOnClickListener {
-                resetSearch()
+    private fun setViewModelValues(workOrder: WorkOrder) {
+        mainViewModel.apply {
+            setWorkOrder(workOrder)
+            setWorkOrderNumber(workOrder.woNumber)
+            getTempWorkOrderHistoryInfo()?.let { history ->
+                setTempWorkOrderHistoryInfo(
+                    TempWorkOrderHistoryInfo(
+                        history.woHistoryId,
+                        workOrder.woNumber,
+                        history.woHistoryWorkDate,
+                        history.woHistoryRegHours,
+                        history.woHistoryOtHours,
+                        history.woHistoryDblOtHours,
+                        history.woHistoryNote,
+                        history.woWorkPerformed,
+                        history.woArea,
+                        history.woHistoryNote,
+                        history.woMaterialQty,
+                        history.woMaterial
+                    )
+                )
             }
         }
     }
 
-    private fun resetSearch() {
-        binding.etWorkOrder.setText(getString(R.string.blank))
-        populateWorkOrders(curEmployer!!.employerId)
-    }
+    private fun gotoCallingFragment() {
+        val callingFragment = mainViewModel.getCallingFragment() ?: return
+        when {
+            callingFragment.contains(FRAG_WORK_ORDER_HISTORY_UPDATE) -> {
+                mainViewModel.removeCallingFragment(FRAG_WORK_ORDER_HISTORY_UPDATE)
+                findNavController().navigate(
+                    WorkOrderLookupFragmentDirections.actionWorkOrderLookupFragmentToWorkOrderHistoryUpdateFragment()
+                )
+            }
 
-    private fun searchWorkOrders(query: String) {
-        if (workOrderAdapter != null && curEmployer != null) {
-            val searchQuery = "%$query%"
-            workOrderViewModel.searchWorkOrders(curEmployer!!.employerId, searchQuery).observe(
-                viewLifecycleOwner
-            ) { list ->
-                workOrderAdapter!!.differ.submitList(list)
+            callingFragment.contains(FRAG_WORK_ORDER_HISTORY_ADD) -> {
+                mainViewModel.removeCallingFragment(FRAG_WORK_ORDER_HISTORY_ADD)
+                findNavController().navigate(
+                    WorkOrderLookupFragmentDirections.actionWorkOrderLookupFragmentToWorkOrderHistoryAddFragment()
+                )
+            }
+
+            callingFragment.contains(FRAG_WORK_DATE_TIME) -> {
+                mainViewModel.removeCallingFragment(FRAG_WORK_DATE_TIME)
+                findNavController().navigate(
+                    WorkOrderLookupFragmentDirections.actionWorkOrderLookupFragmentToWorkDateTimes()
+                )
             }
         }
-    }
-
-    fun gotoWorkOrderHistoryAddFragment() {
-        mView.findNavController().navigate(
-            WorkOrderLookupFragmentDirections.actionWorkOrderLookupFragmentToWorkOrderHistoryAddFragment()
-        )
-    }
-
-    fun gotoWorkOrderHistoryUpdateFragment() {
-        mView.findNavController().navigate(
-            WorkOrderLookupFragmentDirections.actionWorkOrderLookupFragmentToWorkOrderHistoryUpdateFragment()
-        )
-    }
-
-    fun gotoWorkDateTimesFragment() {
-        mView.findNavController().navigate(
-            WorkOrderLookupFragmentDirections.actionWorkOrderLookupFragmentToWorkDateTimes()
-        )
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 }

@@ -19,13 +19,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -76,42 +77,59 @@ class TaxRulesFragment : Fragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
-                TaxRulesScreen()
+                MaterialTheme {
+                    TaxRulesContent(
+                        workTaxViewModel = workTaxViewModel,
+                        mainViewModel = mainViewModel,
+                        onAddTaxRule = { taxType, effectiveDate, level ->
+                            gotoTaxRuleAdd(taxType, effectiveDate, level)
+                        },
+                        onUpdateTaxType = { type -> gotoTaxTypeUpdate(type) },
+                        onTaxRuleSelected = { rule ->
+                            mainViewModel.setTaxRule(rule)
+                            findNavController().navigate(
+                                TaxRulesFragmentDirections.actionTaxRulesFragmentToTaxRuleUpdateFragment()
+                            )
+                        },
+                        onAddTaxType = { gotoTaxTypeAdd() },
+                        onChooseEffectiveDate = { chooseNewEffectiveDate() },
+                        onBack = { findNavController().navigateUp() }
+                    )
+                }
             }
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun TaxRulesScreen() {
+    fun TaxRulesContent(
+        workTaxViewModel: WorkTaxViewModel,
+        mainViewModel: MainViewModel,
+        onAddTaxRule: (String, String, Int) -> Unit,
+        onUpdateTaxType: (TaxTypes) -> Unit,
+        onTaxRuleSelected: (WorkTaxRules) -> Unit,
+        onAddTaxType: () -> Unit,
+        onChooseEffectiveDate: () -> Unit,
+        onBack: () -> Unit
+    ) {
         val taxTypes by workTaxViewModel.getTaxTypes().observeAsState(emptyList())
         val effectiveDates by workTaxViewModel.getTaxEffectiveDates().observeAsState(emptyList())
 
-        var selectedTaxType by remember {
-            mutableStateOf<TaxTypes?>(
-                taxTypes.find { it.taxType == mainViewModel.getTaxTypeString() }
-                    ?: taxTypes.firstOrNull()
-            )
+        var selectedTaxType by remember { mutableStateOf<TaxTypes?>(null) }
+        var selectedEffectiveDate by remember { mutableStateOf<TaxEffectiveDates?>(null) }
+
+        LaunchedEffect(taxTypes) {
+            if (selectedTaxType == null && taxTypes.isNotEmpty()) {
+                selectedTaxType = taxTypes.find { it.taxType == mainViewModel.getTaxTypeString() }
+                    ?: taxTypes.first()
+            }
         }
 
-        // Update selectedTaxType when taxTypes finishes loading if nothing was selected yet
-        if (selectedTaxType == null && taxTypes.isNotEmpty()) {
-            selectedTaxType =
-                taxTypes.find { it.taxType == mainViewModel.getTaxTypeString() } ?: taxTypes.first()
-        }
-
-        var selectedEffectiveDate by remember {
-            mutableStateOf<TaxEffectiveDates?>(
-                effectiveDates.find { it.tdEffectiveDate == mainViewModel.getEffectiveDateString() }
-                    ?: effectiveDates.firstOrNull()
-            )
-        }
-
-        // Same for effectiveDates
-        if (selectedEffectiveDate == null && effectiveDates.isNotEmpty()) {
-            selectedEffectiveDate =
-                effectiveDates.find { it.tdEffectiveDate == mainViewModel.getEffectiveDateString() }
-                    ?: effectiveDates.first()
+        LaunchedEffect(effectiveDates) {
+            if (selectedEffectiveDate == null && effectiveDates.isNotEmpty()) {
+                selectedEffectiveDate =
+                    effectiveDates.find { it.tdEffectiveDate == mainViewModel.getEffectiveDateString() }
+                        ?: effectiveDates.first()
+            }
         }
 
         val taxRules by if (selectedTaxType != null && selectedEffectiveDate != null) {
@@ -120,25 +138,30 @@ class TaxRulesFragment : Fragment() {
                 selectedEffectiveDate!!.tdEffectiveDate
             ).observeAsState(emptyList())
         } else {
-            remember { mutableStateOf(emptyList<WorkTaxRules>()) }
+            remember { mutableStateOf(emptyList()) }
         }
 
         Scaffold(
             topBar = {
                 StandardTopAppBar(
-                    title = stringResource(R.string.view_universal_tax_rules)
+                    title = stringResource(R.string.view_universal_tax_rules),
+                    onBackClicked = onBack
                 )
             },
             floatingActionButton = {
-                FloatingActionButton(onClick = {
-                    if (selectedTaxType != null && selectedEffectiveDate != null) {
-                        gotoTaxRuleAdd(
-                            selectedTaxType!!.taxType,
-                            selectedEffectiveDate!!.tdEffectiveDate,
-                            taxRules.size
-                        )
-                    }
-                }) {
+                FloatingActionButton(
+                    onClick = {
+                        if (selectedTaxType != null && selectedEffectiveDate != null) {
+                            onAddTaxRule(
+                                selectedTaxType!!.taxType,
+                                selectedEffectiveDate!!.tdEffectiveDate,
+                                taxRules.size
+                            )
+                        }
+                    },
+                    containerColor = colorResource(id = R.color.dark_green),
+                    contentColor = colorResource(id = R.color.white)
+                ) {
                     Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_new))
                 }
             }
@@ -163,7 +186,7 @@ class TaxRulesFragment : Fragment() {
                     selectedItem = selectedTaxType ?: taxTypeOptions.last(),
                     onItemSelected = {
                         if (it.taxTypeId == -1L) {
-                            gotoTaxTypeAdd()
+                            onAddTaxType()
                         } else {
                             selectedTaxType = it
                         }
@@ -184,7 +207,7 @@ class TaxRulesFragment : Fragment() {
                     selectedItem = selectedEffectiveDate ?: dateOptions.last(),
                     onItemSelected = {
                         if (it.tdEffectiveDateId == -1L) {
-                            chooseNewEffectiveDate()
+                            onChooseEffectiveDate()
                         } else {
                             selectedEffectiveDate = it
                         }
@@ -201,8 +224,11 @@ class TaxRulesFragment : Fragment() {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { gotoTaxTypeUpdate(type) },
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                                .clickable { onUpdateTaxType(type) },
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer
+                            )
                         ) {
                             Text(
                                 text = "${stringResource(R.string.base_on)} ${TaxBasedOn.entries[type.ttBasedOn].basedOn}",
@@ -211,7 +237,8 @@ class TaxRulesFragment : Fragment() {
                                     .fillMaxWidth(),
                                 textAlign = TextAlign.Center,
                                 style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
                             )
                         }
                     }
@@ -247,7 +274,7 @@ class TaxRulesFragment : Fragment() {
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(taxRules) { rule ->
-                            TaxRuleItem(rule)
+                            TaxRuleItem(rule, onTaxRuleSelected)
                         }
                     }
                 }
@@ -256,17 +283,12 @@ class TaxRulesFragment : Fragment() {
     }
 
     @Composable
-    fun TaxRuleItem(rule: WorkTaxRules) {
+    fun TaxRuleItem(rule: WorkTaxRules, onClick: (WorkTaxRules) -> Unit) {
         Card(
             modifier = Modifier
                 .padding(4.dp)
                 .fillMaxWidth()
-                .clickable {
-                    mainViewModel.setTaxRule(rule)
-                    findNavController().navigate(
-                        TaxRulesFragmentDirections.actionTaxRulesFragmentToTaxRuleUpdateFragment()
-                    )
-                },
+                .clickable { onClick(rule) },
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             Column(modifier = Modifier.padding(8.dp)) {

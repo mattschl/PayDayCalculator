@@ -5,8 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
@@ -15,146 +25,111 @@ import ms.mattschlenkrich.paycalculator.common.FRAG_JOB_SPEC_VIEW
 import ms.mattschlenkrich.paycalculator.data.JobSpec
 import ms.mattschlenkrich.paycalculator.data.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
-import ms.mattschlenkrich.paycalculator.databinding.FragmentSingleItemUpdateBinding
 
+class JobSpecUpdateFragment : Fragment() {
 
-class JobSpecUpdateFragment : Fragment(R.layout.fragment_single_item_update) {
-
-    private var _binding: FragmentSingleItemUpdateBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var workOrderViewModel: WorkOrderViewModel
-
-    private val jobSpecList = ArrayList<JobSpec>()
-    private lateinit var oldJobSpec: JobSpec
     private val df = DateFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSingleItemUpdateBinding.inflate(
-            inflater, container, false
-        )
-        mView = binding.root
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.topMenuBar.title = getString(R.string.update_job_spec)
-        return mView
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setValues()
-        setClickActions()
-    }
+        return ComposeView(requireContext()).apply {
+            setContent {
+                val oldJobSpec = mainViewModel.getJobSpec()
+                var jobSpecName by remember { mutableStateOf(oldJobSpec?.jsName ?: "") }
+                val jobSpecList by workOrderViewModel.getJobSpecsAll().observeAsState(emptyList())
 
-    private fun setValues() {
-        populateJobSpecListForValidation()
-        if (mainViewModel.getJobSpec() != null) {
-            oldJobSpec = mainViewModel.getJobSpec()!!
-            binding.apply {
-                val display = getString(R.string.update_) + oldJobSpec.jsName
-                tvTitle.text = display
-                etItem.setText(oldJobSpec.jsName)
+                JobSpecUpdateScreen(
+                    title = if (oldJobSpec != null) {
+                        getString(R.string.update_) + oldJobSpec.jsName
+                    } else {
+                        getString(R.string.update_job_spec)
+                    },
+                    jobSpecName = jobSpecName,
+                    onJobSpecNameChange = { jobSpecName = it },
+                    onUpdateClick = {
+                        if (oldJobSpec != null) {
+                            updateJobSpecIfValid(oldJobSpec, jobSpecName, jobSpecList)
+                        }
+                    },
+                    onCancelClick = {
+                        gotoCallingFragment()
+                    },
+                    onMergeClick = {
+                        if (oldJobSpec != null) {
+                            // Merge logic is similar to WorkPerformed, but not yet fully implemented in legacy
+                            // For now, let's keep it consistent with WorkPerformed pattern if possible,
+                            // or show a toast if not supported yet.
+                            displayMessage("Merge not yet implemented for Job Specs")
+                        }
+                    }
+                )
             }
         }
     }
 
-    private fun populateJobSpecListForValidation() {
-        workOrderViewModel.getJobSpecsAll().observe(
-            viewLifecycleOwner
-        ) { list ->
-            jobSpecList.clear()
-            list.listIterator().forEach {
-                jobSpecList.add(it)
-            }
-        }
-    }
-
-    private fun setClickActions() {
-        binding.apply {
-            btnUpdate.setOnClickListener {
-                updateJobSpecIfValid()
-            }
-            btnCancel.setOnClickListener {
+    private fun updateJobSpecIfValid(
+        oldJobSpec: JobSpec,
+        newName: String,
+        jobSpecList: List<JobSpec>
+    ) {
+        val answer = validateJobSpec(oldJobSpec, newName, jobSpecList)
+        if (answer == ANSWER_OK) {
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    workOrderViewModel.updateJobSpec(
+                        JobSpec(
+                            oldJobSpec.jobSpecId,
+                            newName.trim(),
+                            false,
+                            df.getCurrentTimeAsString()
+                        )
+                    )
+                }
                 gotoCallingFragment()
             }
-        }
-    }
-
-    private fun updateJobSpecIfValid() {
-        val answer = validateJobSpec()
-        if (answer == ANSWER_OK) {
-            updateJobSpecAndContinue()
         } else {
             displayMessage(getString(R.string.error_) + answer)
         }
-
     }
 
-    private fun displayMessage(answer: String) {
-        Toast.makeText(mView.context, answer, Toast.LENGTH_LONG).show()
-    }
-
-    private fun validateJobSpec(): String {
-        binding.apply {
-            if (etItem.text.isNullOrBlank()) {
-                return getString(R.string.please_enter_a_valid_job_spec)
-            }
-            for (jobSpec in jobSpecList) {
-                if (jobSpec.jsName == binding.etItem.text.toString()
-                        .trim() && jobSpec.jsName != oldJobSpec.jsName
-                ) {
-                    return getString(R.string.this_job_spec_already_exists)
-                }
-            }
-            return ANSWER_OK
+    private fun validateJobSpec(
+        oldJobSpec: JobSpec,
+        newName: String,
+        jobSpecList: List<JobSpec>
+    ): String {
+        if (newName.isBlank()) {
+            return getString(R.string.please_enter_a_valid_job_spec)
         }
+        val trimmed = newName.trim()
+        if (jobSpecList.any { it.jsName == trimmed && it.jobSpecId != oldJobSpec.jobSpecId }) {
+            return getString(R.string.this_job_spec_already_exists)
+        }
+        return ANSWER_OK
     }
 
-    private fun updateJobSpecAndContinue() {
-        mainActivity.workOrderViewModel.updateJobSpec(
-            JobSpec(
-                oldJobSpec.jobSpecId,
-                binding.etItem.text.toString().trim(),
-                false,
-                df.getCurrentTimeAsString()
-            )
-        )
-        gotoCallingFragment()
+    private fun displayMessage(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 
     private fun gotoCallingFragment() {
-        mainViewModel.apply {
-            setJobSpec(null)
-            if (getCallingFragment()!!.contains(
-                    FRAG_JOB_SPEC_VIEW
-                )
-            ) {
-                gotoJobSpecViewFragment()
-            } else {
-                gotoWorkOrderUpdateFragment()
-            }
+        mainViewModel.setJobSpec(null)
+        val callingFragment = mainViewModel.getCallingFragment()
+        if (callingFragment != null && callingFragment.contains(FRAG_JOB_SPEC_VIEW)) {
+            findNavController().navigate(
+                JobSpecUpdateFragmentDirections.actionJobSpecUpdateFragmentToJobSpecViewFragment()
+            )
+        } else {
+            findNavController().navigate(
+                JobSpecUpdateFragmentDirections.actionJobSpecUpdateFragmentToWorkOrderUpdateFragment()
+            )
         }
-    }
-
-    private fun gotoJobSpecViewFragment() {
-        mView.findNavController().navigate(
-            JobSpecUpdateFragmentDirections.actionJobSpecUpdateFragmentToJobSpecViewFragment()
-        )
-    }
-
-    private fun gotoWorkOrderUpdateFragment() {
-        mView.findNavController().navigate(
-            JobSpecUpdateFragmentDirections.actionJobSpecUpdateFragmentToWorkOrderUpdateFragment()
-        )
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 }

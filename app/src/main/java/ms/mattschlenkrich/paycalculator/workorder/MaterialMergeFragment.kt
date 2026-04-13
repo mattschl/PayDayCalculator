@@ -1,381 +1,300 @@
 package ms.mattschlenkrich.paycalculator.workorder
 
 import android.app.AlertDialog
-import android.database.sqlite.SQLiteConstraintException
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.coroutines.CoroutineScope
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
-import ms.mattschlenkrich.paycalculator.common.FRAG_MATERIAL_MERGE
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_100
-import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.data.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.Material
 import ms.mattschlenkrich.paycalculator.data.MaterialAndChild
 import ms.mattschlenkrich.paycalculator.data.MaterialMerged
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
-import ms.mattschlenkrich.paycalculator.databinding.FragmentEntityMergeBinding
 
-private const val TAG = FRAG_MATERIAL_MERGE
+class MaterialMergeFragment : Fragment() {
 
-class MaterialMergeFragment : Fragment(R.layout.fragment_entity_merge) {
-
-    private var _binding: FragmentEntityMergeBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var workOrderViewModel: WorkOrderViewModel
-    private lateinit var materialList: List<Material>
 
-    private lateinit var childList: List<MaterialAndChild>
-    private lateinit var mParent: Material
-    private lateinit var mChild: Material
-    private val mainScope = CoroutineScope(Dispatchers.Main)
     private val df = DateFunctions()
     private val nf = NumberFunctions()
+
+    private var mParent by mutableStateOf<Material?>(null)
+    private var mChild by mutableStateOf<Material?>(null)
+    private var parentDescription by mutableStateOf("")
+    private var childDescription by mutableStateOf("")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentEntityMergeBinding.inflate(inflater, container, false)
-        mView = binding.root
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.topMenuBar.title = getString(R.string.marge_material)
-        return mView
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        populateValues()
-        setClickActions()
-    }
+        return ComposeView(requireContext()).apply {
+            setContent {
+                val materialList by workOrderViewModel.getMaterialsList()
+                    .observeAsState(emptyList())
 
-    private fun populateValues() {
-        populateUI()
-        populateMaterialLists()
-        populateFromCache()
-    }
-
-    private fun populateUI() {
-        binding.apply {
-            lblMaster.text = getString(R.string.master_material)
-            lblChild.text = getString(R.string.child_material_to_merge)
-        }
-    }
-
-    private fun populateMaterialLists() {
-        workOrderViewModel.getMaterialsList().observe(viewLifecycleOwner) { list ->
-            materialList = list
-            val mDescriptions = list.map { it.mName }
-            val wpDescriptionAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_normal, mDescriptions
-            )
-            val listAdapter = MaterialMergedAdapter(mainActivity, mView, this)
-            listAdapter.differ.submitList(list)
-            binding.apply {
-                acParent.setAdapter(wpDescriptionAdapter)
-                acChild.setAdapter(wpDescriptionAdapter)
-                rvMergedList.layoutManager = LinearLayoutManager(mView.context)
-                rvMergedList.adapter = listAdapter
-            }
-        }
-    }
-
-    private fun populateFromCache() {
-        mainViewModel.apply {
-            if (getMaterialId() != null) {
-                workOrderViewModel.getMaterial(getMaterialId()!!)
-                    .observe(viewLifecycleOwner) { material ->
-                        if (getMaterialIsParent()) {
-                            chooseAsParent(material)
-                        } else {
-                            chooseAsChild(material)
-                        }
-                    }
-            }
-        }
-    }
-
-    private fun setClickActions() {
-        binding.apply {
-            acParent.setOnItemClickListener { _, _, _, _ ->
-                chooseAsParent(materialList.first { it.mName == acParent.text.toString() })
-            }
-            acParent.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?, start: Int, count: Int, after: Int
-                ) {
-//                    null
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                    setCurWorkOrder()
-                }
-
-                override fun afterTextChanged(s: Editable?) {
-                    if (findDescription(acParent.text.toString())) {
-                        populateChildren()
-                    } else {
-                        crdChildren.visibility = View.GONE
-                    }
-                }
-            })
-            acChild.setOnItemClickListener { _, _, _, _ ->
-                chooseAsChild(materialList.first { it.mName == acChild.text.toString() })
-            }
-            acChild.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?, start: Int, count: Int, after: Int
-                ) {
-//                    null
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                    setCurWorkOrder()
-                }
-
-                override fun afterTextChanged(s: Editable?) {
-                    if (findDescription(acChild.text.toString())) {
-                        if (childList.any { it.materialParent.mName == acChild.text.toString() }) {
-                            acChild.error =
-                                getString(R.string.this_work_performed_child_already_exists)
-                        }
-                    }
-                }
-            })
-            btnMerge.setOnClickListener { validateDescriptions() }
-//            btnMerge.setOnClickListener { chooseOptionsForMerge() }
-            btnDone.setOnClickListener { gotoCallingFragment() }
-
-        }
-    }
-
-    private fun validateDescriptions() {
-        binding.apply {
-            if (acParent.text.toString().isEmpty()) {
-                acParent.error = getString(R.string.this_is_required)
-                acParent.requestFocus()
-            } else if (acChild.text.toString().isEmpty()) {
-                acChild.error = getString(R.string.this_is_required)
-                acChild.requestFocus()
-            } else {
-                if (!findDescription(acParent.text.toString())) {
-                    chooseToAddDescriptionAndMerge(acParent.text.toString())
-                } else if (!findDescription(acChild.text.toString())) {
-                    chooseToAddDescriptionAndMerge(acChild.text.toString())
+                val childList by if (mParent != null) {
+                    workOrderViewModel.getMaterialAndChildList(mParent!!.materialId)
+                        .observeAsState(emptyList())
                 } else {
-                    chooseOptionsForMerge()
+                    remember { mutableStateOf(emptyList()) }
                 }
-            }
-        }
-    }
 
-    private fun chooseToAddDescriptionAndMerge(newDescription: String) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(getString(R.string.add_new_material))
-            .setPositiveButton(getString(R.string.add)) { _, _ ->
-                mainScope.launch {
-                    insertNewMaterial(newDescription)
-                    delay(WAIT_250)
-                    binding.apply {
-                        workOrderViewModel.getMaterial(acParent.text.toString())
-                            .observe(viewLifecycleOwner) { mat ->
-                                mParent = mat
+                // Initial selection from cache
+                LaunchedEffect(Unit) {
+                    val cachedId = mainViewModel.getMaterialId()
+                    if (cachedId != null) {
+                        val m = withContext(Dispatchers.IO) {
+                            workOrderViewModel.getMaterialSync(cachedId)
+                        }
+                        if (m != null) {
+                            if (mainViewModel.getMaterialIsParent()) {
+                                chooseAsParent(m)
+                            } else {
+                                chooseAsChild(m)
                             }
-                        workOrderViewModel.getMaterial(acChild.text.toString())
-                            .observe(viewLifecycleOwner) { mat ->
-                                mChild = mat
-                            }
-                    }
-                    populateMaterialLists()
-                    chooseOptionsForMerge()
-                }
-            }
-            .setNegativeButton(getString(R.string.cancel), null)
-            .show()
-    }
-
-    private fun insertNewMaterial(newDescription: String) {
-        workOrderViewModel.insertMaterial(
-            Material(
-                nf.generateRandomIdAsLong(),
-                newDescription,
-                0.0,
-                0.0,
-                false,
-                df.getCurrentTimeAsString()
-
-            )
-        )
-    }
-
-    private fun findDescription(mName: String): Boolean {
-        try {
-            return materialList.any { it.mName == mName }
-        } catch (e: UninitializedPropertyAccessException) {
-            Log.d(TAG, "exception is ${e.toString()}")
-            return false
-        }
-    }
-
-    private fun chooseOptionsForMerge() {
-        AlertDialog.Builder(mView.context)
-            .setTitle(getString(R.string.choose_merge_option))
-            .setMessage(getString(R.string.either_merge_and_replace_or_merge_))
-            .setPositiveButton(getString(R.string.merge_and_replace)) { _, _ ->
-                mergeAndReplace()
-            }
-            .setNeutralButton(getString(R.string.merge_and_keep)) { _, _ ->
-                mergeAndKeep()
-            }
-            .setNegativeButton(getString(R.string.cancel), null)
-            .show()
-    }
-
-    private fun mergeAndReplace() {
-        mainScope.launch {
-//            Log.d(
-//                TAG,
-//                "merge and replace called wpParent is ${wpParent.wpDescription} -- wpChild is ${wpChild.wpDescription}"
-//            )
-            try {
-                Log.d(
-                    TAG,
-                    "merge and replace called -- mParent is ${mParent.mName}, mChild is ${mChild.mName}"
-                )
-                workOrderViewModel.updateMaterialMerged(
-                    mChild.materialId,
-                    mParent.materialId,
-                    df.getCurrentTimeAsString()
-                )
-                delay(WAIT_250)
-            } catch (e: SQLiteConstraintException) {
-                Log.d(TAG, e.message.toString())
-            } finally {
-                try {
-                    workOrderViewModel.deleteMaterialMerged(
-                        mChild.materialId,
-                    )
-                    workOrderViewModel.deleteMaterial(
-                        mChild.materialId,
-                        df.getCurrentTimeAsString()
-                    )
-                } catch (e: Exception) {
-                    Log.d(TAG, e.message.toString())
-                    workOrderViewModel.deleteMaterialMerged(
-                        mChild.materialId,
-                    )
-                    workOrderViewModel.deleteMaterial(
-                        mChild.materialId,
-                        df.getCurrentTimeAsString()
-                    )
-                } finally {
-                    populateChildren()
-                    binding.apply {
-                        acParent.setText(mParent.mName)
-                        acChild.setText("")
+                        }
                     }
                 }
+
+                MaterialMergeScreen(
+                    materialList = materialList,
+                    parentDescription = parentDescription,
+                    onParentDescriptionChange = { description ->
+                        parentDescription = description
+                        mParent = materialList.find { it.mName == description }
+                    },
+                    onParentSelected = {
+                        chooseAsParent(it)
+                    },
+                    childList = childList,
+                    onRemoveChild = {
+                        workOrderViewModel.deleteMaterialMerged(it.materialMerged.materialMergeId)
+                    },
+                    childDescription = childDescription,
+                    onChildDescriptionChange = { description ->
+                        childDescription = description
+                        mChild = materialList.find { it.mName == description }
+                    },
+                    onChildSelected = {
+                        chooseAsChild(it)
+                    },
+                    onMergeClick = {
+                        if (parentDescription.isNotBlank()) {
+                            lifecycleScope.launch {
+                                val existingParent = withContext(Dispatchers.IO) {
+                                    workOrderViewModel.getMaterialSync(parentDescription)
+                                }
+                                if (existingParent == null) {
+                                    chooseToAddDescriptionAndMerge(parentDescription)
+                                } else {
+                                    mParent = existingParent
+                                    val currentChildDesc = childDescription
+                                    if (currentChildDesc.isNotBlank()) {
+                                        val existingChild = withContext(Dispatchers.IO) {
+                                            workOrderViewModel.getMaterialSync(currentChildDesc)
+                                        }
+                                        if (existingChild == null) {
+                                            chooseToAddChildAndMerge(currentChildDesc)
+                                        } else if (existingChild.materialId != existingParent.materialId) {
+                                            mChild = existingChild
+                                            chooseOptionsForMerge(existingParent, existingChild) {
+                                                mChild = null
+                                                childDescription = ""
+                                            }
+                                        }
+                                    } else if (mChild != null && mChild!!.materialId != existingParent.materialId) {
+                                        chooseOptionsForMerge(existingParent, mChild!!) {
+                                            mChild = null
+                                            childDescription = ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    onDoneClick = {
+                        findNavController().navigate(
+                            MaterialMergeFragmentDirections.actionMaterialMergeFragmentToMaterialUpdateFragment()
+                        )
+                    },
+                    onListItemSelected = {
+                        if (mParent == null) {
+                            chooseAsParent(it)
+                        } else {
+                            chooseAsChild(it)
+                        }
+                    }
+                )
             }
-            populateMaterialLists()
         }
-    }
-
-    private fun mergeAndKeep() {
-        workOrderViewModel.insertMaterialMerged(
-            MaterialMerged(
-                nf.generateRandomIdAsLong(),
-                mParent.materialId,
-                mChild.materialId,
-                false,
-                df.getCurrentTimeAsString()
-            )
-
-        )
-        populateChildren()
-        binding.acChild.setText("")
     }
 
     fun chooseAsParent(material: Material) {
-        mainScope.launch {
-            binding.apply {
-                mParent = material
-                Log.d(TAG, "chooseToMergeAsParent called -- mParent is ${mParent.mName}")
-                mainViewModel.apply {
-                    setMaterial(mParent)
-                    setMaterialId(mParent.materialId)
-                    setMaterialIsParent(true)
-                }
-                acParent.setText(mParent.mName)
-                delay(WAIT_100)
-                populateChildren()
-            }
-        }
-    }
-
-    private fun populateChildren() {
-        binding.apply {
-            workOrderViewModel.getMaterialAndChildList(mParent.materialId)
-                .observe(viewLifecycleOwner) { list ->
-                    childList = list
-                    if (list.isNotEmpty()) {
-                        crdChildren.visibility = View.VISIBLE
-                        val childAdapter =
-                            MaterialChildrenAdapter(mView, this@MaterialMergeFragment)
-                        childAdapter.differ.submitList(list)
-                        rvChildren.apply {
-                            layoutManager = LinearLayoutManager(mView.context)
-                            adapter = childAdapter
-                        }
-                    } else {
-                        crdChildren.visibility = View.GONE
-                    }
-                }
-        }
+        mParent = material
+        parentDescription = material.mName
+        mainViewModel.setMaterialId(material.materialId)
+        mainViewModel.setMaterialIsParent(true)
     }
 
     fun chooseAsChild(material: Material) {
-        binding.apply {
-            mChild = material
-            acChild.setText(material.mName)
-        }
-    }
-
-    private fun gotoCallingFragment() {
-        gotoMaterialUpdateFragment()
-    }
-
-    fun gotoMaterialUpdateFragment() {
-        mView.findNavController().navigate(
-            MaterialMergeFragmentDirections.actionMaterialMergeFragmentToMaterialUpdateFragment()
-        )
+        mChild = material
+        childDescription = material.mName
     }
 
     fun removeMaterialAsChild(materialAndChild: MaterialAndChild) {
         workOrderViewModel.deleteMaterialMerged(materialAndChild.materialMerged.materialMergeId)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
+    private fun chooseToAddDescriptionAndMerge(newName: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.add_new_material))
+            .setMessage(
+                getString(
+                    R.string.the_material_does_not_exist_would_you_like_to_add_it,
+                    newName
+                )
+            )
+            .setPositiveButton(getString(R.string.add)) { _, _ ->
+                lifecycleScope.launch {
+                    val existing = withContext(Dispatchers.IO) {
+                        workOrderViewModel.getMaterialSync(newName)
+                    }
+                    if (existing == null) {
+                        val newMaterial = Material(
+                            nf.generateRandomIdAsLong(),
+                            newName,
+                            0.0,
+                            0.0,
+                            false,
+                            df.getCurrentTimeAsString()
+                        )
+                        workOrderViewModel.insertMaterial(newMaterial).join()
+                        val newlyCreated = withContext(Dispatchers.IO) {
+                            workOrderViewModel.getMaterialSync(newName)
+                        }
+                        if (newlyCreated != null) {
+                            chooseAsParent(newlyCreated)
+                        }
+                    } else {
+                        chooseAsParent(existing)
+                    }
+                }
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun chooseToAddChildAndMerge(newName: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.add_new_material))
+            .setMessage(
+                getString(
+                    R.string.the_material_does_not_exist_would_you_like_to_add_it,
+                    newName
+                )
+            )
+            .setPositiveButton(getString(R.string.add)) { _, _ ->
+                lifecycleScope.launch {
+                    val existing = withContext(Dispatchers.IO) {
+                        workOrderViewModel.getMaterialSync(newName)
+                    }
+                    if (existing == null) {
+                        val newMaterial = Material(
+                            nf.generateRandomIdAsLong(),
+                            newName,
+                            0.0,
+                            0.0,
+                            false,
+                            df.getCurrentTimeAsString()
+                        )
+                        workOrderViewModel.insertMaterial(newMaterial).join()
+                        val newlyCreated = withContext(Dispatchers.IO) {
+                            workOrderViewModel.getMaterialSync(newName)
+                        }
+                        if (newlyCreated != null) {
+                            chooseAsChild(newlyCreated)
+                        }
+                    } else {
+                        chooseAsChild(existing)
+                    }
+                }
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun chooseOptionsForMerge(parent: Material, child: Material, onMerged: () -> Unit) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.choose_merge_option))
+            .setMessage(getString(R.string.either_merge_and_replace_or_merge_))
+            .setPositiveButton(getString(R.string.merge_and_replace)) { _, _ ->
+                mergeAndReplace(parent, child, onMerged)
+            }
+            .setNeutralButton(getString(R.string.merge_and_keep)) { _, _ ->
+                mergeAndKeep(parent, child, onMerged)
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun mergeAndReplace(parent: Material, child: Material, onMerged: () -> Unit) {
+        lifecycleScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    workOrderViewModel.updateMaterialMerged(
+                        child.materialId,
+                        parent.materialId,
+                        df.getCurrentTimeAsString()
+                    ).join()
+                    delay(WAIT_100)
+                    workOrderViewModel.deleteMaterialMerged(child.materialId).join()
+                    workOrderViewModel.deleteMaterial(child.materialId, df.getCurrentTimeAsString())
+                        .join()
+                }
+                onMerged()
+            } catch (e: Exception) {
+                // handle error
+            }
+        }
+    }
+
+    private fun mergeAndKeep(parent: Material, child: Material, onMerged: () -> Unit) {
+        lifecycleScope.launch {
+            workOrderViewModel.insertMaterialMerged(
+                MaterialMerged(
+                    nf.generateRandomIdAsLong(),
+                    parent.materialId,
+                    child.materialId,
+                    false,
+                    df.getCurrentTimeAsString()
+                )
+            )
+            onMerged()
+        }
     }
 }

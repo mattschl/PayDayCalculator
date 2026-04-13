@@ -1,110 +1,149 @@
 package ms.mattschlenkrich.paycalculator.workorder
 
-
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
-import ms.mattschlenkrich.paycalculator.common.ExceptionUnknown
 import ms.mattschlenkrich.paycalculator.common.FRAG_MATERIAL_VIEW
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.Material
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
-import ms.mattschlenkrich.paycalculator.databinding.FragmentMaterialUpdateBinding
 
 private const val TAG = "MaterialUpdateFragment"
 
-class MaterialUpdateFragment : Fragment(R.layout.fragment_material_update) {
+class MaterialUpdateFragment : Fragment() {
 
-    private var _binding: FragmentMaterialUpdateBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-
-    private val materialList = ArrayList<Material>()
     private lateinit var mainViewModel: MainViewModel
     private lateinit var workOrderViewModel: WorkOrderViewModel
-    private lateinit var oldMaterial: Material
     private val df = DateFunctions()
     private val nf = NumberFunctions()
-    private val mainScope = CoroutineScope(Dispatchers.Main)
+    private var materialList = listOf<Material>()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentMaterialUpdateBinding.inflate(
-            inflater, container, false
-        )
-        mView = binding.root
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.topMenuBar.title = getString(R.string.update_material_description)
-        return mView
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setInitialValues()
-        setClickActions()
-    }
+        val oldMaterial = mainViewModel.getMaterial() ?: return View(requireContext())
 
-    private fun setInitialValues() {
-        populateMaterialListForValidation()
-        if (mainViewModel.getMaterial() != null) {
-            oldMaterial = mainViewModel.getMaterial()!!
-            binding.apply {
-                val display = getString(R.string.update_) + oldMaterial.mName
-                tvTitle.text = display
-                etMaterial.setText(oldMaterial.mName)
-                etPrice.setText(nf.displayDollars(oldMaterial.mPrice))
-                etCost.setText(nf.displayDollars(oldMaterial.mCost))
+        workOrderViewModel.getMaterialsList().observe(viewLifecycleOwner) {
+            materialList = it
+        }
+
+        return ComposeView(requireContext()).apply {
+            setContent {
+                var name by remember { mutableStateOf(oldMaterial.mName) }
+                var cost by remember { mutableStateOf(nf.displayDollars(oldMaterial.mCost)) }
+                var price by remember { mutableStateOf(nf.displayDollars(oldMaterial.mPrice)) }
+
+                MaterialUpdateScreen(
+                    name = name,
+                    onNameChange = { name = it },
+                    cost = cost,
+                    onCostChange = { cost = it },
+                    price = price,
+                    onPriceChange = { price = it },
+                    onUpdateClick = {
+                        val validation = validateMaterial(name, cost, price, oldMaterial)
+                        if (validation == ANSWER_OK) {
+                            updateMaterial(name, cost, price, oldMaterial)
+                            gotoCallingFragment()
+                        } else {
+                            Toast.makeText(requireContext(), validation, Toast.LENGTH_LONG).show()
+                        }
+                    },
+                    onMergeClick = {
+                        val validation = validateMaterial(name, cost, price, oldMaterial)
+                        if (validation == ANSWER_OK) {
+                            chooseMergeOptions(name, cost, price, oldMaterial)
+                        } else {
+                            Toast.makeText(requireContext(), validation, Toast.LENGTH_LONG).show()
+                        }
+                    },
+                    onCancelClick = { gotoCallingFragment() },
+                    title = stringResource(R.string.update_) + oldMaterial.mName
+                )
             }
         }
     }
 
-    private fun populateMaterialListForValidation() {
-        workOrderViewModel.getMaterialsList().observe(viewLifecycleOwner) { list ->
-            materialList.clear()
-            for (material in list.listIterator()) {
-                materialList.add(material)
+    private fun validateMaterial(
+        name: String,
+        cost: String,
+        price: String,
+        oldMaterial: Material
+    ): String {
+        if (name.isBlank()) {
+            return getString(R.string.please_enter_a_new_name_for_this_material)
+        }
+        if (cost.isBlank()) {
+            return getString(R.string.there_needs_to_be_a_cost_including_zero)
+        }
+        if (price.isBlank()) {
+            return getString(R.string.there_needs_to_be_a_price_including_zero)
+        }
+        for (material in materialList) {
+            if (material.mName == name.trim() && name.trim() != oldMaterial.mName
+            ) {
+                return getString(R.string.this_material_already_exists)
             }
         }
-    }
-
-    private fun setClickActions() {
-        binding.apply {
-            btnUpdate.setOnClickListener {
-                updateMaterialIfValid()
-            }
-            btnCancel.setOnClickListener {
-                gotoCallingFragment()
-            }
-            btnMerge.setOnClickListener {
-                chooseMergeOptions()
-            }
+        if (nf.getDoubleFromDollars(cost) > nf.getDoubleFromDollars(price)) {
+            return getString(R.string.the_cost_is_greater_than_the_price)
         }
+        return ANSWER_OK
     }
 
-    private fun chooseMergeOptions() {
-        AlertDialog.Builder(mView.context)
+    private fun updateMaterial(
+        name: String,
+        cost: String,
+        price: String,
+        oldMaterial: Material
+    ) {
+        val material = Material(
+            oldMaterial.materialId,
+            name.trim(),
+            nf.getDoubleFromDollars(cost.trim()),
+            nf.getDoubleFromDollars(price.trim()),
+            oldMaterial.mIsDeleted,
+            df.getCurrentTimeAsString()
+        )
+        workOrderViewModel.updateMaterial(material)
+        mainViewModel.setMaterial(material)
+    }
+
+    private fun chooseMergeOptions(
+        name: String,
+        cost: String,
+        price: String,
+        oldMaterial: Material
+    ) {
+        AlertDialog.Builder(requireContext())
             .setTitle(
                 getString(
                     R.string.choose_merge_option_for,
-                    binding.etMaterial.text.toString().trim()
+                    name.trim()
                 )
             )
             .setItems(
@@ -115,124 +154,43 @@ class MaterialUpdateFragment : Fragment(R.layout.fragment_material_update) {
                 )
             ) { _, pos ->
                 when (pos) {
-                    0 -> {
-                        setOptionsForMergeAndGotoMerge(true)
-                    }
-
-                    1 -> {
-                        setOptionsForMergeAndGotoMerge(false)
-                    }
+                    0 -> setOptionsForMergeAndGotoMerge(name, cost, price, oldMaterial, true)
+                    1 -> setOptionsForMergeAndGotoMerge(name, cost, price, oldMaterial, false)
                 }
             }
             .setNeutralButton(getString(R.string.cancel), null)
             .show()
     }
 
-    private fun setOptionsForMergeAndGotoMerge(isMaster: Boolean) {
-        mainScope.launch {
-            try {
-                updateMaterialIfValid(false)
-                mainViewModel.setMaterialId(oldMaterial.materialId)
-                mainViewModel.setWorkPerformedIsMaster(isMaster)
-                mainViewModel.addCallingFragment(TAG)
-                gotoMaterialMergeFragment()
-            } catch (e: ExceptionUnknown) {
-                Log.d(
-                    TAG,
-                    "exception is ${e.toString()}"
-                )
-            }
-
-        }
-    }
-
-    private fun updateMaterialIfValid(gotoCallingFragment: Boolean = true) {
-        val answer = validateMaterial()
-        if (answer == ANSWER_OK) {
-            updateMaterial(gotoCallingFragment)
-        } else {
-            displayMessage(getString(R.string.error_) + answer)
-        }
-    }
-
-    private fun displayMessage(answer: String) {
-        Toast.makeText(mView.context, answer, Toast.LENGTH_LONG).show()
-    }
-
-    private fun validateMaterial(): String {
-        binding.apply {
-            if (etMaterial.text.isNullOrBlank()) {
-                return getString(R.string.please_enter_a_new_name_for_this_material)
-            }
-            if (etCost.text.isNullOrBlank()) {
-                return getString(R.string.there_needs_to_be_a_cost_including_zero)
-            }
-            if (etPrice.text.isNullOrBlank()) {
-                return getString(R.string.there_needs_to_be_a_price_including_zero)
-            }
-            for (material in materialList) {
-                if (material.mName == etMaterial.text.toString()
-                        .trim() && etMaterial.text.toString().trim() != oldMaterial.mName
-                ) {
-                    return getString(R.string.this_material_already_exists)
-                }
-            }
-            if (nf.getDoubleFromDollars(etCost.text.toString()) > nf.getDoubleFromDollars(etPrice.text.toString())) {
-                return getString(R.string.the_cost_is_greater_than_the_price)
-            }
-        }
-        return ANSWER_OK
-    }
-
-    private fun getCurMaterial(): Material {
-        binding.apply {
-            return Material(
-                oldMaterial.materialId,
-                etMaterial.text.toString().trim(),
-                nf.getDoubleFromDollars(etCost.text.toString().trim()),
-                nf.getDoubleFromDollars(etPrice.text.toString().trim()),
-                false,
-                df.getCurrentTimeAsString()
+    private fun setOptionsForMergeAndGotoMerge(
+        name: String,
+        cost: String,
+        price: String,
+        oldMaterial: Material,
+        isMaster: Boolean
+    ) {
+        lifecycleScope.launch {
+            updateMaterial(name, cost, price, oldMaterial)
+            mainViewModel.setMaterialId(oldMaterial.materialId)
+            mainViewModel.setMaterialIsParent(isMaster)
+            mainViewModel.addCallingFragment(TAG)
+            findNavController().navigate(
+                MaterialUpdateFragmentDirections.actionMaterialUpdateFragmentToMaterialMergeFragment()
             )
         }
     }
 
-    private fun updateMaterial(gotoCallingFragment: Boolean = true) {
-        workOrderViewModel.updateMaterial(getCurMaterial())
-        if (gotoCallingFragment) gotoCallingFragment()
-    }
-
     private fun gotoCallingFragment() {
-        mainViewModel.apply {
-            setMaterial(null)
-            if (getCallingFragment()!!.contains(FRAG_MATERIAL_VIEW)) {
-                gotoMaterialViewFragment()
-            } else {
-                gotoWorkOrderHistoryUpdateFragment()
-            }
+        mainViewModel.setMaterial(null)
+        val callingFragment = mainViewModel.getCallingFragment()
+        if (callingFragment != null && callingFragment.contains(FRAG_MATERIAL_VIEW)) {
+            findNavController().navigate(
+                MaterialUpdateFragmentDirections.actionMaterialUpdateFragmentToMaterialViewFragment()
+            )
+        } else {
+            findNavController().navigate(
+                MaterialUpdateFragmentDirections.actionMaterialUpdateFragmentToWorkOrderHistoryUpdateFragment()
+            )
         }
-    }
-
-    private fun gotoMaterialViewFragment() {
-        mView.findNavController().navigate(
-            MaterialUpdateFragmentDirections.actionMaterialUpdateFragmentToMaterialViewFragment()
-        )
-    }
-
-    private fun gotoWorkOrderHistoryUpdateFragment() {
-        mView.findNavController().navigate(
-            MaterialUpdateFragmentDirections.actionMaterialUpdateFragmentToWorkOrderHistoryUpdateFragment()
-        )
-    }
-
-    private fun gotoMaterialMergeFragment() {
-        mView.findNavController().navigate(
-            MaterialUpdateFragmentDirections.actionMaterialUpdateFragmentToMaterialMergeFragment()
-        )
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 }

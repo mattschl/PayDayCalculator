@@ -12,6 +12,9 @@ class PayDayViewModel(
     fun getCutOffDates(employerId: Long) =
         payDayRepository.getCutOffDates(employerId)
 
+    suspend fun getCutOffDatesSync(employerId: Long) =
+        payDayRepository.getCutOffDatesSync(employerId)
+
     fun insertPayPeriod(cutOff: PayPeriods) =
         viewModelScope.launch {
             payDayRepository.insertPayPeriod(cutOff)

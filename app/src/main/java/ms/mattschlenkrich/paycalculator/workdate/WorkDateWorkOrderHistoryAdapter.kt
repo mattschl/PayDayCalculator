@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
@@ -16,8 +17,6 @@ import ms.mattschlenkrich.paycalculator.common.VisualsFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkOrderHistoryItemBinding
-import ms.mattschlenkrich.paycalculator.MainActivity
-import ms.mattschlenkrich.paycalculator.workdate.WorkDateUpdateFragment
 
 class WorkDateWorkOrderHistoryAdapter(
     private val workOrderHistory: ArrayList<WorkOrderHistoryWithDates>,
@@ -125,8 +124,7 @@ class WorkDateWorkOrderHistoryAdapter(
     }
 
     private fun gotoWorkOrderHistoryUpdate(history: WorkOrderHistoryWithDates) {
-        mainViewModel.setWorkOrderHistory(history.history)
-        workDateUpdateFragment.gotoWorkOrderHistoryUpdateFragment()
+        workDateUpdateFragment.gotoWorkOrderHistoryUpdate(history)
     }
 
 }

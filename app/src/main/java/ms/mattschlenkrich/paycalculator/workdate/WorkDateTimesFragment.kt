@@ -4,17 +4,18 @@ import android.app.AlertDialog
 import android.app.TimePickerDialog
 import android.database.sqlite.SQLiteConstraintException
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +25,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
@@ -35,33 +37,27 @@ import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
+import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.Employers
-import ms.mattschlenkrich.paycalculator.data.WorkDates
+import ms.mattschlenkrich.paycalculator.data.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.PayDayViewModel
+import ms.mattschlenkrich.paycalculator.data.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.data.TimeWorkedByDay
+import ms.mattschlenkrich.paycalculator.data.WorkDates
 import ms.mattschlenkrich.paycalculator.data.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorkedCombined
-import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
-import ms.mattschlenkrich.paycalculator.data.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.PayDayViewModel
-import ms.mattschlenkrich.paycalculator.data.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkTimeViewModel
-import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkDateTimeBinding
 import ms.mattschlenkrich.paycalculator.logic.IWorkTimesFragment
 import ms.mattschlenkrich.paycalculator.logic.WorkTimes
-import ms.mattschlenkrich.paycalculator.MainActivity
-import ms.mattschlenkrich.paycalculator.workdate.WorkDateTimesAdapter
 import java.util.Calendar
 
 private const val TAG = FRAG_WORK_DATE_TIME
 
-class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkTimesFragment {
+class WorkDateTimesFragment : Fragment(), IWorkTimesFragment {
 
-    private var _binding: FragmentWorkDateTimeBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var workTimeViewModel: WorkTimeViewModel
@@ -72,12 +68,22 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
     private lateinit var curEmployer: Employers
     private lateinit var curDate: WorkDates
     private var curWorkOrder: WorkOrder? = null
-    private lateinit var workOrderList: List<WorkOrder>
-    private lateinit var existingHistories: List<WorkOrderHistoryTimeWorkedCombined>
+    private var workOrderList: List<WorkOrder> = emptyList()
+    private var existingHistories: List<WorkOrderHistoryTimeWorkedCombined> = emptyList()
     private lateinit var workTimes: WorkTimes
     private lateinit var timeWorkedByDayData: TimeWorkedByDay
-    private lateinit var startTime: Calendar
-    private lateinit var endTime: Calendar
+    private var startTime by mutableStateOf(Calendar.getInstance())
+    private var endTime by mutableStateOf(Calendar.getInstance())
+    private var workOrderNumber by mutableStateOf("")
+    private var workOrderSuggestions by mutableStateOf(listOf<String>())
+    private var workOrderButtonText by mutableStateOf("")
+    private var workOrderInfoText by mutableStateOf("")
+    private var hoursSummaryText by mutableStateOf("")
+    private var infoText by mutableStateOf("")
+    private var totalTimeText by mutableStateOf("")
+    private var selectedTimeType by mutableIntStateOf(TimeWorkedTypes.REG_HOURS.value)
+    private var existingTimes by mutableStateOf(listOf<WorkOrderHistoryTimeWorkedCombined>())
+
     private lateinit var timeWorkedByDay: TimeWorkedByDay
     private val df = DateFunctions()
     private val nf = NumberFunctions()
@@ -89,8 +95,6 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentWorkDateTimeBinding.inflate(inflater, container, false)
-        mView = binding.root
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workTimeViewModel = mainActivity.workTimeViewModel
@@ -101,13 +105,111 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         startTime = Calendar.getInstance()
         endTime = Calendar.getInstance()
         mainActivity.topMenuBar.title = getString(R.string.enter_work_time)
-        return mView
+
+        return ComposeView(requireContext()).apply {
+            setContent {
+                WorkDateTimesScreen(
+                    infoText = infoText,
+                    hoursSummaryText = hoursSummaryText,
+                    workOrderNumber = workOrderNumber,
+                    onWorkOrderNumberChange = {
+                        workOrderNumber = it
+                        setCurWorkOrder()
+                    },
+                    workOrderSuggestions = workOrderSuggestions,
+                    workOrderButtonText = workOrderButtonText,
+                    onWorkOrderButtonClick = {
+                        if (workOrderButtonText == getString(R.string.edit)) {
+                            gotoWorkOrderUpdate()
+                        } else {
+                            gotoWorkOrderAdd()
+                        }
+                    },
+                    workOrderInfoText = workOrderInfoText,
+                    startTime = startTime,
+                    endTime = endTime,
+                    totalTimeText = totalTimeText,
+                    selectedTimeType = selectedTimeType,
+                    onTimeTypeChange = { selectedTimeType = it },
+                    onStartTimeClick = { showStartTimePicker() },
+                    onEndTimeClick = { showEndTimePicker() },
+                    onEnterTimeClick = { validateWorkOrderNumberAndSaveHistoryIfValid() },
+                    onDoneClick = { chooseToSaveOrDiscard() },
+                    existingTimes = existingTimes,
+                    onTimeClick = { time ->
+                        mainViewModel.setWorkOrderHistoryTimeWorkedCombined(time)
+                        gotoWorkOrderHistoryTimeUpdateFragment()
+                    }
+                )
+            }
+        }
+    }
+
+    private fun showStartTimePicker() {
+        val timeSetListener =
+            TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+                val tempStartTime =
+                    df.roundTimeDownTo15Minutes(hourOfDay, minute)
+                val newStart = startTime.clone() as Calendar
+                newStart.set(Calendar.HOUR_OF_DAY, tempStartTime.first)
+                newStart.set(Calendar.MINUTE, tempStartTime.second)
+                newStart.set(Calendar.SECOND, 0)
+                startTime = newStart
+                updateTimesDisplayed()
+            }
+        val startTimePicker = TimePickerDialog(
+            requireContext(),
+            timeSetListener,
+            df.get12HourIntOfHour(startTime),
+            df.get12HourIntOfMinute(startTime),
+            false // true for 24-hour format, false for AM/PM
+        )
+        startTimePicker.setTitle(getString(R.string.select_start_time))
+        startTimePicker.show()
+    }
+
+    private fun showEndTimePicker() {
+        val timeSetListener =
+            TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+                mainScope.launch {
+                    val tempEndTime = hourOfDay * 60 + minute
+                    val tempStartTime =
+                        startTime.get(Calendar.HOUR_OF_DAY) * 60 + startTime.get(Calendar.MINUTE)
+                    val newEnd = endTime.clone() as Calendar
+                    if (tempEndTime < tempStartTime) {
+                        displayMessage(getString(R.string.end_time_before_start_time))
+                        newEnd.set(Calendar.HOUR_OF_DAY, startTime.get(Calendar.HOUR_OF_DAY))
+                        newEnd.set(Calendar.MINUTE, startTime.get(Calendar.MINUTE))
+                        newEnd.set(Calendar.SECOND, 0)
+                    } else {
+                        val tempHoursAndMin = df.roundTimeUpTo15Minutes(hourOfDay, minute)
+                        newEnd.set(Calendar.HOUR_OF_DAY, tempHoursAndMin.first)
+                        newEnd.set(Calendar.MINUTE, tempHoursAndMin.second)
+                        newEnd.set(Calendar.SECOND, 0)
+                    }
+                    endTime = newEnd
+                    mainScope.launch {
+                        calculateAdjustmentsForRegAndOt(endTime)
+                        delay(WAIT_500)
+                        updateTimesDisplayed()
+                    }
+                }
+            }
+        val endTimePickerDialog = TimePickerDialog(
+            requireContext(),
+            timeSetListener,
+            df.get12HourIntOfHour(endTime),
+            df.get12HourIntOfMinute(endTime),
+            false // true for 24-hour format, false for AM/PM
+        )
+        endTimePickerDialog.setTitle(getString(R.string.select_end_time))
+        endTimePickerDialog.show()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         populateValues()
-        setClickActions()
+        // setClickActions() // Not needed for Compose
     }
 
     override fun populateValues() {
@@ -138,11 +240,9 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
     }
 
     private fun populateBasicInfo() {
-        binding.apply {
-            var display = "Employer: ${curEmployer.employerName}\n"
-            display += "Date: ${df.getDisplayDate(curDate.wdDate)}\n"
-            tvInfo.text = display
-        }
+        var display = "Employer: ${curEmployer.employerName}\n"
+        display += "Date: ${df.getDisplayDate(curDate.wdDate)}\n"
+        infoText = display
     }
 
     private fun populateBasics() {
@@ -172,7 +272,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
                 mainActivity,
                 curEmployer.employerId,
                 curDate.workDateId,
-                mView,
+                requireView(),
             )
             workTimes.instantiateVariables()
         }
@@ -181,55 +281,58 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
 
     private fun populateTimeVariables() {
         val tempDate = curDate.wdDate.split("-")
-        startTime.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
-        endTime.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
-        startTime.set(Calendar.HOUR_OF_DAY, 8)
-        startTime.set(Calendar.MINUTE, 30)
-        startTime.set(Calendar.SECOND, 0)
-        if (endTime < startTime) {
-            endTime = startTime.clone() as Calendar
+        val newStart = startTime.clone() as Calendar
+        val newEnd = endTime.clone() as Calendar
+        newStart.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
+        newEnd.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
+        newStart.set(Calendar.HOUR_OF_DAY, 8)
+        newStart.set(Calendar.MINUTE, 30)
+        newStart.set(Calendar.SECOND, 0)
+        startTime = newStart
+        if (newEnd < newStart) {
+            endTime = newStart.clone() as Calendar
+        } else {
+            endTime = newEnd
         }
     }
 
     private fun calculateAdjustmentsForRegAndOt(tempEndTime: Calendar) {
-        binding.apply {
-            val timeNow: Calendar = tempEndTime.clone() as Calendar
-            val tempDate = curDate.wdDate.split("-")
-            timeNow.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
-            if (df.getTimeWorked(startTime, endTime) < 0.0) {
-                endTime = startTime.clone() as Calendar
-                if (timeNow > endTime) {
-                    endTime = df.roundCalendarTimeUpTo15Minutes(timeNow)
-                }
+        val timeNow: Calendar = tempEndTime.clone() as Calendar
+        val tempDate = curDate.wdDate.split("-")
+        timeNow.set(tempDate[0].toInt(), tempDate[1].toInt() - 1, tempDate[2].toInt())
+        val newEnd = endTime.clone() as Calendar
+        if (df.getTimeWorked(startTime, newEnd) < 0.0) {
+            val correctedEnd = startTime.clone() as Calendar
+            if (timeNow > correctedEnd) {
+                endTime = df.roundCalendarTimeUpTo15Minutes(timeNow)
+            } else {
+                endTime = correctedEnd
             }
-            if (timeWorkedByDay.hrsRegByTimeEntered + df.getTimeWorked(
-                    startTime,
-                    endTime
-                ) > 8.0 && radRegHours.isChecked
-            ) {
-                val timeToAdjust = 8 - timeWorkedByDay.hrsRegByTimeEntered
-                endTime = df.addHoursToCalendar(startTime, timeToAdjust)
-                displayMessage(getString(R.string.time_has_been_adjusted_to_8_hours))
-            }
-            if (timeWorkedByDay.hrsOtByTimeEntered + timeWorkedByDay.hrsRegByTimeEntered + df.getTimeWorked(
-                    startTime,
-                    endTime
-                ) > 12.0 && radOtHours.isChecked
-            ) {
-                val timeToAdjust =
-                    12 - (timeWorkedByDay.hrsOtByTimeEntered + timeWorkedByDay.hrsRegByTimeEntered)
-                endTime = df.addHoursToCalendar(startTime, timeToAdjust)
-                displayMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
-            }
+        }
+        if (timeWorkedByDay.hrsRegByTimeEntered + df.getTimeWorked(
+                startTime,
+                endTime
+            ) > 8.0 && selectedTimeType == TimeWorkedTypes.REG_HOURS.value
+        ) {
+            val timeToAdjust = 8 - timeWorkedByDay.hrsRegByTimeEntered
+            endTime = df.addHoursToCalendar(startTime, timeToAdjust)
+            displayMessage(getString(R.string.time_has_been_adjusted_to_8_hours))
+        }
+        if (timeWorkedByDay.hrsOtByTimeEntered + timeWorkedByDay.hrsRegByTimeEntered + df.getTimeWorked(
+                startTime,
+                endTime
+            ) > 12.0 && selectedTimeType == TimeWorkedTypes.OT_HOURS.value
+        ) {
+            val timeToAdjust =
+                12 - (timeWorkedByDay.hrsOtByTimeEntered + timeWorkedByDay.hrsRegByTimeEntered)
+            endTime = df.addHoursToCalendar(startTime, timeToAdjust)
+            displayMessage(getString(R.string.time_has_been_adjusted_to_12_hours))
         }
     }
 
     private fun queryWorkOrderListForAutoComplete() {
         workOrderList = workTimes.getWorkOrderList()
-        val woAdapter = ArrayAdapter(
-            mView.context, R.layout.spinner_item_normal, workTimes.getWorkOrderNumbers()
-        )
-        binding.acWorkOrder.setAdapter(woAdapter)
+        workOrderSuggestions = workTimes.getWorkOrderNumbers()
     }
 
     private fun updateWorkDateHoursInDb(
@@ -294,72 +397,49 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         if (existingHistories.isNotEmpty()) {
             val tempStartTime =
                 df.splitTimeFromDateTime(existingHistories.last().timeWorked.wohtEndTime)
-            startTime.set(Calendar.HOUR_OF_DAY, tempStartTime[0].toInt())
-            startTime.set(Calendar.MINUTE, tempStartTime[1].toInt())
-            startTime.set(Calendar.SECOND, 0)
+            val newStart = startTime.clone() as Calendar
+            newStart.set(Calendar.HOUR_OF_DAY, tempStartTime[0].toInt())
+            newStart.set(Calendar.MINUTE, tempStartTime[1].toInt())
+            newStart.set(Calendar.SECOND, 0)
+            startTime = newStart
         }
     }
 
     private fun adjustWorkTimeTypes() {
-        binding.apply {
-            if (radBreak.isChecked && timeWorkedByDay.hrsRegByTimeEntered < 8.0) {
-                radRegHours.isChecked = true
-                radBreak.isChecked = false
-                radOtHours.isChecked = false
-                radDblOtHours.isChecked = false
-            }
-            if (timeWorkedByDay.hrsRegByTimeEntered >= 8.0) {
-                radOtHours.isChecked = true
-                radRegHours.isChecked = false
-                radDblOtHours.isChecked = false
-                radBreak.isChecked = false
-            }
-            if (timeWorkedByDay.hrsOtByTimeEntered + timeWorkedByDay.hrsRegByTimeEntered >= 12.0) {
-                radDblOtHours.isChecked = true
-                radOtHours.isChecked = false
-                radRegHours.isChecked = false
-                radBreak.isChecked = false
-            }
+        if (selectedTimeType == TimeWorkedTypes.BREAK.value && timeWorkedByDay.hrsRegByTimeEntered < 8.0) {
+            selectedTimeType = TimeWorkedTypes.REG_HOURS.value
+        }
+        if (timeWorkedByDay.hrsRegByTimeEntered >= 8.0) {
+            selectedTimeType = TimeWorkedTypes.OT_HOURS.value
+        }
+        if (timeWorkedByDay.hrsOtByTimeEntered + timeWorkedByDay.hrsRegByTimeEntered >= 12.0) {
+            selectedTimeType = TimeWorkedTypes.DBL_OT_HOURS.value
         }
     }
 
     private fun populateTimesRecycler() {
-        val workDateTimesAdapter = WorkDateTimesAdapter(
-            mainActivity, mView, this@WorkDateTimesFragment
-        )
-        binding.rvTimeWorked.apply {
-            layoutManager = LinearLayoutManager(mView.context)
-            adapter = workDateTimesAdapter
-        }
-        workDateTimesAdapter.differ.submitList(existingHistories)
+        existingTimes = existingHistories
     }
 
     private fun updateTimesDisplayed() {
-        binding.apply {
-            clkStartTime.text = df.get12HourDisplay(startTime)
-            // automatically set the end time to not exceed the next block of time
-            clkEndTime.text = df.get12HourDisplay(endTime)
-            val display = nf.getNumberFromDouble(
-                df.getTimeWorked(
-                    startTime,
-                    endTime
-                )
-            ) + " " + getString(R.string.hours)
-            tvTotalTime.text = display
-        }
+        totalTimeText = nf.getNumberFromDouble(
+            df.getTimeWorked(
+                startTime,
+                endTime
+            )
+        ) + " " + getString(R.string.hours)
     }
 
     private fun populateWorkOrdersFromDb() {
         if (mainViewModel.getWorkOrder() != null) {
             curWorkOrder = mainViewModel.getWorkOrder()
-            binding.acWorkOrder.setText(curWorkOrder!!.woNumber)
+            workOrderNumber = curWorkOrder!!.woNumber
             setCurWorkOrder()
         }
     }
 
     private fun populateHoursInDisplay() {
         timeWorkedByDayData = workTimes.getTimeWorkedByDay()
-//        Log.d(TAG, "timeWorkedByDayData: $timeWorkedByDayData")
         val hrsReg = timeWorkedByDayData.hrsReg
         val hrsOt = timeWorkedByDayData.hrsOt
         val hrsDblOt = timeWorkedByDayData.hrsDblOt
@@ -373,75 +453,34 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         display += (if (hrsStat > 0.0 && display != "") " ${getString(R.string.pipe)} " else "")
         display += (if (hrsStat > 0.0) "${nf.getNumberFromDouble(hrsStat)} ${getString(R.string.other_hours)} " else "")
         if (display != "") display = getString(R.string.time_entered) + " $display"
-        binding.tvHours.text = display
+        hoursSummaryText = display
     }
 
     override fun setClickActions() {
-        binding.apply {
-            acWorkOrder.setOnItemClickListener { _, _, _, _ -> setCurWorkOrder() }
-            acWorkOrder.setOnLongClickListener {
-                gotoWorkOrderLookup()
-                true
-            }
-            acWorkOrder.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?, start: Int, count: Int, after: Int
-                ) {
-//                    null
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                    setCurWorkOrder()
-                }
-
-                override fun afterTextChanged(s: Editable?) {
-                    setCurWorkOrder()
-                }
-
-            })
-            btnWorkOrder.setOnClickListener {
-                if (btnWorkOrder.text.toString() == getString(R.string.edit)) {
-                    gotoWorkOrderUpdate()
-                } else {
-                    gotoWorkOrderAdd()
-                }
-            }
-            btnEnterTime.setOnClickListener {
-                validateWorkOrderNumberAndSaveHistoryIfValid()
-            }
-            fabDone.setOnClickListener {
-                chooseToSaveOrDiscard()
-            }
-        }
-        setStartTimeActions()
-        setEndTimeActions()
+        // Not used anymore
     }
 
     private fun setCurWorkOrder() {
-        binding.apply {
-            if (acWorkOrder.text.isNullOrBlank()) {
-                displayMessage(
-                    getString(R.string.error_) + getString(R.string.please_enter_a_valid_work_order_before_adding_work_performed)
-                )
-            }
-            if (doesWorkOrderExist()) {
-                populateWorkOrderInfo()
-                btnWorkOrder.text = getString(R.string.edit)
-                tvWoInfo.visibility = View.VISIBLE
-            } else {
-                btnWorkOrder.text = getString(R.string.create)
-                tvWoInfo.visibility = View.INVISIBLE
-            }
+        if (workOrderNumber.isBlank()) {
+            displayMessage(
+                getString(R.string.error_) + getString(R.string.please_enter_a_valid_work_order_before_adding_work_performed)
+            )
+        }
+        if (doesWorkOrderExist()) {
+            populateWorkOrderInfo()
+            workOrderButtonText = getString(R.string.edit)
+        } else {
+            workOrderButtonText = getString(R.string.create)
+            workOrderInfoText = ""
         }
     }
 
     private fun validateWorkOrderNumberAndSaveHistoryIfValid() {
         if (doesWorkOrderExist()) {
-//            displayMessage(getString(R.string.work_order_has_been_added_to_date))
             insertTime()
         } else {
-            AlertDialog.Builder(mView.context)
-                .setTitle(getString(R.string.create_work_order_) + "${binding.acWorkOrder.text}?")
+            AlertDialog.Builder(requireContext())
+                .setTitle(getString(R.string.create_work_order_) + "$workOrderNumber?")
                 .setMessage(getString(R.string.this_work_order_does_not_exist))
                 .setPositiveButton(getString(R.string.yes)) { _, _ -> gotoWorkOrderAdd() }
                 .setNegativeButton(getString(R.string.no), null).show()
@@ -450,7 +489,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
 
     private fun doesWorkOrderExist(): Boolean {
         for (workOrder in workOrderList) {
-            if (binding.acWorkOrder.text.toString() == workOrder.woNumber) {
+            if (workOrderNumber == workOrder.woNumber) {
                 curWorkOrder = workOrder
                 return true
             }
@@ -461,54 +500,38 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
     private fun insertTime(): Boolean {
         val answer = validateTimeWorked()
         if (answer == ANSWER_OK) {
-            binding.apply {
-                btnEnterTime.isEnabled = false
-                val workTimeType =
-                    if (radRegHours.isChecked) {
-                        1
-                    } else if (radOtHours.isChecked) {
-                        2
-                    } else if (radDblOtHours.isChecked) {
-                        3
-                    } else {
-                        0
-                    }
-                try {
-                    mainScope.launch {
-                        val workOrderHistoryDeferred =
-                            async { getOrCreateWorkOrderHistory() }
-                        startTime = df.roundCalendarTimeTo15Minutes(startTime)
-                        endTime = df.roundCalendarTimeTo15Minutes(endTime)
-//                        Log.d(TAG, "insertTime: $startTime")
-//                        Log.d(TAG, "insertTime: $endTime")
-                        workOrderViewModel.insertTimeWorked(
-                            WorkOrderHistoryTimeWorked(
-                                nf.generateRandomIdAsLong(),
-                                workOrderHistoryDeferred.await().woHistoryId,
-                                curDate.workDateId,
-                                df.getDateFromCalendarAsString(startTime),
-                                df.getDateFromCalendarAsString(endTime),
-                                workTimeType,
-                                false,
-                                df.getCurrentTimeAsString()
-                            )
+            val workTimeType = selectedTimeType
+            try {
+                mainScope.launch {
+                    val workOrderHistoryDeferred =
+                        async { getOrCreateWorkOrderHistory() }
+                    startTime = df.roundCalendarTimeTo15Minutes(startTime)
+                    endTime = df.roundCalendarTimeTo15Minutes(endTime)
+                    workOrderViewModel.insertTimeWorked(
+                        WorkOrderHistoryTimeWorked(
+                            nf.generateRandomIdAsLong(),
+                            workOrderHistoryDeferred.await().woHistoryId,
+                            curDate.workDateId,
+                            df.getDateFromCalendarAsString(startTime),
+                            df.getDateFromCalendarAsString(endTime),
+                            workTimeType,
+                            false,
+                            df.getCurrentTimeAsString()
                         )
-                        delay(WAIT_250)
-                        workTimes.instantiateVariables()
-                        delay(WAIT_500)
-                        updateWorkOrderHistoryInDb(workOrderHistoryDeferred.await())
-                        updateHoursInWorkDate()
-                        delay(WAIT_500)
-                        updateUi()
-                    }
-                    btnEnterTime.isEnabled = true
-                    return true
-                } catch (e: SQLiteConstraintException) {
-                    displayMessage(getString(R.string.error_) + e.message)
-                    Log.d(TAG, e.message.toString())
-                    btnEnterTime.isEnabled = true
-                    return false
+                    )
+                    delay(WAIT_250)
+                    workTimes.instantiateVariables()
+                    delay(WAIT_500)
+                    updateWorkOrderHistoryInDb(workOrderHistoryDeferred.await())
+                    updateHoursInWorkDate()
+                    delay(WAIT_500)
+                    updateUi()
                 }
+                return true
+            } catch (e: SQLiteConstraintException) {
+                displayMessage(getString(R.string.error_) + e.message)
+                Log.d(TAG, e.message.toString())
+                return false
             }
         } else {
             displayMessage("${getString(R.string.error_)} $answer")
@@ -517,14 +540,10 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
     }
 
     private suspend fun getOrCreateWorkOrder(): WorkOrder {
-        var wo: WorkOrder? = null
-        defaultScope.launch {
-            wo = workOrderViewModel.findWorkOrder("break", curEmployer.employerId)
-        }
-        delay(WAIT_250)
-        try {
-            curWorkOrder = wo!!
-        } catch (e: Exception) {
+        val wo: WorkOrder? = workOrderViewModel.findWorkOrder("break", curEmployer.employerId)
+        if (wo != null) {
+            curWorkOrder = wo
+        } else {
             curWorkOrder = WorkOrder(
                 nf.generateRandomIdAsLong(),
                 "break",
@@ -535,9 +554,7 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
                 df.getCurrentTimeAsString()
             )
             workOrderViewModel.insertWorkOrder(curWorkOrder!!)
-            Log.d(TAG, "getOrCreateWorkOrder: $e")
         }
-        delay(WAIT_250)
         return curWorkOrder!!
     }
 
@@ -605,74 +622,9 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         }
     }
 
-    private fun setStartTimeActions() {
-        binding.apply {
-            val timeSetListener =
-                TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                    val tempStartTime =
-                        df.roundTimeDownTo15Minutes(hourOfDay, minute)
-                    startTime.set(Calendar.HOUR_OF_DAY, tempStartTime.first)
-                    startTime.set(Calendar.MINUTE, tempStartTime.second)
-                    startTime.set(Calendar.SECOND, 0)
-                    updateTimesDisplayed()
-                }
-            clkStartTime.setOnClickListener {
-                val startTimePicker = TimePickerDialog(
-                    mView.context,
-                    timeSetListener,
-                    df.get12HourIntOfHour(startTime),
-                    df.get12HourIntOfMinute(startTime),
-                    false // true for 24-hour format, false for AM/PM
-                )
-                startTimePicker.setTitle(getString(R.string.select_start_time))
-                startTimePicker.show()
-            }
-        }
-    }
-
-    private fun setEndTimeActions() {
-        binding.apply {
-            val timeSetListener =
-                TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                    mainScope.launch {
-                        val tempEndTime = hourOfDay * 60 + minute
-                        val tempStartTime =
-                            startTime.get(Calendar.HOUR_OF_DAY) * 60 + startTime.get(Calendar.MINUTE)
-                        if (tempEndTime < tempStartTime) {
-                            displayMessage(getString(R.string.end_time_before_start_time))
-                            endTime.set(Calendar.HOUR_OF_DAY, startTime.get(Calendar.HOUR_OF_DAY))
-                            endTime.set(Calendar.MINUTE, startTime.get(Calendar.MINUTE))
-                            endTime.set(Calendar.SECOND, 0)
-                        } else {
-                            val tempHoursAndMin = df.roundTimeUpTo15Minutes(hourOfDay, minute)
-                            endTime.set(Calendar.HOUR_OF_DAY, tempHoursAndMin.first)
-                            endTime.set(Calendar.MINUTE, tempHoursAndMin.second)
-                            endTime.set(Calendar.SECOND, 0)
-                        }
-                        mainScope.launch {
-                            calculateAdjustmentsForRegAndOt(endTime)
-                            delay(WAIT_500)
-                            updateTimesDisplayed()
-                        }
-                    }
-                }
-            clkEndTime.setOnClickListener {
-                val endTimePickerDialog = TimePickerDialog(
-                    mView.context,
-                    timeSetListener,
-                    df.get12HourIntOfHour(endTime),
-                    df.get12HourIntOfMinute(endTime),
-                    false // true for 24-hour format, false for AM/PM
-                )
-                endTimePickerDialog.setTitle(getString(R.string.select_end_time))
-                endTimePickerDialog.show()
-            }
-        }
-    }
-
     private fun chooseToSaveOrDiscard() {
         if (df.getTimeWorked(startTime, endTime) > 0.0) {
-            AlertDialog.Builder(mView.context)
+            AlertDialog.Builder(requireContext())
                 .setTitle(getString(R.string.confirm_leave))
                 .setMessage(getString(R.string.would_you_like_to_save_time_entered))
                 .setPositiveButton(getString(R.string.enter_time)) { _, _ ->
@@ -694,41 +646,32 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
 
 
     private suspend fun getOrCreateWorkOrderHistory(): WorkOrderHistory {
-        var tempWorkOrderHistoryDeferred: Deferred<WorkOrderHistory?>
-        var tempWorkOrderHistory: WorkOrderHistory? = null
-        defaultScope.launch {
-            tempWorkOrderHistoryDeferred =
-                async {
-                    when (curWorkOrder) {
-                        null if binding.radBreak.isChecked -> {
-                            curWorkOrder = getOrCreateWorkOrder()
-                            workOrderViewModel.getWorkOrderHistory(
-                                curWorkOrder!!.workOrderId,
-                                curDate.workDateId
-                            )
-                        }
-
-                        null -> {
-                            return@async null
-                        }
-
-                        else -> {
-                            workOrderViewModel.getWorkOrderHistory(
-                                curWorkOrder!!.workOrderId,
-                                curDate.workDateId
-                            )
-                        }
+        var tempWorkOrderHistory: WorkOrderHistory? =
+            when (curWorkOrder) {
+                null -> {
+                    if (selectedTimeType == TimeWorkedTypes.BREAK.value) {
+                        curWorkOrder = getOrCreateWorkOrder()
+                        workOrderViewModel.getWorkOrderHistory(
+                            curWorkOrder!!.workOrderId,
+                            curDate.workDateId
+                        )
+                    } else {
+                        null
                     }
                 }
 
-            tempWorkOrderHistory = if (tempWorkOrderHistoryDeferred.await() == null) {
-                insertNewWorkOrderHistory()
-            } else {
-                tempWorkOrderHistoryDeferred.await()
+                else -> {
+                    workOrderViewModel.getWorkOrderHistory(
+                        curWorkOrder!!.workOrderId,
+                        curDate.workDateId
+                    )
+                }
             }
+
+        if (tempWorkOrderHistory == null) {
+            tempWorkOrderHistory = insertNewWorkOrderHistory()
         }
 
-        delay(WAIT_500)
         return tempWorkOrderHistory!!
     }
 
@@ -745,65 +688,59 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
             false,
             df.getCurrentTimeAsString()
         )
-//        Log.d(TAG, "insertNewWorkOrderHistory: $tempWorkOrderHistory")
         workOrderViewModel.insertWorkOrderHistory(tempWorkOrderHistory)
         return tempWorkOrderHistory
     }
 
     private fun validateTimeWorked(): String {
-        binding.apply {
-            if (acWorkOrder.text.isNullOrBlank() && !radBreak.isChecked) {
-                return getString(R.string.please_enter_a_work_order_number)
-            }
-            if (radRegHours.isChecked) {
-                if (timeWorkedByDay.hrsRegByTimeEntered + df.getTimeWorked(
-                        startTime,
-                        endTime
-                    ) > 8.0
-                ) {
-                    return getString(R.string.this_will_exceed_8_hours)
-                }
-            }
-            if (radOtHours.isChecked) {
-                if (timeWorkedByDay.hrsRegByTimeEntered + timeWorkedByDay.hrsOtByTimeEntered + df.getTimeWorked(
-                        startTime,
-                        endTime
-                    ) > 12.0
-                ) {
-                    return getString(R.string.this_will_exceed_12_hours)
-                }
-            }
-            if (radDblOtHours.isChecked) {
-                if (timeWorkedByDay.hrsRegByTimeEntered + timeWorkedByDay.hrsOtByTimeEntered + timeWorkedByDay.hrsDblOtByTimeEntered + df.getTimeWorked(
-                        startTime,
-                        endTime
-                    ) > 18.0
-                ) {
-                    return getString(R.string.this_will_exceed_24_hours)
-                }
-            }
-            if (endTime.timeInMillis < startTime.timeInMillis) {
-                return getString(R.string.end_time_before_start_time)
-            }
-            if (endTime.get(Calendar.HOUR_OF_DAY) == startTime.get(Calendar.HOUR_OF_DAY) &&
-                endTime.get(Calendar.MINUTE) == startTime.get(Calendar.MINUTE)
+        if (workOrderNumber.isBlank() && selectedTimeType != TimeWorkedTypes.BREAK.value) {
+            return getString(R.string.please_enter_a_work_order_number)
+        }
+        if (selectedTimeType == TimeWorkedTypes.REG_HOURS.value) {
+            if (timeWorkedByDay.hrsRegByTimeEntered + df.getTimeWorked(
+                    startTime,
+                    endTime
+                ) > 8.0
             ) {
-                return getString(R.string.end_time_same_as_start_time)
+                return getString(R.string.this_will_exceed_8_hours)
             }
+        }
+        if (selectedTimeType == TimeWorkedTypes.OT_HOURS.value) {
+            if (timeWorkedByDay.hrsRegByTimeEntered + timeWorkedByDay.hrsOtByTimeEntered + df.getTimeWorked(
+                    startTime,
+                    endTime
+                ) > 12.0
+            ) {
+                return getString(R.string.this_will_exceed_12_hours)
+            }
+        }
+        if (selectedTimeType == TimeWorkedTypes.DBL_OT_HOURS.value) {
+            if (timeWorkedByDay.hrsRegByTimeEntered + timeWorkedByDay.hrsOtByTimeEntered + timeWorkedByDay.hrsDblOtByTimeEntered + df.getTimeWorked(
+                    startTime,
+                    endTime
+                ) > 18.0
+            ) {
+                return getString(R.string.this_will_exceed_24_hours)
+            }
+        }
+        if (endTime.timeInMillis < startTime.timeInMillis) {
+            return getString(R.string.end_time_before_start_time)
+        }
+        if (endTime.get(Calendar.HOUR_OF_DAY) == startTime.get(Calendar.HOUR_OF_DAY) &&
+            endTime.get(Calendar.MINUTE) == startTime.get(Calendar.MINUTE)
+        ) {
+            return getString(R.string.end_time_same_as_start_time)
         }
         return ANSWER_OK
     }
 
     private fun displayMessage(message: String) {
-        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 
     private fun populateWorkOrderInfo() {
         val display = curWorkOrder!!.woAddress + " | " + curWorkOrder!!.woDescription
-        binding.tvWoInfo.apply {
-            text = display
-            visibility = View.VISIBLE
-        }
+        workOrderInfoText = display
     }
 
     override fun gotoCallingFragment() {
@@ -816,32 +753,32 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
     }
 
     private fun gotoWorkOrderAdd() {
-        mainViewModel.setWorkOrderNumber(binding.acWorkOrder.text.toString())
+        mainViewModel.setWorkOrderNumber(workOrderNumber)
         mainViewModel.addCallingFragment(TAG)
         gotoWorkOrderAddFragment()
     }
 
     private fun gotoWorkOrderUpdate() {
-        mainViewModel.setWorkOrderNumber(binding.acWorkOrder.text.toString())
+        mainViewModel.setWorkOrderNumber(workOrderNumber)
         mainViewModel.setWorkOrder(curWorkOrder)
         mainViewModel.addCallingFragment(TAG)
         gotoWorkOrderUpdateFragment()
     }
 
     private fun gotoWorkDateUpdateFragment() {
-        mView.findNavController().navigate(
+        requireView().findNavController().navigate(
             WorkDateTimesFragmentDirections.actionWorkDateTimesToWorkDateUpdateFragment()
         )
     }
 
     private fun gotoWorkOrderAddFragment() {
-        mView.findNavController().navigate(
+        requireView().findNavController().navigate(
             WorkDateTimesFragmentDirections.actionWorkDateTimesToWorkOrderAddFragment()
         )
     }
 
     private fun gotoWorkOrderUpdateFragment() {
-        mView.findNavController().navigate(
+        requireView().findNavController().navigate(
             WorkDateTimesFragmentDirections.actionWorkDateTimesToWorkOrderUpdateFragment()
         )
     }
@@ -853,14 +790,14 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
     }
 
     private fun gotoWorkOrderLookupFragment() {
-        mView.findNavController().navigate(
+        requireView().findNavController().navigate(
             WorkDateTimesFragmentDirections.actionWorkDateTimesToWorkOrderLookupFragment()
         )
     }
 
     override fun gotoWorkOrderHistoryTimeUpdateFragment() {
         mainViewModel.addCallingFragment(TAG)
-        mView.findNavController().navigate(
+        requireView().findNavController().navigate(
             WorkDateTimesFragmentDirections.actionWorkDateTimesFragmentToWorkOrderHistoryTimeUpdateFragment()
         )
     }
@@ -869,6 +806,5 @@ class WorkDateTimesFragment : Fragment(R.layout.fragment_work_date_time), IWorkT
         mainScope.cancel()
         defaultScope.cancel()
         super.onDestroy()
-        _binding = null
     }
 }

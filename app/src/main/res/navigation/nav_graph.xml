@@ -633,8 +633,7 @@
     <fragment
         android:id="@+id/workOrderViewFragment"
         android:name="ms.mattschlenkrich.paycalculator.workorder.WorkOrderViewFragment"
-        android:label="fragment_work_order_view"
-        tools:layout="@layout/fragment_work_order_view">
+        android:label="fragment_work_order_view">
         <action
             android:id="@+id/action_workOrderViewFragment_to_employerAddFragment"
             app:destination="@id/employerAddFragment" />
@@ -764,8 +763,7 @@
     <fragment
         android:id="@+id/jobSpecViewFragment"
         android:name="ms.mattschlenkrich.paycalculator.workorder.JobSpecViewFragment"
-        android:label="JobSpecViewFragment"
-        tools:layout="@layout/fragment_recycler_view">
+        android:label="JobSpecViewFragment">
         <action
             android:id="@+id/action_jobSpecViewFragment_to_jobSpecUpdateFragment"
             app:destination="@id/jobSpecUpdateFragment" />
@@ -806,8 +804,7 @@
     <fragment
         android:id="@+id/materialViewFragment"
         android:name="ms.mattschlenkrich.paycalculator.workorder.MaterialViewFragment"
-        android:label="MaterialViewFragment"
-        tools:layout="@layout/fragment_recycler_view">
+        android:label="MaterialViewFragment">
         <action
             android:id="@+id/action_materialViewFragment_to_materialUpdateFragment"
             app:destination="@id/materialUpdateFragment" />
@@ -867,8 +864,7 @@
     <fragment
         android:id="@+id/workPerformedViewFragment"
         android:name="ms.mattschlenkrich.paycalculator.workorder.WorkPerformedViewFragment"
-        android:label="WorkPerformedViewFragment"
-        tools:layout="@layout/fragment_recycler_view">
+        android:label="WorkPerformedViewFragment">
         <action
             android:id="@+id/action_workPerformedViewFragment_to_workPerformedUpdateFragment"
             app:destination="@id/workPerformedUpdateFragment" />
@@ -903,8 +899,7 @@
     <fragment
         android:id="@+id/areaViewFragment"
         android:name="ms.mattschlenkrich.paycalculator.workorder.AreaViewFragment"
-        android:label="AreaViewFragment"
-        tools:layout="@layout/fragment_recycler_view">
+        android:label="AreaViewFragment">
         <action
             android:id="@+id/action_areaViewFragment_to_areaUpdateFragment"
             app:destination="@id/areaUpdateFragment" />

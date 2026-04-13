@@ -5,12 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.databinding.ListWorkDateExtraItemBinding
-import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.workdate.WorkDateUpdateFragment
 
 class WorkDateUpdateCustomExtraAdapter(
@@ -22,7 +22,6 @@ class WorkDateUpdateCustomExtraAdapter(
 
     private val df = DateFunctions()
     private val nf = NumberFunctions()
-    private val mainViewModel = mainActivity.mainViewModel
     private val payDayViewModel = mainActivity.payDayViewModel
 
     class ViewHolder(
@@ -79,7 +78,6 @@ class WorkDateUpdateCustomExtraAdapter(
         payDayViewModel.deleteWorkDateExtra(
             extra.wdeName, extra.wdeWorkDateId, extra.wdeUpdateTime
         )
-        workDateUpdateFragment.populateExtras()
     }
 
     private fun activateExtra(extra: WorkDateExtras) {
@@ -116,15 +114,10 @@ class WorkDateUpdateCustomExtraAdapter(
                 )
             )
         }
-        workDateUpdateFragment.populateExtras()
     }
 
     private fun gotoUpdateWorkDateExtra(extra: WorkDateExtras) {
-        mainViewModel.apply {
-            setWorkDateExtra(extra)
-            mainViewModel.setWorkDateExtraList(workDateExtras)
-        }
-        workDateUpdateFragment.gotoWorkDateExtraUpdateFragment()
+        workDateUpdateFragment.gotoUpdateWorkDateExtra(extra)
     }
 
 }

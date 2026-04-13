@@ -5,4 +5,7 @@ interface IWorkOrderHistoryUpdateFragment {
     fun gotoMaterialUpdateFragment()
     fun gotoMaterialQuantityUpdateFragment()
     fun gotoWorkOrderHistoryMaterialUpdateFragment()
+    fun gotoAreaUpdateFragment()
+    fun gotoWorkOrderHistoryWorkPerformedUpdateFragment()
+    fun gotoWorkPerformedUpdateFragment()
 }

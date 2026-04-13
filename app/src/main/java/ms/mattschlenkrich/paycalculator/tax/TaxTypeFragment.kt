@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,16 +32,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.FRAG_TAX_TYPE
@@ -68,37 +67,53 @@ class TaxTypeFragment : Fragment() {
         mainActivity = (activity as MainActivity)
         workTaxViewModel = mainActivity.workTaxViewModel
         mainViewModel = mainActivity.mainViewModel
-        mainActivity.topMenuBar.title = getString(R.string.choose_a_tax_type)
 
         return ComposeView(requireContext()).apply {
             setContent {
                 MaterialTheme {
-                    TaxTypeScreen()
+                    TaxTypeContent(
+                        workTaxViewModel = workTaxViewModel,
+                        onTaxTypeSelected = { taxType ->
+                            mainViewModel.setTaxType(taxType)
+                            gotoTaxTypeUpdate()
+                        },
+                        onAddTaxType = { gotoTaxTypeAdd() },
+                        onBack = { findNavController().navigateUp() }
+                    )
                 }
             }
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun TaxTypeScreen() {
+    fun TaxTypeContent(
+        workTaxViewModel: WorkTaxViewModel,
+        onTaxTypeSelected: (TaxTypes) -> Unit,
+        onAddTaxType: () -> Unit,
+        onBack: () -> Unit
+    ) {
         var searchQuery by remember { mutableStateOf("") }
         val taxTypes by if (searchQuery.isEmpty()) {
-            workTaxViewModel.getTaxTypes().observeAsState(initial = emptyList<TaxTypes>())
+            workTaxViewModel.getTaxTypes().observeAsState(initial = emptyList())
         } else {
             workTaxViewModel.searchTaxTypes("%$searchQuery%")
-                .observeAsState(initial = emptyList<TaxTypes>())
+                .observeAsState(initial = emptyList())
         }
 
         Scaffold(
             topBar = {
                 StandardTopAppBar(
-                    title = stringResource(R.string.choose_a_tax_type)
+                    title = stringResource(R.string.choose_a_tax_type),
+                    onBackClicked = onBack
                 )
             },
             floatingActionButton = {
-                FloatingActionButton(onClick = { gotoTaxTypeAdd() }) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Tax Type")
+                FloatingActionButton(
+                    onClick = onAddTaxType,
+                    containerColor = colorResource(id = R.color.dark_green),
+                    contentColor = colorResource(id = R.color.white)
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_new))
                 }
             }
         ) { paddingValues ->
@@ -130,8 +145,9 @@ class TaxTypeFragment : Fragment() {
                         ) {
                             Text(
                                 text = stringResource(R.string.no_info_to_view),
-                                modifier = Modifier.padding(16.dp),
-                                textAlign = TextAlign.Center
+                                modifier = Modifier.padding(32.dp),
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.bodyLarge
                             )
                         }
                     }
@@ -141,8 +157,8 @@ class TaxTypeFragment : Fragment() {
                         contentPadding = PaddingValues(top = 16.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        items(taxTypes, key = { it.taxType }) { taxType ->
-                            TaxTypeItem(taxType)
+                        items(taxTypes, key = { it.taxTypeId }) { taxType ->
+                            TaxTypeItem(taxType, onTaxTypeSelected)
                         }
                     }
                 }
@@ -151,20 +167,23 @@ class TaxTypeFragment : Fragment() {
     }
 
     @Composable
-    fun TaxTypeItem(taxType: TaxTypes) {
+    fun TaxTypeItem(
+        taxType: TaxTypes,
+        onLongPress: (TaxTypes) -> Unit
+    ) {
         Card(
             modifier = Modifier
                 .padding(4.dp)
                 .fillMaxWidth()
                 .pointerInput(Unit) {
                     detectTapGestures(
-                        onLongPress = {
-                            mainViewModel.setTaxType(taxType)
-                            gotoTaxTypeUpdateFragment()
-                        }
+                        onLongPress = { onLongPress(taxType) }
                     )
                 },
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            )
         ) {
             val display = if (taxType.ttIsDeleted) {
                 taxType.taxType + stringResource(R.string._deleted_)
@@ -174,7 +193,11 @@ class TaxTypeFragment : Fragment() {
             Text(
                 text = display,
                 modifier = Modifier.padding(16.dp),
-                color = if (taxType.ttIsDeleted) Color.Red else Color.Black,
+                color = if (taxType.ttIsDeleted) {
+                    colorResource(id = R.color.red)
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
@@ -183,13 +206,13 @@ class TaxTypeFragment : Fragment() {
 
     private fun gotoTaxTypeAdd() {
         mainViewModel.setCallingFragment(TAG)
-        view?.findNavController()?.navigate(
+        findNavController().navigate(
             TaxTypeFragmentDirections.actionTaxTypeFragmentToTaxTypeAddFragment()
         )
     }
 
-    fun gotoTaxTypeUpdateFragment() {
-        view?.findNavController()?.navigate(
+    private fun gotoTaxTypeUpdate() {
+        findNavController().navigate(
             TaxTypeFragmentDirections.actionTaxTypeFragmentToTaxTypeUpdateFragment()
         )
     }

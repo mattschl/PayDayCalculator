@@ -11,7 +11,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import ms.mattschlenkrich.paycalculator.data.EmployerRepository
 import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
@@ -99,10 +98,43 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_container) as NavHostFragment
         val navController = navHostFragment.navController
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
-        bottomNav.setupWithNavController(navController)
+
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.timeSheetFragment -> {
+                    gotoTimeSheet()
+                    true
+                }
+
+                R.id.payDetailFragmentNew -> {
+                    gotoPayDetails()
+                    true
+                }
+
+                R.id.employerFragment -> {
+                    gotoEmployer()
+                    true
+                }
+
+                R.id.taxRulesFragment -> {
+                    gotoTaxRules()
+                    true
+                }
+
+                R.id.employerExtraDefinitionsFragment -> {
+                    gotoExtras()
+                    true
+                }
+
+                else -> false
+            }
+        }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             topMenuBar.title = destination.label
+            bottomNav.menu.findItem(destination.id)?.let {
+                it.isChecked = true
+            }
         }
     }
 

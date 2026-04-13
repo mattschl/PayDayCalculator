@@ -4,19 +4,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import ms.mattschlenkrich.paycalculator.data.Areas
-import ms.mattschlenkrich.paycalculator.data.JobSpec
-import ms.mattschlenkrich.paycalculator.data.Material
-import ms.mattschlenkrich.paycalculator.data.WorkOrder
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistory
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryMaterial
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorked
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryWorkPerformed
-import ms.mattschlenkrich.paycalculator.data.WorkOrderJobSpec
-import ms.mattschlenkrich.paycalculator.data.WorkPerformed
-import ms.mattschlenkrich.paycalculator.data.MaterialMerged
-import ms.mattschlenkrich.paycalculator.data.WorkPerformedMerged
-import ms.mattschlenkrich.paycalculator.data.WorkOrderRepository
 
 class WorkOrderViewModel(
     app: Application,
@@ -48,7 +35,7 @@ class WorkOrderViewModel(
 
     fun getWorkOrder(workOrderNum: String) = workOrderRepository.getWorkOrder(workOrderNum)
 
-    fun findWorkOrder(workOrderNum: String, employerId: Long) =
+    suspend fun findWorkOrder(workOrderNum: String, employerId: Long) =
         workOrderRepository.findWorkOrder(workOrderNum, employerId)
 
 
@@ -66,7 +53,7 @@ class WorkOrderViewModel(
         workOrderRepository.updateWorkOrderHistory(history)
     }
 
-    fun getWorkOrderHistory(workOrderId: Long, workDateId: Long) =
+    suspend fun getWorkOrderHistory(workOrderId: Long, workDateId: Long) =
         workOrderRepository.getWorkOrderHistory(workOrderId, workDateId)
 
 
@@ -103,7 +90,7 @@ class WorkOrderViewModel(
     fun getWorkOrderHistoriesById(historyId: Long) =
         workOrderRepository.getWorkOrderHistoriesById(historyId)
 
-    fun getWorkOrderHistoryWithDateById(historyID: Long) =
+    suspend fun getWorkOrderHistoryWithDateById(historyID: Long) =
         workOrderRepository.getWorkOrderHistoryWithDatedById(historyID)
 
     fun getWorkOrderHistoryCombined(historyId: Long) =
@@ -130,6 +117,9 @@ class WorkOrderViewModel(
     fun getWorkPerformedHistoryById(historyWorkPerformedId: Long) =
         workOrderRepository.getWorkPerformedHistoryById(historyWorkPerformedId)
 
+    suspend fun getWorkPerformedHistoryByIdSync(historyWorkPerformedId: Long) =
+        workOrderRepository.getWorkPerformedHistoryByIdSync(historyWorkPerformedId)
+
     fun getWorkOrderHistoriesByWorkOrder(workOrderId: Long) =
         workOrderRepository.getWorkOrderHistoriesByWorkOrder(workOrderId)
 
@@ -149,6 +139,8 @@ class WorkOrderViewModel(
     }
 
     fun getJobSpecsAll() = workOrderRepository.getJobSpecs()
+
+    suspend fun getJobSpecsAllSync() = workOrderRepository.getJobSpecsAllSync()
 
     fun searchJobSpecs(query: String) = workOrderRepository.searchJobSpecs(query)
 
@@ -176,6 +168,73 @@ class WorkOrderViewModel(
     fun getWorkOrderJobSpec(workOrderJobSpecId: Long) =
         workOrderRepository.getWorkOrderJobSpec(workOrderJobSpecId)
 
+    suspend fun getWorkOrderJobSpecSync(workOrderJobSpecId: Long) =
+        workOrderRepository.getWorkOrderJobSpecSync(workOrderJobSpecId)
+
+    suspend fun getOrCreateJobSpec(name: String): JobSpec {
+        val existing = getJobSpecsAllSync().find {
+            it.jsName.trim().equals(name.trim(), ignoreCase = true)
+        }
+        if (existing != null) return existing
+
+        val nf = ms.mattschlenkrich.paycalculator.common.NumberFunctions()
+        val df = ms.mattschlenkrich.paycalculator.common.DateFunctions()
+        val newJobSpec = JobSpec(
+            nf.generateRandomIdAsLong(),
+            name.trim(),
+            false,
+            df.getCurrentTimeAsString()
+        )
+        workOrderRepository.insertJobSpec(newJobSpec)
+        return newJobSpec
+    }
+
+    suspend fun getOrCreateArea(name: String): Areas? {
+        if (name.isBlank()) return null
+        val existing = getAreasListSync().find {
+            it.areaName.trim().equals(name.trim(), ignoreCase = true)
+        }
+        if (existing != null) return existing
+
+        val nf = ms.mattschlenkrich.paycalculator.common.NumberFunctions()
+        val df = ms.mattschlenkrich.paycalculator.common.DateFunctions()
+        val newArea = Areas(
+            nf.generateRandomIdAsLong(),
+            name.trim(),
+            false,
+            df.getCurrentTimeAsString()
+        )
+        workOrderRepository.insertArea(newArea)
+        return newArea
+    }
+
+    fun updateWorkOrderJobSpec(
+        originalId: Long,
+        jobSpecId: Long,
+        areaId: Long?,
+        note: String?,
+        onComplete: () -> Unit
+    ) {
+        viewModelScope.launch {
+            val original = getWorkOrderJobSpecSync(originalId)
+            if (original != null) {
+                val df = ms.mattschlenkrich.paycalculator.common.DateFunctions()
+                val updated = WorkOrderJobSpec(
+                    original.workOrderJobSpec.workOrderJobSpecId,
+                    original.workOrderJobSpec.wojsWorkOrderId,
+                    jobSpecId,
+                    areaId,
+                    note,
+                    original.workOrderJobSpec.wojsSequence,
+                    false,
+                    df.getCurrentTimeAsString()
+                )
+                workOrderRepository.updateWorkOrderJobSpec(updated)
+                onComplete()
+            }
+        }
+    }
+
     fun insertWorkPerformed(workPerformed: WorkPerformed) = viewModelScope.launch {
         workOrderRepository.insertWorkPerformed(workPerformed)
     }
@@ -190,6 +249,8 @@ class WorkOrderViewModel(
 
 
     fun getWorkPerformedAll() = workOrderRepository.getWorkPerformedAll()
+
+    suspend fun getWorkPerformedAllSync() = workOrderRepository.getWorkPerformedAllSync()
 
     fun getWorkPerformedChildren(workPerformedId: Long) =
         workOrderRepository.getWorkPerformedChildren(workPerformedId)
@@ -226,8 +287,14 @@ class WorkOrderViewModel(
 
     fun getWorkPerformed(description: String) = workOrderRepository.getWorkPerformed(description)
 
+    suspend fun getWorkPerformedSync(description: String) =
+        workOrderRepository.getWorkPerformedSync(description)
+
     fun getWorkPerformed(workPerformedId: Long) =
         workOrderRepository.getWorkPerformed(workPerformedId)
+
+    suspend fun getWorkPerformedSync(workPerformedId: Long) =
+        workOrderRepository.getWorkPerformedSync(workPerformedId)
 
     fun updateWorkPerformed(workPerformed: WorkPerformed) = viewModelScope.launch {
         workOrderRepository.updateWorkPerformed(workPerformed)
@@ -257,6 +324,9 @@ class WorkOrderViewModel(
     fun getWorkPerformedCombinedByWorkOrderHistory(historyId: Long) =
         workOrderRepository.getWorkPerformedCombinedByWorkOrderHistory(historyId)
 
+    suspend fun getWorkPerformedByWorkOrderHistorySync(historyId: Long) =
+        workOrderRepository.getWorkPerformedByWorkOrderHistorySync(historyId)
+
     fun insertMaterial(material: Material) = viewModelScope.launch {
         workOrderRepository.insertMaterial(material)
     }
@@ -278,7 +348,13 @@ class WorkOrderViewModel(
 
     fun getMaterial(materialId: Long) = workOrderRepository.getMaterial(materialId)
 
+    suspend fun getMaterialSync(materialId: Long) =
+        workOrderRepository.getMaterialSync(materialId)
+
     fun getMaterial(mName: String) = workOrderRepository.getMaterial(mName)
+
+    suspend fun getMaterialSync(mName: String) =
+        workOrderRepository.getMaterialSync(mName)
 
     fun updateMaterialMerged(oldMaterialID: Long, newMaterialID: Long, updateTime: String) =
         viewModelScope.launch {
@@ -335,13 +411,13 @@ class WorkOrderViewModel(
     fun getMaterialsByHistory(historyId: Long) =
         workOrderRepository.getMaterialsByHistory(historyId)
 
-    fun getMaterialsFromHistoryId(historyId: Long) =
+    suspend fun getMaterialsFromHistoryId(historyId: Long) =
         workOrderRepository.getMaterialsFromHistoryId(historyId)
 
     fun getMaterialsHistoryByWorkOrderId(workOrderId: Long) =
         workOrderRepository.getMaterialsHistoryByWorkOrderId(workOrderId)
 
-    fun getWorkOrderHistoryMaterialCombined(woHistoryMaterialId: Long) =
+    suspend fun getWorkOrderHistoryMaterialCombined(woHistoryMaterialId: Long) =
         workOrderRepository.getWorkOrderHistoryMaterialCombined(woHistoryMaterialId)
 
     fun insertArea(area: Areas) = viewModelScope.launch { workOrderRepository.insertArea(area) }
@@ -353,15 +429,21 @@ class WorkOrderViewModel(
      */
     fun getAreasList() = workOrderRepository.getAreasList()
 
+    suspend fun getAreasListSync() = workOrderRepository.getAreasListSync()
+
     /**
      * @return LiveData(Areas)
      */
     fun getArea(areaId: Long) = workOrderRepository.getArea(areaId)
 
+    suspend fun getAreaSync(areaId: Long) = workOrderRepository.getAreaSync(areaId)
+
     /**
      * @return LiveData(Areas)
      */
     fun getArea(areaName: String) = workOrderRepository.getArea(areaName)
+
+    suspend fun getAreaSync(areaName: String) = workOrderRepository.getAreaSync(areaName)
 
     /**
      * @return LiveData(List(Areas))

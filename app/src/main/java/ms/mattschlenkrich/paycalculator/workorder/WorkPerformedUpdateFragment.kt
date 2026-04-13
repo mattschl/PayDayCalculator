@@ -1,111 +1,159 @@
 package ms.mattschlenkrich.paycalculator.workorder
 
 import android.app.AlertDialog
-import android.database.sqlite.SQLiteConstraintException
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-import kotlinx.coroutines.CoroutineScope
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
-import ms.mattschlenkrich.paycalculator.common.ExceptionUnknown
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_PERFORMED_UPDATE
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_PERFORMED_VIEW
-import ms.mattschlenkrich.paycalculator.data.WorkPerformed
 import ms.mattschlenkrich.paycalculator.data.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
-import ms.mattschlenkrich.paycalculator.databinding.FragmentSingleItemUpdateBinding
-import ms.mattschlenkrich.paycalculator.MainActivity
+import ms.mattschlenkrich.paycalculator.data.WorkPerformed
 
-private const val TAG = FRAG_WORK_PERFORMED_UPDATE
+class WorkPerformedUpdateFragment : Fragment() {
 
-class WorkPerformedUpdateFragment : Fragment(R.layout.fragment_single_item_update) {
-
-    private var _binding: FragmentSingleItemUpdateBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var workOrderViewModel: WorkOrderViewModel
     private val df = DateFunctions()
-    private val workPerformedList = ArrayList<WorkPerformed>()
-    private lateinit var oldWorkPerformed: WorkPerformed
-    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSingleItemUpdateBinding.inflate(
-            inflater, container, false
-        )
-        mView = binding.root
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.topMenuBar.title = getString(R.string.update_work_performed_description)
-        return mView
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setValues()
-        setClickActions()
-    }
+        return ComposeView(requireContext()).apply {
+            setContent {
+                val workPerformedId = mainViewModel.getWorkPerformedId()
+                var currentDescription by remember { mutableStateOf("") }
+                var oldWorkPerformed by remember { mutableStateOf<WorkPerformed?>(null) }
+                val workPerformedList by workOrderViewModel.getWorkPerformedAll()
+                    .observeAsState(emptyList())
 
-    private fun setValues() {
-        populateWorkPerformedListForValidation()
-        if (mainViewModel.getWorkPerformedId() != null) {
-            workOrderViewModel.getWorkPerformed(mainViewModel.getWorkPerformedId()!!)
-                .observe(viewLifecycleOwner) { work ->
-                    oldWorkPerformed = work
-                    binding.apply {
-                        var display =
-                            getString(R.string.update_work_description_) + oldWorkPerformed.wpDescription
-                        tvTitle.text = display
-                        etItem.setText(oldWorkPerformed.wpDescription)
-                        display = getString(R.string.update)
-                        btnUpdate.text = display
-                        display = getString(R.string.merge_work_performed)
-                        btnMerge.text = display
+                LaunchedEffect(workPerformedId) {
+                    if (workPerformedId != null) {
+                        val wp = withContext(Dispatchers.IO) {
+                            workOrderViewModel.getWorkPerformedSync(workPerformedId)
+                        }
+                        if (wp != null) {
+                            oldWorkPerformed = wp
+                            currentDescription = wp.wpDescription
+                        }
                     }
                 }
 
-        }
-    }
-
-    private fun populateWorkPerformedListForValidation() {
-        workOrderViewModel.getWorkPerformedAll().observe(viewLifecycleOwner) { list ->
-            workPerformedList.clear()
-            for (workPerformed in list.listIterator()) {
-                workPerformedList.add(workPerformed)
+                WorkPerformedUpdateScreen(
+                    currentDescription = currentDescription,
+                    onDescriptionChange = { currentDescription = it },
+                    onUpdateClick = {
+                        val wpToUpdate = oldWorkPerformed
+                        if (wpToUpdate != null) {
+                            updateWorkPerformedIfValid(
+                                wpToUpdate,
+                                currentDescription,
+                                workPerformedList,
+                                true
+                            )
+                        }
+                    },
+                    onMergeClick = {
+                        val wpToUpdate = oldWorkPerformed
+                        if (wpToUpdate != null) {
+                            updateWorkPerformedIfValid(
+                                wpToUpdate,
+                                currentDescription,
+                                workPerformedList,
+                                false
+                            ) {
+                                chooseMergeOptions(wpToUpdate.workPerformedId, currentDescription)
+                            }
+                        }
+                    },
+                    onCancelClick = {
+                        gotoCallingFragment()
+                    },
+                    title = if (oldWorkPerformed != null) {
+                        getString(R.string.update_work_description_) + oldWorkPerformed!!.wpDescription
+                    } else {
+                        getString(R.string.update_work_performed_description)
+                    }
+                )
             }
         }
     }
 
-    private fun setClickActions() {
-        binding.apply {
-            btnUpdate.setOnClickListener { updateWorkPerformedIfValid(true) }
-            btnCancel.setOnClickListener { gotoCallingFragment() }
-            btnMerge.setOnClickListener { chooseMergeOptions() }
+    private fun updateWorkPerformedIfValid(
+        oldWorkPerformed: WorkPerformed,
+        newDescription: String,
+        workPerformedList: List<WorkPerformed>,
+        shouldNavigateBack: Boolean,
+        onSuccess: (() -> Unit)? = null
+    ) {
+        val answer = validateWorkPerformed(oldWorkPerformed, newDescription, workPerformedList)
+        if (answer == ANSWER_OK) {
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    workOrderViewModel.updateWorkPerformed(
+                        WorkPerformed(
+                            oldWorkPerformed.workPerformedId,
+                            newDescription.trim(),
+                            false,
+                            df.getCurrentTimeAsString()
+                        )
+                    )
+                }
+                if (onSuccess != null) {
+                    onSuccess()
+                } else if (shouldNavigateBack) {
+                    gotoCallingFragment()
+                }
+            }
+        } else {
+            Toast.makeText(requireContext(), getString(R.string.error_) + answer, Toast.LENGTH_LONG)
+                .show()
         }
     }
 
-    private fun chooseMergeOptions() {
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                getString(
-                    R.string.choose_merge_option_for,
-                    binding.etItem.text.toString().trim()
-                )
-            )
+    private fun validateWorkPerformed(
+        oldWorkPerformed: WorkPerformed,
+        newDescription: String,
+        workPerformedList: List<WorkPerformed>
+    ): String {
+        if (newDescription.isBlank()) {
+            return getString(R.string.please_enter_a_valid_work_performed_description)
+        }
+        val trimmed = newDescription.trim()
+        if (workPerformedList.any { it.wpDescription == trimmed && it.workPerformedId != oldWorkPerformed.workPerformedId }) {
+            return getString(R.string.this_work_performed_description_already_exists)
+        }
+        return ANSWER_OK
+    }
+
+    private fun chooseMergeOptions(workPerformedId: Long, description: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.choose_merge_option_for, description.trim()))
             .setItems(
                 arrayOf(
                     "Make this a master description and add children",
@@ -114,115 +162,34 @@ class WorkPerformedUpdateFragment : Fragment(R.layout.fragment_single_item_updat
                 )
             ) { _, pos ->
                 when (pos) {
-                    0 -> {
-                        setOptionsForMergeAndGotoMerge(true)
-                    }
-
-                    1 -> {
-                        setOptionsForMergeAndGotoMerge(false)
-                    }
+                    0 -> setOptionsForMergeAndGotoMerge(workPerformedId, true)
+                    1 -> setOptionsForMergeAndGotoMerge(workPerformedId, false)
                 }
             }
             .setNeutralButton(getString(R.string.cancel), null)
             .show()
     }
 
-    private fun setOptionsForMergeAndGotoMerge(isMaster: Boolean) {
-        mainScope.launch {
-            try {
-                updateWorkPerformedIfValid(false)
-                mainViewModel.setWorkPerformedId(oldWorkPerformed.workPerformedId)
-                mainViewModel.setWorkPerformedIsMaster(isMaster)
-                mainViewModel.addCallingFragment(TAG)
-                gotoWorkPerformedMergeFragment()
-            } catch (e: ExceptionUnknown) {
-                Log.d(TAG, "exception is ${e.toString()}")
-            }
-
-        }
-    }
-
-    private fun updateWorkPerformedIfValid(gotoCallingFragment: Boolean) {
-        val answer = validateWorkPerformed()
-        if (answer == ANSWER_OK) {
-            updateWorkPerformed(gotoCallingFragment)
-        } else {
-            displayError(answer)
-        }
-    }
-
-    private fun displayError(answer: String) {
-        Toast.makeText(mView.context, getString(R.string.error_) + answer, Toast.LENGTH_LONG).show()
-    }
-
-    private fun validateWorkPerformed(): String {
-        binding.apply {
-            if (etItem.text.isNullOrBlank()) {
-                return getString(R.string.please_enter_a_valid_work_performed_description)
-            }
-            for (workPerformed in workPerformedList) {
-                if (workPerformed.wpDescription == etItem.text.toString()
-                        .trim() && etItem.text.toString().trim() != oldWorkPerformed.wpDescription
-                ) {
-                    return getString(R.string.this_work_performed_description_already_exists)
-                }
-            }
-        }
-        return ANSWER_OK
-    }
-
-    private fun updateWorkPerformed(gotoCallingFragment: Boolean) {
-        try {
-            workOrderViewModel.updateWorkPerformed(
-                WorkPerformed(
-                    oldWorkPerformed.workPerformedId,
-                    binding.etItem.text.toString().trim(),
-                    false,
-                    df.getCurrentTimeAsString()
-                )
-            )
-            if (gotoCallingFragment) gotoCallingFragment()
-        } catch (e: SQLiteConstraintException) {
-            AlertDialog.Builder(mView.context).setTitle(getString(R.string.something_went_wrong))
-                .setMessage(
-                    getString(R.string.check_to_see_if_this_work_was_already_entered_) + " " + e.toString()
-                ).setNeutralButton(getString(R.string.ok), null).show()
-            throw ExceptionUnknown("Could not complete action")
-        }
-    }
-
-    private fun gotoCallingFragment() {
-        mainViewModel.setWorkPerformedId(null)
-        if (mainViewModel.getCallingFragment()!!.contains(
-                FRAG_WORK_PERFORMED_VIEW
-            )
-        ) {
-            gotoWorkPerformedViewFragment()
-        } else {
-            gotoWorkPerformedUpdateFragment()
-        }
-    }
-
-    private fun gotoWorkPerformedViewFragment() {
-        mView.findNavController().navigate(
-            WorkPerformedUpdateFragmentDirections.actionWorkPerformedUpdateFragmentToWorkPerformedViewFragment()
-        )
-    }
-
-    private fun gotoWorkPerformedUpdateFragment() {
-        mView.findNavController().navigate(
-            WorkPerformedUpdateFragmentDirections.actionWorkPerformedUpdateFragmentToWorkOrderHistoryUpdateFragment()
-        )
-    }
-
-    private fun gotoWorkPerformedMergeFragment() {
-        mView.findNavController().navigate(
+    private fun setOptionsForMergeAndGotoMerge(workPerformedId: Long, isMaster: Boolean) {
+        mainViewModel.setWorkPerformedId(workPerformedId)
+        mainViewModel.setWorkPerformedIsMaster(isMaster)
+        mainViewModel.addCallingFragment(FRAG_WORK_PERFORMED_UPDATE)
+        findNavController().navigate(
             WorkPerformedUpdateFragmentDirections.actionWorkPerformedUpdateFragmentToWorkPerformedMergeFragment()
         )
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
+    private fun gotoCallingFragment() {
+        mainViewModel.setWorkPerformedId(null)
+        val callingFragment = mainViewModel.getCallingFragment()
+        if (callingFragment != null && callingFragment.contains(FRAG_WORK_PERFORMED_VIEW)) {
+            findNavController().navigate(
+                WorkPerformedUpdateFragmentDirections.actionWorkPerformedUpdateFragmentToWorkPerformedViewFragment()
+            )
+        } else {
+            findNavController().navigate(
+                WorkPerformedUpdateFragmentDirections.actionWorkPerformedUpdateFragmentToWorkOrderHistoryUpdateFragment()
+            )
+        }
     }
 }

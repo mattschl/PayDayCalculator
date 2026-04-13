@@ -25,6 +25,15 @@ interface PayDayDao {
     )
     fun getCutOffDates(employerId: Long): LiveData<List<PayPeriods>>
 
+    @Query(
+        "SELECT * FROM $TABLE_PAY_PERIODS " +
+                "WHERE ppEmployerId = :employerId " +
+                "AND ppIsDeleted = 0 " +
+                "ORDER BY ppCutoffDate DESC " +
+                "LIMIT $PAY_PERIODS_LIMIT"
+    )
+    suspend fun getCutOffDatesSync(employerId: Long): List<PayPeriods>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPayPeriod(payPeriod: PayPeriods)
 

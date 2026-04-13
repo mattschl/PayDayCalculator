@@ -5,11 +5,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_AREA_VIEW
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_UPDATE
@@ -17,156 +26,113 @@ import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_UPDATE
 import ms.mattschlenkrich.paycalculator.data.Areas
 import ms.mattschlenkrich.paycalculator.data.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
-import ms.mattschlenkrich.paycalculator.databinding.FragmentSingleItemUpdateBinding
 
-class AreaUpdateFragment : Fragment(R.layout.fragment_single_item_update) {
+class AreaUpdateFragment : Fragment() {
 
-    private var _binding: FragmentSingleItemUpdateBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var workOrderViewModel: WorkOrderViewModel
     private val df = DateFunctions()
 
-    private lateinit var areasList: List<Areas>
-    private lateinit var oldArea: Areas
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSingleItemUpdateBinding.inflate(
-            inflater, container, false
-        )
-        mView = binding.root
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.topMenuBar.title = getString(R.string.update_area_description)
-        return mView
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setValues()
-        setClickActions()
-    }
+        return ComposeView(requireContext()).apply {
+            setContent {
+                val areaId = mainViewModel.getAreaId()
+                if (areaId == null) {
+                    gotoCallingFragment()
+                    return@setContent
+                }
 
-    private fun setValues() {
-        populateAreasListForValidation()
-        if (mainViewModel.getAreaId() != null) {
-            workOrderViewModel.getArea(mainViewModel.getAreaId()!!).observe(
-                viewLifecycleOwner
-            ) { area ->
-                oldArea = area
-                binding.apply {
-                    val display = getString(R.string.update_area_description_for) + oldArea.areaName
-                    tvTitle.text = display
-                    etItem.setText(oldArea.areaName)
+                val areaList by workOrderViewModel.getAreasList().observeAsState(emptyList())
+                val oldArea by workOrderViewModel.getArea(areaId).observeAsState()
+
+                oldArea?.let { area ->
+                    var name by remember(area.areaId) { mutableStateOf(area.areaName) }
+
+                    AreaUpdateScreen(
+                        name = name,
+                        onNameChange = { name = it },
+                        title = getString(R.string.update_area_description_for) + area.areaName,
+                        onUpdateClick = {
+                            validateAndUpdate(name, area, areaList)
+                        },
+                        onCancelClick = {
+                            gotoCallingFragment()
+                        }
+                    )
                 }
             }
         }
     }
 
-    private fun populateAreasListForValidation() {
-        workOrderViewModel.getAreasList().observe(viewLifecycleOwner) { list ->
-            areasList = list
+    private fun validateAndUpdate(name: String, oldArea: Areas, areaList: List<Areas>) {
+        val trimmedName = name.trim()
+        if (trimmedName.isBlank()) {
+            displayMessage(getString(R.string.please_enter_a_valid_description_of_the_area))
+            return
         }
-    }
 
-    private fun setClickActions() {
-        binding.apply {
-            btnUpdate.setOnClickListener {
-                updateAreaDescriptionIfValid()
+        if (areaList.any { it.areaName == trimmedName && it.areaId != oldArea.areaId }) {
+            displayMessage(getString(R.string.this_area_description_already_exists))
+            return
+        }
+
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                workOrderViewModel.updateArea(
+                    Areas(
+                        oldArea.areaId,
+                        trimmedName,
+                        false,
+                        df.getCurrentTimeAsString()
+                    )
+                ).join()
             }
-            btnCancel.setOnClickListener {
+            withContext(Dispatchers.Main) {
                 gotoCallingFragment()
             }
         }
     }
 
-    private fun updateAreaDescriptionIfValid() {
-        val answer = validateArea()
-        if (answer == ANSWER_OK) {
-            updateArea()
-        } else {
-            displayMessage(getString(R.string.error_) + answer)
-        }
-    }
-
     private fun displayMessage(answer: String) {
-        Toast.makeText(mView.context, answer, Toast.LENGTH_LONG).show()
-    }
-
-    private fun validateArea(): String {
-        binding.apply {
-            if (etItem.text.isNullOrBlank()) {
-                return getString(R.string.please_enter_a_valid_description_of_the_area)
-            }
-            for (area in areasList) {
-                if (area.areaName == etItem.text.toString().trim() && etItem.text.toString()
-                        .trim() != oldArea.areaName
-                ) {
-                    return getString(R.string.this_area_description_already_exists)
-                }
-            }
-        }
-        return ANSWER_OK
-    }
-
-    private fun updateArea() {
-        workOrderViewModel.updateArea(
-            Areas(
-                oldArea.areaId,
-                binding.etItem.text.toString().trim(),
-                false,
-                df.getCurrentTimeAsString()
-            )
-        )
-        gotoCallingFragment()
+        Toast.makeText(requireContext(), answer, Toast.LENGTH_LONG).show()
     }
 
     private fun gotoCallingFragment() {
         mainViewModel.setAreaId(null)
-        val callingFragment = mainActivity.mainViewModel.getCallingFragment()!!
-        if (callingFragment.contains(
-                FRAG_AREA_VIEW
-            )
-        ) {
-            gotoAreaViewFragment()
-        } else if (callingFragment.contains(
-                FRAG_WORK_ORDER_HISTORY_UPDATE
-            )
-        ) {
-            gotoWorkOrderHistoryUpdateFragment()
-        } else if (callingFragment.contains(
-                FRAG_WORK_ORDER_UPDATE
-            )
-        ) {
-            gotoWorkOrderUpdateFragment()
+        val callingFragment = mainViewModel.getCallingFragment()
+        if (callingFragment == null) {
+            view?.findNavController()?.navigateUp()
+            return
         }
-    }
 
-    private fun gotoAreaViewFragment() {
-        mView.findNavController().navigate(
-            AreaUpdateFragmentDirections.actionAreaUpdateFragmentToAreaViewFragment()
-        )
-    }
+        val navController = view?.findNavController()
+        when {
+            callingFragment.contains(FRAG_AREA_VIEW) -> {
+                navController?.navigate(
+                    AreaUpdateFragmentDirections.actionAreaUpdateFragmentToAreaViewFragment()
+                )
+            }
 
-    private fun gotoWorkOrderHistoryUpdateFragment() {
-        mView.findNavController().navigate(
-            AreaUpdateFragmentDirections.actionAreaUpdateFragmentToWorkOrderHistoryUpdateFragment()
-        )
-    }
+            callingFragment.contains(FRAG_WORK_ORDER_HISTORY_UPDATE) -> {
+                navController?.navigate(
+                    AreaUpdateFragmentDirections.actionAreaUpdateFragmentToWorkOrderHistoryUpdateFragment()
+                )
+            }
 
-    private fun gotoWorkOrderUpdateFragment() {
-        mView.findNavController().navigate(
-            AreaUpdateFragmentDirections.actionAreaUpdateFragmentToWorkOrderUpdateFragment()
-        )
-    }
+            callingFragment.contains(FRAG_WORK_ORDER_UPDATE) -> {
+                navController?.navigate(
+                    AreaUpdateFragmentDirections.actionAreaUpdateFragmentToWorkOrderUpdateFragment()
+                )
+            }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
+            else -> navController?.navigateUp()
+        }
     }
 }

@@ -1,16 +1,17 @@
 package ms.mattschlenkrich.paycalculator.workorder
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -39,14 +40,12 @@ import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.data.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.data.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
-import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderBinding
+import ms.mattschlenkrich.paycalculator.data.WorkPerformedAndQuantity
 
 private const val TAG = FRAG_WORK_ORDER_UPDATE
 
-class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrderUpdateFragment {
+class WorkOrderUpdateFragment : Fragment(), IWorkOrderUpdateFragment {
 
-    private var _binding: FragmentWorkOrderBinding? = null
-    private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
@@ -65,49 +64,93 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
     private val mainScope = CoroutineScope(Dispatchers.Main)
     private val defaultScope = CoroutineScope(Dispatchers.Default)
 
+    // Compose states
+    private var employerNameState by mutableStateOf("")
+    private var woNumberState by mutableStateOf("")
+    private var addressState by mutableStateOf("")
+    private var descriptionState by mutableStateOf("")
+    private var jobSpecTextState by mutableStateOf("")
+    private var areaTextState by mutableStateOf("")
+    private var workPerformedNoteState by mutableStateOf("")
+    private var addedJobSpecsState by mutableStateOf(emptyList<WorkOrderJobSpecCombined>())
+    private var historyListState by mutableStateOf(emptyList<WorkOrderHistoryWithDates>())
+    private var workPerformedListState by mutableStateOf(emptyList<WorkPerformedAndQuantity>())
+    private var materialsListState by mutableStateOf(emptyList<MaterialAndQuantity>())
+    private var jobSpecSummaryTextState by mutableStateOf("")
+    private var historySummaryTextState by mutableStateOf("")
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentWorkOrderBinding.inflate(
-            inflater, container, false
-        )
-        mView = binding.root
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
-        mainActivity.topMenuBar.title = getString(R.string.update_work_order)
-        return mView
+        return ComposeView(requireContext()).apply {
+            setContent {
+                WorkOrderUpdateScreen(
+                    employerName = employerNameState,
+                    woNumber = woNumberState,
+                    onWoNumberChange = { woNumberState = it },
+                    address = addressState,
+                    onAddressChange = { addressState = it },
+                    description = descriptionState,
+                    onDescriptionChange = { descriptionState = it },
+                    jobSpecText = jobSpecTextState,
+                    onJobSpecTextChange = { jobSpecTextState = it },
+                    jobSpecSuggestions = if (::jobSpecListForAutoComplete.isInitialized) jobSpecListForAutoComplete else emptyList(),
+                    onJobSpecSelected = {
+                        jobSpecTextState = it.jsName
+                        curJobSpec = it
+                    },
+                    areaText = areaTextState,
+                    onAreaTextChange = { areaTextState = it },
+                    areaSuggestions = if (::areaListForAutoComplete.isInitialized) areaListForAutoComplete else emptyList(),
+                    onAreaSelected = {
+                        areaTextState = it.areaName
+                        curArea = it
+                    },
+                    workPerformedNote = workPerformedNoteState,
+                    onWorkPerformedNoteChange = { workPerformedNoteState = it },
+                    onAddJobSpecClick = { addJobSpecToWorkOrderIfValid(true) },
+                    addedJobSpecs = addedJobSpecsState,
+                    onJobSpecClick = { chooseOptionsForJobSpec(it) },
+                    jobSpecSummaryText = jobSpecSummaryTextState,
+                    historyList = historyListState,
+                    onHistoryClick = { chooseOptionsForHistory(it) },
+                    historySummaryText = historySummaryTextState,
+                    onAddHistoryClick = { gotoWorkOrderHistoryAddFragment() },
+                    workPerformedList = workPerformedListState,
+                    materialsList = materialsListState,
+                    onDoneClick = { prepareToUpdate() },
+                    onBackClick = {
+                        mainViewModel.getCallingFragment()?.let {
+                            gotoCallingFragment()
+                        } ?: run {
+                            mainActivity.onBackPressedDispatcher.onBackPressed()
+                        }
+                    }
+                )
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        mView = view
         setInitialValues()
-        setClickActions()
     }
 
     private fun setInitialValues() {
         populateJobSpecListForAutoComplete()
         populateAreaListForAutoComplete()
-        unHideJobSpecsAndHistory()
         if (mainViewModel.getEmployer() != null) {
             curEmployer = mainViewModel.getEmployer()!!
-            binding.apply {
-                spEmployers.visibility = View.INVISIBLE
-                tvEmployer.visibility = View.VISIBLE
-                tvEmployer.text = curEmployer.employerName
-            }
+            employerNameState = curEmployer.employerName
             populateWorkOrderListForValidation()
             if (mainViewModel.getWorkOrder() != null) {
                 curWorkOrder = mainViewModel.getWorkOrder()!!
                 setValuesFromHistory(curWorkOrder)
             }
-        }
-    }
-
-    private fun unHideJobSpecsAndHistory() {
-        binding.apply {
-            crdJobSpecs.visibility = View.VISIBLE
-            crdHistory.visibility = View.VISIBLE
         }
     }
 
@@ -122,49 +165,69 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
     private fun populateAreaListForAutoComplete() {
         workOrderViewModel.getAreasList().observe(viewLifecycleOwner) { list ->
             areaListForAutoComplete = list
-            val areaNames = list.map { it.areaName }
-            populateAreasInAutoComplete(areaNames)
         }
-    }
-
-    private fun populateAreasInAutoComplete(areaNames: List<String>) {
-        val areaAdapter = ArrayAdapter(mView.context, R.layout.spinner_item_normal, areaNames)
-        binding.acArea.setAdapter(areaAdapter)
     }
 
     private fun setValuesFromHistory(workOrder: WorkOrder) {
-        binding.apply {
-            etWorkOrderNumber.setText(workOrder.woNumber)
-            etAddress.setText(workOrder.woAddress)
-            etDescription.setText(workOrder.woDescription)
-        }
+        woNumberState = workOrder.woNumber
+        addressState = workOrder.woAddress
+        descriptionState = workOrder.woDescription
         populateHistory(workOrder.workOrderId)
     }
 
     private fun populateJobSpecListForAutoComplete() {
         workOrderViewModel.getJobSpecsAll().observe(viewLifecycleOwner) { list ->
-            val jobSpecNameList = ArrayList<String>()
-            list.listIterator().forEach {
-                jobSpecListForAutoComplete = list
-                jobSpecNameList.add(it.jsName)
-            }
-            populateJobSpecsInAutoComplete(jobSpecNameList)
-        }
-    }
-
-    private fun populateJobSpecsInAutoComplete(jobSpecNameList: ArrayList<String>) {
-        binding.apply {
-            val jsAdapter = ArrayAdapter(
-                mView.context, R.layout.spinner_item_normal, jobSpecNameList
-            )
-            acJobSpec.setAdapter(jsAdapter)
+            jobSpecListForAutoComplete = list
         }
     }
 
     private fun populateHistory(workOrderId: Long) {
         populateDateHistory(workOrderId)
+        populateWorkPerformedHistory(workOrderId)
         populateMaterialHistory(workOrderId)
         populateJobSpecsForWorkOrder()
+    }
+
+    private fun populateWorkPerformedHistory(workOrderId: Long) {
+        workOrderViewModel.getWorkOrderHistoriesByWorkOrder(workOrderId).observe(
+            viewLifecycleOwner
+        ) { histories ->
+            val allWorkPerformed = mutableListOf<WorkPerformedAndQuantity>()
+            var historiesProcessed = 0
+            if (histories.isEmpty()) {
+                workPerformedListState = emptyList()
+                return@observe
+            }
+
+            histories.forEach { history ->
+                workOrderViewModel.getWorkPerformedCombinedByWorkOrderHistory(history.history.woHistoryId)
+                    .observe(viewLifecycleOwner) { wpList ->
+                        wpList.forEach { wp ->
+                            val existing = allWorkPerformed.find {
+                                it.description == wp.workPerformed.wpDescription &&
+                                        it.area == wp.area?.areaName
+                            }
+                            if (existing == null) {
+                                allWorkPerformed.add(
+                                    WorkPerformedAndQuantity(
+                                        wp.workPerformed.wpDescription,
+                                        wp.area?.areaName,
+                                        1
+                                    )
+                                )
+                            } else {
+                                val index = allWorkPerformed.indexOf(existing)
+                                allWorkPerformed[index] =
+                                    existing.copy(quantity = existing.quantity + 1)
+                            }
+                        }
+                        historiesProcessed++
+                        if (historiesProcessed == histories.size) {
+                            workPerformedListState = allWorkPerformed.sortedBy { it.description }
+                        }
+                    }
+            }
+        }
     }
 
     private fun populateDateHistory(workOrderId: Long) {
@@ -172,24 +235,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
             viewLifecycleOwner
         ) { list ->
             calculateHistoryTotals(list)
-            val histories = list.sortedBy { it.workDate.wdDate }
-            val workOrderHistoryAdapter = WorkOrderHistoryAdapter(
-                mainActivity, mView, this@WorkOrderUpdateFragment
-            )
-            workOrderHistoryAdapter.differ.submitList(histories)
-            binding.rvHistory.apply {
-                layoutManager = LinearLayoutManager(mView.context)
-                adapter = workOrderHistoryAdapter
-            }
-            hideUnHideHistory(list)
-        }
-    }
-
-    private fun hideUnHideHistory(list: List<WorkOrderHistoryWithDates>) {
-        if (list.isEmpty()) {
-            binding.crdHistory.visibility = View.GONE
-        } else {
-            binding.crdHistory.visibility = View.VISIBLE
+            historyListState = list.sortedBy { it.workDate.wdDate }
         }
     }
 
@@ -199,40 +245,14 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
         ) { list ->
             if (list.isNotEmpty()) {
                 val materials = ArrayList<MaterialAndQuantity>()
-                var curMaterial = ""
-                var counter = list.size
-                var curMaterialAndQuantity: MaterialAndQuantity? = null
-                list.listIterator().forEach {
-                    counter--
-                    if (curMaterial == "") {
-                        curMaterial = it.material.mName
-                        curMaterialAndQuantity = MaterialAndQuantity(
-                            curMaterial, it.workOrderHistoryMaterial.wohmQuantity
-                        )
-                        if (counter == 0) materials.add(curMaterialAndQuantity)
-                    } else if (curMaterial != it.material.mName) {
-                        materials.add(curMaterialAndQuantity!!)
-                        curMaterial = it.material.mName
-                        curMaterialAndQuantity = MaterialAndQuantity(
-                            curMaterial, it.workOrderHistoryMaterial.wohmQuantity
-                        )
-                    } else {
-                        curMaterialAndQuantity!!.quantity += it.workOrderHistoryMaterial.wohmQuantity
-                        if (counter == 0) materials.add(curMaterialAndQuantity)
-                    }
+                list.groupBy { it.material.mName }.forEach { (name, historyItems) ->
+                    val totalQuantity =
+                        historyItems.sumOf { it.workOrderHistoryMaterial.wohmQuantity }
+                    materials.add(MaterialAndQuantity(name, totalQuantity))
                 }
-                val materialsAndCount = materials.sortedBy { it.name }
-                val materialAdapter = MaterialCountAdapter(
-                    materialsAndCount, mView
-                )
-                binding.rvMaterials.apply {
-//                    layoutManager = LinearLayoutManager(mView.context)
-                    layoutManager = StaggeredGridLayoutManager(
-                        2, StaggeredGridLayoutManager.VERTICAL
-                    )
-                    setHasFixedSize(true)
-                    adapter = materialAdapter
-                }
+                materialsListState = materials.sortedBy { it.name }
+            } else {
+                materialsListState = emptyList()
             }
         }
     }
@@ -241,80 +261,64 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
         var regHours = 0.0
         var otHours = 0.0
         var dblOtHours = 0.0
-        historyList.listIterator().forEach {
+        historyList.forEach {
             regHours += it.history.woHistoryRegHours
             otHours += it.history.woHistoryOtHours
             dblOtHours += it.history.woHistoryDblOtHours
         }
         var display = ""
         if (regHours != 0.0) {
-            display = getString(R.string.reg_hrs_) + nf.getNumberFromDouble(regHours)
+            display = getString(R.string.reg_) + nf.getNumberFromDouble(regHours)
         }
         if (otHours != 0.0) {
             if (display.isNotBlank()) {
                 display += " | "
             }
-            display += getString(R.string.ot_hrs_) + nf.getNumberFromDouble(otHours)
+            display += getString(R.string.ot_) + nf.getNumberFromDouble(otHours)
         }
         if (dblOtHours != 0.0) {
             if (display.isNotBlank()) {
                 display += " | "
             }
-            display += getString(R.string.dblot_hrs_) + nf.getNumberFromDouble(dblOtHours)
+            display += getString(R.string.dbl_ot_) + nf.getNumberFromDouble(dblOtHours)
         }
-        binding.tvWorkOrderSummary.text = display
+        historySummaryTextState = display
     }
-
-    private fun setClickActions() {
-        binding.apply {
-            fabDone.setOnClickListener { prepareToUpdate() }
-            acJobSpec.setOnItemClickListener { _, _, _, _ ->
-                setCurrentJobSpec()
-            }
-            btnAddJobSpec.setOnClickListener {
-                addJobSpecToWorkOrderIfValid(true)
-            }
-            onSelectEmployer()
-        }
-    }
-
 
     private fun addJobSpecToWorkOrderIfValid(showError: Boolean) {
         mainScope.launch {
-            binding.apply {
-                if (acJobSpec.text.isNullOrBlank()) {
-                    if (showError) {
-                        displayMessage(
-                            getString(R.string.error_) + getString(R.string.add_a_description_first)
-                        )
+            if (jobSpecTextState.isBlank()) {
+                if (showError) {
+                    displayMessage(
+                        getString(R.string.error_) + getString(R.string.add_a_description_first)
+                    )
+                }
+            } else {
+                val jobSpec = async {
+                    return@async if (setCurrentJobSpec()) {
+                        curJobSpec!!
+                    } else {
+                        insertJobSpecIntoDatabase()
                     }
-                } else {
-                    val jobSpec = async {
-                        return@async if (setCurrentJobSpec()) {
-                            curJobSpec!!
-                        } else {
-                            insertJobSpecIntoDatabase()
-                        }
+                }
+                val area = async {
+                    return@async if (setCurrentArea()) {
+                        curArea!!
+                    } else if (areaTextState.isBlank()) {
+                        null
+                    } else {
+                        insertAreaIntoDatabase()
                     }
-                    val area = async {
-                        return@async if (setCurrentArea()) {
-                            curArea!!
-                        } else if (acArea.text.isNullOrBlank()) {
-                            null
-                        } else {
-                            insertAreaIntoDatabase()
-                        }
-                    }
-                    val jobSpecCombinedIsValid = async {
-                        validateJobSpecCombined(
-                            jobSpec.await(), area.await(), showError
-                        )
-                    }
-                    if (jobSpecCombinedIsValid.await()) {
-                        addJobSpecToWorkOrder(
-                            jobSpec.await(), area.await()
-                        )
-                    }
+                }
+                val jobSpecCombinedIsValid = async {
+                    validateJobSpecCombined(
+                        jobSpec.await(), area.await(), showError
+                    )
+                }
+                if (jobSpecCombinedIsValid.await()) {
+                    addJobSpecToWorkOrder(
+                        jobSpec.await(), area.await()
+                    )
                 }
             }
         }
@@ -337,7 +341,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
     private fun insertAreaIntoDatabase(): Areas {
         val newArea = Areas(
             nf.generateRandomIdAsLong(),
-            binding.acArea.text.toString().trim(),
+            areaTextState.trim(),
             false,
             df.getCurrentTimeAsString()
         )
@@ -349,7 +353,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
     private fun insertJobSpecIntoDatabase(): JobSpec {
         val newJobSpec = JobSpec(
             nf.generateRandomIdAsLong(),
-            binding.acJobSpec.text.toString().trim(),
+            jobSpecTextState.trim(),
             false,
             df.getCurrentTimeAsString()
         )
@@ -362,51 +366,46 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
 
     private fun addJobSpecToWorkOrder(jobSpec: JobSpec, area: Areas?) {
         mainScope.launch {
-            binding.apply {
-                val note: String? = if (etWorkPerformedNote.text.isNullOrBlank()) {
-                    null
-                } else {
-                    etWorkPerformedNote.text.toString().trim()
-                }
-                val areaId: Long? = area?.areaId
-                delay(WAIT_250)
-                jobSpecSequence++
-                defaultScope.launch {
-                    workOrderViewModel.insertWorkOrderJobSpec(
-                        WorkOrderJobSpec(
-                            nf.generateRandomIdAsLong(),
-                            curWorkOrder.workOrderId,
-                            jobSpec.jobSpecId,
-                            areaId,
-                            note,
-                            jobSpecSequence,
-                            false,
-                            df.getCurrentTimeAsString()
-                        )
-                    )
-                }
-                delay(WAIT_250)
-                curJobSpec = null
-                curArea = null
-                acJobSpec.text.clear()
-                etWorkPerformedNote.text.clear()
-                populateJobSpecsForWorkOrder()
+            val note: String? = if (workPerformedNoteState.isBlank()) {
+                null
+            } else {
+                workPerformedNoteState.trim()
             }
+            val areaId: Long? = area?.areaId
+            delay(WAIT_250)
+            jobSpecSequence++
+            defaultScope.launch {
+                workOrderViewModel.insertWorkOrderJobSpec(
+                    WorkOrderJobSpec(
+                        nf.generateRandomIdAsLong(),
+                        curWorkOrder.workOrderId,
+                        jobSpec.jobSpecId,
+                        areaId,
+                        note,
+                        jobSpecSequence,
+                        false,
+                        df.getCurrentTimeAsString()
+                    )
+                )
+            }
+            delay(WAIT_250)
+            curJobSpec = null
+            curArea = null
+            jobSpecTextState = ""
+            workPerformedNoteState = ""
+            populateJobSpecsForWorkOrder()
         }
     }
 
     private fun setCurrentArea(): Boolean {
         curArea = null
-        binding.apply {
-            if (acArea.text.isNullOrBlank()) {
-                return false
-            } else {
-                for (area in areaListForAutoComplete) if (area.areaName == acArea.text.toString()
-                        .trim()
-                ) {
-                    curArea = area
-                    return true
-                }
+        if (areaTextState.isBlank()) {
+            return false
+        } else {
+            for (area in areaListForAutoComplete) if (area.areaName == areaTextState.trim()
+            ) {
+                curArea = area
+                return true
             }
         }
         return false
@@ -419,21 +418,8 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
             jobSpecCombinedList = jobSpecList
             populateJobSpecSummary(jobSpecList)
             jobSpecSequence = determineSequence(jobSpecList)
-            populateJobSpecRecycler(jobSpecList)
+            addedJobSpecsState = jobSpecList
         }
-    }
-
-    private fun populateJobSpecRecycler(jobSpecList: List<WorkOrderJobSpecCombined>) {
-        val workOrderJobSpecAdapter = WorkOrderJobSpecAdapter(
-            mainActivity, this@WorkOrderUpdateFragment, curWorkOrder, TAG, mView
-        )
-        binding.rvJobSpecs.apply {
-            layoutManager = StaggeredGridLayoutManager(
-                2, StaggeredGridLayoutManager.VERTICAL
-            )
-            adapter = workOrderJobSpecAdapter
-        }
-        workOrderJobSpecAdapter.differ.submitList(jobSpecList)
     }
 
     private fun determineSequence(jobSpecList: List<WorkOrderJobSpecCombined>): Int {
@@ -458,20 +444,18 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
             }
             seq++
         }
-        binding.tvJobSpecsCombined.text = display
+        jobSpecSummaryTextState = display
     }
 
     private fun setCurrentJobSpec(): Boolean {
         curJobSpec = null
-        binding.apply {
-            if (acJobSpec.text.isNullOrBlank()) {
-                return false
-            } else {
-                for (jobSpec in jobSpecListForAutoComplete) {
-                    if (jobSpec.jsName == binding.acJobSpec.text.toString().trim()) {
-                        curJobSpec = jobSpec
-                        return true
-                    }
+        if (jobSpecTextState.isBlank()) {
+            return false
+        } else {
+            for (jobSpec in jobSpecListForAutoComplete) {
+                if (jobSpec.jsName == jobSpecTextState.trim()) {
+                    curJobSpec = jobSpec
+                    return true
                 }
             }
         }
@@ -492,7 +476,7 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
     }
 
     private fun displayMessage(message: String) {
-        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 
     private fun updateWorkOrder() {
@@ -511,59 +495,120 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
         gotoCallingFragment()
     }
 
-    private fun onSelectEmployer() {
-        binding.apply {
-            spEmployers.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
-                ) {
-                    defaultScope.launch {
-                        curEmployer = mainActivity.employerViewModel.findEmployer(
-                            spEmployers.selectedItem.toString()
-                        )
-                    }
-                    populateWorkOrderListForValidation()
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    //not needed
-                }
-            }
-        }
-    }
-
     private fun getCurrentWorkOrder(): WorkOrder {
-        binding.apply {
-            return WorkOrder(
-                curWorkOrder.workOrderId,
-                etWorkOrderNumber.text.toString(),
-                curEmployer.employerId,
-                etAddress.text.toString().trim(),
-                etDescription.text.toString().trim(),
-                false,
-                df.getCurrentTimeAsString()
-            )
-        }
+        return WorkOrder(
+            curWorkOrder.workOrderId,
+            woNumberState,
+            curEmployer.employerId,
+            addressState.trim(),
+            descriptionState.trim(),
+            false,
+            df.getCurrentTimeAsString()
+        )
     }
 
     private fun validateWorkOrder(): String {
-        binding.apply {
-            if (etWorkOrderNumber.text.isEmpty()) {
-                return getString(R.string.please_enter_a_valid_work_order_number)
-            }
-            for (workOrder in workOrderList) {
-                if (workOrder.woNumber == etWorkOrderNumber.text.toString() && etWorkOrderNumber.text.toString() != curWorkOrder.woNumber) {
-                    return getString(R.string.this_work_order_has_been_used)
-                }
-            }
-            if (etAddress.text.isEmpty()) {
-                return getString(R.string.please_enter_an_address)
-            }
-            if (etDescription.text.isEmpty()) {
-                return getString(R.string.please_enter_a_description)
+        if (woNumberState.isEmpty()) {
+            return getString(R.string.please_enter_a_valid_work_order_number)
+        }
+        for (workOrder in workOrderList) {
+            if (workOrder.woNumber == woNumberState && woNumberState != curWorkOrder.woNumber) {
+                return getString(R.string.this_work_order_has_been_used)
             }
         }
+        if (addressState.isEmpty()) {
+            return getString(R.string.please_enter_an_address)
+        }
+        if (descriptionState.isEmpty()) {
+            return getString(R.string.please_enter_a_description)
+        }
         return ANSWER_OK
+    }
+
+    private fun chooseOptionsForJobSpec(jobSpec: WorkOrderJobSpecCombined) {
+        AlertDialog.Builder(requireContext()).setTitle(
+            getString(R.string.choose_option_for) + "\"${jobSpec.jobSpec.jsName}\""
+        ).setItems(
+            arrayOf(
+                getString(R.string.edit_the_job_spec_description_in_the_work_order),
+                getString(R.string.remove_this_work_job_spec_description_in_the_work_order),
+                getString(R.string.edit_work_description_of) + jobSpec.jobSpec.jsName,
+                if (jobSpec.workOrderJobSpec.wojsAreaId != null) {
+                    getString(R.string.edit_area_description_of_) + jobSpec.area?.areaName
+                } else {
+                    ""
+                }
+            )
+        ) { _, pos ->
+            when (pos) {
+                0 -> {
+                    gotoJobSpecUpdate(
+                        jobSpec.workOrderJobSpec.workOrderJobSpecId
+                    )
+                }
+
+                1 -> {
+                    removeJobSpecFromWorkOrder(
+                        jobSpec
+                    )
+                }
+
+                2 -> {
+                    editJobSpec(jobSpec)
+                }
+
+                3 -> {
+                    editArea(jobSpec.workOrderJobSpec.wojsAreaId!!)
+                }
+            }
+        }.setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun gotoJobSpecUpdate(workOrderJobSpecId: Long) {
+        // TODO: Not yet implemented in legacy either
+    }
+
+    private fun removeJobSpecFromWorkOrder(woJobSpec: WorkOrderJobSpecCombined) {
+        workOrderViewModel.deleteWorkOrderJobSpec(woJobSpec.workOrderJobSpec.workOrderJobSpecId)
+    }
+
+    private fun editJobSpec(woJobSpec: WorkOrderJobSpecCombined) {
+        mainViewModel.apply {
+            setJobSpec(woJobSpec.jobSpec)
+            addCallingFragment(TAG)
+        }
+        gotoJobSpecUpdateFragment()
+    }
+
+    private fun editArea(areaId: Long) {
+        mainViewModel.apply {
+            setAreaId(areaId)
+            addCallingFragment(TAG)
+        }
+        gotoAreaUpdateFragment()
+    }
+
+    private fun chooseOptionsForHistory(history: WorkOrderHistoryWithDates) {
+        AlertDialog.Builder(requireContext()).setTitle(
+            getString(R.string.choose_option_for) + " ${getString(R.string.work_performed_on)}" + " ${
+                df.getDisplayDate(
+                    history.workDate.wdDate
+                )
+            }"
+        ).setPositiveButton(getString(R.string.open_caps)) { _, _ ->
+            gotoEditWorkOrderHistory(
+                history
+            )
+        }.setNegativeButton(getString(R.string.cancel), null).show()
+    }
+
+    private fun gotoEditWorkOrderHistory(history: WorkOrderHistoryWithDates) {
+        mainViewModel.apply {
+            setWorkOrderHistory(history.history)
+            setWorkDateObject(history.workDate)
+        }
+        gotoWorkOrderHistoryFragment()
     }
 
     private fun gotoCallingFragment() {
@@ -635,6 +680,5 @@ class WorkOrderUpdateFragment : Fragment(R.layout.fragment_work_order), IWorkOrd
 
     override fun onDestroy() {
         super.onDestroy()
-        _binding = null
     }
 }

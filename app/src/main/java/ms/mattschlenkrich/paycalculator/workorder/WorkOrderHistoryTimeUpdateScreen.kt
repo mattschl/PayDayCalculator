@@ -1,0 +1,167 @@
+package ms.mattschlenkrich.paycalculator.workorder
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.common.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.common.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.common.StandardTopAppBar
+import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
+import java.util.Calendar
+
+@Composable
+fun WorkOrderHistoryTimeUpdateScreen(
+    infoText: String,
+    originalTimeText: String,
+    startTime: Calendar,
+    endTime: Calendar,
+    totalTimeText: String,
+    selectedTimeType: Int,
+    onTimeTypeChange: (Int) -> Unit,
+    onStartTimeClick: () -> Unit,
+    onEndTimeClick: () -> Unit,
+    onSaveClick: () -> Unit
+) {
+    val df = DateFunctions()
+
+    Scaffold(
+        topBar = {
+            StandardTopAppBar(title = stringResource(R.string.update_work_time))
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onSaveClick,
+                containerColor = Color(0xFF2E7D32), // Dark Green
+                contentColor = Color.White
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Done,
+                    contentDescription = stringResource(R.string.done)
+                )
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = SCREEN_PADDING_HORIZONTAL)
+                .verticalScroll(rememberScrollState())
+                .padding(vertical = SCREEN_PADDING_VERTICAL),
+            verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+        ) {
+            Text(
+                text = infoText,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Black
+            )
+
+            Text(
+                text = originalTimeText,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                color = Color.Black
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.start_time),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = df.get12HourDisplay(startTime),
+                        modifier = Modifier
+                            .clickable { onStartTimeClick() }
+                            .padding(vertical = 4.dp),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+                }
+
+                Text(
+                    text = totalTimeText,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFFB71C1C) // Deep Red
+                )
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.End
+                ) {
+                    Text(
+                        text = stringResource(R.string.end_time),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = df.get12HourDisplay(endTime),
+                        modifier = Modifier
+                            .clickable { onEndTimeClick() }
+                            .padding(vertical = 4.dp),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                TimeTypeRadioButton(
+                    label = stringResource(R.string.reg_hours),
+                    selected = selectedTimeType == TimeWorkedTypes.REG_HOURS.value,
+                    onClick = { onTimeTypeChange(TimeWorkedTypes.REG_HOURS.value) }
+                )
+                TimeTypeRadioButton(
+                    label = stringResource(R.string.ot_hrs),
+                    selected = selectedTimeType == TimeWorkedTypes.OT_HOURS.value,
+                    onClick = { onTimeTypeChange(TimeWorkedTypes.OT_HOURS.value) }
+                )
+                TimeTypeRadioButton(
+                    label = stringResource(R.string.dbl_ot_hrs),
+                    selected = selectedTimeType == TimeWorkedTypes.DBL_OT_HOURS.value,
+                    onClick = { onTimeTypeChange(TimeWorkedTypes.DBL_OT_HOURS.value) }
+                )
+                TimeTypeRadioButton(
+                    label = stringResource(R.string._break),
+                    selected = selectedTimeType == TimeWorkedTypes.BREAK.value,
+                    onClick = { onTimeTypeChange(TimeWorkedTypes.BREAK.value) }
+                )
+            }
+        }
+    }
+}

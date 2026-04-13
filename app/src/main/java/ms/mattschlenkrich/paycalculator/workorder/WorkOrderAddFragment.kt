@@ -5,266 +5,207 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import androidx.navigation.fragment.findNavController
+import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ANSWER_OK
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_DATE_TIME
 import ms.mattschlenkrich.paycalculator.common.FRAG_WORK_ORDER_HISTORY_ADD
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.Employers
-import ms.mattschlenkrich.paycalculator.data.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.data.Employers
 import ms.mattschlenkrich.paycalculator.data.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
-import ms.mattschlenkrich.paycalculator.databinding.FragmentWorkOrderBinding
-import ms.mattschlenkrich.paycalculator.MainActivity
 
-class WorkOrderAddFragment : Fragment(R.layout.fragment_work_order) {
+class WorkOrderAddFragment : Fragment() {
 
-    private var _binding: FragmentWorkOrderBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var workOrderViewModel: WorkOrderViewModel
     private lateinit var employerViewModel: EmployerViewModel
-    private lateinit var workOrderList: List<WorkOrder>
-    private lateinit var curEmployer: Employers
-    private lateinit var curWorkOrder: WorkOrder
+
     private val df = DateFunctions()
     private val nf = NumberFunctions()
-    private val defaultScope = CoroutineScope(Dispatchers.Default)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentWorkOrderBinding.inflate(
-            inflater, container, false
-        )
-        mView = binding.root
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
         employerViewModel = mainActivity.employerViewModel
-        mainActivity.topMenuBar.title = getString(R.string.add_new_work_order)
-        return mView
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        populateInitialValues()
-        setClickActions()
-    }
+        return ComposeView(requireContext()).apply {
+            setContent {
+                val employers by employerViewModel.getEmployers().observeAsState(emptyList())
+                val fixedEmployer = remember { mainViewModel.getEmployer() }
 
-    private fun populateInitialValues() {
-        hideJobSpecsAndHistory()
-        binding.apply {
-            if (mainViewModel.getEmployer() != null) {
-                curEmployer = mainViewModel.getEmployer()!!
-                spEmployers.visibility = View.INVISIBLE
-                tvEmployer.visibility = View.VISIBLE
-                tvEmployer.text = curEmployer.employerName
-                populateWorkOrderListForValidation()
-            } else {
-                spEmployers.visibility = View.VISIBLE
-                tvEmployer.visibility = View.INVISIBLE
-                populateEmployers()
-            }
-            if (mainViewModel.getWorkOrderNumber() != null) {
-                etWorkOrderNumber.setText(mainViewModel.getWorkOrderNumber()!!)
-            }
-            if (mainViewModel.getTempWorkOrderHistoryInfo() != null) {
-                populateValuesFromHistory()
-//                mainActivity.mainViewModel.setTempWorkOrderHistoryInfo(null)
-            }
-            crdHistory.visibility = View.INVISIBLE
-        }
-    }
+                var selectedEmployer by remember { mutableStateOf(fixedEmployer) }
+                var woNumber by remember {
+                    mutableStateOf(
+                        mainViewModel.getTempWorkOrderHistoryInfo()?.woHistoryWorkOrderNumber
+                            ?: mainViewModel.getWorkOrderNumber()
+                            ?: ""
+                    )
+                }
+                var address by remember { mutableStateOf("") }
+                var description by remember { mutableStateOf("") }
 
-    private fun hideJobSpecsAndHistory() {
-        binding.apply {
-            crdJobSpecs.visibility = View.GONE
-            crdHistory.visibility = View.GONE
-        }
-    }
+                val workOrdersByEmployer by workOrderViewModel.getWorkOrdersByEmployerId(
+                    selectedEmployer?.employerId ?: -1L
+                ).observeAsState(emptyList())
 
-    private fun populateWorkOrderListForValidation() {
-        workOrderViewModel.getWorkOrdersByEmployerId(curEmployer.employerId).observe(
-            viewLifecycleOwner
-        ) { list ->
-            workOrderList = list
-        }
-    }
-
-    private fun populateEmployers() {
-        employerViewModel.getEmployers().observe(
-            viewLifecycleOwner
-        ) { list ->
-            binding.apply {
-                val employerAdapter = ArrayAdapter<Any>(mView.context, R.layout.spinner_item_bold)
-                list.listIterator().forEach { employerAdapter.add(it.employerName) }
-                spEmployers.adapter = employerAdapter
+                WorkOrderAddScreen(
+                    employers = employers,
+                    selectedEmployer = selectedEmployer,
+                    onEmployerSelected = { selectedEmployer = it },
+                    fixedEmployerName = fixedEmployer?.employerName,
+                    woNumber = woNumber,
+                    onWoNumberChange = { woNumber = it },
+                    address = address,
+                    onAddressChange = { address = it },
+                    description = description,
+                    onDescriptionChange = { description = it },
+                    onDoneClick = {
+                        val validationResult = validateWorkOrder(
+                            woNumber,
+                            selectedEmployer,
+                            address,
+                            description,
+                            workOrdersByEmployer
+                        )
+                        if (validationResult == ANSWER_OK) {
+                            saveWorkOrder(
+                                woNumber,
+                                selectedEmployer!!,
+                                address,
+                                description,
+                                false
+                            )
+                        } else {
+                            displayMessage(getString(R.string.error_) + validationResult)
+                        }
+                    }
+                )
             }
         }
     }
 
-    private fun populateValuesFromHistory() {
-        val tempWorkOrder = mainActivity.mainViewModel.getTempWorkOrderHistoryInfo()!!
-        binding.etWorkOrderNumber.setText(tempWorkOrder.woHistoryWorkOrderNumber)
-    }
-
-    private fun setClickActions() {
-        onSelectEmployer()
-        binding.apply {
-            fabDone.setOnClickListener {
-                saveWorkOrderAndAddJobSpecIfValid()
-            }
-            fabDone.setOnLongClickListener {
-                saveWorkOrderAndAddJobSpecIfValid(true)
-                true
+    private fun validateWorkOrder(
+        woNumber: String,
+        selectedEmployer: Employers?,
+        address: String,
+        description: String,
+        workOrderList: List<WorkOrder>
+    ): String {
+        if (selectedEmployer == null) {
+            return getString(R.string.no_employers_add_an_employer_through_the_employer_tab)
+        }
+        if (woNumber.isEmpty()) {
+            return getString(R.string.please_enter_a_work_order_number)
+        }
+        for (workOrder in workOrderList) {
+            if (workOrder.woNumber == woNumber) {
+                return getString(R.string.this_work_order_has_been_used)
             }
         }
-    }
-
-    private fun saveWorkOrderAndAddJobSpecIfValid(gotoNextStep: Boolean = false) {
-        val answer = validateWorkOrder()
-        if (answer == ANSWER_OK) {
-            saveWorkOrderAndAChooseNextSteps(gotoNextStep)
-        } else {
-            displayMessage(getString(R.string.error_) + answer)
+        if (address.isEmpty()) {
+            return getString(R.string.please_enter_an_address)
         }
+        if (description.isEmpty()) {
+            return getString(R.string.please_enter_a_description)
+        }
+        return ANSWER_OK
     }
 
-    private fun saveWorkOrderAndAChooseNextSteps(gotoNextStep: Boolean = false) {
-        curWorkOrder = getCurrentWorkOrder()
-        workOrderViewModel.insertWorkOrder(curWorkOrder)
+    private fun saveWorkOrder(
+        woNumber: String,
+        employer: Employers,
+        address: String,
+        description: String,
+        gotoNextStep: Boolean
+    ) {
+        val newWorkOrder = WorkOrder(
+            nf.generateRandomIdAsLong(),
+            woNumber,
+            employer.employerId,
+            address.trim(),
+            description.trim(),
+            false,
+            df.getCurrentTimeAsString()
+        )
+        workOrderViewModel.insertWorkOrder(newWorkOrder)
         mainViewModel.apply {
-            setWorkOrder(curWorkOrder)
-            setWorkOrderNumber(curWorkOrder.woNumber)
+            setWorkOrder(newWorkOrder)
+            setWorkOrderNumber(newWorkOrder.woNumber)
         }
+
         if (gotoNextStep) {
             chooseToGotoUpdate()
         } else {
+            // In the legacy code, long click on FAB sets gotoNextStep to true.
+            // But the Screen currently only has onDoneClick.
+            // I'll show the dialog by default or just go back depending on requirements.
+            // Legacy had saveWorkOrderAndAddJobSpecIfValid() for normal click
+            // which calls saveWorkOrderAndAChooseNextSteps(false)
+            // which calls gotoCallingFragment().
+            // And long click called saveWorkOrderAndAddJobSpecIfValid(true) 
+            // which calls chooseToGotoUpdate().
+
+            // For now, I'll follow the normal click behavior: gotoCallingFragment.
+            // But maybe I should ask the user if they want to update job specs anyway?
+            // The legacy code's normal click did NOT ask.
             gotoCallingFragment()
         }
     }
 
     private fun chooseToGotoUpdate() {
-        AlertDialog.Builder(mView.context).setTitle(getString(R.string.choose_the_next_step))
+        AlertDialog.Builder(requireContext()).setTitle(getString(R.string.choose_the_next_step))
             .setMessage(getString(R.string.would_you_like_to_update_job_specs_for_this_work_order))
             .setPositiveButton(getString(R.string.yes)) { _, _ -> gotoWorkOrderUpdate() }
             .setNegativeButton(getString(R.string.no)) { _, _ -> gotoCallingFragment() }
             .setNeutralButton(getString(R.string.cancel), null).show()
     }
 
-
-    private fun onSelectEmployer() {
-        binding.apply {
-            spEmployers.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
-                ) {
-                    defaultScope.launch {
-                        curEmployer = mainActivity.employerViewModel.findEmployer(
-                            spEmployers.selectedItem.toString()
-                        )
-                    }
-                    populateWorkOrderListForValidation()
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    //not needed
-                }
-            }
-        }
+    private fun displayMessage(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 
-    private fun validateWorkOrder(): String {
-        binding.apply {
-            if (etWorkOrderNumber.text.isEmpty()) {
-                return getString(R.string.please_enter_a_work_order_number)
+    private fun gotoCallingFragment() {
+        val frag = mainViewModel.getCallingFragment()
+        when {
+            frag?.contains(FRAG_WORK_DATE_TIME) == true -> {
+                findNavController().navigate(
+                    WorkOrderAddFragmentDirections.actionWorkOrderAddFragmentToWorkDateTimes()
+                )
             }
-            for (workOrder in workOrderList) {
-                if (workOrder.woNumber == etWorkOrderNumber.text.toString()) {
-                    return getString(R.string.this_work_order_has_been_used)
-                }
+
+            frag?.contains(FRAG_WORK_ORDER_HISTORY_ADD) == true -> {
+                findNavController().navigate(
+                    WorkOrderAddFragmentDirections.actionWorkOrderAddFragmentToWorkOrderHistoryAddFragment()
+                )
             }
-            if (etAddress.text.isEmpty()) {
-                return getString(R.string.please_enter_an_address)
-            }
-            if (etDescription.text.isEmpty()) {
-                return getString(R.string.please_enter_a_description)
+
+            else -> {
+                findNavController().popBackStack()
             }
         }
-        return ANSWER_OK
     }
 
     private fun gotoWorkOrderUpdate() {
         displayMessage(getString(R.string.work_order_has_been_added_automatically_before_adding_work_specs))
-        gotoWorkOrderUpdateFragment()
-    }
-
-    private fun displayMessage(message: String) {
-        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
-    }
-
-    private fun gotoCallingFragment() {
-        val frag = mainViewModel.getCallingFragment()!!
-        if (frag.contains(FRAG_WORK_DATE_TIME)) {
-            gotoWorkDateTimesFragment()
-        } else if (frag.contains(FRAG_WORK_ORDER_HISTORY_ADD)) {
-            gotoTimeSheetAddWorkOrderFragment()
-        }
-    }
-
-    private fun gotoWorkDateTimesFragment() {
-        mView.findNavController().navigate(
-            WorkOrderAddFragmentDirections.actionWorkOrderAddFragmentToWorkDateTimes()
-        )
-    }
-
-    private fun gotoWorkOrderUpdateFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             WorkOrderAddFragmentDirections.actionWorkOrderAddFragmentToWorkOrderUpdateFragment()
         )
-    }
-
-    private fun gotoTimeSheetAddWorkOrderFragment() {
-        mView.findNavController().navigate(
-            WorkOrderAddFragmentDirections.actionWorkOrderAddFragmentToWorkOrderHistoryAddFragment()
-        )
-    }
-
-    private fun getCurrentWorkOrder(): WorkOrder {
-        binding.apply {
-            return WorkOrder(
-                nf.generateRandomIdAsLong(),
-                etWorkOrderNumber.text.toString(),
-                curEmployer.employerId,
-                etAddress.text.toString().trim(),
-                etDescription.text.toString().trim(),
-                false,
-                df.getCurrentTimeAsString()
-            )
-        }
-    }
-
-    override fun onStop() {
-        defaultScope.cancel()
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 }
