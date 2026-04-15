@@ -11,12 +11,6 @@ import androidx.room.Update
 import ms.mattschlenkrich.paycalculator.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_EXTRA_TYPES
-import ms.mattschlenkrich.paycalculator.data.ExtraDefTypeAndEmployer
-import ms.mattschlenkrich.paycalculator.data.ExtraDefinitionAndType
-import ms.mattschlenkrich.paycalculator.data.ExtraTypeAndDefByDay
-import ms.mattschlenkrich.paycalculator.data.WorkExtraTypes
-import ms.mattschlenkrich.paycalculator.data.WorkExtrasDefinitions
-import ms.mattschlenkrich.paycalculator.data.WorkDateExtras
 
 @Dao
 interface WorkExtraDao {
@@ -193,6 +187,24 @@ interface WorkExtraDao {
     )
     fun getExtraTypeAndDefByTypeId(typeId: Long, cutoffDate: String):
             LiveData<ExtraDefinitionAndType>
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT * FROM workExtraTypes " +
+                "JOIN ( " +
+                "SELECT * FROM workExtrasDefinitions " +
+                "WHERE weExtraTypeId = :typeId " +
+                "AND weEffectiveDate <= :cutoffDate " +
+                "ORDER BY weEffectiveDate DESC " +
+                "LIMIT 1 " +
+                ") on " +
+                "workExtraTypeId = weExtraTypeId " +
+                "WHERE workExtraTypeId = :typeId " +
+                "AND wetIsDeleted = 0"
+    )
+    suspend fun getExtraTypeAndDefByTypeIdSync(typeId: Long, cutoffDate: String):
+            ExtraDefinitionAndType?
 
     @Insert
     suspend fun insertWorkDateExtra(extra: WorkDateExtras)

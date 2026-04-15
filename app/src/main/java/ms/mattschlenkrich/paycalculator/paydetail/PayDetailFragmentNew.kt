@@ -26,7 +26,9 @@ import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.Employers
 import ms.mattschlenkrich.paycalculator.data.ExtraContainer
 import ms.mattschlenkrich.paycalculator.data.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.PayCalculationsViewModel
 import ms.mattschlenkrich.paycalculator.data.PayDayViewModel
+import ms.mattschlenkrich.paycalculator.data.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.data.TaxAndAmount
 import ms.mattschlenkrich.paycalculator.data.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkPayPeriodExtras
@@ -39,6 +41,8 @@ class PayDetailFragmentNew : Fragment(), IPayDetailsFragment {
     private lateinit var mainViewModel: MainViewModel
     private lateinit var employerViewModel: EmployerViewModel
     private lateinit var payDayViewModel: PayDayViewModel
+    private lateinit var payDetailViewModel: PayDetailViewModel
+    private lateinit var payCalculationsViewModel: PayCalculationsViewModel
     private lateinit var workExtraViewModel: WorkExtraViewModel
 
     private val nf = NumberFunctions()
@@ -51,6 +55,8 @@ class PayDetailFragmentNew : Fragment(), IPayDetailsFragment {
         mainViewModel = mainActivity.mainViewModel
         employerViewModel = mainActivity.employerViewModel
         payDayViewModel = mainActivity.payDayViewModel
+        payDetailViewModel = mainActivity.payDetailViewModel
+        payCalculationsViewModel = mainActivity.payCalculationsViewModel
         workExtraViewModel = mainActivity.workExtraViewModel
 
         return ComposeView(requireContext()).apply {
@@ -111,7 +117,12 @@ class PayDetailFragmentNew : Fragment(), IPayDetailsFragment {
                         if (payPeriod != null) {
                             mainViewModel.setPayPeriod(payPeriod)
                             val payCalculations =
-                                PayCalculationsAsync(mainActivity, selectedEmployer!!, payPeriod)
+                                PayCalculationsAsync(
+                                    payCalculationsViewModel,
+                                    payDetailViewModel,
+                                    selectedEmployer!!,
+                                    payPeriod
+                                )
                             payCalculations.waitForCalculations()
 
                             credits = payCalculations.getCredits()

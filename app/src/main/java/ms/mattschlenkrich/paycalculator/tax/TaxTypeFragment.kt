@@ -45,10 +45,10 @@ import androidx.navigation.fragment.findNavController
 import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.FRAG_TAX_TYPE
-import ms.mattschlenkrich.paycalculator.common.SCREEN_PADDING_HORIZONTAL
-import ms.mattschlenkrich.paycalculator.common.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.SelectAllOutlinedTextField
-import ms.mattschlenkrich.paycalculator.common.StandardTopAppBar
+import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
+import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.TaxTypes
 import ms.mattschlenkrich.paycalculator.data.WorkTaxViewModel

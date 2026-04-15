@@ -28,15 +28,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
-import ms.mattschlenkrich.paycalculator.common.DecimalOutlinedTextField
-import ms.mattschlenkrich.paycalculator.common.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
 import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.common.SCREEN_PADDING_HORIZONTAL
-import ms.mattschlenkrich.paycalculator.common.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.SelectAllOutlinedTextField
-import ms.mattschlenkrich.paycalculator.common.StandardTopAppBar
+import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
+import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
+import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.ExtraDefTypeAndEmployer
 import ms.mattschlenkrich.paycalculator.data.WorkExtrasDefinitions
 

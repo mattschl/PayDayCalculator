@@ -25,7 +25,9 @@ import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.Employers
 import ms.mattschlenkrich.paycalculator.data.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.PayCalculationsViewModel
 import ms.mattschlenkrich.paycalculator.data.PayDayViewModel
+import ms.mattschlenkrich.paycalculator.data.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.data.PayPeriods
 import ms.mattschlenkrich.paycalculator.data.WorkDates
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
@@ -40,6 +42,8 @@ class TimeSheetFragment : Fragment(), ITimeSheetFragment {
     private lateinit var employerViewModel: EmployerViewModel
     private lateinit var payDayViewModel: PayDayViewModel
     private lateinit var workOrderViewModel: WorkOrderViewModel
+    private lateinit var payCalculationsViewModel: PayCalculationsViewModel
+    private lateinit var payDetailViewModel: PayDetailViewModel
 
     private val projections = PayDateProjections()
     private val nf = NumberFunctions()
@@ -53,6 +57,8 @@ class TimeSheetFragment : Fragment(), ITimeSheetFragment {
         employerViewModel = mainActivity.employerViewModel
         payDayViewModel = mainActivity.payDayViewModel
         workOrderViewModel = mainActivity.workOrderViewModel
+        payCalculationsViewModel = mainActivity.payCalculationsViewModel
+        payDetailViewModel = mainActivity.payDetailViewModel
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -132,7 +138,12 @@ class TimeSheetFragment : Fragment(), ITimeSheetFragment {
                         if (payPeriod != null) {
                             mainViewModel.setPayPeriod(payPeriod)
                             val payCalculations =
-                                PayCalculationsAsync(mainActivity, selectedEmployer!!, payPeriod)
+                                PayCalculationsAsync(
+                                    payCalculationsViewModel,
+                                    payDetailViewModel,
+                                    selectedEmployer!!,
+                                    payPeriod
+                                )
                             payCalculations.waitForCalculations()
 
                             val week1EndDate =

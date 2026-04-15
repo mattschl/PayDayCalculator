@@ -257,7 +257,7 @@ class WorkDateUpdateFragment : Fragment() {
     private fun setStatHoursEstimate() {
         mainScope.launch {
             val holidayPayCalculator = HolidayPayCalculator(
-                mainActivity, currentWorkDateObject.wdEmployerId, curDateString
+                payDayViewModel, currentWorkDateObject.wdEmployerId, curDateString
             )
             delay(WAIT_1000)
             val stat = round(holidayPayCalculator.getStatHours() * 4) / 4

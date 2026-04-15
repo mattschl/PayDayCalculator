@@ -5,13 +5,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_DATES
 import java.time.DayOfWeek
 import java.time.LocalDate
 
 class HolidayPayCalculator(
-    private val mainActivity: MainActivity,
+    private val payDayViewModel: PayDayViewModel,
     private val employerId: Long,
     private val holidayDate: String
 ) {
@@ -44,7 +43,7 @@ class HolidayPayCalculator(
     private fun getWorkDates(
         employerId: Long, firstDate: String, lastDate: String
     ): List<WorkDates> {
-        return mainActivity.payDayViewModel.getWorkDatesByDateRange(
+        return payDayViewModel.getWorkDatesByDateRange(
             employerId, firstDate, lastDate
         )
     }

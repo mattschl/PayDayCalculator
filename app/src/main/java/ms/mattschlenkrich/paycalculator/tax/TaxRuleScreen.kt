@@ -30,11 +30,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.ELEMENT_SPACING
-import ms.mattschlenkrich.paycalculator.common.SCREEN_PADDING_HORIZONTAL
-import ms.mattschlenkrich.paycalculator.common.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.SelectAllOutlinedTextField
-import ms.mattschlenkrich.paycalculator.common.StandardTopAppBar
+import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
+import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

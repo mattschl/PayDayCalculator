@@ -25,13 +25,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.CapitalizedOutlinedTextField
-import ms.mattschlenkrich.paycalculator.common.ELEMENT_SPACING
-import ms.mattschlenkrich.paycalculator.common.SCREEN_PADDING_HORIZONTAL
-import ms.mattschlenkrich.paycalculator.common.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.SimpleDropdownField
-import ms.mattschlenkrich.paycalculator.common.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.common.TaxBasedOn
+import ms.mattschlenkrich.paycalculator.common.compose.CapitalizedOutlinedTextField
+import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
+import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

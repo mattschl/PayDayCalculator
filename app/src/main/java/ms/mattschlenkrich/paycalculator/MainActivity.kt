@@ -146,6 +146,7 @@ class MainActivity : AppCompatActivity() {
             menu.add(getString(R.string.view_work_performed_list))
             menu.add(getString(R.string.view_material_list))
             menu.add(getString(R.string.sync_data))
+            menu.add(getString(R.string.settings))
             menu.add(resources.getString(R.string.app_name))
 
             setOnMenuItemClickListener { menuItem ->
@@ -181,6 +182,11 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
 
+                    getString(R.string.settings) -> {
+                        gotoSettings()
+                        true
+                    }
+
                     else -> {
                         false
                     }
@@ -192,6 +198,10 @@ class MainActivity : AppCompatActivity() {
     private fun gotoSync() {
         val intent = Intent(this, SyncActivity::class.java)
         syncLauncher.launch(intent)
+    }
+
+    private fun gotoSettings() {
+        // TODO: Implement settings navigation
     }
 
     private fun gotoAreasView() {

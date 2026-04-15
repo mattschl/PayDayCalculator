@@ -33,9 +33,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.AutoCompleteTextField
-import ms.mattschlenkrich.paycalculator.common.DecimalOutlinedTextField
-import ms.mattschlenkrich.paycalculator.common.StandardTopAppBar
+import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
+import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
+import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.WorkOrder
 
 @Composable

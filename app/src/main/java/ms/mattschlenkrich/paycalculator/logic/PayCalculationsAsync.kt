@@ -6,7 +6,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
 import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
 import ms.mattschlenkrich.paycalculator.common.PayRateBasedOn
@@ -15,6 +14,8 @@ import ms.mattschlenkrich.paycalculator.data.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.data.Employers
 import ms.mattschlenkrich.paycalculator.data.ExtraContainer
 import ms.mattschlenkrich.paycalculator.data.ExtraDefinitionAndType
+import ms.mattschlenkrich.paycalculator.data.PayCalculationsViewModel
+import ms.mattschlenkrich.paycalculator.data.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.data.PayPeriods
 import ms.mattschlenkrich.paycalculator.data.TaxAndAmount
 import ms.mattschlenkrich.paycalculator.data.TaxTypes
@@ -27,7 +28,8 @@ import ms.mattschlenkrich.paycalculator.data.WorkTaxRules
 //private const val TAG = "PayCalculationsAsync"
 
 class PayCalculationsAsync(
-    private val mainActivity: MainActivity,
+    private val payCalculationsViewModel: PayCalculationsViewModel,
+    private val payDetailViewModel: PayDetailViewModel,
     private val employer: Employers,
     private val currentPayPeriod: PayPeriods,
 ) : IPayCalculations {
@@ -549,7 +551,7 @@ class PayCalculationsAsync(
         var calculatedPayRate: Double
         withContext(defaultScope) {
             val rawPay = async {
-                mainActivity.payCalculationsViewModel.getPayRate(
+                payCalculationsViewModel.getPayRate(
                     employer.employerId, currentPayPeriod.ppCutoffDate
                 )
             }
@@ -576,7 +578,7 @@ class PayCalculationsAsync(
 
     private suspend fun getWorkDatesList(): List<WorkDates> =
         withContext(defaultScope) {
-            mainActivity.payCalculationsViewModel.getWorkDateList(
+            payCalculationsViewModel.getWorkDateList(
                 employer.employerId, currentPayPeriod.ppCutoffDate
             )
         }
@@ -585,31 +587,31 @@ class PayCalculationsAsync(
     private suspend fun processAllHours() =
         withContext(Dispatchers.Default) {
             val daysWorkedDeferred = async {
-                mainActivity.payDetailViewModel.getDaysWorked(
+                payDetailViewModel.getDaysWorked(
                     employer.employerId, currentPayPeriod.ppCutoffDate
                 )
             }
             daysWorked = daysWorkedDeferred.await()
             val regHoursDeferred = async {
-                mainActivity.payDetailViewModel.getHoursReg(
+                payDetailViewModel.getHoursReg(
                     employer.employerId, currentPayPeriod.ppCutoffDate
                 )
             }
             regHours = regHoursDeferred.await()
             val otHoursDeferred = async {
-                mainActivity.payDetailViewModel.getHoursOt(
+                payDetailViewModel.getHoursOt(
                     employer.employerId, currentPayPeriod.ppCutoffDate
                 )
             }
             otHours = otHoursDeferred.await()
             val dblOtHoursDeferred = async {
-                mainActivity.payDetailViewModel.getHoursDblOt(
+                payDetailViewModel.getHoursDblOt(
                     employer.employerId, currentPayPeriod.ppCutoffDate
                 )
             }
             dblOtHours = dblOtHoursDeferred.await()
             val statHoursDeferred = async {
-                mainActivity.payDetailViewModel.getHoursStat(
+                payDetailViewModel.getHoursStat(
                     employer.employerId, currentPayPeriod.ppCutoffDate
                 )
             }
@@ -619,14 +621,14 @@ class PayCalculationsAsync(
 
     private suspend fun getExtraListForDatesFromDb(): List<WorkDateExtras> =
         withContext(Dispatchers.Default) {
-            mainActivity.payCalculationsViewModel.getWorkDateExtrasPerPay(
+            payCalculationsViewModel.getWorkDateExtrasPerPay(
                 employer.employerId, currentPayPeriod.ppCutoffDate
             )
         }
 
     private suspend fun getDefaultExtraListFromDb(): List<ExtraDefinitionAndType> =
         withContext(defaultScope) {
-            mainActivity.payCalculationsViewModel.getDefaultExtraTypesAndCurrentDef(
+            payCalculationsViewModel.getDefaultExtraTypesAndCurrentDef(
                 employer.employerId,
                 currentPayPeriod.ppCutoffDate,
             )
@@ -634,14 +636,14 @@ class PayCalculationsAsync(
 
     private suspend fun getCustomExtraListByPayFromDb(): List<WorkPayPeriodExtras> =
         withContext(defaultScope) {
-            mainActivity.payCalculationsViewModel.getCustomPayPeriodExtras(
+            payCalculationsViewModel.getCustomPayPeriodExtras(
                 currentPayPeriod.payPeriodId
             )
         }
 
     private suspend fun getExtraTypes() =
         withContext(defaultScope) {
-            mainActivity.payCalculationsViewModel.getExtraTypes(
+            payCalculationsViewModel.getExtraTypes(
                 employer.employerId
             )
         }
@@ -662,19 +664,19 @@ class PayCalculationsAsync(
 
     private suspend fun getTaxTypes(): List<TaxTypes> =
         withContext(defaultScope) {
-            mainActivity.payCalculationsViewModel
+            payCalculationsViewModel
                 .getTaxTypes(employer.employerId)
         }
 
     private suspend fun getCurrentEffectiveDate(): String =
         withContext(defaultScope) {
-            mainActivity.payCalculationsViewModel
+            payCalculationsViewModel
                 .getCurrentEffectiveDate(currentPayPeriod.ppCutoffDate)
         }
 
     private suspend fun getTaxRules(effectiveDate: String) =
         withContext(defaultScope) {
-            mainActivity.payCalculationsViewModel
+            payCalculationsViewModel
                 .getTaxRules(effectiveDate)
         }
 

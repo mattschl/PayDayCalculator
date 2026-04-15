@@ -41,7 +41,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.SelectAllOutlinedTextField
+import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.Employers
 import ms.mattschlenkrich.paycalculator.data.MainViewModel
@@ -62,9 +62,9 @@ class EmployerFragment : Fragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
-                EmployerScreen(
+                EmployerListScreen(
                     employerViewModel = employerViewModel,
-                    onEmployerClick = { employer ->
+                    onEmployerClick = { employer: ms.mattschlenkrich.paycalculator.data.Employers ->
                         mainViewModel.setEmployer(employer)
                         findNavController().navigate(
                             EmployerFragmentDirections.actionEmployerFragmentToEmployerUpdateFragment()
@@ -82,7 +82,7 @@ class EmployerFragment : Fragment() {
 }
 
 @Composable
-fun EmployerScreen(
+fun EmployerListScreen(
     employerViewModel: EmployerViewModel,
     onEmployerClick: (Employers) -> Unit,
     onAddClick: () -> Unit

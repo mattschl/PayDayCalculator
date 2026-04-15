@@ -4,7 +4,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("androidx.navigation.safeargs.kotlin")
     id("kotlin-parcelize")
-    kotlin("plugin.compose") version "2.1.0"
+    kotlin("plugin.compose") version "2.2.10"
 }
 
 android {
@@ -116,6 +116,7 @@ dependencies {
     // Kotlin Navigation
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.navigation.compose)
 //    ksp("androidx.navigation.safeargs.kotlin:$nav_version")
 //    implementation("androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version")
 
