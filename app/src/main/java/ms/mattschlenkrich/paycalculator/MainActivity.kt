@@ -6,11 +6,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -253,6 +255,9 @@ fun MainScreen(
     )).find { it.route == currentDestination?.route }
 
     Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .imePadding(),
         topBar = {
             StandardTopAppBar(
                 title = stringResource(currentScreen?.resourceId ?: R.string.app_name),
@@ -282,7 +287,7 @@ fun MainScreen(
         },
         bottomBar = {
             NavigationBar(
-                modifier = Modifier.height(48.dp)
+                windowInsets = NavigationBarDefaults.windowInsets
             ) {
                 bottomNavItems.forEach { screen ->
                     NavigationBarItem(
