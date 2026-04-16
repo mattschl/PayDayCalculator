@@ -3,6 +3,7 @@ package ms.mattschlenkrich.paycalculator.workorder
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -39,7 +40,9 @@ fun WorkPerformedViewScreen(
     onSearchQueryChange: (String) -> Unit,
     onWorkPerformedClick: (WorkPerformed) -> Unit
 ) {
-    Scaffold { innerPadding ->
+    Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

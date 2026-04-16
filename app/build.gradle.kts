@@ -2,7 +2,6 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
-    id("androidx.navigation.safeargs.kotlin")
     id("kotlin-parcelize")
     kotlin("plugin.compose") version "2.2.10"
 }
@@ -62,9 +61,6 @@ android {
         }
     }
     buildFeatures {
-        //noinspection DataBindingWithoutKapt
-        dataBinding = true
-        viewBinding = true
         compose = true
     }
     buildToolsVersion = "36.0.0"
@@ -81,13 +77,9 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.androidx.constraintlayout)
     implementation(libs.mockito.core)
     implementation(libs.mockito.kotlin)
     implementation(libs.mockk)
-    implementation(libs.androidx.recyclerview)
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.junit.ktx)
     implementation(libs.google.api.client)
     implementation(libs.google.api.client.android)
@@ -112,13 +104,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.room.ktx)
 
-    val navVersion = "2.9.7"
     // Kotlin Navigation
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.navigation.compose)
-//    ksp("androidx.navigation.safeargs.kotlin:$nav_version")
-//    implementation("androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version")
 
     //Lifecycle architecture
     val lifecycleVersion = "2.10.0"

@@ -3,6 +3,7 @@ package ms.mattschlenkrich.paycalculator.workorder
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -34,7 +35,9 @@ fun JobSpecUpdateScreen(
     onCancelClick: () -> Unit,
     onMergeClick: () -> Unit
 ) {
-    Scaffold { innerPadding ->
+    Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
