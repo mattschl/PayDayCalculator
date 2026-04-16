@@ -3,7 +3,6 @@ package ms.mattschlenkrich.paycalculator.timesheet
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -19,11 +18,8 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -32,10 +28,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -306,8 +298,6 @@ fun WorkDateCard(
     displayDate: (String) -> String,
     formatHours: (WorkDates) -> String
 ) {
-    var expanded by remember { mutableStateOf(false) }
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -315,7 +305,7 @@ fun WorkDateCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
+        Column(modifier = Modifier.padding(4.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -323,42 +313,32 @@ fun WorkDateCard(
             ) {
                 Text(
                     text = displayDate(workDate.wdDate),
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
-                    color = if (workDate.wdIsDeleted) Color.Red else Color.Black
+                    color = if (workDate.wdIsDeleted) Color.Red else Color.Black,
+                    modifier = Modifier.weight(1f)
                 )
-                Box {
-                    IconButton(onClick = { expanded = true }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = null)
-                    }
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.open_this_date)) },
-                            onClick = {
-                                expanded = false
-                                onClick()
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.delete_this_date)) },
-                            onClick = {
-                                expanded = false
-                                onLongClick()
-                            }
-                        )
-                    }
+                if (!workDate.wdNote.isNullOrBlank()) {
+                    Text(
+                        text = workDate.wdNote,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray,
+                        maxLines = 1,
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
                 }
             }
-            Text(
-                text = formatHours(workDate),
-                style = MaterialTheme.typography.bodyMedium
-            )
+            if (workDate.wdRegHours > 0 || workDate.wdOtHours > 0 ||
+                workDate.wdDblOtHours > 0 || workDate.wdStatHours > 0
+            ) {
+                Text(
+                    text = formatHours(workDate),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
 
             if (extras.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(2.dp))
                 extras.filter { !it.extra.wdeIsDeleted }.forEach { extra ->
                     Text(
                         text = "${extra.extra.wdeName}: ${

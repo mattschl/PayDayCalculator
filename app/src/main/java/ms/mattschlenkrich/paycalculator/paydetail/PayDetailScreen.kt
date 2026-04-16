@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -323,39 +324,45 @@ fun ExtrasCard(
             ) {
                 FloatingActionButton(
                     onClick = onAddClick,
-                    modifier = Modifier.padding(end = 4.dp),
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .size(40.dp),
                     containerColor = MaterialTheme.colorScheme.secondaryContainer
                 ) {
                     Icon(Icons.Default.Add, contentDescription = addButtonContentDescription)
                 }
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             extras.forEach { extra ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onExtraClick(extra) }
-                        .padding(vertical = 1.dp),
+                        .clickable { onExtraClick(extra) },
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(extra.extraName, modifier = Modifier.weight(1.5f))
+                    Text(
+                        extra.extraName,
+                        modifier = Modifier.weight(1.5f),
+                        style = MaterialTheme.typography.bodySmall
+                    )
                     Text(
                         nf.displayDollars(extra.amount),
                         modifier = Modifier.weight(1f),
-                        textAlign = TextAlign.End
+                        textAlign = TextAlign.End,
+                        style = MaterialTheme.typography.bodySmall
                     )
                     Checkbox(
                         checked = extra.amount > 0.0,
                         onCheckedChange = { onActiveChange(extra, it) },
-                        modifier = Modifier.padding(start = 8.dp)
+                        modifier = Modifier.padding(start = 4.dp)
                     )
                 }
             }
@@ -364,22 +371,26 @@ fun ExtrasCard(
                 taxes.forEach { tax ->
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 2.dp),
+                            .fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(tax.taxType, modifier = Modifier.weight(1.5f))
+                        Text(
+                            tax.taxType,
+                            modifier = Modifier.weight(1.5f),
+                            style = MaterialTheme.typography.bodySmall
+                        )
                         Text(
                             nf.displayDollars(tax.amount),
                             modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.End
+                            textAlign = TextAlign.End,
+                            style = MaterialTheme.typography.bodySmall
                         )
                         // Empty spacer to align with the Checkbox in extras
                         Spacer(
                             modifier = Modifier
                                 .width(48.dp)
-                                .padding(start = 8.dp)
+                                .padding(start = 4.dp)
                         )
                     }
                 }

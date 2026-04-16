@@ -2,18 +2,38 @@ package ms.mattschlenkrich.paycalculator.common.compose
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
+
+@Immutable
+data class ExtendedDimensions(
+    val textFieldMinHeight: Dp = 28.dp,
+    val textFieldContentPadding: PaddingValues = PaddingValues(
+        start = 8.dp,
+        end = 8.dp,
+        top = 0.dp,
+        bottom = 0.dp
+    ),
+    val textFieldBorderThickness: Dp = 1.dp
+)
+
+val LocalExtendedDimensions = staticCompositionLocalOf { ExtendedDimensions() }
 
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xFF073763), // deep_blue
@@ -70,7 +90,11 @@ fun PayCalculatorTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = typography,
-        content = content
-    )
+        typography = typography
+    ) {
+        CompositionLocalProvider(
+            LocalExtendedDimensions provides ExtendedDimensions(),
+            content = content
+        )
+    }
 }

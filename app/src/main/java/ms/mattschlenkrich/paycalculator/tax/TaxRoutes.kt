@@ -9,8 +9,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
@@ -243,8 +244,10 @@ fun TaxRulesContent(
                     }
                 }
 
-                LazyColumn(
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
                     modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(taxRules.sortedBy { it.wtLevel }) { rule ->
@@ -273,14 +276,15 @@ fun TaxRuleItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Level ${rule.wtLevel}",
+                    text = "Lvl ${rule.wtLevel}",
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodyLarge
                 )
@@ -291,19 +295,24 @@ fun TaxRuleItem(
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
-            if (rule.wtHasExemption) {
-                Text(
-                    text = "Exemption: ${nf.displayDollars(rule.wtExemptionAmount)}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
-            }
-            if (rule.wtHasBracket) {
-                Text(
-                    text = "Upper Limit: ${nf.displayDollars(rule.wtBracketAmount)}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                if (rule.wtHasExemption) {
+                    Text(
+                        text = "Ex: ${nf.displayDollars(rule.wtExemptionAmount)}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.Gray
+                    )
+                }
+                if (rule.wtHasBracket) {
+                    Text(
+                        text = "Lim: ${nf.displayDollars(rule.wtBracketAmount)}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.Gray
+                    )
+                }
             }
         }
     }

@@ -349,4 +349,43 @@ class MainViewModel(
     fun getTaxRule(): WorkTaxRules? {
         return taxRule
     }
+
+    fun clearAllData() {
+        employer = null
+        employerString = null
+        taxType = null
+        taxTypeString = null
+        taxRule = null
+        effectiveDateString = null
+        taxLevel = null
+        callingFragment = null
+        extraDefinitionFull = null
+        extraType = null
+        workDateExtraList.clear()
+        workDateExtra = null
+        workDate = null
+        workDateObject = null
+        cutOffDate = null
+        payPeriod = null
+        payRate = null
+        isCredit = false
+        payPeriodExtra = null
+        payPeriodExtraList.clear()
+        tempWorkOrderHistoryInfo = null
+        workOrderHistory = null
+        workOrderNumber = null
+        workOrder = null
+        jobSpec = null
+        workOrderJobSpecId = null
+        workPerformedId = null
+        workPerformedIsParent = true
+        workPerformedHistoryId = null
+        material = null
+        materialId = null
+        materialIsParent = true
+        materialInSequence = null
+        extraContainer = null
+        areaId = null
+        workOrderHistoryTimeWorkedCombined = null
+    }
 }
