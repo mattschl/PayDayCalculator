@@ -141,7 +141,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
-
+    implementation("com.google.code.gson:gson:2.11.0")
 }
 
 kotlin {

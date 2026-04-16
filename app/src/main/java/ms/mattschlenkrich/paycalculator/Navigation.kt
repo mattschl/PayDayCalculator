@@ -67,6 +67,66 @@ sealed class Screen(val route: String, @StringRes val resourceId: Int, @Drawable
 
     object WorkOrderHistoryUpdate :
         Screen("workOrderHistoryUpdate", R.string.update_work_order, R.drawable.ic_time_sheet)
+
+    object WorkOrders :
+        Screen("workOrders", R.string.view_work_order_list, R.drawable.ic_time_sheet)
+
+    object JobSpecs : Screen("jobSpecs", R.string.view_job_spec_list, R.drawable.ic_time_sheet)
+    object Areas : Screen("areas", R.string.view_areas_list, R.drawable.ic_time_sheet)
+    object WorkPerformed :
+        Screen("workPerformed", R.string.view_work_performed_list, R.drawable.ic_time_sheet)
+
+    object Materials : Screen("materials", R.string.view_material_list, R.drawable.ic_time_sheet)
+
+    object AreaUpdate :
+        Screen("areaUpdate", R.string.update_area_description, R.drawable.ic_time_sheet)
+
+    object MaterialUpdate :
+        Screen("materialUpdate", R.string.update_material_description, R.drawable.ic_time_sheet)
+
+    object MaterialMerge :
+        Screen("materialMerge", R.string.marge_material, R.drawable.ic_time_sheet)
+
+    object WorkPerformedUpdate :
+        Screen(
+            "workPerformedUpdate",
+            R.string.update_work_performed_description,
+            R.drawable.ic_time_sheet
+        )
+
+    object WorkPerformedMerge :
+        Screen("workPerformedMerge", R.string.merge_work_performed, R.drawable.ic_time_sheet)
+
+    object WorkOrderAdd :
+        Screen("workOrderAdd", R.string.add_new_work_order, R.drawable.ic_time_sheet)
+
+    object WorkOrderLookup :
+        Screen("workOrderLookup", R.string.choose_a_work_order, R.drawable.ic_time_sheet)
+
+    object WorkOrderHistoryWorkPerformedUpdate :
+        Screen(
+            "workOrderHistoryWorkPerformedUpdate",
+            R.string.update_work_performed_description,
+            R.drawable.ic_time_sheet
+        )
+
+    object WorkOrderHistoryMaterialUpdate :
+        Screen(
+            "workOrderHistoryMaterialUpdate",
+            R.string.update_material_used,
+            R.drawable.ic_time_sheet
+        )
+
+    object WorkOrderHistoryTimeUpdate :
+        Screen("workOrderHistoryTimeUpdate", R.string.update_work_time, R.drawable.ic_time_sheet)
+
+    object WorkOrderHistoryTime :
+        Screen("workOrderHistoryTime", R.string.work_order_history, R.drawable.ic_time_sheet)
+
+    object WorkOrderJobSpecUpdate :
+        Screen("workOrderJobSpecUpdate", R.string.update_job_spec, R.drawable.ic_time_sheet)
+
+    object Settings : Screen("settings", R.string.settings, R.drawable.ic_settings)
 }
 
 val bottomNavItems = listOf(

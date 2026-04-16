@@ -26,6 +26,7 @@ recyclerview = "1.4.0"
 room = "2.8.4"
 runtimeLivedata = "1.10.6"
 ui = "1.10.6"
+gson = "2.12.1"
 
 [libraries]
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }

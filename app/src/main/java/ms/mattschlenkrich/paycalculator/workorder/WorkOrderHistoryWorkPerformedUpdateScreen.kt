@@ -28,7 +28,6 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.Areas
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryWorkPerformedCombined
@@ -56,12 +55,6 @@ fun WorkOrderHistoryWorkPerformedUpdateScreen(
     }
 
     Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = stringResource(R.string.edit_the_work_performed),
-                onBackClicked = onBack
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onUpdate(workPerformedText, areaText, noteText) },

@@ -10,12 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -39,7 +35,6 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.Employers
 import ms.mattschlenkrich.paycalculator.data.WorkExtraTypes
 
@@ -49,8 +44,7 @@ fun WorkExtraTypeScreen(
     initialExtraType: WorkExtraTypes?,
     existingExtraTypes: List<WorkExtraTypes>,
     onUpdate: (WorkExtraTypes) -> Unit,
-    onDelete: (WorkExtraTypes) -> Unit,
-    onCancel: () -> Unit
+    onDelete: (WorkExtraTypes) -> Unit
 ) {
     var wetName by remember { mutableStateOf(initialExtraType?.wetName ?: "") }
     var wetAppliesTo by remember {
@@ -79,21 +73,7 @@ fun WorkExtraTypeScreen(
         stringResource(R.string.update_extra_type_) + initialExtraType.wetName
     }
 
-    Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = title,
-                navigationIcon = {
-                    IconButton(onClick = onCancel) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.go_back)
-                        )
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
+    Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -209,14 +189,6 @@ fun WorkExtraTypeScreen(
                     ) {
                         Text(stringResource(R.string.delete))
                     }
-                }
-
-                Spacer(modifier = Modifier.width(ELEMENT_SPACING))
-                OutlinedButton(
-                    onClick = onCancel,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(stringResource(R.string.cancel))
                 }
             }
         }

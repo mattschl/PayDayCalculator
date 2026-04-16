@@ -1,9 +1,11 @@
 package ms.mattschlenkrich.paycalculator.common.compose
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun DecimalOutlinedTextField(
@@ -13,6 +15,12 @@ fun DecimalOutlinedTextField(
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
     singleLine: Boolean = true,
+    contentPadding: PaddingValues = PaddingValues(
+        start = 4.dp,
+        end = 4.dp,
+        top = 2.dp,
+        bottom = 2.dp
+    ),
 ) {
     SelectAllOutlinedTextField(
         value = value,
@@ -23,6 +31,7 @@ fun DecimalOutlinedTextField(
         singleLine = singleLine,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Decimal
-        )
+        ),
+        contentPadding = contentPadding
     )
 }

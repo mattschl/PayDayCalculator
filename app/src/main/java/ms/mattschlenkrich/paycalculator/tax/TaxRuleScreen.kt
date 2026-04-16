@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,7 +35,6 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,38 +54,45 @@ fun TaxRuleScreen(
     upperLimit: String,
     onUpperLimitChange: (String) -> Unit,
     onSaveClick: () -> Unit,
+    onBackClick: () -> Unit,
     onDeleteClick: (() -> Unit)? = null,
-    onBackClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
-            StandardTopAppBar(
-                title = title,
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.go_back)
+                    )
+                }
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.weight(1f)
+                )
+                if (onDeleteClick != null) {
+                    IconButton(onClick = onDeleteClick) {
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.go_back)
-                        )
-                    }
-                },
-                actions = {
-                    onDeleteClick?.let {
-                        IconButton(onClick = it) {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = stringResource(R.string.delete)
-                            )
-                        }
-                    }
-                    IconButton(onClick = onSaveClick) {
-                        Icon(
-                            Icons.Default.Save,
-                            contentDescription = stringResource(R.string.save)
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = stringResource(R.string.delete)
                         )
                     }
                 }
-            )
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onSaveClick) {
+                Icon(
+                    imageVector = Icons.Default.Save,
+                    contentDescription = stringResource(R.string.save)
+                )
+            }
         }
     ) { innerPadding ->
         Column(

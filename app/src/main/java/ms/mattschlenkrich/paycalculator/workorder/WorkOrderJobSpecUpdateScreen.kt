@@ -28,7 +28,6 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.Areas
 import ms.mattschlenkrich.paycalculator.data.JobSpec
 import ms.mattschlenkrich.paycalculator.data.WorkOrder
@@ -56,12 +55,6 @@ fun WorkOrderJobSpecUpdateScreen(
     }
 
     Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = stringResource(R.string.edit_job_spec),
-                onBackClicked = onBack
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onUpdate(jobSpecText, areaText, noteText) },

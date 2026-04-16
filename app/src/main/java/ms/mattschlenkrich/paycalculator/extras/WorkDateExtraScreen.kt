@@ -10,12 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -39,7 +35,6 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.data.WorkDates
 
@@ -82,19 +77,6 @@ fun WorkDateExtraScreen(
     else stringResource(R.string.update_extra_) + initialExtra.wdeName)
 
     Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = title,
-                navigationIcon = {
-                    IconButton(onClick = onCancel) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.go_back)
-                        )
-                    }
-                }
-            )
-        }
     ) { paddingValues ->
         Column(
             modifier = Modifier

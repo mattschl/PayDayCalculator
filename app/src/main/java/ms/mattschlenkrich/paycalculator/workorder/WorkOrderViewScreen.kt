@@ -21,22 +21,14 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,7 +38,8 @@ import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
+import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
+import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.data.Employers
 import ms.mattschlenkrich.paycalculator.data.WorkOrder
 
@@ -64,12 +57,7 @@ fun WorkOrderViewScreen(
     onWorkOrderClick: (WorkOrder) -> Unit,
     onAddNewWorkOrderClick: () -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
-
     Scaffold(
-        topBar = {
-            StandardTopAppBar(title = stringResource(R.string.work_orders))
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddNewWorkOrderClick,
@@ -98,63 +86,19 @@ fun WorkOrderViewScreen(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = stringResource(R.string.employer),
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(end = 8.dp)
+                        SimpleDropdownField(
+                            label = stringResource(R.string.employer),
+                            items = employers,
+                            selectedItem = selectedEmployer,
+                            onItemSelected = { onEmployerSelected(it) },
+                            modifier = Modifier.weight(1f),
+                            itemToString = { it.employerName }
                         )
-
-                        ExposedDropdownMenuBox(
-                            expanded = expanded,
-                            onExpandedChange = { expanded = !expanded },
-                            modifier = Modifier.weight(1f)
+                        Button(
+                            onClick = onAddNewEmployerClick,
+                            modifier = Modifier.padding(start = 8.dp)
                         ) {
-                            OutlinedTextField(
-                                value = selectedEmployer?.employerName ?: "",
-                                onValueChange = {},
-                                readOnly = true,
-                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                                modifier = Modifier
-                                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                                    .fillMaxWidth(),
-                                textStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-                            )
-
-                            ExposedDropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false }
-                            ) {
-                                employers.forEach { employer ->
-                                    DropdownMenuItem(
-                                        text = {
-                                            Text(
-                                                text = employer.employerName,
-                                                style = MaterialTheme.typography.bodyLarge.copy(
-                                                    fontWeight = FontWeight.Bold
-                                                )
-                                            )
-                                        },
-                                        onClick = {
-                                            onEmployerSelected(employer)
-                                            expanded = false
-                                        }
-                                    )
-                                }
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = stringResource(R.string.add_new_employer),
-                                            style = MaterialTheme.typography.bodyLarge.copy(
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                        )
-                                    },
-                                    onClick = {
-                                        onAddNewEmployerClick()
-                                        expanded = false
-                                    }
-                                )
-                            }
+                            Text(stringResource(R.string.add))
                         }
                     }
 
@@ -165,19 +109,12 @@ fun WorkOrderViewScreen(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = stringResource(R.string.search),
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
-
-                        OutlinedTextField(
+                        SelectAllOutlinedTextField(
                             value = searchQuery,
                             onValueChange = onSearchQueryChange,
                             modifier = Modifier.weight(1f),
                             placeholder = { Text(stringResource(R.string.type_number_or_address_search)) },
-                            singleLine = true
+                            label = { Text(stringResource(R.string.search)) }
                         )
 
                         Spacer(modifier = Modifier.width(8.dp))

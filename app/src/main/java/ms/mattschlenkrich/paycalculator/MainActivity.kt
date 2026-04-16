@@ -2,16 +2,35 @@ package ms.mattschlenkrich.paycalculator
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.View
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import ms.mattschlenkrich.paycalculator.common.compose.PayCalculatorTheme
+import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.EmployerRepository
 import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.EmployerViewModelFactory
@@ -39,23 +58,56 @@ import ms.mattschlenkrich.paycalculator.data.WorkTaxViewModelFactory
 import ms.mattschlenkrich.paycalculator.data.WorkTimeRepository
 import ms.mattschlenkrich.paycalculator.data.WorkTimeViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkTimeViewModelFactory
-import ms.mattschlenkrich.paycalculator.databinding.ActivityMainBinding
+import ms.mattschlenkrich.paycalculator.employer.EmployerAddRoute
+import ms.mattschlenkrich.paycalculator.employer.EmployerListScreen
+import ms.mattschlenkrich.paycalculator.employer.EmployerUpdateRoute
+import ms.mattschlenkrich.paycalculator.extras.EmployerExtraDefinitionUpdateRoute
+import ms.mattschlenkrich.paycalculator.extras.EmployerExtraDefinitionsAddRoute
+import ms.mattschlenkrich.paycalculator.extras.ExtraRoute
+import ms.mattschlenkrich.paycalculator.extras.PayPeriodExtraAddRoute
+import ms.mattschlenkrich.paycalculator.extras.PayPeriodExtraUpdateRoute
+import ms.mattschlenkrich.paycalculator.extras.WorkDateExtraAddRoute
+import ms.mattschlenkrich.paycalculator.extras.WorkDateExtraUpdateRoute
+import ms.mattschlenkrich.paycalculator.extras.WorkExtraTypeAddRoute
+import ms.mattschlenkrich.paycalculator.extras.WorkExtraTypeUpdateRoute
+import ms.mattschlenkrich.paycalculator.paydetail.PayDetailRoute
+import ms.mattschlenkrich.paycalculator.payrate.EmployerPayRateAddRoute
+import ms.mattschlenkrich.paycalculator.payrate.EmployerPayRateUpdateRoute
+import ms.mattschlenkrich.paycalculator.payrate.EmployerPayRatesRoute
+import ms.mattschlenkrich.paycalculator.settings.SettingsRoute
+import ms.mattschlenkrich.paycalculator.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.sync.SyncActivity
+import ms.mattschlenkrich.paycalculator.tax.TaxRoute
+import ms.mattschlenkrich.paycalculator.tax.TaxRuleAddRoute
+import ms.mattschlenkrich.paycalculator.tax.TaxRuleUpdateRoute
+import ms.mattschlenkrich.paycalculator.tax.TaxTypeAddRoute
+import ms.mattschlenkrich.paycalculator.tax.TaxTypeUpdateRoute
+import ms.mattschlenkrich.paycalculator.timesheet.TimeSheetRoute
+import ms.mattschlenkrich.paycalculator.workdate.WorkDateAddRoute
+import ms.mattschlenkrich.paycalculator.workdate.WorkDateTimesRoute
+import ms.mattschlenkrich.paycalculator.workdate.WorkDateUpdateRoute
+import ms.mattschlenkrich.paycalculator.workorder.AreaUpdateRoute
+import ms.mattschlenkrich.paycalculator.workorder.AreaViewRoute
+import ms.mattschlenkrich.paycalculator.workorder.JobSpecViewRoute
+import ms.mattschlenkrich.paycalculator.workorder.MaterialMergeRoute
+import ms.mattschlenkrich.paycalculator.workorder.MaterialUpdateRoute
+import ms.mattschlenkrich.paycalculator.workorder.MaterialViewRoute
+import ms.mattschlenkrich.paycalculator.workorder.WorkOrderHistoryAddRoute
+import ms.mattschlenkrich.paycalculator.workorder.WorkOrderHistoryUpdateRoute
+import ms.mattschlenkrich.paycalculator.workorder.WorkOrderViewRoute
+import ms.mattschlenkrich.paycalculator.workorder.WorkPerformedViewRoute
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
-    private lateinit var mView: View
-    lateinit var mainViewModel: MainViewModel
-    lateinit var employerViewModel: EmployerViewModel
-    lateinit var workTaxViewModel: WorkTaxViewModel
-    lateinit var workExtraViewModel: WorkExtraViewModel
-    lateinit var payDayViewModel: PayDayViewModel
-    lateinit var workOrderViewModel: WorkOrderViewModel
-    lateinit var payDetailViewModel: PayDetailViewModel
-    lateinit var payCalculationsViewModel: PayCalculationsViewModel
-    lateinit var workTimeViewModel: WorkTimeViewModel
-    lateinit var topMenuBar: Toolbar
-//    private val df = DateFunctions()
+class MainActivity : ComponentActivity() {
+
+    internal lateinit var mainViewModel: MainViewModel
+    internal lateinit var employerViewModel: EmployerViewModel
+    internal lateinit var workTaxViewModel: WorkTaxViewModel
+    internal lateinit var workExtraViewModel: WorkExtraViewModel
+    internal lateinit var payDayViewModel: PayDayViewModel
+    internal lateinit var workOrderViewModel: WorkOrderViewModel
+    internal lateinit var payDetailViewModel: PayDetailViewModel
+    internal lateinit var payCalculationsViewModel: PayCalculationsViewModel
+    internal lateinit var workTimeViewModel: WorkTimeViewModel
 
     private val syncLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -72,282 +124,470 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        mView = binding.root
-        topMenuBar = binding.topMenu
-        setContentView(mView)
-        setupMainViewModel()
-        setupEmployerViewModel()
-        setupWorkTaxViewModel()
-        setupWorkExtraViewModel()
-        setupPayDayViewModel()
-        setupWorkOrderViewModel()
-        setupPayDetailViewModel()
-        setupPayCalculationsViewModel()
-        setupWorTimeViewModel()
-        fillMenus()
-    }
+        setupViewModels()
 
-    private fun fillMenus() {
-        fillTopMenuAndActions()
-        fillBottomNavAndActions()
-    }
+        setContent {
+            val settingsViewModel: SettingsViewModel = viewModel()
+            val settings by settingsViewModel.settings.observeAsState()
 
-    private fun fillBottomNavAndActions() {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_container) as NavHostFragment
-        val navController = navHostFragment.navController
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
-
-        bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.timeSheetFragment -> {
-                    gotoTimeSheet()
-                    true
-                }
-
-                R.id.payDetailFragmentNew -> {
-                    gotoPayDetails()
-                    true
-                }
-
-                R.id.employerFragment -> {
-                    gotoEmployer()
-                    true
-                }
-
-                R.id.taxRulesFragment -> {
-                    gotoTaxRules()
-                    true
-                }
-
-                R.id.employerExtraDefinitionsFragment -> {
-                    gotoExtras()
-                    true
-                }
-
-                else -> false
-            }
-        }
-
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            topMenuBar.title = destination.label
-            bottomNav.menu.findItem(destination.id)?.let {
-                it.isChecked = true
+            PayCalculatorTheme(
+                fontSize = settings?.fontSize ?: 16f
+            ) {
+                MainScreen(
+                    mainViewModel = mainViewModel,
+                    employerViewModel = employerViewModel,
+                    workTaxViewModel = workTaxViewModel,
+                    workExtraViewModel = workExtraViewModel,
+                    payDayViewModel = payDayViewModel,
+                    workOrderViewModel = workOrderViewModel,
+                    payDetailViewModel = payDetailViewModel,
+                    payCalculationsViewModel = payCalculationsViewModel,
+                    workTimeViewModel = workTimeViewModel,
+                    onSyncRequested = {
+                        val intent = Intent(this, SyncActivity::class.java)
+                        syncLauncher.launch(intent)
+                    }
+                )
             }
         }
     }
 
-    private fun fillTopMenuAndActions() {
-        topMenuBar.apply {
-            menu.add(getString(R.string.view_work_order_list))
-            menu.add(getString(R.string.view_job_spec_list))
-            menu.add(getString(R.string.view_areas_list))
-            menu.add(getString(R.string.view_work_performed_list))
-            menu.add(getString(R.string.view_material_list))
-            menu.add(getString(R.string.sync_data))
-            menu.add(getString(R.string.settings))
-            menu.add(resources.getString(R.string.app_name))
-
-            setOnMenuItemClickListener { menuItem ->
-                when (menuItem.title) {
-
-                    getString(R.string.view_work_order_list) -> {
-                        gotoWorkOrders()
-                        true
-                    }
-
-                    getString(R.string.view_work_performed_list) -> {
-                        gotoWorkPerformedView()
-                        true
-                    }
-
-                    getString(R.string.view_areas_list) -> {
-                        gotoAreasView()
-                        true
-                    }
-
-                    getString(R.string.view_job_spec_list) -> {
-                        gotoJobSpecs()
-                        true
-                    }
-
-                    getString(R.string.view_material_list) -> {
-                        gotoMaterialView()
-                        true
-                    }
-
-                    getString(R.string.sync_data) -> {
-                        gotoSync()
-                        true
-                    }
-
-                    getString(R.string.settings) -> {
-                        gotoSettings()
-                        true
-                    }
-
-                    else -> {
-                        false
-                    }
-                }
-            }
-        }
-    }
-
-    private fun gotoSync() {
-        val intent = Intent(this, SyncActivity::class.java)
-        syncLauncher.launch(intent)
-    }
-
-    private fun gotoSettings() {
-        // TODO: Implement settings navigation
-    }
-
-    private fun gotoAreasView() {
-        findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalAreaViewFragment()
-        )
-    }
-
-    private fun gotoWorkPerformedView() {
-        findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalWorkPerformedViewFragment()
-        )
-    }
-
-    private fun gotoMaterialView() {
-        findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalMaterialViewFragment()
-        )
-    }
-
-    private fun gotoJobSpecs() {
-        findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalJobSpecViewFragment()
-        )
-    }
-
-    private fun gotoEmployer() {
-        findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalEmployerFragment()
-        )
-    }
-
-    private fun gotoWorkOrders() {
-        findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalWorkOrdersFragment()
-        )
-    }
-
-    private fun gotoPayDetails() {
-        findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalPayDetailFragmentNew()
-        )
-//        findNavController(R.id.nav_host_fragment_container).navigate(
-//            NavGraphDirections.actionGlobalPayDetailFragment()
-//        )
-    }
-
-    private fun gotoTimeSheet() {
-        findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalTimeSheetFragment()
-        )
-    }
-
-    private fun gotoExtras() {
-        findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalEmployerExtraDefinitionsFragment()
-        )
-    }
-
-    private fun gotoTaxRules() {
-        findNavController(R.id.nav_host_fragment_container).navigate(
-            NavGraphDirections.actionGlobalTaxRulesFragment()
-        )
-    }
-
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    private fun setupMainViewModel() {
-        val mainViewModelFactory = MainViewModelFactory(application)
-        mainViewModel = ViewModelProvider(
-            this, mainViewModelFactory
-        )[MainViewModel::class.java]
-    }
-
-
-    private fun setupPayDayViewModel() {
-        val payDayRepository = PayDayRepository(
-            PayDatabase(this)
-        )
-        val payDayViewModelFactory = PayDayViewModelFactory(application, payDayRepository)
-        payDayViewModel = ViewModelProvider(
-            this, payDayViewModelFactory
-        )[PayDayViewModel::class.java]
-    }
-
-    private fun setupWorkExtraViewModel() {
-        val workExtraRepository = WorkExtraRepository(
-            PayDatabase(this)
-        )
-        val workExtraViewModelFactory = WorkExtraViewModelFactory(application, workExtraRepository)
-        workExtraViewModel = ViewModelProvider(
-            this, workExtraViewModelFactory
-        )[WorkExtraViewModel::class.java]
-    }
-
-    private fun setupEmployerViewModel() {
-        val employerRepository = EmployerRepository(
-            PayDatabase(this)
-        )
-        val employerViewModelFactory = EmployerViewModelFactory(application, employerRepository)
+    private fun setupViewModels() {
+        val db = PayDatabase(this)
+        mainViewModel =
+            ViewModelProvider(this, MainViewModelFactory(application))[MainViewModel::class.java]
         employerViewModel = ViewModelProvider(
-            this, employerViewModelFactory
+            this,
+            EmployerViewModelFactory(application, EmployerRepository(db))
         )[EmployerViewModel::class.java]
-    }
-
-    private fun setupWorkTaxViewModel() {
-        val workTaxRepository = WorkTaxRepository(PayDatabase(this))
-        val workTaxViewModelFactory = WorkTaxViewModelFactory(application, workTaxRepository)
         workTaxViewModel = ViewModelProvider(
-            this, workTaxViewModelFactory
+            this,
+            WorkTaxViewModelFactory(application, WorkTaxRepository(db))
         )[WorkTaxViewModel::class.java]
-    }
-
-    private fun setupWorkOrderViewModel() {
-        val workOrderRepository = WorkOrderRepository(PayDatabase(this))
-        val workOrderViewModelFactory = WorkOrderViewModelFactory(application, workOrderRepository)
+        workExtraViewModel = ViewModelProvider(
+            this,
+            WorkExtraViewModelFactory(application, WorkExtraRepository(db))
+        )[WorkExtraViewModel::class.java]
+        payDayViewModel = ViewModelProvider(
+            this,
+            PayDayViewModelFactory(application, PayDayRepository(db))
+        )[PayDayViewModel::class.java]
         workOrderViewModel = ViewModelProvider(
-            this, workOrderViewModelFactory
+            this,
+            WorkOrderViewModelFactory(application, WorkOrderRepository(db))
         )[WorkOrderViewModel::class.java]
-    }
-
-    private fun setupPayDetailViewModel() {
-        val payDetailRepository = PayDetailRepository(PayDatabase(this))
-        val payDetailViewModelFactory = PayDetailViewModelFactory(application, payDetailRepository)
         payDetailViewModel = ViewModelProvider(
-            this, payDetailViewModelFactory
+            this,
+            PayDetailViewModelFactory(application, PayDetailRepository(db))
         )[PayDetailViewModel::class.java]
-    }
-
-    private fun setupPayCalculationsViewModel() {
-        val payCalculationsRepository = PayCalculationsRepository(PayDatabase(this))
-        val payCalculationsViewModelFactory =
-            PayCalculationsViewModelFactory(application, payCalculationsRepository)
         payCalculationsViewModel = ViewModelProvider(
-            this, payCalculationsViewModelFactory
+            this,
+            PayCalculationsViewModelFactory(application, PayCalculationsRepository(db))
         )[PayCalculationsViewModel::class.java]
-    }
-
-    private fun setupWorTimeViewModel() {
-        val workTimeRepository = WorkTimeRepository(PayDatabase(this))
-        val workTimeViewModelFactory = WorkTimeViewModelFactory(application, workTimeRepository)
         workTimeViewModel = ViewModelProvider(
-            this, workTimeViewModelFactory
+            this,
+            WorkTimeViewModelFactory(application, WorkTimeRepository(db))
         )[WorkTimeViewModel::class.java]
+    }
+}
+
+@Composable
+fun MainScreen(
+    mainViewModel: MainViewModel,
+    employerViewModel: EmployerViewModel,
+    workTaxViewModel: WorkTaxViewModel,
+    workExtraViewModel: WorkExtraViewModel,
+    payDayViewModel: PayDayViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    payDetailViewModel: PayDetailViewModel,
+    payCalculationsViewModel: PayCalculationsViewModel,
+    workTimeViewModel: WorkTimeViewModel,
+    onSyncRequested: () -> Unit
+) {
+    val context = LocalContext.current
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    val currentScreen = (bottomNavItems + listOf(
+        Screen.EmployerAdd,
+        Screen.EmployerUpdate,
+        Screen.TaxTypeAdd,
+        Screen.TaxTypeUpdate,
+        Screen.TaxRuleAdd,
+        Screen.TaxRuleUpdate,
+        Screen.EmployerPayRates,
+        Screen.EmployerPayRateAdd,
+        Screen.EmployerPayRateUpdate,
+        Screen.EmployerExtraDefinitionsAdd,
+        Screen.EmployerExtraDefinitionUpdate,
+        Screen.WorkExtraTypeAdd,
+        Screen.WorkExtraTypeUpdate,
+        Screen.PayPeriodExtraAdd,
+        Screen.PayPeriodExtraUpdate,
+        Screen.WorkDateAdd,
+        Screen.WorkDateUpdate,
+        Screen.WorkDateTimes,
+        Screen.WorkDateExtraAdd,
+        Screen.WorkDateExtraUpdate,
+        Screen.WorkOrderHistoryAdd,
+        Screen.WorkOrderHistoryUpdate,
+        Screen.WorkOrders,
+        Screen.JobSpecs,
+        Screen.Areas,
+        Screen.WorkPerformed,
+        Screen.Materials,
+        Screen.Settings,
+        Screen.AreaUpdate,
+        Screen.MaterialUpdate,
+        Screen.MaterialMerge,
+        Screen.WorkPerformedUpdate,
+        Screen.WorkPerformedMerge,
+        Screen.WorkOrderAdd,
+        Screen.WorkOrderLookup,
+        Screen.WorkOrderHistoryWorkPerformedUpdate,
+        Screen.WorkOrderHistoryMaterialUpdate,
+        Screen.WorkOrderHistoryTimeUpdate,
+        Screen.WorkOrderHistoryTime,
+        Screen.WorkOrderJobSpecUpdate
+    )).find { it.route == currentDestination?.route }
+
+    Scaffold(
+        topBar = {
+            StandardTopAppBar(
+                title = stringResource(currentScreen?.resourceId ?: R.string.app_name),
+                onSettingsClicked = { navController.navigate(Screen.Settings.route) },
+                onMenuAction = { action ->
+                    when (action) {
+                        "Sync Data" -> onSyncRequested()
+                        context.getString(R.string.view_work_order_list) -> navController.navigate(
+                            Screen.WorkOrders.route
+                        )
+
+                        context.getString(R.string.view_job_spec_list) -> navController.navigate(
+                            Screen.JobSpecs.route
+                        )
+
+                        context.getString(R.string.view_areas_list) -> navController.navigate(Screen.Areas.route)
+                        context.getString(R.string.view_work_performed_list) -> navController.navigate(
+                            Screen.WorkPerformed.route
+                        )
+
+                        context.getString(R.string.view_material_list) -> navController.navigate(
+                            Screen.Materials.route
+                        )
+                    }
+                }
+            )
+        },
+        bottomBar = {
+            NavigationBar {
+                bottomNavItems.forEach { screen ->
+                    NavigationBarItem(
+                        icon = {
+                            Icon(
+                                painterResource(id = screen.icon),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        },
+                        label = { Text(stringResource(screen.resourceId)) },
+                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                        onClick = {
+                            navController.navigate(screen.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    ) { innerPadding ->
+        NavHost(
+            navController,
+            startDestination = Screen.TimeSheet.route,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(Screen.TimeSheet.route) {
+                TimeSheetRoute(
+                    mainViewModel,
+                    employerViewModel,
+                    payDayViewModel,
+                    payCalculationsViewModel,
+                    payDetailViewModel,
+                    navController
+                )
+            }
+            composable(Screen.PayDetails.route) {
+                PayDetailRoute(
+                    mainViewModel,
+                    employerViewModel,
+                    payDayViewModel,
+                    payCalculationsViewModel,
+                    payDetailViewModel,
+                    navController
+                )
+            }
+            composable(Screen.Employers.route) {
+                EmployerListScreen(
+                    employerViewModel = employerViewModel,
+                    onEmployerClick = { employer ->
+                        mainViewModel.setEmployer(employer)
+                        navController.navigate(Screen.EmployerUpdate.route)
+                    },
+                    onAddClick = {
+                        navController.navigate(Screen.EmployerAdd.route)
+                    }
+                )
+            }
+            composable(Screen.EmployerAdd.route) {
+                EmployerAddRoute(
+                    mainViewModel,
+                    employerViewModel,
+                    workTaxViewModel,
+                    navController
+                )
+            }
+            composable(Screen.EmployerUpdate.route) {
+                EmployerUpdateRoute(
+                    mainViewModel,
+                    employerViewModel,
+                    workTaxViewModel,
+                    workExtraViewModel,
+                    navController
+                )
+            }
+            composable(Screen.EmployerPayRates.route) {
+                EmployerPayRatesRoute(
+                    mainViewModel,
+                    employerViewModel,
+                    navController
+                )
+            }
+            composable(Screen.EmployerPayRateAdd.route) {
+                EmployerPayRateAddRoute(
+                    mainViewModel,
+                    employerViewModel,
+                    navController
+                )
+            }
+            composable(Screen.EmployerPayRateUpdate.route) {
+                EmployerPayRateUpdateRoute(
+                    mainViewModel,
+                    employerViewModel,
+                    navController
+                )
+            }
+            composable(Screen.Taxes.route) {
+                TaxRoute(
+                    mainViewModel,
+                    workTaxViewModel,
+                    navController
+                )
+            }
+            composable(Screen.TaxTypeAdd.route) {
+                TaxTypeAddRoute(
+                    mainViewModel,
+                    employerViewModel,
+                    workTaxViewModel,
+                    navController
+                )
+            }
+            composable(Screen.TaxTypeUpdate.route) {
+                TaxTypeUpdateRoute(
+                    mainViewModel,
+                    workTaxViewModel,
+                    navController
+                )
+            }
+            composable(Screen.TaxRuleAdd.route) {
+                TaxRuleAddRoute(
+                    mainViewModel,
+                    workTaxViewModel,
+                    navController
+                )
+            }
+            composable(Screen.TaxRuleUpdate.route) {
+                TaxRuleUpdateRoute(
+                    mainViewModel,
+                    workTaxViewModel,
+                    navController
+                )
+            }
+            composable(Screen.Extras.route) {
+                ExtraRoute(
+                    mainViewModel,
+                    employerViewModel,
+                    workExtraViewModel,
+                    navController
+                )
+            }
+            composable(Screen.EmployerExtraDefinitionsAdd.route) {
+                EmployerExtraDefinitionsAddRoute(
+                    mainViewModel,
+                    workExtraViewModel,
+                    navController
+                )
+            }
+            composable(Screen.EmployerExtraDefinitionUpdate.route) {
+                EmployerExtraDefinitionUpdateRoute(
+                    mainViewModel,
+                    workExtraViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkExtraTypeAdd.route) {
+                WorkExtraTypeAddRoute(
+                    mainViewModel,
+                    workExtraViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkExtraTypeUpdate.route) {
+                WorkExtraTypeUpdateRoute(
+                    mainViewModel,
+                    workExtraViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkDateAdd.route) {
+                WorkDateAddRoute(
+                    mainViewModel,
+                    payDayViewModel,
+                    workExtraViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkDateUpdate.route) {
+                WorkDateUpdateRoute(
+                    mainViewModel,
+                    payDayViewModel,
+                    workExtraViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkDateTimes.route) {
+                WorkDateTimesRoute(
+                    mainViewModel,
+                    workTimeViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkDateExtraAdd.route) {
+                WorkDateExtraAddRoute(
+                    mainViewModel,
+                    payDayViewModel,
+                    workExtraViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkDateExtraUpdate.route) {
+                WorkDateExtraUpdateRoute(
+                    mainViewModel,
+                    payDayViewModel,
+                    workExtraViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkOrderHistoryAdd.route) {
+                WorkOrderHistoryAddRoute(
+                    mainViewModel,
+                    employerViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkOrderHistoryUpdate.route) {
+                WorkOrderHistoryUpdateRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkOrders.route) {
+                WorkOrderViewRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.JobSpecs.route) {
+                JobSpecViewRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.Areas.route) {
+                AreaViewRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.AreaUpdate.route) {
+                AreaUpdateRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkPerformed.route) {
+                WorkPerformedViewRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.Materials.route) {
+                MaterialViewRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.MaterialUpdate.route) {
+                MaterialUpdateRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.MaterialMerge.route) {
+                MaterialMergeRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.PayPeriodExtraAdd.route) {
+                PayPeriodExtraAddRoute(
+                    mainViewModel,
+                    payDayViewModel,
+                    workExtraViewModel,
+                    navController
+                )
+            }
+            composable(Screen.PayPeriodExtraUpdate.route) {
+                PayPeriodExtraUpdateRoute(
+                    mainViewModel,
+                    payDayViewModel,
+                    workExtraViewModel,
+                    navController
+                )
+            }
+            composable(Screen.Settings.route) {
+                SettingsRoute(
+                    mainViewModel,
+                    navController
+                )
+            }
+        }
     }
 }

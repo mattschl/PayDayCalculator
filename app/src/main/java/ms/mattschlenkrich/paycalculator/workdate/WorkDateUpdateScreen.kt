@@ -23,7 +23,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,7 +38,7 @@ import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
+import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.data.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryWithDates
 
@@ -72,9 +71,6 @@ fun WorkDateUpdateScreen(
     onAddExtraClick: () -> Unit
 ) {
     Scaffold(
-        topBar = {
-            StandardTopAppBar(title = stringResource(R.string.update_this_work_date))
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onDoneClick,
@@ -166,7 +162,7 @@ fun WorkDateUpdateScreen(
                         Text(stringResource(R.string.enter_time_before_wo))
                     }
 
-                    OutlinedTextField(
+                    SelectAllOutlinedTextField(
                         value = note,
                         onValueChange = onNoteChange,
                         label = { Text(stringResource(R.string.enter_note_optional)) },
@@ -314,58 +310,6 @@ fun WorkDateExtraItem(
         if (!extra.wdeIsDeleted) {
             IconButton(onClick = onEditClick) {
                 Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.edit))
-            }
-        }
-    }
-}
-
-@Composable
-fun WorkOrderHistoryItem(
-    history: WorkOrderHistoryWithDates,
-    onClick: (WorkOrderHistoryWithDates) -> Unit,
-    onLongClick: (WorkOrderHistoryWithDates) -> Unit
-) {
-    val nf = NumberFunctions()
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
-    ) {
-        Column(
-            modifier = Modifier
-                .clickable { onClick(history) }
-                .padding(8.dp)
-        ) {
-            Text(
-                text = "${history.workOrder.woNumber} - ${history.workOrder.woAddress}",
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold
-            )
-            val hoursText = buildString {
-                if (history.history.woHistoryRegHours > 0) append(
-                    "reg ${
-                        nf.getNumberFromDouble(
-                            history.history.woHistoryRegHours
-                        )
-                    } "
-                )
-                if (history.history.woHistoryOtHours > 0) {
-                    if (isNotEmpty()) append("| ")
-                    append("ot ${nf.getNumberFromDouble(history.history.woHistoryOtHours)} ")
-                }
-                if (history.history.woHistoryDblOtHours > 0) {
-                    if (isNotEmpty()) append("| ")
-                    append("dbl ${nf.getNumberFromDouble(history.history.woHistoryDblOtHours)} ")
-                }
-            }
-            if (hoursText.isNotEmpty()) {
-                Text(
-                    text = hoursText.trim(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.DarkGray
-                )
             }
         }
     }

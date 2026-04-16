@@ -6,10 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,7 +33,6 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.ExtraDefTypeAndEmployer
 import ms.mattschlenkrich.paycalculator.data.WorkExtrasDefinitions
 
@@ -67,53 +63,6 @@ fun EmployerExtraDefinitionScreen(
     }
 
     Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = if (initialDefinitionFull == null) stringResource(R.string.add_a_definition)
-                else stringResource(R.string.update_this_extra),
-                navigationIcon = {
-                    IconButton(onClick = onCancel) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.go_back)
-                        )
-                    }
-                },
-                actions = {
-                    if (initialDefinitionFull != null) {
-                        IconButton(onClick = { onDelete(initialDefinitionFull.definition) }) {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = stringResource(R.string.delete)
-                            )
-                        }
-                    }
-                    IconButton(onClick = {
-                        val value = nf.getDoubleFromDollarOrPercentString(valueString)
-                        if (value > 0) {
-                            val definition = WorkExtrasDefinitions(
-                                workExtraDefId = initialDefinitionFull?.definition?.workExtraDefId
-                                    ?: nf.generateRandomIdAsLong(),
-                                weEmployerId = initialDefinitionFull?.employer?.employerId ?: 0L,
-                                weExtraTypeId = initialDefinitionFull?.extraType?.workExtraTypeId
-                                    ?: 0L,
-                                weValue = value,
-                                weIsFixed = isFixed,
-                                weEffectiveDate = effectiveDate,
-                                weIsDeleted = false,
-                                weUpdateTime = df.getCurrentTimeAsString()
-                            )
-                            onUpdate(definition)
-                        }
-                    }) {
-                        Icon(
-                            Icons.Default.Check,
-                            contentDescription = stringResource(R.string.save)
-                        )
-                    }
-                }
-            )
-        }
     ) { paddingValues ->
         Column(
             modifier = Modifier

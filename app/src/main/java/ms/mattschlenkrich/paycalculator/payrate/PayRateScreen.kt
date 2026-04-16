@@ -13,11 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -25,7 +23,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -44,7 +41,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.PayRateBasedOn
@@ -53,7 +49,6 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.data.Employers
 
@@ -66,24 +61,10 @@ fun EmployerPayRatesScreen(
     onAddPayRate: (Employers?) -> Unit,
     onUpdatePayRate: (EmployerPayRates, Employers) -> Unit,
     onAddEmployer: () -> Unit,
-    onBackClick: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = stringResource(R.string.view_or_edit_wages),
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.go_back)
-                        )
-                    }
-                }
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onAddPayRate(selectedEmployer) },
@@ -109,7 +90,7 @@ fun EmployerPayRatesScreen(
             ) {
                 Text(
                     text = stringResource(id = R.string.employer),
-                    fontSize = 18.sp,
+                    style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(end = 8.dp)
                 )
                 Box(modifier = Modifier.weight(1f)) {
@@ -172,7 +153,7 @@ fun EmployerPayRatesScreen(
                             text = stringResource(id = R.string.no_wages_have_been_set_for_this_employer),
                             modifier = Modifier.padding(32.dp),
                             textAlign = TextAlign.Center,
-                            fontSize = 18.sp,
+                            style = MaterialTheme.typography.bodyLarge,
                             color = Color.Black
                         )
                     }
@@ -216,18 +197,18 @@ fun PayRateItem(wage: EmployerPayRates, onClick: () -> Unit) {
                 text = wage.eprEffectiveDate,
                 textDecoration = if (wage.eprIsDeleted) TextDecoration.LineThrough else null,
                 color = if (wage.eprIsDeleted) Color.Red else Color.Black,
-                fontSize = 18.sp
+                style = MaterialTheme.typography.bodyLarge
             )
             Text(
                 text = cf.displayDollars(wage.eprPayRate),
-                fontSize = 18.sp,
+                style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
                 textDecoration = if (wage.eprIsDeleted) TextDecoration.LineThrough else null,
                 color = if (wage.eprIsDeleted) Color.Red else Color.Black
             )
             Text(
                 text = PayRateBasedOn.entries[wage.eprPerPeriod].type,
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray
             )
         }
@@ -245,32 +226,8 @@ fun PayRateScreen(
     onFrequencySelected: (PayRateBasedOn) -> Unit,
     onSaveClick: () -> Unit,
     onDeleteClick: (() -> Unit)? = null,
-    onBackClick: () -> Unit
 ) {
     Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = title,
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.go_back)
-                        )
-                    }
-                },
-                actions = {
-                    if (onDeleteClick != null) {
-                        IconButton(onClick = onDeleteClick) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = stringResource(R.string.delete)
-                            )
-                        }
-                    }
-                }
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onSaveClick,

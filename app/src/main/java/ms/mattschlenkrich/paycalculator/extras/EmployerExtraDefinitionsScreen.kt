@@ -11,13 +11,11 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -42,7 +40,6 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.Employers
 import ms.mattschlenkrich.paycalculator.data.ExtraDefTypeAndEmployer
@@ -60,8 +57,7 @@ fun EmployerExtraDefinitionsScreen(
     onUpdateExtraType: (Employers, WorkExtraTypes) -> Unit,
     onAddNewEmployer: () -> Unit,
     onAddNewExtraType: (Employers) -> Unit,
-    onDeleteExtraDefinition: (ExtraDefTypeAndEmployer) -> Unit,
-    onCancel: () -> Unit
+    onDeleteExtraDefinition: (ExtraDefTypeAndEmployer) -> Unit
 ) {
     val employers by employerViewModel.getEmployers().observeAsState(emptyList())
     var selectedEmployer by remember { mutableStateOf(initialEmployer) }
@@ -96,19 +92,6 @@ fun EmployerExtraDefinitionsScreen(
     } ?: remember { mutableStateOf(emptyList<ExtraDefTypeAndEmployer>()) })
 
     Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = stringResource(R.string.pay_extras),
-                navigationIcon = {
-                    IconButton(onClick = onCancel) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.go_back)
-                        )
-                    }
-                }
-            )
-        },
         floatingActionButton = {
             if (selectedEmployer != null && selectedExtraType != null) {
                 FloatingActionButton(

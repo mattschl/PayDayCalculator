@@ -3,7 +3,6 @@ package ms.mattschlenkrich.paycalculator.common.compose
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,8 +48,7 @@ fun <T> SimpleDropdownField(
             ),
             modifier = Modifier
                 .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true)
-                .fillMaxWidth()
-                .height(28.dp),
+                .fillMaxWidth(),
             interactionSource = interactionSource
         ) { innerTextField ->
             OutlinedTextFieldDefaults.DecorationBox(
@@ -65,10 +63,10 @@ fun <T> SimpleDropdownField(
                 } else null,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 contentPadding = PaddingValues(
-                    start = 12.dp,
+                    start = 4.dp,
                     end = 4.dp,
-                    top = 0.dp,
-                    bottom = 0.dp
+                    top = 2.dp,
+                    bottom = 2.dp
                 ),
                 container = {
                     OutlinedTextFieldDefaults.Container(

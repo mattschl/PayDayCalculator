@@ -31,6 +31,12 @@ fun SelectAllOutlinedTextField(
     singleLine: Boolean = true,
     readOnly: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    contentPadding: PaddingValues = PaddingValues(
+        start = 4.dp,
+        end = 4.dp,
+        top = 2.dp,
+        bottom = 2.dp
+    ),
 ) {
     var textFieldValueState by remember {
         mutableStateOf(TextFieldValue(text = value))
@@ -80,12 +86,7 @@ fun SelectAllOutlinedTextField(
         placeholder = placeholder,
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
-        contentPadding = PaddingValues(
-            start = 8.dp,
-            end = 8.dp,
-            top = 4.dp,
-            bottom = 4.dp
-        ),
+        contentPadding = contentPadding,
         container = {
             OutlinedTextFieldDefaults.Container(
                 enabled = true,

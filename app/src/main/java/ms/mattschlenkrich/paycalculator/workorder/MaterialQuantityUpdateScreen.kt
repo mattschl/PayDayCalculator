@@ -25,7 +25,6 @@ import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 
 @Composable
 fun MaterialQuantityUpdateScreen(
@@ -36,12 +35,6 @@ fun MaterialQuantityUpdateScreen(
     onBackClick: () -> Unit
 ) {
     Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = stringResource(R.string.update_quantity),
-                onBackClicked = onBackClick
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onDoneClick,

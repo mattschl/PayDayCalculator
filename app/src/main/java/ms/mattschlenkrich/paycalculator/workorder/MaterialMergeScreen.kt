@@ -31,13 +31,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.Material
 import ms.mattschlenkrich.paycalculator.data.MaterialAndChild
 
@@ -56,13 +54,7 @@ fun MaterialMergeScreen(
     onDoneClick: () -> Unit,
     onListItemSelected: (Material) -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = stringResource(R.string.marge_material)
-            )
-        }
-    ) { innerPadding ->
+    Scaffold { innerPadding ->
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
             modifier = Modifier
@@ -82,9 +74,8 @@ fun MaterialMergeScreen(
                 ) {
                     Text(
                         text = stringResource(R.string.master_material),
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontStyle = FontStyle.Italic,
-                            fontSize = 20.sp
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontStyle = FontStyle.Italic
                         ),
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
@@ -114,9 +105,8 @@ fun MaterialMergeScreen(
                         ) {
                             Text(
                                 text = stringResource(R.string.existing_children),
-                                style = MaterialTheme.typography.bodyLarge.copy(
-                                    fontStyle = FontStyle.Italic,
-                                    fontSize = 20.sp
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontStyle = FontStyle.Italic
                                 )
                             )
                             childList.forEach { child ->
@@ -134,9 +124,8 @@ fun MaterialMergeScreen(
                 ) {
                     Text(
                         text = stringResource(R.string.choose_the_other_description_to_merge),
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontStyle = FontStyle.Italic,
-                            fontSize = 20.sp
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontStyle = FontStyle.Italic
                         ),
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )

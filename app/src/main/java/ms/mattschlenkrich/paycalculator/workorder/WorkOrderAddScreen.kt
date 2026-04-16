@@ -30,7 +30,6 @@ import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.Employers
 
 @Composable
@@ -49,12 +48,6 @@ fun WorkOrderAddScreen(
     onBackClick: () -> Unit
 ) {
     Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = stringResource(R.string.add_new_work_order),
-                onBackClicked = onBackClick
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onDoneClick,

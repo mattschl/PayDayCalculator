@@ -13,7 +13,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,11 +30,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
 import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
+import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.data.WorkOrder
 
 @Composable
@@ -65,12 +63,6 @@ fun WorkOrderHistoryAddScreen(
     val isWorkOrderValid = currentWorkOrder != null
 
     Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = stringResource(R.string.add_time_to_work_order),
-                onBackClicked = onBack
-            )
-        },
         floatingActionButton = {
             androidx.compose.material3.FloatingActionButton(
                 onClick = {
@@ -110,8 +102,9 @@ fun WorkOrderHistoryAddScreen(
                 ) {
                     Text(
                         text = displayDate,
-                        fontSize = 20.sp,
-                        fontStyle = FontStyle.Italic,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontStyle = FontStyle.Italic
+                        ),
                         color = Color.Black
                     )
 
@@ -121,14 +114,16 @@ fun WorkOrderHistoryAddScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.employer) + " ",
-                            fontSize = 20.sp,
-                            fontStyle = FontStyle.Italic,
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontStyle = FontStyle.Italic
+                            ),
                             color = Color.Black
                         )
                         Text(
                             text = displayEmployer,
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
                             color = Color.Black
                         )
                     }
@@ -183,7 +178,7 @@ fun WorkOrderHistoryAddScreen(
                         Text(
                             text = "${currentWorkOrder!!.woAddress} - ${currentWorkOrder.woNumber}",
                             color = Color.Red,
-                            fontSize = 18.sp,
+                            style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(vertical = 4.dp)
                         )
                     }
@@ -212,15 +207,11 @@ fun WorkOrderHistoryAddScreen(
                         )
                     }
 
-                    OutlinedTextField(
+                    SelectAllOutlinedTextField(
                         value = note,
                         onValueChange = { note = it },
                         label = { Text(stringResource(R.string.enter_note_optional)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        textStyle = MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
-                        )
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }

@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -34,14 +32,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.Employers
 import ms.mattschlenkrich.paycalculator.data.ExtraContainer
 import ms.mattschlenkrich.paycalculator.data.TaxAndAmount
@@ -68,27 +64,6 @@ fun PayDetailScreen(
     onBackClick: () -> Unit
 ) {
     Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = stringResource(R.string.pay_details),
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.go_back)
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = onDeleteCutOffClick) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = stringResource(R.string.delete)
-                        )
-                    }
-                }
-            )
-        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -309,14 +284,14 @@ fun HourlyBreakdownCard(data: HourlyBreakdownData) {
                 Text(
                     stringResource(R.string.total_hourly),
                     modifier = Modifier.weight(3.5f),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
                 )
                 Text(
                     data.totalHourly,
                     modifier = Modifier.weight(1.2f),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
@@ -417,14 +392,14 @@ fun ExtrasCard(
                         R.string.total_deductions
                     ),
                     modifier = Modifier.weight(1f),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
                 )
                 Text(
                     total,
                     modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
                     textAlign = TextAlign.End
                 )
             }

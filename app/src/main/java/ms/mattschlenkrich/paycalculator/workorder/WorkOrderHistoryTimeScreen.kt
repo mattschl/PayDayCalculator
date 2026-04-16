@@ -37,7 +37,6 @@ import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorkedCombined
 import java.util.Calendar
 
@@ -61,9 +60,6 @@ fun WorkOrderHistoryTimeScreen(
     val nf = NumberFunctions()
 
     Scaffold(
-        topBar = {
-            StandardTopAppBar(title = stringResource(R.string.enter_work_time))
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onDoneClick,

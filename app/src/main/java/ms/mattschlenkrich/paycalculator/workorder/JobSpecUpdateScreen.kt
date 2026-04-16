@@ -11,7 +11,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +23,7 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
+import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 
 @Composable
 fun JobSpecUpdateScreen(
@@ -35,11 +34,7 @@ fun JobSpecUpdateScreen(
     onCancelClick: () -> Unit,
     onMergeClick: () -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            StandardTopAppBar(title = stringResource(R.string.update_job_spec))
-        }
-    ) { innerPadding ->
+    Scaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -54,7 +49,7 @@ fun JobSpecUpdateScreen(
                 style = MaterialTheme.typography.titleLarge
             )
 
-            OutlinedTextField(
+            SelectAllOutlinedTextField(
                 value = jobSpecName,
                 onValueChange = onJobSpecNameChange,
                 label = { Text(stringResource(R.string.job_spec)) },

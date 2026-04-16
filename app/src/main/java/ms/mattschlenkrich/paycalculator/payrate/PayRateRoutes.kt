@@ -52,7 +52,6 @@ fun EmployerPayRatesRoute(
         onAddEmployer = {
             navController.navigate(ms.mattschlenkrich.paycalculator.Screen.EmployerAdd.route)
         },
-        onBackClick = { navController.popBackStack() }
     )
 }
 
@@ -113,7 +112,6 @@ fun EmployerPayRateAddRoute(
                 navController.popBackStack()
             }
         },
-        onBackClick = { navController.popBackStack() }
     )
 }
 
@@ -183,6 +181,5 @@ fun EmployerPayRateUpdateRoute(
             )
             navController.popBackStack()
         },
-        onBackClick = { navController.popBackStack() }
     )
 }

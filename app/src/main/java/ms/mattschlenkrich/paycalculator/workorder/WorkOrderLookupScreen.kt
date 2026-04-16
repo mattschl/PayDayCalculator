@@ -35,7 +35,6 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.Employers
 import ms.mattschlenkrich.paycalculator.data.WorkOrder
 
@@ -51,12 +50,6 @@ fun WorkOrderLookupScreen(
     var showDialog by remember { mutableStateOf<WorkOrder?>(null) }
 
     Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = stringResource(R.string.choose_a_work_order),
-                onBackClicked = onBackClick
-            )
-        }
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier

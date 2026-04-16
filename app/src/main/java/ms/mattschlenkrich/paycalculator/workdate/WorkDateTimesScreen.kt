@@ -35,7 +35,6 @@ import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.workorder.TimeTypeRadioButton
 import ms.mattschlenkrich.paycalculator.workorder.TimeWorkedItem
@@ -67,9 +66,6 @@ fun WorkDateTimesScreen(
     val nf = NumberFunctions()
 
     Scaffold(
-        topBar = {
-            StandardTopAppBar(title = stringResource(R.string.enter_work_time))
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onDoneClick,

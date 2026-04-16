@@ -10,7 +10,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,12 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.unit.sp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
+import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 
 @Composable
 fun AreaUpdateScreen(
@@ -34,13 +32,7 @@ fun AreaUpdateScreen(
     onCancelClick: () -> Unit,
     title: String
 ) {
-    Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = stringResource(R.string.update_area_description)
-            )
-        }
-    ) { innerPadding ->
+    Scaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -54,14 +46,13 @@ fun AreaUpdateScreen(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontStyle = FontStyle.Italic,
-                    fontSize = 20.sp
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontStyle = FontStyle.Italic
                 ),
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
-            OutlinedTextField(
+            SelectAllOutlinedTextField(
                 value = name,
                 onValueChange = onNameChange,
                 label = { Text(stringResource(R.string.area)) },

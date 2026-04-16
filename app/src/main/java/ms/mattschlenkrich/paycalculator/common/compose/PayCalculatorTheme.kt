@@ -3,6 +3,7 @@ package ms.mattschlenkrich.paycalculator.common.compose
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -10,6 +11,8 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
@@ -39,9 +42,23 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun PayCalculatorTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    fontSize: Float = 16f,
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+
+    val typography = Typography(
+        bodyLarge = TextStyle(fontSize = fontSize.sp),
+        bodyMedium = TextStyle(fontSize = (fontSize * 0.875).sp),
+        bodySmall = TextStyle(fontSize = (fontSize * 0.75).sp),
+        titleLarge = TextStyle(fontSize = (fontSize * 1.375).sp),
+        titleMedium = TextStyle(fontSize = (fontSize * 1.125).sp),
+        titleSmall = TextStyle(fontSize = fontSize.sp),
+        labelLarge = TextStyle(fontSize = (fontSize * 0.875).sp),
+        labelMedium = TextStyle(fontSize = (fontSize * 0.75).sp),
+        labelSmall = TextStyle(fontSize = (fontSize * 0.625).sp)
+    )
+
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
@@ -53,6 +70,7 @@ fun PayCalculatorTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
+        typography = typography,
         content = content
     )
 }

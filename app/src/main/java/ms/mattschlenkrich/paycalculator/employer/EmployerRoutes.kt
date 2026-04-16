@@ -159,7 +159,6 @@ fun EmployerAddRoute(
             }
         },
         onDeleteClick = { },
-        onBackClick = { navController.popBackStack() }
     )
 }
 
@@ -330,7 +329,6 @@ fun EmployerUpdateRoute(
                 employerViewModel.updateEmployer(deletedEmployer)
                 navController.popBackStack()
             },
-            onBackClick = { navController.popBackStack() }
         )
     } else {
         androidx.compose.runtime.LaunchedEffect(Unit) {

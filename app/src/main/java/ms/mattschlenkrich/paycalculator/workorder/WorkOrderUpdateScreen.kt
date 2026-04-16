@@ -41,7 +41,6 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.Areas
 import ms.mattschlenkrich.paycalculator.data.JobSpec
 import ms.mattschlenkrich.paycalculator.data.MaterialAndQuantity
@@ -79,18 +78,11 @@ fun WorkOrderUpdateScreen(
     workPerformedList: List<WorkPerformedAndQuantity>,
     materialsList: List<MaterialAndQuantity>,
     onDoneClick: () -> Unit,
-    onBackClick: () -> Unit
 ) {
     val df = DateFunctions()
     val nf = NumberFunctions()
 
     Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = stringResource(R.string.update_work_order),
-                onBackClicked = onBackClick
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onDoneClick,

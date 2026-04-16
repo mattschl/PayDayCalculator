@@ -26,10 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ms.mattschlenkrich.paycalculator.R
 
 @Composable
@@ -64,9 +62,8 @@ fun SyncScreen(
                         .background(MaterialTheme.colorScheme.surfaceVariant)
                         .padding(8.dp),
                     readOnly = true,
-                    textStyle = TextStyle(
+                    textStyle = MaterialTheme.typography.bodySmall.copy(
                         fontFamily = FontFamily.Monospace,
-                        fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
                     cursorBrush = SolidColor(MaterialTheme.colorScheme.primary)
@@ -96,7 +93,7 @@ fun SyncScreen(
                             Text(
                                 text = errorMessage,
                                 color = Color(0xFFB00020),
-                                fontSize = 14.sp,
+                                style = MaterialTheme.typography.bodyMedium,
                                 modifier = Modifier.padding(8.dp)
                             )
                         }

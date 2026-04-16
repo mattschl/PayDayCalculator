@@ -12,10 +12,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -48,7 +46,6 @@ import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.EmployerTaxTypes
 import ms.mattschlenkrich.paycalculator.data.WorkExtraTypes
 
@@ -78,35 +75,10 @@ fun EmployerScreen(
     onViewWagesClick: () -> Unit,
     onSaveClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    onBackClick: () -> Unit
 ) {
     val df = DateFunctions()
 
     Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = if (isUpdate) stringResource(R.string.update) + " " + name
-                else stringResource(R.string.add_an_employer),
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.go_back)
-                        )
-                    }
-                },
-                actions = {
-                    if (isUpdate) {
-                        IconButton(onClick = onDeleteClick) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = stringResource(R.string.delete)
-                            )
-                        }
-                    }
-                }
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onSaveClick,

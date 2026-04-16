@@ -36,7 +36,6 @@ import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.Areas
 import ms.mattschlenkrich.paycalculator.data.Material
 import ms.mattschlenkrich.paycalculator.data.MaterialInSequence
@@ -96,12 +95,6 @@ fun WorkOrderHistoryUpdateScreen(
     onBack: () -> Unit,
 ) {
     Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = title,
-                onBackClicked = onBack
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onDone,

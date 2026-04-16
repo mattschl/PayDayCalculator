@@ -48,7 +48,6 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.Employers
 import ms.mattschlenkrich.paycalculator.data.WorkDates
 
@@ -74,19 +73,6 @@ fun TimeSheetScreen(
     formatHours: (WorkDates) -> String
 ) {
     Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = stringResource(R.string.time_sheet),
-                actions = {
-                    IconButton(onClick = onViewPayDetailsClick) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = stringResource(R.string.pay_details)
-                        )
-                    }
-                }
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddWorkDateClick,

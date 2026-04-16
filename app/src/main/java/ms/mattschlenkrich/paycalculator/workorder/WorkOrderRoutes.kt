@@ -40,8 +40,10 @@ fun WorkOrderHistoryAddRoute(
         return
     }
 
-    val employers by employerViewModel.getEmployers().observeAsState(emptyList())
-    val employer = employers.find { it.employerId == workDate.wdEmployerId } ?: run {
+    val employers by employerViewModel.getEmployers().observeAsState()
+    if (employers == null) return
+
+    val employer = employers!!.find { it.employerId == workDate.wdEmployerId } ?: run {
         LaunchedEffect(Unit) {
             navController.popBackStack()
         }
@@ -153,17 +155,17 @@ fun WorkOrderHistoryUpdateRoute(
     val nf = remember { NumberFunctions() }
     val coroutineScope = rememberCoroutineScope()
 
-    val historyWithDates by if (mainViewModel.getWorkOrderHistory() != null) {
-        workOrderViewModel.getWorkOrderHistoriesById(mainViewModel.getWorkOrderHistory()!!.woHistoryId)
-            .observeAsState()
-    } else {
-        remember { mutableStateOf(null) }
-    }
-
-    if (historyWithDates == null) {
+    val initialHistory = mainViewModel.getWorkOrderHistory() ?: run {
         LaunchedEffect(Unit) {
             navController.popBackStack()
         }
+        return
+    }
+
+    val historyWithDates by workOrderViewModel.getWorkOrderHistoriesById(initialHistory.woHistoryId)
+        .observeAsState()
+
+    if (historyWithDates == null) {
         return
     }
 
@@ -338,10 +340,300 @@ fun WorkOrderHistoryUpdateRoute(
                             woHistoryUpdateTime = df.getCurrentTimeAsString()
                         )
                     )
-                    navController.popBackStack()
                 }
+                navController.popBackStack()
             }
         },
         onBack = { navController.popBackStack() }
     )
+}
+
+@Composable
+fun AreaViewRoute(
+    mainViewModel: MainViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    navController: androidx.navigation.NavController
+) {
+    var searchQuery by remember { mutableStateOf("") }
+    val areaList by if (searchQuery.isEmpty()) {
+        workOrderViewModel.getAreasList().observeAsState(emptyList())
+    } else {
+        workOrderViewModel.searchAreas("%$searchQuery%").observeAsState(emptyList())
+    }
+
+    AreaViewScreen(
+        areaList = areaList,
+        searchQuery = searchQuery,
+        onSearchQueryChange = { searchQuery = it },
+        onAreaClick = { area ->
+            mainViewModel.setAreaId(area.areaId)
+            navController.navigate(Screen.AreaUpdate.route)
+        }
+    )
+}
+
+@Composable
+fun AreaUpdateRoute(
+    mainViewModel: MainViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    navController: androidx.navigation.NavController
+) {
+    val context = LocalContext.current
+    val df = remember { DateFunctions() }
+    val coroutineScope = rememberCoroutineScope()
+
+    val areaId = mainViewModel.getAreaId()
+    if (areaId == null) {
+        LaunchedEffect(Unit) {
+            navController.popBackStack()
+        }
+        return
+    }
+
+    val areaList by workOrderViewModel.getAreasList().observeAsState(emptyList())
+    val oldArea by workOrderViewModel.getArea(areaId).observeAsState()
+
+    oldArea?.let { area ->
+        var name by remember(area.areaId) { mutableStateOf(area.areaName) }
+
+        AreaUpdateScreen(
+            name = name,
+            onNameChange = { name = it },
+            title = stringResource(R.string.update_area_description_for) + area.areaName,
+            onUpdateClick = {
+                val trimmedName = name.trim()
+                if (trimmedName.isBlank()) {
+                    // In a real app, use a proper snackbar or state-based error
+                    return@AreaUpdateScreen
+                }
+
+                if (areaList.any { it.areaName == trimmedName && it.areaId != area.areaId }) {
+                    return@AreaUpdateScreen
+                }
+
+                coroutineScope.launch {
+                    workOrderViewModel.updateArea(
+                        ms.mattschlenkrich.paycalculator.data.Areas(
+                            area.areaId,
+                            trimmedName,
+                            false,
+                            df.getCurrentTimeAsString()
+                        )
+                    )
+                    navController.popBackStack()
+                }
+            },
+            onCancelClick = {
+                navController.popBackStack()
+            }
+        )
+    }
+}
+
+@Composable
+fun JobSpecViewRoute(
+    mainViewModel: MainViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    navController: androidx.navigation.NavController
+) {
+    // TODO: Implement JobSpecViewScreen
+}
+
+@Composable
+fun JobSpecUpdateRoute(
+    mainViewModel: MainViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    navController: androidx.navigation.NavController
+) {
+    // TODO: Implement JobSpecUpdateScreen
+}
+
+@Composable
+fun MaterialViewRoute(
+    mainViewModel: MainViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    navController: androidx.navigation.NavController
+) {
+    var searchQuery by remember { mutableStateOf("") }
+    val materialList by if (searchQuery.isEmpty()) {
+        workOrderViewModel.getMaterialsList().observeAsState(emptyList())
+    } else {
+        workOrderViewModel.searchMaterials("%$searchQuery%").observeAsState(emptyList())
+    }
+
+    MaterialViewScreen(
+        materialList = materialList,
+        searchQuery = searchQuery,
+        onSearchQueryChange = { searchQuery = it },
+        onMaterialClick = { material ->
+            mainViewModel.setMaterial(material)
+            navController.navigate(Screen.MaterialUpdate.route)
+        }
+    )
+}
+
+@Composable
+fun MaterialUpdateRoute(
+    mainViewModel: MainViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    navController: androidx.navigation.NavController
+) {
+    val context = LocalContext.current
+    val df = remember { DateFunctions() }
+    val nf = remember { NumberFunctions() }
+    val coroutineScope = rememberCoroutineScope()
+
+    val oldMaterial = mainViewModel.getMaterial() ?: run {
+        LaunchedEffect(Unit) {
+            navController.popBackStack()
+        }
+        return
+    }
+
+    val materialList by workOrderViewModel.getMaterialsList().observeAsState(emptyList())
+
+    var name by remember { mutableStateOf(oldMaterial.mName) }
+    var cost by remember { mutableStateOf(nf.displayDollars(oldMaterial.mCost)) }
+    var price by remember { mutableStateOf(nf.displayDollars(oldMaterial.mPrice)) }
+
+    MaterialUpdateScreen(
+        name = name,
+        onNameChange = { name = it },
+        cost = cost,
+        onCostChange = { cost = it },
+        price = price,
+        onPriceChange = { price = it },
+        onUpdateClick = {
+            if (name.isBlank() || cost.isBlank() || price.isBlank()) {
+                return@MaterialUpdateScreen
+            }
+            if (materialList.any { it.mName == name.trim() && it.materialId != oldMaterial.materialId }) {
+                return@MaterialUpdateScreen
+            }
+
+            coroutineScope.launch {
+                val material = ms.mattschlenkrich.paycalculator.data.Material(
+                    oldMaterial.materialId,
+                    name.trim(),
+                    nf.getDoubleFromDollars(cost.trim()),
+                    nf.getDoubleFromDollars(price.trim()),
+                    oldMaterial.mIsDeleted,
+                    df.getCurrentTimeAsString()
+                )
+                workOrderViewModel.updateMaterial(material)
+                mainViewModel.setMaterial(material)
+                navController.popBackStack()
+            }
+        },
+        onMergeClick = {
+            coroutineScope.launch {
+                val material = ms.mattschlenkrich.paycalculator.data.Material(
+                    oldMaterial.materialId,
+                    name.trim(),
+                    nf.getDoubleFromDollars(cost.trim()),
+                    nf.getDoubleFromDollars(price.trim()),
+                    oldMaterial.mIsDeleted,
+                    df.getCurrentTimeAsString()
+                )
+                workOrderViewModel.updateMaterial(material)
+                mainViewModel.setMaterial(material)
+                mainViewModel.setMaterialId(oldMaterial.materialId)
+                // Defaulting to Master for now, or could show dialog
+                mainViewModel.setMaterialIsParent(true)
+                navController.navigate(Screen.MaterialMerge.route)
+            }
+        },
+        onCancelClick = { navController.popBackStack() },
+        title = stringResource(R.string.update_) + oldMaterial.mName
+    )
+}
+
+@Composable
+fun MaterialMergeRoute(
+    mainViewModel: MainViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    navController: androidx.navigation.NavController
+) {
+    // TODO: Implement MaterialMergeScreen
+}
+
+@Composable
+fun MaterialQuantityUpdateRoute(
+    mainViewModel: MainViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    navController: androidx.navigation.NavController
+) {
+    // TODO: Implement MaterialQuantityUpdateScreen
+}
+
+@Composable
+fun WorkOrderViewRoute(
+    mainViewModel: MainViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    navController: androidx.navigation.NavController
+) {
+    // TODO: Implement WorkOrderViewScreen
+}
+
+@Composable
+fun WorkOrderAddRoute(
+    mainViewModel: MainViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    navController: androidx.navigation.NavController
+) {
+    // TODO: Implement WorkOrderAddScreen
+}
+
+@Composable
+fun WorkOrderUpdateRoute(
+    mainViewModel: MainViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    navController: androidx.navigation.NavController
+) {
+    // TODO: Implement WorkOrderUpdateScreen
+}
+
+@Composable
+fun WorkOrderLookupRoute(
+    mainViewModel: MainViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    navController: androidx.navigation.NavController
+) {
+    // TODO: Implement WorkOrderLookupScreen
+}
+
+@Composable
+fun WorkPerformedViewRoute(
+    mainViewModel: MainViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    navController: androidx.navigation.NavController
+) {
+    // TODO: Implement WorkPerformedViewScreen
+}
+
+@Composable
+fun WorkPerformedUpdateRoute(
+    mainViewModel: MainViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    navController: androidx.navigation.NavController
+) {
+    // TODO: Implement WorkPerformedUpdateScreen
+}
+
+@Composable
+fun WorkPerformedMergeRoute(
+    mainViewModel: MainViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    navController: androidx.navigation.NavController
+) {
+    // TODO: Implement WorkPerformedMergeScreen
+}
+
+@Composable
+fun WorkOrderHistoryMaterialUpdateRoute(
+    mainViewModel: MainViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    navController: androidx.navigation.NavController
+) {
+    // TODO: Implement WorkOrderHistoryMaterialUpdateScreen
 }

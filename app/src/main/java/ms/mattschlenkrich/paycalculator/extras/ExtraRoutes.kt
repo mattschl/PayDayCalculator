@@ -130,9 +130,6 @@ fun ExtraRoute(
                 DateFunctions()
                     .getCurrentTimeAsString()
             )
-        },
-        onCancel = {
-            navController.popBackStack()
         }
     )
 }
@@ -222,8 +219,7 @@ fun WorkExtraTypeAddRoute(
                     popUpTo(Screen.WorkExtraTypeAdd.route) { inclusive = true }
                 }
             },
-            onDelete = {},
-            onCancel = { navController.popBackStack() }
+            onDelete = {}
         )
     } else {
         LaunchedEffect(Unit) {
@@ -268,8 +264,7 @@ fun WorkExtraTypeUpdateRoute(
                     )
                 )
                 navController.popBackStack()
-            },
-            onCancel = { navController.popBackStack() }
+            }
         )
     } else {
         LaunchedEffect(Unit) {

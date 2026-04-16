@@ -22,7 +22,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +36,7 @@ import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
+import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.data.WorkExtraTypes
 
 @Composable
@@ -65,12 +64,6 @@ fun WorkDateAddScreen(
     onBackClick: () -> Unit
 ) {
     Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = stringResource(R.string.add_a_new_work_date),
-                onBackClicked = onBackClick
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onSaveClick,
@@ -162,7 +155,7 @@ fun WorkDateAddScreen(
                         Text(stringResource(R.string.enter_time_before_wo))
                     }
 
-                    OutlinedTextField(
+                    SelectAllOutlinedTextField(
                         value = note,
                         onValueChange = onNoteChange,
                         label = { Text(stringResource(R.string.enter_note_optional)) },

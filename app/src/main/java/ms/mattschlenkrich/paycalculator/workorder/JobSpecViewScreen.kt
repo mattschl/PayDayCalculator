@@ -15,7 +15,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,12 +25,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
+import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.data.JobSpec
 
 @Composable
@@ -41,13 +39,7 @@ fun JobSpecViewScreen(
     onSearchQueryChange: (String) -> Unit,
     onJobSpecClick: (JobSpec) -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            StandardTopAppBar(
-                title = stringResource(R.string.view_job_spec_list)
-            )
-        }
-    ) { innerPadding ->
+    Scaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -58,7 +50,7 @@ fun JobSpecViewScreen(
                 ),
             verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
         ) {
-            OutlinedTextField(
+            SelectAllOutlinedTextField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
                 label = { Text(stringResource(R.string.search)) },
@@ -126,8 +118,7 @@ fun JobSpecItem(
                 },
                 color = if (item.jsIsDeleted) Color.Red else Color.Black,
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
+                    fontWeight = FontWeight.Bold
                 )
             )
         }

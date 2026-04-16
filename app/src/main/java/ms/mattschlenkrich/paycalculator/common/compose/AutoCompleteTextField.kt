@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paycalculator.common.compose
 
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -73,6 +74,12 @@ fun <T> AutoCompleteTextField(
                 interactionSource = interactionSource,
                 label = { Text(label) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                contentPadding = PaddingValues(
+                    start = 4.dp,
+                    end = 4.dp,
+                    top = 2.dp,
+                    bottom = 2.dp
+                ),
                 container = {
                     OutlinedTextFieldDefaults.Container(
                         enabled = true,
