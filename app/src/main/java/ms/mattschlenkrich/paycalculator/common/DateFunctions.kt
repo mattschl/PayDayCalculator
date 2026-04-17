@@ -23,6 +23,24 @@ class DateFunctions {
         return dateFormat.format(Calendar.getInstance().time)
     }
 
+    fun getTimeDisplay(calendar: Calendar): String {
+        return timeFormatter.format(calendar.time).split(" ")[1]
+    }
+
+    fun getCalendarFromTime(time: String): Calendar {
+        val cal = Calendar.getInstance()
+        val tempTime = time.split(":")
+        cal.set(Calendar.HOUR_OF_DAY, tempTime[0].toInt())
+        cal.set(Calendar.MINUTE, tempTime[1].toInt())
+        cal.set(Calendar.SECOND, 0)
+        cal.set(Calendar.MILLISECOND, 0)
+        return cal
+    }
+
+    fun getDateTimeFromDateAndTime(date: String, time: String): String {
+        return "$date $time"
+    }
+
     fun getDisplayDate(date: String): String {
         return displayDateString.format(
             dateChecker.parse(date)!!

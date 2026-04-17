@@ -68,6 +68,7 @@ interface PayCalculationsDao {
     @Query(
         "SELECT * FROM workPayPeriodExtras " +
                 "WHERE ppePayPeriodId = :payPeriodId " +
+                "AND ppeIsDeleted = 0 " +
                 "ORDER BY ppeName"
     )
     fun getCustomPayPeriodExtras(payPeriodId: Long): List<WorkPayPeriodExtras>

@@ -50,6 +50,10 @@ class WorkExtraViewModel(
             workExtraRepository.updateWorkExtraType(extraType)
         }
 
+    fun deleteWorkExtraType(id: Long, updateTime: String) = viewModelScope.launch {
+        workExtraRepository.deleteWorkExtraType(id, updateTime)
+    }
+
     fun getWorkExtraTypeList(employerId: Long) =
         workExtraRepository.getWorkExtraTypeList(employerId)
 
@@ -72,6 +76,10 @@ class WorkExtraViewModel(
         viewModelScope.launch {
             workExtraRepository.insertWorkDateExtra(extra)
         }
+
+    fun deleteWorkDateExtra(id: Long, updateTime: String) = viewModelScope.launch {
+        workExtraRepository.deleteWorkDateExtra(id, updateTime)
+    }
 
     fun updateWorkDateExtra(extra: WorkDateExtras) =
         viewModelScope.launch {

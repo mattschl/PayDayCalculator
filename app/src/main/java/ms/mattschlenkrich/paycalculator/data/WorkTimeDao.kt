@@ -2,26 +2,24 @@ package ms.mattschlenkrich.paycalculator.data
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Update
-import ms.mattschlenkrich.paycalculator.data.WorkDates
-import ms.mattschlenkrich.paycalculator.data.WorkOrder
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistory
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryCombined
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorked
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorkedCombined
 
 @Dao
 interface WorkTimeDao {
     @Insert()
     suspend fun insertWorkTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked)
 
-    @Delete()
-    suspend fun deleteWorkTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked)
+    @Query(
+        "UPDATE workOrderHistoryTimeWorked " +
+                "SET wohtIsDeleted = 1, " +
+                "wohtUpdateTime = :updateTime " +
+                "WHERE woHistoryTimeWorkedId = :id"
+    )
+    suspend fun deleteWorkTime(id: Long, updateTime: String)
 
     @Update()
     suspend fun updateWorkTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked)
@@ -39,7 +37,7 @@ interface WorkTimeDao {
                 "WHERE woHistoryWorkDateId = :workDateId " +
                 "AND woHistoryDeleted = 0"
     )
-    suspend fun getExistingHistories(
+    fun getExistingHistories(
         workDateId: Long
     ): List<WorkOrderHistoryCombined>
 
@@ -75,7 +73,7 @@ interface WorkTimeDao {
                 "AND woDeleted = 0 " +
                 "ORDER BY woNumber"
     )
-    suspend fun getWorkOrders(employerId: Long): List<WorkOrder>
+    fun getWorkOrders(employerId: Long): List<WorkOrder>
 
     @Query(
         "SELECT * FROM workOrders " +
@@ -87,7 +85,8 @@ interface WorkTimeDao {
 
     @Query(
         "SELECT * FROM workDates " +
-                "WHERE workDateId = :workDateId"
+                "WHERE workDateId = :workDateId " +
+                "AND wdIsDeleted = 0"
     )
-    suspend fun getWorkDate(workDateId: Long): WorkDates
+    fun getWorkDate(workDateId: Long): WorkDates
 }

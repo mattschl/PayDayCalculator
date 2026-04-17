@@ -31,6 +31,18 @@ class WorkOrderViewModel(
             )
         }
 
+    fun updateWorkOrder(workOrder: WorkOrder) = viewModelScope.launch {
+        workOrderRepository.updateWorkOrder(
+            workOrder.workOrderId,
+            workOrder.woNumber,
+            workOrder.woEmployerId,
+            workOrder.woAddress,
+            workOrder.woDescription,
+            workOrder.woDeleted,
+            workOrder.woUpdateTime
+        )
+    }
+
     fun getWorkOrder(workOrderId: Long) = workOrderRepository.getWorkOrder(workOrderId)
 
     fun getWorkOrder(workOrderNum: String) = workOrderRepository.getWorkOrder(workOrderNum)
@@ -81,7 +93,10 @@ class WorkOrderViewModel(
         }
 
     fun deleteWorkOrderHistory(historyId: Long) = viewModelScope.launch {
-        workOrderRepository.deleteWorkOrderHistory(historyId)
+        workOrderRepository.deleteWorkOrderHistory(
+            historyId,
+            ms.mattschlenkrich.paycalculator.common.DateFunctions().getCurrentTimeAsString()
+        )
     }
 
     fun getWorkOrderHistoriesByDate(workDateId: Long) =
@@ -96,6 +111,15 @@ class WorkOrderViewModel(
     fun getWorkOrderHistoryCombined(historyId: Long) =
         workOrderRepository.getWorkOrderHistoryCombined(historyId)
 
+    fun insertWorkOrderHistoryTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
+        viewModelScope.launch { workOrderRepository.insertTimeWorked(timeWorked) }
+
+    fun updateWorkOrderHistoryTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
+        viewModelScope.launch { workOrderRepository.updateTimeWorked(timeWorked) }
+
+    fun getWorkOrderHistoryTimesByHistory(historyId: Long) =
+        workOrderRepository.getTimeWorkedForWorkOrderHistory(historyId)
+
     fun insertTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
         viewModelScope.launch { workOrderRepository.insertTimeWorked(timeWorked) }
 
@@ -105,8 +129,13 @@ class WorkOrderViewModel(
     fun deleteTimeWorked(timeWorkedId: Long, updateTime: String) =
         viewModelScope.launch { workOrderRepository.deleteTimeWorked(timeWorkedId, updateTime) }
 
-    fun deleteTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
-        viewModelScope.launch { workOrderRepository.deleteTimeWorked(timeWorked) }
+    fun deleteTimeWorked(timeWorkedId: Long) =
+        viewModelScope.launch {
+            workOrderRepository.deleteTimeWorked(
+                timeWorkedId,
+                ms.mattschlenkrich.paycalculator.common.DateFunctions().getCurrentTimeAsString()
+            )
+        }
 
     fun getTimeWorkedPerDay(workDateId: Long) =
         workOrderRepository.getTimeWorkedPerDay(workDateId)
@@ -129,6 +158,31 @@ class WorkOrderViewModel(
         viewModelScope.launch {
             workOrderRepository.deleteWorkOrderHistoryByWorkDateId(workDateId, updateTime)
         }
+
+    fun getJobSpec(jobSpecId: Long) = workOrderRepository.getJobSpec(jobSpecId)
+
+    fun getJobSpecAndChildList(jobSpecId: Long) =
+        workOrderRepository.getJobSpecAndChildList(jobSpecId)
+
+    fun insertJobSpecMerged(jobSpecMerged: JobSpecMerged) =
+        viewModelScope.launch {
+            workOrderRepository.insertJobSpecMerged(jobSpecMerged)
+        }
+
+    fun deleteJobSpecMerged(jobSpecMergedId: Long, updateTime: String) =
+        viewModelScope.launch {
+            workOrderRepository.deleteJobSpecMerged(jobSpecMergedId, updateTime)
+        }
+
+    fun deleteJobSpecMerged(jobSpecMergedId: Long) =
+        viewModelScope.launch {
+            workOrderRepository.deleteJobSpecMerged(
+                jobSpecMergedId,
+                ms.mattschlenkrich.paycalculator.common.DateFunctions().getCurrentTimeAsString()
+            )
+        }
+
+    suspend fun getJobSpecSync(jsName: String) = workOrderRepository.getJobSpecSync(jsName)
 
     fun insertJobSpec(jobSpec: JobSpec) = viewModelScope.launch {
         workOrderRepository.insertJobSpec(jobSpec)
@@ -159,7 +213,10 @@ class WorkOrderViewModel(
     }
 
     fun deleteWorkOrderJobSpec(workOrderJobSpecId: Long) = viewModelScope.launch {
-        workOrderRepository.deleteWorkOrderJobSpec(workOrderJobSpecId)
+        workOrderRepository.deleteWorkOrderJobSpec(
+            workOrderJobSpecId,
+            ms.mattschlenkrich.paycalculator.common.DateFunctions().getCurrentTimeAsString()
+        )
     }
 
     fun getWorkOrderJobSpecs(workOrderId: Long) =
@@ -242,10 +299,13 @@ class WorkOrderViewModel(
     fun deleteWorkPerformed(workPerformedId: Long, updateTime: String) = viewModelScope.launch {
         workOrderRepository.deleteWorkPerformed(workPerformedId, updateTime)
     }
-
-    fun deleteWorkPerformed(workPerformed: WorkPerformed) = viewModelScope.launch {
-        workOrderRepository.deleteWorkPerformed(workPerformed)
-    }
+//
+//    fun deleteWorkPerformed(workPerformed: WorkPerformed) = viewModelScope.launch {
+//        workOrderRepository.deleteWorkPerformed(
+//            workPerformed.workPerformedId,
+//            ms.mattschlenkrich.paycalculator.common.DateFunctions().getCurrentTimeAsString()
+//        )
+//    }
 
 
     fun getWorkPerformedAll() = workOrderRepository.getWorkPerformedAll()
@@ -268,14 +328,20 @@ class WorkOrderViewModel(
             workOrderRepository.updateWorkPerformedMerged(workPerformedMerged)
         }
 
-    fun deleteWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged) =
+    fun deleteWorkPerformedMerged(workPerformedMergedId: Long, updateTime: String) =
         viewModelScope.launch {
-            workOrderRepository.deleteWorkPerformedMerged(workPerformedMerged)
+            workOrderRepository.deleteWorkPerformedMerged(
+                workPerformedMergedId,
+                updateTime
+            )
         }
 
     fun deleteWorkPerformedMerged(workPerformedMergedId: Long) =
         viewModelScope.launch {
-            workOrderRepository.deleteWorkPerformedMerged(workPerformedMergedId)
+            workOrderRepository.deleteWorkPerformedMerged(
+                workPerformedMergedId,
+                ms.mattschlenkrich.paycalculator.common.DateFunctions().getCurrentTimeAsString()
+            )
         }
 
     fun updateWorkPerformedMerged(oldWorkPerformedId: Long, newWorkPerformedId: Long) =
@@ -318,7 +384,10 @@ class WorkOrderViewModel(
 
     fun removeAllWorkPerformedFromWorkOderHistory(historyId: Long) =
         viewModelScope.launch {
-            workOrderRepository.removeAllWorkPerformedFromWorkOrderHistory(historyId)
+            workOrderRepository.removeAllWorkPerformedFromWorkOrderHistory(
+                historyId,
+                ms.mattschlenkrich.paycalculator.common.DateFunctions().getCurrentTimeAsString()
+            )
         }
 
     fun getWorkPerformedCombinedByWorkOrderHistory(historyId: Long) =
@@ -365,8 +434,15 @@ class WorkOrderViewModel(
             )
         }
 
+    fun deleteMaterialMerged(childId: Long, updateTime: String) = viewModelScope.launch {
+        workOrderRepository.deleteMaterialMerged(childId, updateTime)
+    }
+
     fun deleteMaterialMerged(childId: Long) = viewModelScope.launch {
-        workOrderRepository.deleteMaterialMerged(childId)
+        workOrderRepository.deleteMaterialMerged(
+            childId,
+            ms.mattschlenkrich.paycalculator.common.DateFunctions().getCurrentTimeAsString()
+        )
     }
 
     fun insertMaterialMerged(materialMerged: MaterialMerged) =
@@ -382,20 +458,37 @@ class WorkOrderViewModel(
             workOrderRepository.insertWorkOrderHistoryMaterial(workOrderHistoryMaterial)
         }
 
+    fun removeWorkOrderHistoryMaterial(workOrderHistoryMaterialId: Long, updateTime: String) =
+        viewModelScope.launch {
+            workOrderRepository.removeWorkOrderHistoryMaterial(
+                workOrderHistoryMaterialId,
+                updateTime
+            )
+        }
+
     fun removeWorkOrderHistoryMaterial(workOrderHistoryMaterialId: Long) =
         viewModelScope.launch {
-            workOrderRepository.removeWorkOrderHistoryMaterial(workOrderHistoryMaterialId)
+            workOrderRepository.removeWorkOrderHistoryMaterial(
+                workOrderHistoryMaterialId,
+                ms.mattschlenkrich.paycalculator.common.DateFunctions().getCurrentTimeAsString()
+            )
         }
 
     fun removeAllMaterialsFromWorkOrderHistory(historyId: Long) =
         viewModelScope.launch {
-            workOrderRepository.removeAllMaterialsFromWorkOrderHistory(historyId)
+            workOrderRepository.removeAllMaterialsFromWorkOrderHistory(
+                historyId,
+                ms.mattschlenkrich.paycalculator.common.DateFunctions().getCurrentTimeAsString()
+            )
         }
 
-    fun deleteWorkOrderHistoryWorkPerformed(historyWorkPerformedId: Long) =
-        viewModelScope.launch {
-            workOrderRepository.deleteWorkOrderHistoryWorkPerformed(historyWorkPerformedId)
-        }
+    fun deleteWorkOrderHistoryWorkPerformed(
+        historyWorkPerformedId: Long,
+        updateTime: String = ms.mattschlenkrich.paycalculator.common.DateFunctions()
+            .getCurrentTimeAsString()
+    ) = viewModelScope.launch {
+        workOrderRepository.deleteWorkOrderHistoryWorkPerformed(historyWorkPerformedId, updateTime)
+    }
 
     fun updateWorkOrderHistoryMaterial(workOrderHistoryMaterial: WorkOrderHistoryMaterial) =
         viewModelScope.launch {

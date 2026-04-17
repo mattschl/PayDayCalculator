@@ -1,5 +1,7 @@
 package ms.mattschlenkrich.paycalculator.data
 
+import ms.mattschlenkrich.paycalculator.common.DateFunctions
+
 class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun insertWorkOrder(workOrder: WorkOrder) =
         db.getWorkOrderDao().insertWorkOrder(workOrder)
@@ -67,11 +69,14 @@ class WorkOrderRepository(private val db: PayDatabase) {
         updateTime
     )
 
-    suspend fun deleteWorkOrderHistory(historyID: Long, updateTime: String) =
-        db.getWorkOrderDao().deleteWorkOrderHistory(historyID, updateTime)
+    suspend fun deleteWorkOrderHistory(historyId: Long, updateTime: String) =
+        db.getWorkOrderDao().deleteWorkOrderHistory(historyId, updateTime)
 
     suspend fun deleteWorkOrderHistory(historyId: Long) =
-        db.getWorkOrderDao().deleteWorkOrderHistory(historyId)
+        db.getWorkOrderDao().deleteWorkOrderHistory(
+            historyId,
+            DateFunctions().getCurrentTimeAsString()
+        )
 
     fun getWorkOrderHistoriesByDate(workDateId: Long) =
         db.getWorkOrderDao().getWorkOrderHistoriesByDate(workDateId)
@@ -94,8 +99,8 @@ class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun deleteTimeWorked(timeWorkedId: Long, updateTime: String) =
         db.getWorkOrderDao().deleteTimeWorked(timeWorkedId, updateTime)
 
-    suspend fun deleteTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
-        db.getWorkOrderDao().deleteTimeWorked(timeWorked)
+//    suspend fun deleteTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
+//        db.getWorkOrderDao().deleteTimeWorked(timeWorked)
 
     fun getTimeWorkedPerDay(workDateId: Long) =
         db.getWorkOrderDao().getTimeWorkedPerDay(workDateId)
@@ -117,6 +122,19 @@ class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun deleteWorkOrderHistoryByWorkDateId(workDateId: Long, updateTime: String) =
         db.getWorkOrderDao().deleteWorkOrderHistoryByWorkDateId(workDateId, updateTime)
 
+    fun getJobSpec(jobSpecId: Long) = db.getWorkOrderDao().getJobSpec(jobSpecId)
+
+    fun getJobSpecAndChildList(jobSpecId: Long) =
+        db.getWorkOrderDao().getJobSpecAndChildList(jobSpecId)
+
+    suspend fun insertJobSpecMerged(jobSpecMerged: JobSpecMerged) =
+        db.getWorkOrderDao().insertJobSpecMerged(jobSpecMerged)
+
+    suspend fun deleteJobSpecMerged(jobSpecMergedId: Long, updateTime: String) =
+        db.getWorkOrderDao().deleteJobSpecMerged(jobSpecMergedId, updateTime)
+
+    suspend fun getJobSpecSync(jsName: String) = db.getWorkOrderDao().getJobSpecSync(jsName)
+
     suspend fun insertJobSpec(jobSpec: JobSpec) = db.getWorkOrderDao().insertJobSpec(jobSpec)
 
     suspend fun updateJobSpec(jobSpec: JobSpec) = db.getWorkOrderDao().updateJobSpec(jobSpec)
@@ -136,8 +154,8 @@ class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun deleteWorkOrderJobSpec(workOrderJobSpecId: Long, updateTime: String) =
         db.getWorkOrderDao().deleteWorkOrderJobSpec(workOrderJobSpecId, updateTime)
 
-    suspend fun deleteWorkOrderJobSpec(workOrderJobSpecId: Long) =
-        db.getWorkOrderDao().deleteWorkOrderJobSpec(workOrderJobSpecId)
+//    suspend fun deleteWorkOrderJobSpec(workOrderJobSpecId: Long) =
+//        db.getWorkOrderDao().deleteWorkOrderJobSpec(workOrderJobSpecId)
 
     fun getWorkOrderJobSpecs(workOrderId: Long) =
         db.getWorkOrderDao().getWorkOrderJobSpecs(workOrderId)
@@ -154,11 +172,8 @@ class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun deleteWorkPerformed(workPerformedId: Long, updateTime: String) =
         db.getWorkOrderDao().deleteWorkPerformed(workPerformedId, updateTime)
 
-    suspend fun deleteWorkPerformed(workPerformed: WorkPerformed) =
-        db.getWorkOrderDao().deleteWorkPerformed(workPerformed)
-
-    suspend fun deleteWorkPerformedMerged(workPerformedId: Long) =
-        db.getWorkOrderDao().deleteWorkPerformedMerged(workPerformedId)
+    suspend fun deleteWorkPerformedMerged(workPerformedMergedId: Long, updateTime: String) =
+        db.getWorkOrderDao().deleteWorkPerformedMerged(workPerformedMergedId, updateTime)
 
 
     fun getWorkPerformedAll() = db.getWorkOrderDao().getWorkPerformedAll()
@@ -176,9 +191,6 @@ class WorkOrderRepository(private val db: PayDatabase) {
 
     suspend fun updateWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged) =
         db.getWorkOrderDao().updateWorkPerformedMerged(workPerformedMerged)
-
-    suspend fun deleteWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged) =
-        db.getWorkOrderDao().deleteWorkPerformedMerged(workPerformedMerged)
 
     suspend fun updateWorkPerformedMerged(oldWorkPerformedId: Long, newWorkPerformedId: Long) =
         db.getWorkOrderDao().updateWorkPerformedMerged(oldWorkPerformedId, newWorkPerformedId)
@@ -207,11 +219,14 @@ class WorkOrderRepository(private val db: PayDatabase) {
         workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
     ) = db.getWorkOrderDao().updateWorkOrderHistoryWorkPerformed(workOrderHistoryWorkPerformed)
 
-    suspend fun removeAllWorkPerformedFromWorkOrderHistory(historyId: Long) =
-        db.getWorkOrderDao().removeAllWorkPerformedFromWorkOrderHistory(historyId)
+    suspend fun removeAllWorkPerformedFromWorkOrderHistory(historyId: Long, updateTime: String) =
+        db.getWorkOrderDao().removeAllWorkPerformedFromWorkOrderHistory(historyId, updateTime)
 
-    suspend fun deleteWorkOrderHistoryWorkPerformed(historyWorkPerformedId: Long) =
-        db.getWorkOrderDao().deleteWorkOrderHistoryWorkPerformed(historyWorkPerformedId)
+    suspend fun deleteWorkOrderHistoryWorkPerformed(
+        historyWorkPerformedId: Long,
+        updateTime: String
+    ) =
+        db.getWorkOrderDao().deleteWorkOrderHistoryWorkPerformed(historyWorkPerformedId, updateTime)
 
     fun getWorkPerformedCombinedByWorkOrderHistory(historyId: Long) =
         db.getWorkOrderDao().getWorkPerformedByWorkOrderHistory(historyId)
@@ -244,8 +259,8 @@ class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun updateMaterialMerged(oldMaterialID: Long, newMaterialID: Long, updateTime: String) =
         db.getWorkOrderDao().updateMaterialMerged(oldMaterialID, newMaterialID, updateTime)
 
-    suspend fun deleteMaterialMerged(childId: Long) =
-        db.getWorkOrderDao().deleteMaterialMerged(childId)
+    suspend fun deleteMaterialMerged(materialMergedId: Long, updateTime: String) =
+        db.getWorkOrderDao().deleteMaterialMerged(materialMergedId, updateTime)
 
     suspend fun insertMaterialMerged(materialMerged: MaterialMerged) =
         db.getWorkOrderDao().insertMaterialMerged(materialMerged)
@@ -259,8 +274,8 @@ class WorkOrderRepository(private val db: PayDatabase) {
     ) = db.getWorkOrderDao().insertWorkOrderHistoryMaterial(workOrderHistoryMaterial)
 
     suspend fun removeWorkOrderHistoryMaterial(
-        workOrderHistoryMaterialId: Long
-    ) = db.getWorkOrderDao().removeWorkOrderHistoryMaterial(workOrderHistoryMaterialId)
+        workOrderHistoryMaterialId: Long, updateTime: String
+    ) = db.getWorkOrderDao().removeWorkOrderHistoryMaterial(workOrderHistoryMaterialId, updateTime)
 
     suspend fun updateWorkOrderHistoryMaterial(
         workOrderHistoryMaterial: WorkOrderHistoryMaterial
@@ -282,8 +297,8 @@ class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun getWorkOrderHistoryMaterialCombined(woHistoryMaterialId: Long): WorkOrderHistoryMaterialCombined =
         db.getWorkOrderDao().getWorkOrderHistoryMaterialCombined(woHistoryMaterialId)
 
-    suspend fun removeAllMaterialsFromWorkOrderHistory(historyId: Long) =
-        db.getWorkOrderDao().removeAllMaterialsFromWorkOrderHistory(historyId)
+    suspend fun removeAllMaterialsFromWorkOrderHistory(historyId: Long, updateTime: String) =
+        db.getWorkOrderDao().removeAllMaterialsFromWorkOrderHistory(historyId, updateTime)
 
     suspend fun insertArea(area: Areas) = db.getWorkOrderDao().insertArea(area)
 

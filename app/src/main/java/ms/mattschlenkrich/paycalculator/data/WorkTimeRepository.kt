@@ -1,16 +1,11 @@
 package ms.mattschlenkrich.paycalculator.data
 
-import ms.mattschlenkrich.paycalculator.data.PayDatabase
-import ms.mattschlenkrich.paycalculator.data.WorkDates
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistory
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorked
-
 class WorkTimeRepository(private val db: PayDatabase) {
     suspend fun insertWorkTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked) =
         db.getWorkTimeDao().insertWorkTime(workOrderHistoryTimeWorked)
 
-    suspend fun deleteWorkTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked) =
-        db.getWorkTimeDao().deleteWorkTime(workOrderHistoryTimeWorked)
+    suspend fun deleteWorkTime(id: Long, updateTime: String) =
+        db.getWorkTimeDao().deleteWorkTime(id, updateTime)
 
     suspend fun updateWorkTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked) =
         db.getWorkTimeDao().updateWorkTime(workOrderHistoryTimeWorked)
@@ -21,7 +16,7 @@ class WorkTimeRepository(private val db: PayDatabase) {
     suspend fun updateWorkOrderHistory(workOrderHistory: WorkOrderHistory) =
         db.getWorkTimeDao().updateWorkOrderHistory(workOrderHistory)
 
-    suspend fun getExistingHistories(workDateId: Long) =
+    fun getExistingHistories(workDateId: Long) =
         db.getWorkTimeDao().getExistingHistories(workDateId)
 
     fun getExistingHistoriesWithTimes(workDateId: Long) =
@@ -30,13 +25,13 @@ class WorkTimeRepository(private val db: PayDatabase) {
     fun getTimesWorkedByDate(workDateId: Long) =
         db.getWorkTimeDao().getTimesWorkedByDate(workDateId)
 
-    suspend fun getWorkOrders(employerId: Long) =
+    fun getWorkOrders(employerId: Long) =
         db.getWorkTimeDao().getWorkOrders(employerId)
 
     fun getWorkOrderNumbers(employerId: Long) =
         db.getWorkTimeDao().getWorkOrderNumbers(employerId)
 
 
-    suspend fun getWorkDate(workDateId: Long) =
+    fun getWorkDate(workDateId: Long) =
         db.getWorkTimeDao().getWorkDate(workDateId)
 }

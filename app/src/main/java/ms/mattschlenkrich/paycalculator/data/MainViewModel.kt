@@ -32,6 +32,8 @@ class MainViewModel(
     private var workOrder: WorkOrder? = null
     private var jobSpec: JobSpec? = null
     private var workOrderJobSpecId: Long? = null
+    private var jobSpecId: Long? = null
+    private var jobSpecIsMaster: Boolean = true
     private var workPerformedId: Long? = null
     private var workPerformedIsParent: Boolean = true
     private var workPerformedHistoryId: Long? = null
@@ -71,6 +73,26 @@ class MainViewModel(
 
     fun getWorkOrderJobSpecId(): Long? {
         return workOrderJobSpecId
+    }
+
+    fun setWorkOrderJobSpecId(newWorkOrderJobSpecId: Long?) {
+        workOrderJobSpecId = newWorkOrderJobSpecId
+    }
+
+    fun getJobSpecId(): Long? {
+        return jobSpecId
+    }
+
+    fun setJobSpecId(newJobSpecId: Long?) {
+        jobSpecId = newJobSpecId
+    }
+
+    fun setJobSpecIsMaster(isMaster: Boolean) {
+        jobSpecIsMaster = isMaster
+    }
+
+    fun getJobSpecIsMaster(): Boolean {
+        return jobSpecIsMaster
     }
 
     fun setWorkPerformedHistoryId(newWorkPerformedHistoryId: Long?) {
@@ -376,6 +398,8 @@ class MainViewModel(
         workOrderNumber = null
         workOrder = null
         jobSpec = null
+        jobSpecId = null
+        jobSpecIsMaster = true
         workOrderJobSpecId = null
         workPerformedId = null
         workPerformedIsParent = true

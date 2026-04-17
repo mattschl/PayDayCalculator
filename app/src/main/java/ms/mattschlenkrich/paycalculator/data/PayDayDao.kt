@@ -2,7 +2,6 @@ package ms.mattschlenkrich.paycalculator.data
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -13,6 +12,7 @@ import ms.mattschlenkrich.paycalculator.common.PAY_PERIODS_LIMIT
 import ms.mattschlenkrich.paycalculator.common.TABLE_PAY_PERIODS
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_DATE_EXTRAS
+import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_EXTRA_TYPES
 
 @Dao
 interface PayDayDao {
@@ -118,8 +118,13 @@ interface PayDayDao {
         updateTime: String
     )
 
-    @Delete
-    suspend fun deleteWorkDateExtra(extraTypes: WorkExtraTypes)
+    @Query(
+        "UPDATE $TABLE_WORK_EXTRA_TYPES " +
+                "SET wetIsDeleted = 1, " +
+                "wetUpdateTime = :updateTime " +
+                "WHERE workExtraTypeId = :workExtraTypeId"
+    )
+    suspend fun deleteWorkExtraType(workExtraTypeId: Long, updateTime: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkDateExtra(workDateExtra: WorkDateExtras)

@@ -90,13 +90,24 @@ import ms.mattschlenkrich.paycalculator.workdate.WorkDateTimesRoute
 import ms.mattschlenkrich.paycalculator.workdate.WorkDateUpdateRoute
 import ms.mattschlenkrich.paycalculator.workorder.AreaUpdateRoute
 import ms.mattschlenkrich.paycalculator.workorder.AreaViewRoute
+import ms.mattschlenkrich.paycalculator.workorder.JobSpecMergeRoute
+import ms.mattschlenkrich.paycalculator.workorder.JobSpecUpdateRoute
 import ms.mattschlenkrich.paycalculator.workorder.JobSpecViewRoute
 import ms.mattschlenkrich.paycalculator.workorder.MaterialMergeRoute
 import ms.mattschlenkrich.paycalculator.workorder.MaterialUpdateRoute
 import ms.mattschlenkrich.paycalculator.workorder.MaterialViewRoute
+import ms.mattschlenkrich.paycalculator.workorder.WorkOrderAddRoute
 import ms.mattschlenkrich.paycalculator.workorder.WorkOrderHistoryAddRoute
+import ms.mattschlenkrich.paycalculator.workorder.WorkOrderHistoryMaterialUpdateRoute
+import ms.mattschlenkrich.paycalculator.workorder.WorkOrderHistoryTimeRoute
+import ms.mattschlenkrich.paycalculator.workorder.WorkOrderHistoryTimeUpdateRoute
 import ms.mattschlenkrich.paycalculator.workorder.WorkOrderHistoryUpdateRoute
+import ms.mattschlenkrich.paycalculator.workorder.WorkOrderHistoryWorkPerformedUpdateRoute
+import ms.mattschlenkrich.paycalculator.workorder.WorkOrderLookupRoute
+import ms.mattschlenkrich.paycalculator.workorder.WorkOrderUpdateRoute
 import ms.mattschlenkrich.paycalculator.workorder.WorkOrderViewRoute
+import ms.mattschlenkrich.paycalculator.workorder.WorkPerformedMergeRoute
+import ms.mattschlenkrich.paycalculator.workorder.WorkPerformedUpdateRoute
 import ms.mattschlenkrich.paycalculator.workorder.WorkPerformedViewRoute
 
 class MainActivity : ComponentActivity() {
@@ -243,6 +254,7 @@ fun MainScreen(
         Screen.AreaUpdate,
         Screen.MaterialUpdate,
         Screen.MaterialMerge,
+        Screen.JobSpecMerge,
         Screen.WorkPerformedUpdate,
         Screen.WorkPerformedMerge,
         Screen.WorkOrderAdd,
@@ -516,8 +528,51 @@ fun MainScreen(
                     navController
                 )
             }
+            composable(Screen.WorkOrderHistoryWorkPerformedUpdate.route) {
+                WorkOrderHistoryWorkPerformedUpdateRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
             composable(Screen.WorkOrders.route) {
                 WorkOrderViewRoute(
+                    mainViewModel,
+                    employerViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkOrderUpdate.route) {
+                WorkOrderUpdateRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkOrderLookup.route) {
+                WorkOrderLookupRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkOrderHistoryTime.route) {
+                WorkOrderHistoryTimeRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkOrderHistoryTimeUpdate.route) {
+                WorkOrderHistoryTimeUpdateRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkOrderHistoryMaterialUpdate.route) {
+                WorkOrderHistoryMaterialUpdateRoute(
                     mainViewModel,
                     workOrderViewModel,
                     navController
@@ -525,6 +580,20 @@ fun MainScreen(
             }
             composable(Screen.JobSpecs.route) {
                 JobSpecViewRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.JobSpecUpdate.route) {
+                JobSpecUpdateRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.JobSpecMerge.route) {
+                JobSpecMergeRoute(
                     mainViewModel,
                     workOrderViewModel,
                     navController
@@ -568,6 +637,28 @@ fun MainScreen(
             composable(Screen.MaterialMerge.route) {
                 MaterialMergeRoute(
                     mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkPerformedUpdate.route) {
+                WorkPerformedUpdateRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkPerformedMerge.route) {
+                WorkPerformedMergeRoute(
+                    mainViewModel,
+                    workOrderViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkOrderAdd.route) {
+                WorkOrderAddRoute(
+                    mainViewModel,
+                    employerViewModel,
                     workOrderViewModel,
                     navController
                 )

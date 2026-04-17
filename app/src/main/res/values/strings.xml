@@ -78,6 +78,7 @@
     <string name="by_default">by default</string>
     <string name="calculated">"Calculated "</string>
     <string name="cancel">Cancel</string>
+    <string name="change_description">Change description</string>
     <string name="change_the_quantity">Change the quantity</string>
     <string name="check_if_this_is_a_credit_n_otherwise_it_will_be_a_deduction">Check if this is a credit\n otherwise it will be a deduction</string>
     <string name="check_if_this_is_a_default_n_otherwise_it_will_not_automatically_apply">Check if this is a default\n otherwise it will not automatically\n apply</string>
@@ -282,8 +283,9 @@
     <string name="open_this_date">Open this date</string>
     <string name="open">Open</string>
     <string name="original_job_spec">"Original Job Spec: "</string>
-    <string name="original_material__">"Original Material: "</string>
-    <string name="original_quantity__">"Original Quantity: "</string>
+    <string name="edit_material_used_for_wo_">Edit material used for WO: </string>
+    <string name="original_material_">Original Material: </string>
+    <string name="original_quantity_">Original Quantity: </string>
     <string name="original_time">"Original time is "</string>
     <string name="ot_">"Ot: "</string>
     <string name="ot_hrs_">"Ot Hrs: "</string>
@@ -439,6 +441,7 @@
     <string name="update_extra_type">Update Extra Type</string>
     <string name="update_future_pay_dates">Update future pay dates</string>
     <string name="update_job_spec">Update Job Spec</string>
+    <string name="update_in_history">Update in history</string>
     <string name="update_material_description">Update Material description</string>
     <string name="update_material_in_history">Update Material in history</string>
     <string name="update_material_used_on">"Update Material used on "</string>
@@ -490,6 +493,7 @@
     <string name="work_order">Work Order </string>
     <string name="work_orders">Work Orders </string>
     <string name="work_performed_on">" work performed on"</string>
+    <string name="work_performed_options">Work Performed Options</string>
     <string name="work_performed">Work Performed: </string>
     <string name="work_summary">Work Summary </string>
     <string name="would_you_like_to_add_work_performed_or_materials_to_this_history_">Would you like to add work performed or materials to this history?</string>
@@ -544,4 +548,7 @@
     <string name="debug_sha1">E5:BA:F7:BB:5E:0F:FF:44:7F:56:A2:00:34:16:1F:66:05:7E:1A:46</string>
 
 
+    <string name="master_job_spec">Master Job Spec</string>
+    <string name="parent_job_spec">Parent Job Spec</string>
+    <string name="child_job_spec">Child Job Spec</string>
 </resources>

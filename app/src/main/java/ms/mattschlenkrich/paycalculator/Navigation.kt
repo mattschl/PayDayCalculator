@@ -72,6 +72,8 @@ sealed class Screen(val route: String, @StringRes val resourceId: Int, @Drawable
         Screen("workOrders", R.string.view_work_order_list, R.drawable.ic_time_sheet)
 
     object JobSpecs : Screen("jobSpecs", R.string.view_job_spec_list, R.drawable.ic_time_sheet)
+    object JobSpecUpdate :
+        Screen("jobSpecUpdate", R.string.update_job_spec, R.drawable.ic_time_sheet)
     object Areas : Screen("areas", R.string.view_areas_list, R.drawable.ic_time_sheet)
     object WorkPerformed :
         Screen("workPerformed", R.string.view_work_performed_list, R.drawable.ic_time_sheet)
@@ -87,6 +89,9 @@ sealed class Screen(val route: String, @StringRes val resourceId: Int, @Drawable
     object MaterialMerge :
         Screen("materialMerge", R.string.marge_material, R.drawable.ic_time_sheet)
 
+    object JobSpecMerge :
+        Screen("jobSpecMerge", R.string.master_job_spec, R.drawable.ic_time_sheet)
+
     object WorkPerformedUpdate :
         Screen(
             "workPerformedUpdate",
@@ -99,6 +104,9 @@ sealed class Screen(val route: String, @StringRes val resourceId: Int, @Drawable
 
     object WorkOrderAdd :
         Screen("workOrderAdd", R.string.add_new_work_order, R.drawable.ic_time_sheet)
+
+    object WorkOrderUpdate :
+        Screen("workOrderUpdate", R.string.update_work_order, R.drawable.ic_time_sheet)
 
     object WorkOrderLookup :
         Screen("workOrderLookup", R.string.choose_a_work_order, R.drawable.ic_time_sheet)

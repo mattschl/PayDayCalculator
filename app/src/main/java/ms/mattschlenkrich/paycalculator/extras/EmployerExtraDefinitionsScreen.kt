@@ -40,6 +40,7 @@ import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.Employers
@@ -112,39 +113,51 @@ fun EmployerExtraDefinitionsScreen(
                 .padding(paddingValues)
                 .padding(horizontal = SCREEN_PADDING_HORIZONTAL)
         ) {
-            SimpleDropdownField(
-                label = stringResource(R.string.employer),
-                items = employers + null, // null represents "Add new employer"
-                selectedItem = selectedEmployer,
-                onItemSelected = {
-                    if (it == null) {
-                        onAddNewEmployer()
-                    } else {
-                        selectedEmployer = it
-                    }
-                },
-                itemToString = { it?.employerName ?: "Add new employer" },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            SimpleDropdownField(
-                label = stringResource(R.string.extra_type),
-                items = extraTypes + null, // null represents "Add a new extra type"
-                selectedItem = selectedExtraType,
-                onItemSelected = {
-                    if (it == null) {
-                        selectedEmployer?.let { employer ->
-                            onAddNewExtraType(employer)
-                        }
-                    } else {
-                        selectedExtraType = it
-                    }
-                },
-                itemToString = { it?.wetName ?: "Add a new extra type" },
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = ELEMENT_SPACING)
-            )
+                    .padding(vertical = SCREEN_PADDING_VERTICAL),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+                ) {
+                    SimpleDropdownField(
+                        label = stringResource(R.string.employer),
+                        items = employers + null, // null represents "Add new employer"
+                        selectedItem = selectedEmployer,
+                        onItemSelected = {
+                            if (it == null) {
+                                onAddNewEmployer()
+                            } else {
+                                selectedEmployer = it
+                            }
+                        },
+                        itemToString = { it?.employerName ?: "Add new employer" },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    SimpleDropdownField(
+                        label = stringResource(R.string.extra_type),
+                        items = extraTypes + null, // null represents "Add a new extra type"
+                        selectedItem = selectedExtraType,
+                        onItemSelected = {
+                            if (it == null) {
+                                selectedEmployer?.let { employer ->
+                                    onAddNewExtraType(employer)
+                                }
+                            } else {
+                                selectedExtraType = it
+                            }
+                        },
+                        itemToString = { it?.wetName ?: "Add a new extra type" },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
 
             selectedExtraType?.let { extraType ->
                 ExtraTypeInfoCard(

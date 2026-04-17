@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -23,7 +24,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -94,7 +100,67 @@ fun WorkOrderHistoryUpdateScreen(
     // Actions
     onDone: () -> Unit,
     onBack: () -> Unit,
+    onUpdateWorkPerformed: (WorkOrderHistoryWorkPerformedCombined) -> Unit,
 ) {
+    var showWorkPerformedDialog by remember { mutableStateOf(false) }
+    var selectedWorkPerformed by remember {
+        mutableStateOf<WorkOrderHistoryWorkPerformedCombined?>(
+            null
+        )
+    }
+
+    if (showWorkPerformedDialog && selectedWorkPerformed != null) {
+        AlertDialog(
+            onDismissRequest = { showWorkPerformedDialog = false },
+            title = { Text(stringResource(R.string.work_performed_options)) },
+            text = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+                ) {
+                    Text(selectedWorkPerformed!!.workPerformed.wpDescription)
+                    Button(
+                        onClick = {
+                            onWorkPerformedItemClick(
+                                selectedWorkPerformed!!,
+                                1
+                            ) // 1 for Change Description
+                            showWorkPerformedDialog = false
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(R.string.change_description))
+                    }
+                    Button(
+                        onClick = {
+                            onUpdateWorkPerformed(selectedWorkPerformed!!)
+                            showWorkPerformedDialog = false
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(R.string.update_in_history))
+                    }
+                    Button(
+                        onClick = {
+                            onWorkPerformedItemClick(selectedWorkPerformed!!, 0) // 0 for Delete
+                            showWorkPerformedDialog = false
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text(stringResource(R.string.delete))
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showWorkPerformedDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
@@ -326,7 +392,10 @@ fun WorkOrderHistoryUpdateScreen(
                     WorkPerformedItem(
                         item = item,
                         index = workPerformedActualList.indexOf(item),
-                        onClick = { onWorkPerformedItemClick(item, it) }
+                        onClick = {
+                            selectedWorkPerformed = item
+                            showWorkPerformedDialog = true
+                        }
                     )
                 }
             }

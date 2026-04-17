@@ -9,6 +9,7 @@ import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paycalculator.common.TABLE_EMPLOYERS
+import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_DATE_EXTRAS
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_EXTRA_TYPES
 
@@ -30,7 +31,8 @@ interface WorkExtraDao {
 
     @Query(
         "SELECT * FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
-                "WHERE weEmployerId = :employerId "
+                "WHERE weEmployerId = :employerId " +
+                "AND weIsDeleted = 0"
     )
     fun getWorkExtraDefinitions(employerId: Long):
             LiveData<List<WorkExtrasDefinitions>>
@@ -61,6 +63,8 @@ interface WorkExtraDao {
                 "$TABLE_WORK_EXTRA_TYPES.workExtraTypeId " +
                 "WHERE $TABLE_WORK_EXTRAS_DEFINITIONS.weEmployerId = :employerId " +
                 "AND $TABLE_WORK_EXTRAS_DEFINITIONS.weExtraTypeId = :extraTypeId " +
+                "AND $TABLE_WORK_EXTRAS_DEFINITIONS.weIsDeleted = 0 " +
+                "AND ($TABLE_WORK_EXTRA_TYPES.wetIsDeleted = 0 OR $TABLE_WORK_EXTRA_TYPES.wetIsDeleted IS NULL) " +
                 "ORDER BY $TABLE_WORK_EXTRAS_DEFINITIONS.weEffectiveDate DESC "
     )
     fun getActiveExtraDefinitionsFull(
@@ -81,6 +85,7 @@ interface WorkExtraDao {
     @Query(
         "SELECT * FROM $TABLE_WORK_EXTRA_TYPES " +
                 "WHERE wetEmployerId = :employerId " +
+                "AND wetIsDeleted = 0 " +
                 "ORDER BY wetName COLLATE NOCASE"
     )
     fun getExtraDefTypes(employerId: Long): LiveData<List<WorkExtraTypes>>
@@ -94,8 +99,17 @@ interface WorkExtraDao {
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
+        "UPDATE $TABLE_WORK_EXTRA_TYPES " +
+                "SET wetIsDeleted = 1, " +
+                "wetUpdateTime = :updateTime " +
+                "WHERE workExtraTypeId = :id"
+    )
+    suspend fun deleteWorkExtraType(id: Long, updateTime: String)
+
+    @Query(
         "SELECT * FROM $TABLE_WORK_EXTRA_TYPES " +
                 "WHERE wetEmployerId = :employerId " +
+                "AND wetIsDeleted = 0 " +
                 "ORDER BY wetName COLLATE NOCASE"
     )
     fun getWorkExtraTypeList(employerId: Long): LiveData<List<WorkExtraTypes>>
@@ -213,8 +227,17 @@ interface WorkExtraDao {
     suspend fun updateWorkDateExtra(extra: WorkDateExtras)
 
     @Query(
+        "UPDATE $TABLE_WORK_DATE_EXTRAS " +
+                "SET wdeIsDeleted = 1, " +
+                "wdeUpdateTime = :updateTime " +
+                "WHERE workDateExtraId = :id"
+    )
+    suspend fun deleteWorkDateExtra(id: Long, updateTime: String)
+
+    @Query(
         "SELECT * FROM workDateExtras " +
-                "WHERE wdeWorkDateId = :workDateId "
+                "WHERE wdeWorkDateId = :workDateId " +
+                "AND wdeIsDeleted = 0"
     )
     fun getWorkDateExtras(workDateId: Long): LiveData<List<WorkDateExtras>>
 

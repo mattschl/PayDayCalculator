@@ -101,6 +101,7 @@ interface PayDetailDao {
     @Query(
         "SELECT * FROM workDateExtras " +
                 "WHERE wdeWorkDateId = :workDateId " +
+                "AND wdeIsDeleted = 0 " +
                 "ORDER BY wdeName"
     )
     fun getCustomWorkDateExtras(workDateId: Long): List<WorkDateExtras>
@@ -117,6 +118,7 @@ interface PayDetailDao {
                 ") ON workExtraTypeId = weExtraTypeId " +
                 "WHERE wetEmployerId = :employerId " +
                 "AND wetAttachTo = :attachTo " +
+                "AND wetIsDeleted = 0 " +
                 "GROUP BY wetName " +
                 "ORDER BY wetAppliesTo, wetName"
     )
