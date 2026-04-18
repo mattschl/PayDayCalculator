@@ -16,11 +16,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +43,7 @@ import ms.mattschlenkrich.paycalculator.workorder.TimeTypeRadioButton
 import ms.mattschlenkrich.paycalculator.workorder.TimeWorkedItem
 import java.util.Calendar
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkDateTimesScreen(
     infoText: String,
@@ -68,6 +71,16 @@ fun WorkDateTimesScreen(
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "WorkDateTimesScreen", // title,
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onDoneClick,

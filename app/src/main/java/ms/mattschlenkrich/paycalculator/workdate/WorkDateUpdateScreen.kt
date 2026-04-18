@@ -21,12 +21,14 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +46,7 @@ import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextFiel
 import ms.mattschlenkrich.paycalculator.data.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryWithDates
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkDateUpdateScreen(
     dateText: String,
@@ -75,6 +78,16 @@ fun WorkDateUpdateScreen(
     Scaffold(
         modifier = Modifier.imePadding(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "WorkDateUpdateScreen", // title,
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onDoneClick,

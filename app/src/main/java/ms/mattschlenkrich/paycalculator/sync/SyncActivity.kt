@@ -262,7 +262,7 @@ class SyncActivity : ComponentActivity() {
                         if (walShmFile.exists()) {
                             helper.uploadFile(
                                 localFile = walShmFile,
-                                mimeType = "application/octet-stream",
+                                mimeType = "application/x-sqlite3",
                                 driveFileName = "$driveFileName$suffix",
                                 folderId = targetFolderId
                             )

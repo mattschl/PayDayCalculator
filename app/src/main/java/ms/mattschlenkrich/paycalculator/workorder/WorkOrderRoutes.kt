@@ -12,13 +12,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
@@ -92,61 +90,30 @@ fun WorkOrderHistoryAddRoute(
             navController.navigate(Screen.WorkOrderLookup.route)
         },
         onWorkOrderAddEdit = { number, reg, ot, dbl, nt, exists ->
+            mainViewModel.setTempWorkOrderHistoryInfo(
+                ms.mattschlenkrich.paycalculator.data.TempWorkOrderHistoryInfo(
+                    0L,
+                    number,
+                    workDate.wdDate,
+                    reg.toDoubleOrNull() ?: 0.0,
+                    ot.toDoubleOrNull() ?: 0.0,
+                    dbl.toDoubleOrNull() ?: 0.0,
+                    nt,
+                    "",
+                    "",
+                    "",
+                    0.0,
+                    ""
+                )
+            )
             if (!exists) {
-                coroutineScope.launch {
-                    val newWo = ms.mattschlenkrich.paycalculator.data.WorkOrder(
-                        nf.generateRandomIdAsLong(),
-                        number,
-                        workDate.wdEmployerId,
-                        "", // Address
-                        "", // Description
-                        false,
-                        df.getCurrentTimeAsString()
-                    )
-                    workOrderViewModel.insertWorkOrder(newWo)
-                    delay(WAIT_250)
-                    val history = ms.mattschlenkrich.paycalculator.data.WorkOrderHistory(
-                        nf.generateRandomIdAsLong(),
-                        newWo.workOrderId,
-                        workDate.workDateId,
-                        reg.toDoubleOrNull() ?: 0.0,
-                        ot.toDoubleOrNull() ?: 0.0,
-                        dbl.toDoubleOrNull() ?: 0.0,
-                        nt,
-                        false,
-                        df.getCurrentTimeAsString()
-                    )
-                    workOrderViewModel.insertWorkOrderHistory(history)
-                    mainViewModel.setWorkOrderHistory(history)
-                    mainViewModel.setTempWorkOrderHistoryInfo(null)
-                    mainViewModel.setWorkOrder(null)
-                    navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
-                        popUpTo(Screen.WorkOrderHistoryAdd.route) { inclusive = true }
-                    }
-                }
+                mainViewModel.setWorkOrderNumber(number)
+                navController.navigate(Screen.WorkOrderAdd.route)
             } else {
                 val wo = workOrderList.find { it.woNumber == number }
                 if (wo != null) {
-                    coroutineScope.launch {
-                        val history = ms.mattschlenkrich.paycalculator.data.WorkOrderHistory(
-                            nf.generateRandomIdAsLong(),
-                            wo.workOrderId,
-                            workDate.workDateId,
-                            reg.toDoubleOrNull() ?: 0.0,
-                            ot.toDoubleOrNull() ?: 0.0,
-                            dbl.toDoubleOrNull() ?: 0.0,
-                            nt,
-                            false,
-                            df.getCurrentTimeAsString()
-                        )
-                        workOrderViewModel.insertWorkOrderHistory(history)
-                        mainViewModel.setWorkOrderHistory(history)
-                        mainViewModel.setTempWorkOrderHistoryInfo(null)
-                        mainViewModel.setWorkOrder(null)
-                        navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
-                            popUpTo(Screen.WorkOrderHistoryAdd.route) { inclusive = true }
-                        }
-                    }
+                    mainViewModel.setWorkOrder(wo)
+                    navController.navigate(Screen.WorkOrderUpdate.route)
                 }
             }
         },
@@ -231,6 +198,8 @@ fun WorkOrderHistoryUpdateRoute(
     val materialActualList by workOrderViewModel.getMaterialsByHistory(history.woHistoryId)
         .observeAsState(emptyList())
 
+    val isWorkOrderValid = workOrderList.any { it.woNumber == workOrderNumber }
+
     WorkOrderHistoryUpdateScreen(
         title = stringResource(R.string.update_work_order),
         workDateDisplay = df.getDisplayDate(workDate.wdDate),
@@ -242,20 +211,28 @@ fun WorkOrderHistoryUpdateRoute(
             workOrderNumber = wo.woNumber
             workOrderDescription = wo.woDescription
         },
-        onWorkOrderLongClick = { /* TODO */ },
-        workOrderDescription = workOrderDescription,
-        onWorkOrderButtonClick = {
-            coroutineScope.launch {
-                workOrderViewModel.updateWorkOrder(
-                    historyWithDates!!.workOrder.copy(
-                        woNumber = workOrderNumber,
-                        woDescription = workOrderDescription,
-                        woUpdateTime = df.getCurrentTimeAsString()
-                    )
-                )
+        onWorkOrderLongClick = {
+            val wo = workOrderList.find { it.woNumber == workOrderNumber }
+            if (wo != null) {
+                mainViewModel.setWorkOrder(wo)
+                navController.navigate(Screen.WorkOrderUpdate.route)
             }
         },
-        workOrderButtonText = stringResource(R.string.update_work_order),
+        workOrderDescription = workOrderDescription,
+        onWorkOrderButtonClick = {
+            if (isWorkOrderValid) {
+                val wo = workOrderList.find { it.woNumber == workOrderNumber }
+                if (wo != null) {
+                    mainViewModel.setWorkOrder(wo)
+                    navController.navigate(Screen.WorkOrderUpdate.route)
+                }
+            } else {
+                mainViewModel.setWorkOrderNumber(workOrderNumber)
+                navController.navigate(Screen.WorkOrderAdd.route)
+            }
+        },
+        workOrderButtonText = if (isWorkOrderValid) stringResource(R.string.edit)
+        else stringResource(R.string.create),
         regHours = regHours,
         onRegHoursChange = { regHours = it },
         otHours = otHours,
@@ -414,7 +391,8 @@ fun AreaViewRoute(
         onAreaClick = { area ->
             mainViewModel.setAreaId(area.areaId)
             navController.navigate(Screen.AreaUpdate.route)
-        }
+        },
+        onBackClick = { navController.popBackStack() }
     )
 }
 
@@ -470,6 +448,9 @@ fun AreaUpdateRoute(
             },
             onCancelClick = {
                 navController.popBackStack()
+            },
+            onBackClick = {
+                navController.popBackStack()
             }
         )
     }
@@ -495,7 +476,8 @@ fun JobSpecViewRoute(
         onJobSpecClick = { js ->
             mainViewModel.setJobSpecId(js.jobSpecId)
             navController.navigate(Screen.JobSpecUpdate.route)
-        }
+        },
+        onBackClick = { navController.popBackStack() }
     )
 }
 
@@ -667,7 +649,8 @@ fun MaterialViewRoute(
         onMaterialClick = { material ->
             mainViewModel.setMaterial(material)
             navController.navigate(Screen.MaterialUpdate.route)
-        }
+        },
+        onBackClick = { navController.popBackStack() }
     )
 }
 
@@ -943,7 +926,8 @@ fun WorkOrderViewRoute(
             mainViewModel.setWorkOrder(it)
             navController.navigate(Screen.WorkOrderUpdate.route)
         },
-        onAddNewWorkOrderClick = { navController.navigate(Screen.WorkOrderAdd.route) }
+        onAddNewWorkOrderClick = { navController.navigate(Screen.WorkOrderAdd.route) },
+        onBackClick = { navController.popBackStack() }
     )
 }
 
@@ -966,7 +950,8 @@ fun WorkOrderAddRoute(
             currentEmployer
         )
     }
-    var woNumber by remember { mutableStateOf("") }
+    val initialWoNumber = mainViewModel.getWorkOrderNumber() ?: ""
+    var woNumber by remember { mutableStateOf(initialWoNumber) }
     var address by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
 
@@ -995,11 +980,15 @@ fun WorkOrderAddRoute(
                         df.getCurrentTimeAsString()
                     )
                     workOrderViewModel.insertWorkOrder(newWo)
+                    mainViewModel.setWorkOrderNumber(null)
                     navController.popBackStack()
                 }
             }
         },
-        onBackClick = { navController.popBackStack() }
+        onBackClick = {
+            mainViewModel.setWorkOrderNumber(null)
+            navController.popBackStack()
+        }
     )
 }
 
@@ -1118,7 +1107,8 @@ fun WorkOrderUpdateRoute(
                 )
                 navController.popBackStack()
             }
-        }
+        },
+        onBackClick = { navController.popBackStack() }
     )
 }
 
@@ -1170,7 +1160,8 @@ fun WorkPerformedViewRoute(
         onWorkPerformedClick = { wp ->
             mainViewModel.setWorkPerformedId(wp.workPerformedId)
             navController.navigate(Screen.WorkPerformedUpdate.route)
-        }
+        },
+        onBackClick = { navController.popBackStack() }
     )
 }
 
@@ -1391,7 +1382,8 @@ fun WorkOrderHistoryMaterialUpdateRoute(
                 }
                 navController.popBackStack()
             }
-        }
+        },
+        onBackClick = { navController.popBackStack() }
     )
 }
 
@@ -1559,7 +1551,8 @@ fun WorkOrderHistoryTimeRoute(
         onTimeClick = { combined ->
             mainViewModel.setWorkOrderHistoryTimeWorkedCombined(combined)
             navController.navigate(Screen.WorkOrderHistoryTimeUpdate.route)
-        }
+        },
+        onBackClick = { navController.popBackStack() }
     )
 }
 

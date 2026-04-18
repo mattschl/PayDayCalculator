@@ -21,6 +21,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -28,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +53,7 @@ import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.data.EmployerTaxTypes
 import ms.mattschlenkrich.paycalculator.data.WorkExtraTypes
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmployerScreen(
     isUpdate: Boolean,
@@ -81,6 +84,11 @@ fun EmployerScreen(
     val df = DateFunctions()
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("EmployerScreen") } // stringResource(if (isUpdate) R.string.update_employer else R.string.add_employer)
+            )
+        },
         modifier = Modifier.imePadding(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
@@ -193,7 +201,18 @@ fun EmployerScreen(
                         ) {
                             Text(stringResource(R.string.view_or_edit_wages))
                         }
+
+                        Button(
+                            onClick = onDeleteClick,
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error
+                            )
+                        ) {
+                            Text(stringResource(R.string.delete))
+                        }
                     }
+
                 }
             }
 

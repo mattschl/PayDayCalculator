@@ -530,6 +530,7 @@
     <string name="add_new_work_performed">Confirm Add new work performed description</string>
     <string name="the_description_does_not_exist_would_you_like_to_add_it">The description \"%1$s\" does not exist. Would you like to add it?</string>
     <string name="this_work_performed_child_already_exists">This work Performed Child already exists</string>
+    <string name="back">Back</string>
     <string name="marge_material">Merge Material</string>
     <string name="add_new_material">Add New Material</string>
     <string name="master_material">Master Material</string>
