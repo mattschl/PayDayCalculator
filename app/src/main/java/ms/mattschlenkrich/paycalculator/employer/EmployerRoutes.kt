@@ -69,7 +69,7 @@ fun EmployerAddRoute(
                             midMonthDate.toIntOrNull() ?: 0,
                             mainMonthDate.toIntOrNull() ?: 0,
                             false,
-                            df.getCurrentTimeAsString()
+                            df.getCurrentUTCTimeAsString()
                         )
                         coroutineScope.launch {
                             employerViewModel.insertEmployer(curEmployer)
@@ -225,7 +225,7 @@ fun EmployerUpdateRoute(
                     workTaxViewModel.updateEmployerTaxType(
                         tax.copy(
                             etrInclude = include,
-                            etrUpdateTime = df.getCurrentTimeAsString()
+                            etrUpdateTime = df.getCurrentUTCTimeAsString()
                         )
                     )
                 }
@@ -324,7 +324,7 @@ fun EmployerUpdateRoute(
             onDeleteClick = {
                 val deletedEmployer = currentEmployer.copy(
                     employerIsDeleted = true,
-                    employerUpdateTime = df.getCurrentTimeAsString()
+                    employerUpdateTime = df.getCurrentUTCTimeAsString()
                 )
                 employerViewModel.updateEmployer(deletedEmployer)
                 navController.popBackStack()
@@ -358,7 +358,7 @@ private fun getCurrentEmployer(
         midMonthDate.toIntOrNull() ?: 0,
         mainMonthDate.toIntOrNull() ?: 0,
         false,
-        df.getCurrentTimeAsString()
+        df.getCurrentUTCTimeAsString()
     )
 }
 
@@ -393,7 +393,7 @@ private fun addEmployerTaxRules(
                     etrTaxType = it.taxType,
                     etrInclude = true,
                     etrIsDeleted = false,
-                    etrUpdateTime = df.getCurrentTimeAsString()
+                    etrUpdateTime = df.getCurrentUTCTimeAsString()
                 )
             )
         }

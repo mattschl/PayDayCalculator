@@ -212,6 +212,32 @@ interface WorkOrderDao {
 //    @Delete
 //    suspend fun deleteTimeWorked(timeWorked: WorkOrderHistoryTimeWorked)
 
+    @Query(
+        "SELECT * FROM workOrderHistoryTimeWorked " +
+                "WHERE wohtHistoryId = :historyId " +
+                "AND wohtIsDeleted = 0"
+    )
+    suspend fun getTimeWorkedForWorkOrderHistorySync(historyId: Long): List<WorkOrderHistoryTimeWorked>
+
+    @Query(
+        "SELECT * FROM workOrderHistory " +
+                "WHERE woHistoryWorkDateId = :workDateId " +
+                "AND woHistoryDeleted = 0"
+    )
+    suspend fun getWorkOrderHistoriesByDateSync(workDateId: Long): List<WorkOrderHistory>
+
+    @Query(
+        "SELECT * FROM workOrderHistory " +
+                "WHERE woHistoryId = :historyId"
+    )
+    suspend fun getWorkOrderHistorySync(historyId: Long): WorkOrderHistory?
+
+    @Query(
+        "SELECT * FROM workOrderHistoryTimeWorked " +
+                "WHERE woHistoryTimeWorkedId = :timeWorkedId"
+    )
+    suspend fun getTimeWorkedSync(timeWorkedId: Long): WorkOrderHistoryTimeWorked?
+
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(

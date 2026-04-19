@@ -207,7 +207,7 @@ class WorkTimes(
                 dblOtHrs,
                 histories.first().workOrderHistory.workOrderHistory.woHistoryNote,
                 false,
-                df.getCurrentTimeAsString()
+                df.getCurrentUTCTimeAsString()
             )
         }
         return null

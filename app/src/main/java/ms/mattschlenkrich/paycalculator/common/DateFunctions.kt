@@ -4,6 +4,7 @@ import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.TimeZone
 import kotlin.math.pow
 import kotlin.math.round
 
@@ -17,6 +18,12 @@ class DateFunctions {
 
     fun getCurrentTimeAsString(): String {
         return timeFormatter.format(Calendar.getInstance().time)
+    }
+
+    fun getCurrentUTCTimeAsString(): String {
+        val formatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
+        formatter.timeZone = TimeZone.getTimeZone("UTC")
+        return formatter.format(Calendar.getInstance().time)
     }
 
     fun getCurrentDateAsString(): String {

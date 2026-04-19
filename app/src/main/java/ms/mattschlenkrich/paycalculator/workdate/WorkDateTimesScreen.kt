@@ -64,7 +64,8 @@ fun WorkDateTimesScreen(
     onEnterTimeClick: () -> Unit,
     onDoneClick: () -> Unit,
     existingTimes: List<WorkOrderHistoryTimeWorkedCombined>,
-    onTimeClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit
+    onTimeClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit,
+    workOrderError: String? = null,
 ) {
     val df = DateFunctions()
     val nf = NumberFunctions()
@@ -75,7 +76,7 @@ fun WorkDateTimesScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "WorkDateTimesScreen", // title,
+                        text = stringResource(R.string.enter_work_time),
                         style = MaterialTheme.typography.titleLarge,
                     )
                 }
@@ -131,7 +132,8 @@ fun WorkDateTimesScreen(
                         label = stringResource(R.string.work_order),
                         suggestions = workOrderSuggestions,
                         onItemSelected = { onWorkOrderNumberChange(it) },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        isError = workOrderError != null
                     )
 
                     Button(
@@ -140,6 +142,14 @@ fun WorkDateTimesScreen(
                     ) {
                         Text(workOrderButtonText)
                     }
+                }
+
+                if (workOrderError != null) {
+                    Text(
+                        text = workOrderError,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
 
                 if (workOrderInfoText.isNotEmpty()) {

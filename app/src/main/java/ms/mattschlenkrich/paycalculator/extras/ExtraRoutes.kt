@@ -81,7 +81,7 @@ fun PayPeriodExtraUpdateRoute(
             payDayViewModel.updatePayPeriodExtra(
                 extra.copy(
                     ppeIsDeleted = true,
-                    ppeUpdateTime = DateFunctions().getCurrentTimeAsString()
+                    ppeUpdateTime = DateFunctions().getCurrentUTCTimeAsString()
                 )
             )
             navController.popBackStack()
@@ -128,7 +128,7 @@ fun ExtraRoute(
             workExtraViewModel.deleteWorkExtraDefinition(
                 definition.definition.workExtraDefId,
                 DateFunctions()
-                    .getCurrentTimeAsString()
+                    .getCurrentUTCTimeAsString()
             )
         }
     )
@@ -156,7 +156,7 @@ fun EmployerExtraDefinitionsAddRoute(
                         .getCurrentDateAsString(),
                     weIsDeleted = false,
                     weUpdateTime = DateFunctions()
-                        .getCurrentTimeAsString()
+                        .getCurrentUTCTimeAsString()
                 ),
                 employer = curEmployer,
                 extraType = curExtraType
@@ -189,7 +189,7 @@ fun EmployerExtraDefinitionUpdateRoute(
             workExtraViewModel.deleteWorkExtraDefinition(
                 definition.workExtraDefId,
                 DateFunctions()
-                    .getCurrentTimeAsString()
+                    .getCurrentUTCTimeAsString()
             )
             navController.popBackStack()
         },
@@ -260,7 +260,7 @@ fun WorkExtraTypeUpdateRoute(
                         extraTypeToDelete.wetIsCredit,
                         extraTypeToDelete.wetIsDefault,
                         true,
-                        DateFunctions().getCurrentTimeAsString()
+                        DateFunctions().getCurrentUTCTimeAsString()
                     )
                 )
                 navController.popBackStack()
@@ -327,7 +327,7 @@ fun WorkDateExtraUpdateRoute(
             payDayViewModel.updateWorkDateExtra(
                 extra.copy(
                     wdeIsDeleted = true,
-                    wdeUpdateTime = DateFunctions().getCurrentTimeAsString()
+                    wdeUpdateTime = DateFunctions().getCurrentUTCTimeAsString()
                 )
             )
             navController.popBackStack()

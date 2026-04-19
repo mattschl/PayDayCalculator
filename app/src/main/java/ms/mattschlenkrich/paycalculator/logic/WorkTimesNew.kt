@@ -7,17 +7,17 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.common.WAIT_100
-import ms.mattschlenkrich.paycalculator.data.WorkDates
 import ms.mattschlenkrich.paycalculator.data.TimeWorkedByDay
+import ms.mattschlenkrich.paycalculator.data.WorkDates
 import ms.mattschlenkrich.paycalculator.data.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryCombined
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorkedCombined
-import ms.mattschlenkrich.paycalculator.MainActivity
 import java.util.Calendar
 
 class WorkTimesNew(
@@ -185,7 +185,7 @@ class WorkTimesNew(
             dblOtHrs,
             histories.first().workOrderHistory.workOrderHistory.woHistoryNote,
             false,
-            df.getCurrentTimeAsString()
+            df.getCurrentUTCTimeAsString()
         )
     }
 

@@ -31,7 +31,7 @@ class EmployerObj {
             midMonthlyDate.toInt(),
             mainMonthlyDate.toInt(),
             employerIsDeleted,
-            df.getCurrentTimeAsString()
+            df.getCurrentUTCTimeAsString()
         )
     }
 

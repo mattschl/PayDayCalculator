@@ -106,7 +106,7 @@ fun EmployerPayRateAddRoute(
                         selectedFrequency.ordinal,
                         nf.getDoubleFromDollars(wage),
                         false,
-                        df.getCurrentTimeAsString()
+                        df.getCurrentUTCTimeAsString()
                     )
                 )
                 navController.popBackStack()
@@ -166,7 +166,7 @@ fun EmployerPayRateUpdateRoute(
                         eprEffectiveDate = effectiveDate,
                         eprPayRate = nf.getDoubleFromDollars(wage),
                         eprPerPeriod = selectedFrequency.ordinal,
-                        eprUpdateTime = df.getCurrentTimeAsString()
+                        eprUpdateTime = df.getCurrentUTCTimeAsString()
                     )
                 )
                 navController.popBackStack()
@@ -176,7 +176,7 @@ fun EmployerPayRateUpdateRoute(
             employerViewModel.updatePayRate(
                 payRate.copy(
                     eprIsDeleted = true,
-                    eprUpdateTime = df.getCurrentTimeAsString()
+                    eprUpdateTime = df.getCurrentUTCTimeAsString()
                 )
             )
             navController.popBackStack()

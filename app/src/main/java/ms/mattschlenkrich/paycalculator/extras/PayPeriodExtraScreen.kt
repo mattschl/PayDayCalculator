@@ -322,7 +322,7 @@ private fun performSave(
             ppeIsFixed = isFixed,
             ppeIsCredit = isCredit,
             ppeIsDeleted = false,
-            ppeUpdateTime = df.getCurrentTimeAsString()
+            ppeUpdateTime = df.getCurrentUTCTimeAsString()
         )
     )
 }

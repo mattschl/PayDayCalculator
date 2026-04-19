@@ -124,7 +124,10 @@ fun TaxRoute(
                     }"
                     workTaxViewModel.insertEffectiveDate(
                         TaxEffectiveDates(
-                            display, nf.generateRandomIdAsLong(), false, df.getCurrentTimeAsString()
+                            display,
+                            nf.generateRandomIdAsLong(),
+                            false,
+                            df.getCurrentUTCTimeAsString()
                         )
                     )
                 }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
@@ -381,12 +384,12 @@ fun TaxTypeAddRoute(
                     taxTypeState.trim(),
                     selectedBasedOn,
                     false,
-                    df.getCurrentTimeAsString()
+                    df.getCurrentUTCTimeAsString()
                 )
                 workTaxViewModel.insertTaxTypeWithEmployerLinks(
                     taxType,
                     employers,
-                    df.getCurrentTimeAsString()
+                    df.getCurrentUTCTimeAsString()
                 )
                 savedTaxType = taxType
                 showNextStepDialog = true
@@ -435,7 +438,7 @@ fun TaxTypeUpdateRoute(
                 val updatedTaxType = curTaxType.copy(
                     taxType = taxTypeState,
                     ttBasedOn = selectedBasedOn,
-                    ttUpdateTime = df.getCurrentTimeAsString()
+                    ttUpdateTime = df.getCurrentUTCTimeAsString()
                 )
                 workTaxViewModel.updateWorkTaxType(updatedTaxType)
                 navController.popBackStack()
@@ -450,7 +453,7 @@ fun TaxTypeUpdateRoute(
         onDeleteClick = {
             val deletedTaxType = curTaxType.copy(
                 ttIsDeleted = true,
-                ttUpdateTime = df.getCurrentTimeAsString()
+                ttUpdateTime = df.getCurrentUTCTimeAsString()
             )
             workTaxViewModel.updateWorkTaxType(deletedTaxType)
             navController.popBackStack()
@@ -515,7 +518,7 @@ fun TaxRuleAddRoute(
                     hasUpperLimit,
                     if (hasUpperLimit) nf.getDoubleFromDollars(upperLimit) else 0.0,
                     false,
-                    df.getCurrentTimeAsString()
+                    df.getCurrentUTCTimeAsString()
                 )
                 workTaxViewModel.insertTaxRule(taxRule)
                 navController.popBackStack()
@@ -585,7 +588,7 @@ fun TaxRuleUpdateRoute(
                     wtExemptionAmount = nf.getDoubleFromDollars(exemptionAmount),
                     wtHasBracket = hasUpperLimit,
                     wtBracketAmount = nf.getDoubleFromDollars(upperLimit),
-                    wtUpdateTime = df.getCurrentTimeAsString()
+                    wtUpdateTime = df.getCurrentUTCTimeAsString()
                 )
                 workTaxViewModel.updateTaxRule(updatedTaxRule)
                 navController.popBackStack()
@@ -600,7 +603,7 @@ fun TaxRuleUpdateRoute(
         onDeleteClick = {
             val deletedTaxRule = curTaxRule.copy(
                 wtIsDeleted = true,
-                wtUpdateTime = df.getCurrentTimeAsString()
+                wtUpdateTime = df.getCurrentUTCTimeAsString()
             )
             workTaxViewModel.updateTaxRule(deletedTaxRule)
             navController.popBackStack()

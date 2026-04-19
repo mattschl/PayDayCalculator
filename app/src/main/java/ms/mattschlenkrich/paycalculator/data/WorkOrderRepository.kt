@@ -75,7 +75,7 @@ class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun deleteWorkOrderHistory(historyId: Long) =
         db.getWorkOrderDao().deleteWorkOrderHistory(
             historyId,
-            DateFunctions().getCurrentTimeAsString()
+            DateFunctions().getCurrentUTCTimeAsString()
         )
 
     fun getWorkOrderHistoriesByDate(workDateId: Long) =
@@ -90,14 +90,118 @@ class WorkOrderRepository(private val db: PayDatabase) {
     fun getWorkOrderHistoryCombined(historyId: Long) =
         db.getWorkOrderDao().getWorkOrderHistoryCombined(historyId)
 
-    suspend fun insertTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
+    suspend fun getTimeWorkedSync(timeWorkedId: Long) =
+        db.getWorkOrderDao().getTimeWorkedSync(timeWorkedId)
+
+    suspend fun updateWorkOrderHistory(
+        historyId: Long,
+        regHours: Double,
+        otHours: Double,
+        dblOtHours: Double,
+        updateTime: String
+    ) {
+        val history = db.getWorkOrderDao().getWorkOrderHistorySync(historyId)
+        if (history != null) {
+            if (regHours > history.woHistoryRegHours ||
+                otHours > history.woHistoryOtHours ||
+                dblOtHours > history.woHistoryDblOtHours
+            ) {
+                db.getWorkOrderDao().updateWorkOrderHistory(
+                    historyId,
+                    history.woHistoryWorkOrderId,
+                    history.woHistoryWorkDateId,
+                    maxOf(regHours, history.woHistoryRegHours),
+                    maxOf(otHours, history.woHistoryOtHours),
+                    maxOf(dblOtHours, history.woHistoryDblOtHours),
+                    history.woHistoryNote,
+                    history.woHistoryDeleted,
+                    updateTime
+                )
+            }
+        }
+    }
+
+    suspend fun updateWorkDate(
+        workDateId: Long,
+        regHours: Double,
+        otHours: Double,
+        dblOtHours: Double,
+        updateTime: String
+    ) {
+        val workDate = db.getPayDayDao().getWorkDateSync(workDateId)
+        if (workDate != null) {
+            if (regHours > workDate.wdRegHours ||
+                otHours > workDate.wdOtHours ||
+                dblOtHours > workDate.wdDblOtHours
+            ) {
+                db.getPayDayDao().updateWorkDates(
+                    workDateId,
+                    workDate.wdPayPeriodId,
+                    workDate.wdEmployerId,
+                    workDate.wdCutoffDate,
+                    workDate.wdDate,
+                    maxOf(regHours, workDate.wdRegHours),
+                    maxOf(otHours, workDate.wdOtHours),
+                    maxOf(dblOtHours, workDate.wdDblOtHours),
+                    workDate.wdStatHours,
+                    workDate.wdIsDeleted,
+                    updateTime
+                )
+            }
+        }
+    }
+
+    suspend fun synchronizeHours(historyId: Long) {
+        val updateTime = DateFunctions().getCurrentUTCTimeAsString()
+        val times = db.getWorkOrderDao().getTimeWorkedForWorkOrderHistorySync(historyId)
+        var totalReg = 0.0
+        var totalOt = 0.0
+        var totalDbl = 0.0
+
+        for (time in times) {
+            val hours = DateFunctions().getTimeWorked(time.wohtStartTime, time.wohtEndTime)
+            when (time.wohtTimeType) {
+                ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.REG_HOURS.value -> totalReg += hours
+                ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.OT_HOURS.value -> totalOt += hours
+                ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.DBL_OT_HOURS.value -> totalDbl += hours
+            }
+        }
+
+        updateWorkOrderHistory(historyId, totalReg, totalOt, totalDbl, updateTime)
+
+        val history = db.getWorkOrderDao().getWorkOrderHistorySync(historyId)
+        if (history != null) {
+            val dateId = history.woHistoryWorkDateId
+            val histories = db.getWorkOrderDao().getWorkOrderHistoriesByDateSync(dateId)
+            var dateReg = 0.0
+            var dateOt = 0.0
+            var dateDbl = 0.0
+            for (h in histories) {
+                dateReg += h.woHistoryRegHours
+                dateOt += h.woHistoryOtHours
+                dateDbl += h.woHistoryDblOtHours
+            }
+            updateWorkDate(dateId, dateReg, dateOt, dateDbl, updateTime)
+        }
+    }
+
+    suspend fun insertTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) {
         db.getWorkOrderDao().insertTimeWorked(timeWorked)
+        synchronizeHours(timeWorked.wohtHistoryId)
+    }
 
-    suspend fun updateTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
+    suspend fun updateTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) {
         db.getWorkOrderDao().updateTimeWorked(timeWorked)
+        synchronizeHours(timeWorked.wohtHistoryId)
+    }
 
-    suspend fun deleteTimeWorked(timeWorkedId: Long, updateTime: String) =
+    suspend fun deleteTimeWorked(timeWorkedId: Long, updateTime: String) {
+        val time = db.getWorkOrderDao().getTimeWorkedSync(timeWorkedId)
         db.getWorkOrderDao().deleteTimeWorked(timeWorkedId, updateTime)
+        if (time != null) {
+            synchronizeHours(time.wohtHistoryId)
+        }
+    }
 
 //    suspend fun deleteTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
 //        db.getWorkOrderDao().deleteTimeWorked(timeWorked)

@@ -43,6 +43,7 @@ import java.security.SecureRandom
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 private const val TAG: String = "SyncActivity"
 
@@ -246,7 +247,9 @@ class SyncActivity : ComponentActivity() {
                 val dbFile = File(dbDir, "pay.db")
                 if (dbFile.exists()) {
                     val timestamp =
-                        SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                        SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).apply {
+                            timeZone = TimeZone.getTimeZone("UTC")
+                        }.format(Date())
                     val driveFileName = "pay_${timestamp}_merged.db"
 
                     showProgress("Uploading $driveFileName...")

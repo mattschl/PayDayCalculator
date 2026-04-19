@@ -252,7 +252,7 @@ private fun insertOrUpdateExtraOnChange(
             payPeriodExtra.ppeIsFixed,
             payPeriodExtra.ppeIsCredit,
             delete,
-            df.getCurrentTimeAsString()
+            df.getCurrentUTCTimeAsString()
         )
         extraContainer.payPeriodExtra = newExtra
         payDayViewModel.updatePayPeriodExtra(newExtra)
@@ -269,7 +269,7 @@ private fun insertOrUpdateExtraOnChange(
             extraDefinitionAndType.definition.weIsFixed,
             extraDefinitionAndType.extraType.wetIsCredit,
             delete,
-            df.getCurrentTimeAsString()
+            df.getCurrentUTCTimeAsString()
         )
         extraContainer.payPeriodExtra = newExtra
         payDayViewModel.insertPayPeriodExtra(newExtra)

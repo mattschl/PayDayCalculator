@@ -130,7 +130,7 @@ fun WorkOrderHistoryAddRoute(
                         dbl.toDoubleOrNull() ?: 0.0,
                         nt,
                         false,
-                        df.getCurrentTimeAsString()
+                        df.getCurrentUTCTimeAsString()
                     )
                     workOrderViewModel.insertWorkOrderHistory(history)
                     mainViewModel.setTempWorkOrderHistoryInfo(null)
@@ -274,7 +274,7 @@ fun WorkOrderHistoryUpdateRoute(
                             workPerformedNote,
                             workPerformedActualList.size + 1,
                             false,
-                            df.getCurrentTimeAsString()
+                            df.getCurrentUTCTimeAsString()
                         )
                     )
                     workPerformed = ""
@@ -289,7 +289,7 @@ fun WorkOrderHistoryUpdateRoute(
                 coroutineScope.launch {
                     workOrderViewModel.deleteWorkOrderHistoryWorkPerformed(
                         item.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId,
-                        df.getCurrentTimeAsString()
+                        df.getCurrentUTCTimeAsString()
                     )
                 }
             }
@@ -314,7 +314,7 @@ fun WorkOrderHistoryUpdateRoute(
                             materialQty.toDoubleOrNull() ?: 1.0,
                             materialActualList.size + 1,
                             false,
-                            df.getCurrentTimeAsString()
+                            df.getCurrentUTCTimeAsString()
                         )
                     )
                     materialQty = ""
@@ -337,7 +337,7 @@ fun WorkOrderHistoryUpdateRoute(
                 coroutineScope.launch {
                     workOrderViewModel.deleteWorkOrderHistoryMaterial(
                         item.workOrderHistoryMaterialId,
-                        df.getCurrentTimeAsString()
+                        df.getCurrentUTCTimeAsString()
                     )
                 }
             }
@@ -356,7 +356,7 @@ fun WorkOrderHistoryUpdateRoute(
                             woHistoryOtHours = otHours.toDoubleOrNull() ?: 0.0,
                             woHistoryDblOtHours = dblOtHours.toDoubleOrNull() ?: 0.0,
                             woHistoryNote = note,
-                            woHistoryUpdateTime = df.getCurrentTimeAsString()
+                            woHistoryUpdateTime = df.getCurrentUTCTimeAsString()
                         )
                     )
                 }
@@ -440,7 +440,7 @@ fun AreaUpdateRoute(
                             area.areaId,
                             trimmedName,
                             false,
-                            df.getCurrentTimeAsString()
+                            df.getCurrentUTCTimeAsString()
                         )
                     )
                     navController.popBackStack()
@@ -518,7 +518,7 @@ fun JobSpecUpdateRoute(
                     workOrderViewModel.updateJobSpec(
                         js.copy(
                             jsName = trimmedName,
-                            jsUpdateTime = df.getCurrentTimeAsString()
+                            jsUpdateTime = df.getCurrentUTCTimeAsString()
                         )
                     )
                     navController.popBackStack()
@@ -586,7 +586,7 @@ fun JobSpecMergeRoute(
             coroutineScope.launch {
                 workOrderViewModel.deleteJobSpecMerged(
                     child.jobSpecMerged.jobSpecMergedId,
-                    df.getCurrentTimeAsString()
+                    df.getCurrentUTCTimeAsString()
                 )
             }
         },
@@ -606,7 +606,7 @@ fun JobSpecMergeRoute(
                             jsId,
                             childId,
                             false,
-                            df.getCurrentTimeAsString()
+                            df.getCurrentUTCTimeAsString()
                         )
                     )
                     childDescription = ""
@@ -699,7 +699,7 @@ fun MaterialUpdateRoute(
                     nf.getDoubleFromDollars(cost.trim()),
                     nf.getDoubleFromDollars(price.trim()),
                     oldMaterial.mIsDeleted,
-                    df.getCurrentTimeAsString()
+                    df.getCurrentUTCTimeAsString()
                 )
                 workOrderViewModel.updateMaterial(material)
                 mainViewModel.setMaterial(material)
@@ -714,7 +714,7 @@ fun MaterialUpdateRoute(
                     nf.getDoubleFromDollars(cost.trim()),
                     nf.getDoubleFromDollars(price.trim()),
                     oldMaterial.mIsDeleted,
-                    df.getCurrentTimeAsString()
+                    df.getCurrentUTCTimeAsString()
                 )
                 workOrderViewModel.updateMaterial(material)
                 mainViewModel.setMaterial(material)
@@ -785,7 +785,7 @@ fun MaterialMergeRoute(
             coroutineScope.launch {
                 workOrderViewModel.deleteMaterialMerged(
                     child.materialMerged.materialMergeId,
-                    df.getCurrentTimeAsString()
+                    df.getCurrentUTCTimeAsString()
                 )
             }
         },
@@ -805,7 +805,7 @@ fun MaterialMergeRoute(
                             materialId,
                             childId,
                             false,
-                            df.getCurrentTimeAsString()
+                            df.getCurrentUTCTimeAsString()
                         )
                     )
                     childDescription = ""
@@ -877,7 +877,7 @@ fun MaterialQuantityUpdateRoute(
                 workOrderViewModel.updateWorkOrderHistoryMaterial(
                     materialHistory!!.workOrderHistoryMaterial.copy(
                         wohmQuantity = qty.toDoubleOrNull() ?: 0.0,
-                        wohmUpdateTime = df.getCurrentTimeAsString()
+                        wohmUpdateTime = df.getCurrentUTCTimeAsString()
                     )
                 )
                 navController.popBackStack()
@@ -977,7 +977,7 @@ fun WorkOrderAddRoute(
                         address.trim(),
                         description.trim(),
                         false,
-                        df.getCurrentTimeAsString()
+                        df.getCurrentUTCTimeAsString()
                     )
                     workOrderViewModel.insertWorkOrder(newWo)
                     mainViewModel.setWorkOrderNumber(null)
@@ -1067,7 +1067,7 @@ fun WorkOrderUpdateRoute(
                             workPerformedNote.trim(),
                             addedJobSpecs.size + 1,
                             false,
-                            df.getCurrentTimeAsString()
+                            df.getCurrentUTCTimeAsString()
                         )
                     )
                     jobSpecText = ""
@@ -1102,7 +1102,7 @@ fun WorkOrderUpdateRoute(
                         woNumber = woNumber.trim(),
                         woAddress = address.trim(),
                         woDescription = description.trim(),
-                        woUpdateTime = df.getCurrentTimeAsString()
+                        woUpdateTime = df.getCurrentUTCTimeAsString()
                     )
                 )
                 navController.popBackStack()
@@ -1202,7 +1202,7 @@ fun WorkPerformedUpdateRoute(
                     workOrderViewModel.updateWorkPerformed(
                         wp.copy(
                             wpDescription = trimmedDescription,
-                            wpUpdateTime = df.getCurrentTimeAsString()
+                            wpUpdateTime = df.getCurrentUTCTimeAsString()
                         )
                     )
                     navController.popBackStack()
@@ -1271,7 +1271,7 @@ fun WorkPerformedMergeRoute(
             coroutineScope.launch {
                 workOrderViewModel.deleteWorkPerformedMerged(
                     child.workPerformedMerged.workPerformedMergeId,
-                    df.getCurrentTimeAsString()
+                    df.getCurrentUTCTimeAsString()
                 )
             }
         },
@@ -1291,7 +1291,7 @@ fun WorkPerformedMergeRoute(
                             wpId,
                             childId,
                             false,
-                            df.getCurrentTimeAsString()
+                            df.getCurrentUTCTimeAsString()
                         )
                     )
                     childDescription = ""
@@ -1376,7 +1376,7 @@ fun WorkOrderHistoryMaterialUpdateRoute(
                         materialHistory!!.workOrderHistoryMaterial.copy(
                             wohmMaterialId = material.materialId,
                             wohmQuantity = qty.toDoubleOrNull() ?: 0.0,
-                            wohmUpdateTime = df.getCurrentTimeAsString()
+                            wohmUpdateTime = df.getCurrentUTCTimeAsString()
                         )
                     )
                 }
@@ -1432,7 +1432,7 @@ fun WorkOrderHistoryWorkPerformedUpdateRoute(
                                 wowpWorkPerformedId = wp.workPerformedId,
                                 wowpAreaId = a?.areaId,
                                 wowpNote = note,
-                                wowpUpdateTime = df.getCurrentTimeAsString()
+                                wowpUpdateTime = df.getCurrentUTCTimeAsString()
                             )
                         )
                     }
@@ -1470,19 +1470,17 @@ fun WorkOrderHistoryTimeRoute(
     val existingTimes by workOrderViewModel.getWorkOrderHistoryTimesByHistory(history.woHistoryId)
         .observeAsState(emptyList())
 
-    var startTime by remember {
-        mutableStateOf(
-            df.getCalendarFromTime(
-                df.getCurrentTimeAsString().split(" ")[1]
-            )
-        )
+    var startTime by remember(existingTimes) {
+        if (existingTimes.isNotEmpty()) {
+            val latestTime = existingTimes.maxOf { it.timeWorked.wohtEndTime }
+            val timePart = df.splitTimeFromDateTime(latestTime).joinToString(":")
+            mutableStateOf(df.getCalendarFromTime(timePart))
+        } else {
+            mutableStateOf(df.getCalendarFromTime("08:30"))
+        }
     }
-    var endTime by remember {
-        mutableStateOf(
-            df.getCalendarFromTime(
-                df.getCurrentTimeAsString().split(" ")[1]
-            )
-        )
+    var endTime by remember(startTime) {
+        mutableStateOf(startTime.clone() as Calendar)
     }
     var selectedTimeType by remember { mutableIntStateOf(ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.REG_HOURS.value) }
 
@@ -1508,18 +1506,20 @@ fun WorkOrderHistoryTimeRoute(
         onTimeTypeChange = { selectedTimeType = it },
         onStartTimeClick = {
             TimePickerDialog(context, { _, h, m ->
+                val (roundedHour, roundedMinute) = df.roundTimeTo15Minutes(h, m)
                 val newStart = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, h)
-                    set(Calendar.MINUTE, m)
+                    set(Calendar.HOUR_OF_DAY, roundedHour)
+                    set(Calendar.MINUTE, roundedMinute)
                 }
                 startTime = newStart
             }, startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), false).show()
         },
         onEndTimeClick = {
             TimePickerDialog(context, { _, h, m ->
+                val (roundedHour, roundedMinute) = df.roundTimeTo15Minutes(h, m)
                 val newEnd = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, h)
-                    set(Calendar.MINUTE, m)
+                    set(Calendar.HOUR_OF_DAY, roundedHour)
+                    set(Calendar.MINUTE, roundedMinute)
                 }
                 endTime = newEnd
             }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false).show()
@@ -1541,7 +1541,7 @@ fun WorkOrderHistoryTimeRoute(
                         ),
                         selectedTimeType,
                         false,
-                        df.getCurrentTimeAsString()
+                        df.getCurrentUTCTimeAsString()
                     )
                 )
             }
@@ -1613,18 +1613,20 @@ fun WorkOrderHistoryTimeUpdateRoute(
         onTimeTypeChange = { selectedTimeType = it },
         onStartTimeClick = {
             TimePickerDialog(context, { _, h, m ->
+                val (roundedHour, roundedMinute) = df.roundTimeTo15Minutes(h, m)
                 val newStart = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, h)
-                    set(Calendar.MINUTE, m)
+                    set(Calendar.HOUR_OF_DAY, roundedHour)
+                    set(Calendar.MINUTE, roundedMinute)
                 }
                 startTime = newStart
             }, startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), false).show()
         },
         onEndTimeClick = {
             TimePickerDialog(context, { _, h, m ->
+                val (roundedHour, roundedMinute) = df.roundTimeTo15Minutes(h, m)
                 val newEnd = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, h)
-                    set(Calendar.MINUTE, m)
+                    set(Calendar.HOUR_OF_DAY, roundedHour)
+                    set(Calendar.MINUTE, roundedMinute)
                 }
                 endTime = newEnd
             }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false).show()
@@ -1642,7 +1644,7 @@ fun WorkOrderHistoryTimeUpdateRoute(
                             df.getTimeDisplay(endTime)
                         ),
                         wohtTimeType = selectedTimeType,
-                        wohtUpdateTime = df.getCurrentTimeAsString()
+                        wohtUpdateTime = df.getCurrentUTCTimeAsString()
                     )
                 )
                 navController.popBackStack()

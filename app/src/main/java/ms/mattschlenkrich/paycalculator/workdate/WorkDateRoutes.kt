@@ -33,7 +33,6 @@ import ms.mattschlenkrich.paycalculator.data.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkTimeViewModel
 import ms.mattschlenkrich.paycalculator.extras.WorkDateExtraScreen
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Calendar
 import java.util.Locale
@@ -109,7 +108,7 @@ fun WorkDateAddRoute(
                 statHours.toDoubleOrNull() ?: 0.0,
                 note.ifBlank { null },
                 false,
-                df.getCurrentTimeAsString()
+                df.getCurrentUTCTimeAsString()
             )
             payDayViewModel.insertWorkDate(workDate)
             mainViewModel.setWorkDateObject(workDate)
@@ -133,7 +132,7 @@ fun WorkDateAddRoute(
                             extraTypeAndDef.definition.weIsFixed,
                             extraTypeAndDef.extraType.wetIsCredit,
                             false,
-                            df.getCurrentTimeAsString()
+                            df.getCurrentUTCTimeAsString()
                         )
                     )
                 }
@@ -178,7 +177,7 @@ fun WorkDateAddRoute(
                                 wdStatHours = statHours.toDoubleOrNull() ?: 0.0,
                                 wdNote = note.ifBlank { null },
                                 wdIsDeleted = false,
-                                wdUpdateTime = df.getCurrentTimeAsString()
+                                wdUpdateTime = df.getCurrentUTCTimeAsString()
                             )
                         )
                         onSaveWorkDate(Screen.TimeSheet.route)
@@ -315,7 +314,7 @@ fun WorkDateUpdateRoute(
                         typeDef.definition.weIsFixed,
                         typeDef.extraType.wetIsCredit,
                         true,
-                        df.getCurrentTimeAsString()
+                        df.getCurrentUTCTimeAsString()
                     )
                 )
             }
@@ -362,7 +361,7 @@ fun WorkDateUpdateRoute(
                 wdStatHours = statHours.toDoubleOrNull() ?: 0.0,
                 wdNote = note.ifBlank { null },
                 wdIsDeleted = false,
-                wdUpdateTime = df.getCurrentTimeAsString()
+                wdUpdateTime = df.getCurrentUTCTimeAsString()
             )
             payDayViewModel.updateWorkDate(updated)
             mainViewModel.setWorkDateObject(updated)
@@ -545,7 +544,7 @@ fun WorkDateUpdateRoute(
                     payDayViewModel.updateWorkDateExtra(
                         extra.copy(
                             wdeIsDeleted = false,
-                            wdeUpdateTime = df.getCurrentTimeAsString()
+                            wdeUpdateTime = df.getCurrentUTCTimeAsString()
                         )
                     )
                 } else {
@@ -553,7 +552,7 @@ fun WorkDateUpdateRoute(
                         extra.copy(
                             workDateExtraId = nf.generateRandomIdAsLong(),
                             wdeIsDeleted = false,
-                            wdeUpdateTime = df.getCurrentTimeAsString()
+                            wdeUpdateTime = df.getCurrentUTCTimeAsString()
                         )
                     )
                 }
@@ -583,39 +582,120 @@ fun WorkDateTimesRoute(
     val nf = remember { NumberFunctions() }
     val coroutineScope = rememberCoroutineScope()
 
-    val history = mainViewModel.getWorkOrderHistory() ?: return
-    val historyCombined by workOrderViewModel.getWorkOrderHistoryCombined(history.woHistoryId)
-        .observeAsState()
+    var history by remember { mutableStateOf(mainViewModel.getWorkOrderHistory()) }
+    val workDate = mainViewModel.getWorkDateObject() ?: run {
+        LaunchedEffect(Unit) {
+            navController.popBackStack()
+        }
+        return
+    }
 
-    if (historyCombined == null) return
+    val historyCombined by if (history != null) {
+        workOrderViewModel.getWorkOrderHistoryCombined(history!!.woHistoryId)
+            .observeAsState()
+    } else {
+        remember { mutableStateOf(null) }
+    }
 
-    val workDate = historyCombined!!.workDate
-    val workOrder = historyCombined!!.workOrder
+    var workOrderNumber by remember {
+        mutableStateOf(
+            historyCombined?.workOrder?.woNumber ?: ""
+        )
+    }
 
-    var workOrderNumber by remember { mutableStateOf(workOrder.woNumber) }
+    val employer = mainViewModel.getEmployer() ?: return
     val workOrderSuggestions by workTimeViewModel.getWorkOrderNumbers(
-        mainViewModel.getEmployer()!!.employerId
+        employer.employerId
     ).observeAsState(emptyList())
 
-    val timeFormat = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
-    var startTime by remember { mutableStateOf(Calendar.getInstance()) }
-    var endTime by remember { mutableStateOf(Calendar.getInstance()) }
     var selectedTimeType by remember { mutableIntStateOf(0) }
 
-    val existingTimes by workOrderViewModel.getTimeWorkedForWorkOrderHistory(history.woHistoryId)
+    val existingTimes by if (history != null) {
+        workOrderViewModel.getTimeWorkedForWorkOrderHistory(history!!.woHistoryId)
+            .observeAsState(emptyList())
+    } else {
+        remember { mutableStateOf(emptyList()) }
+    }
+
+    val allTimesByDate by workTimeViewModel.getTimesWorkedByDate(workDate.workDateId)
         .observeAsState(emptyList())
+
+    var startTime by remember(allTimesByDate) {
+        if (allTimesByDate.isNotEmpty()) {
+            val latestTime = allTimesByDate.maxOf { it.timeWorked.wohtEndTime }
+            val timePart = df.splitTimeFromDateTime(latestTime).joinToString(":")
+            mutableStateOf(df.getCalendarFromTime(timePart))
+        } else {
+            mutableStateOf(df.getCalendarFromTime("08:30"))
+        }
+    }
+    var endTime by remember(startTime) {
+        mutableStateOf(startTime.clone() as Calendar)
+    }
+
+    val isWorkOrderValid = workOrderSuggestions.any { it.woNumber == workOrderNumber }
+    var workOrderError by remember { mutableStateOf<String?>(null) }
 
     WorkDateTimesScreen(
         infoText = df.getDisplayDate(workDate.wdDate),
-        hoursSummaryText = "${nf.getNumberFromDouble(history.woHistoryRegHours)} Reg | " +
-                "${nf.getNumberFromDouble(history.woHistoryOtHours)} OT | " +
-                "${nf.getNumberFromDouble(history.woHistoryDblOtHours)} Dbl",
+        hoursSummaryText = if (history != null) {
+            "${nf.getNumberFromDouble(history!!.woHistoryRegHours)} Reg | " +
+                    "${nf.getNumberFromDouble(history!!.woHistoryOtHours)} OT | " +
+                    "${nf.getNumberFromDouble(history!!.woHistoryDblOtHours)} Dbl"
+        } else {
+            stringResource(R.string.there_is_no_work_order_selected)
+        },
         workOrderNumber = workOrderNumber,
-        onWorkOrderNumberChange = { workOrderNumber = it },
+        onWorkOrderNumberChange = {
+            workOrderNumber = it
+            workOrderError = null
+            coroutineScope.launch {
+                val wo = workOrderViewModel.findWorkOrder(it, employer.employerId)
+                if (wo != null) {
+                    val existingHistory = workOrderViewModel.getWorkOrderHistory(
+                        wo.workOrderId,
+                        workDate.workDateId
+                    )
+                    if (existingHistory != null) {
+                        history = existingHistory
+                    } else {
+                        val newHistory = ms.mattschlenkrich.paycalculator.data.WorkOrderHistory(
+                            nf.generateRandomIdAsLong(),
+                            wo.workOrderId,
+                            workDate.workDateId,
+                            0.0, 0.0, 0.0,
+                            null, false,
+                            df.getCurrentUTCTimeAsString()
+                        )
+                        workOrderViewModel.insertWorkOrderHistory(newHistory)
+                        history = newHistory
+                    }
+                } else {
+                    history = null
+                }
+            }
+        },
         workOrderSuggestions = workOrderSuggestions.map { it.woNumber },
-        workOrderButtonText = stringResource(R.string.update_work_order),
-        onWorkOrderButtonClick = { /* TODO */ },
-        workOrderInfoText = workOrder.woDescription,
+        workOrderButtonText = if (isWorkOrderValid) stringResource(R.string.edit)
+        else stringResource(R.string.create),
+        onWorkOrderButtonClick = {
+            if (workOrderNumber.isBlank()) {
+                workOrderError = context.getString(R.string.work_order_number_cannot_be_blank)
+                return@WorkDateTimesScreen
+            }
+            if (isWorkOrderValid) {
+                val wo = workOrderSuggestions.find { it.woNumber == workOrderNumber }
+                if (wo != null) {
+                    mainViewModel.setWorkOrder(wo)
+                    navController.navigate(Screen.WorkOrderUpdate.route)
+                }
+            } else {
+                mainViewModel.setWorkOrderNumber(workOrderNumber)
+                navController.navigate(Screen.WorkOrderAdd.route)
+            }
+        },
+        workOrderInfoText = historyCombined?.workOrder?.woDescription ?: "",
+        workOrderError = workOrderError,
         startTime = startTime,
         endTime = endTime,
         totalTimeText = String.format(
@@ -627,34 +707,84 @@ fun WorkDateTimesRoute(
         onTimeTypeChange = { selectedTimeType = it },
         onStartTimeClick = {
             TimePickerDialog(context, { _, h, m ->
-                val newStart = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, h)
-                    set(Calendar.MINUTE, m)
+                val (roundedH, roundedM) = df.roundTimeTo15Minutes(h, m)
+                startTime = Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, roundedH)
+                    set(Calendar.MINUTE, roundedM)
                 }
-                startTime = newStart
             }, startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), false).show()
         },
         onEndTimeClick = {
             TimePickerDialog(context, { _, h, m ->
-                val newEnd = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, h)
-                    set(Calendar.MINUTE, m)
+                val (roundedH, roundedM) = df.roundTimeTo15Minutes(h, m)
+                endTime = Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, roundedH)
+                    set(Calendar.MINUTE, roundedM)
                 }
-                endTime = newEnd
             }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false).show()
         },
         onEnterTimeClick = {
+            if (workOrderNumber.isBlank()) {
+                workOrderError = context.getString(R.string.work_order_number_cannot_be_blank)
+                return@WorkDateTimesScreen
+            }
+            if (history == null) {
+                workOrderError = context.getString(R.string.work_order_not_found_please_create_it)
+                return@WorkDateTimesScreen
+            }
             coroutineScope.launch {
+                var currentHistory = history
+                if (currentHistory == null) {
+                    val wo = workOrderViewModel.findWorkOrder(workOrderNumber, employer.employerId)
+                        ?: run {
+                            val newWo = ms.mattschlenkrich.paycalculator.data.WorkOrder(
+                                nf.generateRandomIdAsLong(),
+                                workOrderNumber,
+                                employer.employerId,
+                                "", "", false,
+                                df.getCurrentUTCTimeAsString()
+                            )
+                            workOrderViewModel.insertWorkOrder(newWo)
+                            newWo
+                        }
+
+                    val existingHistory = workOrderViewModel.getWorkOrderHistory(
+                        wo.workOrderId,
+                        workDate.workDateId
+                    )
+                    currentHistory = if (existingHistory != null) {
+                        existingHistory
+                    } else {
+                        val newHistory = ms.mattschlenkrich.paycalculator.data.WorkOrderHistory(
+                            nf.generateRandomIdAsLong(),
+                            wo.workOrderId,
+                            workDate.workDateId,
+                            0.0, 0.0, 0.0,
+                            null, false,
+                            df.getCurrentUTCTimeAsString()
+                        )
+                        workOrderViewModel.insertWorkOrderHistory(newHistory)
+                        newHistory
+                    }
+                    history = currentHistory
+                }
+
                 workOrderViewModel.insertTimeWorked(
                     ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorked(
                         nf.generateRandomIdAsLong(),
-                        history.woHistoryId,
+                        currentHistory!!.woHistoryId,
                         workDate.workDateId,
-                        timeFormat.format(startTime.time),
-                        timeFormat.format(endTime.time),
+                        df.getDateTimeFromDateAndTime(
+                            workDate.wdDate,
+                            df.getTimeDisplay(startTime)
+                        ),
+                        df.getDateTimeFromDateAndTime(
+                            workDate.wdDate,
+                            df.getTimeDisplay(endTime)
+                        ),
                         selectedTimeType,
                         false,
-                        df.getCurrentTimeAsString()
+                        df.getCurrentUTCTimeAsString()
                     )
                 )
             }
@@ -665,7 +795,7 @@ fun WorkDateTimesRoute(
             coroutineScope.launch {
                 workOrderViewModel.deleteTimeWorked(
                     item.timeWorked.woHistoryTimeWorkedId,
-                    df.getCurrentTimeAsString()
+                    df.getCurrentUTCTimeAsString()
                 )
             }
         }
@@ -726,7 +856,7 @@ fun WorkDateExtraUpdateRoute(
             payDayViewModel.updateWorkDateExtra(
                 (extra as WorkDateExtras).copy(
                     wdeIsDeleted = true,
-                    wdeUpdateTime = DateFunctions().getCurrentTimeAsString()
+                    wdeUpdateTime = DateFunctions().getCurrentUTCTimeAsString()
                 )
             )
             navController.popBackStack()

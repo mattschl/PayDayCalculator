@@ -2,7 +2,7 @@ package ms.mattschlenkrich.paycalculator.common
 
 import java.text.NumberFormat
 import java.util.Locale
-import java.util.Random
+import java.util.UUID
 import kotlin.math.round
 import kotlin.math.roundToInt
 
@@ -32,10 +32,13 @@ class NumberFunctions {
     }
 
     fun generateRandomIdAsLong(): Long {
-        var id = Random().nextInt(Int.MAX_VALUE).toLong()
-        id = if (Random().nextBoolean()) -id
-        else id
-        return id
+//        var id = Random().nextInt(Int.MAX_VALUE).toLong()
+//        id = if (Random().nextBoolean()) -id
+//        else id
+//        return id
+        // UUIDs are 128-bit; we take the 64 least significant bit
+        val uuid = UUID.randomUUID().leastSignificantBits
+        return if (uuid == 0L) UUID.randomUUID().leastSignificantBits else uuid
     }
 
     fun getDoubleFromPercentString(percent: String): Double {

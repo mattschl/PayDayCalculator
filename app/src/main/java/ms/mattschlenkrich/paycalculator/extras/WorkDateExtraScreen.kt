@@ -202,7 +202,7 @@ fun WorkDateExtraScreen(
                                     wdeIsFixed = isFixed,
                                     wdeIsCredit = isCredit,
                                     wdeIsDeleted = false,
-                                    wdeUpdateTime = df.getCurrentTimeAsString()
+                                    wdeUpdateTime = df.getCurrentUTCTimeAsString()
                                 )
                             )
                         } else {

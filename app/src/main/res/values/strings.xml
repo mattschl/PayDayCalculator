@@ -552,4 +552,6 @@
     <string name="master_job_spec">Master Job Spec</string>
     <string name="parent_job_spec">Parent Job Spec</string>
     <string name="child_job_spec">Child Job Spec</string>
+    <string name="work_order_number_cannot_be_blank">Work order number cannot be blank</string>
+    <string name="work_order_not_found_please_create_it">Work order not found. Please create it first.</string>
 </resources>

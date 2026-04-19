@@ -185,7 +185,7 @@ fun WorkExtraTypeScreen(
                                     wetIsCredit = wetIsCredit,
                                     wetIsDefault = wetIsDefault,
                                     wetIsDeleted = false,
-                                    wetUpdateTime = DateFunctions().getCurrentTimeAsString()
+                                    wetUpdateTime = DateFunctions().getCurrentUTCTimeAsString()
                                 )
                             )
                         } else {

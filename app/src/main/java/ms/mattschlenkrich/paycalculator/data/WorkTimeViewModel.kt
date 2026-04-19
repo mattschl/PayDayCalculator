@@ -19,7 +19,7 @@ class WorkTimeViewModel(
     }
 
     fun deleteWorkTime(id: Long) = viewModelScope.launch {
-        workTimeRepository.deleteWorkTime(id, DateFunctions().getCurrentTimeAsString())
+        workTimeRepository.deleteWorkTime(id, DateFunctions().getCurrentUTCTimeAsString())
     }
 
     suspend fun updateWorkTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked) =

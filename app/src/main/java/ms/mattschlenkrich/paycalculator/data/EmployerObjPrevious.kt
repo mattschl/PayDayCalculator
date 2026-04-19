@@ -86,7 +86,7 @@ class EmployerObjPrevious {
             midMonthlyDateId,
             mainMonthlyDateId,
             employerIsDeleted,
-            df.getCurrentTimeAsString()
+            df.getCurrentUTCTimeAsString()
         )
     }
 

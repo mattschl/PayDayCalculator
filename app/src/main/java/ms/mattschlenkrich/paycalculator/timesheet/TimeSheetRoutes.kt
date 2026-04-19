@@ -208,7 +208,7 @@ fun TimeSheetRoute(
                         payDayViewModel.updateWorkDate(
                             workDate.copy(
                                 wdIsDeleted = true,
-                                wdUpdateTime = df.getCurrentTimeAsString()
+                                wdUpdateTime = df.getCurrentUTCTimeAsString()
                             )
                         )
                     }
@@ -281,7 +281,7 @@ fun TimeSheetRoute(
                                 nextCutOff,
                                 selectedEmployer!!.employerId,
                                 false,
-                                df.getCurrentTimeAsString()
+                                df.getCurrentUTCTimeAsString()
                             )
                         )
                     }

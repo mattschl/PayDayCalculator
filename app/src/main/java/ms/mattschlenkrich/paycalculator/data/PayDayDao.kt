@@ -58,6 +58,12 @@ interface PayDayDao {
 
     @Query(
         "SELECT * FROM $TABLE_WORK_DATES " +
+                "WHERE workDateId = :workDateId"
+    )
+    suspend fun getWorkDateSync(workDateId: Long): WorkDates?
+
+    @Query(
+        "SELECT * FROM $TABLE_WORK_DATES " +
                 "WHERE wdEmployerId = :employerId " +
                 "AND wdCutoffDate = :cutOff " +
                 "AND wdIsDeleted = 0 " +

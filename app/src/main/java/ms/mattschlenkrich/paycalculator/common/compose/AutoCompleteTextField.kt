@@ -31,6 +31,7 @@ fun <T> AutoCompleteTextField(
     onLongClick: (() -> Unit)? = null,
     itemToString: (T) -> String = { it.toString() },
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    isError: Boolean = false,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
@@ -66,6 +67,7 @@ fun <T> AutoCompleteTextField(
                 interactionSource = interactionSource,
                 label = { Text(label) },
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                isError = isError,
             )
         }
 
