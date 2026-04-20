@@ -559,4 +559,7 @@
     <string name="time_adjusted_to_not_exceed_12_ot_hours">Time adjusted to not exceed 12 ot hours</string>
     <string name="start_time_before_last_end_time">The start time cannot be before the previous segment\'s end time</string>
     <string name="warning_start_time_overlaps_previous_end_time">Warning: Start time overlaps previous end time. Click again to override.</string>
+    <string name="time_entry_options">Time Entry Options</string>
+    <string name="modify_time_entry">Modify Time Entry</string>
+    <string name="delete_time_entry">Delete Time Entry</string>
 </resources>

@@ -8,6 +8,8 @@ import ms.mattschlenkrich.paycalculator.common.DAY_THURSDAY
 import ms.mattschlenkrich.paycalculator.common.DAY_TUESDAY
 import ms.mattschlenkrich.paycalculator.common.DAY_WEDNESDAY
 import ms.mattschlenkrich.paycalculator.common.INTERVAL_BI_WEEKLY
+import ms.mattschlenkrich.paycalculator.common.INTERVAL_MONTHLY
+import ms.mattschlenkrich.paycalculator.common.INTERVAL_SEMI_MONTHLY
 import ms.mattschlenkrich.paycalculator.common.INTERVAL_WEEKLY
 import ms.mattschlenkrich.paycalculator.data.Employers
 import java.time.DayOfWeek
@@ -20,19 +22,29 @@ class PayDateProjections {
         mostRecent: String,
     ): String {
         var newDate = ""
-        val dates = projectAll(employer, LocalDate.now().plusMonths(2).toString())
+        val projectionEnd = if (mostRecent.isNotEmpty()) {
+            val mostRecentDate = LocalDate.parse(mostRecent)
+            if (mostRecentDate.isAfter(LocalDate.now())) {
+                mostRecentDate.plusMonths(2)
+            } else {
+                LocalDate.now().plusMonths(2)
+            }
+        } else {
+            LocalDate.now().plusMonths(2)
+        }
+        val dates = projectAll(employer, projectionEnd.toString())
 
         if (mostRecent.isEmpty()) {
             return getCutOffForDate(employer, LocalDate.now().toString())
         }
 
         val mostRecentDate = LocalDate.parse(mostRecent)
-        val mostRecentPayDay = mostRecentDate.plusDays(employer.cutoffDaysBefore.toLong())
 
         if (dates.isNotEmpty()) {
             for (date in dates) {
-                if (date > mostRecentPayDay) {
-                    newDate = date.minusDays(employer.cutoffDaysBefore.toLong()).toString()
+                val cutoffCandidate = date.minusDays(employer.cutoffDaysBefore.toLong()).toString()
+                if (cutoffCandidate > mostRecent) {
+                    newDate = cutoffCandidate
                     break
                 }
             }
@@ -73,10 +85,74 @@ class PayDateProjections {
                 )
             }
 
+            INTERVAL_MONTHLY -> {
+                projectMonthly(
+                    employer.startDate, endDate, employer.mainMonthlyDate
+                )
+            }
+
+            INTERVAL_SEMI_MONTHLY -> {
+                projectSemiMonthly(
+                    employer.startDate, endDate, employer.midMonthlyDate, employer.mainMonthlyDate
+                )
+            }
+
             else -> {
                 ArrayList()
             }
         }
+    }
+
+    private fun projectMonthly(
+        startDate: String, endDate: String, mainMonthlyDate: Int
+    ): ArrayList<LocalDate> {
+        val dates = ArrayList<LocalDate>()
+        var workingDate = LocalDate.parse(startDate)
+        val lastDate = LocalDate.parse(endDate)
+
+        while (workingDate < lastDate) {
+            val mainDate = safeWithDayOfMonth(workingDate, mainMonthlyDate)
+            if (mainDate >= workingDate && mainDate < lastDate) {
+                dates.add(mainDate)
+            }
+            workingDate = workingDate.withDayOfMonth(1).plusMonths(1)
+        }
+        return dates
+    }
+
+    private fun projectSemiMonthly(
+        startDate: String, endDate: String, midMonthlyDate: Int, mainMonthlyDate: Int
+    ): ArrayList<LocalDate> {
+        val dates = ArrayList<LocalDate>()
+        var workingDate = LocalDate.parse(startDate)
+        val lastDate = LocalDate.parse(endDate)
+
+        while (workingDate < lastDate) {
+            val midDate = safeWithDayOfMonth(workingDate, midMonthlyDate)
+            if (midDate >= workingDate && midDate < lastDate) {
+                dates.add(midDate)
+            }
+            val mainDate = safeWithDayOfMonth(workingDate, mainMonthlyDate)
+            if (mainDate >= workingDate && mainDate < lastDate) {
+                if (mainDate != midDate) {
+                    dates.add(mainDate)
+                }
+            }
+            workingDate = workingDate.withDayOfMonth(1).plusMonths(1)
+        }
+        dates.sort()
+        return dates
+    }
+
+    private fun safeWithDayOfMonth(date: LocalDate, day: Int): LocalDate {
+        return date.withDayOfMonth(
+            if (day > date.lengthOfMonth())
+                date.lengthOfMonth()
+            else if (day < 1)
+                1
+            else
+                day
+        )
     }
 
     private fun projectWeekly(

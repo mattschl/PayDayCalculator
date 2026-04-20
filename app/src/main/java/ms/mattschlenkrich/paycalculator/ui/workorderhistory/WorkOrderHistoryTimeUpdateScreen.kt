@@ -59,6 +59,7 @@ fun WorkOrderHistoryTimeUpdateScreen(
     allTimesForDay: List<WorkOrderHistoryTimeWorkedCombined> = emptyList(),
     currentHistoryId: Long? = null,
     onTimeClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit = {},
+    onTimeLongClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit = {},
     errorMessage: String? = null
 ) {
     val df = DateFunctions()
@@ -269,6 +270,7 @@ fun WorkOrderHistoryTimeUpdateScreen(
                     df = df,
                     nf = nf,
                     onClick = onTimeClick,
+                    onLongClick = onTimeLongClick,
                     isCurrentWorkOrder = time.timeWorked.wohtHistoryId == currentHistoryId
                 )
             }

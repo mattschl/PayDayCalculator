@@ -1,6 +1,9 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder
 
 import android.app.TimePickerDialog
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,6 +39,7 @@ import ms.mattschlenkrich.paycalculator.data.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryMaterialCombined
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorked
+import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.data.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
@@ -266,6 +270,9 @@ fun WorkOrderHistoryUpdateRoute(
     val materialActualList by workOrderViewModel.getMaterialsByHistory(history.woHistoryId)
         .observeAsState(emptyList())
 
+    val timeWorkedList by workOrderViewModel.getTimeWorkedForWorkOrderHistory(history.woHistoryId)
+        .observeAsState(emptyList())
+
     val isWorkOrderValid = workOrderList.any { it.woNumber == workOrderNumber }
 
     WorkOrderHistoryUpdateScreen(
@@ -313,7 +320,8 @@ fun WorkOrderHistoryUpdateRoute(
             mainViewModel.setWorkOrderHistory(history)
             navController.navigate(Screen.WorkOrderHistoryTime.route)
         },
-        addTimeButtonText = stringResource(R.string.add_time),
+        addTimeButtonText = if (timeWorkedList.isNotEmpty()) stringResource(R.string.edit_times)
+        else stringResource(R.string.add_time),
         workPerformed = workPerformed,
         onWorkPerformedChange = { workPerformed = it },
         workPerformedList = workPerformedList,
@@ -1587,6 +1595,79 @@ fun WorkOrderHistoryTimeRoute(
 
     var showStartTimeWarning by remember { mutableStateOf(false) }
 
+    var showTimeOptionsDialog by remember { mutableStateOf<WorkOrderHistoryTimeWorkedCombined?>(null) }
+    var showDeleteConfirmDialog by remember {
+        mutableStateOf<WorkOrderHistoryTimeWorkedCombined?>(
+            null
+        )
+    }
+
+    if (showTimeOptionsDialog != null) {
+        val combinedItem = showTimeOptionsDialog!!
+        AlertDialog(
+            onDismissRequest = { showTimeOptionsDialog = null },
+            confirmButton = {
+                TextButton(onClick = {
+                    mainViewModel.setWorkOrderHistoryTimeWorkedCombined(combinedItem)
+                    showTimeOptionsDialog = null
+                    navController.navigate(Screen.WorkOrderHistoryTimeUpdate.route)
+                }) {
+                    Text(stringResource(R.string.modify_time_entry))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDeleteConfirmDialog = combinedItem
+                    showTimeOptionsDialog = null
+                }) {
+                    Text(stringResource(R.string.delete_time_entry))
+                }
+            },
+            title = {
+                Text(stringResource(R.string.time_entry_options))
+            },
+            text = {
+                Text(
+                    df.get12HourDisplay(
+                        df.splitTimeFromDateTime(combinedItem.timeWorked.wohtStartTime)
+                            .joinToString(":")
+                    ) + " - " +
+                            df.get12HourDisplay(
+                                df.splitTimeFromDateTime(combinedItem.timeWorked.wohtEndTime)
+                                    .joinToString(":")
+                            )
+                )
+            }
+        )
+    }
+
+    if (showDeleteConfirmDialog != null) {
+        val combinedItem = showDeleteConfirmDialog!!
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmDialog = null },
+            confirmButton = {
+                TextButton(onClick = {
+                    coroutineScope.launch {
+                        workOrderViewModel.deleteTimeWorked(
+                            combinedItem.timeWorked.woHistoryTimeWorkedId,
+                            df.getCurrentUTCTimeAsString()
+                        )
+                    }
+                    showDeleteConfirmDialog = null
+                }) {
+                    Text(stringResource(R.string.delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmDialog = null }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            title = { Text(stringResource(R.string.delete_time_entry)) },
+            text = { Text(stringResource(R.string.this_cannot_be_undone)) }
+        )
+    }
+
     WorkOrderHistoryTimeScreen(
         infoText = stringResource(R.string.work_order) + " ${historyWithDates!!.workOrder.woNumber}\n" +
                 historyWithDates!!.workOrder.woDescription,
@@ -1725,6 +1806,9 @@ fun WorkOrderHistoryTimeRoute(
             mainViewModel.setWorkOrderHistoryTimeWorkedCombined(combined)
             navController.navigate(Screen.WorkOrderHistoryTimeUpdate.route)
         },
+        onTimeLongClick = { combined ->
+            showTimeOptionsDialog = combined
+        },
         onBackClick = { navController.popBackStack() }
     )
 }
@@ -1781,6 +1865,79 @@ fun WorkOrderHistoryTimeUpdateRoute(
     )
 
     var showStartTimeWarning by remember { mutableStateOf(false) }
+
+    var showTimeOptionsDialog by remember { mutableStateOf<WorkOrderHistoryTimeWorkedCombined?>(null) }
+    var showDeleteConfirmDialog by remember {
+        mutableStateOf<WorkOrderHistoryTimeWorkedCombined?>(
+            null
+        )
+    }
+
+    if (showTimeOptionsDialog != null) {
+        val combinedItem = showTimeOptionsDialog!!
+        AlertDialog(
+            onDismissRequest = { showTimeOptionsDialog = null },
+            confirmButton = {
+                TextButton(onClick = {
+                    mainViewModel.setWorkOrderHistoryTimeWorkedCombined(combinedItem)
+                    showTimeOptionsDialog = null
+                    navController.navigate(Screen.WorkOrderHistoryTimeUpdate.route)
+                }) {
+                    Text(stringResource(R.string.modify_time_entry))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDeleteConfirmDialog = combinedItem
+                    showTimeOptionsDialog = null
+                }) {
+                    Text(stringResource(R.string.delete_time_entry))
+                }
+            },
+            title = {
+                Text(stringResource(R.string.time_entry_options))
+            },
+            text = {
+                Text(
+                    df.get12HourDisplay(
+                        df.splitTimeFromDateTime(combinedItem.timeWorked.wohtStartTime)
+                            .joinToString(":")
+                    ) + " - " +
+                            df.get12HourDisplay(
+                                df.splitTimeFromDateTime(combinedItem.timeWorked.wohtEndTime)
+                                    .joinToString(":")
+                            )
+                )
+            }
+        )
+    }
+
+    if (showDeleteConfirmDialog != null) {
+        val combinedItem = showDeleteConfirmDialog!!
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmDialog = null },
+            confirmButton = {
+                TextButton(onClick = {
+                    coroutineScope.launch {
+                        workOrderViewModel.deleteTimeWorked(
+                            combinedItem.timeWorked.woHistoryTimeWorkedId,
+                            df.getCurrentUTCTimeAsString()
+                        )
+                    }
+                    showDeleteConfirmDialog = null
+                }) {
+                    Text(stringResource(R.string.delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmDialog = null }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            title = { Text(stringResource(R.string.delete_time_entry)) },
+            text = { Text(stringResource(R.string.this_cannot_be_undone)) }
+        )
+    }
 
     WorkOrderHistoryTimeUpdateScreen(
         infoText = stringResource(R.string.work_order) + " ${combined.workOrderHistory.workOrder.woNumber}\n" +
@@ -1888,6 +2045,9 @@ fun WorkOrderHistoryTimeUpdateRoute(
         onTimeClick = { item ->
             mainViewModel.setWorkOrderHistoryTimeWorkedCombined(item)
             navController.navigate(Screen.WorkOrderHistoryTimeUpdate.route)
+        },
+        onTimeLongClick = { item ->
+            showTimeOptionsDialog = item
         },
         errorMessage = errorMessage
     )

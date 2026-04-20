@@ -66,6 +66,7 @@ fun WorkDateTimesScreen(
     existingTimes: List<WorkOrderHistoryTimeWorkedCombined>,
     allTimesForDay: List<WorkOrderHistoryTimeWorkedCombined>,
     onTimeClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit,
+    onTimeLongClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit = {},
     workOrderError: String? = null,
     errorMessage: String? = null,
 ) {
@@ -272,6 +273,7 @@ fun WorkDateTimesScreen(
                         df = df,
                         nf = nf,
                         onClick = onTimeClick,
+                        onLongClick = onTimeLongClick,
                         isCurrentWorkOrder = existingTimes.any { it.timeWorked.woHistoryTimeWorkedId == time.timeWorked.woHistoryTimeWorkedId }
                     )
                 }

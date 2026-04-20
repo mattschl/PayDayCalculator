@@ -1,6 +1,8 @@
 package ms.mattschlenkrich.paycalculator.ui.workorderhistory
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -63,6 +65,7 @@ fun WorkOrderHistoryTimeScreen(
     existingTimes: List<WorkOrderHistoryTimeWorkedCombined>,
     allTimesForDay: List<WorkOrderHistoryTimeWorkedCombined>,
     onTimeClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit,
+    onTimeLongClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit = {},
     onBackClick: () -> Unit,
     errorMessage: String? = null
 ) {
@@ -235,6 +238,7 @@ fun WorkOrderHistoryTimeScreen(
                         df = df,
                         nf = nf,
                         onClick = onTimeClick,
+                        onLongClick = onTimeLongClick,
                         isCurrentWorkOrder = time.timeWorked.wohtHistoryId == existingTimes.firstOrNull()?.timeWorked?.wohtHistoryId
                     )
                 }
@@ -258,18 +262,23 @@ fun TimeTypeRadioButton(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TimeWorkedItem(
     item: WorkOrderHistoryTimeWorkedCombined,
     df: DateFunctions,
     nf: NumberFunctions,
     onClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit,
+    onLongClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit = {},
     isCurrentWorkOrder: Boolean = true
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick(item) },
+            .combinedClickable(
+                onClick = { onClick(item) },
+                onLongClick = { onLongClick(item) }
+            ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isCurrentWorkOrder) Color.White else Color(0xFFF5F5F5)

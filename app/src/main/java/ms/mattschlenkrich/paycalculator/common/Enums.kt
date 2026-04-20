@@ -75,7 +75,9 @@ enum class WorkDayOfWeek(val value: Int, val day: String) {
 
 enum class PayDayFrequencies(val value: Int, val frequency: String) {
     BI_WEEKLY(0, "Bi-Weekly"),
-    WEEKLY(1, "Weekly"), ;
+    WEEKLY(1, "Weekly"),
+    SEMI_MONTHLY(2, "Semi-Monthly"),
+    MONTHLY(3, "Monthly"), ;
 
     override fun toString(): String {
         return frequency

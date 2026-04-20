@@ -38,6 +38,7 @@ import ms.mattschlenkrich.paycalculator.data.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorked
+import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkTimeViewModel
@@ -733,6 +734,79 @@ fun WorkDateTimesRoute(
     val isWorkOrderValid = workOrderSuggestions.any { it.woNumber == workOrderNumber }
     var workOrderError by remember { mutableStateOf<String?>(null) }
 
+    var showTimeOptionsDialog by remember { mutableStateOf<WorkOrderHistoryTimeWorkedCombined?>(null) }
+    var showDeleteConfirmDialog by remember {
+        mutableStateOf<WorkOrderHistoryTimeWorkedCombined?>(
+            null
+        )
+    }
+
+    if (showTimeOptionsDialog != null) {
+        val combinedItem = showTimeOptionsDialog!!
+        AlertDialog(
+            onDismissRequest = { showTimeOptionsDialog = null },
+            confirmButton = {
+                TextButton(onClick = {
+                    mainViewModel.setWorkOrderHistoryTimeWorkedCombined(combinedItem)
+                    showTimeOptionsDialog = null
+                    navController.navigate(Screen.WorkOrderHistoryTimeUpdate.route)
+                }) {
+                    Text(stringResource(R.string.modify_time_entry))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDeleteConfirmDialog = combinedItem
+                    showTimeOptionsDialog = null
+                }) {
+                    Text(stringResource(R.string.delete_time_entry))
+                }
+            },
+            title = {
+                Text(stringResource(R.string.time_entry_options))
+            },
+            text = {
+                Text(
+                    df.get12HourDisplay(
+                        df.splitTimeFromDateTime(combinedItem.timeWorked.wohtStartTime)
+                            .joinToString(":")
+                    ) + " - " +
+                            df.get12HourDisplay(
+                                df.splitTimeFromDateTime(combinedItem.timeWorked.wohtEndTime)
+                                    .joinToString(":")
+                            )
+                )
+            }
+        )
+    }
+
+    if (showDeleteConfirmDialog != null) {
+        val combinedItem = showDeleteConfirmDialog!!
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmDialog = null },
+            confirmButton = {
+                TextButton(onClick = {
+                    coroutineScope.launch {
+                        workOrderViewModel.deleteTimeWorked(
+                            combinedItem.timeWorked.woHistoryTimeWorkedId,
+                            df.getCurrentUTCTimeAsString()
+                        )
+                    }
+                    showDeleteConfirmDialog = null
+                }) {
+                    Text(stringResource(R.string.delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmDialog = null }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            title = { Text(stringResource(R.string.delete_time_entry)) },
+            text = { Text(stringResource(R.string.this_cannot_be_undone)) }
+        )
+    }
+
     WorkDateTimesScreen(
         infoText = df.getDisplayDate(workDate.wdDate),
         hoursSummaryText = if (history != null) {
@@ -907,12 +981,11 @@ fun WorkDateTimesRoute(
         existingTimes = existingTimes,
         allTimesForDay = allTimesByDate,
         onTimeClick = { item ->
-            coroutineScope.launch {
-                workOrderViewModel.deleteTimeWorked(
-                    item.timeWorked.woHistoryTimeWorkedId,
-                    df.getCurrentUTCTimeAsString()
-                )
-            }
+            mainViewModel.setWorkOrderHistoryTimeWorkedCombined(item)
+            navController.navigate(Screen.WorkOrderHistoryTimeUpdate.route)
+        },
+        onTimeLongClick = { item ->
+            showTimeOptionsDialog = item
         },
         errorMessage = errorMessage
     )

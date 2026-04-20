@@ -106,22 +106,17 @@ class WorkOrderRepository(private val db: PayDatabase) {
     ) {
         val history = db.getWorkOrderDao().getWorkOrderHistorySync(historyId)
         if (history != null) {
-            if (regHours > history.woHistoryRegHours ||
-                otHours > history.woHistoryOtHours ||
-                dblOtHours > history.woHistoryDblOtHours
-            ) {
-                db.getWorkOrderDao().updateWorkOrderHistory(
-                    historyId,
-                    history.woHistoryWorkOrderId,
-                    history.woHistoryWorkDateId,
-                    maxOf(regHours, history.woHistoryRegHours),
-                    maxOf(otHours, history.woHistoryOtHours),
-                    maxOf(dblOtHours, history.woHistoryDblOtHours),
-                    history.woHistoryNote,
-                    history.woHistoryDeleted,
-                    updateTime
-                )
-            }
+            db.getWorkOrderDao().updateWorkOrderHistory(
+                historyId,
+                history.woHistoryWorkOrderId,
+                history.woHistoryWorkDateId,
+                maxOf(regHours, history.woHistoryRegHours),
+                maxOf(otHours, history.woHistoryOtHours),
+                maxOf(dblOtHours, history.woHistoryDblOtHours),
+                history.woHistoryNote,
+                history.woHistoryDeleted,
+                updateTime
+            )
         }
     }
 
@@ -134,24 +129,19 @@ class WorkOrderRepository(private val db: PayDatabase) {
     ) {
         val workDate = db.getPayDayDao().getWorkDateSync(workDateId)
         if (workDate != null) {
-            if (regHours > workDate.wdRegHours ||
-                otHours > workDate.wdOtHours ||
-                dblOtHours > workDate.wdDblOtHours
-            ) {
-                db.getPayDayDao().updateWorkDates(
-                    workDateId,
-                    workDate.wdPayPeriodId,
-                    workDate.wdEmployerId,
-                    workDate.wdCutoffDate,
-                    workDate.wdDate,
-                    maxOf(regHours, workDate.wdRegHours),
-                    maxOf(otHours, workDate.wdOtHours),
-                    maxOf(dblOtHours, workDate.wdDblOtHours),
-                    workDate.wdStatHours,
-                    workDate.wdIsDeleted,
-                    updateTime
-                )
-            }
+            db.getPayDayDao().updateWorkDates(
+                workDateId,
+                workDate.wdPayPeriodId,
+                workDate.wdEmployerId,
+                workDate.wdCutoffDate,
+                workDate.wdDate,
+                maxOf(regHours, workDate.wdRegHours),
+                maxOf(otHours, workDate.wdOtHours),
+                maxOf(dblOtHours, workDate.wdDblOtHours),
+                workDate.wdStatHours,
+                workDate.wdIsDeleted,
+                updateTime
+            )
         }
     }
 
