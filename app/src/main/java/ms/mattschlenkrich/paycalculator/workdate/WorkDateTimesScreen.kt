@@ -64,8 +64,10 @@ fun WorkDateTimesScreen(
     onEnterTimeClick: () -> Unit,
     onDoneClick: () -> Unit,
     existingTimes: List<WorkOrderHistoryTimeWorkedCombined>,
+    allTimesForDay: List<WorkOrderHistoryTimeWorkedCombined>,
     onTimeClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit,
     workOrderError: String? = null,
+    errorMessage: String? = null,
 ) {
     val df = DateFunctions()
     val nf = NumberFunctions()
@@ -75,10 +77,19 @@ fun WorkDateTimesScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = stringResource(R.string.enter_work_time),
-                        style = MaterialTheme.typography.titleLarge,
-                    )
+                    Column {
+                        Text(
+                            text = stringResource(R.string.enter_work_time),
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+                        if (errorMessage != null) {
+                            Text(
+                                text = errorMessage,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color.Red
+                            )
+                        }
+                    }
                 }
             )
         },
@@ -223,17 +234,17 @@ fun WorkDateTimesScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     TimeTypeRadioButton(
-                        label = stringResource(R.string.reg_hours),
+                        label = stringResource(R.string.reg),
                         selected = selectedTimeType == TimeWorkedTypes.REG_HOURS.value,
                         onClick = { onTimeTypeChange(TimeWorkedTypes.REG_HOURS.value) }
                     )
                     TimeTypeRadioButton(
-                        label = stringResource(R.string.ot_hrs),
+                        label = stringResource(R.string.ot),
                         selected = selectedTimeType == TimeWorkedTypes.OT_HOURS.value,
                         onClick = { onTimeTypeChange(TimeWorkedTypes.OT_HOURS.value) }
                     )
                     TimeTypeRadioButton(
-                        label = stringResource(R.string.dbl_ot_hrs),
+                        label = stringResource(R.string.dbl_ot),
                         selected = selectedTimeType == TimeWorkedTypes.DBL_OT_HOURS.value,
                         onClick = { onTimeTypeChange(TimeWorkedTypes.DBL_OT_HOURS.value) }
                     )
@@ -255,8 +266,14 @@ fun WorkDateTimesScreen(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                items(existingTimes) { time ->
-                    TimeWorkedItem(time, df, nf, onTimeClick)
+                items(allTimesForDay) { time ->
+                    TimeWorkedItem(
+                        item = time,
+                        df = df,
+                        nf = nf,
+                        onClick = onTimeClick,
+                        isCurrentWorkOrder = existingTimes.any { it.timeWorked.woHistoryTimeWorkedId == time.timeWorked.woHistoryTimeWorkedId }
+                    )
                 }
             }
         }

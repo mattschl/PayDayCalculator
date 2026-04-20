@@ -61,6 +61,7 @@ interface WorkTimeDao {
                 "INNER JOIN(" +
                 "SELECT * FROM workOrderHistoryTimeWorked " +
                 "WHERE wohtDateId = :workDateId " +
+                "AND wohtIsDeleted = 0 " +
                 ") ON woHistoryId = wohtHistoryId " +
                 "WHERE woHistoryDeleted = 0 " +
                 "ORDER BY wohtStartTime "

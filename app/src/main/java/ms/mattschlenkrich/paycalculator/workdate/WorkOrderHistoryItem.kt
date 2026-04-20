@@ -46,20 +46,26 @@ fun WorkOrderHistoryItem(
                 fontWeight = FontWeight.Bold
             )
             val hoursText = buildString {
-                if (history.history.woHistoryRegHours > 0) append(
-                    "reg ${
-                        nf.getNumberFromDouble(
-                            history.history.woHistoryRegHours
-                        )
-                    } "
-                )
-                if (history.history.woHistoryOtHours > 0) {
-                    if (isNotEmpty()) append("| ")
-                    append("ot ${nf.getNumberFromDouble(history.history.woHistoryOtHours)} ")
+                val reg = history.history.woHistoryRegHours
+                val ot = history.history.woHistoryOtHours
+                val dbl = history.history.woHistoryDblOtHours
+
+                append("Total hours: ${nf.getNumberFromDouble(reg + ot + dbl)}")
+
+                val details = buildString {
+                    if (reg > 0) append("reg ${nf.getNumberFromDouble(reg)}")
+                    if (ot > 0) {
+                        if (isNotEmpty()) append(" | ")
+                        append("ot ${nf.getNumberFromDouble(ot)}")
+                    }
+                    if (dbl > 0) {
+                        if (isNotEmpty()) append(" | ")
+                        append("dbl ${nf.getNumberFromDouble(dbl)}")
+                    }
                 }
-                if (history.history.woHistoryDblOtHours > 0) {
-                    if (isNotEmpty()) append("| ")
-                    append("dbl ${nf.getNumberFromDouble(history.history.woHistoryDblOtHours)} ")
+                if (details.isNotEmpty()) {
+                    append("\n")
+                    append(details)
                 }
             }
             if (hoursText.isNotEmpty()) {

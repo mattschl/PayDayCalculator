@@ -55,6 +55,7 @@ fun WorkOrderHistoryAddScreen(
     onWorkOrderSearch: (String, String, String, String, String) -> Unit,
     onWorkOrderAddEdit: (String, String, String, String, String, Boolean) -> Unit,
     onDone: (String, String, String, String, String, Boolean) -> Unit,
+    onAddTime: (String, String, String, String, String, Boolean) -> Unit,
     onBack: () -> Unit,
     displayDate: String,
     displayEmployer: String
@@ -235,6 +236,31 @@ fun WorkOrderHistoryAddScreen(
                         label = { Text(stringResource(R.string.enter_note_optional)) },
                         modifier = Modifier.fillMaxWidth()
                     )
+
+                    Button(
+                        onClick = {
+                            if (isWorkOrderValid) {
+                                onAddTime(
+                                    workOrderNumber,
+                                    regHours,
+                                    otHours,
+                                    dblOtHours,
+                                    note,
+                                    false
+                                )
+                            } else {
+                                showCreateDialog = true
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colorResource(id = R.color.dark_green)
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                    ) {
+                        Text(text = stringResource(R.string.add_time))
+                    }
                 }
             }
         }

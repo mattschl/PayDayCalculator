@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
@@ -60,8 +61,10 @@ fun WorkOrderHistoryTimeScreen(
     onEnterTimeClick: () -> Unit,
     onDoneClick: () -> Unit,
     existingTimes: List<WorkOrderHistoryTimeWorkedCombined>,
+    allTimesForDay: List<WorkOrderHistoryTimeWorkedCombined>,
     onTimeClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    errorMessage: String? = null
 ) {
     val df = DateFunctions()
     val nf = NumberFunctions()
@@ -69,7 +72,18 @@ fun WorkOrderHistoryTimeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("WorkOrderHistoryTimeScreen") },
+                title = {
+                    Column {
+                        Text(stringResource(R.string.add_time))
+                        if (errorMessage != null) {
+                            Text(
+                                text = errorMessage,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color.Red
+                            )
+                        }
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
@@ -183,17 +197,17 @@ fun WorkOrderHistoryTimeScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     TimeTypeRadioButton(
-                        label = stringResource(R.string.reg_hours),
+                        label = stringResource(R.string.reg),
                         selected = selectedTimeType == TimeWorkedTypes.REG_HOURS.value,
                         onClick = { onTimeTypeChange(TimeWorkedTypes.REG_HOURS.value) }
                     )
                     TimeTypeRadioButton(
-                        label = stringResource(R.string.ot_hrs),
+                        label = stringResource(R.string.ot),
                         selected = selectedTimeType == TimeWorkedTypes.OT_HOURS.value,
                         onClick = { onTimeTypeChange(TimeWorkedTypes.OT_HOURS.value) }
                     )
                     TimeTypeRadioButton(
-                        label = stringResource(R.string.dbl_ot_hrs),
+                        label = stringResource(R.string.dbl_ot),
                         selected = selectedTimeType == TimeWorkedTypes.DBL_OT_HOURS.value,
                         onClick = { onTimeTypeChange(TimeWorkedTypes.DBL_OT_HOURS.value) }
                     )
@@ -215,8 +229,14 @@ fun WorkOrderHistoryTimeScreen(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                items(existingTimes) { time ->
-                    TimeWorkedItem(time, df, nf, onTimeClick)
+                items(allTimesForDay) { time ->
+                    TimeWorkedItem(
+                        item = time,
+                        df = df,
+                        nf = nf,
+                        onClick = onTimeClick,
+                        isCurrentWorkOrder = time.timeWorked.wohtHistoryId == existingTimes.firstOrNull()?.timeWorked?.wohtHistoryId
+                    )
                 }
             }
         }
@@ -243,14 +263,17 @@ fun TimeWorkedItem(
     item: WorkOrderHistoryTimeWorkedCombined,
     df: DateFunctions,
     nf: NumberFunctions,
-    onClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit
+    onClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit,
+    isCurrentWorkOrder: Boolean = true
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick(item) },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(
+            containerColor = if (isCurrentWorkOrder) Color.White else Color(0xFFF5F5F5)
+        )
     ) {
         val tempStart = df.splitTimeFromDateTime(item.timeWorked.wohtStartTime)
         val startTime = df.get12HourDisplay("${tempStart[0]}:${tempStart[1]}")
@@ -262,15 +285,29 @@ fun TimeWorkedItem(
             TimeWorkedTypes.REG_HOURS.value -> stringResource(R.string.reg_hrs_)
             TimeWorkedTypes.OT_HOURS.value -> stringResource(R.string.ot_hrs_)
             TimeWorkedTypes.DBL_OT_HOURS.value -> stringResource(R.string.dblot_hrs_)
-            else -> "Break time"
+            else -> stringResource(R.string._break)
         }
 
         Column(modifier = Modifier.padding(12.dp)) {
-            Text(
-                text = "$startTime - $endTime",
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "$startTime - $endTime",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                if (!isCurrentWorkOrder) {
+                    Text(
+                        text = "WO: ${item.workOrderHistory.workOrder.woNumber}",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontStyle = FontStyle.Italic,
+                        color = Color.Gray
+                    )
+                }
+            }
             Text(
                 text = "$typeText: ${nf.getNumberFromDouble(hours)} hours",
                 style = MaterialTheme.typography.bodyMedium

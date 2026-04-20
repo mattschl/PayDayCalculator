@@ -12,6 +12,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
@@ -135,7 +136,35 @@ fun WorkOrderHistoryAddRoute(
                     workOrderViewModel.insertWorkOrderHistory(history)
                     mainViewModel.setTempWorkOrderHistoryInfo(null)
                     mainViewModel.setWorkOrder(null)
-                    navController.popBackStack()
+                    navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
+                        popUpTo(Screen.WorkOrderHistoryAdd.route) { inclusive = true }
+                    }
+                }
+            }
+        },
+        onAddTime = { number, reg, ot, dbl, nt, _ ->
+            val wo = workOrderList.find { it.woNumber == number }
+            if (wo != null) {
+                coroutineScope.launch {
+                    val historyId = nf.generateRandomIdAsLong()
+                    val history = ms.mattschlenkrich.paycalculator.data.WorkOrderHistory(
+                        historyId,
+                        wo.workOrderId,
+                        workDate.workDateId,
+                        reg.toDoubleOrNull() ?: 0.0,
+                        ot.toDoubleOrNull() ?: 0.0,
+                        dbl.toDoubleOrNull() ?: 0.0,
+                        nt,
+                        false,
+                        df.getCurrentUTCTimeAsString()
+                    )
+                    workOrderViewModel.insertWorkOrderHistory(history)
+                    mainViewModel.setTempWorkOrderHistoryInfo(null)
+                    mainViewModel.setWorkOrder(null)
+                    mainViewModel.setWorkOrderHistory(history)
+                    navController.navigate(Screen.WorkOrderHistoryTime.route) {
+                        popUpTo(Screen.WorkOrderHistoryAdd.route) { inclusive = true }
+                    }
                 }
             }
         },
@@ -1470,9 +1499,38 @@ fun WorkOrderHistoryTimeRoute(
     val existingTimes by workOrderViewModel.getWorkOrderHistoryTimesByHistory(history.woHistoryId)
         .observeAsState(emptyList())
 
+    val allTimesByDate by workOrderViewModel.getTimeWorkedPerDay(historyWithDates!!.workDate.workDateId)
+        .observeAsState(emptyList())
+
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(errorMessage) {
+        if (errorMessage != null) {
+            delay(3000)
+            errorMessage = null
+        }
+    }
+
+    var selectedTimeType by remember { mutableIntStateOf(ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.REG_HOURS.value) }
+
+    LaunchedEffect(allTimesByDate) {
+        val totalHours = allTimesByDate.sumOf {
+            df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
+        }
+        selectedTimeType = when {
+            totalHours < 8.0 -> ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.REG_HOURS.value
+            totalHours < 12.0 -> ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.OT_HOURS.value
+            else -> ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.DBL_OT_HOURS.value
+        }
+    }
+
     var startTime by remember(existingTimes) {
         if (existingTimes.isNotEmpty()) {
             val latestTime = existingTimes.maxOf { it.timeWorked.wohtEndTime }
+            val timePart = df.splitTimeFromDateTime(latestTime).joinToString(":")
+            mutableStateOf(df.getCalendarFromTime(timePart))
+        } else if (allTimesByDate.isNotEmpty()) {
+            val latestTime = allTimesByDate.maxOf { it.timeWorked.wohtEndTime }
             val timePart = df.splitTimeFromDateTime(latestTime).joinToString(":")
             mutableStateOf(df.getCalendarFromTime(timePart))
         } else {
@@ -1482,23 +1540,53 @@ fun WorkOrderHistoryTimeRoute(
     var endTime by remember(startTime) {
         mutableStateOf(startTime.clone() as Calendar)
     }
-    var selectedTimeType by remember { mutableIntStateOf(ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.REG_HOURS.value) }
 
     val totalHours = df.getTimeWorked(
         df.getTimeDisplay(startTime),
         df.getTimeDisplay(endTime)
     )
 
+    var showStartTimeWarning by remember { mutableStateOf(false) }
+
     WorkOrderHistoryTimeScreen(
         infoText = stringResource(R.string.work_order) + " ${historyWithDates!!.workOrder.woNumber}\n" +
                 historyWithDates!!.workOrder.woDescription,
-        hoursSummaryText = stringResource(R.string.total_hours) + " ${
-            nf.getNumberFromDouble(
-                existingTimes.sumOf {
-                    df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
+        hoursSummaryText = buildString {
+            append(stringResource(R.string.total_hours))
+            append(" ")
+            val totalHours = existingTimes.sumOf {
+                df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
+            }
+            append(nf.getNumberFromDouble(totalHours))
+
+            val reg = existingTimes.filter {
+                it.timeWorked.wohtTimeType == ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.REG_HOURS.value
+            }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) }
+
+            val ot = existingTimes.filter {
+                it.timeWorked.wohtTimeType == ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.OT_HOURS.value
+            }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) }
+
+            val dbl = existingTimes.filter {
+                it.timeWorked.wohtTimeType == ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.DBL_OT_HOURS.value
+            }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) }
+
+            val details = buildString {
+                if (reg > 0) append("reg ${nf.getNumberFromDouble(reg)}")
+                if (ot > 0) {
+                    if (isNotEmpty()) append(" | ")
+                    append("ot ${nf.getNumberFromDouble(ot)}")
                 }
-            )
-        }",
+                if (dbl > 0) {
+                    if (isNotEmpty()) append(" | ")
+                    append("dbl ${nf.getNumberFromDouble(dbl)}")
+                }
+            }
+            if (details.isNotEmpty()) {
+                append("\n")
+                append(details)
+            }
+        },
         startTime = startTime,
         endTime = endTime,
         totalTimeText = nf.getNumberFromDouble(totalHours) + " " + stringResource(R.string.hours),
@@ -1512,6 +1600,8 @@ fun WorkOrderHistoryTimeRoute(
                     set(Calendar.MINUTE, roundedMinute)
                 }
                 startTime = newStart
+                showStartTimeWarning = false
+                errorMessage = null
             }, startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), false).show()
         },
         onEndTimeClick = {
@@ -1521,33 +1611,77 @@ fun WorkOrderHistoryTimeRoute(
                     set(Calendar.HOUR_OF_DAY, roundedHour)
                     set(Calendar.MINUTE, roundedMinute)
                 }
-                endTime = newEnd
+
+                val hoursBefore = allTimesByDate.filter {
+                    it.timeWorked.wohtTimeType != ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.BREAK.value
+                }.sumOf {
+                    df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
+                }
+                val newSegmentHours = df.getTimeWorked(startTime, newEnd)
+
+                if (selectedTimeType == ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.REG_HOURS.value &&
+                    hoursBefore + newSegmentHours > 8.0
+                ) {
+                    val allowedHours = 8.0 - hoursBefore
+                    endTime = df.addHoursToCalendar(startTime, allowedHours)
+                    errorMessage =
+                        context.getString(R.string.time_adjusted_to_not_exceed_8_reg_hours)
+                } else if (selectedTimeType == ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.OT_HOURS.value &&
+                    hoursBefore + newSegmentHours > 12.0
+                ) {
+                    val allowedHours = 12.0 - hoursBefore
+                    endTime = df.addHoursToCalendar(startTime, allowedHours)
+                    errorMessage =
+                        context.getString(R.string.time_adjusted_to_not_exceed_12_ot_hours)
+                } else {
+                    endTime = newEnd
+                }
+                showStartTimeWarning = false
+                errorMessage = null
             }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false).show()
         },
         onEnterTimeClick = {
-            coroutineScope.launch {
-                workOrderViewModel.insertWorkOrderHistoryTimeWorked(
-                    ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorked(
-                        nf.generateRandomIdAsLong(),
-                        history.woHistoryId,
-                        historyWithDates!!.workDate.workDateId,
-                        df.getDateTimeFromDateAndTime(
-                            historyWithDates!!.workDate.wdDate,
-                            df.getTimeDisplay(startTime)
-                        ),
-                        df.getDateTimeFromDateAndTime(
-                            historyWithDates!!.workDate.wdDate,
-                            df.getTimeDisplay(endTime)
-                        ),
-                        selectedTimeType,
-                        false,
-                        df.getCurrentUTCTimeAsString()
+            val latestTime = if (allTimesByDate.isNotEmpty()) {
+                allTimesByDate.maxOf { it.timeWorked.wohtEndTime }
+            } else null
+
+            val currentStart = df.getDateTimeFromDateAndTime(
+                historyWithDates!!.workDate.wdDate,
+                df.getTimeDisplay(startTime)
+            )
+
+            if (latestTime != null && currentStart < latestTime && !showStartTimeWarning) {
+                errorMessage =
+                    context.getString(R.string.warning_start_time_overlaps_previous_end_time)
+                showStartTimeWarning = true
+            } else {
+                coroutineScope.launch {
+                    workOrderViewModel.insertWorkOrderHistoryTimeWorked(
+                        ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorked(
+                            nf.generateRandomIdAsLong(),
+                            history.woHistoryId,
+                            historyWithDates!!.workDate.workDateId,
+                            currentStart,
+                            df.getDateTimeFromDateAndTime(
+                                historyWithDates!!.workDate.wdDate,
+                                df.getTimeDisplay(endTime)
+                            ),
+                            selectedTimeType,
+                            false,
+                            df.getCurrentUTCTimeAsString()
+                        )
                     )
-                )
+                    showStartTimeWarning = false
+                }
             }
         },
-        onDoneClick = { navController.popBackStack() },
+        onDoneClick = {
+            navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
+                popUpTo(Screen.WorkOrderHistoryTime.route) { inclusive = true }
+            }
+        },
         existingTimes = existingTimes,
+        allTimesForDay = allTimesByDate,
         onTimeClick = { combined ->
             mainViewModel.setWorkOrderHistoryTimeWorkedCombined(combined)
             navController.navigate(Screen.WorkOrderHistoryTimeUpdate.route)
@@ -1590,10 +1724,24 @@ fun WorkOrderHistoryTimeUpdateRoute(
     }
     var selectedTimeType by remember { mutableIntStateOf(combined.timeWorked.wohtTimeType) }
 
+    val allTimesByDate by workOrderViewModel.getTimeWorkedPerDay(combined.workDate.workDateId)
+        .observeAsState(emptyList())
+
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(errorMessage) {
+        if (errorMessage != null) {
+            delay(3000)
+            errorMessage = null
+        }
+    }
+
     val totalHours = df.getTimeWorked(
         df.getTimeDisplay(startTime),
         df.getTimeDisplay(endTime)
     )
+
+    var showStartTimeWarning by remember { mutableStateOf(false) }
 
     WorkOrderHistoryTimeUpdateScreen(
         infoText = stringResource(R.string.work_order) + " ${combined.workOrderHistory.workOrder.woNumber}\n" +
@@ -1619,6 +1767,8 @@ fun WorkOrderHistoryTimeUpdateRoute(
                     set(Calendar.MINUTE, roundedMinute)
                 }
                 startTime = newStart
+                showStartTimeWarning = false
+                errorMessage = null
             }, startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), false).show()
         },
         onEndTimeClick = {
@@ -1628,28 +1778,78 @@ fun WorkOrderHistoryTimeUpdateRoute(
                     set(Calendar.HOUR_OF_DAY, roundedHour)
                     set(Calendar.MINUTE, roundedMinute)
                 }
-                endTime = newEnd
+
+                val hoursBefore = allTimesByDate.filter {
+                    it.timeWorked.wohtTimeType != ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.BREAK.value
+                }.sumOf {
+                    df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
+                }
+                val newSegmentHours = df.getTimeWorked(startTime, newEnd)
+
+                if (selectedTimeType == ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.REG_HOURS.value &&
+                    hoursBefore + newSegmentHours > 8.0
+                ) {
+                    val allowedHours = 8.0 - hoursBefore
+                    endTime = df.addHoursToCalendar(startTime, allowedHours)
+                    errorMessage =
+                        context.getString(R.string.time_adjusted_to_not_exceed_8_reg_hours)
+                } else if (selectedTimeType == ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.OT_HOURS.value &&
+                    hoursBefore + newSegmentHours > 12.0
+                ) {
+                    val allowedHours = 12.0 - hoursBefore
+                    endTime = df.addHoursToCalendar(startTime, allowedHours)
+                    errorMessage =
+                        context.getString(R.string.time_adjusted_to_not_exceed_12_ot_hours)
+                } else {
+                    endTime = newEnd
+                }
+                showStartTimeWarning = false
+                errorMessage = null
             }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false).show()
         },
         onSaveClick = {
-            coroutineScope.launch {
-                workOrderViewModel.updateWorkOrderHistoryTimeWorked(
-                    combined.timeWorked.copy(
-                        wohtStartTime = df.getDateTimeFromDateAndTime(
-                            combined.workDate.wdDate,
-                            df.getTimeDisplay(startTime)
-                        ),
-                        wohtEndTime = df.getDateTimeFromDateAndTime(
-                            combined.workDate.wdDate,
-                            df.getTimeDisplay(endTime)
-                        ),
-                        wohtTimeType = selectedTimeType,
-                        wohtUpdateTime = df.getCurrentUTCTimeAsString()
+            val latestTime = if (allTimesByDate.isNotEmpty()) {
+                allTimesByDate.filter { it.timeWorked.woHistoryTimeWorkedId != combined.timeWorked.woHistoryTimeWorkedId }
+                    .maxOfOrNull { it.timeWorked.wohtEndTime }
+            } else null
+
+            val currentStart = df.getDateTimeFromDateAndTime(
+                combined.workDate.wdDate,
+                df.getTimeDisplay(startTime)
+            )
+
+            if (!showStartTimeWarning && latestTime != null && currentStart < latestTime) {
+                errorMessage =
+                    context.getString(R.string.warning_start_time_overlaps_previous_end_time)
+                showStartTimeWarning = true
+            } else {
+                coroutineScope.launch {
+                    workOrderViewModel.updateWorkOrderHistoryTimeWorked(
+                        combined.timeWorked.copy(
+                            wohtStartTime = df.getDateTimeFromDateAndTime(
+                                combined.workDate.wdDate,
+                                df.getTimeDisplay(startTime)
+                            ),
+                            wohtEndTime = df.getDateTimeFromDateAndTime(
+                                combined.workDate.wdDate,
+                                df.getTimeDisplay(endTime)
+                            ),
+                            wohtTimeType = selectedTimeType,
+                            wohtUpdateTime = df.getCurrentUTCTimeAsString()
+                        )
                     )
-                )
-                navController.popBackStack()
+                    showStartTimeWarning = false
+                    navController.popBackStack()
+                }
             }
         },
-        onBackClick = { navController.popBackStack() }
+        onBackClick = { navController.popBackStack() },
+        allTimesForDay = allTimesByDate,
+        currentHistoryId = combined.timeWorked.wohtHistoryId,
+        onTimeClick = { item ->
+            mainViewModel.setWorkOrderHistoryTimeWorkedCombined(item)
+            navController.navigate(Screen.WorkOrderHistoryTimeUpdate.route)
+        },
+        errorMessage = errorMessage
     )
 }

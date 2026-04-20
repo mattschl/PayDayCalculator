@@ -38,11 +38,15 @@ class WorkOrderRepository(private val db: PayDatabase) {
     fun searchWorkOrders(employerId: Long, query: String) =
         db.getWorkOrderDao().searchWorkOrders(employerId, query)
 
-    suspend fun insertWorkOrderHistory(history: WorkOrderHistory) =
+    suspend fun insertWorkOrderHistory(history: WorkOrderHistory) {
         db.getWorkOrderDao().insertWorkOrderHistory(history)
+        synchronizeWorkDate(history.woHistoryWorkDateId)
+    }
 
-    suspend fun updateWorkOrderHistory(history: WorkOrderHistory) =
+    suspend fun updateWorkOrderHistory(history: WorkOrderHistory) {
         db.getWorkOrderDao().updateWorkOrderHistory(history)
+        synchronizeWorkDate(history.woHistoryWorkDateId)
+    }
 
     suspend fun getWorkOrderHistory(workOrderId: Long, workDateId: Long) =
         db.getWorkOrderDao().getWorkOrderHistory(workOrderId, workDateId)
@@ -151,6 +155,20 @@ class WorkOrderRepository(private val db: PayDatabase) {
         }
     }
 
+    suspend fun synchronizeWorkDate(dateId: Long) {
+        val updateTime = DateFunctions().getCurrentUTCTimeAsString()
+        val histories = db.getWorkOrderDao().getWorkOrderHistoriesByDateSync(dateId)
+        var dateReg = 0.0
+        var dateOt = 0.0
+        var dateDbl = 0.0
+        for (h in histories) {
+            dateReg += h.woHistoryRegHours
+            dateOt += h.woHistoryOtHours
+            dateDbl += h.woHistoryDblOtHours
+        }
+        updateWorkDate(dateId, dateReg, dateOt, dateDbl, updateTime)
+    }
+
     suspend fun synchronizeHours(historyId: Long) {
         val updateTime = DateFunctions().getCurrentUTCTimeAsString()
         val times = db.getWorkOrderDao().getTimeWorkedForWorkOrderHistorySync(historyId)
@@ -171,17 +189,7 @@ class WorkOrderRepository(private val db: PayDatabase) {
 
         val history = db.getWorkOrderDao().getWorkOrderHistorySync(historyId)
         if (history != null) {
-            val dateId = history.woHistoryWorkDateId
-            val histories = db.getWorkOrderDao().getWorkOrderHistoriesByDateSync(dateId)
-            var dateReg = 0.0
-            var dateOt = 0.0
-            var dateDbl = 0.0
-            for (h in histories) {
-                dateReg += h.woHistoryRegHours
-                dateOt += h.woHistoryOtHours
-                dateDbl += h.woHistoryDblOtHours
-            }
-            updateWorkDate(dateId, dateReg, dateOt, dateDbl, updateTime)
+            synchronizeWorkDate(history.woHistoryWorkDateId)
         }
     }
 

@@ -147,10 +147,16 @@ fun WorkDateAddRoute(
                 }
 
                 Screen.WorkDateTimes.route -> {
+                    navController.navigate(Screen.WorkDateUpdate.route) {
+                        popUpTo(Screen.WorkDateAdd.route) { inclusive = true }
+                    }
                     navController.navigate(Screen.WorkDateTimes.route)
                 }
 
                 Screen.WorkOrderHistoryAdd.route -> {
+                    navController.navigate(Screen.WorkDateUpdate.route) {
+                        popUpTo(Screen.WorkDateAdd.route) { inclusive = true }
+                    }
                     navController.navigate(Screen.WorkOrderHistoryAdd.route)
                 }
             }
@@ -231,22 +237,84 @@ fun WorkDateAddRoute(
         },
         note = note,
         onNoteChange = { note = it },
-        onUpdateTimeClick = { onSaveWorkDate(Screen.WorkDateTimes.route) },
-        onAddHistoryClick = { onSaveWorkDate(Screen.WorkOrderHistoryAdd.route) },
+        onUpdateTimeClick = {
+            onSaveWorkDate(Screen.WorkDateUpdate.route)
+            coroutineScope.launch {
+                delay(WAIT_250)
+                navController.navigate(Screen.WorkDateTimes.route)
+            }
+        },
+        onAddHistoryClick = {
+            onSaveWorkDate(Screen.WorkDateUpdate.route)
+            coroutineScope.launch {
+                delay(WAIT_250)
+                navController.navigate(Screen.WorkOrderHistoryAdd.route)
+            }
+        },
         onSaveClick = {
             val existing = usedWorkDatesList.find { it.wdDate == curDateString }
             if (existing != null) {
                 existingWorkDate = existing
                 showDateUsedDialog = true
             } else {
-                onSaveWorkDate(Screen.TimeSheet.route)
+                onSaveWorkDate(Screen.WorkDateUpdate.route)
             }
         },
         extras = extras,
         selectedExtras = selectedExtras.toSet(),
         onExtraToggle = { extra, selected ->
             if (selected) {
-                if (!selectedExtras.contains(extra.workExtraTypeId)) selectedExtras.add(extra.workExtraTypeId)
+                if (!selectedExtras.contains(extra.workExtraTypeId)) {
+                    selectedExtras.add(extra.workExtraTypeId)
+                    coroutineScope.launch {
+                        val existing = usedWorkDatesList.find { it.wdDate == curDateString }
+                        val currentWorkDate = if (existing != null) {
+                            existing
+                        } else {
+                            val newWorkDate = WorkDates(
+                                nf.generateRandomIdAsLong(),
+                                payPeriod.payPeriodId,
+                                payPeriod.ppEmployerId,
+                                payPeriod.ppCutoffDate,
+                                curDateString,
+                                regHours.toDoubleOrNull() ?: 0.0,
+                                otHours.toDoubleOrNull() ?: 0.0,
+                                dblOtHours.toDoubleOrNull() ?: 0.0,
+                                statHours.toDoubleOrNull() ?: 0.0,
+                                note.ifBlank { null },
+                                false,
+                                df.getCurrentUTCTimeAsString()
+                            )
+                            payDayViewModel.insertWorkDate(newWorkDate)
+                            newWorkDate
+                        }
+                        mainViewModel.setWorkDateObject(currentWorkDate)
+
+                        val extraTypeAndDef = workExtraViewModel.getExtraTypeAndDefByTypeIdSync(
+                            extra.workExtraTypeId, payPeriod.ppCutoffDate
+                        )
+                        if (extraTypeAndDef != null) {
+                            payDayViewModel.insertWorkDateExtra(
+                                ms.mattschlenkrich.paycalculator.data.WorkDateExtras(
+                                    nf.generateRandomIdAsLong(),
+                                    currentWorkDate.workDateId,
+                                    extraTypeAndDef.extraType.workExtraTypeId,
+                                    extraTypeAndDef.extraType.wetName,
+                                    extraTypeAndDef.extraType.wetAppliesTo,
+                                    extraTypeAndDef.extraType.wetAttachTo,
+                                    extraTypeAndDef.definition.weValue,
+                                    extraTypeAndDef.definition.weIsFixed,
+                                    extraTypeAndDef.extraType.wetIsCredit,
+                                    false,
+                                    df.getCurrentUTCTimeAsString()
+                                )
+                            )
+                        }
+                        navController.navigate(Screen.WorkDateUpdate.route) {
+                            popUpTo(Screen.WorkDateAdd.route) { inclusive = true }
+                        }
+                    }
+                }
             } else {
                 selectedExtras.remove(extra.workExtraTypeId)
             }
@@ -608,8 +676,6 @@ fun WorkDateTimesRoute(
         employer.employerId
     ).observeAsState(emptyList())
 
-    var selectedTimeType by remember { mutableIntStateOf(0) }
-
     val existingTimes by if (history != null) {
         workOrderViewModel.getTimeWorkedForWorkOrderHistory(history!!.woHistoryId)
             .observeAsState(emptyList())
@@ -619,6 +685,24 @@ fun WorkDateTimesRoute(
 
     val allTimesByDate by workTimeViewModel.getTimesWorkedByDate(workDate.workDateId)
         .observeAsState(emptyList())
+
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var isOverlapOverride by remember { mutableStateOf(false) }
+
+    var selectedTimeType by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(allTimesByDate) {
+        val totalHours = allTimesByDate
+            .filter { it.timeWorked.wohtTimeType != ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.BREAK.value }
+            .sumOf {
+                df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
+            }
+        selectedTimeType = when {
+            totalHours < 8.0 -> ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.REG_HOURS.value
+            totalHours < 12.0 -> ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.OT_HOURS.value
+            else -> ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.DBL_OT_HOURS.value
+        }
+    }
 
     var startTime by remember(allTimesByDate) {
         if (allTimesByDate.isNotEmpty()) {
@@ -630,7 +714,11 @@ fun WorkDateTimesRoute(
         }
     }
     var endTime by remember(startTime) {
-        mutableStateOf(startTime.clone() as Calendar)
+        val end = startTime.clone() as Calendar
+        if (allTimesByDate.isEmpty() && df.getTimeDisplay(startTime) == "08:30") {
+            end.add(Calendar.HOUR_OF_DAY, 8)
+        }
+        mutableStateOf(end)
     }
 
     val isWorkOrderValid = workOrderSuggestions.any { it.woNumber == workOrderNumber }
@@ -712,6 +800,8 @@ fun WorkDateTimesRoute(
                     set(Calendar.HOUR_OF_DAY, roundedH)
                     set(Calendar.MINUTE, roundedM)
                 }
+                errorMessage = null
+                isOverlapOverride = false
             }, startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), false).show()
         },
         onEndTimeClick = {
@@ -721,6 +811,8 @@ fun WorkDateTimesRoute(
                     set(Calendar.HOUR_OF_DAY, roundedH)
                     set(Calendar.MINUTE, roundedM)
                 }
+                errorMessage = null
+                isOverlapOverride = false
             }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false).show()
         },
         onEnterTimeClick = {
@@ -732,6 +824,19 @@ fun WorkDateTimesRoute(
                 workOrderError = context.getString(R.string.work_order_not_found_please_create_it)
                 return@WorkDateTimesScreen
             }
+
+            val startTimeString = df.getDateTimeFromDateAndTime(
+                workDate.wdDate,
+                df.getTimeDisplay(startTime)
+            )
+
+            if (!isOverlapOverride && allTimesByDate.any { it.timeWorked.wohtEndTime > startTimeString }) {
+                errorMessage =
+                    context.getString(R.string.warning_start_time_overlaps_previous_end_time)
+                isOverlapOverride = true
+                return@WorkDateTimesScreen
+            }
+
             coroutineScope.launch {
                 var currentHistory = history
                 if (currentHistory == null) {
@@ -774,10 +879,7 @@ fun WorkDateTimesRoute(
                         nf.generateRandomIdAsLong(),
                         currentHistory!!.woHistoryId,
                         workDate.workDateId,
-                        df.getDateTimeFromDateAndTime(
-                            workDate.wdDate,
-                            df.getTimeDisplay(startTime)
-                        ),
+                        startTimeString,
                         df.getDateTimeFromDateAndTime(
                             workDate.wdDate,
                             df.getTimeDisplay(endTime)
@@ -787,10 +889,14 @@ fun WorkDateTimesRoute(
                         df.getCurrentUTCTimeAsString()
                     )
                 )
+                startTime = endTime.clone() as Calendar
+                errorMessage = null
+                isOverlapOverride = false
             }
         },
         onDoneClick = { navController.popBackStack() },
         existingTimes = existingTimes,
+        allTimesForDay = allTimesByDate,
         onTimeClick = { item ->
             coroutineScope.launch {
                 workOrderViewModel.deleteTimeWorked(
@@ -798,7 +904,8 @@ fun WorkDateTimesRoute(
                     df.getCurrentUTCTimeAsString()
                 )
             }
-        }
+        },
+        errorMessage = errorMessage
     )
 }
 

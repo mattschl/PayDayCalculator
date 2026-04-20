@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
@@ -31,10 +32,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorkedCombined
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,14 +53,30 @@ fun WorkOrderHistoryTimeUpdateScreen(
     onStartTimeClick: () -> Unit,
     onEndTimeClick: () -> Unit,
     onSaveClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    allTimesForDay: List<WorkOrderHistoryTimeWorkedCombined> = emptyList(),
+    currentHistoryId: Long? = null,
+    onTimeClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit = {},
+    errorMessage: String? = null
 ) {
     val df = DateFunctions()
+    val nf = NumberFunctions()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("WorkOrderHistoryTimeUpdateScreen") },
+                title = {
+                    Column {
+                        Text(stringResource(R.string.update_work_time))
+                        if (errorMessage != null) {
+                            Text(
+                                text = errorMessage,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = androidx.compose.ui.graphics.Color.Red
+                            )
+                        }
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
@@ -232,6 +251,24 @@ fun WorkOrderHistoryTimeUpdateScreen(
                         )
                     }
                 }
+            }
+
+            item {
+                Text(
+                    text = stringResource(R.string.existing_times),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
+            items(allTimesForDay) { time ->
+                TimeWorkedItem(
+                    item = time,
+                    df = df,
+                    nf = nf,
+                    onClick = onTimeClick,
+                    isCurrentWorkOrder = time.timeWorked.wohtHistoryId == currentHistoryId
+                )
             }
         }
     }
