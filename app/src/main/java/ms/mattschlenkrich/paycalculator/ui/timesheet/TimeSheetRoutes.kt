@@ -89,16 +89,38 @@ fun TimeSheetRoute(
 
     LaunchedEffect(cutOffDates, selectedEmployer) {
         if (selectedEmployer != null) {
-            if (cutOffDates.isNotEmpty()) {
+            val today = LocalDate.now().toString()
+            if (cutOffDates.isEmpty() || cutOffDates.first().ppCutoffDate < today) {
+                coroutineScope.launch {
+                    val nextCutOff = projections.generateNextCutOff(
+                        selectedEmployer!!,
+                        cutOffDates.firstOrNull()?.ppCutoffDate ?: ""
+                    )
+                    if (nextCutOff.isNotEmpty()) {
+                        payDayViewModel.insertPayPeriod(
+                            PayPeriods(
+                                nf.generateRandomIdAsLong(),
+                                nextCutOff,
+                                selectedEmployer!!.employerId,
+                                false,
+                                df.getCurrentUTCTimeAsString()
+                            )
+                        )
+                        selectedCutOffDate = nextCutOff
+                    }
+                }
+            } else {
                 val historyCutOff = mainViewModel.getCutOffDate()
                 val historyEmployerId = mainViewModel.getEmployer()?.employerId
+                val currentCutOff = cutOffDates.last { it.ppCutoffDate >= today }.ppCutoffDate
 
-                if (historyEmployerId != selectedEmployer!!.employerId ||
-                    historyCutOff == null ||
+                if (historyEmployerId != selectedEmployer!!.employerId) {
+                    selectedCutOffDate = currentCutOff
+                } else if (historyCutOff == null ||
                     !cutOffDates.any { it.ppCutoffDate == historyCutOff }
                 ) {
                     if (selectedCutOffDate.isEmpty() || !cutOffDates.any { it.ppCutoffDate == selectedCutOffDate }) {
-                        selectedCutOffDate = cutOffDates.first().ppCutoffDate
+                        selectedCutOffDate = currentCutOff
                     }
                 } else if (selectedCutOffDate.isEmpty()) {
                     selectedCutOffDate = historyCutOff

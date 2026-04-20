@@ -76,7 +76,7 @@ fun WorkDateAddScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "WorkDateAddScreen", // title,
+                        text = stringResource(R.string.add_a_new_work_date),
                         style = MaterialTheme.typography.titleLarge,
                     )
                 },

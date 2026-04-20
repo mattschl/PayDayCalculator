@@ -82,7 +82,7 @@ fun WorkDateUpdateScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "WorkDateUpdateScreen", // title,
+                        text = stringResource(R.string.update_this_work_date),
                         style = MaterialTheme.typography.titleLarge,
                     )
                 }

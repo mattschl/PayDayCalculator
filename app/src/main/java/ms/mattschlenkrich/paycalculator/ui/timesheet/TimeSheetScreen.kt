@@ -74,7 +74,7 @@ fun TimeSheetScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "TimeSheetScreen", // title,
+                        text = stringResource(R.string.time_sheet),
                         style = MaterialTheme.typography.titleLarge,
                     )
                 }
