@@ -60,55 +60,55 @@ import ms.mattschlenkrich.paycalculator.data.WorkTaxViewModelFactory
 import ms.mattschlenkrich.paycalculator.data.WorkTimeRepository
 import ms.mattschlenkrich.paycalculator.data.WorkTimeViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkTimeViewModelFactory
-import ms.mattschlenkrich.paycalculator.employer.EmployerAddRoute
-import ms.mattschlenkrich.paycalculator.employer.EmployerListScreen
-import ms.mattschlenkrich.paycalculator.employer.EmployerUpdateRoute
-import ms.mattschlenkrich.paycalculator.extras.EmployerExtraDefinitionUpdateRoute
-import ms.mattschlenkrich.paycalculator.extras.EmployerExtraDefinitionsAddRoute
-import ms.mattschlenkrich.paycalculator.extras.ExtraRoute
-import ms.mattschlenkrich.paycalculator.extras.PayPeriodExtraAddRoute
-import ms.mattschlenkrich.paycalculator.extras.PayPeriodExtraUpdateRoute
-import ms.mattschlenkrich.paycalculator.extras.WorkDateExtraAddRoute
-import ms.mattschlenkrich.paycalculator.extras.WorkDateExtraUpdateRoute
-import ms.mattschlenkrich.paycalculator.extras.WorkExtraTypeAddRoute
-import ms.mattschlenkrich.paycalculator.extras.WorkExtraTypeUpdateRoute
-import ms.mattschlenkrich.paycalculator.paydetail.PayDetailRoute
-import ms.mattschlenkrich.paycalculator.payrate.EmployerPayRateAddRoute
-import ms.mattschlenkrich.paycalculator.payrate.EmployerPayRateUpdateRoute
-import ms.mattschlenkrich.paycalculator.payrate.EmployerPayRatesRoute
-import ms.mattschlenkrich.paycalculator.settings.SettingsRoute
-import ms.mattschlenkrich.paycalculator.settings.SettingsViewModel
-import ms.mattschlenkrich.paycalculator.sync.SyncActivity
-import ms.mattschlenkrich.paycalculator.tax.TaxRoute
-import ms.mattschlenkrich.paycalculator.tax.TaxRuleAddRoute
-import ms.mattschlenkrich.paycalculator.tax.TaxRuleUpdateRoute
-import ms.mattschlenkrich.paycalculator.tax.TaxTypeAddRoute
-import ms.mattschlenkrich.paycalculator.tax.TaxTypeUpdateRoute
-import ms.mattschlenkrich.paycalculator.timesheet.TimeSheetRoute
-import ms.mattschlenkrich.paycalculator.workdate.WorkDateAddRoute
-import ms.mattschlenkrich.paycalculator.workdate.WorkDateTimesRoute
-import ms.mattschlenkrich.paycalculator.workdate.WorkDateUpdateRoute
-import ms.mattschlenkrich.paycalculator.workorder.AreaUpdateRoute
-import ms.mattschlenkrich.paycalculator.workorder.AreaViewRoute
-import ms.mattschlenkrich.paycalculator.workorder.JobSpecMergeRoute
-import ms.mattschlenkrich.paycalculator.workorder.JobSpecUpdateRoute
-import ms.mattschlenkrich.paycalculator.workorder.JobSpecViewRoute
-import ms.mattschlenkrich.paycalculator.workorder.MaterialMergeRoute
-import ms.mattschlenkrich.paycalculator.workorder.MaterialUpdateRoute
-import ms.mattschlenkrich.paycalculator.workorder.MaterialViewRoute
-import ms.mattschlenkrich.paycalculator.workorder.WorkOrderAddRoute
-import ms.mattschlenkrich.paycalculator.workorder.WorkOrderHistoryAddRoute
-import ms.mattschlenkrich.paycalculator.workorder.WorkOrderHistoryMaterialUpdateRoute
-import ms.mattschlenkrich.paycalculator.workorder.WorkOrderHistoryTimeRoute
-import ms.mattschlenkrich.paycalculator.workorder.WorkOrderHistoryTimeUpdateRoute
-import ms.mattschlenkrich.paycalculator.workorder.WorkOrderHistoryUpdateRoute
-import ms.mattschlenkrich.paycalculator.workorder.WorkOrderHistoryWorkPerformedUpdateRoute
-import ms.mattschlenkrich.paycalculator.workorder.WorkOrderLookupRoute
-import ms.mattschlenkrich.paycalculator.workorder.WorkOrderUpdateRoute
-import ms.mattschlenkrich.paycalculator.workorder.WorkOrderViewRoute
-import ms.mattschlenkrich.paycalculator.workorder.WorkPerformedMergeRoute
-import ms.mattschlenkrich.paycalculator.workorder.WorkPerformedUpdateRoute
-import ms.mattschlenkrich.paycalculator.workorder.WorkPerformedViewRoute
+import ms.mattschlenkrich.paycalculator.ui.employer.EmployerAddRoute
+import ms.mattschlenkrich.paycalculator.ui.employer.EmployerListScreen
+import ms.mattschlenkrich.paycalculator.ui.employer.EmployerUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.extras.EmployerExtraDefinitionUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.extras.EmployerExtraDefinitionsAddRoute
+import ms.mattschlenkrich.paycalculator.ui.extras.ExtraRoute
+import ms.mattschlenkrich.paycalculator.ui.extras.PayPeriodExtraAddRoute
+import ms.mattschlenkrich.paycalculator.ui.extras.PayPeriodExtraUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.extras.WorkDateExtraAddRoute
+import ms.mattschlenkrich.paycalculator.ui.extras.WorkDateExtraUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.extras.WorkExtraTypeAddRoute
+import ms.mattschlenkrich.paycalculator.ui.extras.WorkExtraTypeUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.paydetail.PayDetailRoute
+import ms.mattschlenkrich.paycalculator.ui.payrate.EmployerPayRateAddRoute
+import ms.mattschlenkrich.paycalculator.ui.payrate.EmployerPayRateUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.payrate.EmployerPayRatesRoute
+import ms.mattschlenkrich.paycalculator.ui.settings.SettingsRoute
+import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
+import ms.mattschlenkrich.paycalculator.ui.sync.SyncActivity
+import ms.mattschlenkrich.paycalculator.ui.tax.TaxRoute
+import ms.mattschlenkrich.paycalculator.ui.tax.TaxRuleAddRoute
+import ms.mattschlenkrich.paycalculator.ui.tax.TaxRuleUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.tax.TaxTypeAddRoute
+import ms.mattschlenkrich.paycalculator.ui.tax.TaxTypeUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.timesheet.TimeSheetRoute
+import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateAddRoute
+import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateTimesRoute
+import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.AreaUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.AreaViewRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.JobSpecMergeRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.JobSpecUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.JobSpecViewRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.MaterialMergeRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.MaterialUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.MaterialViewRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderAddRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderHistoryAddRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderHistoryMaterialUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderHistoryTimeRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderHistoryTimeUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderHistoryUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderHistoryWorkPerformedUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderLookupRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderViewRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.WorkPerformedMergeRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.WorkPerformedUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.WorkPerformedViewRoute
 
 class MainActivity : ComponentActivity() {
 
@@ -299,7 +299,8 @@ fun MainScreen(
         },
         bottomBar = {
             NavigationBar(
-                windowInsets = NavigationBarDefaults.windowInsets
+                windowInsets = NavigationBarDefaults.windowInsets,
+//                modifier = Modifier.height(25.dp),
             ) {
                 bottomNavItems.forEach { screen ->
                     NavigationBarItem(

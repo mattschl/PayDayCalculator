@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ms.mattschlenkrich.paycalculator.sync.SyncActivity"
+            android:name="ms.mattschlenkrich.paycalculator.ui.sync.SyncActivity"
             android:exported="true"
             android:label="@string/sync_data">
             <intent-filter android:autoVerify="true">
