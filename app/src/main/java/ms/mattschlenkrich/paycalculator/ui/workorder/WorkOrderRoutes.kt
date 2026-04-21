@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder
 
 import android.app.TimePickerDialog
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -251,9 +252,27 @@ fun WorkOrderHistoryUpdateRoute(
         .observeAsState(emptyList())
     var workOrderDescription by remember { mutableStateOf(historyWithDates!!.workOrder.woDescription) }
 
-    var regHours by remember { mutableStateOf(nf.displayNumberFromDouble(history.woHistoryRegHours)) }
-    var otHours by remember { mutableStateOf(nf.displayNumberFromDouble(history.woHistoryOtHours)) }
-    var dblOtHours by remember { mutableStateOf(nf.displayNumberFromDouble(history.woHistoryDblOtHours)) }
+    var regHours by remember(history.woHistoryRegHours) {
+        mutableStateOf(
+            nf.displayNumberFromDouble(
+                history.woHistoryRegHours
+            )
+        )
+    }
+    var otHours by remember(history.woHistoryOtHours) {
+        mutableStateOf(
+            nf.displayNumberFromDouble(
+                history.woHistoryOtHours
+            )
+        )
+    }
+    var dblOtHours by remember(history.woHistoryDblOtHours) {
+        mutableStateOf(
+            nf.displayNumberFromDouble(
+                history.woHistoryDblOtHours
+            )
+        )
+    }
     var note by remember { mutableStateOf(history.woHistoryNote ?: "") }
 
     var workPerformed by remember { mutableStateOf("") }
@@ -1572,18 +1591,12 @@ fun WorkOrderHistoryTimeRoute(
         }
     }
 
-    var startTime by remember(existingTimes) {
-        if (existingTimes.isNotEmpty()) {
-            val latestTime = existingTimes.maxOf { it.timeWorked.wohtEndTime }
-            val timePart = df.splitTimeFromDateTime(latestTime).joinToString(":")
-            mutableStateOf(df.getCalendarFromTime(timePart))
-        } else if (allTimesByDate.isNotEmpty()) {
-            val latestTime = allTimesByDate.maxOf { it.timeWorked.wohtEndTime }
-            val timePart = df.splitTimeFromDateTime(latestTime).joinToString(":")
-            mutableStateOf(df.getCalendarFromTime(timePart))
-        } else {
-            mutableStateOf(df.getCalendarFromTime("08:30"))
-        }
+    var startTime by remember(allTimesByDate) {
+        val latestTime = allTimesByDate.maxOfOrNull { it.timeWorked.wohtEndTime }
+        val timePart = latestTime?.let {
+            df.splitTimeFromDateTime(it).joinToString(":")
+        } ?: "08:30"
+        mutableStateOf(df.getCalendarFromTime(timePart))
     }
     var endTime by remember(startTime) {
         mutableStateOf(startTime.clone() as Calendar)
@@ -1600,6 +1613,62 @@ fun WorkOrderHistoryTimeRoute(
     var showDeleteConfirmDialog by remember {
         mutableStateOf<WorkOrderHistoryTimeWorkedCombined?>(
             null
+        )
+    }
+    var showUnsavedDialog by remember { mutableStateOf(false) }
+
+    if (showUnsavedDialog) {
+        AlertDialog(
+            onDismissRequest = { showUnsavedDialog = false },
+            title = { Text(stringResource(R.string.confirm_leave)) },
+            text = { Text(stringResource(R.string.would_you_like_to_save_time_entered)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    coroutineScope.launch {
+                        workOrderViewModel.insertWorkOrderHistoryTimeWorked(
+                            WorkOrderHistoryTimeWorked(
+                                nf.generateRandomIdAsLong(),
+                                history.woHistoryId,
+                                historyWithDates!!.workDate.workDateId,
+                                df.getDateTimeFromDateAndTime(
+                                    historyWithDates!!.workDate.wdDate,
+                                    df.getTimeDisplay(startTime)
+                                ),
+                                df.getDateTimeFromDateAndTime(
+                                    historyWithDates!!.workDate.wdDate,
+                                    df.getTimeDisplay(endTime)
+                                ),
+                                selectedTimeType,
+                                false,
+                                df.getCurrentUTCTimeAsString()
+                            )
+                        )
+                        showUnsavedDialog = false
+                        navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
+                            popUpTo(Screen.WorkOrderHistoryTime.route) { inclusive = true }
+                        }
+                    }
+                }) {
+                    Text(stringResource(R.string.save))
+                }
+            },
+            dismissButton = {
+                Row {
+                    TextButton(onClick = {
+                        showUnsavedDialog = false
+                        navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
+                            popUpTo(Screen.WorkOrderHistoryTime.route) { inclusive = true }
+                        }
+                    }) {
+                        Text(stringResource(R.string.no))
+                    }
+                    TextButton(onClick = {
+                        showUnsavedDialog = false
+                    }) {
+                        Text(stringResource(R.string.go_back))
+                    }
+                }
+            }
         )
     }
 
@@ -1797,12 +1866,16 @@ fun WorkOrderHistoryTimeRoute(
             }
         },
         onDoneClick = {
-            navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
-                popUpTo(Screen.WorkOrderHistoryTime.route) { inclusive = true }
+            if (totalHours > 0.0) {
+                showUnsavedDialog = true
+            } else {
+                navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
+                    popUpTo(Screen.WorkOrderHistoryTime.route) { inclusive = true }
+                }
             }
         },
         existingTimes = existingTimes,
-        allTimesForDay = allTimesByDate,
+        allTimesForDay = existingTimes,
         onTimeClick = { combined ->
             mainViewModel.setWorkOrderHistoryTimeWorkedCombined(combined)
             navController.navigate(Screen.WorkOrderHistoryTimeUpdate.route)
@@ -1890,7 +1963,6 @@ fun WorkOrderHistoryTimeUpdateRoute(
             dismissButton = {
                 TextButton(onClick = {
                     showDeleteConfirmDialog = combinedItem
-                    showTimeOptionsDialog = null
                 }) {
                     Text(stringResource(R.string.delete_time_entry))
                 }
@@ -2041,7 +2113,7 @@ fun WorkOrderHistoryTimeUpdateRoute(
             }
         },
         onBackClick = { navController.popBackStack() },
-        allTimesForDay = allTimesByDate,
+        allTimesForDay = allTimesByDate.filter { it.timeWorked.wohtHistoryId == combined.timeWorked.wohtHistoryId },
         currentHistoryId = combined.timeWorked.wohtHistoryId,
         onTimeClick = { item ->
             mainViewModel.setWorkOrderHistoryTimeWorkedCombined(item)

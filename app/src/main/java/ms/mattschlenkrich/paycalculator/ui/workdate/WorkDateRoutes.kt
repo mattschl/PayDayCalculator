@@ -354,11 +354,35 @@ fun WorkDateUpdateRoute(
         return
     }
 
-    var curDateString by remember { mutableStateOf(currentWorkDate.wdDate) }
-    var regHours by remember { mutableStateOf(nf.displayNumberFromDouble(currentWorkDate.wdRegHours)) }
-    var otHours by remember { mutableStateOf(nf.displayNumberFromDouble(currentWorkDate.wdOtHours)) }
-    var dblOtHours by remember { mutableStateOf(nf.displayNumberFromDouble(currentWorkDate.wdDblOtHours)) }
-    var statHours by remember { mutableStateOf(nf.displayNumberFromDouble(currentWorkDate.wdStatHours)) }
+    var curDateString by remember(currentWorkDate.wdDate) { mutableStateOf(currentWorkDate.wdDate) }
+    var regHours by remember(currentWorkDate.wdRegHours) {
+        mutableStateOf(
+            nf.displayNumberFromDouble(
+                currentWorkDate.wdRegHours
+            )
+        )
+    }
+    var otHours by remember(currentWorkDate.wdOtHours) {
+        mutableStateOf(
+            nf.displayNumberFromDouble(
+                currentWorkDate.wdOtHours
+            )
+        )
+    }
+    var dblOtHours by remember(currentWorkDate.wdDblOtHours) {
+        mutableStateOf(
+            nf.displayNumberFromDouble(
+                currentWorkDate.wdDblOtHours
+            )
+        )
+    }
+    var statHours by remember(currentWorkDate.wdStatHours) {
+        mutableStateOf(
+            nf.displayNumberFromDouble(
+                currentWorkDate.wdStatHours
+            )
+        )
+    }
     var note by remember { mutableStateOf(currentWorkDate.wdNote ?: "") }
 
     val usedWorkDatesList by payDayViewModel.getWorkDateList(
