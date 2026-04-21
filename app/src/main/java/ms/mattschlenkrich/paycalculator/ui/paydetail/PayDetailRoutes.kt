@@ -131,7 +131,7 @@ fun PayDetailRoute(
                     items.add(
                         HourlyItem(
                             context.getString(R.string.reg_hours),
-                            nf.getNumberFromDouble(payCalculations.getHoursReg()),
+                            nf.displayNumberFromDouble(payCalculations.getHoursReg()),
                             nf.displayDollars(payCalculations.getPayRate()),
                             nf.displayDollars(payCalculations.getPayReg())
                         )
@@ -141,7 +141,7 @@ fun PayDetailRoute(
                     items.add(
                         HourlyItem(
                             context.getString(R.string.overtime),
-                            nf.getNumberFromDouble(payCalculations.getHoursOt()),
+                            nf.displayNumberFromDouble(payCalculations.getHoursOt()),
                             nf.displayDollars(payCalculations.getPayRate() * 1.5),
                             nf.displayDollars(payCalculations.getPayOt())
                         )
@@ -151,7 +151,7 @@ fun PayDetailRoute(
                     items.add(
                         HourlyItem(
                             context.getString(R.string.double_overtime),
-                            nf.getNumberFromDouble(payCalculations.getHoursDblOt()),
+                            nf.displayNumberFromDouble(payCalculations.getHoursDblOt()),
                             nf.displayDollars(payCalculations.getPayRate() * 2),
                             nf.displayDollars(payCalculations.getPayDblOt())
                         )
@@ -161,7 +161,7 @@ fun PayDetailRoute(
                     items.add(
                         HourlyItem(
                             context.getString(R.string.other_hours),
-                            nf.getNumberFromDouble(payCalculations.getHoursStat()),
+                            nf.displayNumberFromDouble(payCalculations.getHoursStat()),
                             nf.displayDollars(payCalculations.getPayRate()),
                             nf.displayDollars(payCalculations.getPayStat())
                         )

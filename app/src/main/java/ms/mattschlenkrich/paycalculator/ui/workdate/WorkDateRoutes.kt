@@ -242,7 +242,7 @@ fun WorkDateAddRoute(
                     )
                 delay(WAIT_1000)
                 val stat = round(holidayPayCalculator.getStatHours() * 4) / 4
-                statHours = nf.getNumberFromDouble(stat)
+                statHours = nf.displayNumberFromDouble(stat)
             }
         },
         note = note,
@@ -355,10 +355,10 @@ fun WorkDateUpdateRoute(
     }
 
     var curDateString by remember { mutableStateOf(currentWorkDate.wdDate) }
-    var regHours by remember { mutableStateOf(nf.getNumberFromDouble(currentWorkDate.wdRegHours)) }
-    var otHours by remember { mutableStateOf(nf.getNumberFromDouble(currentWorkDate.wdOtHours)) }
-    var dblOtHours by remember { mutableStateOf(nf.getNumberFromDouble(currentWorkDate.wdDblOtHours)) }
-    var statHours by remember { mutableStateOf(nf.getNumberFromDouble(currentWorkDate.wdStatHours)) }
+    var regHours by remember { mutableStateOf(nf.displayNumberFromDouble(currentWorkDate.wdRegHours)) }
+    var otHours by remember { mutableStateOf(nf.displayNumberFromDouble(currentWorkDate.wdOtHours)) }
+    var dblOtHours by remember { mutableStateOf(nf.displayNumberFromDouble(currentWorkDate.wdDblOtHours)) }
+    var statHours by remember { mutableStateOf(nf.displayNumberFromDouble(currentWorkDate.wdStatHours)) }
     var note by remember { mutableStateOf(currentWorkDate.wdNote ?: "") }
 
     val usedWorkDatesList by payDayViewModel.getWorkDateList(
@@ -414,17 +414,17 @@ fun WorkDateUpdateRoute(
         buildString {
             if (historyRegHours != 0.0) {
                 append(context.getString(R.string.reg_))
-                append(nf.getNumberFromDouble(historyRegHours))
+                append(nf.displayNumberFromDouble(historyRegHours))
             }
             if (historyOtHours != 0.0) {
                 if (isNotEmpty()) append(context.getString(R.string.pipe))
                 append(context.getString(R.string.ot_))
-                append(nf.getNumberFromDouble(historyOtHours))
+                append(nf.displayNumberFromDouble(historyOtHours))
             }
             if (historyDblOtHours != 0.0) {
                 if (isNotEmpty()) append(context.getString(R.string.pipe))
                 append(context.getString(R.string.dbl_ot_))
-                append(nf.getNumberFromDouble(historyDblOtHours))
+                append(nf.displayNumberFromDouble(historyDblOtHours))
             }
         }
     }
@@ -580,7 +580,7 @@ fun WorkDateUpdateRoute(
                     )
                 delay(WAIT_1000)
                 val stat = round(holidayPayCalculator.getStatHours() * 4) / 4
-                statHours = nf.getNumberFromDouble(stat)
+                statHours = nf.displayNumberFromDouble(stat)
             }
         },
         note = note,
@@ -588,9 +588,9 @@ fun WorkDateUpdateRoute(
         onUpdateTimeClick = { onUpdateWorkDate(Screen.WorkDateTimes.route) },
         onAddHistoryClick = { onUpdateWorkDate(Screen.WorkOrderHistoryAdd.route) },
         onTransferClick = {
-            regHours = nf.getNumberFromDouble(historyRegHours)
-            otHours = nf.getNumberFromDouble(historyOtHours)
-            dblOtHours = nf.getNumberFromDouble(historyDblOtHours)
+            regHours = nf.displayNumberFromDouble(historyRegHours)
+            otHours = nf.displayNumberFromDouble(historyOtHours)
+            dblOtHours = nf.displayNumberFromDouble(historyDblOtHours)
         },
         onDoneClick = {
             if (curDateString != currentWorkDate.wdDate && usedWorkDatesList.any { it.wdDate == curDateString }) {
@@ -810,9 +810,9 @@ fun WorkDateTimesRoute(
     WorkDateTimesScreen(
         infoText = df.getDisplayDate(workDate.wdDate),
         hoursSummaryText = if (history != null) {
-            "${nf.getNumberFromDouble(history!!.woHistoryRegHours)} Reg | " +
-                    "${nf.getNumberFromDouble(history!!.woHistoryOtHours)} OT | " +
-                    "${nf.getNumberFromDouble(history!!.woHistoryDblOtHours)} Dbl"
+            "${nf.displayNumberFromDouble(history!!.woHistoryRegHours)} Reg | " +
+                    "${nf.displayNumberFromDouble(history!!.woHistoryOtHours)} OT | " +
+                    "${nf.displayNumberFromDouble(history!!.woHistoryDblOtHours)} Dbl"
         } else {
             stringResource(R.string.there_is_no_work_order_selected)
         },

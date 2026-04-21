@@ -99,9 +99,10 @@ fun WorkOrderHistoryAddRoute(
 
     val tempInfo = mainViewModel.getTempWorkOrderHistoryInfo()
     val initialWorkOrderNumber = tempInfo?.woHistoryWorkOrderNumber ?: ""
-    val initialRegHours = tempInfo?.let { nf.getNumberFromDouble(it.woHistoryRegHours) } ?: ""
-    val initialOtHours = tempInfo?.let { nf.getNumberFromDouble(it.woHistoryOtHours) } ?: ""
-    val initialDblOtHours = tempInfo?.let { nf.getNumberFromDouble(it.woHistoryDblOtHours) } ?: ""
+    val initialRegHours = tempInfo?.let { nf.displayNumberFromDouble(it.woHistoryRegHours) } ?: ""
+    val initialOtHours = tempInfo?.let { nf.displayNumberFromDouble(it.woHistoryOtHours) } ?: ""
+    val initialDblOtHours =
+        tempInfo?.let { nf.displayNumberFromDouble(it.woHistoryDblOtHours) } ?: ""
     val initialNote = tempInfo?.woHistoryNote ?: ""
 
     val selectedWo = mainViewModel.getWorkOrder()
@@ -250,9 +251,9 @@ fun WorkOrderHistoryUpdateRoute(
         .observeAsState(emptyList())
     var workOrderDescription by remember { mutableStateOf(historyWithDates!!.workOrder.woDescription) }
 
-    var regHours by remember { mutableStateOf(nf.getNumberFromDouble(history.woHistoryRegHours)) }
-    var otHours by remember { mutableStateOf(nf.getNumberFromDouble(history.woHistoryOtHours)) }
-    var dblOtHours by remember { mutableStateOf(nf.getNumberFromDouble(history.woHistoryDblOtHours)) }
+    var regHours by remember { mutableStateOf(nf.displayNumberFromDouble(history.woHistoryRegHours)) }
+    var otHours by remember { mutableStateOf(nf.displayNumberFromDouble(history.woHistoryOtHours)) }
+    var dblOtHours by remember { mutableStateOf(nf.displayNumberFromDouble(history.woHistoryDblOtHours)) }
     var note by remember { mutableStateOf(history.woHistoryNote ?: "") }
 
     var workPerformed by remember { mutableStateOf("") }
@@ -938,7 +939,7 @@ fun MaterialQuantityUpdateRoute(
 
     if (materialHistory == null || historyWithDates == null) return
 
-    var qty by remember { mutableStateOf(nf.getNumberFromDouble(materialHistory!!.workOrderHistoryMaterial.wohmQuantity)) }
+    var qty by remember { mutableStateOf(nf.displayNumberFromDouble(materialHistory!!.workOrderHistoryMaterial.wohmQuantity)) }
 
     MaterialQuantityUpdateScreen(
         details = stringResource(R.string.edit_material_used_for_wo_) +
@@ -1426,7 +1427,7 @@ fun WorkOrderHistoryMaterialUpdateRoute(
     if (materialHistory == null || historyWithDates == null) return
 
     var mName by remember { mutableStateOf(materialHistory!!.material.mName) }
-    var qty by remember { mutableStateOf(nf.getNumberFromDouble(materialHistory!!.workOrderHistoryMaterial.wohmQuantity)) }
+    var qty by remember { mutableStateOf(nf.displayNumberFromDouble(materialHistory!!.workOrderHistoryMaterial.wohmQuantity)) }
 
     WorkOrderHistoryMaterialUpdateScreen(
         info = stringResource(R.string.edit_material_used_for_wo_) +
@@ -1440,7 +1441,7 @@ fun WorkOrderHistoryMaterialUpdateRoute(
         onQuantityChange = { qty = it },
         originalMaterialLabel = stringResource(R.string.original_material_) + " ${materialHistory!!.material.mName}",
         originalQuantityLabel = stringResource(R.string.original_quantity_) + " ${
-            nf.getNumberFromDouble(
+            nf.displayNumberFromDouble(
                 materialHistory!!.workOrderHistoryMaterial.wohmQuantity
             )
         }",
@@ -1677,7 +1678,7 @@ fun WorkOrderHistoryTimeRoute(
             val totalHours = existingTimes.sumOf {
                 df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
             }
-            append(nf.getNumberFromDouble(totalHours))
+            append(nf.displayNumberFromDouble(totalHours))
 
             val reg = existingTimes.filter {
                 it.timeWorked.wohtTimeType == TimeWorkedTypes.REG_HOURS.value
@@ -1692,14 +1693,14 @@ fun WorkOrderHistoryTimeRoute(
             }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) }
 
             val details = buildString {
-                if (reg > 0) append("reg ${nf.getNumberFromDouble(reg)}")
+                if (reg > 0) append("reg ${nf.displayNumberFromDouble(reg)}")
                 if (ot > 0) {
                     if (isNotEmpty()) append(" | ")
-                    append("ot ${nf.getNumberFromDouble(ot)}")
+                    append("ot ${nf.displayNumberFromDouble(ot)}")
                 }
                 if (dbl > 0) {
                     if (isNotEmpty()) append(" | ")
-                    append("dbl ${nf.getNumberFromDouble(dbl)}")
+                    append("dbl ${nf.displayNumberFromDouble(dbl)}")
                 }
             }
             if (details.isNotEmpty()) {
@@ -1709,7 +1710,7 @@ fun WorkOrderHistoryTimeRoute(
         },
         startTime = startTime,
         endTime = endTime,
-        totalTimeText = nf.getNumberFromDouble(totalHours) + " " + stringResource(R.string.hours),
+        totalTimeText = nf.displayNumberFromDouble(totalHours) + " " + stringResource(R.string.hours),
         selectedTimeType = selectedTimeType,
         onTimeTypeChange = { selectedTimeType = it },
         onStartTimeClick = {
@@ -1952,7 +1953,7 @@ fun WorkOrderHistoryTimeUpdateRoute(
                 ),
         startTime = startTime,
         endTime = endTime,
-        totalTimeText = nf.getNumberFromDouble(totalHours) + " " + stringResource(R.string.hours),
+        totalTimeText = nf.displayNumberFromDouble(totalHours) + " " + stringResource(R.string.hours),
         selectedTimeType = selectedTimeType,
         onTimeTypeChange = { selectedTimeType = it },
         onStartTimeClick = {

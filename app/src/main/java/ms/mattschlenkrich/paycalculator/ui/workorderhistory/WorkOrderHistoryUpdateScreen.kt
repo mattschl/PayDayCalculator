@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -23,12 +22,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +38,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
 import ms.mattschlenkrich.paycalculator.common.compose.CapitalizedOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
@@ -167,19 +165,19 @@ fun WorkOrderHistoryUpdateScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("WorkOrderHistoryUpdateScreen") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.back)
-                        )
-                    }
-                }
-            )
-        },
+        /* topBar = {
+             TopAppBar(
+                 title = { Text("WorkOrderHistoryUpdateScreen") },
+                 navigationIcon = {
+                     IconButton(onClick = onBack) {
+                         Icon(
+                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                             contentDescription = stringResource(R.string.back)
+                         )
+                     }
+                 }
+             )
+         },*/
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             FloatingActionButton(
@@ -544,7 +542,8 @@ fun MaterialItem(
         )
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            val display = "${index + 1}) ${item.mQty} x ${item.mName}"
+            val display =
+                "${index + 1}) ${NumberFunctions().displayNumberFromDouble(item.mQty)} x ${item.mName}"
             Text(
                 text = display,
                 style = MaterialTheme.typography.bodyMedium,

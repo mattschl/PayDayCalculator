@@ -432,9 +432,15 @@ fun HistoryItem(
 
 fun getHistoryHoursDisplay(history: WorkOrderHistoryWithDates, nf: NumberFunctions): String {
     val parts = mutableListOf<String>()
-    if (history.history.woHistoryRegHours > 0) parts.add("Reg: ${nf.getNumberFromDouble(history.history.woHistoryRegHours)}")
-    if (history.history.woHistoryOtHours > 0) parts.add("OT: ${nf.getNumberFromDouble(history.history.woHistoryOtHours)}")
-    if (history.history.woHistoryDblOtHours > 0) parts.add("Dbl: ${nf.getNumberFromDouble(history.history.woHistoryDblOtHours)}")
+    if (history.history.woHistoryRegHours > 0) parts.add("Reg: ${nf.displayNumberFromDouble(history.history.woHistoryRegHours)}")
+    if (history.history.woHistoryOtHours > 0) parts.add("OT: ${nf.displayNumberFromDouble(history.history.woHistoryOtHours)}")
+    if (history.history.woHistoryDblOtHours > 0) parts.add(
+        "Dbl: ${
+            nf.displayNumberFromDouble(
+                history.history.woHistoryDblOtHours
+            )
+        }"
+    )
     return parts.joinToString(" | ")
 }
 
@@ -495,7 +501,7 @@ fun MaterialItem(material: MaterialAndQuantity, nf: NumberFunctions) {
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
             Text(
-                text = nf.getNumberFromDouble(material.quantity),
+                text = nf.displayNumberFromDouble(material.quantity),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSecondaryContainer

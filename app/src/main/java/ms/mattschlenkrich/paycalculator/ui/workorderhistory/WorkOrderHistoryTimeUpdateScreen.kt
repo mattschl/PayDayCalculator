@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -20,15 +19,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -66,30 +62,30 @@ fun WorkOrderHistoryTimeUpdateScreen(
     val nf = NumberFunctions()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(stringResource(R.string.update_work_time))
-                        if (errorMessage != null) {
-                            Text(
-                                text = errorMessage,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = Color.Red
-                            )
-                        }
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.back)
-                        )
-                    }
-                }
-            )
-        },
+        /* topBar = {
+             TopAppBar(
+                 title = {
+                     Column {
+                         Text(stringResource(R.string.update_work_time))
+                         if (errorMessage != null) {
+                             Text(
+                                 text = errorMessage,
+                                 style = MaterialTheme.typography.labelSmall,
+                                 color = Color.Red
+                             )
+                         }
+                     }
+                 },
+                 navigationIcon = {
+                     IconButton(onClick = onBackClick) {
+                         Icon(
+                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                             contentDescription = stringResource(R.string.back)
+                         )
+                     }
+                 }
+             )
+         },*/
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             FloatingActionButton(

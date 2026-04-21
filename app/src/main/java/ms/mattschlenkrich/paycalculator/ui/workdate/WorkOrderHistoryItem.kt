@@ -50,21 +50,21 @@ fun WorkOrderHistoryItem(
                 val ot = history.history.woHistoryOtHours
                 val dbl = history.history.woHistoryDblOtHours
 
-                append("Total hours: ${nf.getNumberFromDouble(reg + ot + dbl)}")
+                append("Total hours: ${nf.displayNumberFromDouble(reg + ot + dbl)}")
 
                 val details = buildString {
-                    if (reg > 0) append("reg ${nf.getNumberFromDouble(reg)}")
+                    if (reg > 0) append("reg ${nf.displayNumberFromDouble(reg)}")
                     if (ot > 0) {
                         if (isNotEmpty()) append(" | ")
-                        append("ot ${nf.getNumberFromDouble(ot)}")
+                        append("ot ${nf.displayNumberFromDouble(ot)}")
                     }
                     if (dbl > 0) {
                         if (isNotEmpty()) append(" | ")
-                        append("dbl ${nf.getNumberFromDouble(dbl)}")
+                        append("dbl ${nf.displayNumberFromDouble(dbl)}")
                     }
                 }
                 if (details.isNotEmpty()) {
-                    append("\n")
+                    append(" -> ")
                     append(details)
                 }
             }

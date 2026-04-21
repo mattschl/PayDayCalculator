@@ -22,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,25 +74,25 @@ fun WorkDateTimesScreen(
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.enter_work_time),
-                            style = MaterialTheme.typography.titleLarge,
-                        )
-                        if (errorMessage != null) {
-                            Text(
-                                text = errorMessage,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = Color.Red
-                            )
-                        }
-                    }
-                }
-            )
-        },
+        /*      topBar = {
+                  TopAppBar(
+                      title = {
+                          Column {
+                              Text(
+                                  text = stringResource(R.string.enter_work_time),
+                                  style = MaterialTheme.typography.titleLarge,
+                              )
+                              if (errorMessage != null) {
+                                  Text(
+                                      text = errorMessage,
+                                      style = MaterialTheme.typography.labelSmall,
+                                      color = Color.Red
+                                  )
+                              }
+                          }
+                      }
+                  )
+              },*/
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onDoneClick,

@@ -164,16 +164,16 @@ fun TimeSheetRoute(
 
                 var totalHoursDesc = ""
                 if (payCalculations.getHoursReg() > 0) totalHoursDesc += "${
-                    nf.getNumberFromDouble(payCalculations.getHoursReg())
+                    nf.displayNumberFromDouble(payCalculations.getHoursReg())
                 } hr "
                 if (payCalculations.getHoursOt() > 0) totalHoursDesc += "| ${
-                    nf.getNumberFromDouble(payCalculations.getHoursOt())
+                    nf.displayNumberFromDouble(payCalculations.getHoursOt())
                 } ot "
                 if (payCalculations.getHoursDblOt() > 0) totalHoursDesc += "| ${
-                    nf.getNumberFromDouble(payCalculations.getHoursDblOt())
+                    nf.displayNumberFromDouble(payCalculations.getHoursDblOt())
                 } dbl ot "
                 if (payCalculations.getHoursStat() > 0) totalHoursDesc += "| ${
-                    nf.getNumberFromDouble(payCalculations.getHoursStat())
+                    nf.displayNumberFromDouble(payCalculations.getHoursStat())
                 } other "
 
                 paySummary = TimeSheetPaySummary(
@@ -334,10 +334,10 @@ private fun getWeekSummaryString(
         reg += it.wdRegHours; ot += it.wdOtHours; dbl += it.wdDblOtHours; stat += it.wdStatHours
     }
     val parts = mutableListOf<String>()
-    if (reg > 0) parts.add("${nf.getNumberFromDouble(reg)} ${context.getString(R.string.hr)}")
-    if (ot > 0) parts.add("${nf.getNumberFromDouble(ot)} ${context.getString(R.string.ot)}")
-    if (dbl > 0) parts.add("${nf.getNumberFromDouble(dbl)} ${context.getString(R.string.dbl_ot)}")
-    if (stat > 0) parts.add("${nf.getNumberFromDouble(stat)} ${context.getString(R.string.other_hours)}")
+    if (reg > 0) parts.add("${nf.displayNumberFromDouble(reg)} ${context.getString(R.string.hr)}")
+    if (ot > 0) parts.add("${nf.displayNumberFromDouble(ot)} ${context.getString(R.string.ot)}")
+    if (dbl > 0) parts.add("${nf.displayNumberFromDouble(dbl)} ${context.getString(R.string.dbl_ot)}")
+    if (stat > 0) parts.add("${nf.displayNumberFromDouble(stat)} ${context.getString(R.string.other_hours)}")
     return parts.joinToString(context.getString(R.string.pipe))
 }
 
@@ -348,28 +348,28 @@ private fun formatWorkDateHoursString(
 ): String {
     val parts = mutableListOf<String>()
     if (workDate.wdRegHours > 0) parts.add(
-        "${nf.getNumberFromDouble(workDate.wdRegHours)}${
+        "${nf.displayNumberFromDouble(workDate.wdRegHours)}${
             context.getString(
                 R.string.hrs
             )
         }"
     )
     if (workDate.wdOtHours > 0) parts.add(
-        "${nf.getNumberFromDouble(workDate.wdOtHours)}${
+        "${nf.displayNumberFromDouble(workDate.wdOtHours)}${
             context.getString(
                 R.string.ot_hrs
             )
         }"
     )
     if (workDate.wdDblOtHours > 0) parts.add(
-        "${nf.getNumberFromDouble(workDate.wdDblOtHours)}${
+        "${nf.displayNumberFromDouble(workDate.wdDblOtHours)}${
             context.getString(
                 R.string.dbl_ot_hrs
             )
         }"
     )
     if (workDate.wdStatHours > 0) parts.add(
-        "${nf.getNumberFromDouble(workDate.wdStatHours)}${
+        "${nf.displayNumberFromDouble(workDate.wdStatHours)}${
             context.getString(
                 R.string.other_hrs
             )

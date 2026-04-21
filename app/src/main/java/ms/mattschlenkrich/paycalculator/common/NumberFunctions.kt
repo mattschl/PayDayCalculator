@@ -23,11 +23,11 @@ class NumberFunctions {
     }
 
     fun displayDollarsWithoutZeros(num: Double): String {
-        return "$" + getNumberFromDouble(num)
+        return "$" + displayNumberFromDouble(num)
     }
 
 
-    fun getNumberFromDouble(num: Double): String {
+    fun displayNumberFromDouble(num: Double): String {
         return numberDisplay.format(num)
     }
 
