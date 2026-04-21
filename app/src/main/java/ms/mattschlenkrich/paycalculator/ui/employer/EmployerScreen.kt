@@ -83,11 +83,11 @@ fun EmployerScreen(
     val df = DateFunctions()
 
     Scaffold(
-//        topBar = {
-//            TopAppBar(
-//                title = { Text("EmployerScreen") } // stringResource(if (isUpdate) R.string.update_employer else R.string.add_employer)
-//            )
-//        },
+        /*        topBar = {
+                    TopAppBar(
+                        title = { Text("EmployerScreen") } // stringResource(if (isUpdate) R.string.update_employer else R.string.add_employer)
+
+             }, )*/
         modifier = Modifier.imePadding(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
