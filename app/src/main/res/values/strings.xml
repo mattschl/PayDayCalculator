@@ -562,4 +562,8 @@
     <string name="time_entry_options">Time Entry Options</string>
     <string name="modify_time_entry">Modify Time Entry</string>
     <string name="delete_time_entry">Delete Time Entry</string>
+    <string name="modify">Modify</string>
+    <string name="extra_options">Extra Options</string>
+    <string name="are_you_sure_you_want_to_delete_">Are you sure you want to delete </string>
+    <string name="modify_or_delete">Modify or Delete</string>
 </resources>

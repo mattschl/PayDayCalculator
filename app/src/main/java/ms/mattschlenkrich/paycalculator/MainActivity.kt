@@ -265,6 +265,9 @@ fun MainScreen(
         topBar = {
             StandardTopAppBar(
                 title = stringResource(currentScreen?.resourceId ?: R.string.app_name),
+                onBackClicked = if (navController.previousBackStackEntry != null) {
+                    { navController.popBackStack() }
+                } else null,
                 onSettingsClicked = { navController.navigate(Screen.Settings.route) },
                 onMenuAction = { action ->
                     when (action) {

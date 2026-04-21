@@ -468,6 +468,16 @@ fun WorkDateUpdateRoute(
             null
         )
     }
+    var showExtraOptionsDialog by remember {
+        mutableStateOf<WorkDateExtras?>(
+            null
+        )
+    }
+    var showDeleteExtraConfirmDialog by remember {
+        mutableStateOf<WorkDateExtras?>(
+            null
+        )
+    }
 
     if (showReplaceDateDialog) {
         AlertDialog(
@@ -549,6 +559,59 @@ fun WorkDateUpdateRoute(
         )
     }
 
+    if (showExtraOptionsDialog != null) {
+        val extra = showExtraOptionsDialog!!
+        AlertDialog(
+            onDismissRequest = { showExtraOptionsDialog = null },
+            confirmButton = {
+                TextButton(onClick = {
+                    mainViewModel.setWorkDateExtra(extra)
+                    mainViewModel.setWorkDateExtraList(displayExtras.toCollection(ArrayList()))
+                    showExtraOptionsDialog = null
+                    navController.navigate(Screen.WorkDateExtraUpdate.route)
+                }) {
+                    Text(stringResource(R.string.modify))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDeleteExtraConfirmDialog = extra
+                    showExtraOptionsDialog = null
+                }) {
+                    Text(stringResource(R.string.delete))
+                }
+            },
+            title = { Text(stringResource(R.string.extra_options)) },
+            text = { Text(extra.wdeName) }
+        )
+    }
+
+    if (showDeleteExtraConfirmDialog != null) {
+        val extra = showDeleteExtraConfirmDialog!!
+        AlertDialog(
+            onDismissRequest = { showDeleteExtraConfirmDialog = null },
+            confirmButton = {
+                TextButton(onClick = {
+                    payDayViewModel.deleteWorkDateExtra(
+                        extra.wdeName, extra.wdeWorkDateId, df.getCurrentUTCTimeAsString()
+                    )
+                    showDeleteExtraConfirmDialog = null
+                }) {
+                    Text(stringResource(R.string.delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDeleteExtraConfirmDialog = null
+                }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            title = { Text(stringResource(R.string.are_you_sure_you_want_to_delete_) + extra.wdeName) },
+            text = { Text(stringResource(R.string.this_cannot_be_undone)) }
+        )
+    }
+
     WorkDateUpdateScreen(
         dateText = df.getDisplayDate(curDateString),
         onDateClick = {
@@ -615,7 +678,7 @@ fun WorkDateUpdateRoute(
         onExtraClick = { extra ->
             if (!extra.wdeIsDeleted) {
                 payDayViewModel.deleteWorkDateExtra(
-                    extra.wdeName, extra.wdeWorkDateId, extra.wdeUpdateTime
+                    extra.wdeName, extra.wdeWorkDateId, df.getCurrentUTCTimeAsString()
                 )
             } else {
                 if (extra.workDateExtraId != 0L) {
@@ -636,10 +699,8 @@ fun WorkDateUpdateRoute(
                 }
             }
         },
-        onExtraEditClick = { extra ->
-            mainViewModel.setWorkDateExtra(extra)
-            mainViewModel.setWorkDateExtraList(displayExtras.toCollection(ArrayList()))
-            navController.navigate(Screen.WorkDateExtraUpdate.route)
+        onExtraLongClick = { extra ->
+            showExtraOptionsDialog = extra
         },
         onAddExtraClick = {
             mainViewModel.setWorkDateObject(currentWorkDate)

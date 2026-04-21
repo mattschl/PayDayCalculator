@@ -68,7 +68,7 @@ fun WorkDateUpdateScreen(
     workOrderSummary: String,
     extras: List<WorkDateExtras>,
     onExtraClick: (WorkDateExtras) -> Unit,
-    onExtraEditClick: (WorkDateExtras) -> Unit,
+    onExtraLongClick: (WorkDateExtras) -> Unit,
     onAddExtraClick: () -> Unit
 ) {
     Scaffold(
@@ -215,7 +215,7 @@ fun WorkDateUpdateScreen(
                             WorkDateExtraItem(
                                 extra = extra,
                                 onClick = { onExtraClick(extra) },
-                                onEditClick = { onExtraEditClick(extra) }
+                                onLongClick = { onExtraLongClick(extra) }
                             )
                         }
                     }
