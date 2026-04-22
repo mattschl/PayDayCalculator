@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paycalculator.ui.timesheet
 
-import android.content.Context
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -12,7 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -41,11 +39,24 @@ fun TimeSheetRoute(
     payDetailViewModel: PayDetailViewModel,
     navController: NavController
 ) {
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val nf = remember { NumberFunctions() }
     val df = remember { DateFunctions() }
     val projections = remember { PayDateProjections() }
+
+    val totalsLabel = stringResource(R.string.totals)
+    val week1Label = stringResource(R.string.week_1_)
+    val week2Label = stringResource(R.string.week_2_)
+    val zeroHrLabel = stringResource(R.string._0_hr)
+    val hrLabel = stringResource(R.string.hr)
+    val otLabel = stringResource(R.string.ot)
+    val dblOtLabel = stringResource(R.string.dbl_ot)
+    val otherHoursLabel = stringResource(R.string.other_hours)
+    val pipeLabel = stringResource(R.string.pipe)
+    val hrsLabel = stringResource(R.string.hrs)
+    val otHrsLabel = stringResource(R.string.ot_hrs)
+    val dblOtHrsLabel = stringResource(R.string.dbl_ot_hrs)
+    val otherHrsLabel = stringResource(R.string.other_hours)
 
     val employers by employerViewModel.getEmployers().observeAsState(emptyList())
     var selectedEmployer by remember { mutableStateOf<Employers?>(null) }
@@ -155,11 +166,11 @@ fun TimeSheetRoute(
 
                 val wk1Summary = getWeekSummaryString(
                     workDates.filter { it.wdDate <= week1EndDate },
-                    nf, context
+                    nf, hrLabel, otLabel, dblOtLabel, otherHoursLabel, pipeLabel
                 )
                 val wk2Summary = getWeekSummaryString(
                     workDates.filter { it.wdDate > week1EndDate },
-                    nf, context
+                    nf, hrLabel, otLabel, dblOtLabel, otherHoursLabel, pipeLabel
                 )
 
                 var totalHoursDesc = ""
@@ -180,12 +191,12 @@ fun TimeSheetRoute(
                     grossPay = nf.displayDollars(payCalculations.getPayGross()),
                     deductions = nf.displayDollars(-payCalculations.getDebitTotalsByPay() - payCalculations.getAllTaxDeductions()),
                     netPay = nf.displayDollars(payCalculations.getPayGross() - payCalculations.getDebitTotalsByPay() - payCalculations.getAllTaxDeductions()),
-                    totalHoursDescription = context.getString(R.string.totals) + " " + totalHoursDesc.trim(),
-                    week1Total = context.getString(R.string.week_1_) + (wk1Summary.ifBlank {
-                        context.getString(R.string._0_hr)
+                    totalHoursDescription = totalsLabel + " " + totalHoursDesc.trim(),
+                    week1Total = week1Label + (wk1Summary.ifBlank {
+                        zeroHrLabel
                     }),
-                    week2Total = context.getString(R.string.week_2_) + (wk2Summary.ifBlank {
-                        context.getString(R.string._0_hr)
+                    week2Total = week2Label + (wk2Summary.ifBlank {
+                        zeroHrLabel
                     })
                 )
             }
@@ -316,70 +327,15 @@ fun TimeSheetRoute(
         },
         displayDate = { df.getDisplayDate(it) },
         formatHours = { workDate ->
-            formatWorkDateHoursString(workDate, nf, context)
+            formatWorkDateHoursString(
+                workDate,
+                nf,
+                hrsLabel,
+                otHrsLabel,
+                dblOtHrsLabel,
+                otherHrsLabel,
+                pipeLabel
+            )
         }
     )
-}
-
-private fun getWeekSummaryString(
-    workDates: List<WorkDates>,
-    nf: NumberFunctions,
-    context: Context
-): String {
-    var reg = 0.0;
-    var ot = 0.0;
-    var dbl = 0.0;
-    var stat = 0.0
-    workDates.forEach {
-        reg += it.wdRegHours; ot += it.wdOtHours; dbl += it.wdDblOtHours; stat += it.wdStatHours
-    }
-    val parts = mutableListOf<String>()
-    if (reg > 0) parts.add("${nf.displayNumberFromDouble(reg)} ${context.getString(R.string.hr)}")
-    if (ot > 0) parts.add("${nf.displayNumberFromDouble(ot)} ${context.getString(R.string.ot)}")
-    if (dbl > 0) parts.add("${nf.displayNumberFromDouble(dbl)} ${context.getString(R.string.dbl_ot)}")
-    if (stat > 0) parts.add("${nf.displayNumberFromDouble(stat)} ${context.getString(R.string.other_hours)}")
-    return parts.joinToString(context.getString(R.string.pipe))
-}
-
-private fun formatWorkDateHoursString(
-    workDate: WorkDates,
-    nf: NumberFunctions,
-    context: Context
-): String {
-    val parts = mutableListOf<String>()
-    if (workDate.wdRegHours > 0) parts.add(
-        "${nf.displayNumberFromDouble(workDate.wdRegHours)}${
-            context.getString(
-                R.string.hrs
-            )
-        }"
-    )
-    if (workDate.wdOtHours > 0) parts.add(
-        "${nf.displayNumberFromDouble(workDate.wdOtHours)}${
-            context.getString(
-                R.string.ot_hrs
-            )
-        }"
-    )
-    if (workDate.wdDblOtHours > 0) parts.add(
-        "${nf.displayNumberFromDouble(workDate.wdDblOtHours)}${
-            context.getString(
-                R.string.dbl_ot_hrs
-            )
-        }"
-    )
-    if (workDate.wdStatHours > 0) parts.add(
-        "${nf.displayNumberFromDouble(workDate.wdStatHours)}${
-            context.getString(
-                R.string.other_hrs
-            )
-        }"
-    )
-
-    var display = parts.joinToString(context.getString(R.string.pipe))
-    if (!workDate.wdNote.isNullOrBlank()) {
-        if (display.isNotBlank()) display += " - "
-        display += workDate.wdNote
-    }
-    return display
 }

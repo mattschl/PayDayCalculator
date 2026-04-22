@@ -105,11 +105,14 @@ fun EmployerExtraDefinitionScreen(
                     modifier = Modifier.padding(bottom = ELEMENT_SPACING)
                 )
 
+                val creditLabel = stringResource(R.string.credit)
+                val debitLabel = stringResource(R.string.debit)
+                val isAutomaticLabel = stringResource(R.string.is_automatic)
+                val addedManuallyLabel = stringResource(R.string.added_manually)
+
                 val description = remember(it.extraType) {
                     val creditDebit =
-                        if (it.extraType.wetIsCredit) context.getString(R.string.credit) else context.getString(
-                            R.string.debit
-                        )
+                        if (it.extraType.wetIsCredit) creditLabel else debitLabel
                     val appliesTo =
                         ExtraAppliesToFrequencies.entries.getOrNull(it.extraType.wetAppliesTo)?.frequency
                             ?: ""
@@ -117,9 +120,7 @@ fun EmployerExtraDefinitionScreen(
                         ExtraAttachToFrequencies.entries.getOrNull(it.extraType.wetAttachTo)?.frequency
                             ?: ""
                     val automatic =
-                        if (it.extraType.wetIsDefault) context.getString(R.string.is_automatic) else context.getString(
-                            R.string.added_manually
-                        )
+                        if (it.extraType.wetIsDefault) isAutomaticLabel else addedManuallyLabel
 
                     "$creditDebit calculated $appliesTo period - attaches to $attachTo. $automatic"
                 }

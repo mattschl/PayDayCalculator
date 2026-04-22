@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -52,6 +51,8 @@ import ms.mattschlenkrich.paycalculator.data.WorkTaxViewModelFactory
 import ms.mattschlenkrich.paycalculator.data.WorkTimeRepository
 import ms.mattschlenkrich.paycalculator.data.WorkTimeViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkTimeViewModelFactory
+import ms.mattschlenkrich.paycalculator.ui.areas.AreaUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.areas.AreaViewRoute
 import ms.mattschlenkrich.paycalculator.ui.employer.EmployerAddRoute
 import ms.mattschlenkrich.paycalculator.ui.employer.EmployerListScreen
 import ms.mattschlenkrich.paycalculator.ui.employer.EmployerUpdateRoute
@@ -60,10 +61,14 @@ import ms.mattschlenkrich.paycalculator.ui.extras.EmployerExtraDefinitionsAddRou
 import ms.mattschlenkrich.paycalculator.ui.extras.ExtraRoute
 import ms.mattschlenkrich.paycalculator.ui.extras.PayPeriodExtraAddRoute
 import ms.mattschlenkrich.paycalculator.ui.extras.PayPeriodExtraUpdateRoute
-import ms.mattschlenkrich.paycalculator.ui.extras.WorkDateExtraAddRoute
-import ms.mattschlenkrich.paycalculator.ui.extras.WorkDateExtraUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.extras.WorkExtraTypeAddRoute
 import ms.mattschlenkrich.paycalculator.ui.extras.WorkExtraTypeUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.jobspec.JobSpecMergeRoute
+import ms.mattschlenkrich.paycalculator.ui.jobspec.JobSpecUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.jobspec.JobSpecViewRoute
+import ms.mattschlenkrich.paycalculator.ui.material.MaterialMergeRoute
+import ms.mattschlenkrich.paycalculator.ui.material.MaterialUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.material.MaterialViewRoute
 import ms.mattschlenkrich.paycalculator.ui.paydetail.PayDetailRoute
 import ms.mattschlenkrich.paycalculator.ui.payrate.EmployerPayRateAddRoute
 import ms.mattschlenkrich.paycalculator.ui.payrate.EmployerPayRateUpdateRoute
@@ -78,29 +83,23 @@ import ms.mattschlenkrich.paycalculator.ui.tax.TaxTypeAddRoute
 import ms.mattschlenkrich.paycalculator.ui.tax.TaxTypeUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.timesheet.TimeSheetRoute
 import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateAddRoute
+import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateExtraAddRoute
+import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateExtraUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateTimesRoute
 import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateUpdateRoute
-import ms.mattschlenkrich.paycalculator.ui.workorder.AreaUpdateRoute
-import ms.mattschlenkrich.paycalculator.ui.workorder.AreaViewRoute
-import ms.mattschlenkrich.paycalculator.ui.workorder.JobSpecMergeRoute
-import ms.mattschlenkrich.paycalculator.ui.workorder.JobSpecUpdateRoute
-import ms.mattschlenkrich.paycalculator.ui.workorder.JobSpecViewRoute
-import ms.mattschlenkrich.paycalculator.ui.workorder.MaterialMergeRoute
-import ms.mattschlenkrich.paycalculator.ui.workorder.MaterialUpdateRoute
-import ms.mattschlenkrich.paycalculator.ui.workorder.MaterialViewRoute
 import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderAddRoute
-import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderHistoryAddRoute
-import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderHistoryMaterialUpdateRoute
-import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderHistoryTimeRoute
-import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderHistoryTimeUpdateRoute
-import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderHistoryUpdateRoute
-import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderHistoryWorkPerformedUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderLookupRoute
 import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderViewRoute
-import ms.mattschlenkrich.paycalculator.ui.workorder.WorkPerformedMergeRoute
-import ms.mattschlenkrich.paycalculator.ui.workorder.WorkPerformedUpdateRoute
-import ms.mattschlenkrich.paycalculator.ui.workorder.WorkPerformedViewRoute
+import ms.mattschlenkrich.paycalculator.ui.workorderhistory.WorkOrderHistoryAddRoute
+import ms.mattschlenkrich.paycalculator.ui.workorderhistory.WorkOrderHistoryMaterialUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.workorderhistory.WorkOrderHistoryTimeRoute
+import ms.mattschlenkrich.paycalculator.ui.workorderhistory.WorkOrderHistoryTimeUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.workorderhistory.WorkOrderHistoryUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.workorderhistory.WorkOrderHistoryWorkPerformedUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.workperformed.WorkPerformedMergeRoute
+import ms.mattschlenkrich.paycalculator.ui.workperformed.WorkPerformedUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.workperformed.WorkPerformedViewRoute
 
 class MainActivity : ComponentActivity() {
 
@@ -209,10 +208,15 @@ fun MainScreen(
     workTimeViewModel: WorkTimeViewModel,
     onSyncRequested: () -> Unit
 ) {
-    val context = LocalContext.current
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+
+    val workOrderListLabel = stringResource(R.string.view_work_order_list)
+    val jobSpecListLabel = stringResource(R.string.view_job_spec_list)
+    val areasListLabel = stringResource(R.string.view_areas_list)
+    val workPerformedListLabel = stringResource(R.string.view_work_performed_list)
+    val materialListLabel = stringResource(R.string.view_material_list)
 
     val currentScreen = (bottomNavItems + listOf(
         Screen.EmployerAdd,
@@ -272,20 +276,20 @@ fun MainScreen(
                 onMenuAction = { action ->
                     when (action) {
                         "Sync Data" -> onSyncRequested()
-                        context.getString(R.string.view_work_order_list) -> navController.navigate(
+                        workOrderListLabel -> navController.navigate(
                             Screen.WorkOrders.route
                         )
 
-                        context.getString(R.string.view_job_spec_list) -> navController.navigate(
+                        jobSpecListLabel -> navController.navigate(
                             Screen.JobSpecs.route
                         )
 
-                        context.getString(R.string.view_areas_list) -> navController.navigate(Screen.Areas.route)
-                        context.getString(R.string.view_work_performed_list) -> navController.navigate(
+                        areasListLabel -> navController.navigate(Screen.Areas.route)
+                        workPerformedListLabel -> navController.navigate(
                             Screen.WorkPerformed.route
                         )
 
-                        context.getString(R.string.view_material_list) -> navController.navigate(
+                        materialListLabel -> navController.navigate(
                             Screen.Materials.route
                         )
                     }

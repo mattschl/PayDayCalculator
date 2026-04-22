@@ -566,4 +566,8 @@
     <string name="extra_options">Extra Options</string>
     <string name="are_you_sure_you_want_to_delete_">Are you sure you want to delete </string>
     <string name="modify_or_delete">Modify or Delete</string>
+    <string name="extra_definitions">Extra Definitions</string>
+    <string name="add_new_definition">Add New Definition</string>
+    <string name="add_new_extra_type">Add New Extra Type</string>
+    <string name="definitions">Definitions</string>
 </resources>

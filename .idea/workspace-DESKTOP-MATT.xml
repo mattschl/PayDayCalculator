@@ -1,0 +1,1295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AndroidLayouts">
+    <shared>
+      <config />
+    </shared>
+    <layouts>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/ic_save_foreground.xml">
+        <config>
+          <theme>@style/Theme.AppCompat.DayNight.NoActionBar</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/ic_save_v.xml">
+        <config>
+          <theme>@style/Theme.AppCompat.DayNight.NoActionBar</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
+        <config>
+          <theme>@style/Theme.AppCompat.DayNight.NoActionBar</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_employer.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_employer_add.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_employer_extra_definition_update.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_employer_extra_definitions.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_employer_extra_definitions_add.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_employer_pay_rate_add.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_employer_pay_rates.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_employer_update.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_employer_wage_update.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_entity_merge.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_job_spec.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_material_quantity_update.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_material_update.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_pay_details.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_pay_period_extra_add.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_pay_period_extra_update.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_recycler_view.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_single_item_update.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_tax_rule_add.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_tax_rule_update.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_tax_rules.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_tax_type.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_tax_type_add.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_tax_type_update.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_time_sheet.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_work_date_add.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_work_date_extra_add.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_work_date_extra_update.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_work_date_time.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_work_date_update.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_work_extra_type_add.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_work_extra_type_update.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_work_extra_types.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_work_order.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_work_order_history.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_work_order_history_material.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_work_order_history_time.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_work_order_history_work_performed_update.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_work_order_job_spec_update.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_work_order_view.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_employer_extra_definiton.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_employer_extra_definiton_short.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_employer_extra_item.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_employer_item.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_employer_tax_item.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_extra_type_item.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_pay_detail_extra_item.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_pay_detail_tax_item.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_single_item.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_tax_rule_item.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_time_worked_item.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_wages_item.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_work_date.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_work_date_extra_item.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_work_date_extra_time_sheet.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_work_date_time.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_work_order_history_detail_item.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_work_order_history_item.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/list_work_order_item.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/spinner_item_bold.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/spinner_item_normal.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/menu/bottom_menu.xml">
+        <config>
+          <theme>@style/Theme.AppCompat.DayNight.NoActionBar</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/menu/menu_delete.xml">
+        <config>
+          <theme>@style/Theme.AppCompat.DayNight.NoActionBar</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/menu/save_menu.xml">
+        <config>
+          <theme>@style/Theme.AppCompat.DayNight.NoActionBar</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/menu/search_menu.xml">
+        <config>
+          <theme>@style/Theme.AppCompat.DayNight.NoActionBar</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_save.xml">
+        <config>
+          <theme>@style/Theme.AppCompat.DayNight.NoActionBar</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/navigation/nav_graph.xml">
+        <config>
+          <theme>@style/Theme.PayCalculator</theme>
+        </config>
+      </layout>
+    </layouts>
+  </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="5349184f-a047-4f0f-84c3-6450d471f180" name="Changes" comment="upgrade agp to 9.0">
+      <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ms/mattschlenkrich/paycalculator/database/dao/WorkTimeDao.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ms/mattschlenkrich/paycalculator/database/dao/WorkTimeDao.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ms/mattschlenkrich/paycalculator/database/repository/WorkTimeRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ms/mattschlenkrich/paycalculator/database/repository/WorkTimeRepository.kt" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="CodeInsightWorkspaceSettings">
+    <option name="optimizeImportsOnTheFly" value="true" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[PhysicalDevice::serial=G9C24Q2016254]" />
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/app">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="Pay Calculator" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Kotlin Enum" />
+        <option value="Kotlin File" />
+        <option value="layoutResourceFile" />
+        <option value="Kotlin Object" />
+        <option value="Kotlin JUnit4 Test Class" />
+        <option value="Kotlin Data Class" />
+        <option value="Kotlin Interface" />
+        <option value="Kotlin Class" />
+      </list>
+    </option>
+  </component>
+  <component name="FormatOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
+  <component name="GenerateSignedApkSettings">
+    <option name="KEY_STORE_PATH" value="$PROJECT_DIR$/../keystore/matt__new_signing.jks" />
+    <option name="KEY_ALIAS" value="key0" />
+    <option name="REMEMBER_PASSWORDS" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <branch-grouping />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="Master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="MIXED" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;mattschl&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/mattschl/PayDayCalculator&quot;,
+    &quot;accountId&quot;: &quot;7cfe8930-c0c9-48da-873a-6e825a9ea5ac&quot;
+  }
+}</component>
+  <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$" gradleHome="$USER_HOME$/.gradle/wrapper/dists/gradle-9.1.0-bin/9agqghryom9wkf8r80qlhnts3/gradle-9.1.0" javaHome="$APPLICATION_HOME_DIR$/jbr" gradleVersion="9.1.0" />
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/app/src/main/res/values/dimens.xml" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="KotlinCodeInsightWorkspaceSettings">
+    <option name="optimizeImportsOnTheFly" value="true" />
+  </component>
+  <component name="OptimizeOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2rBqqqQYOiIkcjtdlUDfuObxftC" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Android App.app.executor&quot;: &quot;Run&quot;,
+    &quot;BundleExportedModule&quot;: &quot;Pay_Calculator.app&quot;,
+    &quot;ExportBundle.BundlePathForPay_Calculator.app&quot;: &quot;/mnt/02D83355D83345E7/project/AndroidProject/PayCalculator/app&quot;,
+    &quot;Gradle.MyDaoTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.MyDaoTest.testRetrieveData.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.NumberFunctionsTest.roundTo2DecimalsIsCorrect.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.PayCalculationsTest.getPayRateFromDb_answerIs_31_93.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.YourDaoTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.YourDaoTest.readItem.executor&quot;: &quot;Run&quot;,
+    &quot;PROJECT_TRUSTED_KEY&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;com.android.tools.idea.streaming.emulator.frame.visible&quot;: &quot;false&quot;,
+    &quot;com.android.tools.idea.streaming.zoom.toolbar.visible&quot;: &quot;false&quot;,
+    &quot;com.google.services.firebase.aqiPopupShown&quot;: &quot;true&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit4&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4&quot;: &quot;&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.includeInheritedMembers&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Version-5&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_directory_selection&quot;: &quot;C:/Projects/AndroidProject/PayCalculator/app/src/test/java/ms/mattschlenkrich/paycalculator&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/mnt/047353E96D6DD7F2/tempDB/pay.db-wal&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
+    &quot;recommended.upgrade.last.time.stamp&quot;: &quot;1768612934009&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.kotlinCompiler&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;ExportApk.BuildVariants&quot;: [
+      &quot;release&quot;
+    ],
+    &quot;com.android.tools.idea.sqlite.queryhistory&quot;: [
+      &quot;select * from materials where mName LIKE '%beaD%'\n&quot;,
+      &quot;select * from materials where mName LIKE '%beaD\n%'\n&quot;,
+      &quot;select * from materials where mName LIKE '%corner%'\n&quot;,
+      &quot;select * from materials where mName LIKE 'corner'\n&quot;,
+      &quot;SELECT * FROM workOrderHistory WHERE woHistoryWorkDateId = '1662542596' AND woHistoryDeleted = 0&quot;
+    ]
+  }
+}</component>
+  <component name="PsdUISettings">
+    <option name="MODULE_TAB" value="Properties" />
+    <option name="LAST_EDITED_SIGNING_CONFIG" value="release" />
+    <option name="LAST_EDITED_BUILD_TYPE" value="release" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/src/main/java/ms/mattschlenkrich/paycalculator/ui/workdate" />
+      <recent name="$PROJECT_DIR$/app/src/main/java/ms/mattschlenkrich/paycalculator/ui/workorder/workorderHistory" />
+      <recent name="$PROJECT_DIR$/app/src/test/assets" />
+      <recent name="$PROJECT_DIR$/app/src/test/java/ms/mattschlenkrich/paycalculator/database" />
+      <recent name="C:\Projects\AndroidProject\PayCalculator\app\src\main\res\layout" />
+    </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="CreateKotlinClassDialog.RecentsKey">
+      <recent name="ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory" />
+      <recent name="ms.mattschlenkrich.paycalculator.ui.workorder.area" />
+    </key>
+    <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="ms.mattschlenkrich.paycalculator.ui.employer.payrate.adapter" />
+      <recent name="ms.mattschlenkrich.paycalculator.ui.timesheet.workdate.adapter" />
+      <recent name="ms.mattschlenkrich.paycalculator.ui.timesheet.workdate" />
+      <recent name="ms.mattschlenkrich.paycalculator.ui.paydetail.adapter" />
+      <recent name="ms.mattschlenkrich.paycalculator.ui.tax.rules.adapter" />
+    </key>
+    <key name="TestGenerationDialog.RecentsKey">
+      <recent name="ms.mattschlenkrich.paycalculator.common" />
+    </key>
+    <key name="KotlinExtractInterfaceDialog.RECENT_KEYS">
+      <recent name="ms.mattschlenkrich.paycalculator.ui.workorder.workorder" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="ms.mattschlenkrich.paycalculator.database" />
+      <recent name="ms.mattschlenkrich.paycalculator.database.model.employer.test" />
+      <recent name="ms.mattschlenkrich.paycalculator.database.model.employer" />
+    </key>
+    <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
+      <recent name="ms.mattschlenkrich.paycalculator.logic.worktime" />
+      <recent name="ms.mattschlenkrich.paycalculator.database.model.employer" />
+      <recent name="ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater" />
+      <recent name="ms.mattschlenkrich.paycalculator.ui.workorder.workorder" />
+      <recent name="ms.mattschlenkrich.paycalculator.ui.paydays.adapter" />
+    </key>
+    <key name="K2MoveDeclarationsDialog.RECENT_PACKAGE_KEY">
+      <recent name="ms.mattschlenkrich.paycalculator.ui.workorder.workorderHistory.adpater" />
+      <recent name="ms.mattschlenkrich.paycalculator.database.model.payperiod" />
+      <recent name="ms.mattschlenkrich.paycalculator.database.model.workorder.merged" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Android App.app">
+    <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
+      <module name="Pay_Calculator.app" />
+      <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
+      <option name="ALLOW_ASSUME_VERIFIED" value="false" />
+      <option name="CLEAR_APP_STORAGE" value="false" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="RESTORE_ENABLED" value="false" />
+      <option name="RESTORE_FILE" value="" />
+      <option name="RESTORE_FRESH_INSTALL_ONLY" value="false" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="DEBUGGER_TYPE" value="Auto" />
+      <Auto>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Auto>
+      <Hybrid>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Hybrid>
+      <Java>
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Java>
+      <Native>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Native>
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Java/Kotlin Method Sample (legacy)" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MyDaoTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":app:testDebugUnitTest" />
+            <option value="--tests" />
+            <option value="&quot;ms.mattschlenkrich.paycalculator.database.MyDaoTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="MyDaoTest.testRetrieveData" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":app:testDebugUnitTest" />
+            <option value="--tests" />
+            <option value="&quot;ms.mattschlenkrich.paycalculator.database.MyDaoTest.testRetrieveData&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="PayCalculationsTest.getPayRateFromDb_answerIs_31_93" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":app:testDebugUnitTest" />
+            <option value="--tests" />
+            <option value="&quot;ms.mattschlenkrich.paycalculator.PayCalculationsTest.getPayRateFromDb_answerIs_31_93&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="YourDaoTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":app:testDebugUnitTest" />
+            <option value="--tests" />
+            <option value="&quot;ms.mattschlenkrich.paycalculator.database.MyDaoTest$YourDaoTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="YourDaoTest.readItem" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":app:testDebugUnitTest" />
+            <option value="--tests" />
+            <option value="&quot;ms.mattschlenkrich.paycalculator.database.MyDaoTest$YourDaoTest.readItem&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="kotlin.scripts.Default Kotlin Script...\::Projects:AndroidProject:PayCalculator:settings.gradle.kts" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="kotlin.scripts.Default Kotlin Script...\::Projects:AndroidProject:PayCalculator:settings.gradle.kts" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.YourDaoTest.readItem" />
+        <item itemvalue="Gradle.YourDaoTest" />
+        <item itemvalue="Gradle.MyDaoTest" />
+        <item itemvalue="Gradle.MyDaoTest.testRetrieveData" />
+        <item itemvalue="Gradle.PayCalculationsTest.getPayRateFromDb_answerIs_31_93" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ScriptDefinitionSettings">
+    <option name="settings">
+      <list>
+        <ScriptDefinitionSetting>
+          <option name="definitionId" value="org.jetbrains.kotlin.mainKts.MainKtsScript" />
+        </ScriptDefinitionSetting>
+        <ScriptDefinitionSetting>
+          <option name="definitionId" value="ideGradleScriptDefinitionId" />
+        </ScriptDefinitionSetting>
+        <ScriptDefinitionSetting>
+          <option name="definitionId" value="ideGradleScriptDefinitionId" />
+        </ScriptDefinitionSetting>
+        <ScriptDefinitionSetting>
+          <option name="definitionId" value="ideGradleScriptDefinitionId" />
+        </ScriptDefinitionSetting>
+        <ScriptDefinitionSetting>
+          <option name="definitionId" value="ideBundledScriptDefinition" />
+        </ScriptDefinitionSetting>
+      </list>
+    </option>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5349184f-a047-4f0f-84c3-6450d471f180" name="Changes" comment="" />
+      <created>1736043014049</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1736043014049</updated>
+    </task>
+    <task id="LOCAL-00139" summary="fixed problem with switching to another employer - not persisted across fragment changes">
+      <option name="closed" value="true" />
+      <created>1759529233041</created>
+      <option name="number" value="00139" />
+      <option name="presentableId" value="LOCAL-00139" />
+      <option name="project" value="LOCAL" />
+      <updated>1759529233041</updated>
+    </task>
+    <task id="LOCAL-00140" summary="worked out some problems with verifying that time worked becomes ot when over 8 hours and dbl ot when over 12 hours">
+      <option name="closed" value="true" />
+      <created>1759692944110</created>
+      <option name="number" value="00140" />
+      <option name="presentableId" value="LOCAL-00140" />
+      <option name="project" value="LOCAL" />
+      <updated>1759692944110</updated>
+    </task>
+    <task id="LOCAL-00141" summary="minor issues">
+      <option name="closed" value="true" />
+      <created>1759693055143</created>
+      <option name="number" value="00141" />
+      <option name="presentableId" value="LOCAL-00141" />
+      <option name="project" value="LOCAL" />
+      <updated>1759693055143</updated>
+    </task>
+    <task id="LOCAL-00142" summary="worked on adding the new functionalities to WorkOrderHistoryTimeUpdateFragment.kt from WorkOrderHistoryTimeFragment.kt as template">
+      <option name="closed" value="true" />
+      <created>1759708799412</created>
+      <option name="number" value="00142" />
+      <option name="presentableId" value="LOCAL-00142" />
+      <option name="project" value="LOCAL" />
+      <updated>1759708799412</updated>
+    </task>
+    <task id="LOCAL-00143" summary="upgraded default database to current version">
+      <option name="closed" value="true" />
+      <created>1759716064335</created>
+      <option name="number" value="00143" />
+      <option name="presentableId" value="LOCAL-00143" />
+      <option name="project" value="LOCAL" />
+      <updated>1759716064336</updated>
+    </task>
+    <task id="LOCAL-00144" summary="fixed issue when there is no payday in PayDetailFragmentNew.kt">
+      <option name="closed" value="true" />
+      <created>1759725175300</created>
+      <option name="number" value="00144" />
+      <option name="presentableId" value="LOCAL-00144" />
+      <option name="project" value="LOCAL" />
+      <updated>1759725175300</updated>
+    </task>
+    <task id="LOCAL-00145" summary="backup">
+      <option name="closed" value="true" />
+      <created>1760239915061</created>
+      <option name="number" value="00145" />
+      <option name="presentableId" value="LOCAL-00145" />
+      <option name="project" value="LOCAL" />
+      <updated>1760239915062</updated>
+    </task>
+    <task id="LOCAL-00146" summary="backup EmployerObj.kt and EmployerLogicViewModel.kt">
+      <option name="closed" value="true" />
+      <created>1760504100018</created>
+      <option name="number" value="00146" />
+      <option name="presentableId" value="LOCAL-00146" />
+      <option name="project" value="LOCAL" />
+      <updated>1760504100019</updated>
+    </task>
+    <task id="LOCAL-00147" summary="working on moving EmployerAddFragment.kt functions to EmployerLogicViewModel.kt">
+      <option name="closed" value="true" />
+      <created>1761615540485</created>
+      <option name="number" value="00147" />
+      <option name="presentableId" value="LOCAL-00147" />
+      <option name="project" value="LOCAL" />
+      <updated>1761615540485</updated>
+    </task>
+    <task id="LOCAL-00148" summary="changing view settings">
+      <option name="closed" value="true" />
+      <created>1762041384874</created>
+      <option name="number" value="00148" />
+      <option name="presentableId" value="LOCAL-00148" />
+      <option name="project" value="LOCAL" />
+      <updated>1762041384874</updated>
+    </task>
+    <task id="LOCAL-00149" summary="Experimented with data binding directly to xml layout file and gave up">
+      <option name="closed" value="true" />
+      <created>1762233899854</created>
+      <option name="number" value="00149" />
+      <option name="presentableId" value="LOCAL-00149" />
+      <option name="project" value="LOCAL" />
+      <updated>1762233899854</updated>
+    </task>
+    <task id="LOCAL-00150" summary="minor tweak">
+      <option name="closed" value="true" />
+      <created>1762829261378</created>
+      <option name="number" value="00150" />
+      <option name="presentableId" value="LOCAL-00150" />
+      <option name="project" value="LOCAL" />
+      <updated>1762829261378</updated>
+    </task>
+    <task id="LOCAL-00151" summary="upgraded AGP to latest and associated dependancies">
+      <option name="closed" value="true" />
+      <created>1762833244149</created>
+      <option name="number" value="00151" />
+      <option name="presentableId" value="LOCAL-00151" />
+      <option name="project" value="LOCAL" />
+      <updated>1762833244153</updated>
+    </task>
+    <task id="LOCAL-00152" summary="upgraded Kotlin">
+      <option name="closed" value="true" />
+      <created>1763173521697</created>
+      <option name="number" value="00152" />
+      <option name="presentableId" value="LOCAL-00152" />
+      <option name="project" value="LOCAL" />
+      <updated>1763173521698</updated>
+    </task>
+    <task id="LOCAL-00153" summary="working on new capability to add hours for the day directly">
+      <option name="closed" value="true" />
+      <created>1763566278027</created>
+      <option name="number" value="00153" />
+      <option name="presentableId" value="LOCAL-00153" />
+      <option name="project" value="LOCAL" />
+      <updated>1763566278027</updated>
+    </task>
+    <task id="LOCAL-00154" summary="working on new capability to add hours for the day directly">
+      <option name="closed" value="true" />
+      <created>1763579896640</created>
+      <option name="number" value="00154" />
+      <option name="presentableId" value="LOCAL-00154" />
+      <option name="project" value="LOCAL" />
+      <updated>1763579896640</updated>
+    </task>
+    <task id="LOCAL-00155" summary="fixed some problems with paths when porting to linux">
+      <option name="closed" value="true" />
+      <created>1763582031816</created>
+      <option name="number" value="00155" />
+      <option name="presentableId" value="LOCAL-00155" />
+      <option name="project" value="LOCAL" />
+      <updated>1763582031817</updated>
+    </task>
+    <task id="LOCAL-00156" summary="removed  default menu bar and made a custom menu bar">
+      <option name="closed" value="true" />
+      <created>1763600573859</created>
+      <option name="number" value="00156" />
+      <option name="presentableId" value="LOCAL-00156" />
+      <option name="project" value="LOCAL" />
+      <updated>1763600573859</updated>
+    </task>
+    <task id="LOCAL-00157" summary="Fixed some difficulties with porting from Linux to Windows">
+      <option name="closed" value="true" />
+      <created>1763685574123</created>
+      <option name="number" value="00157" />
+      <option name="presentableId" value="LOCAL-00157" />
+      <option name="project" value="LOCAL" />
+      <updated>1763685574123</updated>
+    </task>
+    <task id="LOCAL-00158" summary="reopened in Linux">
+      <option name="closed" value="true" />
+      <created>1763787869017</created>
+      <option name="number" value="00158" />
+      <option name="presentableId" value="LOCAL-00158" />
+      <option name="project" value="LOCAL" />
+      <updated>1763787869017</updated>
+    </task>
+    <task id="LOCAL-00159" summary="working on WorkDateTimes.kt and integrating with other fragments">
+      <option name="closed" value="true" />
+      <created>1763835334300</created>
+      <option name="number" value="00159" />
+      <option name="presentableId" value="LOCAL-00159" />
+      <option name="project" value="LOCAL" />
+      <updated>1763835334301</updated>
+    </task>
+    <task id="LOCAL-00160" summary="Got the skeleton of the WorkDateTimesFragment.kt in place. Only basic functionality available yet">
+      <option name="closed" value="true" />
+      <created>1763877656967</created>
+      <option name="number" value="00160" />
+      <option name="presentableId" value="LOCAL-00160" />
+      <option name="project" value="LOCAL" />
+      <updated>1763877656969</updated>
+    </task>
+    <task id="LOCAL-00161" summary="fixed save menu on add fragments not appearing">
+      <option name="closed" value="true" />
+      <created>1764023770026</created>
+      <option name="number" value="00161" />
+      <option name="presentableId" value="LOCAL-00161" />
+      <option name="project" value="LOCAL" />
+      <updated>1764023770027</updated>
+    </task>
+    <task id="LOCAL-00162" summary="fixed 2 crashes">
+      <option name="closed" value="true" />
+      <created>1764027140554</created>
+      <option name="number" value="00162" />
+      <option name="presentableId" value="LOCAL-00162" />
+      <option name="project" value="LOCAL" />
+      <updated>1764027140554</updated>
+    </task>
+    <task id="LOCAL-00163" summary="changed icon for save to contrasting white against colored toolbar">
+      <option name="closed" value="true" />
+      <created>1764027532664</created>
+      <option name="number" value="00163" />
+      <option name="presentableId" value="LOCAL-00163" />
+      <option name="project" value="LOCAL" />
+      <updated>1764027532664</updated>
+    </task>
+    <task id="LOCAL-00164" summary="working on WorkDateTimesFragment.kt&#10;some functionality works">
+      <option name="closed" value="true" />
+      <created>1764043161104</created>
+      <option name="number" value="00164" />
+      <option name="presentableId" value="LOCAL-00164" />
+      <option name="project" value="LOCAL" />
+      <updated>1764043161104</updated>
+    </task>
+    <task id="LOCAL-00165" summary="worked out some bugs in WorkDateTimesFragment.kt&#10;Ready for some real world testing">
+      <option name="closed" value="true" />
+      <created>1764091996647</created>
+      <option name="number" value="00165" />
+      <option name="presentableId" value="LOCAL-00165" />
+      <option name="project" value="LOCAL" />
+      <updated>1764091996648</updated>
+    </task>
+    <task id="LOCAL-00166" summary="working on WorkDateTimesFragment.kt&#10;getting times to adjust properly">
+      <option name="closed" value="true" />
+      <created>1764133541158</created>
+      <option name="number" value="00166" />
+      <option name="presentableId" value="LOCAL-00166" />
+      <option name="project" value="LOCAL" />
+      <updated>1764133541159</updated>
+    </task>
+    <task id="LOCAL-00167" summary="fixed WorkDateTimesFragment.kt&#10;getting times to adjust properly">
+      <option name="closed" value="true" />
+      <created>1764192356957</created>
+      <option name="number" value="00167" />
+      <option name="presentableId" value="LOCAL-00167" />
+      <option name="project" value="LOCAL" />
+      <updated>1764192356958</updated>
+    </task>
+    <task id="LOCAL-00168" summary="fixed WorkDateTimesFragment.kt&#10;updating properly now as far as tested&#10;Will do real world testing">
+      <option name="closed" value="true" />
+      <created>1764201067161</created>
+      <option name="number" value="00168" />
+      <option name="presentableId" value="LOCAL-00168" />
+      <option name="project" value="LOCAL" />
+      <updated>1764201067161</updated>
+    </task>
+    <task id="LOCAL-00169" summary="put string file in alphabetic order">
+      <option name="closed" value="true" />
+      <created>1764203091538</created>
+      <option name="number" value="00169" />
+      <option name="presentableId" value="LOCAL-00169" />
+      <option name="project" value="LOCAL" />
+      <updated>1764203091538</updated>
+    </task>
+    <task id="LOCAL-00170" summary="working on WorkOrderHistoryTimeFragment.kt&#10;to refactor and tweak">
+      <option name="closed" value="true" />
+      <created>1764348521494</created>
+      <option name="number" value="00170" />
+      <option name="presentableId" value="LOCAL-00170" />
+      <option name="project" value="LOCAL" />
+      <updated>1764348521495</updated>
+    </task>
+    <task id="LOCAL-00171" summary="working on WorkOrderHistoryTimeFragment.kt&#10;ready for testing in real world">
+      <option name="closed" value="true" />
+      <created>1764356473799</created>
+      <option name="number" value="00171" />
+      <option name="presentableId" value="LOCAL-00171" />
+      <option name="project" value="LOCAL" />
+      <updated>1764356473800</updated>
+    </task>
+    <task id="LOCAL-00172" summary="fixed display problem with mxl layout files">
+      <option name="closed" value="true" />
+      <created>1764360783543</created>
+      <option name="number" value="00172" />
+      <option name="presentableId" value="LOCAL-00172" />
+      <option name="project" value="LOCAL" />
+      <updated>1764360783543</updated>
+    </task>
+    <task id="LOCAL-00173" summary="converted strainArrays to enums">
+      <option name="closed" value="true" />
+      <created>1764434508133</created>
+      <option name="number" value="00173" />
+      <option name="presentableId" value="LOCAL-00173" />
+      <option name="project" value="LOCAL" />
+      <updated>1764434508134</updated>
+    </task>
+    <task id="LOCAL-00174" summary="many refactoring and new files">
+      <option name="closed" value="true" />
+      <created>1764472057939</created>
+      <option name="number" value="00174" />
+      <option name="presentableId" value="LOCAL-00174" />
+      <option name="project" value="LOCAL" />
+      <updated>1764472057939</updated>
+    </task>
+    <task id="LOCAL-00175" summary="refactoring added a test database">
+      <option name="closed" value="true" />
+      <created>1765591284615</created>
+      <option name="number" value="00175" />
+      <option name="presentableId" value="LOCAL-00175" />
+      <option name="project" value="LOCAL" />
+      <updated>1765591284615</updated>
+    </task>
+    <task id="LOCAL-00176" summary="upgraded Gradle and others">
+      <option name="closed" value="true" />
+      <created>1765591578910</created>
+      <option name="number" value="00176" />
+      <option name="presentableId" value="LOCAL-00176" />
+      <option name="project" value="LOCAL" />
+      <updated>1765591578910</updated>
+    </task>
+    <task id="LOCAL-00177" summary="Interim updates to the time fragments until the WorkTimes class is built">
+      <option name="closed" value="true" />
+      <created>1765680321676</created>
+      <option name="number" value="00177" />
+      <option name="presentableId" value="LOCAL-00177" />
+      <option name="project" value="LOCAL" />
+      <updated>1765680321676</updated>
+    </task>
+    <task id="LOCAL-00178" summary="small tweaks">
+      <option name="closed" value="true" />
+      <created>1765937918271</created>
+      <option name="number" value="00178" />
+      <option name="presentableId" value="LOCAL-00178" />
+      <option name="project" value="LOCAL" />
+      <updated>1765937918272</updated>
+    </task>
+    <task id="LOCAL-00179" summary="small error causing crash">
+      <option name="closed" value="true" />
+      <created>1765940938210</created>
+      <option name="number" value="00179" />
+      <option name="presentableId" value="LOCAL-00179" />
+      <option name="project" value="LOCAL" />
+      <updated>1765940938211</updated>
+    </task>
+    <task id="LOCAL-00180" summary="Changes before redoing time fragments">
+      <option name="closed" value="true" />
+      <created>1766887537270</created>
+      <option name="number" value="00180" />
+      <option name="presentableId" value="LOCAL-00180" />
+      <option name="project" value="LOCAL" />
+      <updated>1766887537270</updated>
+    </task>
+    <task id="LOCAL-00181" summary="made backup copies of timeFragments">
+      <option name="closed" value="true" />
+      <created>1766887984573</created>
+      <option name="number" value="00181" />
+      <option name="presentableId" value="LOCAL-00181" />
+      <option name="project" value="LOCAL" />
+      <updated>1766887984573</updated>
+    </task>
+    <task id="LOCAL-00182" summary="backups and made time sheet scrollable for the entire page for landscape">
+      <option name="closed" value="true" />
+      <created>1767231165765</created>
+      <option name="number" value="00182" />
+      <option name="presentableId" value="LOCAL-00182" />
+      <option name="project" value="LOCAL" />
+      <updated>1767231165766</updated>
+    </task>
+    <task id="LOCAL-00183" summary="minor tweaks for work times">
+      <option name="closed" value="true" />
+      <created>1767310269713</created>
+      <option name="number" value="00183" />
+      <option name="presentableId" value="LOCAL-00183" />
+      <option name="project" value="LOCAL" />
+      <updated>1767310269714</updated>
+    </task>
+    <task id="LOCAL-00184" summary="minor bug fixes">
+      <option name="closed" value="true" />
+      <created>1767312329701</created>
+      <option name="number" value="00184" />
+      <option name="presentableId" value="LOCAL-00184" />
+      <option name="project" value="LOCAL" />
+      <updated>1767312329701</updated>
+    </task>
+    <task id="LOCAL-00185" summary="bug fix in daily time entry">
+      <option name="closed" value="true" />
+      <created>1767484158625</created>
+      <option name="number" value="00185" />
+      <option name="presentableId" value="LOCAL-00185" />
+      <option name="project" value="LOCAL" />
+      <updated>1767484158626</updated>
+    </task>
+    <task id="LOCAL-00186" summary="daily time entry seems to be fixed">
+      <option name="closed" value="true" />
+      <created>1767741279666</created>
+      <option name="number" value="00186" />
+      <option name="presentableId" value="LOCAL-00186" />
+      <option name="project" value="LOCAL" />
+      <updated>1767741279667</updated>
+    </task>
+    <task id="LOCAL-00187" summary="upgrade agp to 9.0">
+      <option name="closed" value="true" />
+      <created>1768704510241</created>
+      <option name="number" value="00187" />
+      <option name="presentableId" value="LOCAL-00187" />
+      <option name="project" value="LOCAL" />
+      <updated>1768704510241</updated>
+    </task>
+    <option name="localTasksCounter" value="188" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="true" />
+                </map>
+              </option>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="Version-5" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="changed icon for save to contrasting white against colored toolbar" />
+    <MESSAGE value="working on WorkDateTimesFragment.kt&#10;some functionality works" />
+    <MESSAGE value="worked out some bugs in WorkDateTimesFragment.kt&#10;Ready for some real world testing" />
+    <MESSAGE value="working on WorkDateTimesFragment.kt&#10;getting times to adjust properly" />
+    <MESSAGE value="fixed WorkDateTimesFragment.kt&#10;getting times to adjust properly" />
+    <MESSAGE value="fixed WorkDateTimesFragment.kt&#10;updating properly now as far as tested&#10;Will do real world testing" />
+    <MESSAGE value="put string file in alphabetic order" />
+    <MESSAGE value="working on WorkOrderHistoryTimeFragment.kt&#10;to refactor and tweak" />
+    <MESSAGE value="working on WorkOrderHistoryTimeFragment.kt&#10;ready for testing in real world" />
+    <MESSAGE value="fixed display problem with mxl layout files" />
+    <MESSAGE value="converted strainArrays to enums" />
+    <MESSAGE value="many refactoring and new files" />
+    <MESSAGE value="refactoring added a test database" />
+    <MESSAGE value="upgraded Gradle and others" />
+    <MESSAGE value="Interim updates to the time fragments until the WorkTimes class is built" />
+    <MESSAGE value="small tweaks" />
+    <MESSAGE value="small error causing crash" />
+    <MESSAGE value="Changes before redoing time fragments" />
+    <MESSAGE value="made backup copies of timeFragments" />
+    <MESSAGE value="backups and made time sheet scrollable for the entire page for landscape" />
+    <MESSAGE value="minor tweaks for work times" />
+    <MESSAGE value="minor bug fixes" />
+    <MESSAGE value="bug fix in daily time entry" />
+    <MESSAGE value="daily time entry seems to be fixed" />
+    <MESSAGE value="upgrade agp to 9.0" />
+    <option name="LAST_COMMIT_MESSAGE" value="upgrade agp to 9.0" />
+    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
+  </component>
+  <component name="play_dynamic_filters_status">
+    <option name="appIdToCheckInfo">
+      <map>
+        <entry key="ms.mattschlenkrich.paycalculator">
+          <value>
+            <CheckInfo lastCheckTimestamp="1767311530186" />
+          </value>
+        </entry>
+        <entry key="ms.mattschlenkrich.paycalculator.test">
+          <value>
+            <CheckInfo lastCheckTimestamp="1767311530187" />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

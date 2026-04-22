@@ -11,7 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
@@ -94,14 +97,16 @@ fun WorkDateUpdateScreen(
             }
         }
     ) { innerPadding ->
-        LazyColumn(
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = SCREEN_PADDING_HORIZONTAL),
-            verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+            verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
+            horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
         ) {
-            item {
+            item(span = { GridItemSpan(2) }) {
                 Column(
                     modifier = Modifier.padding(vertical = SCREEN_PADDING_VERTICAL),
                     verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
@@ -184,7 +189,7 @@ fun WorkDateUpdateScreen(
                 }
             }
 
-            item {
+            item(span = { GridItemSpan(2) }) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -222,68 +227,60 @@ fun WorkDateUpdateScreen(
                 }
             }
 
-            item {
-                Card(
+            item(span = { GridItemSpan(2) }) {
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
                 ) {
-                    Column(modifier = Modifier.padding(8.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                    IconButton(onClick = onAddHistoryClick) {
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = stringResource(R.string.add_new_work_order)
+                        )
+                    }
+                    Text(
+                        text = stringResource(R.string.work_orders),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            items(histories) { history ->
+                WorkOrderHistoryItem(
+                    history = history,
+                    onClick = onHistoryClick,
+                    onLongClick = onHistoryLongClick
+                )
+            }
+
+            if (workOrderSummary.isNotEmpty()) {
+                item(span = { GridItemSpan(2) }) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = workOrderSummary,
+                            color = Color.Red,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Button(
+                            onClick = onTransferClick,
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                IconButton(onClick = onAddHistoryClick) {
-                                    Icon(
-                                        Icons.Default.Add,
-                                        contentDescription = stringResource(R.string.add_new_extra)
-                                    )
-                                }
-                                Text(
-                                    text = stringResource(R.string.work_orders),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-
-                        histories.forEach { history ->
-                            WorkOrderHistoryItem(
-                                history = history,
-                                onClick = onHistoryClick,
-                                onLongClick = onHistoryLongClick
-                            )
-                        }
-
-                        if (workOrderSummary.isNotEmpty()) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = workOrderSummary,
-                                    color = Color.Red,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Button(
-                                    onClick = onTransferClick,
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-                                ) {
-                                    Text(stringResource(R.string.transfer))
-                                }
-                            }
+                            Text(stringResource(R.string.transfer))
                         }
                     }
                 }
             }
 
-            item {
+            item(span = { GridItemSpan(2) }) {
                 Spacer(modifier = Modifier.height(80.dp))
             }
         }

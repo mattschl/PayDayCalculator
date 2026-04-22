@@ -3,14 +3,17 @@ package ms.mattschlenkrich.paycalculator.ui.paydetail
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
@@ -32,12 +35,18 @@ fun PayDetailRoute(
     payDayViewModel: PayDayViewModel,
     payCalculationsViewModel: PayCalculationsViewModel,
     payDetailViewModel: PayDetailViewModel,
-    navController: androidx.navigation.NavController
+    navController: NavController
 ) {
-    val context = LocalContext.current
     val nf = remember { NumberFunctions() }
     val df = remember { DateFunctions() }
     val coroutineScope = rememberCoroutineScope()
+
+    val payDayIsLabel = stringResource(R.string.pay_day_is_)
+    val netLabel = stringResource(R.string.net_)
+    val regLabel = stringResource(R.string.reg_hours)
+    val otLabel = stringResource(R.string.overtime)
+    val dblOtLabel = stringResource(R.string.double_overtime)
+    val otherLabel = stringResource(R.string.other_hours)
 
     val employers by employerViewModel.getEmployers().observeAsState(emptyList())
     var selectedEmployer by remember { mutableStateOf<Employers?>(null) }
@@ -55,7 +64,7 @@ fun PayDetailRoute(
     var deductions by remember { mutableStateOf<List<ExtraContainer>>(emptyList()) }
     var taxes by remember { mutableStateOf<List<TaxAndAmount>>(emptyList()) }
 
-    var trigger by remember { mutableStateOf(0) }
+    var trigger by remember { mutableIntStateOf(0) }
 
     // Initial selection from history
     androidx.compose.runtime.LaunchedEffect(employers) {
@@ -116,10 +125,10 @@ fun PayDetailRoute(
 
                 paySummary =
                     PaySummaryData(
-                        payDayMessage = context.getString(R.string.pay_day_is_) + payDay,
+                        payDayMessage = payDayIsLabel + payDay,
                         grossPay = nf.displayDollars(payCalculations.getPayGross()),
                         deductions = nf.displayDollars(-payCalculations.getDebitTotalsByPay() - payCalculations.getAllTaxDeductions()),
-                        netPay = context.getString(R.string.net_) + nf.displayDollars(
+                        netPay = netLabel + nf.displayDollars(
                             payCalculations.getPayGross() - payCalculations.getDebitTotalsByPay() - payCalculations.getAllTaxDeductions()
                         ),
                         totalCredits = nf.displayDollars(payCalculations.getCreditTotalAll()),
@@ -130,7 +139,7 @@ fun PayDetailRoute(
                 if (payCalculations.getPayReg() > 0.0) {
                     items.add(
                         HourlyItem(
-                            context.getString(R.string.reg_hours),
+                            regLabel,
                             nf.displayNumberFromDouble(payCalculations.getHoursReg()),
                             nf.displayDollars(payCalculations.getPayRate()),
                             nf.displayDollars(payCalculations.getPayReg())
@@ -140,7 +149,7 @@ fun PayDetailRoute(
                 if (payCalculations.getPayOt() > 0.0) {
                     items.add(
                         HourlyItem(
-                            context.getString(R.string.overtime),
+                            otLabel,
                             nf.displayNumberFromDouble(payCalculations.getHoursOt()),
                             nf.displayDollars(payCalculations.getPayRate() * 1.5),
                             nf.displayDollars(payCalculations.getPayOt())
@@ -150,7 +159,7 @@ fun PayDetailRoute(
                 if (payCalculations.getPayDblOt() > 0.0) {
                     items.add(
                         HourlyItem(
-                            context.getString(R.string.double_overtime),
+                            dblOtLabel,
                             nf.displayNumberFromDouble(payCalculations.getHoursDblOt()),
                             nf.displayDollars(payCalculations.getPayRate() * 2),
                             nf.displayDollars(payCalculations.getPayDblOt())
@@ -160,7 +169,7 @@ fun PayDetailRoute(
                 if (payCalculations.getPayStat() > 0.0) {
                     items.add(
                         HourlyItem(
-                            context.getString(R.string.other_hours),
+                            otherLabel,
                             nf.displayNumberFromDouble(payCalculations.getHoursStat()),
                             nf.displayDollars(payCalculations.getPayRate()),
                             nf.displayDollars(payCalculations.getPayStat())
@@ -186,7 +195,7 @@ fun PayDetailRoute(
             }
         },
         onAddNewEmployer = {
-            navController.navigate(ms.mattschlenkrich.paycalculator.Screen.EmployerAdd.route)
+            navController.navigate(Screen.EmployerAdd.route)
         },
         cutOffDates = cutOffDates.map { it.ppCutoffDate },
         selectedCutOffDate = selectedCutOffDate,
@@ -197,15 +206,15 @@ fun PayDetailRoute(
         deductions = deductions,
         taxes = taxes,
         onAddCreditClick = {
-            navController.navigate(ms.mattschlenkrich.paycalculator.Screen.PayPeriodExtraAdd.route)
+            navController.navigate(Screen.PayPeriodExtraAdd.route)
         },
         onAddDeductionClick = {
-            navController.navigate(ms.mattschlenkrich.paycalculator.Screen.PayPeriodExtraAdd.route)
+            navController.navigate(Screen.PayPeriodExtraAdd.route)
         },
         onExtraClick = { extra ->
             if (extra.payPeriodExtra != null) {
                 mainViewModel.setPayPeriodExtra(extra.payPeriodExtra!!)
-                navController.navigate(ms.mattschlenkrich.paycalculator.Screen.PayPeriodExtraUpdate.route)
+                navController.navigate(Screen.PayPeriodExtraUpdate.route)
             }
         },
         onExtraActiveChange = { extra, active ->
@@ -231,49 +240,4 @@ fun PayDetailRoute(
             navController.popBackStack()
         }
     )
-}
-
-private fun insertOrUpdateExtraOnChange(
-    extraContainer: ExtraContainer,
-    delete: Boolean,
-    payPeriodId: Long,
-    payDayViewModel: PayDayViewModel,
-    nf: NumberFunctions,
-    df: DateFunctions
-) {
-    if (extraContainer.payPeriodExtra != null) {
-        val payPeriodExtra = extraContainer.payPeriodExtra!!
-        val newExtra = ms.mattschlenkrich.paycalculator.data.WorkPayPeriodExtras(
-            payPeriodExtra.workPayPeriodExtraId,
-            payPeriodExtra.ppePayPeriodId,
-            payPeriodExtra.ppeExtraTypeId,
-            payPeriodExtra.ppeName,
-            payPeriodExtra.ppeAppliesTo,
-            3,
-            payPeriodExtra.ppeValue,
-            payPeriodExtra.ppeIsFixed,
-            payPeriodExtra.ppeIsCredit,
-            delete,
-            df.getCurrentUTCTimeAsString()
-        )
-        extraContainer.payPeriodExtra = newExtra
-        payDayViewModel.updatePayPeriodExtra(newExtra)
-    } else if (extraContainer.extraDefinitionAndType != null) {
-        val extraDefinitionAndType = extraContainer.extraDefinitionAndType!!
-        val newExtra = ms.mattschlenkrich.paycalculator.data.WorkPayPeriodExtras(
-            nf.generateRandomIdAsLong(),
-            payPeriodId,
-            extraDefinitionAndType.extraType.workExtraTypeId,
-            extraDefinitionAndType.extraType.wetName,
-            extraDefinitionAndType.extraType.wetAppliesTo,
-            extraDefinitionAndType.extraType.wetAttachTo,
-            extraDefinitionAndType.definition.weValue,
-            extraDefinitionAndType.definition.weIsFixed,
-            extraDefinitionAndType.extraType.wetIsCredit,
-            delete,
-            df.getCurrentUTCTimeAsString()
-        )
-        extraContainer.payPeriodExtra = newExtra
-        payDayViewModel.insertPayPeriodExtra(newExtra)
-    }
 }
