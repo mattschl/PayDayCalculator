@@ -78,7 +78,8 @@ fun <T> AutoCompleteTextField(
         if (expanded && filteredSuggestions.isNotEmpty()) {
             ExposedDropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.exposedDropdownSize()
             ) {
                 filteredSuggestions.forEach { suggestion ->
                     DropdownMenuItem(
@@ -87,7 +88,9 @@ fun <T> AutoCompleteTextField(
                             onItemSelected(suggestion)
                             expanded = false
                         },
-                        modifier = Modifier.height(StandardTextFieldDefaults.minHeight()),
+                        modifier = Modifier
+                            .height(StandardTextFieldDefaults.minHeight())
+                            .fillMaxWidth(),
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                     )
                 }

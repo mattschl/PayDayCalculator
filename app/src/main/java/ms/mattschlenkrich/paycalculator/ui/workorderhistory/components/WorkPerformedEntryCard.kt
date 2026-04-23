@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -47,7 +46,7 @@ fun WorkPerformedEntryCard(
     ) {
         Column(
             modifier = Modifier
-                .padding(12.dp)
+//                .padding(12.dp)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
         ) {
@@ -58,35 +57,35 @@ fun WorkPerformedEntryCard(
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
-            ) {
-                AutoCompleteTextField(
-                    value = workPerformed,
-                    onValueChange = onWorkPerformedChange,
-                    label = stringResource(id = R.string.work_performed),
-                    suggestions = workPerformedList,
-                    onItemSelected = onWorkPerformedSelected,
-                    modifier = Modifier.weight(1f),
-                    itemToString = { it.wpDescription }
-                )
-                AutoCompleteTextField(
-                    value = area,
-                    onValueChange = onAreaChange,
-                    label = stringResource(id = R.string.area_optional),
-                    suggestions = areaList,
-                    onItemSelected = onAreaSelected,
-                    modifier = Modifier.weight(1f),
-                    itemToString = { it.areaName }
-                )
-            }
+            AutoCompleteTextField(
+                value = workPerformed,
+                onValueChange = onWorkPerformedChange,
+                label = stringResource(id = R.string.work_performed),
+                suggestions = workPerformedList,
+                onItemSelected = onWorkPerformedSelected,
+//                modifier = Modifier.weight(1f),
+                itemToString = { it.wpDescription }
+            )
+//
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+//            ) {
+            AutoCompleteTextField(
+                value = area,
+                onValueChange = onAreaChange,
+                label = stringResource(id = R.string.area_optional),
+                suggestions = areaList,
+                onItemSelected = onAreaSelected,
+//                modifier = Modifier.weight(1f),
+                itemToString = { it.areaName }
+            )
+//            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+//                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 CapitalizedOutlinedTextField(
                     value = workPerformedNote,

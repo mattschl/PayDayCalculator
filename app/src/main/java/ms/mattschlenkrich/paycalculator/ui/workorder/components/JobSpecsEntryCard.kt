@@ -2,7 +2,6 @@ package ms.mattschlenkrich.paycalculator.ui.workorder.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
@@ -58,35 +57,31 @@ fun JobSpecsEntryCard(
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
 
-            Row(
+            AutoCompleteTextField(
+                value = jobSpecText,
+                onValueChange = onJobSpecTextChange,
+                label = stringResource(R.string.job_spec),
+                suggestions = jobSpecSuggestions,
+                onItemSelected = onJobSpecSelected,
+                itemToString = { it.jsName },
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
-            ) {
-                AutoCompleteTextField(
-                    value = jobSpecText,
-                    onValueChange = onJobSpecTextChange,
-                    label = stringResource(R.string.job_spec),
-                    suggestions = jobSpecSuggestions,
-                    onItemSelected = onJobSpecSelected,
-                    itemToString = { it.jsName },
-                    modifier = Modifier.weight(1.5f),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Words
-                    )
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Words
                 )
-                AutoCompleteTextField(
-                    value = areaText,
-                    onValueChange = onAreaTextChange,
-                    label = stringResource(R.string.area),
-                    suggestions = areaSuggestions,
-                    onItemSelected = onAreaSelected,
-                    itemToString = { it.areaName },
-                    modifier = Modifier.weight(1f),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Words
-                    )
+            )
+
+            AutoCompleteTextField(
+                value = areaText,
+                onValueChange = onAreaTextChange,
+                label = stringResource(R.string.area),
+                suggestions = areaSuggestions,
+                onItemSelected = onAreaSelected,
+                itemToString = { it.areaName },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Words
                 )
-            }
+            )
 
             CapitalizedOutlinedTextField(
                 value = workPerformedNote,

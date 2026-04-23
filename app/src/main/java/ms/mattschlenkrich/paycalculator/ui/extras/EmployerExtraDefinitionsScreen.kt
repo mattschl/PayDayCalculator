@@ -19,7 +19,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -78,11 +77,6 @@ fun EmployerExtraDefinitionsScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.extra_definitions)) }
-            )
-        },
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             if (selectedEmployer != null && selectedExtraType != null) {

@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -43,7 +42,7 @@ fun MaterialEntryCard(
     ) {
         Column(
             modifier = Modifier
-                .padding(12.dp)
+//                .padding(12.dp)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
         ) {
@@ -64,7 +63,8 @@ fun MaterialEntryCard(
                     value = materialQty,
                     onValueChange = onMaterialQtyChange,
                     label = { Text(stringResource(id = R.string.qty)) },
-                    modifier = Modifier.width(80.dp)
+//                    modifier = Modifier.weight(.1f),
+                    modifier = Modifier.width(40.dp)
                 )
                 AutoCompleteTextField(
                     value = material,
@@ -75,14 +75,14 @@ fun MaterialEntryCard(
                     modifier = Modifier.weight(1f),
                     itemToString = { it.mName }
                 )
-                Button(
-                    onClick = onAddMaterial,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
-                ) {
-                    Text(stringResource(id = R.string.add))
-                }
+            }
+            Button(
+                onClick = onAddMaterial,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            ) {
+                Text(stringResource(id = R.string.add))
             }
         }
     }

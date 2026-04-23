@@ -53,12 +53,18 @@ fun <T> SimpleDropdownField(
                 label = if (label.isNotEmpty()) {
                     { Text(label) }
                 } else null,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = expanded
+                    )
+                },
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
             )
         }
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.exposedDropdownSize()
         ) {
             items.forEach { item ->
                 DropdownMenuItem(
@@ -67,7 +73,9 @@ fun <T> SimpleDropdownField(
                         onItemSelected(item)
                         expanded = false
                     },
-                    modifier = Modifier.height(StandardTextFieldDefaults.minHeight()),
+                    modifier = Modifier
+                        .height(StandardTextFieldDefaults.minHeight())
+                        .fillMaxWidth(),
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                 )
             }

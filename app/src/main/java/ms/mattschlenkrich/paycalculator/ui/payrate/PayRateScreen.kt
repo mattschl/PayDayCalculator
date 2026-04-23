@@ -29,7 +29,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -69,11 +68,6 @@ fun EmployerPayRatesScreen(
     var expanded by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("PayRateScreen") }
-            )
-        },
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             FloatingActionButton(
@@ -117,7 +111,7 @@ fun EmployerPayRatesScreen(
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
-                        modifier = Modifier.fillMaxWidth(0.8f)
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         employers.forEach { employer ->
                             DropdownMenuItem(
@@ -125,7 +119,8 @@ fun EmployerPayRatesScreen(
                                 onClick = {
                                     onEmployerSelected(employer)
                                     expanded = false
-                                }
+                                },
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                         HorizontalDivider()
@@ -239,11 +234,6 @@ fun PayRateScreen(
     onDeleteClick: (() -> Unit)? = null,
 ) {
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("PayRateScreen") }
-            )
-        },
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             FloatingActionButton(
