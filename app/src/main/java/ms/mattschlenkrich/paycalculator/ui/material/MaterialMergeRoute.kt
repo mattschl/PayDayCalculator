@@ -41,7 +41,7 @@ fun MaterialMergeRoute(
         }
     }
 
-    val materialList by workOrderViewModel.getMaterialsList().observeAsState(emptyList())
+    val materialList by workOrderViewModel.materialsList.observeAsState(emptyList())
     val parentMaterial by workOrderViewModel.getMaterial(materialId).observeAsState()
     val childList by workOrderViewModel.getMaterialAndChildList(materialId)
         .observeAsState(emptyList())

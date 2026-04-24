@@ -56,22 +56,25 @@ fun EmployerExtraDefinitionsScreen(
     onAddNewExtraType: (Employers) -> Unit,
     onDeleteExtraDefinition: (ExtraDefTypeAndEmployer) -> Unit
 ) {
-    val employers by employerViewModel.getEmployers().observeAsState(emptyList())
+    val employers by employerViewModel.employersAll.observeAsState(emptyList())
     var selectedEmployer by remember { mutableStateOf(initialEmployer) }
 
     val extraTypes by if (selectedEmployer != null) {
-        workExtraViewModel.getWorkExtraTypeList(selectedEmployer!!.employerId)
-            .observeAsState(emptyList<WorkExtraTypes>())
+        remember(selectedEmployer) {
+            workExtraViewModel.getWorkExtraTypeList(selectedEmployer!!.employerId)
+        }.observeAsState(emptyList<WorkExtraTypes>())
     } else {
         remember { mutableStateOf(emptyList<WorkExtraTypes>()) }
     }
     var selectedExtraType by remember { mutableStateOf(initialExtraType) }
 
     val definitions by if (selectedExtraType != null) {
-        workExtraViewModel.getActiveExtraDefinitionsFull(
-            selectedExtraType!!.wetEmployerId,
-            selectedExtraType!!.workExtraTypeId
-        ).observeAsState(emptyList<ExtraDefTypeAndEmployer>())
+        remember(selectedExtraType) {
+            workExtraViewModel.getActiveExtraDefinitionsFull(
+                selectedExtraType!!.wetEmployerId,
+                selectedExtraType!!.workExtraTypeId
+            )
+        }.observeAsState(emptyList<ExtraDefTypeAndEmployer>())
     } else {
         remember { mutableStateOf(emptyList<ExtraDefTypeAndEmployer>()) }
     }

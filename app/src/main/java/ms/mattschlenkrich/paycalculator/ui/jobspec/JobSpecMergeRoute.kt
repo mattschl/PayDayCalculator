@@ -35,7 +35,7 @@ fun JobSpecMergeRoute(
         return
     }
 
-    val jobSpecList by workOrderViewModel.getJobSpecsAll().observeAsState(emptyList())
+    val jobSpecList by workOrderViewModel.jobSpecsAll.observeAsState(emptyList())
     val parentJobSpec by workOrderViewModel.getJobSpec(jsId).observeAsState()
     val childList by workOrderViewModel.getJobSpecAndChildList(jsId)
         .observeAsState(emptyList())

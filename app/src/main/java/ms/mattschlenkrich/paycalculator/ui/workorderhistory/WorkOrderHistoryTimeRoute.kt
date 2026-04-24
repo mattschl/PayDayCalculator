@@ -344,13 +344,14 @@ fun WorkOrderHistoryTimeRoute(
                             currentStart,
                             df.getDateTimeFromDateAndTime(
                                 historyWithDates!!.workDate.wdDate,
-                                df.getTimeDisplay(startTime)
+                                df.getTimeDisplay(endTime)
                             ),
                             selectedTimeType,
                             false,
                             df.getCurrentUTCTimeAsString()
                         )
                     )
+                    startTime = endTime.clone() as Calendar
                     showStartTimeWarning = false
                 }
             }

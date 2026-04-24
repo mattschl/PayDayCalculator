@@ -35,7 +35,7 @@ fun WorkPerformedUpdateRoute(
     }
 
     val originalWp by workOrderViewModel.getWorkPerformed(wpId).observeAsState()
-    val workPerformedList by workOrderViewModel.getWorkPerformedAll().observeAsState(emptyList())
+    val workPerformedList by workOrderViewModel.workPerformedAll.observeAsState(emptyList())
 
     originalWp?.let { wp ->
         var description by remember(wp.workPerformedId) { mutableStateOf(wp.wpDescription) }

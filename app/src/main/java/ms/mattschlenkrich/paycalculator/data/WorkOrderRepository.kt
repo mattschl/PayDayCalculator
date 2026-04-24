@@ -342,6 +342,8 @@ class WorkOrderRepository(private val db: PayDatabase) {
 
     fun getMaterialsList() = db.getWorkOrderDao().getMaterialsList()
 
+    suspend fun getMaterialsListSync() = db.getWorkOrderDao().getMaterialsListSync()
+
     fun getMaterialsChildren(materialId: Long) =
         db.getWorkOrderDao().getMaterialsChildren(materialId)
 

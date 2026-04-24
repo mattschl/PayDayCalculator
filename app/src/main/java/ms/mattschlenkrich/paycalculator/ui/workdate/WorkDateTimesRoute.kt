@@ -66,19 +66,23 @@ fun WorkDateTimesRoute(
     }
 
     val employer = mainViewModel.getEmployer() ?: return
-    val workOrderSuggestions by workTimeViewModel.getWorkOrderNumbers(
-        employer.employerId
-    ).observeAsState(emptyList())
+    val workOrderSuggestions by remember(employer.employerId) {
+        workTimeViewModel.getWorkOrderNumbers(
+            employer.employerId
+        )
+    }.observeAsState(emptyList())
 
     val existingTimes by if (history != null) {
-        workOrderViewModel.getTimeWorkedForWorkOrderHistory(history!!.woHistoryId)
-            .observeAsState(emptyList())
+        remember(history!!.woHistoryId) {
+            workOrderViewModel.getTimeWorkedForWorkOrderHistory(history!!.woHistoryId)
+        }.observeAsState(emptyList())
     } else {
         remember { mutableStateOf(emptyList()) }
     }
 
-    val allTimesByDate by workTimeViewModel.getTimesWorkedByDate(workDate.workDateId)
-        .observeAsState(emptyList())
+    val allTimesByDate by remember(workDate.workDateId) {
+        workTimeViewModel.getTimesWorkedByDate(workDate.workDateId)
+    }.observeAsState(emptyList())
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var isOverlapOverride by remember { mutableStateOf(false) }

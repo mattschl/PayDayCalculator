@@ -78,22 +78,26 @@ fun WorkOrderHistoryUpdateRoute(
     var note by remember { mutableStateOf(history.woHistoryNote ?: "") }
 
     var workPerformed by remember { mutableStateOf("") }
-    val workPerformedList by workOrderViewModel.getWorkPerformedAll().observeAsState(emptyList())
+    val workPerformedList by workOrderViewModel.workPerformedAll.observeAsState(emptyList())
     var area by remember { mutableStateOf("") }
-    val areaList by workOrderViewModel.getAreasList().observeAsState(emptyList())
+    val areaList by workOrderViewModel.areasList.observeAsState(emptyList())
     var workPerformedNote by remember { mutableStateOf("") }
-    val workPerformedActualList by workOrderViewModel.getWorkPerformedCombinedByWorkOrderHistory(
-        history.woHistoryId
-    ).observeAsState(emptyList())
+    val workPerformedActualList by remember(history.woHistoryId) {
+        workOrderViewModel.getWorkPerformedCombinedByWorkOrderHistory(
+            history.woHistoryId
+        )
+    }.observeAsState(emptyList())
 
     var materialQty by remember { mutableStateOf("") }
     var materialName by remember { mutableStateOf("") }
-    val materialList by workOrderViewModel.getMaterialsList().observeAsState(emptyList())
-    val materialActualList by workOrderViewModel.getMaterialsByHistory(history.woHistoryId)
-        .observeAsState(emptyList())
+    val materialList by workOrderViewModel.materialsList.observeAsState(emptyList())
+    val materialActualList by remember(history.woHistoryId) {
+        workOrderViewModel.getMaterialsByHistory(history.woHistoryId)
+    }.observeAsState(emptyList())
 
-    val timeWorkedList by workOrderViewModel.getTimeWorkedForWorkOrderHistory(history.woHistoryId)
-        .observeAsState(emptyList())
+    val timeWorkedList by remember(history.woHistoryId) {
+        workOrderViewModel.getTimeWorkedForWorkOrderHistory(history.woHistoryId)
+    }.observeAsState(emptyList())
 
     val isWorkOrderValid = workOrderList.any { it.woNumber == workOrderNumber }
 
@@ -159,7 +163,7 @@ fun WorkOrderHistoryUpdateRoute(
         onWorkPerformedNoteChange = { workPerformedNote = it },
         onAddWorkPerformed = {
             coroutineScope.launch {
-                val wp = workOrderViewModel.getWorkPerformedSync(workPerformed)
+                val wp = workOrderViewModel.getOrCreateWorkPerformed(workPerformed)
                 val a = workOrderViewModel.getOrCreateArea(area)
                 if (wp != null) {
                     workOrderViewModel.insertWorkOrderHistoryWorkPerformed(
@@ -201,7 +205,7 @@ fun WorkOrderHistoryUpdateRoute(
         },
         onAddMaterial = {
             coroutineScope.launch {
-                val m = workOrderViewModel.getMaterialSync(materialName)
+                val m = workOrderViewModel.getOrCreateMaterial(materialName)
                 if (m != null) {
                     workOrderViewModel.insertWorkOrderHistoryMaterial(
                         WorkOrderHistoryMaterial(

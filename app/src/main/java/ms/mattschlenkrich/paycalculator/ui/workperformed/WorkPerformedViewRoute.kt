@@ -19,7 +19,7 @@ fun WorkPerformedViewRoute(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     val workPerformedList by if (searchQuery.isEmpty()) {
-        workOrderViewModel.getWorkPerformedAll().observeAsState(emptyList())
+        workOrderViewModel.workPerformedAll.observeAsState(emptyList())
     } else {
         workOrderViewModel.searchFromWorkPerformed("%$searchQuery%").observeAsState(emptyList())
     }

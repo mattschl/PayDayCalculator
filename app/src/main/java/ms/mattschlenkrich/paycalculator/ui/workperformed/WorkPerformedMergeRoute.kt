@@ -35,7 +35,7 @@ fun WorkPerformedMergeRoute(
         return
     }
 
-    val workPerformedList by workOrderViewModel.getWorkPerformedAll().observeAsState(emptyList())
+    val workPerformedList by workOrderViewModel.workPerformedAll.observeAsState(emptyList())
     val parentWorkPerformed by workOrderViewModel.getWorkPerformed(wpId).observeAsState()
     val childList by workOrderViewModel.getWorkPerformedAndChildList(wpId)
         .observeAsState(emptyList())

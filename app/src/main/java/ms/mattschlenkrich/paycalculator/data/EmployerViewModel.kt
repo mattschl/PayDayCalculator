@@ -39,6 +39,8 @@ class EmployerViewModel(
     fun getEmployer(employerId: Long) =
         employerRepository.getEmployer(employerId)
 
+    val employersAll = employerRepository.getEmployers()
+
     fun getEmployers() =
         employerRepository.getEmployers()
 

@@ -567,6 +567,13 @@ interface WorkOrderDao {
     )
     fun getMaterialsList(): LiveData<List<Material>>
 
+    @Query(
+        "SELECT * FROM materials " +
+                "WHERE mIsDeleted = 0 " +
+                "ORDER BY mName"
+    )
+    suspend fun getMaterialsListSync(): List<Material>
+
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(

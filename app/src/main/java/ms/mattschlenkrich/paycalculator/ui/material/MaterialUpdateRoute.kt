@@ -36,7 +36,7 @@ fun MaterialUpdateRoute(
         return
     }
 
-    val materialList by workOrderViewModel.getMaterialsList().observeAsState(emptyList())
+    val materialList by workOrderViewModel.materialsList.observeAsState(emptyList())
 
     var name by remember { mutableStateOf(oldMaterial.mName) }
     var cost by remember { mutableStateOf(nf.displayDollars(oldMaterial.mCost)) }

@@ -36,9 +36,9 @@ fun WorkOrderHistoryWorkPerformedUpdateRoute(
     val workPerformedHistory by workOrderViewModel.getWorkPerformedHistoryById(
         workPerformedHistoryId
     ).observeAsState()
-    val workPerformedSuggestions by workOrderViewModel.getWorkPerformedAll()
+    val workPerformedSuggestions by workOrderViewModel.workPerformedAll
         .observeAsState(emptyList())
-    val areaSuggestions by workOrderViewModel.getAreasList().observeAsState(emptyList())
+    val areaSuggestions by workOrderViewModel.areasList.observeAsState(emptyList())
 
     WorkOrderHistoryWorkPerformedUpdateScreen(
         originalWorkOrderHistory = workOrderHistoryWithDates,

@@ -40,7 +40,7 @@ fun WorkOrderHistoryMaterialUpdateRoute(
 
     val historyWithDates by workOrderViewModel.getWorkOrderHistoriesById(initialHistory.woHistoryId)
         .observeAsState()
-    val materialSuggestions by workOrderViewModel.getMaterialsList().observeAsState(emptyList())
+    val materialSuggestions by workOrderViewModel.materialsList.observeAsState(emptyList())
 
     var materialHistory by remember {
         mutableStateOf<WorkOrderHistoryMaterialCombined?>(

@@ -111,6 +111,11 @@ class WorkOrderViewModel(
     fun getWorkOrderHistoryCombined(historyId: Long) =
         workOrderRepository.getWorkOrderHistoryCombined(historyId)
 
+    val jobSpecsAll = workOrderRepository.getJobSpecs()
+    val areasList = workOrderRepository.getAreasList()
+    val workPerformedAll = workOrderRepository.getWorkPerformedAll()
+    val materialsList = workOrderRepository.getMaterialsList()
+
     fun insertWorkOrderHistoryTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
         viewModelScope.launch { workOrderRepository.insertTimeWorked(timeWorked) }
 
@@ -192,7 +197,6 @@ class WorkOrderViewModel(
         workOrderRepository.updateJobSpec(jobSpec)
     }
 
-    fun getJobSpecsAll() = workOrderRepository.getJobSpecs()
 
     suspend fun getJobSpecsAllSync() = workOrderRepository.getJobSpecsAllSync()
 
@@ -265,6 +269,46 @@ class WorkOrderViewModel(
         return newArea
     }
 
+    suspend fun getOrCreateWorkPerformed(description: String): WorkPerformed? {
+        if (description.isBlank()) return null
+        val existing = getWorkPerformedAllSync().find {
+            it.wpDescription.trim().equals(description.trim(), ignoreCase = true)
+        }
+        if (existing != null) return existing
+
+        val nf = ms.mattschlenkrich.paycalculator.common.NumberFunctions()
+        val df = ms.mattschlenkrich.paycalculator.common.DateFunctions()
+        val newWorkPerformed = WorkPerformed(
+            nf.generateRandomIdAsLong(),
+            description.trim(),
+            false,
+            df.getCurrentUTCTimeAsString()
+        )
+        workOrderRepository.insertWorkPerformed(newWorkPerformed)
+        return newWorkPerformed
+    }
+
+    suspend fun getOrCreateMaterial(name: String): Material? {
+        if (name.isBlank()) return null
+        val existing = workOrderRepository.getMaterialsListSync().find {
+            it.mName.trim().equals(name.trim(), ignoreCase = true)
+        }
+        if (existing != null) return existing
+
+        val nf = ms.mattschlenkrich.paycalculator.common.NumberFunctions()
+        val df = ms.mattschlenkrich.paycalculator.common.DateFunctions()
+        val newMaterial = Material(
+            nf.generateRandomIdAsLong(),
+            name.trim(),
+            0.0,
+            0.0,
+            false,
+            df.getCurrentUTCTimeAsString()
+        )
+        workOrderRepository.insertMaterial(newMaterial)
+        return newMaterial
+    }
+
     fun updateWorkOrderJobSpec(
         originalId: Long,
         jobSpecId: Long,
@@ -308,7 +352,6 @@ class WorkOrderViewModel(
 //    }
 
 
-    fun getWorkPerformedAll() = workOrderRepository.getWorkPerformedAll()
 
     suspend fun getWorkPerformedAllSync() = workOrderRepository.getWorkPerformedAllSync()
 
@@ -404,7 +447,8 @@ class WorkOrderViewModel(
         workOrderRepository.updateMaterial(material)
     }
 
-    fun getMaterialsList() = workOrderRepository.getMaterialsList()
+
+    suspend fun getMaterialsListSync() = workOrderRepository.getMaterialsListSync()
 
     fun getMaterialsChildren(materialId: Long) =
         workOrderRepository.getMaterialsChildren(materialId)
@@ -517,10 +561,6 @@ class WorkOrderViewModel(
 
     fun updateArea(area: Areas) = viewModelScope.launch { workOrderRepository.updateArea(area) }
 
-    /**
-     * @return LiveData(List(Areas))
-     */
-    fun getAreasList() = workOrderRepository.getAreasList()
 
     suspend fun getAreasListSync() = workOrderRepository.getAreasListSync()
 

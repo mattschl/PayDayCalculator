@@ -19,7 +19,7 @@ fun AreaViewRoute(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     val areaList by if (searchQuery.isEmpty()) {
-        workOrderViewModel.getAreasList().observeAsState(emptyList())
+        workOrderViewModel.areasList.observeAsState(emptyList())
     } else {
         workOrderViewModel.searchAreas("%$searchQuery%").observeAsState(emptyList())
     }

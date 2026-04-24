@@ -34,7 +34,7 @@ fun AreaUpdateRoute(
         return
     }
 
-    val areaList by workOrderViewModel.getAreasList().observeAsState(emptyList())
+    val areaList by workOrderViewModel.areasList.observeAsState(emptyList())
     val oldArea by workOrderViewModel.getArea(areaId).observeAsState()
 
     oldArea?.let { area ->

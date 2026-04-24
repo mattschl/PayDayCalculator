@@ -19,7 +19,7 @@ fun JobSpecViewRoute(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     val jobSpecList by if (searchQuery.isEmpty()) {
-        workOrderViewModel.getJobSpecsAll().observeAsState(emptyList())
+        workOrderViewModel.jobSpecsAll.observeAsState(emptyList())
     } else {
         workOrderViewModel.searchJobSpecs("%$searchQuery%").observeAsState(emptyList())
     }

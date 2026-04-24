@@ -38,7 +38,7 @@ fun EmployerListScreen(
     onEmployerClick: (Employers) -> Unit,
     onAddClick: () -> Unit
 ) {
-    val employers by employerViewModel.getEmployers().observeAsState(initial = emptyList())
+    val employers by employerViewModel.employersAll.observeAsState(initial = emptyList())
 
     Scaffold(
         /* topBar = {

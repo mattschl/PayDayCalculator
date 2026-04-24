@@ -19,7 +19,7 @@ fun MaterialViewRoute(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     val materialList by if (searchQuery.isEmpty()) {
-        workOrderViewModel.getMaterialsList().observeAsState(emptyList())
+        workOrderViewModel.materialsList.observeAsState(emptyList())
     } else {
         workOrderViewModel.searchMaterials("%$searchQuery%").observeAsState(emptyList())
     }

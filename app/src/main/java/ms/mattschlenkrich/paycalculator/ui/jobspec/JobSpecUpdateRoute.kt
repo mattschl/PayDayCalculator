@@ -35,7 +35,7 @@ fun JobSpecUpdateRoute(
     }
 
     val originalJs by workOrderViewModel.getJobSpec(jsId).observeAsState()
-    val jobSpecList by workOrderViewModel.getJobSpecsAll().observeAsState(emptyList())
+    val jobSpecList by workOrderViewModel.jobSpecsAll.observeAsState(emptyList())
 
     originalJs?.let { js ->
         var name by remember(js.jobSpecId) { mutableStateOf(js.jsName) }

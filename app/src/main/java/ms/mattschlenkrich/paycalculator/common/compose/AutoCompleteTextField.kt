@@ -13,13 +13,19 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 fun <T> AutoCompleteTextField(
     value: String,
@@ -35,6 +41,20 @@ fun <T> AutoCompleteTextField(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
+    val filteredSuggestions = remember { mutableStateListOf<T>() }
+
+    LaunchedEffect(value, suggestions) {
+        snapshotFlow { value }
+            .debounce(100)
+            .collectLatest { query ->
+                val result = suggestions.asSequence()
+                    .filter { itemToString(it).contains(query, ignoreCase = true) }
+                    .take(50)
+                    .toList()
+                filteredSuggestions.clear()
+                filteredSuggestions.addAll(result)
+            }
+    }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -69,10 +89,6 @@ fun <T> AutoCompleteTextField(
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
                 isError = isError,
             )
-        }
-
-        val filteredSuggestions = suggestions.filter {
-            itemToString(it).contains(value, ignoreCase = true)
         }
 
         if (expanded && filteredSuggestions.isNotEmpty()) {

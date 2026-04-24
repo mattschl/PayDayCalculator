@@ -43,15 +43,17 @@ fun WorkOrderUpdateRoute(
     var description by remember { mutableStateOf(initialWo.woDescription) }
 
     var jobSpecText by remember { mutableStateOf("") }
-    val jobSpecSuggestions by workOrderViewModel.getJobSpecsAll().observeAsState(emptyList())
+    val jobSpecSuggestions by workOrderViewModel.jobSpecsAll.observeAsState(emptyList())
     var areaText by remember { mutableStateOf("") }
-    val areaSuggestions by workOrderViewModel.getAreasList().observeAsState(emptyList())
+    val areaSuggestions by workOrderViewModel.areasList.observeAsState(emptyList())
     var workPerformedNote by remember { mutableStateOf("") }
 
-    val addedJobSpecs by workOrderViewModel.getWorkOrderJobSpecs(initialWo.workOrderId)
-        .observeAsState(emptyList())
-    val historyList by workOrderViewModel.getWorkOrderHistoriesByWorkOrder(initialWo.workOrderId)
-        .observeAsState(emptyList())
+    val addedJobSpecs by remember(initialWo.workOrderId) {
+        workOrderViewModel.getWorkOrderJobSpecs(initialWo.workOrderId)
+    }.observeAsState(emptyList())
+    val historyList by remember(initialWo.workOrderId) {
+        workOrderViewModel.getWorkOrderHistoriesByWorkOrder(initialWo.workOrderId)
+    }.observeAsState(emptyList())
 
     // Mocking summaries for now as they might need complex calculation
     val jobSpecSummaryText = "${addedJobSpecs.size} items"
