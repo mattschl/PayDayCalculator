@@ -257,7 +257,7 @@ class SyncActivity : ComponentActivity() {
                     showProgress("Uploading $driveFileName...")
                     helper.uploadFile(
                         localFile = dbFile,
-                        mimeType = "application/x-sqlite3",
+                        mimeType = "application/vnd-sqlite3",
                         driveFileName = driveFileName,
                         folderId = targetFolderId
                     )
@@ -267,7 +267,7 @@ class SyncActivity : ComponentActivity() {
                         if (walShmFile.exists()) {
                             helper.uploadFile(
                                 localFile = walShmFile,
-                                mimeType = "application/x-sqlite3",
+                                mimeType = "application/vnd-sqlite3",
                                 driveFileName = "$driveFileName$suffix",
                                 folderId = targetFolderId
                             )
