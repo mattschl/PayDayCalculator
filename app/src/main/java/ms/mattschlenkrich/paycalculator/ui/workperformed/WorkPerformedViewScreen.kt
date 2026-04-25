@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paycalculator.ui.workperformed
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -25,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
@@ -109,37 +107,6 @@ fun WorkPerformedViewScreen(
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun WorkPerformedItem(
-    item: WorkPerformed,
-    onClick: (WorkPerformed) -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick(item) },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
-    ) {
-        Column(
-            modifier = Modifier.padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = if (item.wpIsDeleted) {
-                    item.wpDescription + " " + stringResource(R.string._deleted_)
-                } else {
-                    item.wpDescription
-                },
-                color = if (item.wpIsDeleted) Color.Red else Color.Black,
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontWeight = FontWeight.Bold
-                )
-            )
         }
     }
 }

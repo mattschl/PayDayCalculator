@@ -41,10 +41,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.PayRateBasedOn
 import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
@@ -181,44 +179,6 @@ fun EmployerPayRatesScreen(
     }
 }
 
-@Composable
-fun PayRateItem(wage: EmployerPayRates, onClick: () -> Unit) {
-    val cf = NumberFunctions()
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = wage.eprEffectiveDate,
-                textDecoration = if (wage.eprIsDeleted) TextDecoration.LineThrough else null,
-                color = if (wage.eprIsDeleted) Color.Red else Color.Black,
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Text(
-                text = cf.displayDollars(wage.eprPayRate),
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
-                textDecoration = if (wage.eprIsDeleted) TextDecoration.LineThrough else null,
-                color = if (wage.eprIsDeleted) Color.Red else Color.Black
-            )
-            Text(
-                text = PayRateBasedOn.entries[wage.eprPerPeriod].type,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
-            )
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
