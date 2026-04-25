@@ -3,27 +3,15 @@
     <string name="db_name">pay.db</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="__calculated">" - Calculated "</string>
-    <string name="__current">" - CURRENT"</string>
     <string name="__for">"\n for "</string>
-    <string name="__pay_summary">" - Pay Summary"</string>
-    <string name="__summary">" - Summary"</string>
-    <string name="__time_sheet">" - time sheet"</string>
     <string name="_0_hr">0 Hr</string>
-    <string name="_15">15</string>
-    <string name="_31">31</string>
-    <string name="_6">6</string>
     <string name="_at_">\nAt:</string>
-    <string name="_attaches_to_">"\nAttaches to "</string>
     <string name="_break">Break</string>
-    <string name="_default">Default</string>
     <string name="_deleted_">  *Deleted*</string>
     <string name="_for_">" for : "</string>
     <string name="_for">" for "</string>
     <string name="_in_">" in "</string>
-    <string name="_in_the_database">" in the database"</string>
     <string name="_on_">" on "</string>
-    <string name="_to_">" to "</string>
     <string name="add_">" add "</string>
     <string name="add_a_definition">Add a definition</string>
     <string name="add_a_description_first">Add a description first</string>
@@ -74,7 +62,6 @@
     <string name="attach_to">Attach To</string>
     <string name="attaches_to">"Attaches to "</string>
     <string name="base_on">Base on:</string>
-    <string name="blank"> </string>
     <string name="by_default">by default</string>
     <string name="calculated">"Calculated "</string>
     <string name="cancel">Cancel</string>
@@ -217,7 +204,6 @@
     <string name="gross_pay">Gross Pay</string>
     <string name="has_exemption_amount">Has Exemption Amount</string>
     <string name="has_upper_limit">Has Upper Limit</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="history">History</string>
     <string name="hour_summary">Hour Summary</string>
     <string name="hourly_details">Hourly Details</string>
@@ -226,7 +212,6 @@
     <string name="how_many_days_before_is_cutoff">How many days before is cutoff</string>
     <string name="hr">Hr</string>
     <string name="hrs">" Hrs"</string>
-    <string name="hyphen">" - "</string>
     <string name="if_this_extra_is_overwritten__">If this extra is overwritten, only the new extra will be included in the pay calculation. Do you want to proceed?</string>
     <string name="if_this_is_edited_any_default_calculations_will_be_overwritten">If this is edited, any default calculations will be overwritten. \nWould you like to edit anyway? If not go to the extra tab on the bottom menu.</string>
     <string name="in_order_to_add_extras_this_work_date_must_be_saved">In order to add extras, this work date must be saved.</string>
@@ -239,7 +224,6 @@
     <string name="job_specs">Job Specs:\n </string>
     <string name="level_bracket">Level/Bracket</string>
     <string name="level">Level </string>
-    <string name="line_break">\n</string>
     <string name="list">List</string>
     <string name="main_monthly_pay_date">Main monthly pay date</string>
     <string name="manually_added">Manually added</string>
@@ -306,8 +290,6 @@
     <string name="pay_summary">Pay Summary</string>
     <string name="per_frequency">Per Frequency</string>
     <string name="percentage">Percentage</string>
-    <string name="period_hyphen">". - "</string>
-    <string name="period_space">". "</string>
     <string name="pipe">" | "</string>
     <string name="please_enter_a_description">Please enter a description.</string>
     <string name="please_enter_a_new_name_for_this_material">Please enter a new name for this material!</string>
@@ -365,7 +347,6 @@
     <string name="tax_summary">Tax Summary</string>
     <string name="tax_type">Tax Type</string>
     <string name="taxes">Taxes</string>
-    <string name="text_zeros">0000</string>
     <string name="the_cost_is_greater_than_the_price">The cost is greater than the price.</string>
     <string name="the_employer_must_have_a_name">The employer must have a name!</string>
     <string name="the_extra_must_have_a_name">The Extra must have a name</string>
@@ -431,6 +412,7 @@
     <string name="transfer">Transfer</string>
     <string name="type_number_or_address_search">Type number or address search</string>
     <string name="type_numbers">Type Numbers</string>
+    <string name="text_zeros">000000</string>
     <string name="update_">"Update: "</string>
     <string name="update_area_description_for">"Update Area Description for "</string>
     <string name="update_area_description">Update Area Description</string>
@@ -507,9 +489,6 @@
     <string name="you_cannot_add_any_extra_credits_or_deductions_until_the_employer_is_saved">"You cannot add any extra credits or deductions until the employer is saved.\nSave the employer first and go to edit mode. "</string>
     <string name="you_cannot_add_taxes_until_the_employer_is_saved">You cannot add taxes until the employer is saved. \nSave the employer first and go to edit mode.</string>
     <string name="zero_dollars">$0.00</string>
-    <string name="zero_double">0.0</string>
-    <string name="zero_percent">0.0%</string>
-    <string name="zero">0</string>
     <string name="confirm_leave">Confirm leaving Time Worked Worksheet</string>
     <string name="would_you_like_to_save_time_entered">Would you like to add the time entered or go back before leaving?</string>
     <string name="save_time">Enter Time</string>
@@ -546,7 +525,6 @@
     <string name="upload">Upload</string>
     <string name="processing">Processing...</string>
     <string name="default_web_client_id">659552924329-ihbi24aqo9kjitctefhc3lnqgkf9ajg5.apps.googleusercontent.com</string>
-    <string name="debug_sha1">E5:BA:F7:BB:5E:0F:FF:44:7F:56:A2:00:34:16:1F:66:05:7E:1A:46</string>
 
 
     <string name="master_job_spec">Master Job Spec</string>
