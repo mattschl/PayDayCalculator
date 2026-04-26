@@ -71,7 +71,7 @@ fun SyncScreen(
                         onValueChange = onDocContentChange,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(0.5f)
+                            .fillMaxHeight(.85f)
                             .background(MaterialTheme.colorScheme.surfaceVariant)
                             .padding(8.dp),
                         readOnly = true,
