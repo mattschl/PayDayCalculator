@@ -63,6 +63,34 @@ fun WorkExtraTypeScreen(
     var wetIsCredit by remember { mutableStateOf(initialExtraType?.wetIsCredit ?: false) }
     var wetIsDefault by remember { mutableStateOf(initialExtraType?.wetIsDefault ?: false) }
 
+    var showDeleteConfirm by remember { mutableStateOf(false) }
+
+    if (showDeleteConfirm && initialExtraType != null) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showDeleteConfirm = false },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    onDelete(initialExtraType)
+                    showDeleteConfirm = false
+                }) {
+                    Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { showDeleteConfirm = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            title = { Text(stringResource(R.string.modify_or_delete)) },
+            text = {
+                Text(
+                    stringResource(R.string.are_you_sure_you_want_to_delete_) +
+                            " " + initialExtraType.wetName + "?"
+                )
+            }
+        )
+    }
+
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val appliesToAllError =
@@ -199,7 +227,7 @@ fun WorkExtraTypeScreen(
                 if (initialExtraType != null) {
                     Spacer(modifier = Modifier.width(ELEMENT_SPACING))
                     OutlinedButton(
-                        onClick = { onDelete(initialExtraType) },
+                        onClick = { showDeleteConfirm = true },
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(stringResource(R.string.delete))

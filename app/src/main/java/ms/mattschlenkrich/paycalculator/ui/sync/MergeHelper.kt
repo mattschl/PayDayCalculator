@@ -233,6 +233,21 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
         localId: Long = -1L
     ): ContentValues {
         val values = ContentValues()
+
+        // 1. Resolve local employer ID if this record depends on an employer
+        var recordLocalEmployerId: Long? = null
+        if (spec.employerIdColumn != null) {
+            val idx = cursor.getColumnIndex(spec.employerIdColumn)
+            if (idx != -1 && !cursor.isNull(idx)) {
+                // Employer ID column is always an FK to 'employers'
+                val employerFk =
+                    FKSpec(spec.employerIdColumn, "employers", "employerId", "employerName")
+                recordLocalEmployerId = getLocalFkValue(
+                    localDb, remoteDb, cursor, employerFk, idx, idMap
+                ).toLongOrNull()
+            }
+        }
+
         for (i in 0 until cursor.columnCount) {
             val colName = cursor.getColumnName(i)
 
@@ -247,7 +262,9 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
 
             val fk = spec.fks.find { it.fkColumn == colName }
             if (fk != null && !cursor.isNull(i)) {
-                val localFkValue = getLocalFkValue(localDb, remoteDb, cursor, fk, i, idMap)
+                val localFkValue = getLocalFkValue(
+                    localDb, remoteDb, cursor, fk, i, idMap, recordLocalEmployerId
+                )
                 if (localFkValue != "-1") {
                     values.put(colName, localFkValue)
                     continue
@@ -275,25 +292,38 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
         cursor: Cursor,
         fk: FKSpec,
         columnIndex: Int,
-        idMap: Map<String, Map<Long, Long>>
+        idMap: Map<String, Map<Long, Long>>,
+        recordEmployerId: Long? = null
     ): String {
-        return if (cursor.getType(columnIndex) == Cursor.FIELD_TYPE_INTEGER) {
-            val remoteFkId = cursor.getLong(columnIndex)
-            val localFkId = idMap[fk.parentTable]?.get(remoteFkId) ?: getIdByName(
-                localDb, fk.parentTable, fk.parentPk, fk.parentNaturalKey,
-                getNameFromTable(
-                    remoteDb,
-                    fk.parentTable,
-                    fk.parentPk,
-                    fk.parentNaturalKey,
-                    remoteFkId
-                )
-            )
-            localFkId.toString()
-        } else {
-            // String based FK (natural key used directly as FK)
-            cursor.getString(columnIndex)
+        if (cursor.getType(columnIndex) != Cursor.FIELD_TYPE_INTEGER) {
+            return cursor.getString(columnIndex)
         }
+
+        val remoteFkId = cursor.getLong(columnIndex)
+        val localFkIdFromMap = idMap[fk.parentTable]?.get(remoteFkId)
+        if (localFkIdFromMap != null) return localFkIdFromMap.toString()
+
+        val parentName = getNameFromTable(
+            remoteDb,
+            fk.parentTable,
+            fk.parentPk,
+            fk.parentNaturalKey,
+            remoteFkId
+        )
+
+        val localFkId = if (fk.dependsOnEmployer && recordEmployerId != null) {
+            getIdByName(
+                localDb, fk.parentTable, fk.parentPk, fk.parentNaturalKey,
+                parentName, recordEmployerId
+            )
+        } else {
+            getIdByName(
+                localDb, fk.parentTable, fk.parentPk, fk.parentNaturalKey,
+                parentName
+            )
+        }
+
+        return localFkId.toString()
     }
 
     private fun findNewAndUpdatedRecords(
@@ -385,15 +415,19 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
                     localCursor.getString(localCursor.getColumnIndexOrThrow(spec.updateTimeColumn))
                 val remoteUpdateTime =
                     remoteCursor.getString(remoteCursor.getColumnIndexOrThrow(spec.updateTimeColumn))
-                if (remoteUpdateTime > localUpdateTime) {
+
+                if (remoteUpdateTime != null && (localUpdateTime == null || remoteUpdateTime > localUpdateTime)) {
                     status = RecordStatus.UPDATED
-                } else {
-                    // Even if timestamps are equal/older, check if data actually differs
+                } else if (remoteUpdateTime != null && remoteUpdateTime == localUpdateTime) {
+                    // Timestamps are equal, update only if data actually differs
                     if (isDataDifferent(localCursor, remoteCursor, spec)) {
                         status = RecordStatus.UPDATED
                     } else {
                         status = RecordStatus.EXISTS
                     }
+                } else {
+                    // Local record is newer or remoteUpdateTime is null
+                    status = RecordStatus.EXISTS
                 }
             } else {
                 // No timestamp available, must compare all data columns
@@ -440,8 +474,9 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
                     localIdx
                 )
 
-                Cursor.FIELD_TYPE_STRING -> remoteCursor.getString(remoteIdx)
-                    .trim() != localCursor.getString(localIdx).trim()
+                Cursor.FIELD_TYPE_STRING -> remoteCursor.getString(remoteIdx) != localCursor.getString(
+                    localIdx
+                )
 
                 Cursor.FIELD_TYPE_BLOB -> !remoteCursor.getBlob(remoteIdx)
                     .contentEquals(localCursor.getBlob(localIdx))
@@ -464,6 +499,20 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
         val selectionArgs = mutableListOf<String>()
         val handledColumns = mutableSetOf<String>()
 
+        // 1. Resolve local employer ID if this record depends on an employer
+        var recordLocalEmployerId: Long? = null
+        if (spec.employerIdColumn != null) {
+            val idx = remoteCursor.getColumnIndex(spec.employerIdColumn)
+            if (idx != -1 && !remoteCursor.isNull(idx)) {
+                // Employer ID column is always an FK to 'employers'
+                val employerFk =
+                    FKSpec(spec.employerIdColumn, "employers", "employerId", "employerName")
+                recordLocalEmployerId = getLocalFkValue(
+                    localDb, remoteDb, remoteCursor, employerFk, idx, idMap
+                ).toLongOrNull()
+            }
+        }
+
         for (fk in spec.fks) {
             val fkIndex = remoteCursor.getColumnIndex(fk.fkColumn)
             if (fkIndex != -1) {
@@ -471,8 +520,9 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
                 if (remoteCursor.isNull(fkIndex)) {
                     whereClauses.add("${fk.fkColumn} IS NULL")
                 } else {
-                    val localParentValue =
-                        getLocalFkValue(localDb, remoteDb, remoteCursor, fk, fkIndex, idMap)
+                    val localParentValue = getLocalFkValue(
+                        localDb, remoteDb, remoteCursor, fk, fkIndex, idMap, recordLocalEmployerId
+                    )
                     if (localParentValue == "-1") return null
                     whereClauses.add("${fk.fkColumn} = ?")
                     selectionArgs.add(localParentValue)
@@ -518,12 +568,23 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
         table: String,
         pk: String,
         nameCol: String,
-        name: String
+        name: String,
+        employerId: Long? = null
     ): Long {
         if (name.isBlank()) return -1L
         return try {
-            val cursor =
-                db.rawQuery("SELECT $pk FROM $table WHERE TRIM($nameCol) = ?", arrayOf(name))
+            val employerCol = getTables().find { it.tableName == table }?.employerIdColumn
+            val query = if (employerId != null && employerCol != null) {
+                "SELECT $pk FROM $table WHERE TRIM($nameCol) = ? AND $employerCol = ?"
+            } else {
+                "SELECT $pk FROM $table WHERE TRIM($nameCol) = ?"
+            }
+            val args = if (employerId != null && employerCol != null) {
+                arrayOf(name, employerId.toString())
+            } else {
+                arrayOf(name)
+            }
+            val cursor = db.rawQuery(query, args)
             var id = -1L
             if (cursor.moveToFirst()) id = cursor.getLong(0)
             cursor.close()
@@ -534,7 +595,13 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
     }
 
     private fun getTables() = listOf(
-        TableSpec("taxTypes", listOf("taxType"), pkColumn = "taxTypeId"),
+        TableSpec(
+            "taxTypes",
+            listOf("taxType"),
+            pkColumn = "taxTypeId",
+            isDeletedColumn = "ttIsDeleted",
+            updateTimeColumn = "ttUpdateTime"
+        ),
         TableSpec(
             "employers",
             listOf("employerName"),
@@ -573,7 +640,7 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
         TableSpec(
             "taxEffectiveDates",
             listOf("tdEffectiveDate"),
-            pkColumn = "tdEffectiveDateId",
+            pkColumn = null, // PK is string
             isDeletedColumn = "tdIsDeleted",
             updateTimeColumn = "tdUpdateTime"
         ),
@@ -584,7 +651,8 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             listOf(FKSpec("wetEmployerId", "employers", "employerId", "employerName")),
             pkColumn = "workExtraTypeId",
             isDeletedColumn = "wetIsDeleted",
-            updateTimeColumn = "wetUpdateTime"
+            updateTimeColumn = "wetUpdateTime",
+            employerIdColumn = "wetEmployerId"
         ),
         TableSpec(
             "payPeriods",
@@ -592,15 +660,20 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             listOf(FKSpec("ppEmployerId", "employers", "employerId", "employerName")),
             pkColumn = "payPeriodId",
             isDeletedColumn = "ppIsDeleted",
-            updateTimeColumn = "ppUpdateTime"
+            updateTimeColumn = "ppUpdateTime",
+            employerIdColumn = "ppEmployerId"
         ),
         TableSpec(
             "workDates",
             listOf("wdDate", "wdEmployerId", "wdCutoffDate"),
-            listOf(FKSpec("wdEmployerId", "employers", "employerId", "employerName")),
+            listOf(
+                FKSpec("wdEmployerId", "employers", "employerId", "employerName"),
+                FKSpec("wdPayPeriodId", "payPeriods", "payPeriodId", "ppCutoffDate", true)
+            ),
             pkColumn = "workDateId",
             isDeletedColumn = "wdIsDeleted",
-            updateTimeColumn = "wdUpdateTime"
+            updateTimeColumn = "wdUpdateTime",
+            employerIdColumn = "wdEmployerId"
         ),
         TableSpec(
             "workOrders",
@@ -608,7 +681,8 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             listOf(FKSpec("woEmployerId", "employers", "employerId", "employerName")),
             pkColumn = "workOrderId",
             isDeletedColumn = "woDeleted",
-            updateTimeColumn = "woUpdateTime"
+            updateTimeColumn = "woUpdateTime",
+            employerIdColumn = "woEmployerId"
         ),
         TableSpec(
             "workPerformedMerged",
@@ -651,7 +725,8 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
                 FKSpec("etrTaxType", "taxTypes", "taxType", "taxType")
             ),
             isDeletedColumn = "etrIsDeleted",
-            updateTimeColumn = "etrUpdateTime"
+            updateTimeColumn = "etrUpdateTime",
+            employerIdColumn = "etrEmployerId"
         ),
         TableSpec(
             "workTaxRules",
@@ -670,26 +745,28 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             listOf(FKSpec("eprEmployerId", "employers", "employerId", "employerName")),
             pkColumn = "employerPayRateId",
             isDeletedColumn = "eprIsDeleted",
-            updateTimeColumn = "eprUpdateTime"
+            updateTimeColumn = "eprUpdateTime",
+            employerIdColumn = "eprEmployerId"
         ),
         TableSpec(
             "workExtrasDefinitions",
-            listOf("weEmployerId", "weExtraTypeId"),
+            listOf("weEmployerId", "weExtraTypeId", "weEffectiveDate"),
             listOf(
                 FKSpec("weEmployerId", "employers", "employerId", "employerName"),
-                FKSpec("weExtraTypeId", "workExtraTypes", "workExtraTypeId", "wetName")
+                FKSpec("weExtraTypeId", "workExtraTypes", "workExtraTypeId", "wetName", true)
             ),
             pkColumn = "workExtraDefId",
             isDeletedColumn = "weIsDeleted",
-            updateTimeColumn = "weUpdateTime"
+            updateTimeColumn = "weUpdateTime",
+            employerIdColumn = "weEmployerId"
         ),
 
         TableSpec(
             "workOrderHistory",
             listOf("woHistoryWorkOrderId", "woHistoryWorkDateId"),
             listOf(
-                FKSpec("woHistoryWorkOrderId", "workOrders", "workOrderId", "woNumber"),
-                FKSpec("woHistoryWorkDateId", "workDates", "workDateId", "wdDate")
+                FKSpec("woHistoryWorkOrderId", "workOrders", "workOrderId", "woNumber", true),
+                FKSpec("woHistoryWorkDateId", "workDates", "workDateId", "wdDate", true)
             ),
             pkColumn = "woHistoryId",
             isDeletedColumn = "woHistoryDeleted",
@@ -699,7 +776,7 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             "workOrderJobSpecs",
             listOf("wojsWorkOrderId", "wojsJobSpecId", "wojsAreaId"),
             listOf(
-                FKSpec("wojsWorkOrderId", "workOrders", "workOrderId", "woNumber"),
+                FKSpec("wojsWorkOrderId", "workOrders", "workOrderId", "woNumber", true),
                 FKSpec("wojsJobSpecId", "jobSpecs", "jobSpecId", "jsName"),
                 FKSpec("wojsAreaId", "areas", "areaId", "areaName")
             ),
@@ -711,8 +788,8 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             "workDateExtras",
             listOf("wdeWorkDateId", "wdeName"),
             listOf(
-                FKSpec("wdeWorkDateId", "workDates", "workDateId", "wdDate"),
-                FKSpec("wdeExtraTypeId", "workExtraTypes", "workExtraTypeId", "wetName")
+                FKSpec("wdeWorkDateId", "workDates", "workDateId", "wdDate", true),
+                FKSpec("wdeExtraTypeId", "workExtraTypes", "workExtraTypeId", "wetName", true)
             ),
             pkColumn = "workDateExtraId",
             isDeletedColumn = "wdeIsDeleted",
@@ -722,8 +799,8 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             "workPayPeriodExtras",
             listOf("ppePayPeriodId", "ppeName"),
             listOf(
-                FKSpec("ppePayPeriodId", "payPeriods", "payPeriodId", "payPeriodId"),
-                FKSpec("ppeExtraTypeId", "workExtraTypes", "workExtraTypeId", "wetName")
+                FKSpec("ppePayPeriodId", "payPeriods", "payPeriodId", "ppCutoffDate", true),
+                FKSpec("ppeExtraTypeId", "workExtraTypes", "workExtraTypeId", "wetName", true)
             ),
             pkColumn = "workPayPeriodExtraId",
             isDeletedColumn = "ppeIsDeleted",
@@ -736,9 +813,10 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
                 FKSpec("wppEmployerId", "employers", "employerId", "employerName"),
                 FKSpec("wppTaxType", "taxTypes", "taxType", "taxType")
             ),
-            pkColumn = "workPayPeriodTaxId",
+            pkColumn = null, // PK is composite
             isDeletedColumn = "wppIsDeleted",
-            updateTimeColumn = "wppUpdateTime"
+            updateTimeColumn = "wppUpdateTime",
+            employerIdColumn = "wppEmployerId"
         ),
 
         TableSpec(
@@ -769,7 +847,7 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             listOf("wohtDateId", "wohtStartTime"),
             listOf(
                 FKSpec("wohtHistoryId", "workOrderHistory", "woHistoryId", "woHistoryId"),
-                FKSpec("wohtDateId", "workDates", "workDateId", "wdDate")
+                FKSpec("wohtDateId", "workDates", "workDateId", "wdDate", true)
             ),
             pkColumn = "woHistoryTimeWorkedId",
             isDeletedColumn = "wohtIsDeleted",
@@ -783,13 +861,15 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
         val fks: List<FKSpec> = emptyList(),
         val isDeletedColumn: String? = null,
         val updateTimeColumn: String? = null,
-        val pkColumn: String? = null
+        val pkColumn: String? = null,
+        val employerIdColumn: String? = null // Column that links to an employer
     )
 
     data class FKSpec(
         val fkColumn: String,
         val parentTable: String,
         val parentPk: String,
-        val parentNaturalKey: String
+        val parentNaturalKey: String,
+        val dependsOnEmployer: Boolean = false // If true, use employerIdColumn for lookup
     )
 }

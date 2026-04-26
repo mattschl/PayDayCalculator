@@ -44,7 +44,8 @@ fun SyncScreen(
     onDocContentChange: (String) -> Unit,
     onQueryClick: () -> Unit,
     onSyncClick: () -> Unit,
-    onReturnClick: () -> Unit
+    onReturnClick: () -> Unit,
+    onChangeAccountClick: () -> Unit
 ) {
     Scaffold(
         /*  topBar = {
@@ -140,6 +141,16 @@ fun SyncScreen(
                             ) {
                                 Text(stringResource(R.string.return_text))
                             }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Button(
+                            onClick = onChangeAccountClick,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary
+                            )
+                        ) {
+                            Text("Change Google Account")
                         }
                     }
                 }

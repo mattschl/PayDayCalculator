@@ -151,6 +151,9 @@ const val WAIT_1000 = 1000L
 const val WAIT_1500 = 1500L
 //const val WAIT_2000 = 2000L
 
+const val PREFS_NAME = "PayCalculatorPrefs"
+const val SYNC_ACCOUNT_EMAIL = "sync_account_email"
+
 //const val FRAG_EMPLOYERS = "Employers"
 const val FRAG_EMPLOYER_UPDATE = "EmployerUpdate"
 const val FRAG_TAX_RULES = "TaxRules"

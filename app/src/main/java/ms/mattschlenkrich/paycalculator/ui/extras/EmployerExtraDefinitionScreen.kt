@@ -7,8 +7,14 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -16,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -76,32 +83,75 @@ fun EmployerExtraDefinitionScreen(
         )
     }
 
+    var showDeleteConfirm by remember { mutableStateOf(false) }
+
+    if (showDeleteConfirm && initialDefinitionFull != null) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showDeleteConfirm = false },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    onDelete(initialDefinitionFull.definition)
+                    showDeleteConfirm = false
+                }) {
+                    Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { showDeleteConfirm = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            title = { Text(stringResource(R.string.confirm_leave)) }, // Need a delete confirm string
+            text = {
+                Text(
+                    stringResource(R.string.are_you_sure_you_want_to_delete_) +
+                            " " + initialDefinitionFull.extraType.wetName +
+                            " (" + initialDefinitionFull.definition.weEffectiveDate + ")?"
+                )
+            }
+        )
+    }
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        /*  topBar = {
-              TopAppBar(
-                  title = {
-                      Text(
-                          text = "EmployerExtraDefinitionScreen", // title,
-                          style = MaterialTheme.typography.titleLarge,
-                      )
-                  },
-                  navigationIcon = {
-                      IconButton(onClick = onCancel) {
-                          Icon(
-                              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                              contentDescription = stringResource(R.string.go_back)
-                          )
-                      }
-                  }
-              )
-          }*/
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = if (initialDefinitionFull == null || initialDefinitionFull.definition.workExtraDefId == 0L)
+                            stringResource(R.string.add_new_definition)
+                        else stringResource(R.string.update_this_extra),
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onCancel) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.go_back)
+                        )
+                    }
+                },
+                actions = {
+                    if (initialDefinitionFull != null && initialDefinitionFull.definition.workExtraDefId != 0L) {
+                        IconButton(onClick = { showDeleteConfirm = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = stringResource(R.string.delete),
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                }
+            )
+        }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = SCREEN_PADDING_HORIZONTAL, vertical = SCREEN_PADDING_VERTICAL)
+                .verticalScroll(rememberScrollState())
         ) {
             initialDefinitionFull?.let {
                 Text(
@@ -202,20 +252,20 @@ fun EmployerExtraDefinitionScreen(
                     .padding(vertical = SCREEN_PADDING_VERTICAL),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                androidx.compose.material3.Button(onClick = onCancel) {
+                Button(onClick = onCancel) {
                     Text(stringResource(R.string.cancel))
                 }
                 if (initialDefinitionFull != null && initialDefinitionFull.definition.workExtraDefId != 0L) {
-                    androidx.compose.material3.Button(
-                        onClick = { onDelete(initialDefinitionFull.definition) },
-                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    Button(
+                        onClick = { showDeleteConfirm = true },
+                        colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.error
                         )
                     ) {
                         Text(stringResource(R.string.delete))
                     }
                 }
-                androidx.compose.material3.Button(onClick = {
+                Button(onClick = {
                     if (valueString.isNotBlank()) {
                         var value = nf.getDoubleFromDollarOrPercentString(valueString)
                         if (!isFixed && !valueString.contains("%") && value != 0.0) {

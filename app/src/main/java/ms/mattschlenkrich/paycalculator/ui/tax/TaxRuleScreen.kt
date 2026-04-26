@@ -14,15 +14,23 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -56,37 +64,66 @@ fun TaxRuleScreen(
     onBackClick: () -> Unit,
     onDeleteClick: (() -> Unit)? = null,
 ) {
+    var showDeleteConfirm by remember { mutableStateOf(false) }
+
+    if (showDeleteConfirm && onDeleteClick != null) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showDeleteConfirm = false },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    onDeleteClick()
+                    showDeleteConfirm = false
+                }) {
+                    Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { showDeleteConfirm = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            title = { Text(stringResource(R.string.modify_or_delete)) },
+            text = {
+                Text(
+                    stringResource(R.string.are_you_sure_you_want_to_delete_) +
+                            " " + taxType + " " + stringResource(R.string.level) + " " + taxLevel + "?"
+                )
+            }
+        )
+    }
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier = Modifier.imePadding(),
-        /* topBar = {
-             TopAppBar(
-                 title = {
-                     Text(
-                         text = "TaxRuleScreen", // title,
-                         style = MaterialTheme.typography.titleLarge,
-                     )
-                 },
-                 navigationIcon = {
-                     IconButton(onClick = onBackClick) {
-                         Icon(
-                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                             contentDescription = stringResource(R.string.go_back)
-                         )
-                     }
-                 },
-                 actions = {
-                     if (onDeleteClick != null) {
-                         IconButton(onClick = onDeleteClick) {
-                             Icon(
-                                 imageVector = Icons.Default.Delete,
-                                 contentDescription = stringResource(R.string.delete)
-                             )
-                         }
-                     }
-                 }
-             )
-         },*/
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.go_back)
+                        )
+                    }
+                },
+                actions = {
+                    if (onDeleteClick != null) {
+                        IconButton(onClick = { showDeleteConfirm = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = stringResource(R.string.delete),
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = onSaveClick) {
                 Icon(
@@ -157,7 +194,9 @@ fun TaxRuleScreen(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(checked = hasUpperLimit, onCheckedChange = onHasUpperLimitChange)
+                        Checkbox(
+                            checked = hasUpperLimit,
+                            onCheckedChange = { onHasUpperLimitChange(it) })
                         Text(
                             text = stringResource(R.string.has_upper_limit),
                             modifier = Modifier.padding(start = 4.dp),

@@ -38,6 +38,8 @@ import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.FileList
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.PREFS_NAME
+import ms.mattschlenkrich.paycalculator.common.SYNC_ACCOUNT_EMAIL
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
 import java.io.File
 import java.security.MessageDigest
@@ -81,13 +83,29 @@ class SyncActivity : ComponentActivity() {
                     onDocContentChange = { docContent = it },
                     onQueryClick = { query() },
                     onSyncClick = { performSync() },
-                    onReturnClick = { finish() }
+                    onReturnClick = { finish() },
+                    onChangeAccountClick = {
+                        getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                            .edit()
+                            .remove(SYNC_ACCOUNT_EMAIL)
+                            .apply()
+                        mCurrentAccount = null
+                        mDriveServiceHelper = null
+                        signInWithCredentialManager()
+                    }
                 )
             }
         }
 
         // Initiate sign-in with Credential Manager
-        signInWithCredentialManager()
+        val savedEmail = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+            .getString(SYNC_ACCOUNT_EMAIL, null)
+
+        if (savedEmail != null) {
+            initializeDriveService(savedEmail)
+        } else {
+            signInWithCredentialManager()
+        }
     }
 
     private fun showProgress(message: String) {
@@ -223,26 +241,6 @@ class SyncActivity : ComponentActivity() {
                     docContent = "No backups found to sync."
                 }
 
-                showProgress("Cleaning up old backups...")
-                val driveFileList = helper.queryFiles(targetFolderId)
-                val driveBackups = driveFileList.files
-                    ?.filter { it.name.startsWith("pay_") && it.name.endsWith(".db") }
-                    ?.sortedByDescending { it.name } ?: emptyList()
-
-                if (driveBackups.size > 3) {
-                    val toDelete = driveBackups.drop(3)
-                    for (file in toDelete) {
-                        Log.d(TAG, "Deleting old backup from Drive: ${file.name}")
-                        helper.deleteFile(file.id)
-                        listOf("-wal", "-shm").forEach { suffix ->
-                            val extraName = "${file.name}$suffix"
-                            driveFileList.files?.find { it.name == extraName }?.let {
-                                helper.deleteFile(it.id)
-                            }
-                        }
-                    }
-                }
-
                 showProgress("Creating fresh backup...")
                 PayDatabase.checkpoint(this@SyncActivity)
 
@@ -271,6 +269,32 @@ class SyncActivity : ComponentActivity() {
                                 driveFileName = "$driveFileName$suffix",
                                 folderId = targetFolderId
                             )
+                        }
+                    }
+                }
+
+                showProgress("Cleaning up local backups...")
+                val finalDbDir = File(applicationInfo.dataDir, "databases")
+                finalDbDir.listFiles { _, name ->
+                    name.startsWith("pay_")
+                }?.forEach { it.delete() }
+
+                showProgress("Cleaning up old backups...")
+                val finalDriveFileList = helper.queryFiles(targetFolderId)
+                val finalDriveBackups = finalDriveFileList.files
+                    ?.filter { it.name.startsWith("pay_") && it.name.endsWith(".db") }
+                    ?.sortedByDescending { it.name } ?: emptyList()
+
+                if (finalDriveBackups.size > 3) {
+                    val toDelete = finalDriveBackups.drop(3)
+                    for (file in toDelete) {
+                        Log.d(TAG, "Deleting old backup from Drive: ${file.name}")
+                        helper.deleteFile(file.id)
+                        listOf("-wal", "-shm").forEach { suffix ->
+                            val extraName = "${file.name}$suffix"
+                            finalDriveFileList.files?.find { it.name == extraName }?.let {
+                                helper.deleteFile(it.id)
+                            }
                         }
                     }
                 }
@@ -413,8 +437,13 @@ class SyncActivity : ComponentActivity() {
     private fun handleSignInResult(credential: Credential) {
         if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
             val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-            Log.d(TAG, "Signed in as ${googleIdTokenCredential.id}")
-            initializeDriveService(googleIdTokenCredential.id)
+            val email = googleIdTokenCredential.id
+            Log.d(TAG, "Signed in as $email")
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .edit()
+                .putString(SYNC_ACCOUNT_EMAIL, email)
+                .apply()
+            initializeDriveService(email)
         } else {
             Log.e(TAG, "Unexpected credential type: ${credential.type}")
         }
