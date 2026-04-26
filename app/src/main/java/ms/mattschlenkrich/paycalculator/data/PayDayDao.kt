@@ -34,7 +34,7 @@ interface PayDayDao {
     )
     suspend fun getCutOffDatesSync(employerId: Long): List<PayPeriods>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPayPeriod(payPeriod: PayPeriods)
 
     @Update
@@ -58,7 +58,8 @@ interface PayDayDao {
 
     @Query(
         "SELECT * FROM $TABLE_WORK_DATES " +
-                "WHERE workDateId = :workDateId"
+                "WHERE workDateId = :workDateId " +
+                "AND wdIsDeleted = 0"
     )
     suspend fun getWorkDateSync(workDateId: Long): WorkDates?
 
@@ -86,11 +87,12 @@ interface PayDayDao {
         "SELECT * FROM $TABLE_WORK_DATES " +
                 "WHERE wdEmployerId = :employerId " +
                 "AND wdCutoffDate = :cutOff " +
+                "AND wdIsDeleted = 0 " +
                 "ORDER BY wdDate"
     )
     fun getWorkDateListUsed(employerId: Long, cutOff: String): LiveData<List<WorkDates>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWorkDate(workDate: WorkDates)
 
     @Update
@@ -132,7 +134,7 @@ interface PayDayDao {
     )
     suspend fun deleteWorkExtraType(workExtraTypeId: Long, updateTime: String)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWorkDateExtra(workDateExtra: WorkDateExtras)
 
     @Update
@@ -140,7 +142,8 @@ interface PayDayDao {
 
     @Query(
         "SELECT * FROM $TABLE_WORK_DATE_EXTRAS " +
-                "WHERE wdeWorkDateId = :workDateId "
+                "WHERE wdeWorkDateId = :workDateId " +
+                "AND wdeIsDeleted = 0"
     )
     fun getWorkDateExtras(workDateId: Long): LiveData<List<WorkDateExtras>>
 
@@ -227,6 +230,7 @@ interface PayDayDao {
         "SELECT * FROM workPayPeriodExtras " +
                 "WHERE ppePayPeriodId = :payPeriodId " +
                 "AND ppeAttachTo = 3 " +
+                "AND ppeIsDeleted = 0 " +
                 "ORDER BY ppeName"
     )
     fun getPayPeriodExtras(payPeriodId: Long): LiveData<List<WorkPayPeriodExtras>>

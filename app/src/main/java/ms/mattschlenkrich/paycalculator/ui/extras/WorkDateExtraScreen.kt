@@ -183,7 +183,10 @@ fun WorkDateExtraScreen(
                             nf
                         )
                         if (error == null) {
-                            val value = nf.getDoubleFromDollarOrPercentString(valueString)
+                            var value = nf.getDoubleFromDollarOrPercentString(valueString)
+                            if (!isFixed && !valueString.contains("%") && value != 0.0) {
+                                value /= 100.0
+                            }
                             onUpdate(
                                 WorkDateExtras(
                                     workDateExtraId = initialExtra?.workDateExtraId
@@ -193,7 +196,7 @@ fun WorkDateExtraScreen(
                                     wdeName = name.trim(),
                                     wdeAppliesTo = appliesTo,
                                     wdeAttachTo = initialExtra?.wdeAttachTo ?: 1,
-                                    wdeValue = if (!isFixed && value >= 1.0) value / 100.0 else value,
+                                    wdeValue = value,
                                     wdeIsFixed = isFixed,
                                     wdeIsCredit = isCredit,
                                     wdeIsDeleted = false,

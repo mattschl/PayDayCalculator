@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.ui.extras
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -50,15 +51,25 @@ fun EmployerExtraDefinitionScreen(
     val df = remember { DateFunctions() }
     val context = LocalContext.current
 
+    val forcedFixed = initialDefinitionFull?.extraType?.wetAppliesTo == 1
+    val forcedPercent = initialDefinitionFull?.extraType?.wetAppliesTo == 4
+
+    var isFixed by remember {
+        mutableStateOf(
+            if (forcedFixed) true
+            else if (forcedPercent) false
+            else initialDefinitionFull?.definition?.weIsFixed ?: true
+        )
+    }
+
     var valueString by remember {
         mutableStateOf(
             initialDefinitionFull?.let {
-                if (it.definition.weIsFixed) nf.displayDollars(it.definition.weValue)
-                else nf.getPercentStringFromDouble(it.definition.weValue / 100)
+                if (isFixed) nf.displayDollars(it.definition.weValue)
+                else nf.getPercentStringFromDouble(it.definition.weValue)
             } ?: ""
         )
     }
-    var isFixed by remember { mutableStateOf(initialDefinitionFull?.definition?.weIsFixed ?: true) }
     var effectiveDate by remember {
         mutableStateOf(
             initialDefinitionFull?.definition?.weEffectiveDate ?: df.getCurrentDateAsString()
@@ -151,11 +162,9 @@ fun EmployerExtraDefinitionScreen(
                         val currentVal = nf.getDoubleFromDollarOrPercentString(valueString)
                         isFixed = it
                         valueString = if (it) nf.displayDollars(currentVal)
-                        else nf.getPercentStringFromDouble(currentVal / 100)
+                        else nf.getPercentStringFromDouble(currentVal)
                     },
-                    enabled = initialDefinitionFull?.extraType?.let {
-                        it.wetAppliesTo != 4 && it.wetAppliesTo != 1
-                    } ?: true
+                    enabled = !forcedFixed && !forcedPercent
                 )
                 Text(
                     text = when (initialDefinitionFull?.extraType?.wetAppliesTo) {
@@ -186,6 +195,53 @@ fun EmployerExtraDefinitionScreen(
                     }
                 }
             )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = SCREEN_PADDING_VERTICAL),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                androidx.compose.material3.Button(onClick = onCancel) {
+                    Text(stringResource(R.string.cancel))
+                }
+                if (initialDefinitionFull != null && initialDefinitionFull.definition.workExtraDefId != 0L) {
+                    androidx.compose.material3.Button(
+                        onClick = { onDelete(initialDefinitionFull.definition) },
+                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text(stringResource(R.string.delete))
+                    }
+                }
+                androidx.compose.material3.Button(onClick = {
+                    if (valueString.isNotBlank()) {
+                        var value = nf.getDoubleFromDollarOrPercentString(valueString)
+                        if (!isFixed && !valueString.contains("%") && value != 0.0) {
+                            value /= 100.0
+                        }
+                        val currentId = initialDefinitionFull?.definition?.workExtraDefId ?: 0L
+                        val employerId = initialDefinitionFull?.employer?.employerId ?: 0L
+                        val typeId = initialDefinitionFull?.extraType?.workExtraTypeId ?: 0L
+
+                        onUpdate(
+                            WorkExtrasDefinitions(
+                                workExtraDefId = if (currentId == 0L) nf.generateRandomIdAsLong() else currentId,
+                                weEmployerId = employerId,
+                                weExtraTypeId = typeId,
+                                weValue = value,
+                                weIsFixed = isFixed,
+                                weEffectiveDate = effectiveDate,
+                                weIsDeleted = false,
+                                weUpdateTime = df.getCurrentUTCTimeAsString()
+                            )
+                        )
+                    }
+                }) {
+                    Text(stringResource(R.string.save))
+                }
+            }
         }
     }
 }

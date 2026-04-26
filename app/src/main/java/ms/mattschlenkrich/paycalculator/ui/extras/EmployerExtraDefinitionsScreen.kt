@@ -45,10 +45,9 @@ import ms.mattschlenkrich.paycalculator.ui.extras.components.ExtraTypeInfoCard
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmployerExtraDefinitionsScreen(
+    mainViewModel: ms.mattschlenkrich.paycalculator.data.MainViewModel,
     employerViewModel: EmployerViewModel,
     workExtraViewModel: WorkExtraViewModel,
-    initialEmployer: Employers?,
-    initialExtraType: WorkExtraTypes?,
     onAddExtraDefinition: (Employers, WorkExtraTypes) -> Unit,
     onUpdateExtraDefinition: (ExtraDefTypeAndEmployer) -> Unit,
     onUpdateExtraType: (Employers, WorkExtraTypes) -> Unit,
@@ -57,26 +56,37 @@ fun EmployerExtraDefinitionsScreen(
     onDeleteExtraDefinition: (ExtraDefTypeAndEmployer) -> Unit
 ) {
     val employers by employerViewModel.employersAll.observeAsState(emptyList())
-    var selectedEmployer by remember { mutableStateOf(initialEmployer) }
+    var selectedEmployer by remember { mutableStateOf(mainViewModel.getEmployer()) }
 
-    val extraTypes by if (selectedEmployer != null) {
+    val extraTypesState = if (selectedEmployer != null) {
         remember(selectedEmployer) {
             workExtraViewModel.getWorkExtraTypeList(selectedEmployer!!.employerId)
-        }.observeAsState(emptyList<WorkExtraTypes>())
+        }
     } else {
-        remember { mutableStateOf(emptyList<WorkExtraTypes>()) }
+        null
     }
-    var selectedExtraType by remember { mutableStateOf(initialExtraType) }
+    val extraTypes by (extraTypesState ?: remember {
+        androidx.lifecycle.MutableLiveData(emptyList<WorkExtraTypes>())
+    }).observeAsState(emptyList())
 
-    val definitions by if (selectedExtraType != null) {
+    var selectedExtraType by remember { mutableStateOf(mainViewModel.getWorkExtraType()) }
+
+    val definitionsState = if (selectedExtraType != null) {
         remember(selectedExtraType) {
             workExtraViewModel.getActiveExtraDefinitionsFull(
                 selectedExtraType!!.wetEmployerId,
                 selectedExtraType!!.workExtraTypeId
             )
-        }.observeAsState(emptyList<ExtraDefTypeAndEmployer>())
+        }
     } else {
-        remember { mutableStateOf(emptyList<ExtraDefTypeAndEmployer>()) }
+        null
+    }
+    val definitions by (definitionsState ?: remember {
+        androidx.lifecycle.MutableLiveData(emptyList<ExtraDefTypeAndEmployer>())
+    }).observeAsState(emptyList())
+
+    val sortedDefinitions = remember(definitions) {
+        definitions.sortedByDescending { it.definition.weEffectiveDate }
     }
 
     Scaffold(
@@ -84,7 +94,11 @@ fun EmployerExtraDefinitionsScreen(
         floatingActionButton = {
             if (selectedEmployer != null && selectedExtraType != null) {
                 FloatingActionButton(
-                    onClick = { onAddExtraDefinition(selectedEmployer!!, selectedExtraType!!) },
+                    onClick = {
+                        mainViewModel.setEmployer(selectedEmployer)
+                        mainViewModel.setWorkExtraType(selectedExtraType)
+                        onAddExtraDefinition(selectedEmployer!!, selectedExtraType!!)
+                    },
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
@@ -112,7 +126,9 @@ fun EmployerExtraDefinitionsScreen(
                     selectedItem = selectedEmployer,
                     onItemSelected = {
                         selectedEmployer = it
+                        mainViewModel.setEmployer(it)
                         selectedExtraType = null
+                        mainViewModel.setWorkExtraType(null)
                     },
                     itemToString = { it.employerName },
                     modifier = Modifier.weight(1f)
@@ -136,7 +152,10 @@ fun EmployerExtraDefinitionsScreen(
                         label = stringResource(R.string.extra_type),
                         items = extraTypes,
                         selectedItem = selectedExtraType,
-                        onItemSelected = { selectedExtraType = it },
+                        onItemSelected = {
+                            selectedExtraType = it
+                            mainViewModel.setWorkExtraType(it)
+                        },
                         itemToString = { it.wetName },
                         modifier = Modifier.weight(1f)
                     )
@@ -152,7 +171,11 @@ fun EmployerExtraDefinitionsScreen(
             if (selectedExtraType != null) {
                 ExtraTypeInfoCard(
                     extraType = selectedExtraType!!,
-                    onClick = { onUpdateExtraType(selectedEmployer!!, selectedExtraType!!) },
+                    onClick = {
+                        mainViewModel.setEmployer(selectedEmployer)
+                        mainViewModel.setWorkExtraType(selectedExtraType)
+                        onUpdateExtraType(selectedEmployer!!, selectedExtraType!!)
+                    },
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
 
@@ -164,15 +187,26 @@ fun EmployerExtraDefinitionsScreen(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
+                if (sortedDefinitions.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.no_info_to_view),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(top = 16.dp)
+                    )
+                }
+
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
                     contentPadding = PaddingValues(bottom = 80.dp)
                 ) {
-                    items(definitions.sortedByDescending { it.definition.weEffectiveDate }) { definition ->
+                    items(
+                        sortedDefinitions,
+//                        key = { it.definition.workExtraDefId }
+                    ) { definition ->
                         ExtraDefinitionItem(
                             item = definition,
-                            isCurrent = definition == definitions.firstOrNull(),
+                            isCurrent = definition == sortedDefinitions.firstOrNull(),
                             onClick = { onUpdateExtraDefinition(definition) }
                         )
                     }

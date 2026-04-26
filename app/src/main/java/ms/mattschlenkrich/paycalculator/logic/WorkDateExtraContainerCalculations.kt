@@ -5,13 +5,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
 import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
 import ms.mattschlenkrich.paycalculator.data.ExtraContainer
 import ms.mattschlenkrich.paycalculator.data.ExtraDefinitionAndType
 import ms.mattschlenkrich.paycalculator.data.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.data.WorkDates
-import ms.mattschlenkrich.paycalculator.MainActivity
 
 class WorkDateExtraContainerCalculations(
     private val mainActivity: MainActivity,
@@ -37,14 +37,17 @@ class WorkDateExtraContainerCalculations(
             if (workDateExtraList.isNotEmpty()) {
                 for (extra in workDateExtraList) {
                     if (!extra.wdeIsDeleted) {
+                        val value = if (!extra.wdeIsFixed && extra.wdeValue >= 1.0)
+                            extra.wdeValue / 100.0
+                        else extra.wdeValue
                         val amount: Double = if (extra.wdeIsFixed) {
                             when (extra.wdeAppliesTo) {
                                 ExtraAppliesToFrequencies.HOURLY.value -> {
-                                    extra.wdeValue * (workDate.wdRegHours + workDate.wdOtHours + workDate.wdDblOtHours)
+                                    value * (workDate.wdRegHours + workDate.wdOtHours + workDate.wdDblOtHours)
                                 }
 
                                 ExtraAppliesToFrequencies.DAILY.value -> {
-                                    extra.wdeValue
+                                    value
                                 }
 
                                 else -> {
@@ -52,7 +55,7 @@ class WorkDateExtraContainerCalculations(
                                 }
                             }
                         } else {
-                            extra.wdeValue * wage * (workDate.wdRegHours + workDate.wdOtHours * 1.5 + workDate.wdDblOtHours * 2)
+                            value * wage * (workDate.wdRegHours + workDate.wdOtHours * 1.5 + workDate.wdDblOtHours * 2.0)
 
                         }
                         if (amount > 0.0) {
@@ -69,14 +72,18 @@ class WorkDateExtraContainerCalculations(
                 for (extra in extraDefinitionAndTypeList) {
 
                     if (!extra.extraType.wetIsDeleted && !extra.definition.weIsDeleted && extra.extraType.wetIsDefault) {
+                        val value =
+                            if (!extra.definition.weIsFixed && extra.definition.weValue >= 1.0)
+                                extra.definition.weValue / 100.0
+                            else extra.definition.weValue
                         val amount: Double = if (extra.definition.weIsFixed) {
                             when (extra.extraType.wetAppliesTo) {
                                 ExtraAppliesToFrequencies.HOURLY.value -> {
-                                    extra.definition.weValue * (workDate.wdRegHours + workDate.wdOtHours + workDate.wdDblOtHours)
+                                    value * (workDate.wdRegHours + workDate.wdOtHours + workDate.wdDblOtHours)
                                 }
 
                                 ExtraAppliesToFrequencies.DAILY.value -> {
-                                    extra.definition.weValue
+                                    value
                                 }
 
                                 else -> {
@@ -84,7 +91,7 @@ class WorkDateExtraContainerCalculations(
                                 }
                             }
                         } else {
-                            extra.definition.weValue * wage * (workDate.wdRegHours + workDate.wdOtHours + workDate.wdDblOtHours)
+                            value * wage * (workDate.wdRegHours + workDate.wdOtHours * 1.5 + workDate.wdDblOtHours * 2.0)
                         }
                         if (amount > 0.0) {
                             extraContainers.add(

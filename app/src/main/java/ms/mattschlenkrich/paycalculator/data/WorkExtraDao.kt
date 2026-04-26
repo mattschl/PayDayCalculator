@@ -8,7 +8,6 @@ import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Update
-import ms.mattschlenkrich.paycalculator.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_DATE_EXTRAS
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_EXTRA_TYPES
@@ -47,25 +46,14 @@ interface WorkExtraDao {
     fun getWorkExtraDefinitions(employerId: Long, extraTypeId: Long):
             LiveData<List<WorkExtrasDefinitions>>
 
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
-        "SELECT $TABLE_WORK_EXTRAS_DEFINITIONS.*, " +
-                "$TABLE_EMPLOYERS.*, " +
-                "$TABLE_WORK_EXTRA_TYPES.* " +
-                "FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
-                "LEFT JOIN $TABLE_EMPLOYERS ON " +
-                "$TABLE_WORK_EXTRAS_DEFINITIONS.weEmployerId = " +
-                "$TABLE_EMPLOYERS.employerId " +
-                "LEFT JOIN $TABLE_WORK_EXTRA_TYPES ON " +
-                "$TABLE_WORK_EXTRAS_DEFINITIONS.weExtraTypeId =" +
-                "$TABLE_WORK_EXTRA_TYPES.workExtraTypeId " +
-                "WHERE $TABLE_WORK_EXTRAS_DEFINITIONS.weEmployerId = :employerId " +
-                "AND $TABLE_WORK_EXTRAS_DEFINITIONS.weExtraTypeId = :extraTypeId " +
-                "AND $TABLE_WORK_EXTRAS_DEFINITIONS.weIsDeleted = 0 " +
-                "AND ($TABLE_WORK_EXTRA_TYPES.wetIsDeleted = 0 OR $TABLE_WORK_EXTRA_TYPES.wetIsDeleted IS NULL) " +
-                "ORDER BY $TABLE_WORK_EXTRAS_DEFINITIONS.weEffectiveDate DESC "
+        "SELECT * FROM $TABLE_WORK_EXTRAS_DEFINITIONS " +
+                "WHERE weEmployerId = :employerId " +
+                "AND weExtraTypeId = :extraTypeId " +
+                "AND weIsDeleted = 0 " +
+                "ORDER BY weEffectiveDate DESC "
     )
     fun getActiveExtraDefinitionsFull(
         employerId: Long,

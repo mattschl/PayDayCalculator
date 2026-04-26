@@ -51,7 +51,7 @@ fun ExtraDefinitionItem(
                     else nf.getPercentStringFromDouble(item.definition.weValue),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+//                    color = MaterialTheme.colorScheme.primary
                 )
             }
             if (item.definition.weIsDeleted) {

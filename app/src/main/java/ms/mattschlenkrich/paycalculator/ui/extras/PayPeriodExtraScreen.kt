@@ -304,6 +304,10 @@ private fun performSave(
     curPayPeriod: PayPeriods,
     onUpdate: (WorkPayPeriodExtras) -> Unit
 ) {
+    var value = nf.getDoubleFromDollarOrPercentString(valueString)
+    if (!isFixed && !valueString.contains("%") && value != 0.0) {
+        value /= 100.0
+    }
     onUpdate(
         WorkPayPeriodExtras(
             workPayPeriodExtraId = initialExtra?.workPayPeriodExtraId
@@ -313,7 +317,7 @@ private fun performSave(
             ppeName = name.trim(),
             ppeAppliesTo = appliesTo,
             ppeAttachTo = 3, // Per legacy code
-            ppeValue = nf.getDoubleFromDollarOrPercentString(valueString),
+            ppeValue = value,
             ppeIsFixed = isFixed,
             ppeIsCredit = isCredit,
             ppeIsDeleted = false,

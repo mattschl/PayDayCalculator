@@ -56,7 +56,7 @@ interface EmployerDao {
     )
     fun findEmployer(employerName: String): Employers
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPayRate(payRate: EmployerPayRates)
 
     @Update

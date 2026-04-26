@@ -16,13 +16,10 @@ fun ExtraRoute(
     navController: NavController
 ) {
     EmployerExtraDefinitionsScreen(
+        mainViewModel = mainViewModel,
         employerViewModel = employerViewModel,
         workExtraViewModel = workExtraViewModel,
-        initialEmployer = mainViewModel.getEmployer(),
-        initialExtraType = mainViewModel.getWorkExtraType(),
-        onAddExtraDefinition = { employer, extraType ->
-            mainViewModel.setEmployer(employer)
-            mainViewModel.setWorkExtraType(extraType)
+        onAddExtraDefinition = { _, _ ->
             navController.navigate(Screen.EmployerExtraDefinitionsAdd.route)
         },
         onUpdateExtraDefinition = { definition ->
@@ -30,16 +27,13 @@ fun ExtraRoute(
             mainViewModel.setExtraDefinitionFull(definition)
             navController.navigate(Screen.EmployerExtraDefinitionUpdate.route)
         },
-        onUpdateExtraType = { employer, extraType ->
-            mainViewModel.setEmployer(employer)
-            mainViewModel.setWorkExtraType(extraType)
+        onUpdateExtraType = { _, _ ->
             navController.navigate(Screen.WorkExtraTypeUpdate.route)
         },
         onAddNewEmployer = {
             navController.navigate(Screen.EmployerAdd.route)
         },
-        onAddNewExtraType = { employer ->
-            mainViewModel.setEmployer(employer)
+        onAddNewExtraType = { _ ->
             navController.navigate(Screen.WorkExtraTypeAdd.route)
         },
         onDeleteExtraDefinition = { definition ->

@@ -51,7 +51,7 @@ interface WorkOrderDao {
         "UPDATE workOrders " +
                 "SET woDeleted = 1, " +
                 "woUpdateTime = :updateTime " +
-                "WHERE workOrderId = :workOrderNumber"
+                "WHERE woNumber = :workOrderNumber"
     )
     suspend fun deleteWorkOrder(workOrderNumber: String, updateTime: String)
 
@@ -95,7 +95,7 @@ interface WorkOrderDao {
     )
     fun searchWorkOrders(employerId: Long, query: String): LiveData<List<WorkOrder>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWorkOrderHistory(history: WorkOrderHistory)
 
     @Update
@@ -147,7 +147,8 @@ interface WorkOrderDao {
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistory " +
-                "WHERE woHistoryId = :historyId "
+                "WHERE woHistoryId = :historyId " +
+                "AND woHistoryDeleted = 0 "
     )
     fun getWorkOrderHistoriesById(historyId: Long): LiveData<WorkOrderHistoryWithDates>
 
@@ -166,7 +167,8 @@ interface WorkOrderDao {
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistory " +
-                "WHERE woHistoryId = :historyID"
+                "WHERE woHistoryId = :historyID " +
+                "AND woHistoryDeleted = 0"
     )
     fun getWorkOrderHistory(historyID: Long): LiveData<WorkOrderHistoryWithDates>
 
@@ -174,7 +176,8 @@ interface WorkOrderDao {
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistory " +
-                "WHERE woHistoryId = :historyID"
+                "WHERE woHistoryId = :historyID " +
+                "AND woHistoryDeleted = 0"
     )
     suspend fun getWorkOrderHistoryWithDateById(historyID: Long): WorkOrderHistoryWithDates
 
@@ -182,7 +185,8 @@ interface WorkOrderDao {
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistory " +
-                "WHERE woHistoryId = :historyId"
+                "WHERE woHistoryId = :historyId " +
+                "AND woHistoryDeleted = 0"
     )
     fun getWorkOrderHistoryCombined(historyId: Long): LiveData<WorkOrderHistoryCombined>
 
@@ -228,7 +232,8 @@ interface WorkOrderDao {
 
     @Query(
         "SELECT * FROM workOrderHistory " +
-                "WHERE woHistoryId = :historyId"
+                "WHERE woHistoryId = :historyId " +
+                "AND woHistoryDeleted = 0"
     )
     suspend fun getWorkOrderHistorySync(historyId: Long): WorkOrderHistory?
 
@@ -260,7 +265,8 @@ interface WorkOrderDao {
 
     @Query(
         "SELECT * FROM jobSpecs " +
-                "WHERE jobSpecId = :jobSpecId"
+                "WHERE jobSpecId = :jobSpecId " +
+                "AND jsIsDeleted = 0"
     )
     fun getJobSpec(jobSpecId: Long): LiveData<JobSpec>
 
@@ -268,7 +274,8 @@ interface WorkOrderDao {
     @RewriteQueriesToDropUnusedColumns
     @Query(
         "SELECT * FROM jobSpecMerged " +
-                "WHERE jsmMasterId = :jobSpecId"
+                "WHERE jsmMasterId = :jobSpecId " +
+                "AND jsmIsDeleted = 0"
     )
     fun getJobSpecAndChildList(jobSpecId: Long): LiveData<List<JobSpecAndChild>>
 
@@ -285,7 +292,8 @@ interface WorkOrderDao {
 
     @Query(
         "SELECT * FROM jobSpecs " +
-                "WHERE jsName = :jsName"
+                "WHERE jsName = :jsName " +
+                "AND jsIsDeleted = 0"
     )
     suspend fun getJobSpecSync(jsName: String): JobSpec?
 
@@ -346,7 +354,8 @@ interface WorkOrderDao {
     @Transaction
     @Query(
         "SELECT * FROM workOrderJobSpecs " +
-                "WHERE workOrderJobSpecId = :workOrderJobSpecId"
+                "WHERE workOrderJobSpecId = :workOrderJobSpecId " +
+                "AND wojsIsDeleted = 0"
     )
     fun getWorkOrderJobSpec(workOrderJobSpecId: Long): LiveData<WorkOrderJobSpecCombined>
 
@@ -354,7 +363,8 @@ interface WorkOrderDao {
     @Transaction
     @Query(
         "SELECT * FROM workOrderJobSpecs " +
-                "WHERE workOrderJobSpecId = :workOrderJobSpecId"
+                "WHERE workOrderJobSpecId = :workOrderJobSpecId " +
+                "AND wojsIsDeleted = 0"
     )
     suspend fun getWorkOrderJobSpecSync(workOrderJobSpecId: Long): WorkOrderJobSpecCombined?
 
@@ -390,9 +400,11 @@ interface WorkOrderDao {
         "SELECT * FROM workPerformed " +
                 "INNER JOIN  " +
                 "(SELECT wpmChildId FROM workPerformedMerged " +
-                "WHERE wpmMasterId = :workPerformedId) " +
+                "WHERE wpmMasterId = :workPerformedId " +
+                "AND wpmIsDeleted = 0) " +
                 "ON workPerformed.workPerformedId = " +
-                "wpmChildId "
+                "wpmChildId " +
+                "WHERE wpIsDeleted = 0"
     )
     fun getWorkPerformedChildren(workPerformedId: Long): LiveData<List<WorkPerformed>>
 
@@ -400,7 +412,8 @@ interface WorkOrderDao {
     @RewriteQueriesToDropUnusedColumns
     @Query(
         "SELECT * FROM workPerformedMerged " +
-                "WHERE wpmMasterId = :workPerformedId"
+                "WHERE wpmMasterId = :workPerformedId " +
+                "AND wpmIsDeleted = 0"
     )
     fun getWorkPerformedAndChildList(workPerformedId: Long): LiveData<List<WorkPerformedAndChild>>
 
@@ -437,25 +450,29 @@ interface WorkOrderDao {
 
     @Query(
         "SELECT * FROM workPerformed " +
-                "WHERE wpDescription = :description"
+                "WHERE wpDescription = :description " +
+                "AND wpIsDeleted = 0"
     )
     fun getWorkPerformed(description: String): LiveData<WorkPerformed>
 
     @Query(
         "SELECT * FROM workPerformed " +
-                "WHERE wpDescription = :description"
+                "WHERE wpDescription = :description " +
+                "AND wpIsDeleted = 0"
     )
     suspend fun getWorkPerformedSync(description: String): WorkPerformed?
 
     @Query(
         "SELECT * FROM workPerformed " +
-                "WHERE workPerformedId = :workPerformedId"
+                "WHERE workPerformedId = :workPerformedId " +
+                "AND wpIsDeleted = 0"
     )
     fun getWorkPerformed(workPerformedId: Long): LiveData<WorkPerformed>
 
     @Query(
         "SELECT * FROM workPerformed " +
-                "WHERE workPerformedId = :workPerformedId"
+                "WHERE workPerformedId = :workPerformedId " +
+                "AND wpIsDeleted = 0"
     )
     suspend fun getWorkPerformedSync(workPerformedId: Long): WorkPerformed?
 
@@ -532,7 +549,8 @@ interface WorkOrderDao {
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistoryWorkPerformed " +
-                "WHERE workOrderHistoryWorkPerformedId = :historyWorkPerformedId"
+                "WHERE workOrderHistoryWorkPerformedId = :historyWorkPerformedId " +
+                "AND wowpIsDeleted = 0"
     )
     fun getWorkPerformedHistoryById(historyWorkPerformedId: Long):
             LiveData<WorkOrderHistoryWorkPerformedCombined>
@@ -542,6 +560,8 @@ interface WorkOrderDao {
                 "INNER JOIN workPerformed ON wowpWorkPerformedId = workPerformedId " +
                 "LEFT OUTER JOIN areas ON wowpAreaId = areaId " +
                 "WHERE wowpHistoryId = :historyId " +
+                "AND wowpIsDeleted = 0 " +
+                "AND wpIsDeleted = 0 " +
                 "ORDER BY wowpSequence"
     )
     suspend fun getWorkPerformedByWorkOrderHistorySync(historyId: Long): List<WorkOrderHistoryWorkPerformedCombined>
@@ -550,7 +570,8 @@ interface WorkOrderDao {
         "SELECT * FROM workOrderHistoryWorkPerformed " +
                 "INNER JOIN workPerformed ON wowpWorkPerformedId = workPerformedId " +
                 "LEFT OUTER JOIN areas ON wowpAreaId = areaId " +
-                "WHERE workOrderHistoryWorkPerformedId = :historyWorkPerformedId"
+                "WHERE workOrderHistoryWorkPerformedId = :historyWorkPerformedId " +
+                "AND wowpIsDeleted = 0"
     )
     suspend fun getWorkPerformedHistoryByIdSync(historyWorkPerformedId: Long): WorkOrderHistoryWorkPerformedCombined
 
@@ -580,8 +601,10 @@ interface WorkOrderDao {
         "SELECT * FROM materials " +
                 "INNER JOIN " +
                 "(SELECT mmChildId FROM materialMerged " +
-                "WHERE mmMasterId = :materialId)" +
+                "WHERE mmMasterId = :materialId " +
+                "AND mmIsDeleted = 0)" +
                 "ON materials.materialId = mmChildId " +
+                "WHERE mIsDeleted = 0 " +
                 "ORDER BY mName"
     )
     fun getMaterialsChildren(materialId: Long): LiveData<List<Material>>
@@ -591,7 +614,8 @@ interface WorkOrderDao {
     @Transaction
     @Query(
         "SELECT * FROM materialMerged " +
-                "WHERE mmMasterId = :materialId"
+                "WHERE mmMasterId = :materialId " +
+                "AND mmIsDeleted = 0"
     )
     fun getMaterialAndChildList(materialId: Long): LiveData<List<MaterialAndChild>>
 
@@ -605,25 +629,29 @@ interface WorkOrderDao {
 
     @Query(
         "SELECT * FROM materials " +
-                "WHERE materialId = :materialId"
+                "WHERE materialId = :materialId " +
+                "AND mIsDeleted = 0"
     )
     fun getMaterial(materialId: Long): LiveData<Material>
 
     @Query(
         "SELECT * FROM materials " +
-                "WHERE materialId = :materialId"
+                "WHERE materialId = :materialId " +
+                "AND mIsDeleted = 0"
     )
     suspend fun getMaterialSync(materialId: Long): Material?
 
     @Query(
         "SELECT * FROM materials " +
-                "WHERE mName = :mName"
+                "WHERE mName = :mName " +
+                "AND mIsDeleted = 0"
     )
     fun getMaterial(mName: String): LiveData<Material>
 
     @Query(
         "SELECT * FROM materials " +
-                "WHERE mName = :mName"
+                "WHERE mName = :mName " +
+                "AND mIsDeleted = 0"
     )
     suspend fun getMaterialSync(mName: String): Material?
 
@@ -663,7 +691,7 @@ interface WorkOrderDao {
     )
     suspend fun removeAllMaterialsFromWorkOrderHistory(historyId: Long, updateTime: String)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWorkOrderHistoryMaterial(
         workOrderHistoryMaterial: WorkOrderHistoryMaterial
     )
@@ -763,25 +791,29 @@ interface WorkOrderDao {
 
     @Query(
         "SELECT * FROM areas " +
-                "WHERE areaId = :areaId"
+                "WHERE areaId = :areaId " +
+                "AND areaIsDeleted = 0"
     )
     fun getArea(areaId: Long): LiveData<Areas>
 
     @Query(
         "SELECT * FROM areas " +
-                "WHERE areaId = :areaId"
+                "WHERE areaId = :areaId " +
+                "AND areaIsDeleted = 0"
     )
     suspend fun getAreaSync(areaId: Long): Areas?
 
     @Query(
         "SELECT * FROM areas " +
-                "WHERE areaName = :areaName"
+                "WHERE areaName = :areaName " +
+                "AND areaIsDeleted = 0"
     )
     fun getArea(areaName: String): LiveData<Areas>
 
     @Query(
         "SELECT * FROM areas " +
-                "WHERE areaName = :areaName"
+                "WHERE areaName = :areaName " +
+                "AND areaIsDeleted = 0"
     )
     suspend fun getAreaSync(areaName: String): Areas?
 

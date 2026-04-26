@@ -47,11 +47,7 @@ class NumberFunctions {
 
     fun getPercentStringFromDouble(num: Double): String {
         val percent = (num * 10000).roundToInt() / 100.0
-        return if (percent < 100) {
-            "$percent%"
-        } else {
-            "${(percent / 100)}%"
-        }
+        return "$percent%"
     }
 
     fun getDoubleFromDollarOrPercentString(numString: String?): Double {

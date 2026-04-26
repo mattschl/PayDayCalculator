@@ -114,21 +114,24 @@ class PayCalculationsAsync(
     private suspend fun processCustomExtraContainersByPay() =
         withContext(defaultScope) {
             for (extra in customExtrasByPay) {
+                val value = if (!extra.ppeIsFixed && extra.ppeValue >= 1.0)
+                    extra.ppeValue / 100.0
+                else extra.ppeValue
                 val total: Double = if (extra.ppeIsDeleted) {
                     0.0
                 } else if (extra.ppeIsFixed) {
                     when (extra.ppeAppliesTo) {
-                        ExtraAttachToFrequencies.HOURLY.value -> getHoursWorked() * extra.ppeValue
-                        ExtraAttachToFrequencies.DAILY.value -> getDaysWorked() * extra.ppeValue
-                        ExtraAttachToFrequencies.PER_PAY.value -> extra.ppeValue
-                        else -> extra.ppeValue
+                        ExtraAttachToFrequencies.HOURLY.value -> getHoursWorked() * value
+                        ExtraAttachToFrequencies.DAILY.value -> getDaysWorked() * value
+                        ExtraAttachToFrequencies.PER_PAY.value -> value
+                        else -> value
                     }
                 } else {
                     when (extra.ppeAppliesTo) {
-                        ExtraAttachToFrequencies.HOURLY.value -> getPayTimeWorked() * extra.ppeValue
-                        ExtraAttachToFrequencies.DAILY.value -> getPayTimeWorked() * extra.ppeValue
-                        ExtraAttachToFrequencies.PER_PAY.value -> getPayAllHourly() * extra.ppeValue
-                        else -> extra.ppeValue
+                        ExtraAttachToFrequencies.HOURLY.value -> getPayTimeWorked() * value
+                        ExtraAttachToFrequencies.DAILY.value -> getPayTimeWorked() * value
+                        ExtraAttachToFrequencies.PER_PAY.value -> getPayAllHourly() * value
+                        else -> value
                     }
                 }
 //                Log.d(TAG, "-------- value of $total for ${extra.ppeName} ---------")
@@ -233,13 +236,17 @@ class PayCalculationsAsync(
         withContext(defaultScope) {
             if (defaultExtrasByPercentageOfAll.isNotEmpty()) {
                 for (extraAndDef in defaultExtrasByPercentageOfAll) {
+                    val value =
+                        if (!extraAndDef.definition.weIsFixed && extraAndDef.definition.weValue >= 1.0)
+                            extraAndDef.definition.weValue / 100.0
+                        else extraAndDef.definition.weValue
                     val subTotal =
                         if (extraAndDef.extraType.wetIsDeleted ||
                             extraAndDef.definition.weIsDeleted
                         ) {
                             0.0
                         } else {
-                            extraAndDef.definition.weValue * totalBeforePercentageAdjustment / 100
+                            value * totalBeforePercentageAdjustment
                         }
                     if (extraAndDef.extraType.wetIsCredit) {
                         creditExtraContainers.add(
@@ -291,6 +298,10 @@ class PayCalculationsAsync(
         withContext(defaultScope) {
             if (defaultExtrasByHour.isNotEmpty()) {
                 for (extraAndDef in defaultExtrasByHour) {
+                    val value =
+                        if (!extraAndDef.definition.weIsFixed && extraAndDef.definition.weValue >= 1.0)
+                            extraAndDef.definition.weValue / 100.0
+                        else extraAndDef.definition.weValue
                     val subTotal =
                         if (extraAndDef.extraType.wetIsDeleted ||
                             extraAndDef.definition.weIsDeleted
@@ -300,7 +311,7 @@ class PayCalculationsAsync(
                             if (extraAndDef.definition.weIsFixed) {
                                 extraAndDef.definition.weValue * getHoursWorked()
                             } else {
-                                extraAndDef.definition.weValue * getPayTimeWorked()
+                                value * getPayTimeWorked()
                             }
                         }
                     val newExtraContainer = ExtraContainer(
@@ -327,6 +338,10 @@ class PayCalculationsAsync(
         withContext(defaultScope) {
             if (defaultExtrasByDay.isNotEmpty()) {
                 for (extraAndDef in defaultExtrasByDay) {
+                    val value =
+                        if (!extraAndDef.definition.weIsFixed && extraAndDef.definition.weValue >= 1.0)
+                            extraAndDef.definition.weValue / 100.0
+                        else extraAndDef.definition.weValue
                     val subTotal =
                         if (extraAndDef.extraType.wetIsDeleted ||
                             extraAndDef.definition.weIsDeleted
@@ -336,7 +351,7 @@ class PayCalculationsAsync(
                             if (extraAndDef.definition.weIsFixed) {
                                 extraAndDef.definition.weValue * getDaysWorked()
                             } else {
-                                extraAndDef.definition.weValue * getPayTimeWorked()
+                                value * getPayTimeWorked()
                             }
                         }
                     val newExtraContainer = ExtraContainer(
@@ -363,6 +378,10 @@ class PayCalculationsAsync(
         withContext(defaultScope) {
             if (defaultExtrasByPay.isNotEmpty()) {
                 for (extraAndDef in defaultExtrasByPay) {
+                    val value =
+                        if (!extraAndDef.definition.weIsFixed && extraAndDef.definition.weValue >= 1.0)
+                            extraAndDef.definition.weValue / 100.0
+                        else extraAndDef.definition.weValue
                     val subTotal =
                         if (extraAndDef.extraType.wetIsDeleted ||
                             extraAndDef.definition.weIsDeleted
@@ -372,7 +391,7 @@ class PayCalculationsAsync(
                             if (extraAndDef.definition.weIsFixed) {
                                 extraAndDef.definition.weValue
                             } else {
-                                extraAndDef.definition.weValue * getPayTimeWorked() / 100
+                                value * getPayTimeWorked()
                             }
                         }
 //                    Log.d(
@@ -425,12 +444,15 @@ class PayCalculationsAsync(
                         workingExtra = currentExtra.wdeName
                         subTotal = 0.0
                     }
+                    val value = if (!currentExtra.wdeIsFixed && currentExtra.wdeValue >= 1.0)
+                        currentExtra.wdeValue / 100.0
+                    else currentExtra.wdeValue
                     if (currentExtra.wdeAppliesTo == ExtraAppliesToFrequencies.HOURLY.value &&
                         currentExtra.wdeIsFixed
                     ) {
                         for (date in workDates) {
                             if (date.workDateId == currentExtra.wdeWorkDateId) {
-                                subTotal += currentExtra.wdeValue *
+                                subTotal += value *
                                         (date.wdRegHours + date.wdOtHours + date.wdDblOtHours)
                             }
                         }
@@ -440,13 +462,13 @@ class PayCalculationsAsync(
                     ) {
                         for (date in workDates) {
                             if (date.workDateId == currentExtra.wdeWorkDateId) {
-                                subTotal += currentExtra.wdeValue * getPayRate() *
-                                        (date.wdRegHours + date.wdOtHours + date.wdDblOtHours)
+                                subTotal += value * getPayRate() *
+                                        (date.wdRegHours + date.wdOtHours * 1.5 + date.wdDblOtHours * 2.0)
                             }
                         }
                     } else if (currentExtra.wdeAppliesTo == ExtraAppliesToFrequencies.DAILY.value
                     ) {
-                        subTotal += currentExtra.wdeValue
+                        subTotal += value
                     }
                     if (i == customWorkDateExtras.size - 1) {
                         val newExtraContainer = ExtraContainer(
