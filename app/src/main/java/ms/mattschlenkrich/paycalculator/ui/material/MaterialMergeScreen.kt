@@ -26,6 +26,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,10 +57,55 @@ fun MaterialMergeScreen(
     childDescription: String,
     onChildDescriptionChange: (String) -> Unit,
     onChildSelected: (Material) -> Unit,
-    onMergeClick: () -> Unit,
+    onMergeAction: (Int) -> Unit,
     onDoneClick: () -> Unit,
     onListItemSelected: (Material) -> Unit
 ) {
+    var showMergeOptionsDialog by remember {
+        mutableStateOf(
+            false
+        )
+    }
+
+    if (showMergeOptionsDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showMergeOptionsDialog = false },
+            title = { Text(stringResource(R.string.choose_merge_option)) },
+            text = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+                ) {
+                    Button(
+                        onClick = {
+                            onMergeAction(1) // Keep
+                            showMergeOptionsDialog = false
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(R.string.merge_keep_description))
+                    }
+                    Button(
+                        onClick = {
+                            onMergeAction(2) // Replace
+                            showMergeOptionsDialog = false
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(R.string.merge_replace_all))
+                    }
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    showMergeOptionsDialog = false
+                }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
     Scaffold(
         /*  topBar = {
               TopAppBar(
@@ -163,7 +212,7 @@ fun MaterialMergeScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Button(
-                            onClick = onMergeClick,
+                            onClick = { showMergeOptionsDialog = true },
                             modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)) // Dark Green
                         ) {

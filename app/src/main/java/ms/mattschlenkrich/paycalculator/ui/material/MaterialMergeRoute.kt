@@ -83,19 +83,31 @@ fun MaterialMergeRoute(
             selectedChild = it
             childDescription = it.mName
         },
-        onMergeClick = {
+        onMergeAction = { action ->
             val childId = selectedChild?.materialId
             if (childId != null && childId != materialId) {
                 coroutineScope.launch {
-                    workOrderViewModel.insertMaterialMerged(
-                        MaterialMerged(
-                            nf.generateRandomIdAsLong(),
-                            materialId,
+                    if (action == 1) { // Keep
+                        workOrderViewModel.insertMaterialMerged(
+                            MaterialMerged(
+                                nf.generateRandomIdAsLong(),
+                                materialId,
+                                childId,
+                                false,
+                                df.getCurrentUTCTimeAsString()
+                            )
+                        )
+                    } else if (action == 2) { // Replace and delete
+                        workOrderViewModel.updateMaterialMerged(
                             childId,
-                            false,
+                            materialId,
                             df.getCurrentUTCTimeAsString()
                         )
-                    )
+                        workOrderViewModel.deleteMaterial(
+                            childId,
+                            df.getCurrentUTCTimeAsString()
+                        )
+                    }
                     childDescription = ""
                     selectedChild = null
                 }

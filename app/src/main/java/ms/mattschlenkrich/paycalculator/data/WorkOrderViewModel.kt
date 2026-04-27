@@ -179,6 +179,11 @@ class WorkOrderViewModel(
             workOrderRepository.deleteJobSpecMerged(jobSpecMergedId, updateTime)
         }
 
+    fun updateJobSpecMerged(oldJobSpecId: Long, newJobSpecId: Long) =
+        viewModelScope.launch {
+            workOrderRepository.updateJobSpecMerged(oldJobSpecId, newJobSpecId)
+        }
+
     fun deleteJobSpecMerged(jobSpecMergedId: Long) =
         viewModelScope.launch {
             workOrderRepository.deleteJobSpecMerged(
@@ -195,6 +200,10 @@ class WorkOrderViewModel(
 
     fun updateJobSpec(jobSpec: JobSpec) = viewModelScope.launch {
         workOrderRepository.updateJobSpec(jobSpec)
+    }
+
+    fun deleteJobSpec(jobSpecId: Long, updateTime: String) = viewModelScope.launch {
+        workOrderRepository.deleteJobSpec(jobSpecId, updateTime)
     }
 
 

@@ -502,6 +502,8 @@
     <string name="existing_children">Existing Children</string>
     <string name="existing_times">Existing Times</string>
     <string name="choose_merge_option">Choose Merge Option</string>
+    <string name="merge_keep_description">Merge and keep the description</string>
+    <string name="merge_replace_all">Merge and delete and replace all references to the child</string>
     <string name="either_merge_and_replace_or_merge_">There are 2 options:\nMerge and delete the child and replace all references.\nMerge and keep the child as an alternate description.</string>
     <string name="merge_and_replace">Merge and replace</string>
     <string name="merge_and_keep">Merge and Keep</string>
@@ -548,4 +550,7 @@
     <string name="add_new_definition">Add New Definition</string>
     <string name="add_new_extra_type">Add New Extra Type</string>
     <string name="definitions">Definitions</string>
+    <string name="material_options">Material Options</string>
+    <string name="update_work_performed_in_history">Update Work Performed in history</string>
+    <string name="edit_description_in_database">Edit description in database</string>
 </resources>

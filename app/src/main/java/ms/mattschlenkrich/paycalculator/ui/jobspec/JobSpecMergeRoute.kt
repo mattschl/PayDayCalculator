@@ -77,19 +77,27 @@ fun JobSpecMergeRoute(
             selectedChild = it
             childDescription = it.jsName
         },
-        onMergeClick = {
+        onMergeAction = { action ->
             val childId = selectedChild?.jobSpecId
             if (childId != null && childId != jsId) {
                 coroutineScope.launch {
-                    workOrderViewModel.insertJobSpecMerged(
-                        JobSpecMerged(
-                            nf.generateRandomIdAsLong(),
-                            jsId,
+                    if (action == 1) { // Keep
+                        workOrderViewModel.insertJobSpecMerged(
+                            JobSpecMerged(
+                                nf.generateRandomIdAsLong(),
+                                jsId,
+                                childId,
+                                false,
+                                df.getCurrentUTCTimeAsString()
+                            )
+                        )
+                    } else if (action == 2) { // Replace and delete
+                        workOrderViewModel.updateJobSpecMerged(childId, jsId)
+                        workOrderViewModel.deleteJobSpec(
                             childId,
-                            false,
                             df.getCurrentUTCTimeAsString()
                         )
-                    )
+                    }
                     childDescription = ""
                     selectedChild = null
                 }

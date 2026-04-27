@@ -291,6 +291,13 @@ interface WorkOrderDao {
     suspend fun deleteJobSpecMerged(jobSpecMergedId: Long, updateTime: String)
 
     @Query(
+        "UPDATE workOrderJobSpecs " +
+                "SET wojsJobSpecId = :newJobSpecId " +
+                "WHERE wojsJobSpecId = :oldJobSpecId"
+    )
+    suspend fun updateJobSpecMerged(oldJobSpecId: Long, newJobSpecId: Long)
+
+    @Query(
         "SELECT * FROM jobSpecs " +
                 "WHERE jsName = :jsName " +
                 "AND jsIsDeleted = 0"
@@ -302,6 +309,14 @@ interface WorkOrderDao {
 
     @Update
     suspend fun updateJobSpec(jobSpec: JobSpec)
+
+    @Query(
+        "UPDATE jobSpecs " +
+                "SET jsIsDeleted = 1," +
+                "jsUpdateTime = :updateTime " +
+                "WHERE jobSpecId = :jobSpecId"
+    )
+    suspend fun deleteJobSpec(jobSpecId: Long, updateTime: String)
 
     @Query(
         "SELECT * FROM jobSpecs " +

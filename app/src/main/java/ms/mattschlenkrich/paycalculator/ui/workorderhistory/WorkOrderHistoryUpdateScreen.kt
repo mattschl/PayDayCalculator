@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,6 +37,7 @@ import ms.mattschlenkrich.paycalculator.data.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryWorkPerformedCombined
 import ms.mattschlenkrich.paycalculator.data.WorkPerformed
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.components.MaterialEntryCard
+import ms.mattschlenkrich.paycalculator.ui.workorderhistory.components.MaterialOptionsDialog
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.components.WorkOrderHistoryInfoCard
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.components.WorkOrderHistoryMaterialItem
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.components.WorkPerformedEntryCard
@@ -91,6 +94,9 @@ fun WorkOrderHistoryUpdateScreen(
     // Actions
     onDone: () -> Unit,
     onUpdateWorkPerformed: (WorkOrderHistoryWorkPerformedCombined) -> Unit,
+    onUpdateWorkPerformedDefinition: (WorkOrderHistoryWorkPerformedCombined) -> Unit,
+    onUpdateMaterialInHistory: (MaterialInSequence) -> Unit,
+    onUpdateMaterialDefinition: (MaterialInSequence) -> Unit,
 ) {
     var showWorkPerformedDialog by remember { mutableStateOf(false) }
     var selectedWorkPerformed by remember {
@@ -99,12 +105,25 @@ fun WorkOrderHistoryUpdateScreen(
         )
     }
 
+    var showMaterialDialog by remember { mutableStateOf(false) }
+    var selectedMaterial by remember { mutableStateOf<MaterialInSequence?>(null) }
+
     WorkPerformedOptionsDialog(
         showDialog = showWorkPerformedDialog,
         onDismissRequest = { showWorkPerformedDialog = false },
         item = selectedWorkPerformed,
         onWorkPerformedItemClick = onWorkPerformedItemClick,
-        onUpdateWorkPerformed = onUpdateWorkPerformed
+        onUpdateWorkPerformed = onUpdateWorkPerformed,
+        onEditWorkPerformedDefinition = onUpdateWorkPerformedDefinition
+    )
+
+    MaterialOptionsDialog(
+        showDialog = showMaterialDialog,
+        onDismissRequest = { showMaterialDialog = false },
+        item = selectedMaterial,
+        onDelete = { onMaterialItemClick(it, 0) },
+        onEditInHistory = onUpdateMaterialInHistory,
+        onEditMaterialDefinition = onUpdateMaterialDefinition
     )
 
     Scaffold(
@@ -122,18 +141,20 @@ fun WorkOrderHistoryUpdateScreen(
             }
         }
     ) { paddingValues ->
-        LazyColumn(
+        LazyVerticalStaggeredGrid(
+            columns = StaggeredGridCells.Fixed(2),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = SCREEN_PADDING_HORIZONTAL),
-            verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+            verticalItemSpacing = ELEMENT_SPACING,
+            horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
         ) {
-            item {
+            item(span = StaggeredGridItemSpan.FullLine) {
                 Spacer(modifier = Modifier.padding(vertical = SCREEN_PADDING_VERTICAL))
             }
 
-            item {
+            item(span = StaggeredGridItemSpan.FullLine) {
                 WorkOrderHistoryInfoCard(
                     workDateDisplay = workDateDisplay,
                     employerName = employerName,
@@ -158,7 +179,7 @@ fun WorkOrderHistoryUpdateScreen(
                 )
             }
 
-            item {
+            item(span = StaggeredGridItemSpan.FullLine) {
                 WorkPerformedEntryCard(
                     workPerformed = workPerformed,
                     onWorkPerformedChange = onWorkPerformedChange,
@@ -175,7 +196,7 @@ fun WorkOrderHistoryUpdateScreen(
             }
 
             if (workPerformedActualList.isNotEmpty()) {
-                item {
+                item(span = StaggeredGridItemSpan.FullLine) {
                     Text(
                         text = stringResource(R.string.work_performed),
                         style = MaterialTheme.typography.titleMedium,
@@ -196,7 +217,7 @@ fun WorkOrderHistoryUpdateScreen(
                 }
             }
 
-            item {
+            item(span = StaggeredGridItemSpan.FullLine) {
                 MaterialEntryCard(
                     materialQty = materialQty,
                     onMaterialQtyChange = onMaterialQtyChange,
@@ -209,7 +230,7 @@ fun WorkOrderHistoryUpdateScreen(
             }
 
             if (materialActualList.isNotEmpty()) {
-                item {
+                item(span = StaggeredGridItemSpan.FullLine) {
                     Text(
                         text = stringResource(R.string.materials),
                         style = MaterialTheme.typography.titleMedium,
@@ -222,12 +243,15 @@ fun WorkOrderHistoryUpdateScreen(
                     WorkOrderHistoryMaterialItem(
                         item = item,
                         index = materialActualList.indexOf(item),
-                        onClick = { onMaterialItemClick(item, it) }
+                        onClick = {
+                            selectedMaterial = item
+                            showMaterialDialog = true
+                        }
                     )
                 }
             }
 
-            item {
+            item(span = StaggeredGridItemSpan.FullLine) {
                 Spacer(modifier = Modifier.padding(vertical = SCREEN_PADDING_VERTICAL))
             }
         }

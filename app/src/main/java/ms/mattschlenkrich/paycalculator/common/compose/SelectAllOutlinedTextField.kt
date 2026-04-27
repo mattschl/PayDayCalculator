@@ -3,6 +3,7 @@ package ms.mattschlenkrich.paycalculator.common.compose
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -60,7 +61,9 @@ fun SelectAllOutlinedTextField(
                         onValueChange(it.text)
                     }
                 },
-                modifier = modifier.heightIn(min = StandardTextFieldDefaults.minHeight()),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = StandardTextFieldDefaults.minHeight()),
                 singleLine = singleLine,
                 readOnly = readOnly,
                 keyboardOptions = keyboardOptions,
@@ -69,6 +72,7 @@ fun SelectAllOutlinedTextField(
             )
         },
         interactionSource = interactionSource,
+        modifier = modifier,
         singleLine = singleLine,
         label = label,
         placeholder = placeholder,

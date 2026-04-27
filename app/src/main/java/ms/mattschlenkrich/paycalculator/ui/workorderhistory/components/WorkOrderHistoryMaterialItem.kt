@@ -18,12 +18,12 @@ import ms.mattschlenkrich.paycalculator.data.MaterialInSequence
 fun WorkOrderHistoryMaterialItem(
     item: MaterialInSequence,
     index: Int,
-    onClick: (Int) -> Unit
+    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick(index) },
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface

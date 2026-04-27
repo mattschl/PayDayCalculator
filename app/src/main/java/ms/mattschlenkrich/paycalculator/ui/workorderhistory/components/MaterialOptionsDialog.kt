@@ -14,47 +14,47 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryWorkPerformedCombined
+import ms.mattschlenkrich.paycalculator.data.MaterialInSequence
 
 @Composable
-fun WorkPerformedOptionsDialog(
+fun MaterialOptionsDialog(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
-    item: WorkOrderHistoryWorkPerformedCombined?,
-    onWorkPerformedItemClick: (WorkOrderHistoryWorkPerformedCombined, Int) -> Unit,
-    onUpdateWorkPerformed: (WorkOrderHistoryWorkPerformedCombined) -> Unit,
-    onEditWorkPerformedDefinition: (WorkOrderHistoryWorkPerformedCombined) -> Unit
+    item: MaterialInSequence?,
+    onDelete: (MaterialInSequence) -> Unit,
+    onEditInHistory: (MaterialInSequence) -> Unit,
+    onEditMaterialDefinition: (MaterialInSequence) -> Unit
 ) {
     if (showDialog && item != null) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(stringResource(R.string.work_performed_options)) },
+            title = { Text(stringResource(R.string.material_options)) },
             text = {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
                 ) {
-                    Text(item.workPerformed.wpDescription)
+                    Text(item.mName)
                     Button(
                         onClick = {
-                            onUpdateWorkPerformed(item)
+                            onEditInHistory(item)
                             onDismissRequest()
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(stringResource(R.string.update_work_performed_in_history))
+                        Text(stringResource(R.string.update_material_in_history))
                     }
                     Button(
                         onClick = {
-                            onEditWorkPerformedDefinition(item)
+                            onEditMaterialDefinition(item)
                             onDismissRequest()
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(stringResource(R.string.edit_description_in_database))
+                        Text(stringResource(R.string.edit_the_material_in_the_database))
                     }
                     Button(
                         onClick = {
-                            onWorkPerformedItemClick(item, 0) // 0 for Delete
+                            onDelete(item)
                             onDismissRequest()
                         },
                         modifier = Modifier.fillMaxWidth(),

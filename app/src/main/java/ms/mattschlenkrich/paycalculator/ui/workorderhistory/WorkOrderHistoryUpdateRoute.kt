@@ -267,6 +267,23 @@ fun WorkOrderHistoryUpdateRoute(
         onUpdateWorkPerformed = { item ->
             mainViewModel.setWorkPerformedHistoryId(item.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId)
             navController.navigate(Screen.WorkOrderHistoryWorkPerformedUpdate.route)
+        },
+        onUpdateWorkPerformedDefinition = { item ->
+            mainViewModel.setWorkPerformedId(item.workPerformed.workPerformedId)
+            navController.navigate(Screen.WorkPerformedUpdate.route)
+        },
+        onUpdateMaterialInHistory = { item ->
+            mainViewModel.setMaterialId(item.workOrderHistoryMaterialId)
+            navController.navigate(Screen.WorkOrderHistoryMaterialUpdate.route)
+        },
+        onUpdateMaterialDefinition = { item ->
+            coroutineScope.launch {
+                val material = workOrderViewModel.getMaterialSync(item.materialId)
+                if (material != null) {
+                    mainViewModel.setMaterial(material)
+                    navController.navigate(Screen.MaterialUpdate.route)
+                }
+            }
         }
     )
 }

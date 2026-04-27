@@ -235,11 +235,17 @@ class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun deleteJobSpecMerged(jobSpecMergedId: Long, updateTime: String) =
         db.getWorkOrderDao().deleteJobSpecMerged(jobSpecMergedId, updateTime)
 
+    suspend fun updateJobSpecMerged(oldJobSpecId: Long, newJobSpecId: Long) =
+        db.getWorkOrderDao().updateJobSpecMerged(oldJobSpecId, newJobSpecId)
+
     suspend fun getJobSpecSync(jsName: String) = db.getWorkOrderDao().getJobSpecSync(jsName)
 
     suspend fun insertJobSpec(jobSpec: JobSpec) = db.getWorkOrderDao().insertJobSpec(jobSpec)
 
     suspend fun updateJobSpec(jobSpec: JobSpec) = db.getWorkOrderDao().updateJobSpec(jobSpec)
+
+    suspend fun deleteJobSpec(jobSpecId: Long, updateTime: String) =
+        db.getWorkOrderDao().deleteJobSpec(jobSpecId, updateTime)
 
     fun getJobSpecs() = db.getWorkOrderDao().getJobSpecsAll()
 

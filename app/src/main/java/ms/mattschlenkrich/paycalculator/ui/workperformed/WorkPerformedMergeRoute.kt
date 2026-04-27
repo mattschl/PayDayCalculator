@@ -77,19 +77,27 @@ fun WorkPerformedMergeRoute(
             selectedChild = it
             childDescription = it.wpDescription
         },
-        onMergeClick = {
+        onMergeAction = { action ->
             val childId = selectedChild?.workPerformedId
             if (childId != null && childId != wpId) {
                 coroutineScope.launch {
-                    workOrderViewModel.insertWorkPerformedMerged(
-                        WorkPerformedMerged(
-                            nf.generateRandomIdAsLong(),
-                            wpId,
+                    if (action == 1) { // Keep
+                        workOrderViewModel.insertWorkPerformedMerged(
+                            WorkPerformedMerged(
+                                nf.generateRandomIdAsLong(),
+                                wpId,
+                                childId,
+                                false,
+                                df.getCurrentUTCTimeAsString()
+                            )
+                        )
+                    } else if (action == 2) { // Replace and delete
+                        workOrderViewModel.updateWorkPerformedMerged(childId, wpId)
+                        workOrderViewModel.deleteWorkPerformed(
                             childId,
-                            false,
                             df.getCurrentUTCTimeAsString()
                         )
-                    )
+                    }
                     childDescription = ""
                     selectedChild = null
                 }
