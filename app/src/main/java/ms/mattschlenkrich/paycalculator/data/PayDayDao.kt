@@ -34,7 +34,7 @@ interface PayDayDao {
     )
     suspend fun getCutOffDatesSync(employerId: Long): List<PayPeriods>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPayPeriod(payPeriod: PayPeriods)
 
     @Update

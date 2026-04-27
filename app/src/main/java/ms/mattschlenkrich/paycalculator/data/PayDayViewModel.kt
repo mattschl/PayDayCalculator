@@ -20,6 +20,9 @@ class PayDayViewModel(
             payDayRepository.insertPayPeriod(cutOff)
         }
 
+    suspend fun insertPayPeriodSync(cutOff: PayPeriods) =
+        payDayRepository.insertPayPeriod(cutOff)
+
     fun updatePayPeriod(payPeriod: PayPeriods) =
         viewModelScope.launch {
             payDayRepository.updatePayPeriod(payPeriod)

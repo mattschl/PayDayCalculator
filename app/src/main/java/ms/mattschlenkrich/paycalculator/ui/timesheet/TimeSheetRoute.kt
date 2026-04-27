@@ -108,7 +108,8 @@ fun TimeSheetRoute(
                         cutOffDates.firstOrNull()?.ppCutoffDate ?: ""
                     )
                     if (nextCutOff.isNotEmpty()) {
-                        payDayViewModel.insertPayPeriod(
+                        mainViewModel.setPayPeriod(null)
+                        payDayViewModel.insertPayPeriodSync(
                             PayPeriods(
                                 nf.generateRandomIdAsLong(),
                                 nextCutOff,
@@ -150,8 +151,8 @@ fun TimeSheetRoute(
                 selectedCutOffDate,
                 selectedEmployer!!.employerId
             )
+            mainViewModel.setPayPeriod(payPeriod)
             if (payPeriod != null) {
-                mainViewModel.setPayPeriod(payPeriod)
                 val payCalculations =
                     PayCalculationsAsync(
                         payCalculationsViewModel,
@@ -279,6 +280,7 @@ fun TimeSheetRoute(
             if (selectedEmployer?.employerId != it.employerId) {
                 selectedEmployer = it
                 selectedCutOffDate = ""
+                mainViewModel.setPayPeriod(null)
             }
         },
         onAddNewEmployer = {
@@ -312,7 +314,7 @@ fun TimeSheetRoute(
                         dates.firstOrNull()?.ppCutoffDate ?: ""
                     )
                     if (nextCutOff.isNotEmpty()) {
-                        payDayViewModel.insertPayPeriod(
+                        payDayViewModel.insertPayPeriodSync(
                             PayPeriods(
                                 nf.generateRandomIdAsLong(),
                                 nextCutOff,
