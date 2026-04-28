@@ -3,7 +3,7 @@
 package ms.mattschlenkrich.paycalculator.common
 
 const val PAY_DB_NAME = "pay.db"
-const val PAY_DB_VERSION = 12
+const val PAY_DB_VERSION = 13
 
 const val PAY_PERIODS_LIMIT = 15
 

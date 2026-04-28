@@ -119,9 +119,7 @@ class SyncActivity : ComponentActivity() {
     }
 
     private suspend fun getTargetFolderId(helper: DriveServiceHelper): String {
-        val appsFolderId = helper.getOrCreateFolder("Apps")
-        val appName = getString(R.string.app_name)
-        return helper.getOrCreateFolder(appName, appsFolderId)
+        return "appDataFolder"
     }
 
 
@@ -144,19 +142,26 @@ class SyncActivity : ComponentActivity() {
             if (!dbDir.exists()) dbDir.mkdirs()
 
             val dbFiles = driveFiles
-                .filter { it.name.startsWith("pay_") && it.name.endsWith(".db") }
+                .filter { (it.name.startsWith("pay_") || it.name == "pay.db") && it.name.endsWith(".db") }
                 .sortedBy { it.name }
 
             var downloadCount = 0
 
             for (dbFile in dbFiles) {
-                val prefix = dbFile.name.removeSuffix(".db")
-                for (driveFile in driveFiles) {
-                    if (driveFile.name.startsWith(prefix)) {
-                        val internalFile = File(dbDir, driveFile.name)
+                val relatedSuffixes = listOf("", "-wal", "-shm")
+                for (suffix in relatedSuffixes) {
+                    val remoteName = dbFile.name + suffix
+                    val driveFile = driveFiles.find { it.name == remoteName }
+                    if (driveFile != null) {
+                        val localName = if (remoteName.startsWith("pay.db")) {
+                            remoteName.replace("pay.db", "pay_from_drive.db")
+                        } else {
+                            remoteName
+                        }
+                        val internalFile = File(dbDir, localName)
                         if (!internalFile.exists()) {
-                            showProgress("Downloading ${driveFile.name} to app...")
-                            helper.downloadBinaryFile(driveFile.name, internalFile, targetFolderId)
+                            showProgress("Downloading $remoteName to app...")
+                            helper.downloadBinaryFile(remoteName, internalFile, targetFolderId)
                             downloadCount++
                         }
                     }
@@ -250,21 +255,19 @@ class SyncActivity : ComponentActivity() {
                         SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).apply {
                             timeZone = TimeZone.getTimeZone("UTC")
                         }.format(Date())
-                    val driveFileName = "pay_${timestamp}_merged.db"
+                    val isMerged = localBackups.isNotEmpty()
+                    val driveFileName = if (isMerged) {
+                        "pay_${timestamp}_merged.db"
+                    } else {
+                        "pay_${timestamp}.db"
+                    }
 
                     showProgress("Uploading $driveFileName...")
-                    helper.uploadFile(
-                        localFile = dbFile,
-                        mimeType = "application/vnd-sqlite3",
-                        driveFileName = driveFileName,
-                        folderId = targetFolderId
-                    )
-
-                    listOf("-wal", "-shm").forEach { suffix ->
-                        val walShmFile = File(dbDir, "pay.db$suffix")
-                        if (walShmFile.exists()) {
+                    listOf("", "-wal", "-shm").forEach { suffix ->
+                        val localFile = if (suffix == "") dbFile else File(dbDir, "pay.db$suffix")
+                        if (localFile.exists()) {
                             helper.uploadFile(
-                                localFile = walShmFile,
+                                localFile = localFile,
                                 mimeType = "application/vnd-sqlite3",
                                 driveFileName = "$driveFileName$suffix",
                                 folderId = targetFolderId
@@ -282,7 +285,7 @@ class SyncActivity : ComponentActivity() {
                 showProgress("Cleaning up old backups...")
                 val finalDriveFileList = helper.queryFiles(targetFolderId)
                 val finalDriveBackups = finalDriveFileList.files
-                    ?.filter { it.name.startsWith("pay_") && it.name.endsWith(".db") }
+                    ?.filter { it.name.startsWith("pay") && it.name.endsWith(".db") }
                     ?.sortedByDescending { it.name } ?: emptyList()
 
                 if (finalDriveBackups.size > 3) {
@@ -499,9 +502,24 @@ class SyncActivity : ComponentActivity() {
             try {
                 val targetFolderId = getTargetFolderId(helper)
                 val fileList: FileList = helper.queryFiles(targetFolderId)
-                val builder = StringBuilder()
-                for (file in fileList.files) {
-                    builder.append(file.name).append("\n")
+                val builder = StringBuilder("Files on Google Drive:\n\n")
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+
+                val relatedFiles = fileList.files
+                    ?.filter { it.name.startsWith("pay") }
+                    ?.sortedByDescending { it.name } ?: emptyList()
+
+                if (relatedFiles.isEmpty()) {
+                    builder.append("No related files found.")
+                } else {
+                    for (file in relatedFiles) {
+                        val size = formatFileSize(file.getSize())
+                        val date = file.modifiedTime?.let {
+                            dateFormat.format(Date(it.value))
+                        } ?: "Unknown date"
+                        builder.append("${file.name}\n")
+                            .append("  Size: $size | Modified: $date\n\n")
+                    }
                 }
                 docContent = builder.toString()
             } catch (e: Exception) {
@@ -512,8 +530,19 @@ class SyncActivity : ComponentActivity() {
         }
     }
 
+    private fun formatFileSize(size: Long?): String {
+        if (size == null) return "0 B"
+        if (size < 1024) return "$size B"
+        val kb = size / 1024
+        if (kb < 1024) return "$kb KB"
+        val mb = kb / 1024
+        if (mb < 1024) return "$mb MB"
+        val gb = mb / 1024
+        return "$gb GB"
+    }
+
     companion object {
-        private val DRIVE_SCOPES = listOf(DriveScopes.DRIVE_FILE, DriveScopes.DRIVE)
+        private val DRIVE_SCOPES = listOf(DriveScopes.DRIVE_APPDATA)
         private val HTTP_TRANSPORT: HttpTransport = NetHttpTransport()
         private val JSON_FACTORY: JsonFactory = GsonFactory.getDefaultInstance()
     }

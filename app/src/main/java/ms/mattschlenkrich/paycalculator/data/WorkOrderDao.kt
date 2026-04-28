@@ -681,7 +681,7 @@ interface WorkOrderDao {
     @Query(
         "UPDATE materialMerged " +
                 "SET mmIsDeleted = 1, " +
-                "mUpdateTime = :updateTime " +
+                "mmUpdateTime = :updateTime " +
                 "WHERE materialMergeId = :materialMergedId"
     )
     suspend fun deleteMaterialMerged(materialMergedId: Long, updateTime: String)

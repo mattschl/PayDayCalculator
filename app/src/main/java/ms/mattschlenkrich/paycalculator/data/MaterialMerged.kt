@@ -31,5 +31,5 @@ data class MaterialMerged(
     @ColumnInfo(index = true)
     val mmChildId: Long,
     val mmIsDeleted: Boolean,
-    val mUpdateTime: String,
+    val mmUpdateTime: String,
 ) : Parcelable

@@ -22,10 +22,9 @@ class DriveServiceHelper(private val mDriveService: Drive) {
         localFile: File,
         mimeType: String,
         driveFileName: String,
-        folderId: String? = null
+        folderId: String? = "appDataFolder"
     ): String = withContext(Dispatchers.IO) {
-        val parents =
-            if (folderId != null) listOf(folderId) else listOf("root")
+        val parents = listOf(folderId ?: "appDataFolder")
 
         val metadata = com.google.api.services.drive.model.File()
             .setName(driveFileName)
@@ -44,9 +43,9 @@ class DriveServiceHelper(private val mDriveService: Drive) {
     /**
      * Finds or creates a folder with the given name under the specified parent.
      */
-    suspend fun getOrCreateFolder(folderName: String, parentId: String? = null): String =
+    suspend fun getOrCreateFolder(folderName: String, parentId: String? = "appDataFolder"): String =
         withContext(Dispatchers.IO) {
-            val parent = parentId ?: "root"
+            val parent = parentId ?: "appDataFolder"
             val query =
                 "name = '$folderName' and mimeType = 'application/vnd.google-apps.folder' and '$parent' in parents and trashed = false"
 
@@ -54,7 +53,7 @@ class DriveServiceHelper(private val mDriveService: Drive) {
 
             val result = mDriveService.files().list()
                 .setQ(query)
-                .setSpaces("drive")
+                .setSpaces("appDataFolder")
                 .setFields("files(id, name)")
                 .execute()
 
@@ -83,7 +82,7 @@ class DriveServiceHelper(private val mDriveService: Drive) {
     /**
      * Finds a file ID on Google Drive by its name and folder.
      */
-    suspend fun findFileIdByName(fileName: String, folderId: String? = null): String? =
+    suspend fun findFileIdByName(fileName: String, folderId: String? = "appDataFolder"): String? =
         withContext(Dispatchers.IO) {
             var query = "name = '$fileName' and trashed = false"
             if (folderId != null) {
@@ -92,7 +91,7 @@ class DriveServiceHelper(private val mDriveService: Drive) {
 
             val result = mDriveService.files().list()
                 .setQ(query)
-                .setSpaces("drive")
+                .setSpaces("appDataFolder")
                 .setFields("files(id, name)")
                 .execute()
 
@@ -124,17 +123,18 @@ class DriveServiceHelper(private val mDriveService: Drive) {
      * Returns a [com.google.api.services.drive.model.FileList] containing files in a specific folder.
      * Explicitly requests 'id' and 'name' fields to ensure they are available in the result.
      */
-    suspend fun queryFiles(folderId: String? = null): FileList = withContext(Dispatchers.IO) {
-        var listRequest = mDriveService.files().list()
-            .setSpaces("drive")
-            .setFields("files(id, name, modifiedTime)")
+    suspend fun queryFiles(folderId: String? = "appDataFolder"): FileList =
+        withContext(Dispatchers.IO) {
+            var listRequest = mDriveService.files().list()
+                .setSpaces("appDataFolder")
+                .setFields("files(id, name, modifiedTime, size)")
 
-        if (folderId != null) {
-            listRequest = listRequest.setQ("'$folderId' in parents and trashed = false")
+            if (folderId != null) {
+                listRequest = listRequest.setQ("'$folderId' in parents and trashed = false")
+            }
+
+            listRequest.execute()
         }
-
-        listRequest.execute()
-    }
 
     /**
      * Utility to fetch file content as a string.

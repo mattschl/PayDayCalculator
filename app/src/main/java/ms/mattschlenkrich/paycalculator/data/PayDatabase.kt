@@ -3,8 +3,10 @@ package ms.mattschlenkrich.paycalculator.data
 import android.content.Context
 import androidx.room.AutoMigration
 import androidx.room.Database
+import androidx.room.RenameColumn
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.AutoMigrationSpec
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_VERSION
 
@@ -40,7 +42,8 @@ import ms.mattschlenkrich.paycalculator.common.PAY_DB_VERSION
     views = [ExtraDefinitionAndType::class,
         ExtraTypeAndDefByDay::class],
     autoMigrations =
-        [AutoMigration(9, 10), AutoMigration(10, 11), AutoMigration(11, 12)],
+        [AutoMigration(9, 10), AutoMigration(10, 11), AutoMigration(11, 12),
+            AutoMigration(from = 12, to = 13, spec = PayDatabase.Migration12To13::class)],
     exportSchema = true,
     version = PAY_DB_VERSION,
 )
@@ -54,6 +57,13 @@ abstract class PayDatabase : RoomDatabase() {
     abstract fun getPayDetailDao(): PayDetailDao
     abstract fun getPayCalculationsDao(): PayCalculationsDao
     abstract fun getWorkTimeDao(): WorkTimeDao
+
+    @RenameColumn(
+        tableName = "materialMerged",
+        fromColumnName = "mUpdateTime",
+        toColumnName = "mmUpdateTime"
+    )
+    class Migration12To13 : AutoMigrationSpec
 
     companion object {
         @Volatile
