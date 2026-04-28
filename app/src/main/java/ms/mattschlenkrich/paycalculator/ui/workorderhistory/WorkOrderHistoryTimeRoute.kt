@@ -74,12 +74,14 @@ fun WorkOrderHistoryTimeRoute(
     var selectedTimeType by remember { mutableIntStateOf(TimeWorkedTypes.REG_HOURS.value) }
 
     LaunchedEffect(allTimesByDate) {
-        val totalHours = allTimesByDate.sumOf {
-            df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
-        }
+        val totalWorkedHours = allTimesByDate
+            .filter { it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value }
+            .sumOf {
+                df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
+            }
         selectedTimeType = when {
-            totalHours < 8.0 -> TimeWorkedTypes.REG_HOURS.value
-            totalHours < 12.0 -> TimeWorkedTypes.OT_HOURS.value
+            totalWorkedHours < 8.0 -> TimeWorkedTypes.REG_HOURS.value
+            totalWorkedHours < 12.0 -> TimeWorkedTypes.OT_HOURS.value
             else -> TimeWorkedTypes.DBL_OT_HOURS.value
         }
     }
@@ -235,12 +237,23 @@ fun WorkOrderHistoryTimeRoute(
         infoText = stringResource(R.string.work_order) + " ${historyWithDates!!.workOrder.woNumber}\n" +
                 historyWithDates!!.workOrder.woDescription,
         hoursSummaryText = buildString {
+            val workedHours = existingTimes.filter {
+                it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value
+            }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) }
+
+            val breakHours = existingTimes.filter {
+                it.timeWorked.wohtTimeType == TimeWorkedTypes.BREAK.value
+            }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) }
+
             append(stringResource(R.string.total_hours))
             append(" ")
-            val totalHours = existingTimes.sumOf {
-                df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
+            append(nf.displayNumberFromDouble(workedHours))
+
+            if (breakHours > 0.0) {
+                append(" (")
+                append(nf.displayNumberFromDouble(breakHours))
+                append(" break)")
             }
-            append(nf.displayNumberFromDouble(totalHours))
 
             val reg = existingTimes.filter {
                 it.timeWorked.wohtTimeType == TimeWorkedTypes.REG_HOURS.value

@@ -53,17 +53,11 @@ fun MaterialEntryCard(
                 color = MaterialTheme.colorScheme.onTertiaryContainer,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
-            ) {
+            Row() {
                 DecimalOutlinedTextField(
                     value = materialQty,
                     onValueChange = onMaterialQtyChange,
                     label = { Text(stringResource(id = R.string.qty)) },
-//                    modifier = Modifier.weight(.1f),
                     modifier = Modifier.width(40.dp)
                 )
                 AutoCompleteTextField(
@@ -72,12 +66,13 @@ fun MaterialEntryCard(
                     label = stringResource(id = R.string.material),
                     suggestions = materialList,
                     onItemSelected = onMaterialSelected,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.fillMaxWidth(),
                     itemToString = { it.mName }
                 )
             }
             Button(
                 onClick = onAddMaterial,
+                modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 )

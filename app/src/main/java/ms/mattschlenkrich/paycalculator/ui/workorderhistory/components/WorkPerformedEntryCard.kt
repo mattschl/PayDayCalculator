@@ -2,7 +2,6 @@ package ms.mattschlenkrich.paycalculator.ui.workorderhistory.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -63,45 +62,33 @@ fun WorkPerformedEntryCard(
                 label = stringResource(id = R.string.work_performed),
                 suggestions = workPerformedList,
                 onItemSelected = onWorkPerformedSelected,
-//                modifier = Modifier.weight(1f),
                 itemToString = { it.wpDescription }
             )
-//
-//            Row(
-//                modifier = Modifier.fillMaxWidth(),
-//                horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
-//            ) {
             AutoCompleteTextField(
                 value = area,
                 onValueChange = onAreaChange,
                 label = stringResource(id = R.string.area_optional),
                 suggestions = areaList,
                 onItemSelected = onAreaSelected,
-//                modifier = Modifier.weight(1f),
                 itemToString = { it.areaName }
             )
 //            }
 
-            Row(
+            CapitalizedOutlinedTextField(
+                value = workPerformedNote,
+                onValueChange = onWorkPerformedNoteChange,
+                label = { Text(stringResource(id = R.string.enter_note_optional)) },
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-//                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                CapitalizedOutlinedTextField(
-                    value = workPerformedNote,
-                    onValueChange = onWorkPerformedNoteChange,
-                    label = { Text(stringResource(id = R.string.enter_note_optional)) },
-                    modifier = Modifier.weight(1f),
-                    singleLine = false
+                singleLine = false
+            )
+            Button(
+                onClick = onAddWorkPerformed,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
                 )
-                Button(
-                    onClick = onAddWorkPerformed,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
-                ) {
-                    Text(stringResource(id = R.string.add))
-                }
+            ) {
+                Text(stringResource(id = R.string.add))
             }
         }
     }

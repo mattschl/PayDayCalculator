@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -108,6 +109,9 @@ fun WorkOrderHistoryUpdateScreen(
     var showMaterialDialog by remember { mutableStateOf(false) }
     var selectedMaterial by remember { mutableStateOf<MaterialInSequence?>(null) }
 
+    val configuration = LocalConfiguration.current
+    val columns = if (configuration.screenWidthDp >= 600) 3 else 2
+
     WorkPerformedOptionsDialog(
         showDialog = showWorkPerformedDialog,
         onDismissRequest = { showWorkPerformedDialog = false },
@@ -142,7 +146,7 @@ fun WorkOrderHistoryUpdateScreen(
         }
     ) { paddingValues ->
         LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(2),
+            columns = StaggeredGridCells.Fixed(columns),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)

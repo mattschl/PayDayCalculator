@@ -90,14 +90,14 @@ fun WorkDateTimesRoute(
     var selectedTimeType by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(allTimesByDate) {
-        val totalHours = allTimesByDate
+        val totalWorkedHours = allTimesByDate
             .filter { it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value }
             .sumOf {
                 df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
             }
         selectedTimeType = when {
-            totalHours < 8.0 -> TimeWorkedTypes.REG_HOURS.value
-            totalHours < 12.0 -> TimeWorkedTypes.OT_HOURS.value
+            totalWorkedHours < 8.0 -> TimeWorkedTypes.REG_HOURS.value
+            totalWorkedHours < 12.0 -> TimeWorkedTypes.OT_HOURS.value
             else -> TimeWorkedTypes.DBL_OT_HOURS.value
         }
     }
