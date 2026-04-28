@@ -121,7 +121,7 @@ const val PAY_PERIOD_TAX_TYPE = "wppTaxType"
 const val TABLE_TAX_EFFECTIVE_DATES = "taxEffectiveDates"
 const val TAX_EFFECTIVE_DATE = "tdEffectiveDate"
 
-const val ANSWER_OK = "Ok"
+//const val ANSWER_OK = "Ok"
 
 const val DAY_MONDAY = "Monday"
 const val DAY_TUESDAY = "Tuesday"
@@ -148,45 +148,45 @@ const val WAIT_500 = 500L
 
 //const val WAIT_750 = 750L
 const val WAIT_1000 = 1000L
-const val WAIT_1500 = 1500L
+//const val WAIT_1500 = 1500L
 //const val WAIT_2000 = 2000L
 
 const val PREFS_NAME = "PayCalculatorPrefs"
 const val SYNC_ACCOUNT_EMAIL = "sync_account_email"
 
 //const val FRAG_EMPLOYERS = "Employers"
-const val FRAG_EMPLOYER_UPDATE = "EmployerUpdate"
-const val FRAG_TAX_RULES = "TaxRules"
-
-const val FRAG_TAX_TYPE = "TaxTypes"
-const val FRAG_WORK_DATE_EXTRA_ADD = "WorkDateExtraAdd"
-
-//const val FRAG_WORK_DATE_EXTRA_UPDATE = "WorkDateExtraUpdate"
-const val FRAG_EXTRA_DEFINITIONS = "EmployerExtraDef"
-const val FRAG_PAY_RATES = "EmployerPayRates"
-
-//const val FRAG_PAY_RATE_UPDATE = "PayRateUpdate"
-//const val FRAG_EXTRA_TYPES = "ExtraTypes"
-const val FRAG_PAY_DETAILS = "PayDetails"
-const val FRAG_TIME_SHEET = "TimeSheet"
-
-const val FRAG_WORK_DATE_ADD = "WorkDateAdd"
-const val FRAG_WORK_DATE_UPDATE = "WorkDateUpdate"
-const val FRAG_WORK_DATE_TIME = "WorkDateTimes"
-const val FRAG_WORK_ORDERS = "WorkOrders"
-const val FRAG_WORK_ORDER_HISTORY_ADD = "WorkOrderHistoryAdd"
-const val FRAG_WORK_ORDER_HISTORY_UPDATE = "WorkOrderHistoryUpdate"
-const val FRAG_JOB_SPEC_VIEW = "JobSpecView"
-const val FRAG_WORK_ORDER_UPDATE = "WorkOrderUpdate"
-const val FRAG_MATERIAL_VIEW = "MaterialView"
-
-const val FRAG_MATERIAL_MERGE = "MaterialMerge"
-const val FRAG_WORK_PERFORMED_VIEW = "WorkPerformedView"
-const val FRAG_WORK_PERFORMED_UPDATE = "WorkPerformedUpdate"
-const val FRAG_AREA_VIEW = "AreaViewFragment"
-
-//const val FRAG_WORK_ORDER_LOOKUP = "WorkOrderLookup"
-const val FRAG_WORK_PERFORMED_MERGE = "WorkPerformedMerge"
-const val FRAG_WORK_ORDER_HISTORY_TIME = "WorkOrderHistoryTime"
-
-const val FRAG_WORK_ORDER_HISTORY_TIME_UPDATE = "WorkOrderHistoryTimeUpdate"
+//const val FRAG_EMPLOYER_UPDATE = "EmployerUpdate"
+//const val FRAG_TAX_RULES = "TaxRules"
+//
+//const val FRAG_TAX_TYPE = "TaxTypes"
+//const val FRAG_WORK_DATE_EXTRA_ADD = "WorkDateExtraAdd"
+//
+////const val FRAG_WORK_DATE_EXTRA_UPDATE = "WorkDateExtraUpdate"
+//const val FRAG_EXTRA_DEFINITIONS = "EmployerExtraDef"
+//const val FRAG_PAY_RATES = "EmployerPayRates"
+//
+////const val FRAG_PAY_RATE_UPDATE = "PayRateUpdate"
+////const val FRAG_EXTRA_TYPES = "ExtraTypes"
+//const val FRAG_PAY_DETAILS = "PayDetails"
+//const val FRAG_TIME_SHEET = "TimeSheet"
+//
+//const val FRAG_WORK_DATE_ADD = "WorkDateAdd"
+//const val FRAG_WORK_DATE_UPDATE = "WorkDateUpdate"
+//const val FRAG_WORK_DATE_TIME = "WorkDateTimes"
+//const val FRAG_WORK_ORDERS = "WorkOrders"
+//const val FRAG_WORK_ORDER_HISTORY_ADD = "WorkOrderHistoryAdd"
+//const val FRAG_WORK_ORDER_HISTORY_UPDATE = "WorkOrderHistoryUpdate"
+//const val FRAG_JOB_SPEC_VIEW = "JobSpecView"
+//const val FRAG_WORK_ORDER_UPDATE = "WorkOrderUpdate"
+//const val FRAG_MATERIAL_VIEW = "MaterialView"
+//
+//const val FRAG_MATERIAL_MERGE = "MaterialMerge"
+//const val FRAG_WORK_PERFORMED_VIEW = "WorkPerformedView"
+//const val FRAG_WORK_PERFORMED_UPDATE = "WorkPerformedUpdate"
+//const val FRAG_AREA_VIEW = "AreaViewFragment"
+//
+////const val FRAG_WORK_ORDER_LOOKUP = "WorkOrderLookup"
+//const val FRAG_WORK_PERFORMED_MERGE = "WorkPerformedMerge"
+//const val FRAG_WORK_ORDER_HISTORY_TIME = "WorkOrderHistoryTime"
+//
+//const val FRAG_WORK_ORDER_HISTORY_TIME_UPDATE = "WorkOrderHistoryTimeUpdate"

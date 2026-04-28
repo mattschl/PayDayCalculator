@@ -84,7 +84,7 @@ abstract class PayDatabase : RoomDatabase() {
             }
         }
 
-        suspend fun checkpoint(context: Context) {
+        fun checkpoint(context: Context) {
             synchronized(LOCK) {
                 try {
                     val db = instance ?: invoke(context)
