@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -26,6 +27,7 @@ import ms.mattschlenkrich.paycalculator.data.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.data.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.data.TaxAndAmount
 import ms.mattschlenkrich.paycalculator.logic.PayCalculationsAsync
+import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import java.time.LocalDate
 
 @Composable
@@ -35,11 +37,15 @@ fun PayDetailRoute(
     payDayViewModel: PayDayViewModel,
     payCalculationsViewModel: PayCalculationsViewModel,
     payDetailViewModel: PayDetailViewModel,
+    settingsViewModel: SettingsViewModel = viewModel(),
     navController: NavController
 ) {
     val nf = remember { NumberFunctions() }
     val df = remember { DateFunctions() }
     val coroutineScope = rememberCoroutineScope()
+
+    val settings by settingsViewModel.settings.observeAsState()
+    val payPeriodsLimit = settings?.payPeriodsLimit ?: 15
 
     val payDayIsLabel = stringResource(R.string.pay_day_is_)
     val netLabel = stringResource(R.string.net_)
@@ -51,7 +57,7 @@ fun PayDetailRoute(
     val employers by employerViewModel.getEmployers().observeAsState(emptyList())
     var selectedEmployer by remember { mutableStateOf<Employers?>(null) }
     val cutOffDates by if (selectedEmployer != null) {
-        payDayViewModel.getCutOffDates(selectedEmployer!!.employerId)
+        payDayViewModel.getCutOffDates(selectedEmployer!!.employerId, payPeriodsLimit)
             .observeAsState(emptyList())
     } else {
         remember { mutableStateOf(emptyList()) }

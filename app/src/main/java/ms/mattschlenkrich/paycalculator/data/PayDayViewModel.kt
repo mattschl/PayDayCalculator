@@ -9,11 +9,11 @@ class PayDayViewModel(
     app: Application,
     private val payDayRepository: PayDayRepository,
 ) : AndroidViewModel(app) {
-    fun getCutOffDates(employerId: Long) =
-        payDayRepository.getCutOffDates(employerId)
+    fun getCutOffDates(employerId: Long, limit: Int) =
+        payDayRepository.getCutOffDates(employerId, limit)
 
-    suspend fun getCutOffDatesSync(employerId: Long) =
-        payDayRepository.getCutOffDatesSync(employerId)
+    suspend fun getCutOffDatesSync(employerId: Long, limit: Int) =
+        payDayRepository.getCutOffDatesSync(employerId, limit)
 
     fun insertPayPeriod(cutOff: PayPeriods) =
         viewModelScope.launch {

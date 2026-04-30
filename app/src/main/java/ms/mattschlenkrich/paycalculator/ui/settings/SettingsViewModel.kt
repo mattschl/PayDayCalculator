@@ -21,4 +21,10 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         _settings.value = newSettings
         settingsManager.saveSettings(newSettings)
     }
+
+    fun updatePayPeriodsLimit(limit: Int) {
+        val newSettings = _settings.value?.copy(payPeriodsLimit = limit) ?: Settings(payPeriodsLimit = limit)
+        _settings.value = newSettings
+        settingsManager.saveSettings(newSettings)
+    }
 }

@@ -2,10 +2,10 @@ package ms.mattschlenkrich.paycalculator.data
 
 class PayDayRepository(private val db: PayDatabase) {
 
-    fun getCutOffDates(employerId: Long) = db.getPayDayDao().getCutOffDates(employerId)
+    fun getCutOffDates(employerId: Long, limit: Int) = db.getPayDayDao().getCutOffDates(employerId, limit)
 
-    suspend fun getCutOffDatesSync(employerId: Long) =
-        db.getPayDayDao().getCutOffDatesSync(employerId)
+    suspend fun getCutOffDatesSync(employerId: Long, limit: Int) =
+        db.getPayDayDao().getCutOffDatesSync(employerId, limit)
 
     suspend fun insertPayPeriod(cutOff: PayPeriods) = db.getPayDayDao().insertPayPeriod(cutOff)
 

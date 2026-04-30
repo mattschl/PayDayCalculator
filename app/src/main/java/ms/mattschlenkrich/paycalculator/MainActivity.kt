@@ -112,6 +112,7 @@ class MainActivity : ComponentActivity() {
     internal lateinit var payDetailViewModel: PayDetailViewModel
     internal lateinit var payCalculationsViewModel: PayCalculationsViewModel
     internal lateinit var workTimeViewModel: WorkTimeViewModel
+    internal lateinit var settingsViewModel: SettingsViewModel
 
     private val syncLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -131,7 +132,6 @@ class MainActivity : ComponentActivity() {
         setupViewModels()
 
         setContent {
-            val settingsViewModel: SettingsViewModel = viewModel()
             val settings by settingsViewModel.settings.observeAsState()
 
             PayCalculatorTheme(
@@ -147,6 +147,7 @@ class MainActivity : ComponentActivity() {
                     payDetailViewModel = payDetailViewModel,
                     payCalculationsViewModel = payCalculationsViewModel,
                     workTimeViewModel = workTimeViewModel,
+                    settingsViewModel = settingsViewModel,
                     onSyncRequested = {
                         val intent = Intent(this, SyncActivity::class.java)
                         syncLauncher.launch(intent)
@@ -192,6 +193,7 @@ class MainActivity : ComponentActivity() {
             this,
             WorkTimeViewModelFactory(application, WorkTimeRepository(db))
         )[WorkTimeViewModel::class.java]
+        settingsViewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
     }
 }
 
@@ -206,6 +208,7 @@ fun MainScreen(
     payDetailViewModel: PayDetailViewModel,
     payCalculationsViewModel: PayCalculationsViewModel,
     workTimeViewModel: WorkTimeViewModel,
+    settingsViewModel: SettingsViewModel,
     onSyncRequested: () -> Unit
 ) {
     val navController = rememberNavController()
@@ -315,7 +318,8 @@ fun MainScreen(
                     payDayViewModel,
                     payCalculationsViewModel,
                     payDetailViewModel,
-                    navController
+                    settingsViewModel,
+                    navController = navController
                 )
             }
             composable(Screen.PayDetails.route) {
@@ -325,7 +329,8 @@ fun MainScreen(
                     payDayViewModel,
                     payCalculationsViewModel,
                     payDetailViewModel,
-                    navController
+                    settingsViewModel,
+                    navController = navController
                 )
             }
             composable(Screen.Employers.route) {
@@ -660,7 +665,8 @@ fun MainScreen(
             composable(Screen.Settings.route) {
                 SettingsRoute(
                     mainViewModel,
-                    navController
+                    navController,
+                    settingsViewModel
                 )
             }
         }

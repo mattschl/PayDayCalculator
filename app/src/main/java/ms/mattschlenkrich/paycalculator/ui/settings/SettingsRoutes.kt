@@ -17,6 +17,8 @@ fun SettingsRoute(
 
     SettingsScreen(
         fontSize = settings?.fontSize ?: 16f,
-        onFontSizeChange = { viewModel.updateFontSize(it) }
+        payPeriodsLimit = settings?.payPeriodsLimit ?: 15,
+        onFontSizeChange = { viewModel.updateFontSize(it) },
+        onPayPeriodsLimitChange = { viewModel.updatePayPeriodsLimit(it) }
     )
 }

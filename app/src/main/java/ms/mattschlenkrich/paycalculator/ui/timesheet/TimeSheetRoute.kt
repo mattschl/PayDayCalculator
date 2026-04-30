@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -28,6 +29,7 @@ import ms.mattschlenkrich.paycalculator.data.PayPeriods
 import ms.mattschlenkrich.paycalculator.data.WorkDates
 import ms.mattschlenkrich.paycalculator.logic.PayCalculationsAsync
 import ms.mattschlenkrich.paycalculator.logic.PayDateProjections
+import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import java.time.LocalDate
 
 @Composable
@@ -37,12 +39,16 @@ fun TimeSheetRoute(
     payDayViewModel: PayDayViewModel,
     payCalculationsViewModel: PayCalculationsViewModel,
     payDetailViewModel: PayDetailViewModel,
+    settingsViewModel: SettingsViewModel = viewModel(),
     navController: NavController
 ) {
     val coroutineScope = rememberCoroutineScope()
     val nf = remember { NumberFunctions() }
     val df = remember { DateFunctions() }
     val projections = remember { PayDateProjections() }
+
+    val settings by settingsViewModel.settings.observeAsState()
+    val payPeriodsLimit = settings?.payPeriodsLimit ?: 15
 
     val totalsLabel = stringResource(R.string.totals)
     val week1Label = stringResource(R.string.week_1_)
@@ -61,7 +67,7 @@ fun TimeSheetRoute(
     val employers by employerViewModel.getEmployers().observeAsState(emptyList())
     var selectedEmployer by remember { mutableStateOf<Employers?>(null) }
     val cutOffDates by if (selectedEmployer != null) {
-        payDayViewModel.getCutOffDates(selectedEmployer!!.employerId)
+        payDayViewModel.getCutOffDates(selectedEmployer!!.employerId, payPeriodsLimit)
             .observeAsState(emptyList())
     } else {
         remember { mutableStateOf(emptyList()) }
@@ -308,7 +314,7 @@ fun TimeSheetRoute(
         onGenerateCutoffClick = {
             if (selectedEmployer != null) {
                 coroutineScope.launch {
-                    val dates = payDayViewModel.getCutOffDatesSync(selectedEmployer!!.employerId)
+                    val dates = payDayViewModel.getCutOffDatesSync(selectedEmployer!!.employerId, payPeriodsLimit)
                     val nextCutOff = projections.generateNextCutOff(
                         selectedEmployer!!,
                         dates.firstOrNull()?.ppCutoffDate ?: ""

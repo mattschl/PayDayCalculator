@@ -8,7 +8,6 @@ import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Update
-import ms.mattschlenkrich.paycalculator.common.PAY_PERIODS_LIMIT
 import ms.mattschlenkrich.paycalculator.common.TABLE_PAY_PERIODS
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_DATE_EXTRAS
@@ -21,18 +20,18 @@ interface PayDayDao {
                 "WHERE ppEmployerId = :employerId " +
                 "AND ppIsDeleted = 0 " +
                 "ORDER BY ppCutoffDate DESC " +
-                "LIMIT $PAY_PERIODS_LIMIT"
+                "LIMIT :limit"
     )
-    fun getCutOffDates(employerId: Long): LiveData<List<PayPeriods>>
+    fun getCutOffDates(employerId: Long, limit: Int): LiveData<List<PayPeriods>>
 
     @Query(
         "SELECT * FROM $TABLE_PAY_PERIODS " +
                 "WHERE ppEmployerId = :employerId " +
                 "AND ppIsDeleted = 0 " +
                 "ORDER BY ppCutoffDate DESC " +
-                "LIMIT $PAY_PERIODS_LIMIT"
+                "LIMIT :limit"
     )
-    suspend fun getCutOffDatesSync(employerId: Long): List<PayPeriods>
+    suspend fun getCutOffDatesSync(employerId: Long, limit: Int): List<PayPeriods>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPayPeriod(payPeriod: PayPeriods)
