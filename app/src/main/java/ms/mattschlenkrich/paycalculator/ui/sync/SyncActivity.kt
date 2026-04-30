@@ -84,6 +84,7 @@ class SyncActivity : ComponentActivity() {
                     onQueryClick = { query() },
                     onSyncClick = { performSync() },
                     onReturnClick = { finish() },
+                    onClearBackupsClick = { clearBackups() },
                     onChangeAccountClick = {
                         getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
                             .edit()
@@ -311,6 +312,37 @@ class SyncActivity : ComponentActivity() {
 
             } catch (e: Exception) {
                 handleError("Update failed", e)
+            } finally {
+                hideProgress()
+            }
+        }
+    }
+
+    fun clearBackups() {
+        lifecycleScope.launch {
+            val helper = mDriveServiceHelper ?: run {
+                Log.e(TAG, "clearBackups: Drive service not initialized.")
+                return@launch
+            }
+            showProgress("Deleting backups from Google Drive...")
+            try {
+                val targetFolderId = getTargetFolderId(helper)
+                val fileList: FileList = helper.queryFiles(targetFolderId)
+                val relatedFiles = fileList.files
+                    ?.filter { it.name.startsWith("pay") } ?: emptyList()
+
+                if (relatedFiles.isEmpty()) {
+                    Toast.makeText(this@SyncActivity, "No backups found to delete.", Toast.LENGTH_SHORT).show()
+                } else {
+                    for (file in relatedFiles) {
+                        Log.d(TAG, "Deleting file from Drive: ${file.name}")
+                        helper.deleteFile(file.id)
+                    }
+                    Toast.makeText(this@SyncActivity, "All backups deleted from Google Drive.", Toast.LENGTH_SHORT).show()
+                    docContent = "All backups deleted from Google Drive."
+                }
+            } catch (e: Exception) {
+                handleError("Failed to clear backups", e)
             } finally {
                 hideProgress()
             }

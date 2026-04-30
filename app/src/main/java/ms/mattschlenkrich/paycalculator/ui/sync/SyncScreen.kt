@@ -23,6 +23,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,8 +49,11 @@ fun SyncScreen(
     onQueryClick: () -> Unit,
     onSyncClick: () -> Unit,
     onReturnClick: () -> Unit,
-    onChangeAccountClick: () -> Unit
+    onChangeAccountClick: () -> Unit,
+    onClearBackupsClick: () -> Unit
 ) {
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+
     Scaffold(
         /*  topBar = {
               TopAppBar(
@@ -71,7 +78,7 @@ fun SyncScreen(
                         onValueChange = onDocContentChange,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(.85f)
+                            .fillMaxHeight(.75f)
                             .background(MaterialTheme.colorScheme.surfaceVariant)
                             .padding(8.dp),
                         readOnly = true,
@@ -144,6 +151,16 @@ fun SyncScreen(
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Button(
+                            onClick = { showDeleteConfirmation = true },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error
+                            )
+                        ) {
+                            Text("Clear All Backups from Google Drive")
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Button(
                             onClick = onChangeAccountClick,
                             modifier = Modifier.fillMaxWidth(),
                             colors = androidx.compose.material3.ButtonDefaults.buttonColors(
@@ -153,6 +170,31 @@ fun SyncScreen(
                             Text("Change Google Account")
                         }
                     }
+                }
+
+                if (showDeleteConfirmation) {
+                    androidx.compose.material3.AlertDialog(
+                        onDismissRequest = { showDeleteConfirmation = false },
+                        title = { Text("Confirm Deletion") },
+                        text = { Text("Are you sure you want to delete all backup files from Google Drive? This action cannot be undone.") },
+                        confirmButton = {
+                            androidx.compose.material3.TextButton(
+                                onClick = {
+                                    showDeleteConfirmation = false
+                                    onClearBackupsClick()
+                                }
+                            ) {
+                                Text("Delete", color = MaterialTheme.colorScheme.error)
+                            }
+                        },
+                        dismissButton = {
+                            androidx.compose.material3.TextButton(
+                                onClick = { showDeleteConfirmation = false }
+                            ) {
+                                Text("Cancel")
+                            }
+                        }
+                    )
                 }
 
                 if (isLoading) {

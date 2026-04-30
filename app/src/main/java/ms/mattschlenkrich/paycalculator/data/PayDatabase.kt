@@ -41,10 +41,10 @@ import ms.mattschlenkrich.paycalculator.common.PAY_DB_VERSION
     ],
     views = [ExtraDefinitionAndType::class,
         ExtraTypeAndDefByDay::class],
-    autoMigrations =
-        [AutoMigration(9, 10), AutoMigration(10, 11), AutoMigration(11, 12),
-            AutoMigration(from = 12, to = 13, spec = PayDatabase.Migration12To13::class)],
-    exportSchema = true,
+//    autoMigrations =
+//        [AutoMigration(9, 10), AutoMigration(10, 11), AutoMigration(11, 12),
+//            AutoMigration(from = 12, to = 13, spec = PayDatabase.Migration12To13::class)],
+//    exportSchema = true,
     version = PAY_DB_VERSION,
 )
 abstract class PayDatabase : RoomDatabase() {
@@ -58,12 +58,12 @@ abstract class PayDatabase : RoomDatabase() {
     abstract fun getPayCalculationsDao(): PayCalculationsDao
     abstract fun getWorkTimeDao(): WorkTimeDao
 
-    @RenameColumn(
-        tableName = "materialMerged",
-        fromColumnName = "mUpdateTime",
-        toColumnName = "mmUpdateTime"
-    )
-    class Migration12To13 : AutoMigrationSpec
+//    @RenameColumn(
+//        tableName = "materialMerged",
+//        fromColumnName = "mUpdateTime",
+//        toColumnName = "mmUpdateTime"
+//    )
+//    class Migration12To13 : AutoMigrationSpec
 
     companion object {
         @Volatile
@@ -102,7 +102,7 @@ abstract class PayDatabase : RoomDatabase() {
                 PAY_DB_NAME
             )
                 .createFromAsset(PAY_DB_NAME)
-//                .fallbackToDestructiveMigration(false)
+                .fallbackToDestructiveMigration(false)
                 .build()
         }
     }
