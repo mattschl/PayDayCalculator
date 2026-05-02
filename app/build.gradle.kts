@@ -25,12 +25,12 @@ android {
         }
     }
     namespace = "ms.mattschlenkrich.paycalculator"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "ms.mattschlenkrich.paycalculator"
         minSdk = 28
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 2
         versionName = "v1.0"
 //        ksp {
@@ -64,6 +64,7 @@ android {
         compose = true
     }
     buildToolsVersion = "36.0.0"
+    compileSdkMinor = 0
 //    kotlinOptions {
 //        jvmTarget = JavaVersion.VERSION_17
 //    }

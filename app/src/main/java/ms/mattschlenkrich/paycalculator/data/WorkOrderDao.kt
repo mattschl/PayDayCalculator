@@ -532,6 +532,7 @@ interface WorkOrderDao {
         updateTime: String
     )
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -544,8 +545,8 @@ interface WorkOrderDao {
     fun getWorkPerformedByWorkOrderHistory(historyId: Long):
             LiveData<List<WorkOrderHistoryWorkPerformedCombined>>
 
-    @RewriteQueriesToDropUnusedColumns
     @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT * FROM workOrderHistoryWorkPerformed as wp, areas as ar " +
@@ -560,6 +561,7 @@ interface WorkOrderDao {
     fun getWorkPerformedByWorkOrderHistory2(historyId: Long):
             LiveData<List<WorkOrderHistoryWorkPerformedCombined>>
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -570,6 +572,9 @@ interface WorkOrderDao {
     fun getWorkPerformedHistoryById(historyWorkPerformedId: Long):
             LiveData<WorkOrderHistoryWorkPerformedCombined>
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
     @Query(
         "SELECT * FROM workOrderHistoryWorkPerformed " +
                 "INNER JOIN workPerformed ON wowpWorkPerformedId = workPerformedId " +
@@ -581,6 +586,9 @@ interface WorkOrderDao {
     )
     suspend fun getWorkPerformedByWorkOrderHistorySync(historyId: Long): List<WorkOrderHistoryWorkPerformedCombined>
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
     @Query(
         "SELECT * FROM workOrderHistoryWorkPerformed " +
                 "INNER JOIN workPerformed ON wowpWorkPerformedId = workPerformedId " +
@@ -625,6 +633,7 @@ interface WorkOrderDao {
     fun getMaterialsChildren(materialId: Long): LiveData<List<Material>>
 
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -732,6 +741,7 @@ interface WorkOrderDao {
     )
     suspend fun deleteWorkOrderHistoryMaterial(historyMaterialId: Long, updateTime: String)
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -742,6 +752,7 @@ interface WorkOrderDao {
     )
     fun getMaterialsByHistory(historyId: Long): LiveData<List<WorkOrderHistoryMaterialCombined>>
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -754,6 +765,7 @@ interface WorkOrderDao {
     )
     suspend fun getMaterialsFromHistoryId(historyId: Long): List<Material>
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -770,6 +782,7 @@ interface WorkOrderDao {
     fun getMaterialsHistoryByWorkOrderId(workOrderId: Long):
             LiveData<List<WorkOrderHistoryMaterialCombined>>
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
