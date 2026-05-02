@@ -7,10 +7,11 @@ import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_NAME
 import java.io.File
+import androidx.core.database.sqlite.transaction
+private const val TAG = "MergeHelper"
 
 class MergeHelper(private val context: Context, private val remoteDbPath: String) {
 
-    private val TAG = "MergeHelper"
 
     /**
      * Analyzes the remote database and compares it with the local one.
@@ -118,75 +119,77 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
                 var tableUpdatedCount = 0
                 var remoteCount = 0
 
-                localDb.beginTransaction()
-                try {
-                    val remoteCursor = remoteDb.rawQuery("SELECT * FROM ${spec.tableName}", null)
-                    remoteCount = remoteCursor.count
+                localDb.transaction {
+                    try {
+                        val remoteCursor =
+                            remoteDb.rawQuery("SELECT * FROM ${spec.tableName}", null)
+                        remoteCount = remoteCursor.count
 
-                    if (remoteCursor.moveToFirst()) {
-                        do {
-                            val remotePkValue = if (spec.pkColumn != null) {
-                                val idx = remoteCursor.getColumnIndex(spec.pkColumn)
-                                if (idx != -1 && remoteCursor.getType(idx) == Cursor.FIELD_TYPE_INTEGER) {
-                                    remoteCursor.getLong(idx)
+                        if (remoteCursor.moveToFirst()) {
+                            do {
+                                val remotePkValue = if (spec.pkColumn != null) {
+                                    val idx = remoteCursor.getColumnIndex(spec.pkColumn)
+                                    if (idx != -1 && remoteCursor.getType(idx) == Cursor.FIELD_TYPE_INTEGER) {
+                                        remoteCursor.getLong(idx)
+                                    } else -1L
                                 } else -1L
-                            } else -1L
 
-                            val (status, localId) = checkRecordStatusWithId(
-                                localDb,
-                                remoteDb,
-                                remoteCursor,
-                                spec,
-                                idMap
-                            )
+                                val (status, localId) = checkRecordStatusWithId(
+                                    this,
+                                    remoteDb,
+                                    remoteCursor,
+                                    spec,
+                                    idMap
+                                )
 
-                            if (status == RecordStatus.EXISTS) {
-                                if (remotePkValue != -1L) {
-                                    idMap[spec.tableName]!![remotePkValue] = localId
+                                if (status == RecordStatus.EXISTS) {
+                                    if (remotePkValue != -1L) {
+                                        idMap[spec.tableName]!![remotePkValue] = localId
+                                    }
+                                    continue
                                 }
-                                continue
-                            }
 
-                            val values = getContentValues(
-                                localDb,
-                                remoteDb,
-                                remoteCursor,
-                                spec,
-                                idMap,
-                                localId
-                            )
-                            val newId = localDb.insertWithOnConflict(
-                                spec.tableName,
-                                null,
-                                values,
-                                SQLiteDatabase.CONFLICT_REPLACE
-                            )
+                                val values = getContentValues(
+                                    this,
+                                    remoteDb,
+                                    remoteCursor,
+                                    spec,
+                                    idMap,
+                                    localId
+                                )
+                                val newId = insertWithOnConflict(
+                                    spec.tableName,
+                                    null,
+                                    values,
+                                    SQLiteDatabase.CONFLICT_REPLACE
+                                )
 
-                            if (newId != -1L) {
-                                val mappingId =
-                                    if (spec.pkColumn != null && values.containsKey(spec.pkColumn)) {
-                                        values.getAsLong(spec.pkColumn) ?: newId
-                                    } else {
-                                        newId
+                                if (newId != -1L) {
+                                    val mappingId =
+                                        if (spec.pkColumn != null && values.containsKey(spec.pkColumn)) {
+                                            values.getAsLong(spec.pkColumn) ?: newId
+                                        } else {
+                                            newId
+                                        }
+
+                                    if (remotePkValue != -1L) {
+                                        idMap[spec.tableName]!![remotePkValue] = mappingId
                                     }
 
-                                if (remotePkValue != -1L) {
-                                    idMap[spec.tableName]!![remotePkValue] = mappingId
+                                    if (status == RecordStatus.NEW) tableNewCount++ else tableUpdatedCount++
+                                } else {
+                                    Log.e(
+                                        TAG,
+                                        "Failed to sync record in ${spec.tableName}: $values"
+                                    )
                                 }
-
-                                if (status == RecordStatus.NEW) tableNewCount++ else tableUpdatedCount++
-                            } else {
-                                Log.e(TAG, "Failed to sync record in ${spec.tableName}: $values")
-                            }
-                        } while (remoteCursor.moveToNext())
+                            } while (remoteCursor.moveToNext())
+                        }
+                        remoteCursor.close()
+                        totalNew += tableNewCount
+                        totalUpdated += tableUpdatedCount
+                    } finally {
                     }
-                    remoteCursor.close()
-                    localDb.setTransactionSuccessful()
-
-                    totalNew += tableNewCount
-                    totalUpdated += tableUpdatedCount
-                } finally {
-                    localDb.endTransaction()
                 }
 
                 // Verification: ensure local count is at least the remote count
@@ -356,7 +359,7 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
                             "Unknown record"
                         }
                     } catch (e: Exception) {
-                        "Unknown record"
+                        "Unknown record: $e"
                     }
 
                     when (status) {
@@ -559,7 +562,7 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             cursor.close()
             name
         } catch (e: Exception) {
-            ""
+            "unknown Exception: $e"
         }
     }
 

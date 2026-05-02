@@ -43,7 +43,7 @@ class DriveServiceHelper(private val mDriveService: Drive) {
     /**
      * Finds or creates a folder with the given name under the specified parent.
      */
-    suspend fun getOrCreateFolder(folderName: String, parentId: String? = "appDataFolder"): String =
+ /*   suspend fun getOrCreateFolder(folderName: String, parentId: String? = "appDataFolder"): String =
         withContext(Dispatchers.IO) {
             val parent = parentId ?: "appDataFolder"
             val query =
@@ -77,7 +77,7 @@ class DriveServiceHelper(private val mDriveService: Drive) {
                 .setFields("id")
                 .execute() ?: throw IOException("Null result when creating folder.")
             folder.id
-        }
+        }*/
 
     /**
      * Finds a file ID on Google Drive by its name and folder.
@@ -139,7 +139,7 @@ class DriveServiceHelper(private val mDriveService: Drive) {
     /**
      * Utility to fetch file content as a string.
      */
-    suspend fun downloadFileByName(fileName: String, targetFile: File): String =
+    /*suspend fun downloadFileByName(fileName: String, targetFile: File): String =
         withContext(Dispatchers.IO) {
             val fileId = findFileIdByName(fileName)
                 ?: throw IOException("File not found on Drive: $fileName")
@@ -149,5 +149,5 @@ class DriveServiceHelper(private val mDriveService: Drive) {
             mDriveService.files().get(fileId).executeMediaAsInputStream().use { inputStream ->
                 inputStream.bufferedReader().use { it.readText() }
             }
-        }
+        }*/
 }

@@ -48,6 +48,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import androidx.core.content.edit
 
 private const val TAG: String = "SyncActivity"
 
@@ -87,9 +88,9 @@ class SyncActivity : ComponentActivity() {
                     onClearBackupsClick = { clearBackups() },
                     onChangeAccountClick = {
                         getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-                            .edit()
-                            .remove(SYNC_ACCOUNT_EMAIL)
-                            .apply()
+                            .edit {
+                                remove(SYNC_ACCOUNT_EMAIL)
+                            }
                         mCurrentAccount = null
                         mDriveServiceHelper = null
                         signInWithCredentialManager()
@@ -119,7 +120,7 @@ class SyncActivity : ComponentActivity() {
         isLoading = false
     }
 
-    private suspend fun getTargetFolderId(helper: DriveServiceHelper): String {
+    private fun getTargetFolderId(helper: DriveServiceHelper): String {
         return "appDataFolder"
     }
 
@@ -475,9 +476,9 @@ class SyncActivity : ComponentActivity() {
             val email = googleIdTokenCredential.id
             Log.d(TAG, "Signed in as $email")
             getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-                .edit()
-                .putString(SYNC_ACCOUNT_EMAIL, email)
-                .apply()
+                .edit {
+                    putString(SYNC_ACCOUNT_EMAIL, email)
+                }
             initializeDriveService(email)
         } else {
             Log.e(TAG, "Unexpected credential type: ${credential.type}")
@@ -545,7 +546,7 @@ class SyncActivity : ComponentActivity() {
                     builder.append("No related files found.")
                 } else {
                     for (file in relatedFiles) {
-                        val size = formatFileSize(file.getSize())
+                        val size = formatFileSize(file.size.toLong())
                         val date = file.modifiedTime?.let {
                             dateFormat.format(Date(it.value))
                         } ?: "Unknown date"
