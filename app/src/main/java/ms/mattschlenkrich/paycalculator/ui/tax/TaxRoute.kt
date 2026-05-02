@@ -44,6 +44,7 @@ import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
+import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
 import ms.mattschlenkrich.paycalculator.data.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.TaxEffectiveDates
 import ms.mattschlenkrich.paycalculator.data.TaxTypes
@@ -143,6 +144,8 @@ fun TaxRulesContent(
     onTaxRuleSelected: (WorkTaxRules) -> Unit,
     onChooseEffectiveDate: () -> Unit
 ) {
+    val columns = calculateGridColumns()
+
     val taxTypes by workTaxViewModel.getTaxTypes().observeAsState(emptyList())
     val effectiveDates by workTaxViewModel.getTaxEffectiveDates().observeAsState(emptyList())
     val taxRules by if (selectedTaxType != null && selectedEffectiveDate != null) {
@@ -236,7 +239,7 @@ fun TaxRulesContent(
                 }
 
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
+                    columns = GridCells.Fixed(columns),
                     modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)

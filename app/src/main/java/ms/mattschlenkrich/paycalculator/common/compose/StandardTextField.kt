@@ -25,6 +25,9 @@ object StandardTextFieldDefaults {
     fun contentPadding() = getTextFieldDimensions().textFieldContentPadding
 
     @Composable
+    fun dropdownItemPadding() = getTextFieldDimensions().dropdownItemPadding
+
+    @Composable
     fun textStyle() = MaterialTheme.typography.bodyLarge.copy(
         color = MaterialTheme.colorScheme.onSurface
     )

@@ -2,7 +2,7 @@ package ms.mattschlenkrich.paycalculator.common.compose
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,7 +42,7 @@ fun <T> SimpleDropdownField(
             textStyle = StandardTextFieldDefaults.textStyle(),
             modifier = Modifier
                 .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true)
-                .height(StandardTextFieldDefaults.minHeight())
+                .heightIn(min = StandardTextFieldDefaults.minHeight())
                 .fillMaxWidth(),
             interactionSource = interactionSource
         ) { innerTextField ->
@@ -74,9 +74,9 @@ fun <T> SimpleDropdownField(
                         expanded = false
                     },
                     modifier = Modifier
-                        .height(StandardTextFieldDefaults.minHeight())
+                        .heightIn(min = StandardTextFieldDefaults.minHeight())
                         .fillMaxWidth(),
-                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                    contentPadding = StandardTextFieldDefaults.dropdownItemPadding()
                 )
             }
         }

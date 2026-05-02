@@ -23,7 +23,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -31,6 +30,7 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
 import ms.mattschlenkrich.paycalculator.data.Areas
 import ms.mattschlenkrich.paycalculator.data.Material
 import ms.mattschlenkrich.paycalculator.data.MaterialInSequence
@@ -109,8 +109,7 @@ fun WorkOrderHistoryUpdateScreen(
     var showMaterialDialog by remember { mutableStateOf(false) }
     var selectedMaterial by remember { mutableStateOf<MaterialInSequence?>(null) }
 
-    val configuration = LocalConfiguration.current
-    val columns = if (configuration.screenWidthDp >= 600) 3 else 2
+    val columns = calculateGridColumns()
 
     WorkPerformedOptionsDialog(
         showDialog = showWorkPerformedDialog,

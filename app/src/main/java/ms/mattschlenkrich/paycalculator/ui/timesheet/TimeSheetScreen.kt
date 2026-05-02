@@ -26,6 +26,7 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
 import ms.mattschlenkrich.paycalculator.data.Employers
 import ms.mattschlenkrich.paycalculator.data.WorkDateExtraAndTypeAndDef
 import ms.mattschlenkrich.paycalculator.data.WorkDates
@@ -54,6 +55,8 @@ fun TimeSheetScreen(
     displayDate: (String) -> String,
     formatHours: (WorkDates) -> String
 ) {
+    val columns = calculateGridColumns()
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
@@ -70,7 +73,7 @@ fun TimeSheetScreen(
         }
     ) { innerPadding ->
         LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+            columns = GridCells.Fixed(columns),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
@@ -79,11 +82,11 @@ fun TimeSheetScreen(
             horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
             contentPadding = PaddingValues(bottom = 80.dp)
         ) {
-            item(span = { GridItemSpan(2) }) {
+            item(span = { GridItemSpan(columns) }) {
                 Spacer(modifier = Modifier.height(SCREEN_PADDING_VERTICAL))
             }
 
-            item(span = { GridItemSpan(2) }) {
+            item(span = { GridItemSpan(columns) }) {
                 TimeSheetSelectionCard(
                     employers = employers,
                     selectedEmployer = selectedEmployer,
@@ -96,7 +99,7 @@ fun TimeSheetScreen(
                 )
             }
 
-            item(span = { GridItemSpan(2) }) {
+            item(span = { GridItemSpan(columns) }) {
                 TimeSheetSummaryCard(
                     paySummary = paySummary,
                     onViewPayDetailsClick = onViewPayDetailsClick
@@ -114,7 +117,7 @@ fun TimeSheetScreen(
                 )
             }
 
-            item(span = { GridItemSpan(2) }) {
+            item(span = { GridItemSpan(columns) }) {
                 Spacer(modifier = Modifier.height(SCREEN_PADDING_VERTICAL))
             }
         }

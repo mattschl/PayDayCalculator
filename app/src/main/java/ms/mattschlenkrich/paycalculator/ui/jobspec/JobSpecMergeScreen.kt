@@ -42,6 +42,7 @@ import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
 import ms.mattschlenkrich.paycalculator.data.JobSpec
 import ms.mattschlenkrich.paycalculator.data.JobSpecAndChild
 
@@ -61,6 +62,8 @@ fun JobSpecMergeScreen(
     onDoneClick: () -> Unit,
     onListItemSelected: (JobSpec) -> Unit
 ) {
+    val columns = calculateGridColumns()
+
     var showMergeOptionsDialog by remember {
         mutableStateOf(
             false
@@ -123,7 +126,7 @@ fun JobSpecMergeScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { innerPadding ->
         LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(2),
+            columns = StaggeredGridCells.Fixed(columns),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)

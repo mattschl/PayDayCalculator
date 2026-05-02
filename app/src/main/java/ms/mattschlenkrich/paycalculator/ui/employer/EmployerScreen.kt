@@ -98,8 +98,8 @@ fun EmployerScreen(
             SimpleDropdownField(
                 label = stringResource(R.string.pay_day_frequency),
                 items = PayDayFrequencies.entries,
-                selectedItem = PayDayFrequencies.valueOf(frequency),
-                onItemSelected = { onFrequencyChange(it.name) },
+                selectedItem = PayDayFrequencies.findByString(frequency),
+                onItemSelected = { onFrequencyChange(it.frequency) },
                 itemToString = { it.frequency },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -114,8 +114,8 @@ fun EmployerScreen(
             SimpleDropdownField(
                 label = stringResource(R.string.day_of_week),
                 items = WorkDayOfWeek.entries,
-                selectedItem = WorkDayOfWeek.valueOf(dayOfWeek),
-                onItemSelected = { onDayOfWeekChange(it.name) },
+                selectedItem = WorkDayOfWeek.findByString(dayOfWeek),
+                onItemSelected = { onDayOfWeekChange(it.day) },
                 itemToString = { it.day },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -127,7 +127,7 @@ fun EmployerScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            if (frequency == PayDayFrequencies.SEMI_MONTHLY.name) {
+            if (PayDayFrequencies.findByString(frequency) == PayDayFrequencies.SEMI_MONTHLY) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)

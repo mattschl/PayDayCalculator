@@ -33,6 +33,7 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
 import ms.mattschlenkrich.paycalculator.data.Areas
 import ms.mattschlenkrich.paycalculator.data.JobSpec
 import ms.mattschlenkrich.paycalculator.data.MaterialAndQuantity
@@ -79,6 +80,7 @@ fun WorkOrderUpdateScreen(
     onDoneClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
+    val columns = calculateGridColumns()
     val df = DateFunctions()
     val nf = NumberFunctions()
 
@@ -206,7 +208,7 @@ fun WorkOrderUpdateScreen(
                     )
                 }
 
-                val wpChunks = workPerformedList.chunked(2)
+                val wpChunks = workPerformedList.chunked(columns)
                 items(wpChunks) { chunk ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -217,7 +219,7 @@ fun WorkOrderUpdateScreen(
                                 WorkPerformedSummaryItem(wp)
                             }
                         }
-                        if (chunk.size == 1) {
+                        repeat(columns - chunk.size) {
                             Spacer(modifier = Modifier.weight(1f))
                         }
                     }
@@ -235,7 +237,7 @@ fun WorkOrderUpdateScreen(
                     )
                 }
 
-                val matChunks = materialsList.chunked(2)
+                val matChunks = materialsList.chunked(columns)
                 items(matChunks) { chunk ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -246,7 +248,7 @@ fun WorkOrderUpdateScreen(
                                 WorkOrderMaterialSummaryItem(material, nf)
                             }
                         }
-                        if (chunk.size == 1) {
+                        repeat(columns - chunk.size) {
                             Spacer(modifier = Modifier.weight(1f))
                         }
                     }

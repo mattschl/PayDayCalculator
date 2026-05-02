@@ -42,6 +42,7 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
+import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
 import ms.mattschlenkrich.paycalculator.data.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryWithDates
 
@@ -74,6 +75,8 @@ fun WorkDateUpdateScreen(
     onExtraLongClick: (WorkDateExtras) -> Unit,
     onAddExtraClick: () -> Unit
 ) {
+    val columns = calculateGridColumns()
+
     Scaffold(
         modifier = Modifier.imePadding(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -98,7 +101,7 @@ fun WorkDateUpdateScreen(
         }
     ) { innerPadding ->
         LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+            columns = GridCells.Fixed(columns),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
@@ -106,7 +109,7 @@ fun WorkDateUpdateScreen(
             verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
             horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
         ) {
-            item(span = { GridItemSpan(2) }) {
+            item(span = { GridItemSpan(columns) }) {
                 Column(
                     modifier = Modifier.padding(vertical = SCREEN_PADDING_VERTICAL),
                     verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
@@ -189,7 +192,7 @@ fun WorkDateUpdateScreen(
                 }
             }
 
-            item(span = { GridItemSpan(2) }) {
+            item(span = { GridItemSpan(columns) }) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -227,7 +230,7 @@ fun WorkDateUpdateScreen(
                 }
             }
 
-            item(span = { GridItemSpan(2) }) {
+            item(span = { GridItemSpan(columns) }) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -256,7 +259,7 @@ fun WorkDateUpdateScreen(
             }
 
             if (workOrderSummary.isNotEmpty()) {
-                item(span = { GridItemSpan(2) }) {
+                item(span = { GridItemSpan(columns) }) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -280,7 +283,7 @@ fun WorkDateUpdateScreen(
                 }
             }
 
-            item(span = { GridItemSpan(2) }) {
+            item(span = { GridItemSpan(columns) }) {
                 Spacer(modifier = Modifier.height(80.dp))
             }
         }

@@ -3,7 +3,7 @@ package ms.mattschlenkrich.paycalculator.common.compose
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenuItem
@@ -70,7 +70,7 @@ fun <T> AutoCompleteTextField(
             modifier = Modifier
                 .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true)
                 .fillMaxWidth()
-                .height(StandardTextFieldDefaults.minHeight())
+                .heightIn(min = StandardTextFieldDefaults.minHeight())
                 .combinedClickable(
                     interactionSource = interactionSource,
                     indication = null,
@@ -105,9 +105,9 @@ fun <T> AutoCompleteTextField(
                             expanded = false
                         },
                         modifier = Modifier
-                            .height(StandardTextFieldDefaults.minHeight())
+                            .heightIn(min = StandardTextFieldDefaults.minHeight())
                             .fillMaxWidth(),
-                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                        contentPadding = StandardTextFieldDefaults.dropdownItemPadding()
                     )
                 }
             }

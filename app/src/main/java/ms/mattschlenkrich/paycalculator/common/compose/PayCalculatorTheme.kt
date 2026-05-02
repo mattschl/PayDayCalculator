@@ -14,6 +14,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
@@ -27,8 +28,14 @@ data class ExtendedDimensions(
     val textFieldContentPadding: PaddingValues = PaddingValues(
         start = 8.dp,
         end = 8.dp,
-        top = 0.dp,
-        bottom = 0.dp
+        top = 4.dp,
+        bottom = 4.dp
+    ),
+    val dropdownItemPadding: PaddingValues = PaddingValues(
+        start = 8.dp,
+        end = 8.dp,
+        top = 4.dp,
+        bottom = 4.dp
     ),
     val textFieldBorderThickness: Dp = 1.dp
 )
@@ -88,12 +95,32 @@ fun PayCalculatorTheme(
         }
     }
 
+    val density = LocalDensity.current
+    val minHeight = with(density) { (fontSize * 1.1f * 1.1f).sp.toDp() }
+    val verticalPadding = with(density) { (fontSize * 0.1f).sp.toDp() }
+
+    val dimensions = ExtendedDimensions(
+        textFieldMinHeight = minHeight,
+        textFieldContentPadding = PaddingValues(
+            start = 8.dp,
+            end = 8.dp,
+            top = verticalPadding,
+            bottom = verticalPadding
+        ),
+        dropdownItemPadding = PaddingValues(
+            start = 12.dp,
+            end = 12.dp,
+            top = verticalPadding,
+            bottom = verticalPadding
+        )
+    )
+
     MaterialTheme(
         colorScheme = colorScheme,
         typography = typography
     ) {
         CompositionLocalProvider(
-            LocalExtendedDimensions provides ExtendedDimensions(),
+            LocalExtendedDimensions provides dimensions,
             content = content
         )
     }

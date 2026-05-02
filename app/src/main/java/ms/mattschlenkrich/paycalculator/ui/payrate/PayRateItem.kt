@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paycalculator.ui.payrate
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,12 +31,11 @@ fun PayRateItem(wage: EmployerPayRates, onClick: () -> Unit) {
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .padding(4.dp)
+                .padding(8.dp)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
                 text = wage.eprEffectiveDate,
@@ -43,18 +43,24 @@ fun PayRateItem(wage: EmployerPayRates, onClick: () -> Unit) {
                 color = if (wage.eprIsDeleted) Color.Red else Color.Black,
                 style = MaterialTheme.typography.bodyLarge
             )
-            Text(
-                text = cf.displayDollars(wage.eprPayRate),
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
-                textDecoration = if (wage.eprIsDeleted) TextDecoration.LineThrough else null,
-                color = if (wage.eprIsDeleted) Color.Red else Color.Black
-            )
-            Text(
-                text = PayRateBasedOn.entries[wage.eprPerPeriod].type,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = cf.displayDollars(wage.eprPayRate),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    textDecoration = if (wage.eprIsDeleted) TextDecoration.LineThrough else null,
+                    color = if (wage.eprIsDeleted) Color.Red else Color.Black
+                )
+                Text(
+                    text = PayRateBasedOn.entries[wage.eprPerPeriod].type,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+            }
         }
     }
 }

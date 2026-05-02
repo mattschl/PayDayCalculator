@@ -71,6 +71,13 @@ enum class WorkDayOfWeek(val value: Int, val day: String) {
     override fun toString(): String {
         return day
     }
+
+    companion object {
+        fun findByString(value: String): WorkDayOfWeek {
+            return entries.find { it.name == value || it.day == value }
+                ?: FRIDAY
+        }
+    }
 }
 
 enum class PayDayFrequencies(val value: Int, val frequency: String) {
@@ -81,5 +88,12 @@ enum class PayDayFrequencies(val value: Int, val frequency: String) {
 
     override fun toString(): String {
         return frequency
+    }
+
+    companion object {
+        fun findByString(value: String): PayDayFrequencies {
+            return entries.find { it.name == value || it.frequency == value }
+                ?: BI_WEEKLY
+        }
     }
 }

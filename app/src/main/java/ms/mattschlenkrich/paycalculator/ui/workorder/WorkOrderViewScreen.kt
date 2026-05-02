@@ -42,6 +42,7 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
+import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
 import ms.mattschlenkrich.paycalculator.data.Employers
 import ms.mattschlenkrich.paycalculator.data.WorkOrder
 
@@ -60,6 +61,8 @@ fun WorkOrderViewScreen(
     onAddNewWorkOrderClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
+    val columns = calculateGridColumns()
+
     Scaffold(
         /* topBar = {
              TopAppBar(
@@ -86,7 +89,7 @@ fun WorkOrderViewScreen(
         }
     ) { innerPadding ->
         LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(2),
+            columns = StaggeredGridCells.Fixed(columns),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
