@@ -77,6 +77,7 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
+    implementation(libs.gson)
     implementation(libs.material)
     implementation(libs.mockito.core)
     implementation(libs.mockito.kotlin)
@@ -96,7 +97,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    val roomVersion = "2.8.4"
+//    val roomVersion = "2.8.4"
     implementation(libs.androidx.room.runtime)
     // To use Kotlin symbol processing tool (ksp)id("androidx.navigation.safeargs.kotlin")
     ksp(libs.androidx.room.compiler)
@@ -109,7 +110,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     //Lifecycle architecture
-    val lifecycleVersion = "2.10.0"
+//    val lifecycleVersion = "2.10.0"
     // ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     // LiveData
@@ -117,8 +118,8 @@ dependencies {
     // Annotation processor
     ksp(libs.androidx.room.compiler)
 
-    val material3Version = "1.4.0"
-    val composeVersion = "1.7.8"
+//    val material3Version = "1.4.0"
+//    val composeVersion = "1.7.8"
 
     implementation(libs.androidx.material3)
     implementation(libs.androidx.activity.compose)
@@ -129,7 +130,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
-    implementation("com.google.code.gson:gson:2.14.0")
+
 }
 
 kotlin {
