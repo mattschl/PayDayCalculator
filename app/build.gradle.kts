@@ -1,12 +1,14 @@
+import com.android.build.api.dsl.ApplicationExtension
+
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+//    id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
     id("kotlin-parcelize")
-    kotlin("plugin.compose") version "2.2.10"
+    kotlin("plugin.compose") version "2.3.21"
 }
 
-android {
+extensions.configure<ApplicationExtension> {
     signingConfigs {
         getByName("debug") {
             storeFile =
@@ -50,10 +52,6 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
 
     packaging {
         resources {
@@ -63,13 +61,28 @@ android {
     buildFeatures {
         compose = true
     }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+
     buildToolsVersion = "36.0.0"
     compileSdkMinor = 0
 //    kotlinOptions {
 //        jvmTarget = JavaVersion.VERSION_17
 //    }
-    ksp {
-        arg("room.schemaLocation", "$projectDir/schemas")
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
     }
 }
 
@@ -115,8 +128,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     // LiveData
     implementation(libs.androidx.lifecycle.livedata.ktx)
-    // Annotation processor
-    ksp(libs.androidx.room.compiler)
 
 //    val material3Version = "1.4.0"
 //    val composeVersion = "1.7.8"
@@ -131,10 +142,4 @@ dependencies {
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
 
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
-    }
 }
