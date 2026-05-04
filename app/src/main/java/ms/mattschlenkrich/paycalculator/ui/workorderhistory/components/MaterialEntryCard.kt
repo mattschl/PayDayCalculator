@@ -21,7 +21,7 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
 import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
-import ms.mattschlenkrich.paycalculator.data.Material
+import ms.mattschlenkrich.paycalculator.data.entity.Material
 
 @Composable
 fun MaterialEntryCard(

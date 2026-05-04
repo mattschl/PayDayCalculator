@@ -33,8 +33,8 @@ import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
-import ms.mattschlenkrich.paycalculator.data.EmployerTaxTypes
-import ms.mattschlenkrich.paycalculator.data.WorkExtraTypes
+import ms.mattschlenkrich.paycalculator.data.entity.EmployerTaxTypes
+import ms.mattschlenkrich.paycalculator.data.entity.WorkExtraTypes
 import ms.mattschlenkrich.paycalculator.ui.employer.components.EmployerExtrasCard
 import ms.mattschlenkrich.paycalculator.ui.employer.components.EmployerTaxesCard
 

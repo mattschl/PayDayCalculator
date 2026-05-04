@@ -2,9 +2,9 @@ package ms.mattschlenkrich.paycalculator.ui.paydetail
 
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.ExtraContainer
-import ms.mattschlenkrich.paycalculator.data.PayDayViewModel
-import ms.mattschlenkrich.paycalculator.data.WorkPayPeriodExtras
+import ms.mattschlenkrich.paycalculator.data.model.ExtraContainer
+import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
+import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras
 
 fun insertOrUpdateExtraOnChange(
     extraContainer: ExtraContainer,

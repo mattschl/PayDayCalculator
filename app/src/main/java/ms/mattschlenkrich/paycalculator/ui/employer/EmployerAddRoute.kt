@@ -23,10 +23,10 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.PayDayFrequencies
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.WorkDayOfWeek
-import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
-import ms.mattschlenkrich.paycalculator.data.Employers
-import ms.mattschlenkrich.paycalculator.data.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkTaxViewModel
+import ms.mattschlenkrich.paycalculator.data.entity.Employers
+import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 
 @Composable
 fun EmployerAddRoute(

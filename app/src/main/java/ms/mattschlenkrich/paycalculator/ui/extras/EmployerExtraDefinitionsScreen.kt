@@ -36,18 +36,19 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
-import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
-import ms.mattschlenkrich.paycalculator.data.Employers
-import ms.mattschlenkrich.paycalculator.data.ExtraDefTypeAndEmployer
-import ms.mattschlenkrich.paycalculator.data.WorkExtraTypes
 import ms.mattschlenkrich.paycalculator.data.WorkExtraViewModel
+import ms.mattschlenkrich.paycalculator.data.entity.Employers
+import ms.mattschlenkrich.paycalculator.data.entity.WorkExtraTypes
+import ms.mattschlenkrich.paycalculator.data.model.ExtraDefTypeAndEmployer
+import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.ui.extras.components.ExtraDefinitionItem
 import ms.mattschlenkrich.paycalculator.ui.extras.components.ExtraTypeInfoCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmployerExtraDefinitionsScreen(
-    mainViewModel: ms.mattschlenkrich.paycalculator.data.MainViewModel,
+    mainViewModel: MainViewModel,
     employerViewModel: EmployerViewModel,
     workExtraViewModel: WorkExtraViewModel,
     onAddExtraDefinition: (Employers, WorkExtraTypes) -> Unit,

@@ -9,8 +9,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
-import ms.mattschlenkrich.paycalculator.data.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 
 @Composable
 fun WorkOrderHistoryWorkPerformedUpdateRoute(

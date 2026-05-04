@@ -7,9 +7,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
-import ms.mattschlenkrich.paycalculator.data.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 
 @Composable
 fun WorkOrderLookupRoute(

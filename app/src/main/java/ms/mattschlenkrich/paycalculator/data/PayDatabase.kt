@@ -9,6 +9,42 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_VERSION
+import ms.mattschlenkrich.paycalculator.data.dao.EmployerDao
+import ms.mattschlenkrich.paycalculator.data.dao.PayCalculationsDao
+import ms.mattschlenkrich.paycalculator.data.dao.PayDayDao
+import ms.mattschlenkrich.paycalculator.data.dao.PayDetailDao
+import ms.mattschlenkrich.paycalculator.data.dao.WorkExtraDao
+import ms.mattschlenkrich.paycalculator.data.dao.WorkOrderDao
+import ms.mattschlenkrich.paycalculator.data.dao.WorkTaxDao
+import ms.mattschlenkrich.paycalculator.data.dao.WorkTimeDao
+import ms.mattschlenkrich.paycalculator.data.entity.Areas
+import ms.mattschlenkrich.paycalculator.data.entity.EmployerPayRates
+import ms.mattschlenkrich.paycalculator.data.entity.EmployerTaxTypes
+import ms.mattschlenkrich.paycalculator.data.entity.Employers
+import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
+import ms.mattschlenkrich.paycalculator.data.entity.JobSpecMerged
+import ms.mattschlenkrich.paycalculator.data.entity.Material
+import ms.mattschlenkrich.paycalculator.data.entity.MaterialMerged
+import ms.mattschlenkrich.paycalculator.data.entity.PayPeriods
+import ms.mattschlenkrich.paycalculator.data.entity.TaxEffectiveDates
+import ms.mattschlenkrich.paycalculator.data.entity.TaxTypes
+import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
+import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
+import ms.mattschlenkrich.paycalculator.data.entity.WorkExtraTypes
+import ms.mattschlenkrich.paycalculator.data.entity.WorkExtrasDefinitions
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec
+import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras
+import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodTax
+import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed
+import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformedMerged
+import ms.mattschlenkrich.paycalculator.data.entity.WorkTaxRules
+import ms.mattschlenkrich.paycalculator.data.model.ExtraDefinitionAndType
+import ms.mattschlenkrich.paycalculator.data.model.ExtraTypeAndDefByDay
 
 @Database(
     entities = [

@@ -14,8 +14,8 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryMaterialCombined
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryMaterialCombined
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
 
 @Composable

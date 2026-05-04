@@ -39,10 +39,10 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
-import ms.mattschlenkrich.paycalculator.data.ExtraDefinitionAndType
-import ms.mattschlenkrich.paycalculator.data.PayPeriods
-import ms.mattschlenkrich.paycalculator.data.WorkDateExtraAndTypeAndDef
-import ms.mattschlenkrich.paycalculator.data.WorkPayPeriodExtras
+import ms.mattschlenkrich.paycalculator.data.entity.PayPeriods
+import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras
+import ms.mattschlenkrich.paycalculator.data.model.ExtraDefinitionAndType
+import ms.mattschlenkrich.paycalculator.data.model.WorkDateExtraAndTypeAndDef
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

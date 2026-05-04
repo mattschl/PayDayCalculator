@@ -19,8 +19,8 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
 import ms.mattschlenkrich.paycalculator.common.compose.CapitalizedOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
-import ms.mattschlenkrich.paycalculator.data.Areas
-import ms.mattschlenkrich.paycalculator.data.WorkPerformed
+import ms.mattschlenkrich.paycalculator.data.entity.Areas
+import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed
 
 @Composable
 fun WorkPerformedEntryCard(

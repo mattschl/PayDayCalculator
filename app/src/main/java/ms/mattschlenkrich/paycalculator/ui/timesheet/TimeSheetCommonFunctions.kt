@@ -1,7 +1,7 @@
 package ms.mattschlenkrich.paycalculator.ui.timesheet
 
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.WorkDates
+import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
 
 fun getWeekSummaryString(
     workDates: List<WorkDates>,

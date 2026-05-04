@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
 import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
-import ms.mattschlenkrich.paycalculator.data.WorkExtraTypes
+import ms.mattschlenkrich.paycalculator.data.entity.WorkExtraTypes
 
 @Composable
 fun ExtraTypeInfoCard(

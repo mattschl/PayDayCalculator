@@ -2,9 +2,9 @@ package ms.mattschlenkrich.paycalculator.logic
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
-import ms.mattschlenkrich.paycalculator.data.EmployerObj
-import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
-import ms.mattschlenkrich.paycalculator.data.Employers
+import ms.mattschlenkrich.paycalculator.data.entity.Employers
+import ms.mattschlenkrich.paycalculator.data.model.EmployerObj
+import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 
 class EmployerLogicViewModel(
     val app: Application,

@@ -1,7 +1,7 @@
 package ms.mattschlenkrich.paycalculator.logic
 
-import ms.mattschlenkrich.paycalculator.data.ExtraContainer
 import ms.mattschlenkrich.paycalculator.data.TaxAndAmount
+import ms.mattschlenkrich.paycalculator.data.model.ExtraContainer
 
 
 interface IPayCalculations {

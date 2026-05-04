@@ -15,8 +15,8 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.Material
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.entity.Material
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
 
 @Composable

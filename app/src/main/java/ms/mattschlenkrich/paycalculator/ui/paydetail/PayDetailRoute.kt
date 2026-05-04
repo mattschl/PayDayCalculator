@@ -18,12 +18,12 @@ import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
-import ms.mattschlenkrich.paycalculator.data.EmployerViewModel
-import ms.mattschlenkrich.paycalculator.data.Employers
-import ms.mattschlenkrich.paycalculator.data.ExtraContainer
-import ms.mattschlenkrich.paycalculator.data.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.data.entity.Employers
+import ms.mattschlenkrich.paycalculator.data.model.ExtraContainer
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.PayCalculationsViewModel
-import ms.mattschlenkrich.paycalculator.data.PayDayViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.data.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.data.TaxAndAmount
 import ms.mattschlenkrich.paycalculator.logic.PayCalculationsAsync

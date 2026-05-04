@@ -18,8 +18,8 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.data.Employers
-import ms.mattschlenkrich.paycalculator.data.ExtraContainer
+import ms.mattschlenkrich.paycalculator.data.entity.Employers
+import ms.mattschlenkrich.paycalculator.data.model.ExtraContainer
 import ms.mattschlenkrich.paycalculator.data.TaxAndAmount
 import ms.mattschlenkrich.paycalculator.ui.paydetail.components.ExtrasCard
 import ms.mattschlenkrich.paycalculator.ui.paydetail.components.HourlyBreakdownCard

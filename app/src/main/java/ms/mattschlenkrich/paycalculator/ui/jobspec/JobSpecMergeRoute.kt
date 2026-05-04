@@ -12,10 +12,10 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.JobSpec
-import ms.mattschlenkrich.paycalculator.data.JobSpecMerged
-import ms.mattschlenkrich.paycalculator.data.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
+import ms.mattschlenkrich.paycalculator.data.entity.JobSpecMerged
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 
 @Composable
 fun JobSpecMergeRoute(

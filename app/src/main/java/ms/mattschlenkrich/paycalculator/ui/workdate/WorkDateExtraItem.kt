@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.WorkDateExtras
+import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
 
 @Composable
 fun WorkDateExtraItem(

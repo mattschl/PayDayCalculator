@@ -38,7 +38,7 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
 import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
-import ms.mattschlenkrich.paycalculator.data.WorkOrder
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

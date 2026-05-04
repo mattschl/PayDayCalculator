@@ -8,10 +8,10 @@ import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
 import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
-import ms.mattschlenkrich.paycalculator.data.ExtraContainer
-import ms.mattschlenkrich.paycalculator.data.ExtraDefinitionAndType
-import ms.mattschlenkrich.paycalculator.data.WorkDateExtras
-import ms.mattschlenkrich.paycalculator.data.WorkDates
+import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
+import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
+import ms.mattschlenkrich.paycalculator.data.model.ExtraContainer
+import ms.mattschlenkrich.paycalculator.data.model.ExtraDefinitionAndType
 
 class WorkDateExtraContainerCalculations(
     private val mainActivity: MainActivity,

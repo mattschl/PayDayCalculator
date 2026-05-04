@@ -22,13 +22,13 @@ import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
-import ms.mattschlenkrich.paycalculator.data.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.WorkOrder
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistory
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorked
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkTimeViewModel
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
+import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryTimeWorkedCombined
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import java.util.Calendar
 import java.util.Locale
 

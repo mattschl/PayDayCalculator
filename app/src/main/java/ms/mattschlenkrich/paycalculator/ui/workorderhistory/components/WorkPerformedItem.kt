@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryWorkPerformedCombined
+import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWorkPerformedCombined
 
 @Composable
 fun WorkPerformedItem(

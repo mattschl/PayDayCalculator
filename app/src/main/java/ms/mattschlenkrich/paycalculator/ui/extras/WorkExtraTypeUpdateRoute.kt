@@ -6,9 +6,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
-import ms.mattschlenkrich.paycalculator.data.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.WorkExtraTypes
 import ms.mattschlenkrich.paycalculator.data.WorkExtraViewModel
+import ms.mattschlenkrich.paycalculator.data.entity.WorkExtraTypes
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 
 @Composable
 fun WorkExtraTypeUpdateRoute(

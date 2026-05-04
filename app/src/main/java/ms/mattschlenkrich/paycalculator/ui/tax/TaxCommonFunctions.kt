@@ -2,7 +2,7 @@ package ms.mattschlenkrich.paycalculator.ui.tax
 
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.TaxTypes
+import ms.mattschlenkrich.paycalculator.data.entity.TaxTypes
 
 fun validateTaxType(
     name: String,

@@ -22,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
-import ms.mattschlenkrich.paycalculator.data.Employers
+import ms.mattschlenkrich.paycalculator.data.entity.Employers
 
 @Composable
 fun TimeSheetSelectionCard(

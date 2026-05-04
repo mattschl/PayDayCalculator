@@ -34,12 +34,12 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
-import ms.mattschlenkrich.paycalculator.data.Areas
-import ms.mattschlenkrich.paycalculator.data.JobSpec
+import ms.mattschlenkrich.paycalculator.data.entity.Areas
+import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
 import ms.mattschlenkrich.paycalculator.data.MaterialAndQuantity
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryWithDates
-import ms.mattschlenkrich.paycalculator.data.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paycalculator.data.WorkPerformedAndQuantity
+import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWithDates
+import ms.mattschlenkrich.paycalculator.data.model.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paycalculator.ui.workorder.components.HistoryItem
 import ms.mattschlenkrich.paycalculator.ui.workorder.components.JobSpecsEntryCard
 import ms.mattschlenkrich.paycalculator.ui.workorder.components.WorkOrderDetailsCard

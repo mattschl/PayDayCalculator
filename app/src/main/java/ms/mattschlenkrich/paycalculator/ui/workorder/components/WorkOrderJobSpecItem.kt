@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.data.WorkOrderJobSpecCombined
+import ms.mattschlenkrich.paycalculator.data.model.WorkOrderJobSpecCombined
 
 @Composable
 fun WorkOrderJobSpecItem(

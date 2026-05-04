@@ -27,9 +27,9 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
-import ms.mattschlenkrich.paycalculator.data.Employers
-import ms.mattschlenkrich.paycalculator.data.WorkDateExtraAndTypeAndDef
-import ms.mattschlenkrich.paycalculator.data.WorkDates
+import ms.mattschlenkrich.paycalculator.data.entity.Employers
+import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
+import ms.mattschlenkrich.paycalculator.data.model.WorkDateExtraAndTypeAndDef
 import ms.mattschlenkrich.paycalculator.ui.timesheet.components.TimeSheetSelectionCard
 import ms.mattschlenkrich.paycalculator.ui.timesheet.components.TimeSheetSummaryCard
 import ms.mattschlenkrich.paycalculator.ui.timesheet.components.WorkDateCard

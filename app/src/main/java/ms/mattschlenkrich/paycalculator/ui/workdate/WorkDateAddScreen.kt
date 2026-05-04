@@ -40,7 +40,7 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
-import ms.mattschlenkrich.paycalculator.data.WorkExtraTypes
+import ms.mattschlenkrich.paycalculator.data.entity.WorkExtraTypes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

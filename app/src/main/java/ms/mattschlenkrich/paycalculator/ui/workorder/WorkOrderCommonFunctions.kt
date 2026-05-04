@@ -1,9 +1,9 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder
 
 import ms.mattschlenkrich.paycalculator.MainActivity
-import ms.mattschlenkrich.paycalculator.data.Employers
-import ms.mattschlenkrich.paycalculator.data.WorkDates
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistory
+import ms.mattschlenkrich.paycalculator.data.entity.Employers
+import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
 
 class WorkOrderCommonFunctions(val mainActivity: MainActivity) {
     fun getWorkDateObject(): WorkDates? {

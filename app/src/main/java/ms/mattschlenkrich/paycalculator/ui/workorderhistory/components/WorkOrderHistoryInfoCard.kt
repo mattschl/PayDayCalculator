@@ -25,7 +25,7 @@ import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
 import ms.mattschlenkrich.paycalculator.common.compose.CapitalizedOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
-import ms.mattschlenkrich.paycalculator.data.WorkOrder
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 
 @Composable
 fun WorkOrderHistoryInfoCard(

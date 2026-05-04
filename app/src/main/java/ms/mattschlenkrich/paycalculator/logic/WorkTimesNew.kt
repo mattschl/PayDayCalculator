@@ -12,12 +12,12 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.common.WAIT_100
 import ms.mattschlenkrich.paycalculator.data.TimeWorkedByDay
-import ms.mattschlenkrich.paycalculator.data.WorkDates
-import ms.mattschlenkrich.paycalculator.data.WorkOrder
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistory
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryCombined
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorked
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryTimeWorkedCombined
+import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
+import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryCombined
+import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryTimeWorkedCombined
 import java.util.Calendar
 
 class WorkTimesNew(

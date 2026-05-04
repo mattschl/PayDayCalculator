@@ -25,11 +25,11 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_1000
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.data.HolidayPayCalculator
-import ms.mattschlenkrich.paycalculator.data.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.PayDayViewModel
-import ms.mattschlenkrich.paycalculator.data.WorkDateExtras
-import ms.mattschlenkrich.paycalculator.data.WorkDates
 import ms.mattschlenkrich.paycalculator.data.WorkExtraViewModel
+import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
+import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
 import java.time.LocalDate
 import kotlin.math.round
 

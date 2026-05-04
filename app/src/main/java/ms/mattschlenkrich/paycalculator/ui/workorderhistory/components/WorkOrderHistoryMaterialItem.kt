@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.MaterialInSequence
+import ms.mattschlenkrich.paycalculator.data.model.MaterialInSequence
 
 @Composable
 fun WorkOrderHistoryMaterialItem(

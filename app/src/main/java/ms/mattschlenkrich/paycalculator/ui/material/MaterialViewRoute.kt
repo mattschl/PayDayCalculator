@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.Screen
-import ms.mattschlenkrich.paycalculator.data.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
 
 @Composable

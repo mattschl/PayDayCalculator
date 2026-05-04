@@ -1,0 +1,57 @@
+package ms.mattschlenkrich.paycalculator.data.repository
+
+import ms.mattschlenkrich.paycalculator.data.PayDatabase
+import ms.mattschlenkrich.paycalculator.data.entity.EmployerTaxTypes
+import ms.mattschlenkrich.paycalculator.data.entity.TaxEffectiveDates
+import ms.mattschlenkrich.paycalculator.data.entity.TaxTypes
+import ms.mattschlenkrich.paycalculator.data.entity.WorkTaxRules
+
+class WorkTaxRepository(private val db: PayDatabase) {
+    suspend fun insertTaxType(workTaxType: TaxTypes) = db.getWorkTaxDao().insertTaxType(workTaxType)
+
+    suspend fun updateWorkTaxType(workTaxType: TaxTypes) =
+        db.getWorkTaxDao().updateWorkTaxType(workTaxType)
+
+    fun getTaxTypes() = db.getWorkTaxDao().getTaxTypes()
+
+    fun searchTaxTypes(query: String?) = db.getWorkTaxDao().searchTaxTypes(query)
+
+    fun findTaxType(taxType: String) = db.getWorkTaxDao().findTaxType(taxType)
+
+    suspend fun insertTaxRule(taxRule: WorkTaxRules) = db.getWorkTaxDao().insertTaxRule(taxRule)
+
+    suspend fun updateTaxRule(taxRule: WorkTaxRules) = db.getWorkTaxDao().updateTaxRule(taxRule)
+
+    fun getTaxRules(taxType: String, effectiveDate: String) =
+        db.getWorkTaxDao().getTaxRules(taxType, effectiveDate)
+
+    suspend fun insertEffectiveDate(effectiveDate: TaxEffectiveDates) =
+        db.getWorkTaxDao().insertEffectiveDate(effectiveDate)
+
+    fun getTaxEffectiveDates() = db.getWorkTaxDao().getTaxEffectiveDates()
+
+    suspend fun insertEmployerTaxType(employerTaxTypes: EmployerTaxTypes) =
+        db.getWorkTaxDao().insertEmployerTaxType(employerTaxTypes)
+
+    suspend fun updateEmployerTaxType(employerTaxTypes: EmployerTaxTypes) =
+        db.getWorkTaxDao().updateEmployerTaxType(employerTaxTypes)
+
+    suspend fun updateEmployerTaxIncluded(
+        employerId: Long, taxType: String, include: Boolean
+    ) = db.getWorkTaxDao().updateEmployerTaxIncluded(
+        employerId, taxType, include
+    )
+
+    fun getEmployerTaxTypes(employerId: Long) = db.getWorkTaxDao().getEmployerTaxTypes(employerId)
+
+//    fun getTaxTypeAndDef(effectiveDate: String) =
+//        db.getWorkTaxDao().getTaxTypeAndDef(effectiveDate)
+
+    fun getCurrentEffectiveDate(cutoffDate: String) =
+        db.getWorkTaxDao().getCurrentEffectiveDate(cutoffDate)
+
+    fun getTaxTypesByEmployer(employerId: Long) =
+        db.getWorkTaxDao().getTaxTypesByEmployer(employerId)
+
+    fun getTaxDefByDate(effectiveDate: String) = db.getWorkTaxDao().getTaxDefByDate(effectiveDate)
+}

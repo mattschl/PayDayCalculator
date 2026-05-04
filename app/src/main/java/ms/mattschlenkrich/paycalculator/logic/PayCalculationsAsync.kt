@@ -10,20 +10,20 @@ import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
 import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
 import ms.mattschlenkrich.paycalculator.common.PayRateBasedOn
 import ms.mattschlenkrich.paycalculator.common.TaxBasedOn
-import ms.mattschlenkrich.paycalculator.data.EmployerPayRates
-import ms.mattschlenkrich.paycalculator.data.Employers
-import ms.mattschlenkrich.paycalculator.data.ExtraContainer
-import ms.mattschlenkrich.paycalculator.data.ExtraDefinitionAndType
 import ms.mattschlenkrich.paycalculator.data.PayCalculationsViewModel
 import ms.mattschlenkrich.paycalculator.data.PayDetailViewModel
-import ms.mattschlenkrich.paycalculator.data.PayPeriods
 import ms.mattschlenkrich.paycalculator.data.TaxAndAmount
-import ms.mattschlenkrich.paycalculator.data.TaxTypes
-import ms.mattschlenkrich.paycalculator.data.WorkDateExtras
-import ms.mattschlenkrich.paycalculator.data.WorkDates
-import ms.mattschlenkrich.paycalculator.data.WorkExtraTypes
-import ms.mattschlenkrich.paycalculator.data.WorkPayPeriodExtras
-import ms.mattschlenkrich.paycalculator.data.WorkTaxRules
+import ms.mattschlenkrich.paycalculator.data.entity.EmployerPayRates
+import ms.mattschlenkrich.paycalculator.data.entity.Employers
+import ms.mattschlenkrich.paycalculator.data.entity.PayPeriods
+import ms.mattschlenkrich.paycalculator.data.entity.TaxTypes
+import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
+import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
+import ms.mattschlenkrich.paycalculator.data.entity.WorkExtraTypes
+import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras
+import ms.mattschlenkrich.paycalculator.data.entity.WorkTaxRules
+import ms.mattschlenkrich.paycalculator.data.model.ExtraContainer
+import ms.mattschlenkrich.paycalculator.data.model.ExtraDefinitionAndType
 
 //private const val TAG = "PayCalculationsAsync"
 

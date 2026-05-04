@@ -37,8 +37,8 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
-import ms.mattschlenkrich.paycalculator.data.WorkDateExtras
-import ms.mattschlenkrich.paycalculator.data.WorkDates
+import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
+import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

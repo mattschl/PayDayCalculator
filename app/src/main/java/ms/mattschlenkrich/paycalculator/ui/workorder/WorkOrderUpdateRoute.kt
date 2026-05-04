@@ -13,11 +13,11 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.MaterialAndQuantity
-import ms.mattschlenkrich.paycalculator.data.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkPerformedAndQuantity
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 
 @Composable
 fun WorkOrderUpdateRoute(

@@ -30,10 +30,10 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
-import ms.mattschlenkrich.paycalculator.data.Areas
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryWithDates
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryWorkPerformedCombined
-import ms.mattschlenkrich.paycalculator.data.WorkPerformed
+import ms.mattschlenkrich.paycalculator.data.entity.Areas
+import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed
+import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWithDates
+import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWorkPerformedCombined
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

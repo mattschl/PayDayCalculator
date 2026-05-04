@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.PayRateBasedOn
-import ms.mattschlenkrich.paycalculator.data.EmployerPayRates
+import ms.mattschlenkrich.paycalculator.data.entity.EmployerPayRates
 
 @Composable
 fun PayRateItem(wage: EmployerPayRates, onClick: () -> Unit) {

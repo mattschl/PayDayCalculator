@@ -20,8 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import ms.mattschlenkrich.paycalculator.data.WorkDateExtraAndTypeAndDef
-import ms.mattschlenkrich.paycalculator.data.WorkDates
+import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
+import ms.mattschlenkrich.paycalculator.data.model.WorkDateExtraAndTypeAndDef
 
 @Composable
 fun WorkDateCard(

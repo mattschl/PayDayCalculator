@@ -45,10 +45,10 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
-import ms.mattschlenkrich.paycalculator.data.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.TaxEffectiveDates
-import ms.mattschlenkrich.paycalculator.data.TaxTypes
-import ms.mattschlenkrich.paycalculator.data.WorkTaxRules
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.entity.TaxEffectiveDates
+import ms.mattschlenkrich.paycalculator.data.entity.TaxTypes
+import ms.mattschlenkrich.paycalculator.data.entity.WorkTaxRules
 import ms.mattschlenkrich.paycalculator.data.WorkTaxViewModel
 
 @Composable

@@ -43,8 +43,8 @@ import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
-import ms.mattschlenkrich.paycalculator.data.Employers
-import ms.mattschlenkrich.paycalculator.data.WorkOrder
+import ms.mattschlenkrich.paycalculator.data.entity.Employers
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

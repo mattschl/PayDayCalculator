@@ -2,9 +2,9 @@ package ms.mattschlenkrich.paycalculator.ui.employer
 
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
-import ms.mattschlenkrich.paycalculator.data.EmployerTaxTypes
-import ms.mattschlenkrich.paycalculator.data.Employers
 import ms.mattschlenkrich.paycalculator.data.WorkTaxViewModel
+import ms.mattschlenkrich.paycalculator.data.entity.EmployerTaxTypes
+import ms.mattschlenkrich.paycalculator.data.entity.Employers
 
 fun getCurrentEmployer(
     id: Long,

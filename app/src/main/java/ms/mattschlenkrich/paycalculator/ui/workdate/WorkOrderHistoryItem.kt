@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.WorkOrderHistoryWithDates
+import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWithDates
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

@@ -11,7 +11,7 @@ import ms.mattschlenkrich.paycalculator.common.INTERVAL_BI_WEEKLY
 import ms.mattschlenkrich.paycalculator.common.INTERVAL_MONTHLY
 import ms.mattschlenkrich.paycalculator.common.INTERVAL_SEMI_MONTHLY
 import ms.mattschlenkrich.paycalculator.common.INTERVAL_WEEKLY
-import ms.mattschlenkrich.paycalculator.data.Employers
+import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import java.time.DayOfWeek
 import java.time.LocalDate
 
