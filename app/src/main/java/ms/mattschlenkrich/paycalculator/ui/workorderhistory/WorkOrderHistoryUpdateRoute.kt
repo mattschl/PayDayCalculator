@@ -245,6 +245,40 @@ fun WorkOrderHistoryUpdateRoute(
         },
         onDone = {
             coroutineScope.launch {
+                if (workPerformed.isNotBlank()) {
+                    val wp = workOrderViewModel.getOrCreateWorkPerformed(workPerformed)
+                    val a = workOrderViewModel.getOrCreateArea(area)
+                    if (wp != null) {
+                        workOrderViewModel.insertWorkOrderHistoryWorkPerformed(
+                            WorkOrderHistoryWorkPerformed(
+                                nf.generateRandomIdAsLong(),
+                                history.woHistoryId,
+                                wp.workPerformedId,
+                                a?.areaId,
+                                workPerformedNote,
+                                workPerformedActualList.size + 1,
+                                false,
+                                df.getCurrentUTCTimeAsString()
+                            )
+                        )
+                    }
+                }
+                if (materialName.isNotBlank()) {
+                    val m = workOrderViewModel.getOrCreateMaterial(materialName)
+                    if (m != null) {
+                        workOrderViewModel.insertWorkOrderHistoryMaterial(
+                            WorkOrderHistoryMaterial(
+                                nf.generateRandomIdAsLong(),
+                                history.woHistoryId,
+                                m.materialId,
+                                materialQty.toDoubleOrNull() ?: 1.0,
+                                materialActualList.size + 1,
+                                false,
+                                df.getCurrentUTCTimeAsString()
+                            )
+                        )
+                    }
+                }
                 val wo = workOrderViewModel.findWorkOrder(
                     workOrderNumber,
                     employer.employerId
