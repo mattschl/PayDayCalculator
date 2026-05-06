@@ -16,6 +16,7 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.entity.Material
 import ms.mattschlenkrich.paycalculator.data.entity.MaterialMerged
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.ui.material.composable.MaterialMergeScreen
 
 @Composable
 fun MaterialMergeRoute(

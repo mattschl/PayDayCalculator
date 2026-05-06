@@ -17,6 +17,7 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryMaterialCombined
 import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.ui.material.composable.MaterialQuantityUpdateScreen
 
 @Composable
 fun MaterialQuantityUpdateRoute(

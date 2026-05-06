@@ -30,6 +30,7 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.logic.PayCalculationsAsync
 import ms.mattschlenkrich.paycalculator.logic.PayDateProjections
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
+import ms.mattschlenkrich.paycalculator.ui.timesheet.composable.TimeSheetScreen
 import java.time.LocalDate
 
 @Composable
@@ -314,7 +315,10 @@ fun TimeSheetRoute(
         onGenerateCutoffClick = {
             if (selectedEmployer != null) {
                 coroutineScope.launch {
-                    val dates = payDayViewModel.getCutOffDatesSync(selectedEmployer!!.employerId, payPeriodsLimit)
+                    val dates = payDayViewModel.getCutOffDatesSync(
+                        selectedEmployer!!.employerId,
+                        payPeriodsLimit
+                    )
                     val nextCutOff = projections.generateNextCutOff(
                         selectedEmployer!!,
                         dates.firstOrNull()?.ppCutoffDate ?: ""

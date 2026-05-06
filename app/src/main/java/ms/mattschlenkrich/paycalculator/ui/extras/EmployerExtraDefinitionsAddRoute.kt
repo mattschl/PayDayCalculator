@@ -7,6 +7,7 @@ import ms.mattschlenkrich.paycalculator.data.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.data.entity.WorkExtrasDefinitions
 import ms.mattschlenkrich.paycalculator.data.model.ExtraDefTypeAndEmployer
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.ui.extras.composable.EmployerExtraDefinitionScreen
 
 @Composable
 fun EmployerExtraDefinitionsAddRoute(

@@ -15,6 +15,7 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.entity.WorkTaxRules
 import ms.mattschlenkrich.paycalculator.data.WorkTaxViewModel
+import ms.mattschlenkrich.paycalculator.ui.tax.composable.TaxRuleScreen
 
 @Composable
 fun TaxRuleAddRoute(

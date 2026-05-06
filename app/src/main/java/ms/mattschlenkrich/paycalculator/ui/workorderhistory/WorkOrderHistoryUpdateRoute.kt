@@ -20,6 +20,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.data.model.MaterialInSequence
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable.WorkOrderHistoryUpdateScreen
 
 @Composable
 fun WorkOrderHistoryUpdateRoute(

@@ -11,8 +11,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -23,6 +23,7 @@ import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.credentials.exceptions.NoCredentialException
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -40,7 +41,9 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.PREFS_NAME
 import ms.mattschlenkrich.paycalculator.common.SYNC_ACCOUNT_EMAIL
+import ms.mattschlenkrich.paycalculator.common.compose.PayCalculatorTheme
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
+import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import java.io.File
 import java.security.MessageDigest
 import java.security.SecureRandom
@@ -49,6 +52,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import androidx.core.content.edit
+import ms.mattschlenkrich.paycalculator.ui.sync.composable.SyncScreen
 
 private const val TAG: String = "SyncActivity"
 
@@ -65,15 +69,21 @@ class SyncActivity : ComponentActivity() {
     private var errorMessage by mutableStateOf<String?>(null)
 
     private lateinit var credentialManager: CredentialManager
+    private lateinit var settingsViewModel: SettingsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         credentialManager = CredentialManager.create(this)
+        settingsViewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
 
         setContent {
-            MaterialTheme {
+            val settings by settingsViewModel.settings.observeAsState()
+
+            PayCalculatorTheme(
+                fontSize = settings?.fontSize ?: 16f
+            ) {
                 SyncScreen(
                     docContent = docContent,
                     isLoading = isLoading,

@@ -27,6 +27,7 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.data.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.data.TaxAndAmount
 import ms.mattschlenkrich.paycalculator.logic.PayCalculationsAsync
+import ms.mattschlenkrich.paycalculator.ui.paydetail.composable.PayDetailScreen
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import java.time.LocalDate
 

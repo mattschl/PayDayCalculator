@@ -22,6 +22,7 @@ import ms.mattschlenkrich.paycalculator.data.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.data.entity.TaxTypes
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.ui.tax.composable.TaxTypeScreen
 
 @Composable
 fun TaxTypeAddRoute(

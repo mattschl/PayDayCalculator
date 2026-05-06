@@ -18,6 +18,7 @@ import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.data.WorkPerformedAndQuantity
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.ui.workorder.composable.WorkOrderUpdateScreen
 
 @Composable
 fun WorkOrderUpdateRoute(

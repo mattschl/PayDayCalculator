@@ -7,7 +7,7 @@ import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.data.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
-import ms.mattschlenkrich.paycalculator.ui.extras.WorkDateExtraScreen
+import ms.mattschlenkrich.paycalculator.ui.extras.composable.WorkDateExtraScreen
 
 @Composable
 fun WorkDateExtraAddRoute(
