@@ -1,10 +1,10 @@
 package ms.mattschlenkrich.paycalculator
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import ms.mattschlenkrich.paycalculator.data.Employers
-import ms.mattschlenkrich.paycalculator.data.PayPeriods
+import kotlinx.coroutines.runBlocking
+import ms.mattschlenkrich.paycalculator.data.PayCalculationsViewModel
+import ms.mattschlenkrich.paycalculator.data.PayDetailViewModel
+import ms.mattschlenkrich.paycalculator.data.entity.Employers
+import ms.mattschlenkrich.paycalculator.data.entity.PayPeriods
 import ms.mattschlenkrich.paycalculator.logic.PayCalculationsAsync
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,12 +15,11 @@ import org.mockito.junit.MockitoJUnitRunner
 class PayCalculationsTest {
 
     @Mock
-    private val scope = CoroutineScope(Dispatchers.Default)
+    private lateinit var payCalculationsViewModel: PayCalculationsViewModel
 
     @Mock
-    private val mainActivity = MainActivity()
+    private lateinit var payDetailViewModel: PayDetailViewModel
 
-    @Mock
     private val employerMock = Employers(
         -1550413509,
         "Cornerstone",
@@ -34,7 +33,6 @@ class PayCalculationsTest {
         "2024-10-15 20:49:52"
     )
 
-    @Mock
     private val payPeriodMock = PayPeriods(
         -493210422,
         "2025-01-04",
@@ -43,18 +41,15 @@ class PayCalculationsTest {
         "2024-12-22 09:30:31"
     )
 
-
-    private val payCalculationsAsync = PayCalculationsAsync(
-        mainActivity,
-        employerMock,
-        payPeriodMock
-    )
-
-
     @Test
-    fun getPayRateFromDb_answerIs_31_93() {
-        scope.launch {
-            assert(payCalculationsAsync.calculatePayRateFromDb() == 31.93)
-        }
+    fun getPayRateFromDb_answerIs_31_93() = runBlocking {
+        val payCalculationsAsync = PayCalculationsAsync(
+            payCalculationsViewModel,
+            payDetailViewModel,
+            employerMock,
+            payPeriodMock
+        )
+
+        assert(payCalculationsAsync.calculatePayRateFromDb() == 31.93)
     }
 }
