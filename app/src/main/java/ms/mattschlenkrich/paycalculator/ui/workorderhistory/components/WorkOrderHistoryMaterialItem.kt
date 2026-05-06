@@ -29,7 +29,7 @@ fun WorkOrderHistoryMaterialItem(
             containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
+        Column(modifier = Modifier.padding(4.dp)) {
             val display =
                 "${index + 1}) ${NumberFunctions().displayNumberFromDouble(item.mQty)} x ${item.mName}"
             Text(

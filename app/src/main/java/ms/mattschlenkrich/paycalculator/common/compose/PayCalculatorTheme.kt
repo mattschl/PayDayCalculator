@@ -94,8 +94,8 @@ fun PayCalculatorTheme(
     }
 
     val density = LocalDensity.current
-    val minHeight = with(density) { (fontSize * 1.1f * 1.1f).sp.toDp() }
-    val verticalPadding = with(density) { (fontSize * 0.1f).sp.toDp() }
+    val minHeight = with(density) { (fontSize * 1.1f).sp.toDp() }
+    val verticalPadding = with(density) { (fontSize * 0.05f).sp.toDp() }
 
     val dimensions = ExtendedDimensions(
         textFieldMinHeight = minHeight,
@@ -108,8 +108,8 @@ fun PayCalculatorTheme(
         dropdownItemPadding = PaddingValues(
             start = 12.dp,
             end = 12.dp,
-            top = verticalPadding,
-            bottom = verticalPadding
+            top = 1.dp,
+            bottom = 1.dp
         )
     )
 

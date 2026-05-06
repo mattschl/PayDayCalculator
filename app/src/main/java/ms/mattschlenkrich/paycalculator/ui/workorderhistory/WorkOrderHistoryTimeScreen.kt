@@ -294,7 +294,7 @@ fun TimeWorkedItem(
             else -> stringResource(R.string._break)
         }
 
-        Column(modifier = Modifier.padding(12.dp)) {
+        Column(modifier = Modifier.padding(6.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,

@@ -34,7 +34,7 @@ fun EmployerExtrasCard(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
+        Column(modifier = Modifier.padding(4.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -59,7 +59,7 @@ fun EmployerExtrasCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onExtraClick(extra) }
-                        .padding(8.dp),
+                        .padding(4.dp),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }

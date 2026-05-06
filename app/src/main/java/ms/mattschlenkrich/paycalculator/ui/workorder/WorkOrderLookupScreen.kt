@@ -112,7 +112,7 @@ fun WorkOrderLookupScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
+                            .padding(4.dp)
                     ) {
                         SelectAllOutlinedTextField(
                             value = searchQuery,
@@ -208,7 +208,7 @@ fun WorkOrderLookupItem(
     ) {
         Column(
             modifier = Modifier
-                .padding(vertical = 8.dp, horizontal = 4.dp)
+                .padding(vertical = 4.dp, horizontal = 4.dp)
         ) {
             Text(
                 text = workOrder.woNumber,

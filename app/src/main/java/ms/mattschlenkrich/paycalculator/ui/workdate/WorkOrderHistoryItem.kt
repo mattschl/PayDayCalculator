@@ -37,7 +37,7 @@ fun WorkOrderHistoryItem(
                     onClick = { onClick(history) },
                     onLongClick = { onLongClick(history) }
                 )
-                .padding(8.dp)
+                .padding(4.dp)
         ) {
             Text(
                 text = "${history.workOrder.woNumber} - ${history.workOrder.woAddress}",

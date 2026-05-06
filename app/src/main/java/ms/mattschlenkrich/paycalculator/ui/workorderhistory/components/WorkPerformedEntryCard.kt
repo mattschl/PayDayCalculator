@@ -3,6 +3,7 @@ package ms.mattschlenkrich.paycalculator.ui.workorderhistory.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -45,7 +46,7 @@ fun WorkPerformedEntryCard(
     ) {
         Column(
             modifier = Modifier
-//                .padding(12.dp)
+                .padding(6.dp)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
         ) {

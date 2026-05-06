@@ -94,7 +94,7 @@ fun WorkOrderAddScreen(
                     )
                 ) {
                     Column(
-                        modifier = Modifier.padding(8.dp),
+                        modifier = Modifier.padding(4.dp),
                         verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
                     ) {
                         // Employer selection
@@ -150,7 +150,7 @@ fun WorkOrderAddScreen(
                     )
                 ) {
                     Column(
-                        modifier = Modifier.padding(8.dp),
+                        modifier = Modifier.padding(4.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(

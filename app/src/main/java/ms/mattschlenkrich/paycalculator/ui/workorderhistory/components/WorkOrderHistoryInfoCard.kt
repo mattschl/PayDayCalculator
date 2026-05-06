@@ -59,7 +59,7 @@ fun WorkOrderHistoryInfoCard(
     ) {
         Column(
             modifier = Modifier
-                .padding(12.dp)
+                .padding(6.dp)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)

@@ -102,8 +102,8 @@ fun JobSpecViewScreen(
                 LazyVerticalStaggeredGrid(
                     columns = StaggeredGridCells.Fixed(columns),
                     modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalItemSpacing = 8.dp
+                    horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
+                    verticalItemSpacing = ELEMENT_SPACING
                 ) {
                     items(jobSpecList) { item ->
                         JobSpecItem(item, onJobSpecClick)

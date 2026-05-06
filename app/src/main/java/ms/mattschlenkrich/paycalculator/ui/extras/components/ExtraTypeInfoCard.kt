@@ -35,7 +35,7 @@ fun ExtraTypeInfoCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             if (extraType.wetIsDeleted) {

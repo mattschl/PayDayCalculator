@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -55,11 +56,7 @@ fun SyncScreen(
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
     Scaffold(
-        /*  topBar = {
-              TopAppBar(
-                  title = { Text("SyncScreen") }
-              )
-          }*/
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { innerPadding ->
         Surface(
             modifier = Modifier

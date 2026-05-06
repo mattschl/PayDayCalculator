@@ -94,8 +94,8 @@ fun WorkOrderViewScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = SCREEN_PADDING_HORIZONTAL),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalItemSpacing = 8.dp
+            horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
+            verticalItemSpacing = ELEMENT_SPACING
         ) {
             item(span = StaggeredGridItemSpan.FullLine) {
                 Column {
@@ -217,7 +217,7 @@ fun WorkOrderListItem(
 
             Column(
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(4.dp)
                     .fillMaxWidth()
             ) {
                 Row(

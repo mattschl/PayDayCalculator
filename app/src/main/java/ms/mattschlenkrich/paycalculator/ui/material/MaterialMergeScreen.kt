@@ -170,7 +170,7 @@ fun MaterialMergeScreen(
                         colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
                         Column(
-                            modifier = Modifier.padding(8.dp),
+                            modifier = Modifier.padding(4.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
@@ -212,7 +212,7 @@ fun MaterialMergeScreen(
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
                     ) {
                         Button(
                             onClick = { showMergeOptionsDialog = true },
@@ -273,7 +273,7 @@ fun MaterialSelectionItem(item: Material, onListItemSelected: (Material) -> Unit
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onListItemSelected(item) }
-            .padding(horizontal = 8.dp, vertical = 2.dp)
+            .padding(horizontal = 4.dp, vertical = 2.dp)
     ) {
         Text(
             text = item.mName,

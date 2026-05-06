@@ -126,6 +126,22 @@ fun WorkOrderUpdateRoute(
         materialsList = materialsList,
         onDoneClick = {
             coroutineScope.launch {
+                if (jobSpecText.isNotBlank()) {
+                    val js = workOrderViewModel.getOrCreateJobSpec(jobSpecText.trim())
+                    val a = workOrderViewModel.getOrCreateArea(areaText.trim())
+                    workOrderViewModel.insertWorkOrderJobSpec(
+                        WorkOrderJobSpec(
+                            nf.generateRandomIdAsLong(),
+                            initialWo.workOrderId,
+                            js.jobSpecId,
+                            a?.areaId,
+                            workPerformedNote.trim(),
+                            addedJobSpecs.size + 1,
+                            false,
+                            df.getCurrentUTCTimeAsString()
+                        )
+                    )
+                }
                 workOrderViewModel.updateWorkOrder(
                     initialWo.copy(
                         woNumber = woNumber.trim(),

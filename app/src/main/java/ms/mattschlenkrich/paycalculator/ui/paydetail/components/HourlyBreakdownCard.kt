@@ -30,7 +30,7 @@ fun HourlyBreakdownCard(data: HourlyBreakdownData) {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
+        Column(modifier = Modifier.padding(4.dp)) {
             Text(
                 text = stringResource(R.string.hourly_details),
                 style = MaterialTheme.typography.titleMedium,
@@ -40,7 +40,9 @@ fun HourlyBreakdownCard(data: HourlyBreakdownData) {
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             data.items.forEach { item ->
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(

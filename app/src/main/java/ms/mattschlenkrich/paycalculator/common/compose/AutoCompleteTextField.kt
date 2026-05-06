@@ -14,16 +14,15 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
 
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
@@ -41,19 +40,34 @@ fun <T> AutoCompleteTextField(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
-    val filteredSuggestions = remember { mutableStateListOf<T>() }
 
-    LaunchedEffect(value, suggestions) {
-        snapshotFlow { value }
-            .debounce(100)
-            .collectLatest { query ->
-                val result = suggestions.asSequence()
-                    .filter { itemToString(it).contains(query, ignoreCase = true) }
+    // Internal state for immediate feedback
+    var textFieldValue by remember {
+        mutableStateOf(TextFieldValue(text = value, selection = TextRange(value.length)))
+    }
+
+    // Sync with external value updates
+    LaunchedEffect(value) {
+        if (value != textFieldValue.text) {
+            textFieldValue = textFieldValue.copy(
+                text = value,
+                selection = TextRange(value.length)
+            )
+        }
+    }
+
+    // Snappy filtering logic using derivedStateOf
+    val filteredSuggestions by remember(textFieldValue.text, suggestions) {
+        derivedStateOf {
+            if (textFieldValue.text.isEmpty()) {
+                emptyList()
+            } else {
+                suggestions.asSequence()
+                    .filter { itemToString(it).contains(textFieldValue.text, ignoreCase = true) }
                     .take(50)
                     .toList()
-                filteredSuggestions.clear()
-                filteredSuggestions.addAll(result)
             }
+        }
     }
 
     ExposedDropdownMenuBox(
@@ -62,10 +76,13 @@ fun <T> AutoCompleteTextField(
         modifier = modifier
     ) {
         BasicTextField(
-            value = value,
+            value = textFieldValue,
             onValueChange = {
-                onValueChange(it)
-                expanded = it.isNotEmpty()
+                textFieldValue = it
+                if (it.text != value) {
+                    onValueChange(it.text)
+                }
+                expanded = it.text.isNotEmpty() && filteredSuggestions.isNotEmpty()
             },
             modifier = Modifier
                 .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true)
@@ -82,7 +99,7 @@ fun <T> AutoCompleteTextField(
             keyboardOptions = keyboardOptions
         ) { innerTextField ->
             StandardDecorationBox(
-                value = value,
+                value = textFieldValue.text,
                 innerTextField = innerTextField,
                 interactionSource = interactionSource,
                 label = { Text(label) },
@@ -98,10 +115,16 @@ fun <T> AutoCompleteTextField(
                 modifier = Modifier.exposedDropdownSize()
             ) {
                 filteredSuggestions.forEach { suggestion ->
+                    val suggestionText = itemToString(suggestion)
                     DropdownMenuItem(
-                        text = { Text(itemToString(suggestion)) },
+                        text = { Text(suggestionText) },
                         onClick = {
                             onItemSelected(suggestion)
+                            // Selection update with cursor management
+                            textFieldValue = TextFieldValue(
+                                text = suggestionText,
+                                selection = TextRange(suggestionText.length)
+                            )
                             expanded = false
                         },
                         modifier = Modifier

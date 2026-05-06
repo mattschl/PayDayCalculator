@@ -18,15 +18,18 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
@@ -60,72 +63,80 @@ fun ExtrasCard(
                     onClick = onAddClick,
                     modifier = Modifier
                         .padding(end = 4.dp)
-                        .size(40.dp),
+                        .size(32.dp),
                     containerColor = MaterialTheme.colorScheme.secondaryContainer
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = addButtonContentDescription)
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = addButtonContentDescription,
+                        modifier = Modifier.size(18.dp)
+                    )
                 }
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold
                 )
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(2.dp))
 
-            extras.forEach { extra ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onExtraClick(extra) },
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        extra.extraName,
-                        modifier = Modifier.weight(1.5f),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Text(
-                        nf.displayDollars(extra.amount),
-                        modifier = Modifier.weight(1f),
-                        textAlign = TextAlign.End,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Checkbox(
-                        checked = extra.amount > 0.0,
-                        onCheckedChange = { onActiveChange(extra, it) },
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                }
-            }
-
-            if (taxes.isNotEmpty()) {
-                taxes.forEach { tax ->
+            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
+                extras.forEach { extra ->
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .clickable { onExtraClick(extra) }
+                            .padding(vertical = 2.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            tax.taxType,
+                            extra.extraName,
                             modifier = Modifier.weight(1.5f),
                             style = MaterialTheme.typography.bodySmall
                         )
                         Text(
-                            nf.displayDollars(tax.amount),
+                            nf.displayDollars(extra.amount),
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.End,
                             style = MaterialTheme.typography.bodySmall
                         )
-                        // Empty spacer to align with the Checkbox in extras
-                        Spacer(
-                            modifier = Modifier
-                                .width(48.dp)
-                                .padding(start = 4.dp)
+                        Checkbox(
+                            checked = extra.amount > 0.0,
+                            onCheckedChange = { onActiveChange(extra, it) },
+                            modifier = Modifier.padding(start = 4.dp)
                         )
+                    }
+                }
+
+                if (taxes.isNotEmpty()) {
+                    taxes.forEach { tax ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 2.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                tax.taxType,
+                                modifier = Modifier.weight(1.5f),
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            Text(
+                                nf.displayDollars(tax.amount),
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.End,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            // Empty spacer to align with the Checkbox in extras
+                            Spacer(
+                                modifier = Modifier
+                                    .width(32.dp)
+                                    .padding(start = 4.dp)
+                            )
+                        }
                     }
                 }
             }

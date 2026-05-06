@@ -47,7 +47,7 @@ fun JobSpecsEntryCard(
         )
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(6.dp),
             verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
         ) {
             Text(

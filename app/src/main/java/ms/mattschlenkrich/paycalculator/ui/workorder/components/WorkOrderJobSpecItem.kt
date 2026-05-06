@@ -34,7 +34,7 @@ fun WorkOrderJobSpecItem(
                         ?: "") +
                     (combined.workOrderJobSpec.wojsNote?.let { " - $it" } ?: ""),
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(4.dp)
         )
     }
 }
