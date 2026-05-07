@@ -72,7 +72,7 @@ fun <T> AutoCompleteTextField(
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = it },
+        onExpandedChange = { },
         modifier = modifier
     ) {
         BasicTextField(
@@ -128,7 +128,7 @@ fun <T> AutoCompleteTextField(
                             expanded = false
                         },
                         modifier = Modifier
-                            .heightIn(min = StandardTextFieldDefaults.minHeight())
+                            .heightIn(min = StandardTextFieldDefaults.minHeight(), max = StandardTextFieldDefaults.maxHeight())
                             .fillMaxWidth(),
                         contentPadding = StandardTextFieldDefaults.dropdownItemPadding()
                     )

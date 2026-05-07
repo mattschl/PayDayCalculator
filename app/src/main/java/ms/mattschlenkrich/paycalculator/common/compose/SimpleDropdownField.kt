@@ -42,7 +42,7 @@ fun <T> SimpleDropdownField(
             textStyle = StandardTextFieldDefaults.textStyle(),
             modifier = Modifier
                 .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true)
-                .heightIn(min = StandardTextFieldDefaults.minHeight())
+                .heightIn(min = StandardTextFieldDefaults.minHeight(), max = StandardTextFieldDefaults.maxHeight())
                 .fillMaxWidth(),
             interactionSource = interactionSource
         ) { innerTextField ->
@@ -74,7 +74,7 @@ fun <T> SimpleDropdownField(
                         expanded = false
                     },
                     modifier = Modifier
-                        .heightIn(min = StandardTextFieldDefaults.minHeight())
+                        .heightIn(min = StandardTextFieldDefaults.minHeight(), max = StandardTextFieldDefaults.maxHeight())
                         .fillMaxWidth(),
                     contentPadding = StandardTextFieldDefaults.dropdownItemPadding()
                 )

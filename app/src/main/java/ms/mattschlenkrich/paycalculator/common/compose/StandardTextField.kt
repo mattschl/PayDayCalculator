@@ -19,6 +19,9 @@ object StandardTextFieldDefaults {
     fun minHeight() = getTextFieldDimensions().textFieldMinHeight
 
     @Composable
+    fun maxHeight() = getTextFieldDimensions().textFieldMaxHeight
+
+    @Composable
     fun borderThickness() = getTextFieldDimensions().textFieldBorderThickness
 
     @Composable
