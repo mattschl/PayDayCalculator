@@ -2,7 +2,6 @@ import com.android.build.api.dsl.ApplicationExtension
 
 plugins {
     id("com.android.application")
-//    id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
     id("kotlin-parcelize")
     kotlin("plugin.compose") version "2.3.21"
@@ -35,9 +34,6 @@ extensions.configure<ApplicationExtension> {
         targetSdk = 37
         versionCode = 2
         versionName = "v1.0"
-//        ksp {
-//            arg("room.schemaLocation", "$projectDir/schemas")
-//        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         signingConfig = signingConfigs.getByName("debug")
@@ -66,12 +62,6 @@ extensions.configure<ApplicationExtension> {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
-
-    buildToolsVersion = "36.0.0"
-    compileSdkMinor = 0
-//    kotlinOptions {
-//        jvmTarget = JavaVersion.VERSION_17
-//    }
 }
 
 ksp {
@@ -87,7 +77,7 @@ kotlin {
 }
 
 dependencies {
-
+    implementation("org.jetbrains.kotlin:kotlin-parcelize-runtime:2.3.21")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.gson)
@@ -106,13 +96,10 @@ dependencies {
     implementation(libs.googleid)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
-//    testImplementation("junit:junit:4.12")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-//    val roomVersion = "2.8.4"
     implementation(libs.androidx.room.runtime)
-    // To use Kotlin symbol processing tool (ksp)id("androidx.navigation.safeargs.kotlin")
     ksp(libs.androidx.room.compiler)
 
     //coRoutines
@@ -122,15 +109,10 @@ dependencies {
     // Kotlin Navigation
     implementation(libs.androidx.navigation.compose)
 
-    //Lifecycle architecture
-//    val lifecycleVersion = "2.10.0"
     // ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     // LiveData
     implementation(libs.androidx.lifecycle.livedata.ktx)
-
-//    val material3Version = "1.4.0"
-//    val composeVersion = "1.7.8"
 
     implementation(libs.androidx.material3)
     implementation(libs.androidx.activity.compose)

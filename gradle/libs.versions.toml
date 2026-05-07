@@ -20,7 +20,6 @@ materialVersion = "1.13.0"
 mockitoCore = "5.23.0"
 mockitoKotlin = "6.3.0"
 mockk = "1.14.9"
-navigation = "2.9.8"
 navigationCompose = "2.9.8"
 playServicesAuth = "21.5.1"
 recyclerview = "1.4.0"
@@ -43,7 +42,6 @@ androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifec
 androidx-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core", version.ref = "material" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "material" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
-androidx-navigation-safe-args-gradle-plugin = { group = "androidx.navigation", name = "navigation-safe-args-gradle-plugin", version.ref = "navigation" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
