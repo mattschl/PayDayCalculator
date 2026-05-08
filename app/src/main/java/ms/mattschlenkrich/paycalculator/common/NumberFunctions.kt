@@ -22,9 +22,9 @@ class NumberFunctions {
         return dollarFormat.format(num)
     }
 
-    fun displayDollarsWithoutZeros(num: Double): String {
+    /*fun displayDollarsWithoutZeros(num: Double): String {
         return "$" + displayNumberFromDouble(num)
-    }
+    }*/
 
 
     fun displayNumberFromDouble(num: Double): String {

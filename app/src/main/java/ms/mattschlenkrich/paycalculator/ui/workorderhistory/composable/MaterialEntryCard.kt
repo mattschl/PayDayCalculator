@@ -54,7 +54,7 @@ fun MaterialEntryCard(
                 color = MaterialTheme.colorScheme.onTertiaryContainer,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-            Row() {
+            Row {
                 DecimalOutlinedTextField(
                     value = materialQty,
                     onValueChange = onMaterialQtyChange,

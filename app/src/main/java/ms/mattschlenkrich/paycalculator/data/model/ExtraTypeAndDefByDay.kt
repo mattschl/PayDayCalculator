@@ -6,7 +6,6 @@ import androidx.room.Embedded
 import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
-import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_EXTRA_TYPES
 import ms.mattschlenkrich.paycalculator.data.entity.WorkExtraTypes
 import ms.mattschlenkrich.paycalculator.data.entity.WorkExtrasDefinitions

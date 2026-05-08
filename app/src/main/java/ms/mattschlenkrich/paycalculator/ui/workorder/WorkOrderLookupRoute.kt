@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
-import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.ui.workorder.composable.WorkOrderLookupScreen
@@ -24,7 +23,7 @@ fun WorkOrderLookupRoute(
         workOrderViewModel.searchWorkOrders(employer.employerId, "%$searchQuery%")
             .observeAsState(emptyList())
     } else {
-        remember { mutableStateOf(emptyList<WorkOrder>()) }
+        remember { mutableStateOf(emptyList()) }
     }
 
     WorkOrderLookupScreen(

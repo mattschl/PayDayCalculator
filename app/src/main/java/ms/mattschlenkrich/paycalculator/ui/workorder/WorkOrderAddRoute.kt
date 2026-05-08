@@ -11,7 +11,6 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
@@ -33,7 +32,7 @@ fun WorkOrderAddRoute(
     val currentEmployer = mainViewModel.getEmployer()
 
     var selectedEmployer by remember {
-        mutableStateOf<Employers?>(
+        mutableStateOf(
             currentEmployer
         )
     }

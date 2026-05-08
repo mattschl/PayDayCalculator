@@ -4,7 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import java.io.File
 
-class SettingsManager(private val context: Context) {
+class SettingsManager(context: Context) {
     private val gson = Gson()
     private val settingsFile = File(context.filesDir, "settings.json")
 

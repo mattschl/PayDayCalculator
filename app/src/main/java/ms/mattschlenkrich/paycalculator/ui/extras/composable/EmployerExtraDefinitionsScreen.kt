@@ -68,7 +68,7 @@ fun EmployerExtraDefinitionsScreen(
         null
     }
     val extraTypes by (extraTypesState ?: remember {
-        MutableLiveData(emptyList<WorkExtraTypes>())
+        MutableLiveData(emptyList())
     }).observeAsState(emptyList())
 
     var selectedExtraType by remember { mutableStateOf(mainViewModel.getWorkExtraType()) }
@@ -84,7 +84,7 @@ fun EmployerExtraDefinitionsScreen(
         null
     }
     val definitions by (definitionsState ?: remember {
-        MutableLiveData(emptyList<ExtraDefTypeAndEmployer>())
+        MutableLiveData(emptyList())
     }).observeAsState(emptyList())
 
     val sortedDefinitions = remember(definitions) {

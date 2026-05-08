@@ -5,9 +5,10 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
+import androidx.core.database.sqlite.transaction
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_NAME
 import java.io.File
-import androidx.core.database.sqlite.transaction
+
 private const val TAG = "MergeHelper"
 
 class MergeHelper(private val context: Context, private val remoteDbPath: String) {
@@ -458,30 +459,29 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             val colName = remoteCursor.getColumnName(i)
             if (colName == spec.pkColumn || colName == spec.updateTimeColumn) continue
 
-            val remoteIdx = i
             val localIdx = localCursor.getColumnIndex(colName)
             if (localIdx == -1) continue
 
-            if (remoteCursor.isNull(remoteIdx) != localCursor.isNull(localIdx)) return true
-            if (remoteCursor.isNull(remoteIdx)) continue
+            if (remoteCursor.isNull(i) != localCursor.isNull(localIdx)) return true
+            if (remoteCursor.isNull(i)) continue
 
-            val type = remoteCursor.getType(remoteIdx)
+            val type = remoteCursor.getType(i)
             if (type != localCursor.getType(localIdx)) return true
 
             val isDifferent = when (type) {
-                Cursor.FIELD_TYPE_INTEGER -> remoteCursor.getLong(remoteIdx) != localCursor.getLong(
+                Cursor.FIELD_TYPE_INTEGER -> remoteCursor.getLong(i) != localCursor.getLong(
                     localIdx
                 )
 
-                Cursor.FIELD_TYPE_FLOAT -> remoteCursor.getDouble(remoteIdx) != localCursor.getDouble(
+                Cursor.FIELD_TYPE_FLOAT -> remoteCursor.getDouble(i) != localCursor.getDouble(
                     localIdx
                 )
 
-                Cursor.FIELD_TYPE_STRING -> remoteCursor.getString(remoteIdx) != localCursor.getString(
+                Cursor.FIELD_TYPE_STRING -> remoteCursor.getString(i) != localCursor.getString(
                     localIdx
                 )
 
-                Cursor.FIELD_TYPE_BLOB -> !remoteCursor.getBlob(remoteIdx)
+                Cursor.FIELD_TYPE_BLOB -> !remoteCursor.getBlob(i)
                     .contentEquals(localCursor.getBlob(localIdx))
 
                 else -> false

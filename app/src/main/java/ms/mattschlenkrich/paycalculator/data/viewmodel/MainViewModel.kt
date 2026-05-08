@@ -89,9 +89,9 @@ class MainViewModel(
 
     }
 
-    fun getWorkOrderJobSpecId(): Long? {
+    /*fun getWorkOrderJobSpecId(): Long? {
         return workOrderJobSpecId
-    }
+    }*/
 
     fun setWorkOrderJobSpecId(newWorkOrderJobSpecId: Long?) {
         workOrderJobSpecId = newWorkOrderJobSpecId
@@ -137,7 +137,7 @@ class MainViewModel(
         return areaId
     }
 
-    fun setExtraContainer(newExtraContainer: ExtraContainer?) {
+    /*fun setExtraContainer(newExtraContainer: ExtraContainer?) {
         extraContainer = newExtraContainer
     }
 
@@ -151,7 +151,7 @@ class MainViewModel(
 
     fun getMaterialInSequence(): MaterialInSequence? {
         return materialInSequence
-    }
+    }*/
 
     fun setMaterial(newMaterial: Material?) {
         material = newMaterial
@@ -169,13 +169,13 @@ class MainViewModel(
         return workPerformedId
     }
 
-    fun getJobSpec(): JobSpec? {
-        return jobSpec
-    }
+    /*  fun getJobSpec(): JobSpec? {
+          return jobSpec
+      }
 
-    fun setJobSpec(newJobSpec: JobSpec?) {
-        jobSpec = newJobSpec
-    }
+      fun setJobSpec(newJobSpec: JobSpec?) {
+          jobSpec = newJobSpec
+      }*/
 
     fun getWorkOrder(): WorkOrder? {
         return workOrder
@@ -209,17 +209,17 @@ class MainViewModel(
         return tempWorkOrderHistoryInfo
     }
 
-    fun setPayPeriodExtraList(newList: ArrayList<WorkPayPeriodExtras>) {
-        payPeriodExtraList = newList
-    }
+    /* fun setPayPeriodExtraList(newList: ArrayList<WorkPayPeriodExtras>) {
+         payPeriodExtraList = newList
+     }
 
-    fun getPayPeriodExtraList(): ArrayList<WorkPayPeriodExtras> {
-        return payPeriodExtraList
-    }
+     fun getPayPeriodExtraList(): ArrayList<WorkPayPeriodExtras> {
+         return payPeriodExtraList
+     }
 
-    fun clearPayPeriodExtraList() {
-        payPeriodExtraList.clear()
-    }
+     fun clearPayPeriodExtraList() {
+         payPeriodExtraList.clear()
+     }*/
 
     fun setPayPeriodExtra(newExtra: WorkPayPeriodExtras?) {
         payPeriodExtra = newExtra
@@ -229,13 +229,13 @@ class MainViewModel(
         return payPeriodExtra
     }
 
-    fun getIsCredit(): Boolean {
+    /*fun getIsCredit(): Boolean {
         return isCredit
     }
 
     fun setIsCredit(b: Boolean) {
         isCredit = b
-    }
+    }*/
 
     fun getWorkDateExtra(): WorkDateExtras? {
         return workDateExtra
@@ -249,9 +249,9 @@ class MainViewModel(
         workDateExtraList = extraList
     }
 
-    fun getWorkDateExtraList(): ArrayList<WorkDateExtras> {
-        return workDateExtraList
-    }
+    /* fun getWorkDateExtraList(): ArrayList<WorkDateExtras> {
+         return workDateExtraList
+     }*/
 
     fun setPayRate(newRate: EmployerPayRates?) {
         payRate = newRate
@@ -293,7 +293,7 @@ class MainViewModel(
         return cutOffDate
     }
 
-    fun setWorkDateString(date: String?) {
+    /*fun setWorkDateString(date: String?) {
         workDate = date
     }
 
@@ -307,7 +307,7 @@ class MainViewModel(
 
     fun getEmployerString(): String? {
         return employerString
-    }
+    }*/
 
     fun setExtraDefinitionFull(newExtra: ExtraDefTypeAndEmployer?) {
         extraDefinitionFull = newExtra
@@ -317,30 +317,30 @@ class MainViewModel(
         return extraDefinitionFull
     }
 
-    fun setCallingFragment(newFragment: String?) {
-        callingFragment = newFragment
-    }
+    /* fun setCallingFragment(newFragment: String?) {
+         callingFragment = newFragment
+     }
 
-    fun addCallingFragment(newFragment: String?) {
-        if (callingFragment != null) {
-            callingFragment += ", $newFragment"
-        } else {
-            callingFragment = newFragment
-        }
-    }
+     fun addCallingFragment(newFragment: String?) {
+         if (callingFragment != null) {
+             callingFragment += ", $newFragment"
+         } else {
+             callingFragment = newFragment
+         }
+     }
 
-    fun removeCallingFragment(oldFragment: String) {
-        callingFragment = if (callingFragment != null) {
-            callingFragment!!.replace(", $oldFragment", "")
-            callingFragment!!.replace(oldFragment, "")
-        } else {
-            null
-        }
-    }
+     fun removeCallingFragment(oldFragment: String) {
+         callingFragment = if (callingFragment != null) {
+             callingFragment!!.replace(", $oldFragment", "")
+             callingFragment!!.replace(oldFragment, "")
+         } else {
+             null
+         }
+     }
 
-    fun getCallingFragment(): String? {
-        return callingFragment
-    }
+     fun getCallingFragment(): String? {
+         return callingFragment
+     }*/
 
     fun setEffectiveDateString(newDate: String?) {
         effectiveDateString = newDate
@@ -390,44 +390,44 @@ class MainViewModel(
         return taxRule
     }
 
-    fun clearAllData() {
-        employer = null
-        employerString = null
-        taxType = null
-        taxTypeString = null
-        taxRule = null
-        effectiveDateString = null
-        taxLevel = null
-        callingFragment = null
-        extraDefinitionFull = null
-        extraType = null
-        workDateExtraList.clear()
-        workDateExtra = null
-        workDate = null
-        workDateObject = null
-        cutOffDate = null
-        payPeriod = null
-        payRate = null
-        isCredit = false
-        payPeriodExtra = null
-        payPeriodExtraList.clear()
-        tempWorkOrderHistoryInfo = null
-        workOrderHistory = null
-        workOrderNumber = null
-        workOrder = null
-        jobSpec = null
-        jobSpecId = null
-        jobSpecIsMaster = true
-        workOrderJobSpecId = null
-        workPerformedId = null
-        workPerformedIsParent = true
-        workPerformedHistoryId = null
-        material = null
-        materialId = null
-        materialIsParent = true
-        materialInSequence = null
-        extraContainer = null
-        areaId = null
-        workOrderHistoryTimeWorkedCombined = null
-    }
+    /* fun clearAllData() {
+         employer = null
+         employerString = null
+         taxType = null
+         taxTypeString = null
+         taxRule = null
+         effectiveDateString = null
+         taxLevel = null
+         callingFragment = null
+         extraDefinitionFull = null
+         extraType = null
+         workDateExtraList.clear()
+         workDateExtra = null
+         workDate = null
+         workDateObject = null
+         cutOffDate = null
+         payPeriod = null
+         payRate = null
+         isCredit = false
+         payPeriodExtra = null
+         payPeriodExtraList.clear()
+         tempWorkOrderHistoryInfo = null
+         workOrderHistory = null
+         workOrderNumber = null
+         workOrder = null
+         jobSpec = null
+         jobSpecId = null
+         jobSpecIsMaster = true
+         workOrderJobSpecId = null
+         workPerformedId = null
+         workPerformedIsParent = true
+         workPerformedHistoryId = null
+         material = null
+         materialId = null
+         materialIsParent = true
+         materialInSequence = null
+         extraContainer = null
+         areaId = null
+         workOrderHistoryTimeWorkedCombined = null
+     }*/
 }

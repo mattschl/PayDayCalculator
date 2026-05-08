@@ -10,7 +10,7 @@ class EmployerLogicViewModel(
     val app: Application,
     val employerViewModel: EmployerViewModel,
 ) : ViewModel() {
-    var previousEmployerObj: EmployerObj = EmployerObj()
+    //    var previousEmployerObj: EmployerObj = EmployerObj()
     var currentEmployerObj: EmployerObj = EmployerObj()
     private lateinit var employerList: List<Employers>
 
@@ -44,12 +44,12 @@ class EmployerLogicViewModel(
         return employerList
     }
 
-    fun addEmployer() {
-        employerViewModel.insertEmployer(currentEmployerObj.getEmployer())
-    }
-
-    fun updateEmployer() {
-        employerViewModel.updateEmployer(currentEmployerObj.getEmployer())
-    }
+//    fun addEmployer() {
+//        employerViewModel.insertEmployer(currentEmployerObj.getEmployer())
+//    }
+//
+//    fun updateEmployer() {
+//        employerViewModel.updateEmployer(currentEmployerObj.getEmployer())
+//    }
 
 }

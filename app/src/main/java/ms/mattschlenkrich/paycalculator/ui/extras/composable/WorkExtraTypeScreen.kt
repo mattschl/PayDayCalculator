@@ -54,7 +54,7 @@ fun WorkExtraTypeScreen(
 ) {
     var wetName by remember { mutableStateOf(initialExtraType?.wetName ?: "") }
     var wetAppliesTo by remember {
-        androidx.compose.runtime.mutableIntStateOf(
+        mutableIntStateOf(
             initialExtraType?.wetAppliesTo ?: ExtraAppliesToFrequencies.HOURLY.value
         )
     }

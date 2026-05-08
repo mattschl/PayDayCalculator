@@ -154,7 +154,7 @@ fun TaxRulesContent(
             selectedEffectiveDate.tdEffectiveDate
         ).observeAsState(emptyList())
     } else {
-        remember { mutableStateOf(emptyList<WorkTaxRules>()) }
+        remember { mutableStateOf(emptyList()) }
     }
 
     Scaffold(

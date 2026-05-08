@@ -1,12 +1,9 @@
 package ms.mattschlenkrich.paycalculator.data
 
 import android.content.Context
-import androidx.room.AutoMigration
 import androidx.room.Database
-import androidx.room.RenameColumn
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.migration.AutoMigrationSpec
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_VERSION
 import ms.mattschlenkrich.paycalculator.data.dao.EmployerDao

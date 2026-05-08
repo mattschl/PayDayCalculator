@@ -8,7 +8,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.Screen
-import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
@@ -34,7 +33,7 @@ fun WorkOrderViewRoute(
                 .observeAsState(emptyList())
         }
     } else {
-        remember { mutableStateOf(emptyList<WorkOrder>()) }
+        remember { mutableStateOf(emptyList()) }
     }
 
     WorkOrderViewScreen(

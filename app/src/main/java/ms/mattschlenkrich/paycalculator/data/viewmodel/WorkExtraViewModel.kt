@@ -54,9 +54,9 @@ class WorkExtraViewModel(
             workExtraRepository.updateWorkExtraType(extraType)
         }
 
-    fun deleteWorkExtraType(id: Long, updateTime: String) = viewModelScope.launch {
+    /*fun deleteWorkExtraType(id: Long, updateTime: String) = viewModelScope.launch {
         workExtraRepository.deleteWorkExtraType(id, updateTime)
-    }
+    }*/
 
     fun getWorkExtraTypeList(employerId: Long) =
         workExtraRepository.getWorkExtraTypeList(employerId)
@@ -67,23 +67,23 @@ class WorkExtraViewModel(
     fun getExtraTypesByDaily(employerId: Long) =
         workExtraRepository.getExtraTypesByDaily(employerId)
 
-    fun getExtraTypeAndDefByTypeId(typeId: Long, cutoffDate: String) =
-        workExtraRepository.getExtraTypeAndDefByTypeId(typeId, cutoffDate)
+    /* fun getExtraTypeAndDefByTypeId(typeId: Long, cutoffDate: String) =
+         workExtraRepository.getExtraTypeAndDefByTypeId(typeId, cutoffDate)*/
 
     suspend fun getExtraTypeAndDefByTypeIdSync(typeId: Long, cutoffDate: String) =
         workExtraRepository.getExtraTypeAndDefByTypeIdSync(typeId, cutoffDate)
 
-    fun getExtraTypesAndDef(employerId: Long, cutoffDate: String, appliesTo: Int) =
-        workExtraRepository.getExtraTypesAndDef(employerId, cutoffDate, appliesTo)
+    /*fun getExtraTypesAndDef(employerId: Long, cutoffDate: String, appliesTo: Int) =
+        workExtraRepository.getExtraTypesAndDef(employerId, cutoffDate, appliesTo)*/
 
     fun insertWorkDateExtra(extra: WorkDateExtras) =
         viewModelScope.launch {
             workExtraRepository.insertWorkDateExtra(extra)
         }
 
-    fun deleteWorkDateExtra(id: Long, updateTime: String) = viewModelScope.launch {
+    /*fun deleteWorkDateExtra(id: Long, updateTime: String) = viewModelScope.launch {
         workExtraRepository.deleteWorkDateExtra(id, updateTime)
-    }
+    }*/
 
     fun updateWorkDateExtra(extra: WorkDateExtras) =
         viewModelScope.launch {
@@ -93,6 +93,6 @@ class WorkExtraViewModel(
 //    fun getWorkDateExtras(workDateId: Long) =
 //        workExtraRepository.getWorkDateExtras(workDateId)
 
-    fun getDefaultExtraTypesAndCurrentDef(employerId: Long, cutoffDate: String) =
-        workExtraRepository.getDefaultExtraTypesAndCurrentDef(employerId, cutoffDate)
+    /* fun getDefaultExtraTypesAndCurrentDef(employerId: Long, cutoffDate: String) =
+         workExtraRepository.getDefaultExtraTypesAndCurrentDef(employerId, cutoffDate)*/
 }

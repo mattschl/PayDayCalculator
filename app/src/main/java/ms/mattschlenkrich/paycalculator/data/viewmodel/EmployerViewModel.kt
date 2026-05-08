@@ -16,13 +16,13 @@ class EmployerViewModel(
     val employerLogicViewModel: EmployerLogicViewModel =
         EmployerLogicViewModel(app, this)
 
-    fun getCurrentEmployer(): Employers {
+    /*fun getCurrentEmployer(): Employers {
         return employerLogicViewModel.currentEmployerObj.getEmployer()
     }
 
     fun getEmployerList(): List<Employers> {
         return employerLogicViewModel.getEmployerList()
-    }
+    }*/
 
     fun insertEmployer(employers: Employers) =
         viewModelScope.launch {
@@ -34,9 +34,9 @@ class EmployerViewModel(
             employerRepository.updateEmployer(employers)
         }
 
-    fun deleteEmployer(employerId: Long, updateTime: String) = viewModelScope.launch {
+    /*fun deleteEmployer(employerId: Long, updateTime: String) = viewModelScope.launch {
         employerRepository.deleteEmployer(employerId, updateTime)
-    }
+    }*/
 
 
     fun getEmployer(employerId: Long) =
@@ -47,11 +47,11 @@ class EmployerViewModel(
     fun getEmployers() =
         employerRepository.getEmployers()
 
-    fun searchEmployers(query: String?) =
+    /*fun searchEmployers(query: String?) =
         employerRepository.searchEmployers(query)
 
     fun findEmployer(employerName: String) =
-        employerRepository.findEmployer(employerName)
+        employerRepository.findEmployer(employerName)*/
 
     fun insertPayRate(payRate: EmployerPayRates) =
         viewModelScope.launch {
@@ -66,6 +66,6 @@ class EmployerViewModel(
     fun getEmployerPayRates(employerId: Long) =
         employerRepository.getEmployerPayRates(employerId)
 
-    fun getCurrentEmployerRate(employerId: Long, cutoffDate: String) =
-        employerRepository.getCurrentEmployerRate(employerId, cutoffDate)
+    /*fun getCurrentEmployerRate(employerId: Long, cutoffDate: String) =
+        employerRepository.getCurrentEmployerRate(employerId, cutoffDate)*/
 }
