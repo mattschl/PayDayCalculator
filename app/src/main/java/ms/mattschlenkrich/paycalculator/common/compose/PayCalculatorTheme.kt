@@ -96,7 +96,7 @@ fun PayCalculatorTheme(
 
     val density = LocalDensity.current
     val minHeight = with(density) { (fontSize * 1.1f).sp.toDp() }
-    val maxHeight = with(density) {(fontSize * 1.45).sp.toDp()}
+    val maxHeight = with(density) { (fontSize * 1.7).sp.toDp() }
     val verticalPadding = with(density) { (fontSize * 0.05f).sp.toDp() }
 
     val dimensions = ExtendedDimensions(

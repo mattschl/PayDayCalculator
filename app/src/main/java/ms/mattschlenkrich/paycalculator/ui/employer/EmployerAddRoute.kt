@@ -165,6 +165,5 @@ fun EmployerAddRoute(
                 ).show()
             }
         },
-        onDeleteClick = { },
     )
 }

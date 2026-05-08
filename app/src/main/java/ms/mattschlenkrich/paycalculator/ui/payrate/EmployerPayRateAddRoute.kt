@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
@@ -36,7 +35,6 @@ fun EmployerPayRateAddRoute(
     var selectedFrequency by remember { mutableStateOf(PayRateBasedOn.HOURLY) }
 
     PayRateScreen(
-        title = stringResource(R.string.add_a_pay_rate),
         effectiveDate = df.getDisplayDate(effectiveDate),
         onEffectiveDateClick = {
             val curDateAll = effectiveDate.split("-")

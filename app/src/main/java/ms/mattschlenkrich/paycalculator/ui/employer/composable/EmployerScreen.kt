@@ -61,8 +61,7 @@ fun EmployerScreen(
     onExtraClick: (WorkExtraTypes) -> Unit,
     onAddExtraClick: () -> Unit,
     onViewWagesClick: () -> Unit,
-    onSaveClick: () -> Unit,
-    onDeleteClick: () -> Unit
+    onSaveClick: () -> Unit
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),

@@ -1,13 +1,11 @@
 package ms.mattschlenkrich.paycalculator.logic
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.model.EmployerObj
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 
 class EmployerLogicViewModel(
-    val app: Application,
     val employerViewModel: EmployerViewModel,
 ) : ViewModel() {
     //    var previousEmployerObj: EmployerObj = EmployerObj()

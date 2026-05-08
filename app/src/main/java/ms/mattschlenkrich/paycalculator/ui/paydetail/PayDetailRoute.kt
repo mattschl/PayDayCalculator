@@ -239,12 +239,6 @@ fun PayDetailRoute(
                     trigger++
                 }
             }
-        },
-        onDeleteCutOffClick = {
-            // TODO: Confirm and Delete
-        },
-        onBackClick = {
-            navController.popBackStack()
         }
     )
 }

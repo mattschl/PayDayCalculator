@@ -54,8 +54,7 @@ fun EmployerExtraDefinitionsScreen(
     onUpdateExtraDefinition: (ExtraDefTypeAndEmployer) -> Unit,
     onUpdateExtraType: (Employers, WorkExtraTypes) -> Unit,
     onAddNewEmployer: () -> Unit,
-    onAddNewExtraType: (Employers) -> Unit,
-    onDeleteExtraDefinition: (ExtraDefTypeAndEmployer) -> Unit
+    onAddNewExtraType: (Employers) -> Unit
 ) {
     val employers by employerViewModel.employersAll.observeAsState(emptyList())
     var selectedEmployer by remember { mutableStateOf(mainViewModel.getEmployer()) }

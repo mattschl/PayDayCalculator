@@ -37,10 +37,7 @@ fun TaxTypeScreen(
     onTaxTypeChange: (String) -> Unit,
     selectedBasedOn: Int,
     onBasedOnChange: (Int) -> Unit,
-    title: String,
     onSaveClick: () -> Unit,
-    onBackClick: () -> Unit,
-    onDeleteClick: (() -> Unit)? = null,
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),

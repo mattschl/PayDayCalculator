@@ -38,7 +38,7 @@ class PayDateProjections {
             return getCutOffForDate(employer, LocalDate.now().toString())
         }
 
-        val mostRecentDate = LocalDate.parse(mostRecent)
+//        val mostRecentDate = LocalDate.parse(mostRecent)
 
         if (dates.isNotEmpty()) {
             for (date in dates) {
@@ -112,7 +112,7 @@ class PayDateProjections {
 
         while (workingDate < lastDate) {
             val mainDate = safeWithDayOfMonth(workingDate, mainMonthlyDate)
-            if (mainDate >= workingDate && mainDate < lastDate) {
+            if (mainDate in workingDate..<lastDate) {
                 dates.add(mainDate)
             }
             workingDate = workingDate.withDayOfMonth(1).plusMonths(1)
@@ -129,11 +129,11 @@ class PayDateProjections {
 
         while (workingDate < lastDate) {
             val midDate = safeWithDayOfMonth(workingDate, midMonthlyDate)
-            if (midDate >= workingDate && midDate < lastDate) {
+            if (midDate in workingDate..<lastDate) {
                 dates.add(midDate)
             }
             val mainDate = safeWithDayOfMonth(workingDate, mainMonthlyDate)
-            if (mainDate >= workingDate && mainDate < lastDate) {
+            if (mainDate in workingDate..<lastDate) {
                 if (mainDate != midDate) {
                     dates.add(mainDate)
                 }

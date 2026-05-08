@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
@@ -29,7 +28,7 @@ fun EmployerPayRateUpdateRoute(
     val nf = remember { NumberFunctions() }
 
     val payRate = mainViewModel.getPayRate() ?: return
-    val employer = mainViewModel.getEmployer() ?: return
+//    val employer = mainViewModel.getEmployer() ?: return
 
     var effectiveDate by remember { mutableStateOf(payRate.eprEffectiveDate) }
     var wage by remember { mutableStateOf(nf.displayDollars(payRate.eprPayRate)) }
@@ -38,7 +37,6 @@ fun EmployerPayRateUpdateRoute(
     }
 
     PayRateScreen(
-        title = stringResource(R.string.update),
         effectiveDate = df.getDisplayDate(effectiveDate),
         onEffectiveDateClick = {
             val curDateAll = effectiveDate.split("-")
@@ -74,15 +72,6 @@ fun EmployerPayRateUpdateRoute(
                 )
                 navController.popBackStack()
             }
-        },
-        onDeleteClick = {
-            employerViewModel.updatePayRate(
-                payRate.copy(
-                    eprIsDeleted = true,
-                    eprUpdateTime = df.getCurrentUTCTimeAsString()
-                )
-            )
-            navController.popBackStack()
         },
     )
 }

@@ -18,6 +18,9 @@
     <string name="add_an_employer">* Add an employer *</string>
     <string name="add_an_extra_to_this_pay_period">Add an extra to this pay period</string>
     <string name="add_extra_type">Add Extra Type</string>
+    <string name="update_job_spec_in_work_order">Update the Job Spec in the Work Order</string>
+    <string name="update_the_job_spec_definition">Update the description of the Job Spec</string>
+    <string name="job_spec_options">Job Spec Options</string>
     <string name="add_job_spec_below">Add Job Spec below:</string>
     <string name="add_materials_used_below">Add Materials Used below</string>
     <string name="add_new_credit">Add new Credit</string>

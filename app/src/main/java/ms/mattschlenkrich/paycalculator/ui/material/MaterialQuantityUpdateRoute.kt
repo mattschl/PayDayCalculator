@@ -73,7 +73,6 @@ fun MaterialQuantityUpdateRoute(
                 )
                 navController.popBackStack()
             }
-        },
-        onBackClick = { navController.popBackStack() }
+        }
     )
 }

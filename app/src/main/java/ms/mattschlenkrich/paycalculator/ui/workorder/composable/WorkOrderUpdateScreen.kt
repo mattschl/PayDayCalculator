@@ -21,6 +21,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -64,6 +68,7 @@ fun WorkOrderUpdateScreen(
     onAddJobSpecClick: () -> Unit,
     addedJobSpecs: List<WorkOrderJobSpecCombined>,
     onJobSpecClick: (WorkOrderJobSpecCombined) -> Unit,
+    onUpdateJobSpecDefinition: (JobSpec) -> Unit,
     jobSpecSummaryText: String,
     historyList: List<WorkOrderHistoryWithDates>,
     onHistoryClick: (WorkOrderHistoryWithDates) -> Unit,
@@ -77,6 +82,17 @@ fun WorkOrderUpdateScreen(
     val columns = calculateGridColumns()
     val df = DateFunctions()
     val nf = NumberFunctions()
+
+    var showJobSpecDialog by remember { mutableStateOf(false) }
+    var selectedJobSpecCombined by remember { mutableStateOf<WorkOrderJobSpecCombined?>(null) }
+
+    JobSpecOptionsDialog(
+        showDialog = showJobSpecDialog,
+        onDismissRequest = { showJobSpecDialog = false },
+        item = selectedJobSpecCombined,
+        onUpdateInWorkOrder = { onJobSpecClick(it) },
+        onUpdateDefinition = { onUpdateJobSpecDefinition(it.jobSpec) }
+    )
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -143,7 +159,10 @@ fun WorkOrderUpdateScreen(
                 items(addedJobSpecs) { combined ->
                     WorkOrderJobSpecItem(
                         combined = combined,
-                        onClick = { onJobSpecClick(combined) }
+                        onClick = {
+                            selectedJobSpecCombined = combined
+                            showJobSpecDialog = true
+                        }
                     )
                 }
             }

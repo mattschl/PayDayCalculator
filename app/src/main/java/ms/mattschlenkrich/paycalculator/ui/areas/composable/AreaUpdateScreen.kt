@@ -1,4 +1,4 @@
-@file:Suppress("unused", "unused", "unused", "unused", "unused")
+@file:Suppress("unused", "unused", "unused", "unused")
 
 package ms.mattschlenkrich.paycalculator.ui.areas.composable
 

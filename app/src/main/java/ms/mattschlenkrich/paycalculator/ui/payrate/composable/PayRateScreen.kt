@@ -189,7 +189,6 @@ fun EmployerPayRatesScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PayRateScreen(
-    title: String,
     effectiveDate: String,
     onEffectiveDateClick: () -> Unit,
     wage: String,
@@ -197,7 +196,6 @@ fun PayRateScreen(
     selectedFrequency: PayRateBasedOn,
     onFrequencySelected: (PayRateBasedOn) -> Unit,
     onSaveClick: () -> Unit,
-    onDeleteClick: (() -> Unit)? = null,
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),

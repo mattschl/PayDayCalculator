@@ -49,7 +49,6 @@ fun TaxTypeUpdateRoute(
         onTaxTypeChange = { taxTypeState = it },
         selectedBasedOn = selectedBasedOn,
         onBasedOnChange = { selectedBasedOn = it },
-        title = stringResource(R.string.update_tax_type),
         onSaveClick = {
             val errorResId = validateTaxTypeUpdate(taxTypeState, curTaxType, taxTypeList)
             if (errorResId == null) {
@@ -67,15 +66,6 @@ fun TaxTypeUpdateRoute(
                     Toast.LENGTH_LONG
                 ).show()
             }
-        },
-        onDeleteClick = {
-            val deletedTaxType = curTaxType.copy(
-                ttIsDeleted = true,
-                ttUpdateTime = df.getCurrentUTCTimeAsString()
-            )
-            workTaxViewModel.updateWorkTaxType(deletedTaxType)
-            navController.popBackStack()
-        },
-        onBackClick = { navController.popBackStack() }
+        }
     )
 }

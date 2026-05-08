@@ -231,7 +231,7 @@ class WorkOrderViewModel(
         workOrderRepository.insertWorkOrderJobSpec(workOrderJobSpec)
     }
 
-    /*fun updateWorkOrderJobSpec(workOrderJobSpec: WorkOrderJobSpec) = viewModelScope.launch {
+    fun updateWorkOrderJobSpec(workOrderJobSpec: WorkOrderJobSpec) = viewModelScope.launch {
         workOrderRepository.updateWorkOrderJobSpec(workOrderJobSpec)
     }
 
@@ -246,13 +246,13 @@ class WorkOrderViewModel(
             workOrderJobSpecId,
             DateFunctions().getCurrentUTCTimeAsString()
         )
-    }*/
+    }
 
     fun getWorkOrderJobSpecs(workOrderId: Long) =
         workOrderRepository.getWorkOrderJobSpecs(workOrderId)
 
-    /*fun getWorkOrderJobSpec(workOrderJobSpecId: Long) =
-        workOrderRepository.getWorkOrderJobSpec(workOrderJobSpecId)*/
+    fun getWorkOrderJobSpec(workOrderJobSpecId: Long) =
+        workOrderRepository.getWorkOrderJobSpec(workOrderJobSpecId)
 
     suspend fun getWorkOrderJobSpecSync(workOrderJobSpecId: Long) =
         workOrderRepository.getWorkOrderJobSpecSync(workOrderJobSpecId)

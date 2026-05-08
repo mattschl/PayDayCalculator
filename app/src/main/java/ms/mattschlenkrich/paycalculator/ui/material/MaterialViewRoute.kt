@@ -32,7 +32,6 @@ fun MaterialViewRoute(
         onMaterialClick = { material ->
             mainViewModel.setMaterial(material)
             navController.navigate(Screen.MaterialUpdate.route)
-        },
-        onBackClick = { navController.popBackStack() }
+        }
     )
 }

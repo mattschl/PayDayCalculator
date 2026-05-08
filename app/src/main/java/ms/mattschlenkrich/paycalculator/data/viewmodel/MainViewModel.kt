@@ -89,9 +89,9 @@ class MainViewModel(
 
     }
 
-    /*fun getWorkOrderJobSpecId(): Long? {
+    fun getWorkOrderJobSpecId(): Long? {
         return workOrderJobSpecId
-    }*/
+    }
 
     fun setWorkOrderJobSpecId(newWorkOrderJobSpecId: Long?) {
         workOrderJobSpecId = newWorkOrderJobSpecId
@@ -169,13 +169,13 @@ class MainViewModel(
         return workPerformedId
     }
 
-    /*  fun getJobSpec(): JobSpec? {
-          return jobSpec
-      }
+    fun getJobSpec(): JobSpec? {
+        return jobSpec
+    }
 
-      fun setJobSpec(newJobSpec: JobSpec?) {
-          jobSpec = newJobSpec
-      }*/
+    fun setJobSpec(newJobSpec: JobSpec?) {
+        jobSpec = newJobSpec
+    }
 
     fun getWorkOrder(): WorkOrder? {
         return workOrder

@@ -35,8 +35,7 @@ fun MaterialQuantityUpdateScreen(
     details: String,
     quantity: String,
     onQuantityChange: (String) -> Unit,
-    onDoneClick: () -> Unit,
-    onBackClick: () -> Unit
+    onDoneClick: () -> Unit
 ) {
     Scaffold(
         /* topBar = {

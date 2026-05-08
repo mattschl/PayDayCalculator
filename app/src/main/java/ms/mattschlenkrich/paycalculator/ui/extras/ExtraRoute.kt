@@ -3,7 +3,6 @@ package ms.mattschlenkrich.paycalculator.ui.extras
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.Screen
-import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkExtraViewModel
@@ -36,13 +35,6 @@ fun ExtraRoute(
         },
         onAddNewExtraType = { _ ->
             navController.navigate(Screen.WorkExtraTypeAdd.route)
-        },
-        onDeleteExtraDefinition = { definition ->
-            workExtraViewModel.deleteWorkExtraDefinition(
-                definition.definition.workExtraDefId,
-                DateFunctions()
-                    .getCurrentUTCTimeAsString()
-            )
         }
     )
 }

@@ -39,8 +39,7 @@ fun JobSpecViewScreen(
     jobSpecList: List<JobSpec>,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
-    onJobSpecClick: (JobSpec) -> Unit,
-    onBackClick: () -> Unit
+    onJobSpecClick: (JobSpec) -> Unit
 ) {
     val columns = calculateGridColumns()
 

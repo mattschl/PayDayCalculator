@@ -32,7 +32,6 @@ fun JobSpecViewRoute(
         onJobSpecClick = { js ->
             mainViewModel.setJobSpecId(js.jobSpecId)
             navController.navigate(Screen.JobSpecUpdate.route)
-        },
-        onBackClick = { navController.popBackStack() }
+        }
     )
 }

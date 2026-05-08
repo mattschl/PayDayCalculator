@@ -40,8 +40,7 @@ fun MaterialViewScreen(
     materialList: List<Material>,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
-    onMaterialClick: (Material) -> Unit,
-    onBackClick: () -> Unit
+    onMaterialClick: (Material) -> Unit
 ) {
     val columns = calculateGridColumns()
     val nf = NumberFunctions()

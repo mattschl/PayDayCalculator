@@ -188,14 +188,6 @@ fun EmployerUpdateRoute(
                     ).show()
                 }
             },
-            onDeleteClick = {
-                val deletedEmployer = currentEmployer.copy(
-                    employerIsDeleted = true,
-                    employerUpdateTime = df.getCurrentUTCTimeAsString()
-                )
-                employerViewModel.updateEmployer(deletedEmployer)
-                navController.popBackStack()
-            },
         )
     } else {
         LaunchedEffect(Unit) {

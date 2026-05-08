@@ -111,6 +111,10 @@ fun WorkOrderUpdateRoute(
             mainViewModel.setWorkOrderJobSpecId(combined.workOrderJobSpec.workOrderJobSpecId)
             navController.navigate(Screen.WorkOrderJobSpecUpdate.route)
         },
+        onUpdateJobSpecDefinition = { jobSpec ->
+            mainViewModel.setJobSpecId(jobSpec.jobSpecId)
+            navController.navigate(Screen.JobSpecUpdate.route)
+        },
         jobSpecSummaryText = jobSpecSummaryText,
         historyList = historyList,
         onHistoryClick = { history ->

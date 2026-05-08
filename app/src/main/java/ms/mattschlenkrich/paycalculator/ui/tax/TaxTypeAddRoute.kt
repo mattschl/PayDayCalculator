@@ -81,7 +81,6 @@ fun TaxTypeAddRoute(
         onTaxTypeChange = { taxTypeState = it },
         selectedBasedOn = selectedBasedOn,
         onBasedOnChange = { selectedBasedOn = it },
-        title = stringResource(R.string.add_a_new_tax_type),
         onSaveClick = {
             val errorResId = validateTaxType(taxTypeState, taxTypeList)
             if (errorResId == null) {
@@ -106,7 +105,6 @@ fun TaxTypeAddRoute(
                     Toast.LENGTH_LONG
                 ).show()
             }
-        },
-        onBackClick = { navController.popBackStack() }
+        }
     )
 }

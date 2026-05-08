@@ -39,8 +39,7 @@ fun AreaViewScreen(
     areaList: List<Areas>,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
-    onAreaClick: (Areas) -> Unit,
-    onBackClick: () -> Unit
+    onAreaClick: (Areas) -> Unit
 ) {
     val columns = calculateGridColumns()
 

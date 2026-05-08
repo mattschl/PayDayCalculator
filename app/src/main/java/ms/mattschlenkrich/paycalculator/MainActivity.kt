@@ -88,6 +88,7 @@ import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateExtraUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateTimesRoute
 import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderAddRoute
+import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderJobSpecUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderLookupRoute
 import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderViewRoute
@@ -658,6 +659,13 @@ fun MainScreen(
                     mainViewModel,
                     payDayViewModel,
                     workExtraViewModel,
+                    navController
+                )
+            }
+            composable(Screen.WorkOrderJobSpecUpdate.route) {
+                WorkOrderJobSpecUpdateRoute(
+                    mainViewModel,
+                    workOrderViewModel,
                     navController
                 )
             }

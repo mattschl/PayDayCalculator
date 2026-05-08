@@ -16,7 +16,7 @@ import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryTimeWorkedCom
 
 @Dao
 interface WorkTimeDao {
-    @Insert()
+    @Insert
     suspend fun insertWorkTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked)
 
     @Query(
@@ -27,10 +27,10 @@ interface WorkTimeDao {
     )
     suspend fun deleteWorkTime(id: Long, updateTime: String)
 
-    @Update()
+    @Update
     suspend fun updateWorkTime(workOrderHistoryTimeWorked: WorkOrderHistoryTimeWorked)
 
-    @Update()
+    @Update
     suspend fun updateWorkDate(workDates: WorkDates)
 
     @Update

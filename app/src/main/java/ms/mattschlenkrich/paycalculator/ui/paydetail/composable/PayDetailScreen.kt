@@ -42,9 +42,7 @@ fun PayDetailScreen(
     onAddCreditClick: () -> Unit,
     onAddDeductionClick: () -> Unit,
     onExtraClick: (ExtraContainer) -> Unit,
-    onExtraActiveChange: (ExtraContainer, Boolean) -> Unit,
-    onDeleteCutOffClick: () -> Unit,
-    onBackClick: () -> Unit
+    onExtraActiveChange: (ExtraContainer, Boolean) -> Unit
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0)

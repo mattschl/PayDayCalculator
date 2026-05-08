@@ -32,7 +32,6 @@ fun AreaViewRoute(
         onAreaClick = { area ->
             mainViewModel.setAreaId(area.areaId)
             navController.navigate(Screen.AreaUpdate.route)
-        },
-        onBackClick = { navController.popBackStack() }
+        }
     )
 }

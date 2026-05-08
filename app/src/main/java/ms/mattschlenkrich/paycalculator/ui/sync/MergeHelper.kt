@@ -420,18 +420,19 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
                 val remoteUpdateTime =
                     remoteCursor.getString(remoteCursor.getColumnIndexOrThrow(spec.updateTimeColumn))
 
-                if (remoteUpdateTime != null && (localUpdateTime == null || remoteUpdateTime > localUpdateTime)) {
-                    status = RecordStatus.UPDATED
+                status =
+                    if (remoteUpdateTime != null && (localUpdateTime == null || remoteUpdateTime > localUpdateTime)) {
+                        RecordStatus.UPDATED
                 } else if (remoteUpdateTime != null && remoteUpdateTime == localUpdateTime) {
                     // Timestamps are equal, update only if data actually differs
                     if (isDataDifferent(localCursor, remoteCursor, spec)) {
-                        status = RecordStatus.UPDATED
+                        RecordStatus.UPDATED
                     } else {
-                        status = RecordStatus.EXISTS
+                        RecordStatus.EXISTS
                     }
                 } else {
                     // Local record is newer or remoteUpdateTime is null
-                    status = RecordStatus.EXISTS
+                        RecordStatus.EXISTS
                 }
             } else {
                 // No timestamp available, must compare all data columns

@@ -14,7 +14,7 @@ class EmployerViewModel(
     private val employerRepository: EmployerRepository
 ) : AndroidViewModel(app) {
     val employerLogicViewModel: EmployerLogicViewModel =
-        EmployerLogicViewModel(app, this)
+        EmployerLogicViewModel(this)
 
     /*fun getCurrentEmployer(): Employers {
         return employerLogicViewModel.currentEmployerObj.getEmployer()
