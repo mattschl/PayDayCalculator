@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -22,16 +23,15 @@ import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
-import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
-import ms.mattschlenkrich.paycalculator.data.WorkTimeViewModel
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTimeViewModel
 import ms.mattschlenkrich.paycalculator.ui.workdate.composable.WorkDateTimesScreen
 import java.util.Calendar
-import java.util.Locale
 
 @Composable
 fun WorkDateTimesRoute(
@@ -263,7 +263,7 @@ fun WorkDateTimesRoute(
         startTime = startTime,
         endTime = endTime,
         totalTimeText = String.format(
-            Locale.getDefault(),
+            LocalLocale.current.platformLocale,
             "%.2f",
             df.getTimeWorked(startTime, endTime)
         ),

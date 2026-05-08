@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.MaterialAndQuantity
+import ms.mattschlenkrich.paycalculator.data.model.MaterialAndQuantity
 
 @Composable
 fun WorkOrderMaterialSummaryItem(

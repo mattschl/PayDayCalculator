@@ -15,10 +15,10 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.WAIT_500
-import ms.mattschlenkrich.paycalculator.data.TimeWorkedByDay
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
+import ms.mattschlenkrich.paycalculator.data.model.TimeWorkedByDay
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryCombined
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryTimeWorkedCombined
 import java.util.Calendar

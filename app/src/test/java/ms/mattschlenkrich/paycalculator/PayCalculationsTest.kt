@@ -1,10 +1,10 @@
 package ms.mattschlenkrich.paycalculator
 
 import kotlinx.coroutines.runBlocking
-import ms.mattschlenkrich.paycalculator.data.PayCalculationsViewModel
-import ms.mattschlenkrich.paycalculator.data.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.entity.PayPeriods
+import ms.mattschlenkrich.paycalculator.data.viewmodel.PayCalculationsViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.logic.PayCalculationsAsync
 import org.junit.Test
 import org.junit.runner.RunWith

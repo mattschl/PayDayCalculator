@@ -14,8 +14,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
-import ms.mattschlenkrich.paycalculator.data.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.ui.tax.composable.TaxTypeScreen
 
 @Composable

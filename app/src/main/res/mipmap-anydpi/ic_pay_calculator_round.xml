@@ -2,4 +2,5 @@
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@color/ic_pay_calculator_background"/>
     <foreground android:drawable="@drawable/ic_pay_calculator_foreground"/>
+    <monochrome android:drawable="@drawable/ic_pay_calculator_monochrome" />
 </adaptive-icon>

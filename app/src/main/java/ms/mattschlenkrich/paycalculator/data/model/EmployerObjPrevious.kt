@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.data
+package ms.mattschlenkrich.paycalculator.data.model
 
 import android.util.Log
 import ms.mattschlenkrich.paycalculator.common.DateFunctions

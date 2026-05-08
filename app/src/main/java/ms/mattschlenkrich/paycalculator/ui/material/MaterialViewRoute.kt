@@ -9,7 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.ui.material.composable.MaterialViewScreen
 
 @Composable

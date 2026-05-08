@@ -77,7 +77,7 @@ kotlin {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-parcelize-runtime:2.3.21")
+    implementation(libs.kotlin.parcelize.runtime)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.gson)

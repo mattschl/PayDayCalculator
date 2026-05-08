@@ -1,4 +1,9 @@
-package ms.mattschlenkrich.paycalculator.data
+@file:Suppress(
+    "EmptyMethod", "EmptyMethod", "EmptyMethod", "EmptyMethod", "EmptyMethod",
+    "EmptyMethod", "EmptyMethod", "EmptyMethod"
+)
+
+package ms.mattschlenkrich.paycalculator.database.model.employer.test
 
 import org.junit.Test
 

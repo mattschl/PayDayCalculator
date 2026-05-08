@@ -20,7 +20,7 @@ import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.model.ExtraContainer
-import ms.mattschlenkrich.paycalculator.data.TaxAndAmount
+import ms.mattschlenkrich.paycalculator.data.model.TaxAndAmount
 import ms.mattschlenkrich.paycalculator.ui.paydetail.HourlyBreakdownData
 import ms.mattschlenkrich.paycalculator.ui.paydetail.PaySummaryData
 

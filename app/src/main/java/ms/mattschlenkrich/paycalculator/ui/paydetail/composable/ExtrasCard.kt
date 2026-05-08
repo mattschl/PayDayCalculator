@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.TaxAndAmount
 import ms.mattschlenkrich.paycalculator.data.model.ExtraContainer
+import ms.mattschlenkrich.paycalculator.data.model.TaxAndAmount
 
 @Composable
 fun ExtrasCard(

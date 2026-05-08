@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -53,12 +54,12 @@ fun WorkExtraTypeScreen(
 ) {
     var wetName by remember { mutableStateOf(initialExtraType?.wetName ?: "") }
     var wetAppliesTo by remember {
-        mutableStateOf(
+        androidx.compose.runtime.mutableIntStateOf(
             initialExtraType?.wetAppliesTo ?: ExtraAppliesToFrequencies.HOURLY.value
         )
     }
     var wetAttachTo by remember {
-        mutableStateOf(
+        mutableIntStateOf(
             initialExtraType?.wetAttachTo ?: ExtraAttachToFrequencies.HOURLY.value
         )
     }

@@ -18,10 +18,10 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.data.entity.TaxTypes
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.ui.tax.composable.TaxTypeScreen
 
 @Composable

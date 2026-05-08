@@ -1,3 +1,5 @@
+@file:Suppress("unused", "unused", "unused", "unused", "unused")
+
 package ms.mattschlenkrich.paycalculator.ui.areas.composable
 
 import androidx.compose.foundation.layout.Arrangement

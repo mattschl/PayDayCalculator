@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paycalculator.ui.sync
 
-import android.util.Log
 import com.google.api.client.http.FileContent
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.model.FileList
@@ -115,7 +114,7 @@ class DriveServiceHelper(private val mDriveService: Drive) {
     /**
      * Deletes a file from Google Drive.
      */
-    suspend fun deleteFile(fileId: String) = withContext(Dispatchers.IO) {
+    suspend fun deleteFile(fileId: String): Void? = withContext(Dispatchers.IO) {
         mDriveService.files().delete(fileId).execute()
     }
 

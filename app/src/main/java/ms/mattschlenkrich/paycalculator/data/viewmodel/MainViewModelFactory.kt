@@ -1,9 +1,8 @@
-package ms.mattschlenkrich.paycalculator.data
+package ms.mattschlenkrich.paycalculator.data.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 
 class MainViewModelFactory(
     val app: Application

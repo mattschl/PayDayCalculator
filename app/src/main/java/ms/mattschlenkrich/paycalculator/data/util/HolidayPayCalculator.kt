@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.data
+package ms.mattschlenkrich.paycalculator.data.util
 
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope

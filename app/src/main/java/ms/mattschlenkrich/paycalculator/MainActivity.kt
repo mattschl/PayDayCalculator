@@ -24,20 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import ms.mattschlenkrich.paycalculator.common.compose.PayCalculatorTheme
 import ms.mattschlenkrich.paycalculator.common.compose.StandardNavigationBar
 import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
-import ms.mattschlenkrich.paycalculator.data.MainViewModelFactory
-import ms.mattschlenkrich.paycalculator.data.PayCalculationsViewModel
-import ms.mattschlenkrich.paycalculator.data.PayCalculationsViewModelFactory
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
-import ms.mattschlenkrich.paycalculator.data.PayDetailViewModel
-import ms.mattschlenkrich.paycalculator.data.PayDetailViewModelFactory
-import ms.mattschlenkrich.paycalculator.data.WorkExtraViewModel
-import ms.mattschlenkrich.paycalculator.data.WorkExtraViewModelFactory
-import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModel
-import ms.mattschlenkrich.paycalculator.data.WorkOrderViewModelFactory
-import ms.mattschlenkrich.paycalculator.data.WorkTaxViewModel
-import ms.mattschlenkrich.paycalculator.data.WorkTaxViewModelFactory
-import ms.mattschlenkrich.paycalculator.data.WorkTimeViewModel
-import ms.mattschlenkrich.paycalculator.data.WorkTimeViewModelFactory
 import ms.mattschlenkrich.paycalculator.data.repository.EmployerRepository
 import ms.mattschlenkrich.paycalculator.data.repository.PayCalculationsRepository
 import ms.mattschlenkrich.paycalculator.data.repository.PayDayRepository
@@ -49,13 +36,26 @@ import ms.mattschlenkrich.paycalculator.data.repository.WorkTimeRepository
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModelFactory
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModelFactory
+import ms.mattschlenkrich.paycalculator.data.viewmodel.PayCalculationsViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.PayCalculationsViewModelFactory
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModelFactory
+import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDetailViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDetailViewModelFactory
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkExtraViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkExtraViewModelFactory
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModelFactory
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModelFactory
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTimeViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTimeViewModelFactory
 import ms.mattschlenkrich.paycalculator.ui.areas.AreaUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.areas.AreaViewRoute
 import ms.mattschlenkrich.paycalculator.ui.employer.EmployerAddRoute
-import ms.mattschlenkrich.paycalculator.ui.employer.composable.EmployerListScreen
 import ms.mattschlenkrich.paycalculator.ui.employer.EmployerUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.employer.composable.EmployerListScreen
 import ms.mattschlenkrich.paycalculator.ui.extras.EmployerExtraDefinitionUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.extras.EmployerExtraDefinitionsAddRoute
 import ms.mattschlenkrich.paycalculator.ui.extras.ExtraRoute
@@ -485,7 +485,6 @@ fun MainScreen(
                 WorkDateExtraAddRoute(
                     mainViewModel,
                     payDayViewModel,
-                    workExtraViewModel,
                     navController
                 )
             }
@@ -493,7 +492,6 @@ fun MainScreen(
                 WorkDateExtraUpdateRoute(
                     mainViewModel,
                     payDayViewModel,
-                    workExtraViewModel,
                     navController
                 )
             }
@@ -665,8 +663,6 @@ fun MainScreen(
             }
             composable(Screen.Settings.route) {
                 SettingsRoute(
-                    mainViewModel,
-                    navController,
                     settingsViewModel
                 )
             }

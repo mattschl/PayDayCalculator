@@ -36,10 +36,10 @@ import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
 import ms.mattschlenkrich.paycalculator.data.entity.Areas
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
-import ms.mattschlenkrich.paycalculator.data.MaterialAndQuantity
-import ms.mattschlenkrich.paycalculator.data.WorkPerformedAndQuantity
+import ms.mattschlenkrich.paycalculator.data.model.MaterialAndQuantity
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderJobSpecCombined
+import ms.mattschlenkrich.paycalculator.data.model.WorkPerformedAndQuantity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

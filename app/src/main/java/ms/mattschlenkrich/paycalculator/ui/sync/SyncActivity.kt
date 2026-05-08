@@ -2,7 +2,6 @@ package ms.mattschlenkrich.paycalculator.ui.sync
 
 import android.accounts.Account
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -16,6 +15,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.content.edit
 import androidx.credentials.Credential
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -44,6 +44,7 @@ import ms.mattschlenkrich.paycalculator.common.SYNC_ACCOUNT_EMAIL
 import ms.mattschlenkrich.paycalculator.common.compose.PayCalculatorTheme
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
+import ms.mattschlenkrich.paycalculator.ui.sync.composable.SyncScreen
 import java.io.File
 import java.security.MessageDigest
 import java.security.SecureRandom
@@ -51,8 +52,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
-import androidx.core.content.edit
-import ms.mattschlenkrich.paycalculator.ui.sync.composable.SyncScreen
 
 private const val TAG: String = "SyncActivity"
 
@@ -130,7 +129,7 @@ class SyncActivity : ComponentActivity() {
         isLoading = false
     }
 
-    private fun getTargetFolderId(helper: DriveServiceHelper): String {
+    private fun getTargetFolderId(): String {
         return "appDataFolder"
     }
 
@@ -215,7 +214,7 @@ class SyncActivity : ComponentActivity() {
                     return@launch
                 }
 
-                val targetFolderId = getTargetFolderId(helper)
+                val targetFolderId = getTargetFolderId()
                 performDownload(helper, targetFolderId)
 
                 val dbDir = File(applicationInfo.dataDir, "databases")
@@ -337,7 +336,7 @@ class SyncActivity : ComponentActivity() {
             }
             showProgress("Deleting backups from Google Drive...")
             try {
-                val targetFolderId = getTargetFolderId(helper)
+                val targetFolderId = getTargetFolderId()
                 val fileList: FileList = helper.queryFiles(targetFolderId)
                 val relatedFiles = fileList.files
                     ?.filter { it.name.startsWith("pay") } ?: emptyList()
@@ -442,23 +441,13 @@ class SyncActivity : ComponentActivity() {
     private fun logSHA1Fingerprint() {
         try {
             val packageInfo =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    packageManager.getPackageInfo(
-                        packageName,
-                        PackageManager.GET_SIGNING_CERTIFICATES
-                    )
-                } else {
-                    @Suppress("DEPRECATION")
-                    packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
-                }
+                packageManager.getPackageInfo(
+                    packageName,
+                    PackageManager.GET_SIGNING_CERTIFICATES
+                )
 
             val signatures =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    packageInfo.signingInfo?.apkContentsSigners
-                } else {
-                    @Suppress("DEPRECATION")
-                    packageInfo.signatures
-                }
+                packageInfo.signingInfo?.apkContentsSigners
 
             signatures?.forEach { signature ->
                 val md = MessageDigest.getInstance("SHA-1")
@@ -543,7 +532,7 @@ class SyncActivity : ComponentActivity() {
         showProgress("Querying files...")
         lifecycleScope.launch {
             try {
-                val targetFolderId = getTargetFolderId(helper)
+                val targetFolderId = getTargetFolderId()
                 val fileList: FileList = helper.queryFiles(targetFolderId)
                 val builder = StringBuilder("Files on Google Drive:\n\n")
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())

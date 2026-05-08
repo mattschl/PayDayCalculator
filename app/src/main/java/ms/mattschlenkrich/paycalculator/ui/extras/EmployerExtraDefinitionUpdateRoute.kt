@@ -3,8 +3,8 @@ package ms.mattschlenkrich.paycalculator.ui.extras
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
-import ms.mattschlenkrich.paycalculator.data.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.ui.extras.composable.EmployerExtraDefinitionScreen
 
 @Composable

@@ -10,9 +10,6 @@ import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
 import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
 import ms.mattschlenkrich.paycalculator.common.PayRateBasedOn
 import ms.mattschlenkrich.paycalculator.common.TaxBasedOn
-import ms.mattschlenkrich.paycalculator.data.PayCalculationsViewModel
-import ms.mattschlenkrich.paycalculator.data.PayDetailViewModel
-import ms.mattschlenkrich.paycalculator.data.TaxAndAmount
 import ms.mattschlenkrich.paycalculator.data.entity.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.entity.PayPeriods
@@ -24,6 +21,9 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras
 import ms.mattschlenkrich.paycalculator.data.entity.WorkTaxRules
 import ms.mattschlenkrich.paycalculator.data.model.ExtraContainer
 import ms.mattschlenkrich.paycalculator.data.model.ExtraDefinitionAndType
+import ms.mattschlenkrich.paycalculator.data.model.TaxAndAmount
+import ms.mattschlenkrich.paycalculator.data.viewmodel.PayCalculationsViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDetailViewModel
 
 //private const val TAG = "PayCalculationsAsync"
 
