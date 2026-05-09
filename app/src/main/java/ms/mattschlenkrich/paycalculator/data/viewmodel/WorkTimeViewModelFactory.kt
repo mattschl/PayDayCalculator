@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import ms.mattschlenkrich.paycalculator.data.repository.WorkTimeRepository
 
+@Suppress("UNCHECKED_CAST")
 class WorkTimeViewModelFactory(
     val app: Application,
     private val workTimeRepository: WorkTimeRepository

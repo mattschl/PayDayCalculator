@@ -51,7 +51,7 @@ fun WorkOrderAddScreen(
     woNumberError: Boolean,
     addressError: Boolean,
     descriptionError: Boolean,
-    onDoneClick: @Composable () -> Unit,
+    onDoneClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
     Scaffold(

@@ -11,17 +11,17 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
 @Parcelize
 data class WorkOrderHistoryWithDates(
     @Embedded
-    var history: WorkOrderHistory,
+    val history: WorkOrderHistory,
     @Relation(
         entity = WorkDates::class,
         parentColumn = "woHistoryWorkDateId",
         entityColumn = "workDateId"
     )
-    var workDate: WorkDates,
+    val workDate: WorkDates,
     @Relation(
         entity = WorkOrder::class,
         parentColumn = "woHistoryWorkOrderId",
         entityColumn = "workOrderId"
     )
-    var workOrder: WorkOrder
+    val workOrder: WorkOrder
 ) : Parcelable

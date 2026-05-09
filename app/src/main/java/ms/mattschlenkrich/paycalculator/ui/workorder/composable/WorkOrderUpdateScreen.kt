@@ -81,7 +81,7 @@ fun WorkOrderUpdateScreen(
     onAddHistoryClick: () -> Unit,
     workPerformedList: List<WorkPerformedAndQuantity>,
     materialsList: List<MaterialAndQuantity>,
-    onDoneClick: @Composable () -> Unit,
+    onDoneClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
     val columns = calculateGridColumns()

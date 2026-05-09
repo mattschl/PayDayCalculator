@@ -12,17 +12,17 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec
 @Parcelize
 data class WorkOrderJobSpecCombined(
     @Embedded
-    var workOrderJobSpec: WorkOrderJobSpec,
+    val workOrderJobSpec: WorkOrderJobSpec,
     @Relation(
         entity = JobSpec::class,
         parentColumn = "wojsJobSpecId",
         entityColumn = "jobSpecId"
     )
-    var jobSpec: JobSpec,
+    val jobSpec: JobSpec,
     @Relation(
         entity = Areas::class,
         parentColumn = "wojsAreaId",
         entityColumn = "areaId"
     )
-    var area: Areas?
+    val area: Areas?
 ) : Parcelable

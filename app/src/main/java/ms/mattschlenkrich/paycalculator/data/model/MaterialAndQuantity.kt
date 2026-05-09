@@ -6,5 +6,5 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class MaterialAndQuantity(
     val name: String,
-    var quantity: Double
+    val quantity: Double
 ) : Parcelable

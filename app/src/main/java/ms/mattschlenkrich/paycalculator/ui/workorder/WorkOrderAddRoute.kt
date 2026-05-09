@@ -53,6 +53,10 @@ fun WorkOrderAddRoute(
 
     val context = LocalContext.current
     val errorLabel = stringResource(R.string.error_)
+    val noEmployerError = stringResource(R.string.the_work_order_must_have_an_employer)
+    val noNumberError = stringResource(R.string.the_work_order_must_have_a_number)
+    val noAddressError = stringResource(R.string.the_work_order_must_have_an_address)
+    val noDescriptionError = stringResource(R.string.the_work_order_must_have_a_description)
 
     WorkOrderAddScreen(
         employers = employers,
@@ -82,7 +86,7 @@ fun WorkOrderAddRoute(
             if (employerId == null) {
                 Toast.makeText(
                     context,
-                    errorLabel + stringResource(R.string.the_work_order_must_have_an_employer),
+                    errorLabel + noEmployerError,
                     Toast.LENGTH_LONG
                 ).show()
                 return@WorkOrderAddScreen
@@ -91,7 +95,7 @@ fun WorkOrderAddRoute(
                 woNumberError = true
                 Toast.makeText(
                     context,
-                    errorLabel + stringResource(R.string.the_work_order_must_have_a_number),
+                    errorLabel + noNumberError,
                     Toast.LENGTH_LONG
                 ).show()
                 return@WorkOrderAddScreen
@@ -100,7 +104,7 @@ fun WorkOrderAddRoute(
                 addressError = true
                 Toast.makeText(
                     context,
-                    errorLabel + stringResource(R.string.the_work_order_must_have_an_address),
+                    errorLabel + noAddressError,
                     Toast.LENGTH_LONG
                 ).show()
                 return@WorkOrderAddScreen
@@ -109,7 +113,7 @@ fun WorkOrderAddRoute(
                 descriptionError = true
                 Toast.makeText(
                     context,
-                    errorLabel + stringResource(R.string.the_work_order_must_have_a_description),
+                    errorLabel + noDescriptionError,
                     Toast.LENGTH_LONG
                 ).show()
                 return@WorkOrderAddScreen
