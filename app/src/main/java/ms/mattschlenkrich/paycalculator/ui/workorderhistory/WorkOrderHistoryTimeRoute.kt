@@ -43,7 +43,7 @@ fun WorkOrderHistoryTimeRoute(
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
     val coroutineScope = rememberCoroutineScope()
-    val overlapWarning = stringResource(R.string.warning_start_time_overlaps_previous_end_time)
+    val duplicateStartTimeError = stringResource(R.string.error_start_time_already_used)
     val adjustedRegHours = stringResource(R.string.time_adjusted_to_not_exceed_8_reg_hours)
     val adjustedOtHours = stringResource(R.string.time_adjusted_to_not_exceed_12_ot_hours)
 
@@ -105,15 +105,39 @@ fun WorkOrderHistoryTimeRoute(
         df.getTimeDisplay(endTime)
     )
 
-    var showStartTimeWarning by remember { mutableStateOf(false) }
-
     var showTimeOptionsDialog by remember { mutableStateOf<WorkOrderHistoryTimeWorkedCombined?>(null) }
     var showDeleteConfirmDialog by remember {
         mutableStateOf<WorkOrderHistoryTimeWorkedCombined?>(
             null
         )
     }
+    var showOverlapConfirmDialog by remember { mutableStateOf<WorkOrderHistoryTimeWorked?>(null) }
     var showUnsavedDialog by remember { mutableStateOf(false) }
+
+    if (showOverlapConfirmDialog != null) {
+        val entry = showOverlapConfirmDialog!!
+        AlertDialog(
+            onDismissRequest = { showOverlapConfirmDialog = null },
+            title = { Text(stringResource(R.string.save)) },
+            text = { Text(stringResource(R.string.confirm_overlap)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    coroutineScope.launch {
+                        workOrderViewModel.insertWorkOrderHistoryTimeWorked(entry)
+                        startTime = endTime.clone() as Calendar
+                        showOverlapConfirmDialog = null
+                    }
+                }) {
+                    Text(stringResource(R.string.save))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showOverlapConfirmDialog = null }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
 
     if (showUnsavedDialog) {
         AlertDialog(
@@ -299,7 +323,6 @@ fun WorkOrderHistoryTimeRoute(
                     set(Calendar.MINUTE, roundedMinute)
                 }
                 startTime = newStart
-                showStartTimeWarning = false
                 errorMessage = null
             }, startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), false).show()
         },
@@ -333,42 +356,49 @@ fun WorkOrderHistoryTimeRoute(
                 } else {
                     endTime = newEnd
                 }
-                showStartTimeWarning = false
                 errorMessage = null
             }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false).show()
         },
         onEnterTimeClick = {
-            val latestTime = if (allTimesByDate.isNotEmpty()) {
-                allTimesByDate.maxOf { it.timeWorked.wohtEndTime }
-            } else null
-
             val currentStart = df.getDateTimeFromDateAndTime(
                 historyWithDates!!.workDate.wdDate,
                 df.getTimeDisplay(startTime)
             )
+            val currentEnd = df.getDateTimeFromDateAndTime(
+                historyWithDates!!.workDate.wdDate,
+                df.getTimeDisplay(endTime)
+            )
 
-            if (latestTime != null && currentStart < latestTime && !showStartTimeWarning) {
-                errorMessage = overlapWarning
-                showStartTimeWarning = true
+            val isDuplicateStart =
+                allTimesByDate.any { it.timeWorked.wohtStartTime == currentStart }
+
+            if (isDuplicateStart) {
+                errorMessage = duplicateStartTimeError
             } else {
-                coroutineScope.launch {
-                    workOrderViewModel.insertWorkOrderHistoryTimeWorked(
-                        WorkOrderHistoryTimeWorked(
-                            nf.generateRandomIdAsLong(),
-                            history.woHistoryId,
-                            historyWithDates!!.workDate.workDateId,
-                            currentStart,
-                            df.getDateTimeFromDateAndTime(
-                                historyWithDates!!.workDate.wdDate,
-                                df.getTimeDisplay(endTime)
-                            ),
-                            selectedTimeType,
-                            false,
-                            df.getCurrentUTCTimeAsString()
-                        )
-                    )
-                    startTime = endTime.clone() as Calendar
-                    showStartTimeWarning = false
+                val hasOverlap = allTimesByDate.any {
+                    (currentStart >= it.timeWorked.wohtStartTime && currentStart < it.timeWorked.wohtEndTime) ||
+                            (currentEnd > it.timeWorked.wohtStartTime && currentEnd <= it.timeWorked.wohtEndTime) ||
+                            (currentStart <= it.timeWorked.wohtStartTime && currentEnd >= it.timeWorked.wohtEndTime)
+                }
+
+                val entry = WorkOrderHistoryTimeWorked(
+                    nf.generateRandomIdAsLong(),
+                    history.woHistoryId,
+                    historyWithDates!!.workDate.workDateId,
+                    currentStart,
+                    currentEnd,
+                    selectedTimeType,
+                    false,
+                    df.getCurrentUTCTimeAsString()
+                )
+
+                if (hasOverlap) {
+                    showOverlapConfirmDialog = entry
+                } else {
+                    coroutineScope.launch {
+                        workOrderViewModel.insertWorkOrderHistoryTimeWorked(entry)
+                        startTime = endTime.clone() as Calendar
+                    }
                 }
             }
         },

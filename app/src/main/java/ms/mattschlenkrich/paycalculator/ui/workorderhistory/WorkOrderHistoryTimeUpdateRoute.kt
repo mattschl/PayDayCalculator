@@ -22,6 +22,7 @@ import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
@@ -39,6 +40,7 @@ fun WorkOrderHistoryTimeUpdateRoute(
     val nf = remember { NumberFunctions() }
     val coroutineScope = rememberCoroutineScope()
     val overlapWarning = stringResource(R.string.warning_start_time_overlaps_previous_end_time)
+    val duplicateStartTimeError = stringResource(R.string.error_start_time_already_used)
     val adjustedRegHours = stringResource(R.string.time_adjusted_to_not_exceed_8_reg_hours)
     val adjustedOtHours = stringResource(R.string.time_adjusted_to_not_exceed_12_ot_hours)
 
@@ -77,17 +79,43 @@ fun WorkOrderHistoryTimeUpdateRoute(
         }
     }
 
-    val totalHours = df.getTimeWorked(
+    var totalHours = df.getTimeWorked(
         df.getTimeDisplay(startTime),
         df.getTimeDisplay(endTime)
     )
 
-    var showStartTimeWarning by remember { mutableStateOf(false) }
-
+    var showOverlapConfirmDialog by remember { mutableStateOf<WorkOrderHistoryTimeWorked?>(null) }
     var showTimeOptionsDialog by remember { mutableStateOf<WorkOrderHistoryTimeWorkedCombined?>(null) }
     var showDeleteConfirmDialog by remember {
         mutableStateOf<WorkOrderHistoryTimeWorkedCombined?>(
             null
+        )
+    }
+
+    if (showOverlapConfirmDialog != null) {
+        val entry = showOverlapConfirmDialog!!
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showOverlapConfirmDialog = null },
+            title = { androidx.compose.material3.Text(stringResource(R.string.save)) },
+            text = { androidx.compose.material3.Text(stringResource(R.string.confirm_overlap)) },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    coroutineScope.launch {
+                        workOrderViewModel.updateWorkOrderHistoryTimeWorked(entry)
+                        showOverlapConfirmDialog = null
+                        navController.popBackStack()
+                    }
+                }) {
+                    androidx.compose.material3.Text(stringResource(R.string.save))
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    showOverlapConfirmDialog = null
+                }) {
+                    androidx.compose.material3.Text(stringResource(R.string.cancel))
+                }
+            }
         )
     }
 
@@ -115,7 +143,6 @@ fun WorkOrderHistoryTimeUpdateRoute(
                     set(Calendar.MINUTE, roundedMinute)
                 }
                 startTime = newStart
-                showStartTimeWarning = false
                 errorMessage = null
             }, startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), false).show()
         },
@@ -149,42 +176,46 @@ fun WorkOrderHistoryTimeUpdateRoute(
                 } else {
                     endTime = newEnd
                 }
-                showStartTimeWarning = false
                 errorMessage = null
             }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false).show()
         },
         onSaveClick = {
-            val latestTime = if (allTimesByDate.isNotEmpty()) {
-                allTimesByDate.filter { it.timeWorked.woHistoryTimeWorkedId != combined.timeWorked.woHistoryTimeWorkedId }
-                    .maxOfOrNull { it.timeWorked.wohtEndTime }
-            } else null
-
             val currentStart = df.getDateTimeFromDateAndTime(
                 combined.workDate.wdDate,
                 df.getTimeDisplay(startTime)
             )
+            val currentEnd = df.getDateTimeFromDateAndTime(
+                combined.workDate.wdDate,
+                df.getTimeDisplay(endTime)
+            )
 
-            if (!showStartTimeWarning && latestTime != null && currentStart < latestTime) {
-                errorMessage = overlapWarning
-                showStartTimeWarning = true
+            val otherTimes =
+                allTimesByDate.filter { it.timeWorked.woHistoryTimeWorkedId != combined.timeWorked.woHistoryTimeWorkedId }
+            val isDuplicateStart = otherTimes.any { it.timeWorked.wohtStartTime == currentStart }
+
+            if (isDuplicateStart) {
+                errorMessage = duplicateStartTimeError
             } else {
-                coroutineScope.launch {
-                    workOrderViewModel.updateWorkOrderHistoryTimeWorked(
-                        combined.timeWorked.copy(
-                            wohtStartTime = df.getDateTimeFromDateAndTime(
-                                combined.workDate.wdDate,
-                                df.getTimeDisplay(startTime)
-                            ),
-                            wohtEndTime = df.getDateTimeFromDateAndTime(
-                                combined.workDate.wdDate,
-                                df.getTimeDisplay(endTime)
-                            ),
-                            wohtTimeType = selectedTimeType,
-                            wohtUpdateTime = df.getCurrentUTCTimeAsString()
-                        )
-                    )
-                    showStartTimeWarning = false
-                    navController.popBackStack()
+                val hasOverlap = otherTimes.any {
+                    (currentStart >= it.timeWorked.wohtStartTime && currentStart < it.timeWorked.wohtEndTime) ||
+                            (currentEnd > it.timeWorked.wohtStartTime && currentEnd <= it.timeWorked.wohtEndTime) ||
+                            (currentStart <= it.timeWorked.wohtStartTime && currentEnd >= it.timeWorked.wohtEndTime)
+                }
+
+                val entry = combined.timeWorked.copy(
+                    wohtStartTime = currentStart,
+                    wohtEndTime = currentEnd,
+                    wohtTimeType = selectedTimeType,
+                    wohtUpdateTime = df.getCurrentUTCTimeAsString()
+                )
+
+                if (hasOverlap) {
+                    showOverlapConfirmDialog = entry
+                } else {
+                    coroutineScope.launch {
+                        workOrderViewModel.updateWorkOrderHistoryTimeWorked(entry)
+                        navController.popBackStack()
+                    }
                 }
             }
         },
