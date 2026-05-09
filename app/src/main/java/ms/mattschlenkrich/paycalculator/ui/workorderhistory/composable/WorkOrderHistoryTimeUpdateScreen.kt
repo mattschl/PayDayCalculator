@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -56,12 +57,26 @@ fun WorkOrderHistoryTimeUpdateScreen(
     currentHistoryId: Long? = null,
     onTimeClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit = {},
     onTimeLongClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit = {},
-    errorMessage: String? = null
+    errorMessage: String? = null,
+    isStartTimeError: Boolean = false
 ) {
     val df = DateFunctions()
     val nf = NumberFunctions()
 
     Scaffold(
+        topBar = {
+            if (errorMessage != null) {
+                androidx.compose.material3.TopAppBar(
+                    title = {
+                        Text(
+                            text = errorMessage,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.Red
+                        )
+                    }
+                )
+            }
+        },
         /* topBar = {
              TopAppBar(
                  title = {
@@ -163,7 +178,7 @@ fun WorkOrderHistoryTimeUpdateScreen(
                                     .padding(vertical = 4.dp),
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = if (isStartTimeError) Color.Red else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
 

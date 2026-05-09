@@ -420,6 +420,8 @@ fun WorkOrderHistoryTimeRoute(
         onTimeLongClick = { combined ->
             showTimeOptionsDialog = combined
         },
-        onBackClick = { navController.popBackStack() }
+        onBackClick = { navController.popBackStack() },
+        errorMessage = errorMessage,
+        isStartTimeError = errorMessage == duplicateStartTimeError
     )
 }

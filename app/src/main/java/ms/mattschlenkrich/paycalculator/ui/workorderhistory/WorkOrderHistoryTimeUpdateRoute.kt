@@ -79,7 +79,7 @@ fun WorkOrderHistoryTimeUpdateRoute(
         }
     }
 
-    var totalHours = df.getTimeWorked(
+    val totalHours = df.getTimeWorked(
         df.getTimeDisplay(startTime),
         df.getTimeDisplay(endTime)
     )
@@ -229,6 +229,7 @@ fun WorkOrderHistoryTimeUpdateRoute(
         onTimeLongClick = { item ->
             showTimeOptionsDialog = item
         },
-        errorMessage = errorMessage
+        errorMessage = errorMessage,
+        isStartTimeError = errorMessage == duplicateStartTimeError
     )
 }

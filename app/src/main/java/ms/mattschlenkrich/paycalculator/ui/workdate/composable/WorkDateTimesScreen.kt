@@ -70,12 +70,26 @@ fun WorkDateTimesScreen(
     onTimeLongClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit = {},
     workOrderError: String? = null,
     errorMessage: String? = null,
+    isStartTimeError: Boolean = false,
 ) {
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
 
     Scaffold(
         modifier = Modifier.imePadding(),
+        topBar = {
+            if (errorMessage != null) {
+                androidx.compose.material3.TopAppBar(
+                    title = {
+                        Text(
+                            text = errorMessage,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.Red
+                        )
+                    }
+                )
+            }
+        },
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             FloatingActionButton(
@@ -173,7 +187,7 @@ fun WorkDateTimesScreen(
                                     .padding(vertical = 4.dp),
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Black
+                                color = if (isStartTimeError) Color.Red else Color.Black
                             )
                         }
 

@@ -64,36 +64,26 @@ fun WorkOrderHistoryTimeScreen(
     onTimeClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit,
     onTimeLongClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit = {},
     onBackClick: () -> Unit,
-    errorMessage: String? = null
+    errorMessage: String? = null,
+    isStartTimeError: Boolean = false
 ) {
     val df = DateFunctions()
     val nf = NumberFunctions()
 
     Scaffold(
-        /*topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(stringResource(R.string.add_time))
-                        if (errorMessage != null) {
-                            Text(
-                                text = errorMessage,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = Color.Red
-                            )
-                        }
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.back)
+        topBar = {
+            if (errorMessage != null) {
+                androidx.compose.material3.TopAppBar(
+                    title = {
+                        Text(
+                            text = errorMessage,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.Red
                         )
                     }
-                }
-            )
-        },*/
+                )
+            }
+        },
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             FloatingActionButton(
@@ -152,7 +142,7 @@ fun WorkOrderHistoryTimeScreen(
                                 .padding(vertical = 4.dp),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            color = if (isStartTimeError) Color.Red else Color.Black
                         )
                     }
 

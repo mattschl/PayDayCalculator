@@ -377,6 +377,7 @@ fun WorkDateTimesRoute(
         onTimeLongClick = { item ->
             showTimeOptionsDialog = item
         },
-        errorMessage = errorMessage
+        errorMessage = errorMessage,
+        isStartTimeError = errorMessage == duplicateStartTimeError
     )
 }
