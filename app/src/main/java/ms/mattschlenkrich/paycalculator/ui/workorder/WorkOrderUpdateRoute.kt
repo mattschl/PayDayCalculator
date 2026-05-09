@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -8,8 +9,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
@@ -43,6 +47,10 @@ fun WorkOrderUpdateRoute(
     var address by remember { mutableStateOf(initialWo.woAddress) }
     var description by remember { mutableStateOf(initialWo.woDescription) }
 
+    var woNumberError by remember { mutableStateOf(false) }
+    var addressError by remember { mutableStateOf(false) }
+    var descriptionError by remember { mutableStateOf(false) }
+
     var jobSpecText by remember { mutableStateOf("") }
     val jobSpecSuggestions by workOrderViewModel.jobSpecsAll.observeAsState(emptyList())
     var areaText by remember { mutableStateOf("") }
@@ -65,14 +73,29 @@ fun WorkOrderUpdateRoute(
         emptyList<WorkPerformedAndQuantity>()
     val materialsList = emptyList<MaterialAndQuantity>()
 
+    val context = LocalContext.current
+    val errorLabel = stringResource(R.string.error_)
+
     WorkOrderUpdateScreen(
         employerName = employer.employerName,
         woNumber = woNumber,
-        onWoNumberChange = { woNumber = it },
+        onWoNumberChange = {
+            woNumber = it
+            woNumberError = false
+        },
         address = address,
-        onAddressChange = { address = it },
+        onAddressChange = {
+            address = it
+            addressError = false
+        },
         description = description,
-        onDescriptionChange = { description = it },
+        onDescriptionChange = {
+            description = it
+            descriptionError = false
+        },
+        woNumberError = woNumberError,
+        addressError = addressError,
+        descriptionError = descriptionError,
         jobSpecText = jobSpecText,
         onJobSpecTextChange = { jobSpecText = it },
         jobSpecSuggestions = jobSpecSuggestions,
@@ -130,6 +153,34 @@ fun WorkOrderUpdateRoute(
         workPerformedList = workPerformedList,
         materialsList = materialsList,
         onDoneClick = {
+            if (woNumber.isBlank()) {
+                woNumberError = true
+                Toast.makeText(
+                    context,
+                    errorLabel + context.getString(R.string.the_work_order_must_have_a_number),
+                    Toast.LENGTH_LONG
+                ).show()
+                return@WorkOrderUpdateScreen
+            }
+            if (address.isBlank()) {
+                addressError = true
+                Toast.makeText(
+                    context,
+                    errorLabel + context.getString(R.string.the_work_order_must_have_an_address),
+                    Toast.LENGTH_LONG
+                ).show()
+                return@WorkOrderUpdateScreen
+            }
+            if (description.isBlank()) {
+                descriptionError = true
+                Toast.makeText(
+                    context,
+                    errorLabel + context.getString(R.string.the_work_order_must_have_a_description),
+                    Toast.LENGTH_LONG
+                ).show()
+                return@WorkOrderUpdateScreen
+            }
+
             coroutineScope.launch {
                 if (jobSpecText.isNotBlank()) {
                     val js = workOrderViewModel.getOrCreateJobSpec(jobSpecText.trim())

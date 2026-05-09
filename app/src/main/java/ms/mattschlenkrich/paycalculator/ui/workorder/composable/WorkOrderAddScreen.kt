@@ -48,6 +48,9 @@ fun WorkOrderAddScreen(
     onAddressChange: (String) -> Unit,
     description: String,
     onDescriptionChange: (String) -> Unit,
+    woNumberError: Boolean,
+    addressError: Boolean,
+    descriptionError: Boolean,
     onDoneClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -128,7 +131,8 @@ fun WorkOrderAddScreen(
                             onValueChange = onWoNumberChange,
                             label = { Text(stringResource(R.string.work_order_number)) },
                             placeholder = { Text(stringResource(R.string.text_zeros)) },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            isError = woNumberError
                         )
 
                         CapitalizedOutlinedTextField(
@@ -136,7 +140,8 @@ fun WorkOrderAddScreen(
                             onValueChange = onAddressChange,
                             label = { Text(stringResource(R.string.address)) },
                             placeholder = { Text(stringResource(R.string.enter_address)) },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            isError = addressError
                         )
                     }
                 }
@@ -166,7 +171,8 @@ fun WorkOrderAddScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(120.dp),
-                            singleLine = false
+                            singleLine = false,
+                            isError = descriptionError
                         )
                     }
                 }

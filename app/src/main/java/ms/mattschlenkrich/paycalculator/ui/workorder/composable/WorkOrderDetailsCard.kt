@@ -23,10 +23,13 @@ fun WorkOrderDetailsCard(
     employerName: String,
     woNumber: String,
     onWoNumberChange: (String) -> Unit,
+    woNumberError: Boolean,
     address: String,
     onAddressChange: (String) -> Unit,
+    addressError: Boolean,
     description: String,
-    onDescriptionChange: (String) -> Unit
+    onDescriptionChange: (String) -> Unit,
+    descriptionError: Boolean
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -51,13 +54,15 @@ fun WorkOrderDetailsCard(
                 onValueChange = onWoNumberChange,
                 label = { Text(stringResource(R.string.work_order_number)) },
                 modifier = Modifier.fillMaxWidth(),
+                isError = woNumberError
             )
 
             CapitalizedOutlinedTextField(
                 value = address,
                 onValueChange = onAddressChange,
                 label = { Text(stringResource(R.string.address)) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = addressError
             )
 
             CapitalizedOutlinedTextField(
@@ -65,7 +70,8 @@ fun WorkOrderDetailsCard(
                 onValueChange = onDescriptionChange,
                 label = { Text(stringResource(R.string.general_job_description)) },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = false
+                singleLine = false,
+                isError = descriptionError
             )
         }
     }

@@ -55,6 +55,9 @@ fun WorkOrderUpdateScreen(
     onAddressChange: (String) -> Unit,
     description: String,
     onDescriptionChange: (String) -> Unit,
+    woNumberError: Boolean,
+    addressError: Boolean,
+    descriptionError: Boolean,
     jobSpecText: String,
     onJobSpecTextChange: (String) -> Unit,
     jobSpecSuggestions: List<JobSpec>,
@@ -122,10 +125,13 @@ fun WorkOrderUpdateScreen(
                     employerName = employerName,
                     woNumber = woNumber,
                     onWoNumberChange = onWoNumberChange,
+                    woNumberError = woNumberError,
                     address = address,
                     onAddressChange = onAddressChange,
+                    addressError = addressError,
                     description = description,
-                    onDescriptionChange = onDescriptionChange
+                    onDescriptionChange = onDescriptionChange,
+                    descriptionError = descriptionError
                 )
             }
 

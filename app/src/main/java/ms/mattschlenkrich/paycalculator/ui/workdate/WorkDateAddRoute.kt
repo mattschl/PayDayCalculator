@@ -189,7 +189,7 @@ fun WorkDateAddRoute(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDateUsedDialog = false }) {
+                TextButton(onClick = { }) {
                     Text(stringResource(R.string.no))
                 }
             }
@@ -199,8 +199,10 @@ fun WorkDateAddRoute(
     WorkDateAddScreen(
         dateText = if (curDateString.isNotEmpty()) df.getDisplayDate(curDateString) else "",
         onDateClick = {
-            val curDateAll = (if (curDateString.isEmpty()) LocalDate.now()
-                .toString() else curDateString).split("-")
+            val curDateAll = (curDateString.ifEmpty {
+                LocalDate.now()
+                    .toString()
+            }).split("-")
             DatePickerDialog(
                 context, { _, year, monthOfYear, dayOfMonth ->
                     val month = monthOfYear + 1

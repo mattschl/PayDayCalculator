@@ -60,7 +60,7 @@ fun <T> AutoCompleteTextField(
     val filteredSuggestions by remember(textFieldValue.text, suggestions) {
         derivedStateOf {
             if (textFieldValue.text.isEmpty()) {
-                emptyList()
+                suggestions.take(50).toList()
             } else {
                 suggestions.asSequence()
                     .filter { itemToString(it).contains(textFieldValue.text, ignoreCase = true) }
@@ -72,7 +72,7 @@ fun <T> AutoCompleteTextField(
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { },
+        onExpandedChange = { expanded = it },
         modifier = modifier
     ) {
         BasicTextField(
@@ -82,7 +82,7 @@ fun <T> AutoCompleteTextField(
                 if (it.text != value) {
                     onValueChange(it.text)
                 }
-                expanded = it.text.isNotEmpty() && filteredSuggestions.isNotEmpty()
+                expanded = true
             },
             modifier = Modifier
                 .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true)
@@ -91,7 +91,7 @@ fun <T> AutoCompleteTextField(
                 .combinedClickable(
                     interactionSource = interactionSource,
                     indication = null,
-                    onClick = { expanded = !expanded },
+                    onClick = { expanded = true },
                     onLongClick = onLongClick
                 ),
             textStyle = StandardTextFieldDefaults.textStyle(),
@@ -128,7 +128,10 @@ fun <T> AutoCompleteTextField(
                             expanded = false
                         },
                         modifier = Modifier
-                            .heightIn(min = StandardTextFieldDefaults.minHeight(), max = StandardTextFieldDefaults.maxHeight())
+                            .heightIn(
+                                min = StandardTextFieldDefaults.minHeight(),
+                                max = StandardTextFieldDefaults.maxHeight()
+                            )
                             .fillMaxWidth(),
                         contentPadding = StandardTextFieldDefaults.dropdownItemPadding()
                     )

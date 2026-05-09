@@ -28,6 +28,7 @@ fun SelectAllOutlinedTextField(
     trailingIcon: @Composable (() -> Unit)? = null,
     singleLine: Boolean = true,
     readOnly: Boolean = false,
+    isError: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     contentPadding: PaddingValues = StandardTextFieldDefaults.contentPadding(),
 ) {
@@ -74,6 +75,7 @@ fun SelectAllOutlinedTextField(
         interactionSource = interactionSource,
         modifier = modifier,
         singleLine = singleLine,
+        isError = isError,
         label = label,
         placeholder = placeholder,
         leadingIcon = leadingIcon,
