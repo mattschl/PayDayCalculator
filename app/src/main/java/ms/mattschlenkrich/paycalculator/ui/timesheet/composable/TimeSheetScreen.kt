@@ -26,7 +26,6 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
 import ms.mattschlenkrich.paycalculator.data.model.WorkDateExtraAndTypeAndDef
@@ -53,7 +52,11 @@ fun TimeSheetScreen(
     displayDate: (String) -> String,
     formatHours: (WorkDates) -> String
 ) {
-    val columns = calculateGridColumns()
+    val windowInfo = androidx.compose.ui.platform.LocalWindowInfo.current
+    val density = androidx.compose.ui.platform.LocalDensity.current
+    val columns = with(density) {
+        if (windowInfo.containerSize.width.toDp() >= 600.dp) 2 else 1
+    }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
