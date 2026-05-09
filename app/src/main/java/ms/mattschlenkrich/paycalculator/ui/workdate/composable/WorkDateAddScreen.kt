@@ -1,3 +1,8 @@
+@file:Suppress(
+    "unused", "unused", "unused", "unused", "unused", "unused", "unused", "unused",
+    "unused", "unused", "unused", "unused", "unused", "unused"
+)
+
 package ms.mattschlenkrich.paycalculator.ui.workdate.composable
 
 import androidx.compose.foundation.clickable

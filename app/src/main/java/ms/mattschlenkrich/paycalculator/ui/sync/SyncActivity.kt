@@ -1,3 +1,5 @@
+@file:Suppress("SameReturnValue")
+
 package ms.mattschlenkrich.paycalculator.ui.sync
 
 import android.accounts.Account
