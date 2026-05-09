@@ -60,12 +60,12 @@ fun TimeSheetRoute(
     val hrLabel = stringResource(R.string.hr)
     val otLabel = stringResource(R.string.ot)
     val dblOtLabel = stringResource(R.string.dbl_ot)
-    val otherHoursLabel = stringResource(R.string.other_hours)
+    val otherHoursLabel = stringResource(R.string.other)
     val pipeLabel = stringResource(R.string.pipe)
     val hrsLabel = stringResource(R.string.hrs)
-    val otHrsLabel = stringResource(R.string.ot_hrs)
-    val dblOtHrsLabel = stringResource(R.string.dbl_ot_hrs)
-    val otherHrsLabel = stringResource(R.string.other_hours)
+    val otHrsLabel = stringResource(R.string.ot)
+    val dblOtHrsLabel = stringResource(R.string.dbl_ot)
+    val otherHrsLabel = stringResource(R.string.other)
 
     val employers by employerViewModel.getEmployers().observeAsState(emptyList())
     var selectedEmployer by remember { mutableStateOf<Employers?>(null) }

@@ -38,16 +38,16 @@ fun formatWorkDateHoursString(
 ): String {
     val parts = mutableListOf<String>()
     if (workDate.wdRegHours > 0) parts.add(
-        "${nf.displayNumberFromDouble(workDate.wdRegHours)}$hrsLabel"
+        "${nf.displayNumberFromDouble(workDate.wdRegHours)} $hrsLabel"
     )
     if (workDate.wdOtHours > 0) parts.add(
-        "${nf.displayNumberFromDouble(workDate.wdOtHours)}$otHrsLabel"
+        "${nf.displayNumberFromDouble(workDate.wdOtHours)} $otHrsLabel"
     )
     if (workDate.wdDblOtHours > 0) parts.add(
-        "${nf.displayNumberFromDouble(workDate.wdDblOtHours)}$dblOtHrsLabel"
+        "${nf.displayNumberFromDouble(workDate.wdDblOtHours)} $dblOtHrsLabel"
     )
     if (workDate.wdStatHours > 0) parts.add(
-        "${nf.displayNumberFromDouble(workDate.wdStatHours)}$otherHrsLabel"
+        "${nf.displayNumberFromDouble(workDate.wdStatHours)} $otherHrsLabel"
     )
 
     var display = parts.joinToString(pipeLabel)
