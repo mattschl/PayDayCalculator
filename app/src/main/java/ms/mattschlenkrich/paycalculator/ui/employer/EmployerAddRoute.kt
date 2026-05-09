@@ -1,3 +1,5 @@
+@file:Suppress("AssignedValueIsNeverRead")
+
 package ms.mattschlenkrich.paycalculator.ui.employer
 
 import android.app.DatePickerDialog

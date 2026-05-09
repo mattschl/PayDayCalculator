@@ -1,3 +1,5 @@
+@file:Suppress("AssignedValueIsNeverRead")
+
 package ms.mattschlenkrich.paycalculator.ui.timesheet
 
 import androidx.compose.material3.AlertDialog

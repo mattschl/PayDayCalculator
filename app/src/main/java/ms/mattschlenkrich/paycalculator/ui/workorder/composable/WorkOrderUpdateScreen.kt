@@ -1,3 +1,5 @@
+@file:Suppress("AssignedValueIsNeverRead")
+
 package ms.mattschlenkrich.paycalculator.ui.workorder.composable
 
 import androidx.compose.foundation.layout.Arrangement
@@ -79,7 +81,7 @@ fun WorkOrderUpdateScreen(
     onAddHistoryClick: () -> Unit,
     workPerformedList: List<WorkPerformedAndQuantity>,
     materialsList: List<MaterialAndQuantity>,
-    onDoneClick: () -> Unit,
+    onDoneClick: @Composable () -> Unit,
     onBackClick: () -> Unit
 ) {
     val columns = calculateGridColumns()

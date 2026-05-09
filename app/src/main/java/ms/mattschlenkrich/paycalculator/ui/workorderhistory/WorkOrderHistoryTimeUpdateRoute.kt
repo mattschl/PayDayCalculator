@@ -1,3 +1,5 @@
+@file:Suppress("VariableNeverRead")
+
 package ms.mattschlenkrich.paycalculator.ui.workorderhistory
 
 import android.app.TimePickerDialog

@@ -1,7 +1,4 @@
-@file:Suppress(
-    "unused", "unused", "unused", "unused", "unused", "unused", "unused", "unused",
-    "unused", "unused", "unused", "unused", "unused", "unused"
-)
+@file:Suppress("unused")
 
 package ms.mattschlenkrich.paycalculator.ui.workdate.composable
 

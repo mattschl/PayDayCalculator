@@ -1,5 +1,7 @@
 //@file:Suppress("unused")
 
+@file:Suppress("unused")
+
 package ms.mattschlenkrich.paycalculator.common
 
 const val PAY_DB_NAME = "pay.db"

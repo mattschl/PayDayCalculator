@@ -1,3 +1,5 @@
+@file:Suppress("AssignedValueIsNeverRead")
+
 package ms.mattschlenkrich.paycalculator.ui.workorder
 
 import android.widget.Toast
@@ -157,7 +159,7 @@ fun WorkOrderUpdateRoute(
                 woNumberError = true
                 Toast.makeText(
                     context,
-                    errorLabel + context.getString(R.string.the_work_order_must_have_a_number),
+                    errorLabel + stringResource(R.string.the_work_order_must_have_a_number),
                     Toast.LENGTH_LONG
                 ).show()
                 return@WorkOrderUpdateScreen
@@ -166,7 +168,7 @@ fun WorkOrderUpdateRoute(
                 addressError = true
                 Toast.makeText(
                     context,
-                    errorLabel + context.getString(R.string.the_work_order_must_have_an_address),
+                    errorLabel + stringResource(R.string.the_work_order_must_have_an_address),
                     Toast.LENGTH_LONG
                 ).show()
                 return@WorkOrderUpdateScreen
@@ -175,7 +177,7 @@ fun WorkOrderUpdateRoute(
                 descriptionError = true
                 Toast.makeText(
                     context,
-                    errorLabel + context.getString(R.string.the_work_order_must_have_a_description),
+                    errorLabel + stringResource(R.string.the_work_order_must_have_a_description),
                     Toast.LENGTH_LONG
                 ).show()
                 return@WorkOrderUpdateScreen

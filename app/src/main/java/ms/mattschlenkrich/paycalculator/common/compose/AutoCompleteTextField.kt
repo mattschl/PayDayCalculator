@@ -1,3 +1,5 @@
+@file:Suppress("AssignedValueIsNeverRead", "KotlinConstantConditions", "KotlinConstantConditions")
+
 package ms.mattschlenkrich.paycalculator.common.compose
 
 import androidx.compose.foundation.combinedClickable
