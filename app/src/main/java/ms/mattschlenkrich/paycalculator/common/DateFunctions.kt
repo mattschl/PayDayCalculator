@@ -153,6 +153,31 @@ class DateFunctions {
         return tempTime
     }
 
+    fun roundCalendarTimeUpTo15Minutes(time: Calendar): Calendar {
+        val tempTime = time.clone() as Calendar
+        val minutes = tempTime.get(Calendar.MINUTE)
+        val roundedMinute = ((minutes + 14) / 15) * 15
+        if (roundedMinute == 60) {
+            tempTime.add(Calendar.HOUR_OF_DAY, 1)
+            tempTime.set(Calendar.MINUTE, 0)
+        } else {
+            tempTime.set(Calendar.MINUTE, roundedMinute)
+        }
+        tempTime.set(Calendar.SECOND, 0)
+        tempTime.set(Calendar.MILLISECOND, 0)
+        return tempTime
+    }
+
+    fun roundCalendarTimeDownTo15Minutes(time: Calendar): Calendar {
+        val tempTime = time.clone() as Calendar
+        val minutes = tempTime.get(Calendar.MINUTE)
+        val roundedMinute = (minutes / 15) * 15
+        tempTime.set(Calendar.MINUTE, roundedMinute)
+        tempTime.set(Calendar.SECOND, 0)
+        tempTime.set(Calendar.MILLISECOND, 0)
+        return tempTime
+    }
+
 
     /*fun roundToDecimalPlacesNumerical(number: Double, decimalPlaces: Int): Double {
         val factor = 10.0.pow(decimalPlaces)

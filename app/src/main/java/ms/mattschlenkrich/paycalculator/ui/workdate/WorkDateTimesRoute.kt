@@ -116,10 +116,32 @@ fun WorkDateTimesRoute(
             mutableStateOf(df.getCalendarFromTime("08:30"))
         }
     }
-    var endTime by remember(startTime) {
-        val end = startTime.clone() as Calendar
-        if (allTimesByDate.isEmpty() && df.getTimeDisplay(startTime) == "08:30") {
-            end.add(Calendar.HOUR_OF_DAY, 8)
+    var endTime by remember(startTime, selectedTimeType) {
+        val now = df.roundCalendarTimeUpTo15Minutes(Calendar.getInstance())
+        val hoursBefore = allTimesByDate
+            .filter { it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value }
+            .sumOf {
+                df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
+            }
+
+        val limitHours = when (selectedTimeType) {
+            TimeWorkedTypes.REG_HOURS.value -> 8.0 - hoursBefore
+            TimeWorkedTypes.OT_HOURS.value -> 12.0 - hoursBefore
+            else -> Double.MAX_VALUE
+        }
+
+        val limitTime = if (limitHours > 0 && limitHours != Double.MAX_VALUE) {
+            df.addHoursToCalendar(startTime, limitHours)
+        } else {
+            null
+        }
+
+        val end = if (limitTime != null && now.after(limitTime)) {
+            limitTime
+        } else if (now.after(startTime)) {
+            now
+        } else {
+            startTime.clone() as Calendar
         }
         mutableStateOf(end)
     }
@@ -297,21 +319,22 @@ fun WorkDateTimesRoute(
         onTimeTypeChange = { selectedTimeType = it },
         onStartTimeClick = {
             TimePickerDialog(context, { _, h, m ->
-                val (roundedH, roundedM) = df.roundTimeTo15Minutes(h, m)
-                startTime = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, roundedH)
-                    set(Calendar.MINUTE, roundedM)
+                val newStart = Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, h)
+                    set(Calendar.MINUTE, m)
                 }
+                startTime = df.roundCalendarTimeDownTo15Minutes(newStart)
                 errorMessage = null
             }, startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), false).show()
         },
         onEndTimeClick = {
             TimePickerDialog(context, { _, h, m ->
-                val (roundedH, roundedM) = df.roundTimeTo15Minutes(h, m)
-                endTime = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, roundedH)
-                    set(Calendar.MINUTE, roundedM)
-                }
+                endTime = df.roundCalendarTimeUpTo15Minutes(
+                    Calendar.getInstance().apply {
+                        set(Calendar.HOUR_OF_DAY, h)
+                        set(Calendar.MINUTE, m)
+                    }
+                )
                 errorMessage = null
             }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false).show()
         },

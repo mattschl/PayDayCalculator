@@ -46,58 +46,6 @@ fun TimeSheetSummaryCard(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    val parts = paySummary.week1Total.split(": ", limit = 2)
-                    if (parts.size == 2) {
-                        Text(
-                            text = parts[0],
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color.Gray
-                        )
-                        Text(
-                            text = parts[1],
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.Gray
-                        )
-                    } else {
-                        Text(
-                            text = paySummary.week1Total,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.Gray
-                        )
-                    }
-                }
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    val parts = paySummary.week2Total.split(": ", limit = 2)
-                    if (parts.size == 2) {
-                        Text(
-                            text = parts[0],
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color.Gray
-                        )
-                        Text(
-                            text = parts[1],
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.Gray
-                        )
-                    } else {
-                        Text(
-                            text = paySummary.week2Total,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.Gray
-                        )
-                    }
-                }
-            }
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),

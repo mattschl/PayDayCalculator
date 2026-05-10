@@ -137,28 +137,29 @@ fun WorkOrderHistoryTimeUpdateRoute(
         onTimeTypeChange = { selectedTimeType = it },
         onStartTimeClick = {
             TimePickerDialog(context, { _, h, m ->
-                val (roundedHour, roundedMinute) = df.roundTimeTo15Minutes(h, m)
                 val newStart = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, roundedHour)
-                    set(Calendar.MINUTE, roundedMinute)
+                    set(Calendar.HOUR_OF_DAY, h)
+                    set(Calendar.MINUTE, m)
                 }
-                startTime = newStart
+                startTime = df.roundCalendarTimeDownTo15Minutes(newStart)
                 errorMessage = null
             }, startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), false).show()
         },
         onEndTimeClick = {
             TimePickerDialog(context, { _, h, m ->
-                val (roundedHour, roundedMinute) = df.roundTimeTo15Minutes(h, m)
-                val newEnd = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, roundedHour)
-                    set(Calendar.MINUTE, roundedMinute)
-                }
+                val newEnd = df.roundCalendarTimeUpTo15Minutes(
+                    Calendar.getInstance().apply {
+                        set(Calendar.HOUR_OF_DAY, h)
+                        set(Calendar.MINUTE, m)
+                    }
+                )
 
-                val hoursBefore = allTimesByDate.filter {
-                    it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value
-                }.sumOf {
-                    df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
-                }
+                val hoursBefore = allTimesByDate
+                    .filter { it.timeWorked.woHistoryTimeWorkedId != combined.timeWorked.woHistoryTimeWorkedId }
+                    .filter { it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value }
+                    .sumOf {
+                        df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
+                    }
                 val newSegmentHours = df.getTimeWorked(startTime, newEnd)
 
                 if (selectedTimeType == TimeWorkedTypes.REG_HOURS.value &&

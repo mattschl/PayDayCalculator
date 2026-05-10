@@ -77,6 +77,8 @@ fun TimeSheetRoute(
     }
     var selectedCutOffDate by remember { mutableStateOf("") }
     var paySummary by remember { mutableStateOf(TimeSheetPaySummary()) }
+    var week1SummaryString by remember { mutableStateOf("") }
+    var week2SummaryString by remember { mutableStateOf("") }
     val workDates by if (selectedEmployer != null && selectedCutOffDate.isNotEmpty()) {
         payDayViewModel.getWorkDateList(
             selectedEmployer!!.employerId,
@@ -209,6 +211,8 @@ fun TimeSheetRoute(
                         zeroHrLabel
                     })
                 )
+                week1SummaryString = wk1Summary.ifBlank { zeroHrLabel }
+                week2SummaryString = wk2Summary.ifBlank { zeroHrLabel }
             }
         }
     }
@@ -282,6 +286,12 @@ fun TimeSheetRoute(
         )
     }
 
+    val week1EndDate = remember(selectedCutOffDate) {
+        if (selectedCutOffDate.isNotEmpty()) {
+            LocalDate.parse(selectedCutOffDate).minusDays(7).toString()
+        } else ""
+    }
+
     TimeSheetScreen(
         employers = employers,
         selectedEmployer = selectedEmployer,
@@ -299,6 +309,8 @@ fun TimeSheetRoute(
         selectedCutOffDate = selectedCutOffDate,
         onCutOffDateSelected = { selectedCutOffDate = it },
         paySummary = paySummary,
+        week1Summary = week1SummaryString,
+        week2Summary = week2SummaryString,
         workDates = workDates,
         workDateExtras = workDateExtras,
         onWorkDateClick = { workDate ->
@@ -339,6 +351,7 @@ fun TimeSheetRoute(
                 }
             }
         },
+        week1EndDate = week1EndDate,
         displayDate = { df.getDisplayDate(it) },
         formatHours = { workDate ->
             formatWorkDateHoursString(

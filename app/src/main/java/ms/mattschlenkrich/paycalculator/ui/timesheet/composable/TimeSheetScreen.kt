@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -18,9 +19,12 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
@@ -42,6 +46,8 @@ fun TimeSheetScreen(
     selectedCutOffDate: String,
     onCutOffDateSelected: (String) -> Unit,
     paySummary: TimeSheetPaySummary,
+    week1Summary: String,
+    week2Summary: String,
     workDates: List<WorkDates>,
     workDateExtras: Map<Long, List<WorkDateExtraAndTypeAndDef>>,
     onWorkDateClick: (WorkDates) -> Unit,
@@ -49,6 +55,7 @@ fun TimeSheetScreen(
     onAddWorkDateClick: () -> Unit,
     onViewPayDetailsClick: () -> Unit,
     onGenerateCutoffClick: () -> Unit,
+    week1EndDate: String,
     displayDate: (String) -> String,
     formatHours: (WorkDates) -> String
 ) {
@@ -57,6 +64,10 @@ fun TimeSheetScreen(
     val columns = with(density) {
         if (windowInfo.containerSize.width.toDp() >= 600.dp) 2 else 1
     }
+
+    val activeWorkDates = workDates.filter { !it.wdIsDeleted }.sortedBy { it.wdDate }
+    val week1Dates = activeWorkDates.filter { it.wdDate <= week1EndDate }
+    val week2Dates = activeWorkDates.filter { it.wdDate > week1EndDate }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -107,7 +118,7 @@ fun TimeSheetScreen(
                 )
             }
 
-            items(workDates.filter { !it.wdIsDeleted }.sortedBy { it.wdDate }) { workDate ->
+            items(week1Dates) { workDate ->
                 WorkDateCard(
                     workDate = workDate,
                     extras = workDateExtras[workDate.workDateId] ?: emptyList(),
@@ -118,9 +129,56 @@ fun TimeSheetScreen(
                 )
             }
 
+            if (week1Dates.isNotEmpty()) {
+                item(span = { GridItemSpan(columns) }) {
+                    CenteredSummaryText(week1Summary)
+                }
+            }
+
+            if (week1Dates.isNotEmpty() && week2Dates.isNotEmpty()) {
+                item(span = { GridItemSpan(columns) }) {
+                    androidx.compose.material3.HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        thickness = 2.dp,
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                    )
+                }
+            }
+
+            items(week2Dates) { workDate ->
+                WorkDateCard(
+                    workDate = workDate,
+                    extras = workDateExtras[workDate.workDateId] ?: emptyList(),
+                    onWorkDateClick = { onWorkDateClick(workDate) },
+                    onWorkDateLongClick = { onWorkDateLongClick(workDate) },
+                    displayDate = displayDate,
+                    formatHours = formatHours
+                )
+            }
+
+            if (week2Dates.isNotEmpty()) {
+                item(span = { GridItemSpan(columns) }) {
+                    CenteredSummaryText(week2Summary)
+                }
+            }
+
             item(span = { GridItemSpan(columns) }) {
                 Spacer(modifier = Modifier.height(SCREEN_PADDING_VERTICAL))
             }
         }
     }
+}
+
+@Composable
+fun CenteredSummaryText(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodySmall,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.secondary,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    )
 }
