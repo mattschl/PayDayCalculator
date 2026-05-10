@@ -11,7 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
@@ -29,7 +28,9 @@ fun WorkOrderHistoryItem(
         modifier = Modifier
             .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
     ) {
         Column(
             modifier = Modifier
@@ -71,7 +72,7 @@ fun WorkOrderHistoryItem(
                 Text(
                     text = hoursText.trim(),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.DarkGray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

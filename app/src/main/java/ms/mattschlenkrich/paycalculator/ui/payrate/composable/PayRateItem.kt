@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -29,7 +28,9 @@ fun PayRateItem(wage: EmployerPayRates, onClick: () -> Unit) {
             .fillMaxWidth()
             .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Column(
             modifier = Modifier
@@ -40,7 +41,11 @@ fun PayRateItem(wage: EmployerPayRates, onClick: () -> Unit) {
             Text(
                 text = wage.eprEffectiveDate,
                 textDecoration = if (wage.eprIsDeleted) TextDecoration.LineThrough else null,
-                color = if (wage.eprIsDeleted) Color.Red else Color.Black,
+                color = if (wage.eprIsDeleted) {
+                    MaterialTheme.colorScheme.error
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                },
                 style = MaterialTheme.typography.bodyLarge
             )
             Row(
@@ -53,12 +58,16 @@ fun PayRateItem(wage: EmployerPayRates, onClick: () -> Unit) {
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                     textDecoration = if (wage.eprIsDeleted) TextDecoration.LineThrough else null,
-                    color = if (wage.eprIsDeleted) Color.Red else Color.Black
+                    color = if (wage.eprIsDeleted) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    }
                 )
                 Text(
                     text = PayRateBasedOn.entries[wage.eprPerPeriod].type,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

@@ -54,7 +54,6 @@ fun WorkOrderViewRoute(
             mainViewModel.setWorkOrder(it)
             navController.navigate(Screen.WorkOrderUpdate.route)
         },
-        onAddNewWorkOrderClick = { navController.navigate(Screen.WorkOrderAdd.route) },
-        onBackClick = { navController.popBackStack() }
+        onAddNewWorkOrderClick = { navController.navigate(Screen.WorkOrderAdd.route) }
     )
 }

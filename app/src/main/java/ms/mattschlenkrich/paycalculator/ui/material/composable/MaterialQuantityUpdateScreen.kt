@@ -58,7 +58,11 @@ fun MaterialQuantityUpdateScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Icon(Icons.Default.Done, contentDescription = stringResource(R.string.done))
+                Icon(
+                    imageVector = Icons.Default.Done,
+                    contentDescription = stringResource(R.string.done),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
     ) { innerPadding ->

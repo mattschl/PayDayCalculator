@@ -27,4 +27,18 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         _settings.value = newSettings
         settingsManager.saveSettings(newSettings)
     }
+
+    fun updateIsDarkTheme(isDark: Boolean) {
+        val newSettings = _settings.value?.copy(isDarkTheme = isDark, isSystemTheme = false)
+            ?: Settings(isDarkTheme = isDark, isSystemTheme = false)
+        _settings.value = newSettings
+        settingsManager.saveSettings(newSettings)
+    }
+
+    fun updateIsSystemTheme(isSystem: Boolean) {
+        val newSettings =
+            _settings.value?.copy(isSystemTheme = isSystem) ?: Settings(isSystemTheme = isSystem)
+        _settings.value = newSettings
+        settingsManager.saveSettings(newSettings)
+    }
 }

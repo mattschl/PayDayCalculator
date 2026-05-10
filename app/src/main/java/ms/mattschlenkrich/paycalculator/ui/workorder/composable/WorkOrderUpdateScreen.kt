@@ -81,8 +81,7 @@ fun WorkOrderUpdateScreen(
     onAddHistoryClick: () -> Unit,
     workPerformedList: List<WorkPerformedAndQuantity>,
     materialsList: List<MaterialAndQuantity>,
-    onDoneClick: () -> Unit,
-    onBackClick: () -> Unit
+    onDoneClick: () -> Unit
 ) {
     val columns = calculateGridColumns()
     val df = DateFunctions()
@@ -107,7 +106,11 @@ fun WorkOrderUpdateScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Icon(Icons.Default.Done, contentDescription = stringResource(R.string.done))
+                Icon(
+                    imageVector = Icons.Default.Done,
+                    contentDescription = stringResource(R.string.done),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
     ) { innerPadding ->

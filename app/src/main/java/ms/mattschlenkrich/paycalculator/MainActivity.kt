@@ -136,6 +136,8 @@ class MainActivity : ComponentActivity() {
             val settings by settingsViewModel.settings.observeAsState()
 
             PayCalculatorTheme(
+                isSystemTheme = settings?.isSystemTheme ?: true,
+                isDarkTheme = settings?.isDarkTheme ?: false,
                 fontSize = settings?.fontSize ?: 16f
             ) {
                 MainScreen(

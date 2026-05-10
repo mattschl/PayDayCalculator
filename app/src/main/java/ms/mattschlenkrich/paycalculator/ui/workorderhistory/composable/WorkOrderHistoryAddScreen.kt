@@ -29,8 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -55,7 +53,6 @@ fun WorkOrderHistoryAddScreen(
     onWorkOrderAddEdit: (String, String, String, String, String, Boolean) -> Unit,
     onDone: (String, String, String, String, String, Boolean) -> Unit,
     onAddTime: (String, String, String, String, String, Boolean) -> Unit,
-    onBack: () -> Unit,
     displayDate: String,
     displayEmployer: String
 ) {
@@ -94,12 +91,13 @@ fun WorkOrderHistoryAddScreen(
                         showCreateDialog = true
                     }
                 },
-                containerColor = colorResource(id = R.color.dark_green),
-                contentColor = Color.White
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_done),
-                    contentDescription = stringResource(R.string.done)
+                    contentDescription = stringResource(R.string.done),
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
@@ -114,7 +112,9 @@ fun WorkOrderHistoryAddScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
             ) {
                 Column(
                     modifier = Modifier
@@ -127,7 +127,7 @@ fun WorkOrderHistoryAddScreen(
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontStyle = FontStyle.Italic
                         ),
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     Row(
@@ -139,14 +139,14 @@ fun WorkOrderHistoryAddScreen(
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontStyle = FontStyle.Italic
                             ),
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             text = displayEmployer,
                             style = MaterialTheme.typography.titleLarge.copy(
                                 fontWeight = FontWeight.Bold
                             ),
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
@@ -185,7 +185,7 @@ fun WorkOrderHistoryAddScreen(
                                 )
                             },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = colorResource(id = R.color.dark_green)
+                                containerColor = MaterialTheme.colorScheme.primary
                             ),
                             modifier = Modifier.padding(start = 8.dp)
                         ) {
@@ -198,8 +198,8 @@ fun WorkOrderHistoryAddScreen(
 
                     if (isWorkOrderValid) {
                         Text(
-                            text = "${currentWorkOrder!!.woAddress} - ${currentWorkOrder.woNumber}",
-                            color = Color.Red,
+                            text = "${currentWorkOrder.woAddress} - ${currentWorkOrder.woNumber}",
+                            color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(vertical = 4.dp)
                         )
@@ -252,7 +252,7 @@ fun WorkOrderHistoryAddScreen(
                             }
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = colorResource(id = R.color.dark_green)
+                            containerColor = MaterialTheme.colorScheme.primary
                         ),
                         modifier = Modifier
                             .fillMaxWidth()

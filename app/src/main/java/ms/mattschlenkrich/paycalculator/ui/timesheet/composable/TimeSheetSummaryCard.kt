@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -32,7 +31,9 @@ fun TimeSheetSummaryCard(
             .fillMaxWidth()
             .clickable { onViewPayDetailsClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Column(
             modifier = Modifier.padding(4.dp),
@@ -66,7 +67,7 @@ fun TimeSheetSummaryCard(
                     Text(
                         paySummary.deductions,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Red
+                        color = MaterialTheme.colorScheme.error
                     )
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -78,7 +79,7 @@ fun TimeSheetSummaryCard(
                         paySummary.netPay,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFB71C1C)
+                        color = MaterialTheme.colorScheme.tertiary
                     )
                 }
             }

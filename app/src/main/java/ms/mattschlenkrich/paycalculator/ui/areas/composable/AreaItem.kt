@@ -9,7 +9,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -26,7 +25,9 @@ fun AreaItem(
             .fillMaxWidth()
             .clickable { onClick(area) },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Text(
             text = if (area.areaIsDeleted) {
@@ -38,7 +39,11 @@ fun AreaItem(
             style = MaterialTheme.typography.bodyLarge.copy(
                 fontWeight = FontWeight.Bold
             ),
-            color = if (area.areaIsDeleted) Color.Red else Color.Black
+            color = if (area.areaIsDeleted) {
+                MaterialTheme.colorScheme.error
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            }
         )
     }
 }

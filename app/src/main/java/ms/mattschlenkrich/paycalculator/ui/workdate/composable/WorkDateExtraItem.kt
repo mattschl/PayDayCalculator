@@ -9,7 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
 
@@ -45,7 +44,7 @@ fun WorkDateExtraItem(
             text = display,
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.bodyLarge,
-            color = if (extra.wdeIsCredit) Color.Unspecified else Color.Red
+            color = if (extra.wdeIsCredit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
         )
     }
 }

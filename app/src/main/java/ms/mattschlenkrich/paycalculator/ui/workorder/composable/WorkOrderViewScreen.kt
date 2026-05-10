@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -58,8 +59,7 @@ fun WorkOrderViewScreen(
     onResetSearchClick: () -> Unit,
     workOrders: List<WorkOrder>,
     onWorkOrderClick: (WorkOrder) -> Unit,
-    onAddNewWorkOrderClick: () -> Unit,
-    onBackClick: () -> Unit
+    onAddNewWorkOrderClick: () -> Unit
 ) {
     val columns = calculateGridColumns()
 
@@ -81,10 +81,14 @@ fun WorkOrderViewScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddNewWorkOrderClick,
-                containerColor = Color(0xFF1B5E20), // dark_green
-                contentColor = Color.White
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_new))
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.add_new),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
     ) { innerPadding ->
@@ -116,7 +120,11 @@ fun WorkOrderViewScreen(
                         )
                         Button(
                             onClick = onAddNewEmployerClick,
-                            modifier = Modifier.padding(start = 8.dp)
+                            modifier = Modifier.padding(start = 8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
                         ) {
                             Text(stringResource(R.string.add))
                         }
@@ -139,7 +147,13 @@ fun WorkOrderViewScreen(
 
                         Spacer(modifier = Modifier.width(8.dp))
 
-                        Button(onClick = onResetSearchClick) {
+                        Button(
+                            onClick = onResetSearchClick,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.onSecondary
+                            )
+                        ) {
                             Text(stringResource(R.string.reset))
                         }
                     }
@@ -158,13 +172,15 @@ fun WorkOrderViewScreen(
                     ) {
                         Card(
                             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White)
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
                         ) {
                             Text(
                                 text = stringResource(R.string.no_work_orders_to_view),
                                 modifier = Modifier.padding(50.dp),
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = Color.Black
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -203,7 +219,9 @@ fun WorkOrderListItem(
             .fillMaxWidth()
             .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Row(
             modifier = Modifier.height(intrinsicSize = IntrinsicSize.Min)
@@ -229,18 +247,18 @@ fun WorkOrderListItem(
                         text = workOrder.woNumber,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 Text(
                     text = workOrder.woAddress,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = workOrder.woDescription,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }

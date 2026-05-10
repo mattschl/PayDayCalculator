@@ -34,7 +34,6 @@ fun WorkPerformedViewRoute(
         onWorkPerformedClick = { wp ->
             mainViewModel.setWorkPerformedId(wp.workPerformedId)
             navController.navigate(Screen.WorkPerformedUpdate.route)
-        },
-        onBackClick = { navController.popBackStack() }
+        }
     )
 }

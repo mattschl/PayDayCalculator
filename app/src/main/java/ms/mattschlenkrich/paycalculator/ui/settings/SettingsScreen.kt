@@ -13,9 +13,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,8 +36,12 @@ import ms.mattschlenkrich.paycalculator.common.compose.NumberOutlinedTextField
 fun SettingsScreen(
     fontSize: Float,
     payPeriodsLimit: Int,
+    isDarkTheme: Boolean,
+    isSystemTheme: Boolean,
     onFontSizeChange: (Float) -> Unit,
-    onPayPeriodsLimitChange: (Int) -> Unit
+    onPayPeriodsLimitChange: (Int) -> Unit,
+    onIsDarkThemeChange: (Boolean) -> Unit,
+    onIsSystemThemeChange: (Boolean) -> Unit
 ) {
     Scaffold(
         /*  topBar = {
@@ -112,6 +118,59 @@ fun SettingsScreen(
                 label = { Text("Limit") },
                 modifier = Modifier.fillMaxWidth()
             )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            Text("Theme Selection:", style = MaterialTheme.typography.titleMedium)
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .selectable(
+                        selected = isSystemTheme,
+                        onClick = { onIsSystemThemeChange(!isSystemTheme) },
+                        role = Role.Switch
+                    )
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Use System Theme")
+                Switch(
+                    checked = isSystemTheme,
+                    onCheckedChange = null
+                )
+            }
+
+            if (!isSystemTheme) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.selectable(
+                            selected = !isDarkTheme,
+                            onClick = { onIsDarkThemeChange(false) },
+                            role = Role.RadioButton
+                        )
+                    ) {
+                        RadioButton(selected = !isDarkTheme, onClick = null)
+                        Text("Light", modifier = Modifier.padding(start = 8.dp))
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.selectable(
+                            selected = isDarkTheme,
+                            onClick = { onIsDarkThemeChange(true) },
+                            role = Role.RadioButton
+                        )
+                    ) {
+                        RadioButton(selected = isDarkTheme, onClick = null)
+                        Text("Dark", modifier = Modifier.padding(start = 8.dp))
+                    }
+                }
+            }
         }
     }
 }

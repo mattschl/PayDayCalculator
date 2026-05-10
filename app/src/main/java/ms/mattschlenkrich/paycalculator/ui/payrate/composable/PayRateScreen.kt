@@ -37,8 +37,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -74,8 +72,8 @@ fun EmployerPayRatesScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onAddPayRate(selectedEmployer) },
-                containerColor = colorResource(id = R.color.dark_green),
-                contentColor = Color.White
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(
                     Icons.Default.Add,
@@ -154,14 +152,16 @@ fun EmployerPayRatesScreen(
                     Card(
                         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                         shape = MaterialTheme.shapes.medium,
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
                     ) {
                         Text(
                             text = stringResource(id = R.string.no_wages_have_been_set_for_this_employer),
                             modifier = Modifier.padding(32.dp),
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.bodyLarge,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -202,12 +202,13 @@ fun PayRateScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onSaveClick,
-                containerColor = colorResource(id = R.color.dark_green),
-                contentColor = Color.White
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(
-                    Icons.Default.Check,
-                    contentDescription = stringResource(id = R.string.save)
+                    imageVector = Icons.Default.Check,
+                    contentDescription = stringResource(id = R.string.save),
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

@@ -25,7 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -52,7 +51,6 @@ fun WorkOrderHistoryTimeUpdateScreen(
     onStartTimeClick: () -> Unit,
     onEndTimeClick: () -> Unit,
     onSaveClick: () -> Unit,
-    onBackClick: () -> Unit,
     allTimesForDay: List<WorkOrderHistoryTimeWorkedCombined> = emptyList(),
     currentHistoryId: Long? = null,
     onTimeClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit = {},
@@ -71,7 +69,7 @@ fun WorkOrderHistoryTimeUpdateScreen(
                         Text(
                             text = errorMessage,
                             style = MaterialTheme.typography.labelSmall,
-                            color = Color.Red
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 )
@@ -110,7 +108,8 @@ fun WorkOrderHistoryTimeUpdateScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Done,
-                    contentDescription = stringResource(R.string.done)
+                    contentDescription = stringResource(R.string.done),
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
@@ -178,7 +177,7 @@ fun WorkOrderHistoryTimeUpdateScreen(
                                     .padding(vertical = 4.dp),
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isStartTimeError) Color.Red else MaterialTheme.colorScheme.onSurfaceVariant
+                                color = if (isStartTimeError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
 

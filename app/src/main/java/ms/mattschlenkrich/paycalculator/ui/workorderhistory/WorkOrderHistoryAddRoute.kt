@@ -164,7 +164,6 @@ fun WorkOrderHistoryAddRoute(
                 }
             }
         },
-        onBack = { navController.popBackStack() },
         displayDate = df.getDisplayDate(workDate.wdDate),
         displayEmployer = employer.employerName
     )

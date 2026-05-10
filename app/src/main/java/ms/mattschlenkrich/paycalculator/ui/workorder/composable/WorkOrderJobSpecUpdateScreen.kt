@@ -45,7 +45,6 @@ fun WorkOrderJobSpecUpdateScreen(
     jobSpecSuggestions: List<JobSpec>,
     areaSuggestions: List<Areas>,
     onUpdate: (String, String, String?) -> Unit,
-    onBack: () -> Unit,
 ) {
     var jobSpecText by remember { mutableStateOf("") }
     var areaText by remember { mutableStateOf("") }
@@ -82,7 +81,8 @@ fun WorkOrderJobSpecUpdateScreen(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_done),
-                    contentDescription = stringResource(R.string.done)
+                    contentDescription = stringResource(R.string.done),
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

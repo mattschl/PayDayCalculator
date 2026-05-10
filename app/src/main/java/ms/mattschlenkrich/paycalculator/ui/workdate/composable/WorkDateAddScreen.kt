@@ -32,7 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -93,10 +92,14 @@ fun WorkDateAddScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onSaveClick,
-                containerColor = Color(0xFF2E7D32),
-                contentColor = Color.White
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Icon(Icons.Default.Done, contentDescription = stringResource(R.string.save))
+                Icon(
+                    imageVector = Icons.Default.Done,
+                    contentDescription = stringResource(R.string.save),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
     ) { innerPadding ->
@@ -176,7 +179,9 @@ fun WorkDateAddScreen(
                     Button(
                         onClick = onUpdateTimeClick,
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
                     ) {
                         Text(stringResource(R.string.enter_time_before_wo))
                     }
@@ -195,7 +200,9 @@ fun WorkDateAddScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
                     ) {
                         Column(modifier = Modifier.padding(4.dp)) {
                             Row(
@@ -239,7 +246,7 @@ fun WorkDateAddScreen(
                                     Text(
                                         text = extra.wetName,
                                         modifier = Modifier.weight(1f),
-                                        color = if (extra.wetIsCredit) Color.Black else Color.Red
+                                        color = if (extra.wetIsCredit) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error
                                     )
                                 }
                             }
@@ -252,7 +259,9 @@ fun WorkDateAddScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
                 ) {
                     Column(modifier = Modifier.padding(4.dp)) {
                         Row(
@@ -278,7 +287,7 @@ fun WorkDateAddScreen(
                             text = stringResource(R.string.no_work_orders_yet),
                             modifier = Modifier.padding(8.dp),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }

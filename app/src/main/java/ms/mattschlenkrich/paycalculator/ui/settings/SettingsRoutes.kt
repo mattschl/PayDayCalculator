@@ -14,7 +14,11 @@ fun SettingsRoute(
     SettingsScreen(
         fontSize = settings?.fontSize ?: 16f,
         payPeriodsLimit = settings?.payPeriodsLimit ?: 15,
+        isDarkTheme = settings?.isDarkTheme ?: false,
+        isSystemTheme = settings?.isSystemTheme ?: true,
         onFontSizeChange = { viewModel.updateFontSize(it) },
-        onPayPeriodsLimitChange = { viewModel.updatePayPeriodsLimit(it) }
+        onPayPeriodsLimitChange = { viewModel.updatePayPeriodsLimit(it) },
+        onIsDarkThemeChange = { viewModel.updateIsDarkTheme(it) },
+        onIsSystemThemeChange = { viewModel.updateIsSystemTheme(it) }
     )
 }

@@ -71,7 +71,11 @@ fun EmployerScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Icon(Icons.Default.Done, contentDescription = stringResource(R.string.save))
+                Icon(
+                    imageVector = Icons.Default.Done,
+                    contentDescription = stringResource(R.string.save),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
     ) { innerPadding ->

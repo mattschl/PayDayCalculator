@@ -173,9 +173,9 @@ fun TimeSheetScreen(
 fun CenteredSummaryText(text: String) {
     Text(
         text = text,
-        style = MaterialTheme.typography.bodySmall,
+        style = MaterialTheme.typography.bodyMedium,
         fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.secondary,
+        color = MaterialTheme.colorScheme.onBackground,
         textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()

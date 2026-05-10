@@ -32,7 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -93,10 +92,14 @@ fun WorkDateUpdateScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onDoneClick,
-                containerColor = Color(0xFF2E7D32),
-                contentColor = Color.White
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Icon(Icons.Default.Done, contentDescription = stringResource(R.string.done))
+                Icon(
+                    imageVector = Icons.Default.Done,
+                    contentDescription = stringResource(R.string.done),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
     ) { innerPadding ->
@@ -178,7 +181,9 @@ fun WorkDateUpdateScreen(
                     Button(
                         onClick = onUpdateTimeClick,
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
                     ) {
                         Text(stringResource(R.string.enter_time_before_wo))
                     }
@@ -196,7 +201,9 @@ fun WorkDateUpdateScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
                 ) {
                     Column(modifier = Modifier.padding(4.dp)) {
                         Row(
@@ -269,13 +276,15 @@ fun WorkDateUpdateScreen(
                     ) {
                         Text(
                             text = workOrderSummary,
-                            color = Color.Red,
+                            color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold
                         )
                         Button(
                             onClick = onTransferClick,
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error
+                            )
                         ) {
                             Text(stringResource(R.string.transfer))
                         }

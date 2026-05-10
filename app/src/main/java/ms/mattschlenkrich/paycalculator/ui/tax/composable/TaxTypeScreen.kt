@@ -70,8 +70,16 @@ fun TaxTypeScreen(
              )
          },*/
         floatingActionButton = {
-            FloatingActionButton(onClick = onSaveClick) {
-                Icon(Icons.Default.Save, contentDescription = stringResource(R.string.save))
+            FloatingActionButton(
+                onClick = onSaveClick,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Save,
+                    contentDescription = stringResource(R.string.save),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
     ) { innerPadding ->

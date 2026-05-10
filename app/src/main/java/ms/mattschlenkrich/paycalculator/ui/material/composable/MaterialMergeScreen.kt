@@ -36,7 +36,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -171,7 +170,9 @@ fun MaterialMergeScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
                     ) {
                         Column(
                             modifier = Modifier.padding(4.dp),
@@ -221,14 +222,18 @@ fun MaterialMergeScreen(
                         Button(
                             onClick = { showMergeOptionsDialog = true },
                             modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)) // Dark Green
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            )
                         ) {
                             Text(stringResource(R.string.merge))
                         }
                         Button(
                             onClick = onDoneClick,
                             modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB71C1C)) // Deep Red
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary
+                            )
                         ) {
                             Text(stringResource(R.string.done))
                         }
@@ -257,7 +262,11 @@ fun ChildItem(child: MaterialAndChild, onRemoveChild: (MaterialAndChild) -> Unit
             } else {
                 child.materialChild.mName
             },
-            color = if (isDeleted) Color.Red else Color.Black,
+            color = if (isDeleted) {
+                MaterialTheme.colorScheme.error
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            },
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.bodyMedium
         )
@@ -265,7 +274,7 @@ fun ChildItem(child: MaterialAndChild, onRemoveChild: (MaterialAndChild) -> Unit
             Icon(
                 imageVector = Icons.Default.Delete,
                 contentDescription = stringResource(R.string.delete),
-                tint = Color.Red
+                tint = MaterialTheme.colorScheme.error
             )
         }
     }

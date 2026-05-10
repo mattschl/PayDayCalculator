@@ -220,7 +220,6 @@ fun WorkOrderHistoryTimeUpdateRoute(
                 }
             }
         },
-        onBackClick = { navController.popBackStack() },
         allTimesForDay = allTimesByDate.filter { it.timeWorked.wohtHistoryId == combined.timeWorked.wohtHistoryId },
         currentHistoryId = combined.timeWorked.wohtHistoryId,
         onTimeClick = { item ->

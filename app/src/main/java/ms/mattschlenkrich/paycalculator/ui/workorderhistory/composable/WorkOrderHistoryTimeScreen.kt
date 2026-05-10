@@ -30,7 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -63,7 +62,6 @@ fun WorkOrderHistoryTimeScreen(
     allTimesForDay: List<WorkOrderHistoryTimeWorkedCombined>,
     onTimeClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit,
     onTimeLongClick: (WorkOrderHistoryTimeWorkedCombined) -> Unit = {},
-    onBackClick: () -> Unit,
     errorMessage: String? = null,
     isStartTimeError: Boolean = false
 ) {
@@ -78,7 +76,7 @@ fun WorkOrderHistoryTimeScreen(
                         Text(
                             text = errorMessage,
                             style = MaterialTheme.typography.labelSmall,
-                            color = Color.Red
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 )
@@ -88,12 +86,13 @@ fun WorkOrderHistoryTimeScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onDoneClick,
-                containerColor = Color(0xFF2E7D32), // Dark Green
-                contentColor = Color.White
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(
                     imageVector = Icons.Default.Done,
-                    contentDescription = stringResource(R.string.done)
+                    contentDescription = stringResource(R.string.done),
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
@@ -113,7 +112,7 @@ fun WorkOrderHistoryTimeScreen(
                 Text(
                     text = infoText,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 Text(
@@ -121,7 +120,7 @@ fun WorkOrderHistoryTimeScreen(
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontWeight = FontWeight.Bold
                     ),
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 Row(
@@ -142,7 +141,7 @@ fun WorkOrderHistoryTimeScreen(
                                 .padding(vertical = 4.dp),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
-                            color = if (isStartTimeError) Color.Red else Color.Black
+                            color = if (isStartTimeError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onBackground
                         )
                     }
 
@@ -150,7 +149,7 @@ fun WorkOrderHistoryTimeScreen(
                         text = totalTimeText,
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFB71C1C) // Deep Red
+                        color = MaterialTheme.colorScheme.tertiary
                     )
 
                     Column(
@@ -169,7 +168,7 @@ fun WorkOrderHistoryTimeScreen(
                                 .padding(vertical = 4.dp),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
@@ -177,7 +176,9 @@ fun WorkOrderHistoryTimeScreen(
                 Button(
                     onClick = onEnterTimeClick,
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
                 ) {
                     Text(stringResource(R.string.enter_time))
                 }
@@ -268,7 +269,7 @@ fun TimeWorkedItem(
             ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isCurrentWorkOrder) Color.White else Color(0xFFF5F5F5)
+            containerColor = if (isCurrentWorkOrder) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         val tempStart = df.splitTimeFromDateTime(item.timeWorked.wohtStartTime)
@@ -300,7 +301,7 @@ fun TimeWorkedItem(
                         text = "WO: ${item.workOrderHistory.workOrder.woNumber}",
                         style = MaterialTheme.typography.labelSmall,
                         fontStyle = FontStyle.Italic,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }

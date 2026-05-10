@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,7 +31,9 @@ fun MaterialItem(
             .fillMaxWidth()
             .clickable { onClick(item) },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Column(
             modifier = Modifier.padding(4.dp),
@@ -44,7 +45,11 @@ fun MaterialItem(
                 } else {
                     item.mName
                 },
-                color = if (item.mIsDeleted) Color.Red else Color.Black,
+                color = if (item.mIsDeleted) {
+                    MaterialTheme.colorScheme.error
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                },
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontWeight = FontWeight.Bold
                 )

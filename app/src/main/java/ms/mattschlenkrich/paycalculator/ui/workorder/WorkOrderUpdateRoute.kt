@@ -213,7 +213,6 @@ fun WorkOrderUpdateRoute(
                 )
                 navController.popBackStack()
             }
-        },
-        onBackClick = { navController.popBackStack() }
+        }
     )
 }

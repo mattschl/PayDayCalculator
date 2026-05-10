@@ -57,9 +57,6 @@ fun WorkOrderJobSpecUpdateRoute(
                 }
                 navController.popBackStack()
             }
-        },
-        onBack = {
-            navController.popBackStack()
         }
     )
 }

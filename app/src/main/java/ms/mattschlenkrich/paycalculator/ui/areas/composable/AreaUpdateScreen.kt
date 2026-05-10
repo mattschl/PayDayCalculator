@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import ms.mattschlenkrich.paycalculator.R
@@ -83,7 +82,9 @@ fun AreaUpdateScreen(
             Button(
                 onClick = onUpdateClick,
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)) // Dark Green
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
             ) {
                 Text(stringResource(R.string.update))
             }
@@ -91,7 +92,9 @@ fun AreaUpdateScreen(
             Button(
                 onClick = onCancelClick,
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB71C1C)) // Deep Red
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                )
             ) {
                 Text(stringResource(R.string.cancel))
             }

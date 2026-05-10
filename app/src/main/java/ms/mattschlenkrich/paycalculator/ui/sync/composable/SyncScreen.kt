@@ -33,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -103,7 +102,7 @@ fun SyncScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(120.dp),
-                            color = Color(0xFFFFF0F0)
+                            color = MaterialTheme.colorScheme.errorContainer
                         ) {
                             Column(
                                 modifier = Modifier
@@ -112,7 +111,7 @@ fun SyncScreen(
                             ) {
                                 Text(
                                     text = errorMessage,
-                                    color = Color(0xFFB00020),
+                                    color = MaterialTheme.colorScheme.onErrorContainer,
                                     style = MaterialTheme.typography.bodyMedium,
                                     modifier = Modifier.padding(8.dp)
                                 )
@@ -201,7 +200,7 @@ fun SyncScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.5f))
+                            .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.5f))
                             .padding(24.dp),
                         contentAlignment = Alignment.Center
                     ) {

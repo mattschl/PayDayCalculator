@@ -27,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -84,7 +83,7 @@ fun WorkDateTimesScreen(
                         Text(
                             text = errorMessage,
                             style = MaterialTheme.typography.labelSmall,
-                            color = Color.Red
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 )
@@ -94,12 +93,13 @@ fun WorkDateTimesScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onDoneClick,
-                containerColor = Color(0xFF2E7D32), // Dark Green
-                contentColor = Color.White
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(
                     imageVector = Icons.Default.Done,
-                    contentDescription = stringResource(R.string.done)
+                    contentDescription = stringResource(R.string.done),
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
@@ -119,7 +119,7 @@ fun WorkDateTimesScreen(
                     Text(
                         text = infoText,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.onBackground
                     )
 
                     Text(
@@ -127,7 +127,7 @@ fun WorkDateTimesScreen(
                         style = MaterialTheme.typography.bodyLarge.copy(
                             fontWeight = FontWeight.Bold
                         ),
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.onBackground
                     )
 
                     Row(
@@ -147,7 +147,9 @@ fun WorkDateTimesScreen(
 
                         Button(
                             onClick = onWorkOrderButtonClick,
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            )
                         ) {
                             Text(workOrderButtonText)
                         }
@@ -165,7 +167,7 @@ fun WorkDateTimesScreen(
                         Text(
                             text = workOrderInfoText,
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
 
@@ -187,7 +189,7 @@ fun WorkDateTimesScreen(
                                     .padding(vertical = 4.dp),
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isStartTimeError) Color.Red else Color.Black
+                                color = if (isStartTimeError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onBackground
                             )
                         }
 
@@ -195,7 +197,7 @@ fun WorkDateTimesScreen(
                             text = totalTimeText,
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFB71C1C) // Deep Red
+                            color = MaterialTheme.colorScheme.tertiary
                         )
 
                         Column(
@@ -214,7 +216,7 @@ fun WorkDateTimesScreen(
                                     .padding(vertical = 4.dp),
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Black
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                         }
                     }
@@ -222,7 +224,9 @@ fun WorkDateTimesScreen(
                     Button(
                         onClick = onEnterTimeClick,
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
                     ) {
                         Text(stringResource(R.string.enter_time))
                     }
