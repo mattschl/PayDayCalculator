@@ -133,10 +133,6 @@ fun WorkOrderAddRoute(
                 mainViewModel.setWorkOrderNumber(null)
                 navController.popBackStack()
             }
-        },
-        onBackClick = {
-            mainViewModel.setWorkOrderNumber(null)
-            navController.popBackStack()
         }
     )
 }

@@ -39,8 +39,7 @@ fun WorkOrderHistoryMaterialUpdateScreen(
     onQuantityChange: (String) -> Unit,
     originalMaterialLabel: String,
     originalQuantityLabel: String,
-    onDoneClick: () -> Unit,
-    onBackClick: () -> Unit
+    onDoneClick: () -> Unit
 ) {
     Scaffold(
         /* topBar = {

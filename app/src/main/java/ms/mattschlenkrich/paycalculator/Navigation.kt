@@ -3,7 +3,11 @@ package ms.mattschlenkrich.paycalculator
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
-sealed class Screen(val route: String, @StringRes val resourceId: Int, @DrawableRes val icon: Int) {
+sealed class Screen(
+    val route: String,
+    @param:StringRes val resourceId: Int,
+    @param:DrawableRes val icon: Int
+) {
     object TimeSheet : Screen("timeSheet", R.string.time_sheet, R.drawable.ic_time_sheet)
     object PayDetails : Screen("payDetails", R.string.pay_details, R.drawable.ic_check_foreground)
     object Employers : Screen("employers", R.string.employers, R.drawable.ic_employer_foreground)

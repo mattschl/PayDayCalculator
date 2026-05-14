@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package ms.mattschlenkrich.paycalculator.ui.workdate.composable
 
 import androidx.compose.foundation.clickable
@@ -65,8 +63,7 @@ fun WorkDateAddScreen(
     extras: List<WorkExtraTypes>,
     selectedExtras: Set<Long>,
     onExtraToggle: (WorkExtraTypes, Boolean) -> Unit,
-    onAddExtraClick: () -> Unit,
-    onBackClick: () -> Unit
+    onAddExtraClick: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier.imePadding(),

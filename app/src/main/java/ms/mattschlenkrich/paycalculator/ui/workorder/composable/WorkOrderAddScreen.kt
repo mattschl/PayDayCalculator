@@ -51,8 +51,7 @@ fun WorkOrderAddScreen(
     woNumberError: Boolean,
     addressError: Boolean,
     descriptionError: Boolean,
-    onDoneClick: () -> Unit,
-    onBackClick: () -> Unit
+    onDoneClick: () -> Unit
 ) {
     Scaffold(
         /*topBar = {

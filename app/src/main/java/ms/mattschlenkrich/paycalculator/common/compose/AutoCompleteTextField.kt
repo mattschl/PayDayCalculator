@@ -1,4 +1,4 @@
-@file:Suppress("AssignedValueIsNeverRead", "KotlinConstantConditions", "KotlinConstantConditions")
+@file:Suppress("AssignedValueIsNeverRead", "KotlinConstantConditions")
 
 package ms.mattschlenkrich.paycalculator.common.compose
 

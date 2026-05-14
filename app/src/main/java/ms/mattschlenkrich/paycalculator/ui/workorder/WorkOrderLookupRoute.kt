@@ -36,7 +36,6 @@ fun WorkOrderLookupRoute(
         onWorkOrderSelected = { wo ->
             mainViewModel.setWorkOrder(wo)
             navController.popBackStack()
-        },
-        onBackClick = { navController.popBackStack() }
+        }
     )
 }

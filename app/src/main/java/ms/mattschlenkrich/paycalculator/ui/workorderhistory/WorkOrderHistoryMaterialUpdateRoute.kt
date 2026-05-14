@@ -89,7 +89,6 @@ fun WorkOrderHistoryMaterialUpdateRoute(
                 }
                 navController.popBackStack()
             }
-        },
-        onBackClick = { navController.popBackStack() }
+        }
     )
 }

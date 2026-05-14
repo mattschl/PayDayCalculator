@@ -50,8 +50,7 @@ fun WorkOrderLookupScreen(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     workOrders: List<WorkOrder>,
-    onWorkOrderSelected: (WorkOrder) -> Unit,
-    onBackClick: () -> Unit
+    onWorkOrderSelected: (WorkOrder) -> Unit
 ) {
     var showDialog by remember { mutableStateOf<WorkOrder?>(null) }
 

@@ -65,7 +65,6 @@ fun WorkOrderHistoryWorkPerformedUpdateRoute(
                 }
                 navController.popBackStack()
             }
-        },
-        onBack = { navController.popBackStack() }
+        }
     )
 }

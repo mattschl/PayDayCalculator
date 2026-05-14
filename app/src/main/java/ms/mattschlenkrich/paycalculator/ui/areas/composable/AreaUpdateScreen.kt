@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package ms.mattschlenkrich.paycalculator.ui.areas.composable
 
 import androidx.compose.foundation.layout.Arrangement
@@ -34,8 +32,7 @@ fun AreaUpdateScreen(
     onNameChange: (String) -> Unit,
     onUpdateClick: () -> Unit,
     onCancelClick: () -> Unit,
-    title: String,
-    onBackClick: () -> Unit
+    title: String
 ) {
     Scaffold(
 //        topBar = {

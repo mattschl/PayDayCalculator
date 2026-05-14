@@ -7,14 +7,11 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.data.entity.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.repository.EmployerRepository
-import ms.mattschlenkrich.paycalculator.logic.EmployerLogicViewModel
 
 class EmployerViewModel(
     val app: Application,
     private val employerRepository: EmployerRepository
 ) : AndroidViewModel(app) {
-    val employerLogicViewModel: EmployerLogicViewModel =
-        EmployerLogicViewModel(this)
 
     /*fun getCurrentEmployer(): Employers {
         return employerLogicViewModel.currentEmployerObj.getEmployer()

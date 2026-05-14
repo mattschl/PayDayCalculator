@@ -72,9 +72,6 @@ fun AreaUpdateRoute(
             },
             onCancelClick = {
                 navController.popBackStack()
-            },
-            onBackClick = {
-                navController.popBackStack()
             }
         )
     }

@@ -319,7 +319,6 @@ fun WorkDateAddRoute(
                 selectedExtras.remove(extra.workExtraTypeId)
             }
         },
-        onAddExtraClick = { /* Navigate to Extra Add */ },
-        onBackClick = { navController.popBackStack() }
+        onAddExtraClick = { /* Navigate to Extra Add */ }
     )
 }

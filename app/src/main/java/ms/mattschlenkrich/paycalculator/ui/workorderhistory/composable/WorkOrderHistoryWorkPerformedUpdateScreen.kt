@@ -43,7 +43,6 @@ fun WorkOrderHistoryWorkPerformedUpdateScreen(
     workPerformedSuggestions: List<WorkPerformed>,
     areaSuggestions: List<Areas>,
     onUpdate: (String, String, String?) -> Unit,
-    onBack: () -> Unit,
 ) {
     var workPerformedText by remember { mutableStateOf("") }
     var areaText by remember { mutableStateOf("") }
