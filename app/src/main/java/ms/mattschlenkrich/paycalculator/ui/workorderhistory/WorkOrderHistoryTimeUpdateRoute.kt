@@ -3,6 +3,7 @@ package ms.mattschlenkrich.paycalculator.ui.workorderhistory
 import android.app.TimePickerDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -49,16 +50,12 @@ fun WorkOrderHistoryTimeUpdateRoute(
 
     var startTime by remember {
         mutableStateOf(
-            df.getCalendarFromTime(
-                df.splitTimeFromDateTime(combined.timeWorked.wohtStartTime).joinToString(":")
-            )
+            df.getCalendarFromTime(combined.timeWorked.wohtStartTime.substringAfter(" "))
         )
     }
     var endTime by remember {
         mutableStateOf(
-            df.getCalendarFromTime(
-                df.splitTimeFromDateTime(combined.timeWorked.wohtEndTime).joinToString(":")
-            )
+            df.getCalendarFromTime(combined.timeWorked.wohtEndTime.substringAfter(" "))
         )
     }
     var selectedTimeType by remember { mutableIntStateOf(combined.timeWorked.wohtTimeType) }
@@ -75,10 +72,11 @@ fun WorkOrderHistoryTimeUpdateRoute(
         }
     }
 
-    val totalHours = df.getTimeWorked(
-        df.getTimeDisplay(startTime),
-        df.getTimeDisplay(endTime)
-    )
+    val totalHours by remember {
+        derivedStateOf {
+            df.getTimeWorked(startTime, endTime)
+        }
+    }
 
     var showOverlapConfirmDialog by remember { mutableStateOf<WorkOrderHistoryTimeWorked?>(null) }
 
@@ -113,13 +111,9 @@ fun WorkOrderHistoryTimeUpdateRoute(
         infoText = stringResource(R.string.work_order) + " ${combined.workOrderHistory.workOrder.woNumber}\n" +
                 combined.workOrderHistory.workOrder.woDescription,
         originalTimeText = stringResource(R.string.original_time) + " " +
-                df.get12HourDisplay(
-                    df.splitTimeFromDateTime(combined.timeWorked.wohtStartTime).joinToString(":")
-                ) +
+                df.get12HourDisplay(combined.timeWorked.wohtStartTime.substringAfter(" ")) +
                 " - " +
-                df.get12HourDisplay(
-                    df.splitTimeFromDateTime(combined.timeWorked.wohtEndTime).joinToString(":")
-                ),
+                df.get12HourDisplay(combined.timeWorked.wohtEndTime.substringAfter(" ")),
         startTime = startTime,
         endTime = endTime,
         totalTimeText = nf.displayNumberFromDouble(totalHours) + " " + stringResource(R.string.hours),
@@ -166,8 +160,8 @@ fun WorkOrderHistoryTimeUpdateRoute(
                     errorMessage = adjustedOtHours
                 } else {
                     endTime = newEnd
+                    errorMessage = null
                 }
-                errorMessage = null
             }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false).show()
         },
         onSaveClick = {

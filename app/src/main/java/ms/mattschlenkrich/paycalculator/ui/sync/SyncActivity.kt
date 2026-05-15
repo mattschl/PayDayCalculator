@@ -225,10 +225,15 @@ class SyncActivity : ComponentActivity() {
                 }?.sortedBy { it.name } ?: emptyList()
 
                 if (localBackups.isNotEmpty()) {
-                    val summaryBuilder = StringBuilder("Sync Analysis Complete:\n\n")
+                    val summaryBuilder = StringBuilder("Sync Analysis and Results:\n\n")
                     for (localDb in localBackups) {
                         showProgress("Analyzing ${localDb.name}...")
                         val mergeHelper = MergeHelper(this@SyncActivity, localDb.absolutePath)
+
+                        val analysis = mergeHelper.getSyncSummary()
+                        summaryBuilder.append("--- ANALYSIS: ${localDb.name} ---\n")
+                        summaryBuilder.append(analysis).append("\n\n")
+                        docContent = summaryBuilder.toString()
 
                         showProgress("Applying changes from ${localDb.name}...")
                         val summary = mergeHelper.applySync { progress, total ->
@@ -237,11 +242,12 @@ class SyncActivity : ComponentActivity() {
                             progressMessage =
                                 "Syncing ${localDb.name}: table ${progress + 1} of $total..."
                         }
-                        summaryBuilder.append("Results for ${localDb.name}:\n$summary\n\n")
+                        summaryBuilder.append("--- SYNC RESULTS: ${localDb.name} ---\n")
+                        summaryBuilder.append(summary).append("\n\n")
+                        docContent = summaryBuilder.toString()
                     }
 
                     syncMax = 0
-                    docContent = summaryBuilder.toString()
                     Log.d(TAG, "Sync Result: $docContent")
 
                     showProgress("Cleaning up local backups...")
