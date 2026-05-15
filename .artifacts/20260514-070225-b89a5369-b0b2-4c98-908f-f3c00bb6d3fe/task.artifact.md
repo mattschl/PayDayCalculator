@@ -1,0 +1,30 @@
+# Tasks
+
+- [x] Analyze `WorkOrderHistoryTimeUpdateRoute.kt` for unused variables
+- [x] Create implementation plan for variable cleanup
+- [x] Remove unused variables and suppressions
+- [x] Verify changes with build and analysis
+- [x] Remove unused `EmployerObj` file
+    - [x] Locate `EmployerObj.kt` and its tests
+    - [x] Verify usages of `EmployerObj`
+    - [x] Create implementation plan for deletion
+    - [x] Delete `EmployerObj.kt` and `EmployerObjTest.kt`
+    - [x] Verify project builds and investigate test failures
+- [x] Remove redundant and unused functions from repositories and viewmodels
+    - [x] Identify all repositories and viewmodels
+    - [x] Analyze each file for unused functions and commented out code
+    - [x] Create implementation plan for cleanup
+    - [x] Clean up `PayDayRepository.kt`
+    - [x] Clean up `EmployerViewModel.kt`
+    - [x] Clean up `PayDayViewModel.kt`
+    - [x] Clean up `WorkTaxRepository.kt`
+    - [x] Clean up `WorkTaxViewModel.kt`
+    - [x] Clean up `WorkTimeRepository.kt`
+    - [x] Clean up `WorkTimeViewModel.kt`
+    - [x] Clean up `PayDetailRepository.kt`
+    - [x] Clean up `PayDetailViewModel.kt`
+    - [x] Clean up `WorkExtraRepository.kt`
+    - [x] Clean up `WorkExtraViewModel.kt`
+    - [x] Clean up `WorkOrderRepository.kt`
+    - [x] Clean up `WorkOrderViewModel.kt`
+    - [x] Verify project builds and tests pass

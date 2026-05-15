@@ -26,9 +26,6 @@ class WorkExtraRepository(private val db: PayDatabase) {
     suspend fun updateWorkExtraType(extraType: WorkExtraTypes) =
         db.getWorkExtraDao().updateWorkExtraType(extraType)
 
-    suspend fun deleteWorkExtraType(id: Long, updateTime: String) =
-        db.getWorkExtraDao().deleteWorkExtraType(id, updateTime)
-
     fun getWorkExtraTypeList(employerId: Long) =
         db.getWorkExtraDao().getWorkExtraTypeList(employerId)
 
@@ -38,24 +35,12 @@ class WorkExtraRepository(private val db: PayDatabase) {
     fun getExtraTypesByDaily(employerId: Long) =
         db.getWorkExtraDao().getExtraTypesByDaily(employerId)
 
-    fun getExtraTypeAndDefByTypeId(typeId: Long, cutoffDate: String) =
-        db.getWorkExtraDao().getExtraTypeAndDefByTypeId(typeId, cutoffDate)
-
     suspend fun getExtraTypeAndDefByTypeIdSync(typeId: Long, cutoffDate: String) =
         db.getWorkExtraDao().getExtraTypeAndDefByTypeIdSync(typeId, cutoffDate)
-
-    fun getExtraTypesAndDef(employerId: Long, cutoffDate: String, appliesTo: Int) =
-        db.getWorkExtraDao().getExtraTypesAndDef(employerId, cutoffDate, appliesTo)
 
     suspend fun insertWorkDateExtra(extra: WorkDateExtras) =
         db.getWorkExtraDao().insertWorkDateExtra(extra)
 
-    suspend fun deleteWorkDateExtra(id: Long, updateTime: String) =
-        db.getWorkExtraDao().deleteWorkDateExtra(id, updateTime)
-
     suspend fun updateWorkDateExtra(extra: WorkDateExtras) =
         db.getWorkExtraDao().updateWorkDateExtra(extra)
-
-    fun getDefaultExtraTypesAndCurrentDef(employerId: Long, cutoffDate: String) =
-        db.getWorkExtraDao().getDefaultExtraTypesAndCurrentDef(employerId, cutoffDate)
 }

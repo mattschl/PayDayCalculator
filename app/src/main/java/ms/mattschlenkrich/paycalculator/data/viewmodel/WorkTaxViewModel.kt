@@ -17,11 +17,6 @@ class WorkTaxViewModel(
     private val workTaxRepository: WorkTaxRepository
 ) : AndroidViewModel(app) {
 
-    /* fun insertTaxType(workTaxType: TaxTypes) =
-         viewModelScope.launch {
-             workTaxRepository.insertTaxType(workTaxType)
-         }*/
-
     fun insertTaxTypeWithEmployerLinks(
         taxType: TaxTypes,
         employers: List<Employers>,
@@ -48,12 +43,6 @@ class WorkTaxViewModel(
 
     fun getTaxTypes() =
         workTaxRepository.getTaxTypes()
-
-    /*fun searchTaxTypes(query: String?) =
-        workTaxRepository.searchTaxTypes(query)
-
-    fun findTaxType(taxType: String) =
-        workTaxRepository.findTaxType(taxType)*/
 
     fun insertTaxRule(taxRule: WorkTaxRules) =
         viewModelScope.launch {
@@ -86,24 +75,6 @@ class WorkTaxViewModel(
             workTaxRepository.updateEmployerTaxType(employerTaxTypes)
         }
 
-    /* fun updateEmployerTaxIncluded(
-         employerId: Long, taxType: String, include: Boolean
-     ) = viewModelScope.launch {
-         workTaxRepository.updateEmployerTaxIncluded(employerId, taxType, include)
-     }*/
-
     fun getEmployerTaxTypes(employerId: Long) =
         workTaxRepository.getEmployerTaxTypes(employerId)
-
-//    fun getTaxTypeAndDef(effectiveDate: String) =
-//        workTaxRepository.getTaxTypeAndDef(effectiveDate)
-
-    /*fun getCurrentEffectiveDate(cutoffDate: String) =
-        workTaxRepository.getCurrentEffectiveDate(cutoffDate)
-
-    fun getTaxTypesByEmployer(employerId: Long) =
-        workTaxRepository.getTaxTypesByEmployer(employerId)
-
-    fun getTaxDefByDate(effectiveDate: String) =
-        workTaxRepository.getTaxDefByDate(effectiveDate)*/
 }

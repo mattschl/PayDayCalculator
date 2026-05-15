@@ -14,10 +14,6 @@ class WorkTaxRepository(private val db: PayDatabase) {
 
     fun getTaxTypes() = db.getWorkTaxDao().getTaxTypes()
 
-    fun searchTaxTypes(query: String?) = db.getWorkTaxDao().searchTaxTypes(query)
-
-    fun findTaxType(taxType: String) = db.getWorkTaxDao().findTaxType(taxType)
-
     suspend fun insertTaxRule(taxRule: WorkTaxRules) = db.getWorkTaxDao().insertTaxRule(taxRule)
 
     suspend fun updateTaxRule(taxRule: WorkTaxRules) = db.getWorkTaxDao().updateTaxRule(taxRule)
@@ -36,22 +32,5 @@ class WorkTaxRepository(private val db: PayDatabase) {
     suspend fun updateEmployerTaxType(employerTaxTypes: EmployerTaxTypes) =
         db.getWorkTaxDao().updateEmployerTaxType(employerTaxTypes)
 
-    suspend fun updateEmployerTaxIncluded(
-        employerId: Long, taxType: String, include: Boolean
-    ) = db.getWorkTaxDao().updateEmployerTaxIncluded(
-        employerId, taxType, include
-    )
-
     fun getEmployerTaxTypes(employerId: Long) = db.getWorkTaxDao().getEmployerTaxTypes(employerId)
-
-//    fun getTaxTypeAndDef(effectiveDate: String) =
-//        db.getWorkTaxDao().getTaxTypeAndDef(effectiveDate)
-
-    fun getCurrentEffectiveDate(cutoffDate: String) =
-        db.getWorkTaxDao().getCurrentEffectiveDate(cutoffDate)
-
-    fun getTaxTypesByEmployer(employerId: Long) =
-        db.getWorkTaxDao().getTaxTypesByEmployer(employerId)
-
-    fun getTaxDefByDate(effectiveDate: String) = db.getWorkTaxDao().getTaxDefByDate(effectiveDate)
 }

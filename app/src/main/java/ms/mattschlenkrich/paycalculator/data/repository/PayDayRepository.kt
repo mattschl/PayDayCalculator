@@ -15,12 +15,6 @@ class PayDayRepository(private val db: PayDatabase) {
 
     suspend fun insertPayPeriod(cutOff: PayPeriods) = db.getPayDayDao().insertPayPeriod(cutOff)
 
-    suspend fun updatePayPeriod(payPeriod: PayPeriods) =
-        db.getPayDayDao().updatePayPeriod(payPeriod)
-
-    fun getPayPeriod(cutOff: String, employerId: Long) =
-        db.getPayDayDao().getPayPeriod(cutOff, employerId)
-
     suspend fun getPayPeriodSync(cutOff: String, employerId: Long) =
         db.getPayDayDao().getPayPeriodSync(cutOff, employerId)
 
@@ -37,28 +31,6 @@ class PayDayRepository(private val db: PayDatabase) {
 
     suspend fun updateWorkDate(workDate: WorkDates) = db.getPayDayDao().updateWorkDate(workDate)
 
-//    suspend fun updateWorkDates(
-//        id: Long,
-//        payPeriodId: Long,
-//        employerId: Long,
-//        cutOffDate: String,
-//        date: String,
-//        regHours: Double,
-//        otHours: Double,
-//        dblOtHours: Double,
-//        statHours: Double,
-//        isDeleted: Boolean,
-//        updateTime: String
-//    ) =
-//        db.getPayDayDao().updateWorkDates(
-//            id, payPeriodId, employerId, cutOffDate,
-//            date, regHours, otHours, dblOtHours,
-//            statHours, isDeleted, updateTime
-//        )
-
-//    fun getWorkDatesAndExtras(employerId: Long, cutOffDate: String) =
-//        db.getPayDayDao().getWorkDatesAndExtras(employerId, cutOffDate)
-
     suspend fun insertWorkDateExtra(workDateExtra: WorkDateExtras) =
         db.getPayDayDao().insertWorkDateExtra(workDateExtra)
 
@@ -67,25 +39,10 @@ class PayDayRepository(private val db: PayDatabase) {
 
     fun getWorkDateExtras(workDateId: Long) = db.getPayDayDao().getWorkDateExtras(workDateId)
 
-    fun getWorkDateExtrasActive(workDateId: Long) =
-        db.getPayDayDao().getWorkDateExtrasActive(workDateId)
-
-//    suspend fun deleteWorkDateExtra(extraType: WorkExtraTypes) =
-//        db.getPayDayDao().deleteWorkDateExtra(extraType)
-
-//    fun getWorkDateAndExtraDefAndWorkDateExtras(workDateId: Long) =
-//        db.getPayDayDao().getWorkDateAndExtraDefAndWorkDateExtras(workDateId)
-
     suspend fun deleteWorkDateExtra(
         extraName: String, workDateId: Long, updateTime: String
     ) = db.getPayDayDao().deleteWorkDateExtra(
         extraName, workDateId, updateTime
-    )
-
-    suspend fun deleteWorkDateExtrasByDateId(
-        workDateId: Long, updateTime: String
-    ) = db.getPayDayDao().deleteWorkDateExtrasByDateId(
-        workDateId, updateTime
     )
 
     fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String) =
@@ -97,17 +54,6 @@ class PayDayRepository(private val db: PayDatabase) {
     suspend fun updatePayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras) =
         db.getPayDayDao().updatePayPeriodExtra(payPeriodExtra)
 
-    suspend fun deletePayPeriodExtra(extraId: Long, updateTime: String) =
-        db.getPayDayDao().deletePayPeriodExtra(extraId, updateTime)
-
     fun getPayPeriodExtras(payPeriodId: Long) = db.getPayDayDao().getPayPeriodExtras(payPeriodId)
-
-//    fun findPayPeriodExtra(workPayPeriodExtraId: Long) =
-//        db.getPayDayDao().findPayPeriodExtra(workPayPeriodExtraId)
-
-    fun findPayPeriodExtra(extraName: String) = db.getPayDayDao().findPayPeriodExtra(extraName)
-
-    fun getWorkDateExtrasAndDates(cutOffDate: String) =
-        db.getPayDayDao().getWorkDateExtrasAndDates(cutOffDate)
 
 }

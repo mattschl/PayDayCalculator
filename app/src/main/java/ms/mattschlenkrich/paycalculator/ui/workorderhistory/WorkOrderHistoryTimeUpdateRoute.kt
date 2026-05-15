@@ -1,5 +1,3 @@
-@file:Suppress("VariableNeverRead")
-
 package ms.mattschlenkrich.paycalculator.ui.workorderhistory
 
 import android.app.TimePickerDialog
@@ -23,7 +21,6 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
-import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable.WorkOrderHistoryTimeUpdateScreen
@@ -39,7 +36,6 @@ fun WorkOrderHistoryTimeUpdateRoute(
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
     val coroutineScope = rememberCoroutineScope()
-    val overlapWarning = stringResource(R.string.warning_start_time_overlaps_previous_end_time)
     val duplicateStartTimeError = stringResource(R.string.error_start_time_already_used)
     val adjustedRegHours = stringResource(R.string.time_adjusted_to_not_exceed_8_reg_hours)
     val adjustedOtHours = stringResource(R.string.time_adjusted_to_not_exceed_12_ot_hours)
@@ -85,12 +81,6 @@ fun WorkOrderHistoryTimeUpdateRoute(
     )
 
     var showOverlapConfirmDialog by remember { mutableStateOf<WorkOrderHistoryTimeWorked?>(null) }
-    var showTimeOptionsDialog by remember { mutableStateOf<WorkOrderHistoryTimeWorkedCombined?>(null) }
-    var showDeleteConfirmDialog by remember {
-        mutableStateOf<WorkOrderHistoryTimeWorkedCombined?>(
-            null
-        )
-    }
 
     if (showOverlapConfirmDialog != null) {
         val entry = showOverlapConfirmDialog!!
@@ -226,9 +216,7 @@ fun WorkOrderHistoryTimeUpdateRoute(
             mainViewModel.setWorkOrderHistoryTimeWorkedCombined(item)
             navController.navigate(Screen.WorkOrderHistoryTimeUpdate.route)
         },
-        onTimeLongClick = { item ->
-            showTimeOptionsDialog = item
-        },
+        onTimeLongClick = { },
         errorMessage = errorMessage,
         isStartTimeError = errorMessage == duplicateStartTimeError
     )

@@ -9,19 +9,6 @@ class PayDetailViewModel(
     private val payDetailRepository: PayDetailRepository,
 ) : AndroidViewModel(app) {
 
-    /*fun getHoursReg(workDateId: Long) =
-        payDetailRepository.getHoursReg(workDateId)*/
-
-    /* fun getHoursOt(workDateId: Long) =
-         payDetailRepository.getHoursOt(workDateId)
-
-     fun getHoursDblOt(workDateId: Long) =
-         payDetailRepository.getHoursDblOt(workDateId)
-
-     fun getHoursStat(workDateId: Long) =
-         payDetailRepository.getHoursStat(workDateId)*/
-
-
     fun getHoursReg(employerId: Long, cutoffDate: String) =
         payDetailRepository.getHoursReg(employerId, cutoffDate)
 
@@ -39,8 +26,4 @@ class PayDetailViewModel(
 
     fun getPayRate(employerId: Long, cutoffDate: String) =
         payDetailRepository.getPayRate(employerId, cutoffDate)
-
-    /* fun getWorkDates(employerId: Long, cutoffDate: String) =
-         payDetailRepository.getWorkDates(employerId, cutoffDate)*/
-
 }

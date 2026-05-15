@@ -13,14 +13,6 @@ class EmployerViewModel(
     private val employerRepository: EmployerRepository
 ) : AndroidViewModel(app) {
 
-    /*fun getCurrentEmployer(): Employers {
-        return employerLogicViewModel.currentEmployerObj.getEmployer()
-    }
-
-    fun getEmployerList(): List<Employers> {
-        return employerLogicViewModel.getEmployerList()
-    }*/
-
     fun insertEmployer(employers: Employers) =
         viewModelScope.launch {
             employerRepository.insertEmployer(employers)
@@ -31,11 +23,6 @@ class EmployerViewModel(
             employerRepository.updateEmployer(employers)
         }
 
-    /*fun deleteEmployer(employerId: Long, updateTime: String) = viewModelScope.launch {
-        employerRepository.deleteEmployer(employerId, updateTime)
-    }*/
-
-
     fun getEmployer(employerId: Long) =
         employerRepository.getEmployer(employerId)
 
@@ -43,12 +30,6 @@ class EmployerViewModel(
 
     fun getEmployers() =
         employerRepository.getEmployers()
-
-    /*fun searchEmployers(query: String?) =
-        employerRepository.searchEmployers(query)
-
-    fun findEmployer(employerName: String) =
-        employerRepository.findEmployer(employerName)*/
 
     fun insertPayRate(payRate: EmployerPayRates) =
         viewModelScope.launch {
@@ -63,6 +44,4 @@ class EmployerViewModel(
     fun getEmployerPayRates(employerId: Long) =
         employerRepository.getEmployerPayRates(employerId)
 
-    /*fun getCurrentEmployerRate(employerId: Long, cutoffDate: String) =
-        employerRepository.getCurrentEmployerRate(employerId, cutoffDate)*/
 }
