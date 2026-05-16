@@ -1,5 +1,3 @@
-@file:Suppress("AssignedValueIsNeverRead")
-
 package ms.mattschlenkrich.paycalculator.ui.timesheet
 
 import androidx.compose.material3.AlertDialog
@@ -21,7 +19,6 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.entity.PayPeriods
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
@@ -68,20 +65,20 @@ fun TimeSheetRoute(
     val otherHrsLabel = stringResource(R.string.other)
 
     val employers by employerViewModel.getEmployers().observeAsState(emptyList())
-    var selectedEmployer by remember { mutableStateOf<Employers?>(null) }
+    val selectedEmployer = mainViewModel.selectedEmployer.value
     val cutOffDates by if (selectedEmployer != null) {
-        payDayViewModel.getCutOffDates(selectedEmployer!!.employerId, payPeriodsLimit)
-            .observeAsState(emptyList())
+        payDayViewModel.getCutOffDates(selectedEmployer.employerId, payPeriodsLimit)
+            .observeAsState(null)
     } else {
         remember { mutableStateOf(emptyList()) }
     }
-    var selectedCutOffDate by remember { mutableStateOf("") }
+    val selectedCutOffDate = mainViewModel.selectedCutOffDate.value
     var paySummary by remember { mutableStateOf(TimeSheetPaySummary()) }
     var week1SummaryString by remember { mutableStateOf("") }
     var week2SummaryString by remember { mutableStateOf("") }
     val workDates by if (selectedEmployer != null && selectedCutOffDate.isNotEmpty()) {
         payDayViewModel.getWorkDateList(
-            selectedEmployer!!.employerId,
+            selectedEmployer.employerId,
             selectedCutOffDate
         ).observeAsState(emptyList())
     } else {
@@ -90,7 +87,7 @@ fun TimeSheetRoute(
 
     val extrasList by if (selectedEmployer != null && selectedCutOffDate.isNotEmpty()) {
         payDayViewModel.getWorkDateExtrasPerPay(
-            selectedEmployer!!.employerId,
+            selectedEmployer.employerId,
             selectedCutOffDate
         ).observeAsState(emptyList())
     } else {
@@ -104,19 +101,20 @@ fun TimeSheetRoute(
     // Initial selection from history
     LaunchedEffect(employers) {
         if (selectedEmployer == null && employers.isNotEmpty()) {
-            val historyEmployer = mainViewModel.getEmployer()
-            selectedEmployer = historyEmployer ?: employers.first()
+            val savedEmployer = employers.find { it.employerId == mainViewModel.selectedEmployerId }
+            mainViewModel.setEmployer(savedEmployer ?: employers.first())
         }
     }
 
     LaunchedEffect(cutOffDates, selectedEmployer) {
+        val dates = cutOffDates ?: return@LaunchedEffect
         if (selectedEmployer != null) {
             val today = LocalDate.now().toString()
-            if (cutOffDates.isEmpty() || cutOffDates.first().ppCutoffDate < today) {
+            if (dates.isEmpty() || dates.first().ppCutoffDate < today) {
                 coroutineScope.launch {
                     val nextCutOff = projections.generateNextCutOff(
-                        selectedEmployer!!,
-                        cutOffDates.firstOrNull()?.ppCutoffDate ?: ""
+                        selectedEmployer,
+                        dates.firstOrNull()?.ppCutoffDate ?: ""
                     )
                     if (nextCutOff.isNotEmpty()) {
                         mainViewModel.setPayPeriod(null)
@@ -124,29 +122,26 @@ fun TimeSheetRoute(
                             PayPeriods(
                                 nf.generateRandomIdAsLong(),
                                 nextCutOff,
-                                selectedEmployer!!.employerId,
+                                selectedEmployer.employerId,
                                 false,
                                 df.getCurrentUTCTimeAsString()
                             )
                         )
-                        selectedCutOffDate = nextCutOff
+                        if (mainViewModel.selectedCutOffDate.value.isEmpty() ||
+                            !dates.any { it.ppCutoffDate == mainViewModel.selectedCutOffDate.value }
+                        ) {
+                            mainViewModel.setCutOffDate(nextCutOff)
+                        }
                     }
                 }
             } else {
-                val historyCutOff = mainViewModel.getCutOffDate()
-                val historyEmployerId = mainViewModel.getEmployer()?.employerId
-                val currentCutOff = cutOffDates.last { it.ppCutoffDate >= today }.ppCutoffDate
-
-                if (historyEmployerId != selectedEmployer!!.employerId) {
-                    selectedCutOffDate = currentCutOff
-                } else if (historyCutOff == null ||
-                    !cutOffDates.any { it.ppCutoffDate == historyCutOff }
+                if (mainViewModel.selectedCutOffDate.value.isEmpty() ||
+                    !dates.any { it.ppCutoffDate == mainViewModel.selectedCutOffDate.value }
                 ) {
-                    if (selectedCutOffDate.isEmpty() || !cutOffDates.any { it.ppCutoffDate == selectedCutOffDate }) {
-                        selectedCutOffDate = currentCutOff
-                    }
-                } else if (selectedCutOffDate.isEmpty()) {
-                    selectedCutOffDate = historyCutOff
+                    val currentCutOff =
+                        dates.lastOrNull { it.ppCutoffDate >= today }?.ppCutoffDate
+                            ?: dates.first().ppCutoffDate
+                    mainViewModel.setCutOffDate(currentCutOff)
                 }
             }
         }
@@ -154,13 +149,12 @@ fun TimeSheetRoute(
 
     // Update summary and set global state
     LaunchedEffect(selectedEmployer, selectedCutOffDate, workDates) {
-        if (selectedEmployer != null && selectedCutOffDate.isNotEmpty()) {
-            mainViewModel.setEmployer(selectedEmployer!!)
-            mainViewModel.setCutOffDate(selectedCutOffDate)
-
+        if (selectedEmployer != null && selectedCutOffDate.isNotEmpty() &&
+            cutOffDates?.any { it.ppCutoffDate == selectedCutOffDate } == true
+        ) {
             val payPeriod = payDayViewModel.getPayPeriodSync(
                 selectedCutOffDate,
-                selectedEmployer!!.employerId
+                selectedEmployer.employerId
             )
             mainViewModel.setPayPeriod(payPeriod)
             if (payPeriod != null) {
@@ -168,7 +162,7 @@ fun TimeSheetRoute(
                     PayCalculationsAsync(
                         payCalculationsViewModel,
                         payDetailViewModel,
-                        selectedEmployer!!,
+                        selectedEmployer,
                         payPeriod
                     )
                 payCalculations.waitForCalculations()
@@ -297,17 +291,17 @@ fun TimeSheetRoute(
         selectedEmployer = selectedEmployer,
         onEmployerSelected = {
             if (selectedEmployer?.employerId != it.employerId) {
-                selectedEmployer = it
-                selectedCutOffDate = ""
+                mainViewModel.setEmployer(it)
+                mainViewModel.setCutOffDate("")
                 mainViewModel.setPayPeriod(null)
             }
         },
         onAddNewEmployer = {
             navController.navigate(Screen.EmployerAdd.route)
         },
-        cutOffDates = cutOffDates.map { it.ppCutoffDate },
+        cutOffDates = cutOffDates?.map { it.ppCutoffDate } ?: emptyList(),
         selectedCutOffDate = selectedCutOffDate,
-        onCutOffDateSelected = { selectedCutOffDate = it },
+        onCutOffDateSelected = { mainViewModel.setCutOffDate(it) },
         paySummary = paySummary,
         week1Summary = week1SummaryString,
         week2Summary = week2SummaryString,

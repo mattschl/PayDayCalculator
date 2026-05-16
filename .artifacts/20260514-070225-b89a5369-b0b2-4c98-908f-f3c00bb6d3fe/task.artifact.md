@@ -14,19 +14,7 @@
     - [x] Identify all repositories and viewmodels
     - [x] Analyze each file for unused functions and commented out code
     - [x] Create implementation plan for cleanup
-    - [x] Clean up `PayDayRepository.kt`
-    - [x] Clean up `EmployerViewModel.kt`
-    - [x] Clean up `PayDayViewModel.kt`
-    - [x] Clean up `WorkTaxRepository.kt`
-    - [x] Clean up `WorkTaxViewModel.kt`
-    - [x] Clean up `WorkTimeRepository.kt`
-    - [x] Clean up `WorkTimeViewModel.kt`
-    - [x] Clean up `PayDetailRepository.kt`
-    - [x] Clean up `PayDetailViewModel.kt`
-    - [x] Clean up `WorkExtraRepository.kt`
-    - [x] Clean up `WorkExtraViewModel.kt`
-    - [x] Clean up `WorkOrderRepository.kt`
-    - [x] Clean up `WorkOrderViewModel.kt`
+    - [x] Clean up all Repository and ViewModel files
     - [x] Verify project builds and tests pass
 - [x] Integrate `getSyncSummary` into sync display
     - [x] Research `SyncActivity.kt` and `MergeHelper.kt`
@@ -50,3 +38,35 @@
     - [x] Clean up `MainViewModel.kt`
     - [x] Resolve regressions in Repository and UI code
     - [x] Verify project builds and tests pass
+- [x] Fix always-false condition in `MergeHelper.kt`
+    - [x] Investigate why `mismatchTables` is never populated
+    - [x] Create implementation plan
+    - [x] Populate `mismatchTables` during verification loop
+    - [x] Verify warning is gone and project builds
+- [x] Remove unused `MaterialQuantityUpdateRoute` and screen
+    - [x] Investigate why `MaterialQuantityUpdateRoute` is unused
+    - [x] Identify related unused files
+    - [x] Create implementation plan
+    - [x] Delete `MaterialQuantityUpdateRoute.kt` and `MaterialQuantityUpdateScreen.kt`
+    - [x] Verify build
+- [x] Fix app crashes after cleanup and ensure data retention
+    - [x] Analyze `logcat` for stack traces
+    - [x] Identify Room schema mismatch and main-thread access issues
+    - [x] Create implementation plan for crash fixes with migrations
+    - [x] Implement proper Room migrations (13->15) to preserve data
+    - [x] Restore incorrectly deleted ViewModel and DAO methods
+    - [x] Fix regressions in 5 UI route files
+    - [x] Verify app stability and data retention on device
+- [x] Implement robust sync fallback
+    - [x] Analyze potential sync failures due to dropped tables
+    - [x] Create implementation plan
+    - [x] Implement `isTableExists` helper in `MergeHelper.kt`
+    - [x] Update sync loops to skip missing tables
+    - [x] Verify stability
+- [x] Persistent Selection for Employer and Payday
+    - [x] Research Route selection logic
+    - [x] Create implementation plan
+    - [x] Refactor `MainViewModel.kt` with state and persistence
+    - [x] Update `TimeSheetRoute.kt` to use shared state
+    - [x] Update `PayDetailRoute.kt` to use shared state
+    - [x] Verify persistence across screens and app restart

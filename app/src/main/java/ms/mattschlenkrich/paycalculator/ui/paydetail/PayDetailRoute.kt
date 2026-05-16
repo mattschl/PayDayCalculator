@@ -18,7 +18,6 @@ import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.WAIT_250
-import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.model.ExtraContainer
 import ms.mattschlenkrich.paycalculator.data.model.TaxAndAmount
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
@@ -56,14 +55,14 @@ fun PayDetailRoute(
     val otherLabel = stringResource(R.string.other_hours)
 
     val employers by employerViewModel.getEmployers().observeAsState(emptyList())
-    var selectedEmployer by remember { mutableStateOf<Employers?>(null) }
+    val selectedEmployer = mainViewModel.selectedEmployer.value
     val cutOffDates by if (selectedEmployer != null) {
-        payDayViewModel.getCutOffDates(selectedEmployer!!.employerId, payPeriodsLimit)
+        payDayViewModel.getCutOffDates(selectedEmployer.employerId, payPeriodsLimit)
             .observeAsState(emptyList())
     } else {
         remember { mutableStateOf(emptyList()) }
     }
-    var selectedCutOffDate by remember { mutableStateOf("") }
+    val selectedCutOffDate = mainViewModel.selectedCutOffDate.value
 
     var paySummary by remember { mutableStateOf(PaySummaryData()) }
     var hourlyBreakdown by remember { mutableStateOf(HourlyBreakdownData()) }
@@ -76,25 +75,19 @@ fun PayDetailRoute(
     // Initial selection from history
     androidx.compose.runtime.LaunchedEffect(employers) {
         if (selectedEmployer == null && employers.isNotEmpty()) {
-            val historyEmployer = mainViewModel.getEmployer()
-            selectedEmployer = historyEmployer ?: employers.first()
+            val savedEmployer = employers.find { it.employerId == mainViewModel.selectedEmployerId }
+            mainViewModel.setEmployer(savedEmployer ?: employers.first())
         }
     }
 
     androidx.compose.runtime.LaunchedEffect(cutOffDates, selectedEmployer) {
         if (selectedEmployer != null && cutOffDates.isNotEmpty()) {
-            val historyCutOff = mainViewModel.getCutOffDate()
-            val historyEmployerId = mainViewModel.getEmployer()?.employerId
-
-            if (historyEmployerId != selectedEmployer!!.employerId ||
-                historyCutOff == null ||
-                !cutOffDates.any { it.ppCutoffDate == historyCutOff }
-            ) {
-                if (selectedCutOffDate.isEmpty() || !cutOffDates.any { it.ppCutoffDate == selectedCutOffDate }) {
-                    selectedCutOffDate = cutOffDates.first().ppCutoffDate
-                }
-            } else if (selectedCutOffDate.isEmpty()) {
-                selectedCutOffDate = historyCutOff
+            if (selectedCutOffDate.isEmpty() || !cutOffDates.any { it.ppCutoffDate == selectedCutOffDate }) {
+                val currentCutOff = cutOffDates.lastOrNull {
+                    it.ppCutoffDate >= LocalDate.now().toString()
+                }?.ppCutoffDate
+                    ?: cutOffDates.first().ppCutoffDate
+                mainViewModel.setCutOffDate(currentCutOff)
             }
         }
     }
@@ -102,12 +95,9 @@ fun PayDetailRoute(
     // Recalculate when selection changes
     androidx.compose.runtime.LaunchedEffect(selectedEmployer, selectedCutOffDate, trigger) {
         if (selectedEmployer != null && selectedCutOffDate.isNotEmpty()) {
-            mainViewModel.setEmployer(selectedEmployer!!)
-            mainViewModel.setCutOffDate(selectedCutOffDate)
-
             val payPeriod = payDayViewModel.getPayPeriodSync(
                 selectedCutOffDate,
-                selectedEmployer!!.employerId
+                selectedEmployer.employerId
             )
             if (payPeriod != null) {
                 mainViewModel.setPayPeriod(payPeriod)
@@ -115,7 +105,7 @@ fun PayDetailRoute(
                     PayCalculationsAsync(
                         payCalculationsViewModel,
                         payDetailViewModel,
-                        selectedEmployer!!,
+                        selectedEmployer,
                         payPeriod
                     )
                 payCalculations.waitForCalculations()
@@ -126,7 +116,7 @@ fun PayDetailRoute(
 
                 val payDay = df.getDisplayDate(
                     LocalDate.parse(selectedCutOffDate)
-                        .plusDays(selectedEmployer!!.cutoffDaysBefore.toLong())
+                        .plusDays(selectedEmployer.cutoffDaysBefore.toLong())
                         .toString()
                 )
 
@@ -197,8 +187,8 @@ fun PayDetailRoute(
         selectedEmployer = selectedEmployer,
         onEmployerSelected = {
             if (selectedEmployer?.employerId != it.employerId) {
-                selectedEmployer = it
-                selectedCutOffDate = ""
+                mainViewModel.setEmployer(it)
+                mainViewModel.setCutOffDate("")
             }
         },
         onAddNewEmployer = {
@@ -206,7 +196,7 @@ fun PayDetailRoute(
         },
         cutOffDates = cutOffDates.map { it.ppCutoffDate },
         selectedCutOffDate = selectedCutOffDate,
-        onCutOffDateSelected = { selectedCutOffDate = it },
+        onCutOffDateSelected = { mainViewModel.setCutOffDate(it) },
         paySummary = paySummary,
         hourlyBreakdown = hourlyBreakdown,
         credits = credits,
@@ -226,17 +216,20 @@ fun PayDetailRoute(
         },
         onExtraActiveChange = { extra, active ->
             coroutineScope.launch {
-                val payPeriod = payDayViewModel.getPayPeriodSync(
-                    selectedCutOffDate,
-                    selectedEmployer!!.employerId
-                )
-                if (payPeriod != null) {
-                    insertOrUpdateExtraOnChange(
-                        extra, !active, payPeriod.payPeriodId,
-                        payDayViewModel, nf, df
+                val employer = mainViewModel.selectedEmployer.value
+                if (employer != null) {
+                    val payPeriod = payDayViewModel.getPayPeriodSync(
+                        selectedCutOffDate,
+                        employer.employerId
                     )
-                    delay(WAIT_250)
-                    trigger++
+                    if (payPeriod != null) {
+                        insertOrUpdateExtraOnChange(
+                            extra, !active, payPeriod.payPeriodId,
+                            payDayViewModel, nf, df
+                        )
+                        delay(WAIT_250)
+                        trigger++
+                    }
                 }
             }
         }

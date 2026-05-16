@@ -1,7 +1,11 @@
 package ms.mattschlenkrich.paycalculator.data.viewmodel
 
 import android.app.Application
+import android.content.Context
+import androidx.compose.runtime.mutableStateOf
+import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
+import ms.mattschlenkrich.paycalculator.common.PREFS_NAME
 import ms.mattschlenkrich.paycalculator.data.entity.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.entity.Material
@@ -18,9 +22,21 @@ import ms.mattschlenkrich.paycalculator.data.model.ExtraDefTypeAndEmployer
 import ms.mattschlenkrich.paycalculator.data.model.TempWorkOrderHistoryInfo
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryTimeWorkedCombined
 
+private const val SELECTED_EMPLOYER_ID = "selected_employer_id"
+private const val SELECTED_CUTOFF_DATE = "selected_cutoff_date"
+
 class MainViewModel(
     app: Application,
 ) : AndroidViewModel(app) {
+    private val prefs = app.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+    var selectedEmployer = mutableStateOf<Employers?>(null)
+        private set
+    var selectedCutOffDate = mutableStateOf(prefs.getString(SELECTED_CUTOFF_DATE, "") ?: "")
+        private set
+    var selectedEmployerId = prefs.getLong(SELECTED_EMPLOYER_ID, -1L)
+        private set
+
     private var employer: Employers? = null
     private var taxType: TaxTypes? = null
     private var taxTypeString: String? = null
@@ -228,10 +244,14 @@ class MainViewModel(
 
     fun setCutOffDate(date: String?) {
         cutOffDate = date
+        selectedCutOffDate.value = date ?: ""
+        prefs.edit {
+            putString(SELECTED_CUTOFF_DATE, selectedCutOffDate.value)
+        }
     }
 
     fun getCutOffDate(): String? {
-        return cutOffDate
+        return cutOffDate ?: selectedCutOffDate.value.ifEmpty { null }
     }
 
     fun setExtraDefinitionFull(newExtra: ExtraDefTypeAndEmployer?) {
@@ -260,6 +280,11 @@ class MainViewModel(
 
     fun setEmployer(newEmployer: Employers?) {
         employer = newEmployer
+        selectedEmployer.value = newEmployer
+        selectedEmployerId = newEmployer?.employerId ?: -1L
+        prefs.edit {
+            putLong(SELECTED_EMPLOYER_ID, selectedEmployerId)
+        }
     }
 
     fun setTaxType(newTaxType: TaxTypes?) {
@@ -279,7 +304,7 @@ class MainViewModel(
     }
 
     fun getEmployer(): Employers? {
-        return employer
+        return employer ?: selectedEmployer.value
     }
 
     fun getTaxType(): TaxTypes? {
