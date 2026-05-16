@@ -28,3 +28,25 @@
     - [x] Clean up `WorkOrderRepository.kt`
     - [x] Clean up `WorkOrderViewModel.kt`
     - [x] Verify project builds and tests pass
+- [x] Integrate `getSyncSummary` into sync display
+    - [x] Research `SyncActivity.kt` and `MergeHelper.kt`
+    - [x] Create implementation plan
+    - [x] Update `SyncActivity.kt` to call `getSyncSummary`
+    - [x] Verify build and behavior
+- [x] Cleanup redundancy in `WorkOrderHistoryTimeUpdateRoute.kt`
+    - [x] Analyze file for redundancies and bugs
+    - [x] Create implementation plan
+    - [x] Simplify time parsing and use `derivedStateOf`
+    - [x] Fix `errorMessage` clearing bug
+    - [x] Verify project builds and logic is correct
+- [x] Project-wide cleanup of unused and redundant code
+    - [x] Identify unused models and entities
+    - [x] Identify unused DAO methods
+    - [x] Create implementation plan
+    - [x] Delete unused model and entity files
+    - [x] Clean up `PayDatabase.kt` and `MergeHelper.kt`
+    - [x] Clean up all DAO files
+    - [x] Clean up `DateFunctions.kt` and `NumberFunctions.kt`
+    - [x] Clean up `MainViewModel.kt`
+    - [x] Resolve regressions in Repository and UI code
+    - [x] Verify project builds and tests pass

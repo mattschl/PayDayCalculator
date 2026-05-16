@@ -45,6 +45,18 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             var totalNewRecords = 0
             var totalUpdatedRecords = 0
             for (spec in tables) {
+                if (!isTableExists(localDb, spec.tableName) || !isTableExists(
+                        remoteDb,
+                        spec.tableName
+                    )
+                ) {
+                    Log.w(
+                        TAG,
+                        "Skipping table ${spec.tableName} as it is missing in one of the databases."
+                    )
+                    continue
+                }
+
                 val results = findNewAndUpdatedRecords(localDb, remoteDb, spec)
                 val newRecords = results.first
                 val updatedRecords = results.second
@@ -85,6 +97,16 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
         return summary.toString()
     }
 
+    private fun isTableExists(db: SQLiteDatabase, tableName: String): Boolean {
+        val cursor = db.rawQuery(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+            arrayOf(tableName)
+        )
+        val exists = cursor.count > 0
+        cursor.close()
+        return exists
+    }
+
     /**
      * Applies the synchronization from the remote database to the local one.
      */
@@ -114,6 +136,19 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
 
             for ((index, spec) in tables.withIndex()) {
                 onProgress(index, tables.size)
+
+                if (!isTableExists(localDb, spec.tableName) || !isTableExists(
+                        remoteDb,
+                        spec.tableName
+                    )
+                ) {
+                    Log.w(
+                        TAG,
+                        "Skipping table ${spec.tableName} as it is missing in one of the databases."
+                    )
+                    continue
+                }
+
                 idMap[spec.tableName] = mutableMapOf()
 
                 var tableNewCount = 0
@@ -201,6 +236,10 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
                     localCount = localCountCursor.getInt(0)
                 }
                 localCountCursor.close()
+
+                if (localCount < remoteCount) {
+                    mismatchTables.add(spec.tableName)
+                }
 
                 tableSummaries.append("  - ${spec.tableName}: Backup: $remoteCount, Local: $localCount\n")
             }
@@ -593,7 +632,7 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             if (cursor.moveToFirst()) id = cursor.getLong(0)
             cursor.close()
             id
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             -1L
         }
     }
@@ -809,18 +848,6 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             pkColumn = "workPayPeriodExtraId",
             isDeletedColumn = "ppeIsDeleted",
             updateTimeColumn = "ppeUpdateTime"
-        ),
-        TableSpec(
-            "workPayPeriodTax",
-            listOf("wppCutoffDate", "wppEmployerId", "wppTaxType"),
-            listOf(
-                FKSpec("wppEmployerId", "employers", "employerId", "employerName"),
-                FKSpec("wppTaxType", "taxTypes", "taxType", "taxType")
-            ),
-            pkColumn = null, // PK is composite
-            isDeletedColumn = "wppIsDeleted",
-            updateTimeColumn = "wppUpdateTime",
-            employerIdColumn = "wppEmployerId"
         ),
 
         TableSpec(

@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_VERSION
 import ms.mattschlenkrich.paycalculator.data.dao.EmployerDao
@@ -36,12 +38,10 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras
-import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodTax
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformedMerged
 import ms.mattschlenkrich.paycalculator.data.entity.WorkTaxRules
 import ms.mattschlenkrich.paycalculator.data.model.ExtraDefinitionAndType
-import ms.mattschlenkrich.paycalculator.data.model.ExtraTypeAndDefByDay
 
 @Database(
     entities = [
@@ -52,7 +52,6 @@ import ms.mattschlenkrich.paycalculator.data.model.ExtraTypeAndDefByDay
         WorkPayPeriodExtras::class,
         WorkExtraTypes::class,
         WorkDates::class,
-        WorkPayPeriodTax::class,
         WorkExtrasDefinitions::class,
         WorkTaxRules::class,
         TaxTypes::class,
@@ -72,8 +71,7 @@ import ms.mattschlenkrich.paycalculator.data.model.ExtraTypeAndDefByDay
         WorkPerformedMerged::class,
         WorkOrderHistoryTimeWorked::class,
     ],
-    views = [ExtraDefinitionAndType::class,
-        ExtraTypeAndDefByDay::class],
+    views = [ExtraDefinitionAndType::class],
 //    autoMigrations =
 //        [AutoMigration(9, 10), AutoMigration(10, 11), AutoMigration(11, 12),
 //            AutoMigration(from = 12, to = 13, spec = PayDatabase.Migration12To13::class)],
@@ -91,14 +89,21 @@ abstract class PayDatabase : RoomDatabase() {
     abstract fun getPayCalculationsDao(): PayCalculationsDao
     abstract fun getWorkTimeDao(): WorkTimeDao
 
-//    @RenameColumn(
-//        tableName = "materialMerged",
-//        fromColumnName = "mUpdateTime",
-//        toColumnName = "mmUpdateTime"
-//    )
-//    class Migration12To13 : AutoMigrationSpec
-
     companion object {
+        private val MIGRATION_13_15 = object : Migration(13, 15) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("DROP TABLE IF EXISTS workPayPeriodTax")
+                db.execSQL("DROP VIEW IF EXISTS ExtraTypeAndDefByDay")
+            }
+        }
+
+        private val MIGRATION_14_15 = object : Migration(14, 15) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("DROP TABLE IF EXISTS workPayPeriodTax")
+                db.execSQL("DROP VIEW IF EXISTS ExtraTypeAndDefByDay")
+            }
+        }
+
         @Volatile
         private var instance: PayDatabase? = null
         private val LOCK = Any()
@@ -135,7 +140,7 @@ abstract class PayDatabase : RoomDatabase() {
                 PAY_DB_NAME
             )
                 .createFromAsset(PAY_DB_NAME)
-                .fallbackToDestructiveMigration(false)
+                .addMigrations(MIGRATION_13_15, MIGRATION_14_15)
                 .build()
         }
     }

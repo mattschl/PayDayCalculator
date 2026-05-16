@@ -126,22 +126,6 @@ class MainViewModel(
         return areaId
     }
 
-    /*fun setExtraContainer(newExtraContainer: ExtraContainer?) {
-        extraContainer = newExtraContainer
-    }
-
-    fun getExtraContainer(): ExtraContainer? {
-        return extraContainer
-    }
-
-    fun setMaterialInSequence(newMaterial: MaterialInSequence?) {
-        materialInSequence = newMaterial
-    }
-
-    fun getMaterialInSequence(): MaterialInSequence? {
-        return materialInSequence
-    }*/
-
     fun setMaterial(newMaterial: Material?) {
         material = newMaterial
     }

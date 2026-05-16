@@ -22,20 +22,11 @@ class NumberFunctions {
         return dollarFormat.format(num)
     }
 
-    /*fun displayDollarsWithoutZeros(num: Double): String {
-        return "$" + displayNumberFromDouble(num)
-    }*/
-
-
     fun displayNumberFromDouble(num: Double): String {
         return numberDisplay.format(num)
     }
 
     fun generateRandomIdAsLong(): Long {
-//        var id = Random().nextInt(Int.MAX_VALUE).toLong()
-//        id = if (Random().nextBoolean()) -id
-//        else id
-//        return id
         // UUIDs are 128-bit; we take the 64 least significant bit
         val uuid = UUID.randomUUID().leastSignificantBits
         return if (uuid == 0L) UUID.randomUUID().leastSignificantBits else uuid

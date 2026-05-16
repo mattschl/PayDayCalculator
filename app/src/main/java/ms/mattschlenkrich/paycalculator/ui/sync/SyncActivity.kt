@@ -39,7 +39,9 @@ import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.FileList
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.PREFS_NAME
 import ms.mattschlenkrich.paycalculator.common.SYNC_ACCOUNT_EMAIL
@@ -266,7 +268,9 @@ class SyncActivity : ComponentActivity() {
                 }
 
                 showProgress("Creating fresh backup...")
-                PayDatabase.checkpoint(this@SyncActivity)
+                withContext(Dispatchers.IO) {
+                    PayDatabase.checkpoint(this@SyncActivity)
+                }
 
                 val dbFile = File(dbDir, "pay.db")
                 if (dbFile.exists()) {

@@ -41,7 +41,7 @@ fun WorkOrderHistoryMaterialUpdateRoute(
         return
     }
 
-    val historyWithDates by workOrderViewModel.getWorkOrderHistoriesById(initialHistory.woHistoryId)
+    val historyWithDates by workOrderViewModel.getWorkOrderHistory(initialHistory.woHistoryId)
         .observeAsState()
     val materialSuggestions by workOrderViewModel.materialsList.observeAsState(emptyList())
 

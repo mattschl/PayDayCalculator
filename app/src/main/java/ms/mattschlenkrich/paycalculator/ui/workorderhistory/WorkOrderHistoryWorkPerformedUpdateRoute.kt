@@ -32,7 +32,7 @@ fun WorkOrderHistoryWorkPerformedUpdateRoute(
         return
     }
 
-    val workOrderHistoryWithDates by workOrderViewModel.getWorkOrderHistoriesById(history.woHistoryId)
+    val workOrderHistoryWithDates by workOrderViewModel.getWorkOrderHistory(history.woHistoryId)
         .observeAsState()
     val workPerformedHistory by workOrderViewModel.getWorkPerformedHistoryById(
         workPerformedHistoryId

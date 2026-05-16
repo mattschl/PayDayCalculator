@@ -54,7 +54,7 @@ fun WorkOrderHistoryTimeRoute(
         return
     }
 
-    val historyWithDates by workOrderViewModel.getWorkOrderHistoriesById(history.woHistoryId)
+    val historyWithDates by workOrderViewModel.getWorkOrderHistory(history.woHistoryId)
         .observeAsState()
 
     if (historyWithDates == null) return

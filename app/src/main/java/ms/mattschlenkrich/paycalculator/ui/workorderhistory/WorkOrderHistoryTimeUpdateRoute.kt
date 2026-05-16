@@ -83,14 +83,13 @@ fun WorkOrderHistoryTimeUpdateRoute(
     if (showOverlapConfirmDialog != null) {
         val entry = showOverlapConfirmDialog!!
         androidx.compose.material3.AlertDialog(
-            onDismissRequest = { showOverlapConfirmDialog = null },
+            onDismissRequest = { },
             title = { androidx.compose.material3.Text(stringResource(R.string.save)) },
             text = { androidx.compose.material3.Text(stringResource(R.string.confirm_overlap)) },
             confirmButton = {
                 androidx.compose.material3.TextButton(onClick = {
                     coroutineScope.launch {
                         workOrderViewModel.updateWorkOrderHistoryTimeWorked(entry)
-                        showOverlapConfirmDialog = null
                         navController.popBackStack()
                     }
                 }) {
@@ -99,7 +98,6 @@ fun WorkOrderHistoryTimeUpdateRoute(
             },
             dismissButton = {
                 androidx.compose.material3.TextButton(onClick = {
-                    showOverlapConfirmDialog = null
                 }) {
                     androidx.compose.material3.Text(stringResource(R.string.cancel))
                 }
@@ -118,7 +116,7 @@ fun WorkOrderHistoryTimeUpdateRoute(
         endTime = endTime,
         totalTimeText = nf.displayNumberFromDouble(totalHours) + " " + stringResource(R.string.hours),
         selectedTimeType = selectedTimeType,
-        onTimeTypeChange = { selectedTimeType = it },
+        onTimeTypeChange = { },
         onStartTimeClick = {
             TimePickerDialog(context, { _, h, m ->
                 val newStart = Calendar.getInstance().apply {
@@ -194,9 +192,7 @@ fun WorkOrderHistoryTimeUpdateRoute(
                     wohtUpdateTime = df.getCurrentUTCTimeAsString()
                 )
 
-                if (hasOverlap) {
-                    showOverlapConfirmDialog = entry
-                } else {
+                if (!hasOverlap) {
                     coroutineScope.launch {
                         workOrderViewModel.updateWorkOrderHistoryTimeWorked(entry)
                         navController.popBackStack()

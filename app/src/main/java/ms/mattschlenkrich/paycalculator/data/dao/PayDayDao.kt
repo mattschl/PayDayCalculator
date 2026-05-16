@@ -11,13 +11,11 @@ import androidx.room.Update
 import ms.mattschlenkrich.paycalculator.common.TABLE_PAY_PERIODS
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_DATE_EXTRAS
-import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_EXTRA_TYPES
 import ms.mattschlenkrich.paycalculator.data.entity.PayPeriods
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras
 import ms.mattschlenkrich.paycalculator.data.model.WorkDateExtraAndTypeAndDef
-import ms.mattschlenkrich.paycalculator.data.model.WorkDateExtrasAndDates
 
 @Dao
 interface PayDayDao {
@@ -41,17 +39,6 @@ interface PayDayDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPayPeriod(payPeriod: PayPeriods)
-
-    @Update
-    suspend fun updatePayPeriod(payPeriod: PayPeriods)
-
-    @Query(
-        "SELECT * FROM payPeriods " +
-                "WHERE ppCutoffDate = :cutOff " +
-                "AND ppEmployerId = :employerId " +
-                "AND ppIsDeleted = 0"
-    )
-    fun getPayPeriod(cutOff: String, employerId: Long): LiveData<PayPeriods>
 
     @Query(
         "SELECT * FROM payPeriods " +
@@ -131,14 +118,6 @@ interface PayDayDao {
         updateTime: String
     )
 
-    @Query(
-        "UPDATE $TABLE_WORK_EXTRA_TYPES " +
-                "SET wetIsDeleted = 1, " +
-                "wetUpdateTime = :updateTime " +
-                "WHERE workExtraTypeId = :workExtraTypeId"
-    )
-    suspend fun deleteWorkExtraType(workExtraTypeId: Long, updateTime: String)
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWorkDateExtra(workDateExtra: WorkDateExtras)
 
@@ -153,14 +132,6 @@ interface PayDayDao {
     fun getWorkDateExtras(workDateId: Long): LiveData<List<WorkDateExtras>>
 
     @Query(
-        "SELECT * FROM $TABLE_WORK_DATE_EXTRAS " +
-                "WHERE wdeWorkDateId = :workDateId " +
-                "AND wdeIsDeleted = 0"
-    )
-
-    fun getWorkDateExtrasActive(workDateId: Long): LiveData<List<WorkDateExtras>>
-
-    @Query(
         "Update $TABLE_WORK_DATE_EXTRAS " +
                 "SET wdeIsDeleted = 1, " +
                 "wdeUpdateTime = :updateTime " +
@@ -171,17 +142,6 @@ interface PayDayDao {
         extraName: String, workDateId: Long, updateTime: String
     )
 
-    @Query(
-        "UPDATE workDateExtras " +
-                "SET wdeIsDeleted = 1, " +
-                "wdeUpdateTime = :updateTime " +
-                "WHERE wdeWorkDateId = :workDateId"
-    )
-    suspend fun deleteWorkDateExtrasByDateId(
-        workDateId: Long, updateTime: String
-    )
-
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -212,26 +172,6 @@ interface PayDayDao {
     suspend fun updatePayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras)
 
     @Query(
-        "UPDATE workPayPeriodExtras " +
-                "SET ppeIsDeleted = 1, " +
-                "ppeUpdateTime = :updateTime " +
-                "WHERE workPayPeriodExtraId = :extraId"
-    )
-    suspend fun deletePayPeriodExtra(extraId: Long, updateTime: String)
-
-    @Query(
-        "SELECT * FROM workPayPeriodExtras " +
-                "WHERE workPayPeriodExtraId = :workPayPeriodExtraId"
-    )
-    fun findPayPeriodExtra(workPayPeriodExtraId: Long): LiveData<WorkPayPeriodExtras>
-
-    @Query(
-        "SELECT * FROM workPayPeriodExtras " +
-                "WHERE workPayPeriodExtraId = :extraName"
-    )
-    fun findPayPeriodExtra(extraName: String): LiveData<WorkPayPeriodExtras>
-
-    @Query(
         "SELECT * FROM workPayPeriodExtras " +
                 "WHERE ppePayPeriodId = :payPeriodId " +
                 "AND ppeAttachTo = 3 " +
@@ -239,20 +179,4 @@ interface PayDayDao {
                 "ORDER BY ppeName"
     )
     fun getPayPeriodExtras(payPeriodId: Long): LiveData<List<WorkPayPeriodExtras>>
-
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @RewriteQueriesToDropUnusedColumns
-    @Transaction
-    @Query(
-        "SELECT * FROM workDates " +
-                "JOIN (" +
-                "SELECT * FROM workDateExtras " +
-                "WHERE wdeIsDeleted = 0 " +
-                ") ON workDateId = wdeWorkDateId " +
-                "WHERE wdIsDeleted =0 " +
-                "AND wdCutoffDate = :cutOffDate " +
-                "ORDER BY wdeName , wdDate "
-    )
-    fun getWorkDateExtrasAndDates(cutOffDate: String):
-            LiveData<List<WorkDateExtrasAndDates>>
 }
