@@ -250,10 +250,6 @@ class MainViewModel(
         }
     }
 
-    fun getCutOffDate(): String? {
-        return cutOffDate ?: selectedCutOffDate.value.ifEmpty { null }
-    }
-
     fun setExtraDefinitionFull(newExtra: ExtraDefTypeAndEmployer?) {
         extraDefinitionFull = newExtra
     }

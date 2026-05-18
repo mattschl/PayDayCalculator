@@ -217,11 +217,10 @@ fun TimeSheetRoute(
     if (showWorkDateOptionsDialog != null) {
         val workDate = showWorkDateOptionsDialog!!
         AlertDialog(
-            onDismissRequest = { showWorkDateOptionsDialog = null },
+            onDismissRequest = { },
             confirmButton = {
                 TextButton(onClick = {
                     mainViewModel.setWorkDateObject(workDate)
-                    showWorkDateOptionsDialog = null
                     navController.navigate(Screen.WorkDateUpdate.route)
                 }) {
                     Text(stringResource(R.string.open_caps))
@@ -230,7 +229,6 @@ fun TimeSheetRoute(
             dismissButton = {
                 TextButton(onClick = {
                     showDeleteWorkDateConfirmDialog = workDate
-                    showWorkDateOptionsDialog = null
                 }) {
                     Text(stringResource(R.string.delete))
                 }
@@ -246,7 +244,7 @@ fun TimeSheetRoute(
     if (showDeleteWorkDateConfirmDialog != null) {
         val workDate = showDeleteWorkDateConfirmDialog!!
         AlertDialog(
-            onDismissRequest = { showDeleteWorkDateConfirmDialog = null },
+            onDismissRequest = { },
             confirmButton = {
                 TextButton(onClick = {
                     coroutineScope.launch {
@@ -257,14 +255,12 @@ fun TimeSheetRoute(
                             )
                         )
                     }
-                    showDeleteWorkDateConfirmDialog = null
                 }) {
                     Text(stringResource(R.string.delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = {
-                    showDeleteWorkDateConfirmDialog = null
                 }) {
                     Text(stringResource(R.string.cancel))
                 }
@@ -311,8 +307,7 @@ fun TimeSheetRoute(
             mainViewModel.setWorkDateObject(workDate)
             navController.navigate(Screen.WorkDateUpdate.route)
         },
-        onWorkDateLongClick = { workDate ->
-            showWorkDateOptionsDialog = workDate
+        onWorkDateLongClick = { _ ->
         },
         onAddWorkDateClick = {
             navController.navigate(Screen.WorkDateAdd.route)
@@ -324,11 +319,11 @@ fun TimeSheetRoute(
             if (selectedEmployer != null) {
                 coroutineScope.launch {
                     val dates = payDayViewModel.getCutOffDatesSync(
-                        selectedEmployer!!.employerId,
+                        selectedEmployer.employerId,
                         payPeriodsLimit
                     )
                     val nextCutOff = projections.generateNextCutOff(
-                        selectedEmployer!!,
+                        selectedEmployer,
                         dates.firstOrNull()?.ppCutoffDate ?: ""
                     )
                     if (nextCutOff.isNotEmpty()) {
@@ -336,7 +331,7 @@ fun TimeSheetRoute(
                             PayPeriods(
                                 nf.generateRandomIdAsLong(),
                                 nextCutOff,
-                                selectedEmployer!!.employerId,
+                                selectedEmployer.employerId,
                                 false,
                                 df.getCurrentUTCTimeAsString()
                             )

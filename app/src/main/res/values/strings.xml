@@ -92,7 +92,6 @@
     <string name="enter_amount_or_percentage">Enter amount or percentage</string>
     <string name="enter_extra_name">Enter Extra Name</string>
     <string name="enter_general_job_description">Enter general job description</string>
-    <string name="enter_new_quantity">Enter new quantity</string>
     <string name="enter_note_optional">Enter note (optional)</string>
     <string name="enter_tax_type">Enter Tax Type</string>
     <string name="enter_time_before_wo">Enter time before work order</string>
