@@ -321,7 +321,7 @@ class WorkOrderRepository(private val db: PayDatabase) {
     fun getMaterialsByHistory(historyId: Long) =
         db.getWorkOrderDao().getMaterialsByHistory(historyId)
 
-    suspend fun getWorkOrderHistoryMaterialCombined(woHistoryMaterialId: Long): WorkOrderHistoryMaterialCombined =
+    suspend fun getWorkOrderHistoryMaterialCombined(woHistoryMaterialId: Long): WorkOrderHistoryMaterialCombined? =
         db.getWorkOrderDao().getWorkOrderHistoryMaterialCombined(woHistoryMaterialId)
 
     suspend fun removeAllMaterialsFromWorkOrderHistory(historyId: Long, updateTime: String) =

@@ -24,6 +24,57 @@ import ms.mattschlenkrich.paycalculator.data.model.TaxAndAmount
 import ms.mattschlenkrich.paycalculator.ui.paydetail.HourlyBreakdownData
 import ms.mattschlenkrich.paycalculator.ui.paydetail.PaySummaryData
 
+@Composable
+fun PayDetailContent(
+    modifier: Modifier = Modifier,
+    paySummary: PaySummaryData,
+    hourlyBreakdown: HourlyBreakdownData,
+    credits: List<ExtraContainer>,
+    deductions: List<ExtraContainer>,
+    taxes: List<TaxAndAmount>,
+    onAddCreditClick: () -> Unit,
+    onAddDeductionClick: () -> Unit,
+    onExtraClick: (ExtraContainer) -> Unit,
+    onExtraActiveChange: (ExtraContainer, Boolean) -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = SCREEN_PADDING_HORIZONTAL)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+    ) {
+        Spacer(modifier = Modifier.height(SCREEN_PADDING_VERTICAL))
+
+        SummaryCard(data = paySummary)
+
+        HourlyBreakdownCard(data = hourlyBreakdown)
+
+        ExtrasCard(
+            title = stringResource(R.string.credits),
+            extras = credits,
+            total = paySummary.totalCredits,
+            onAddClick = onAddCreditClick,
+            onExtraClick = onExtraClick,
+            onActiveChange = onExtraActiveChange,
+            addButtonContentDescription = stringResource(R.string.add_new_credit)
+        )
+
+        ExtrasCard(
+            title = stringResource(R.string.deductions),
+            extras = deductions,
+            taxes = taxes,
+            total = paySummary.totalDeductions,
+            onAddClick = onAddDeductionClick,
+            onExtraClick = onExtraClick,
+            onActiveChange = onExtraActiveChange,
+            addButtonContentDescription = stringResource(R.string.add_new_deductions)
+        )
+
+        Spacer(modifier = Modifier.height(SCREEN_PADDING_VERTICAL))
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PayDetailScreen(
@@ -47,17 +98,13 @@ fun PayDetailScreen(
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { innerPadding ->
-        Column(
+        androidx.compose.foundation.layout.Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = SCREEN_PADDING_HORIZONTAL)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
         ) {
-            Spacer(modifier = Modifier.height(SCREEN_PADDING_VERTICAL))
-
             SelectionCard(
+                modifier = Modifier.padding(horizontal = SCREEN_PADDING_HORIZONTAL),
                 employers = employers,
                 selectedEmployer = selectedEmployer,
                 onEmployerSelected = onEmployerSelected,
@@ -67,32 +114,17 @@ fun PayDetailScreen(
                 onCutOffDateSelected = onCutOffDateSelected
             )
 
-            SummaryCard(data = paySummary)
-
-            HourlyBreakdownCard(data = hourlyBreakdown)
-
-            ExtrasCard(
-                title = stringResource(R.string.credits),
-                extras = credits,
-                total = paySummary.totalCredits,
-                onAddClick = onAddCreditClick,
-                onExtraClick = onExtraClick,
-                onActiveChange = onExtraActiveChange,
-                addButtonContentDescription = stringResource(R.string.add_new_credit)
-            )
-
-            ExtrasCard(
-                title = stringResource(R.string.deductions),
-                extras = deductions,
+            PayDetailContent(
+                paySummary = paySummary,
+                hourlyBreakdown = hourlyBreakdown,
+                credits = credits,
+                deductions = deductions,
                 taxes = taxes,
-                total = paySummary.totalDeductions,
-                onAddClick = onAddDeductionClick,
+                onAddCreditClick = onAddCreditClick,
+                onAddDeductionClick = onAddDeductionClick,
                 onExtraClick = onExtraClick,
-                onActiveChange = onExtraActiveChange,
-                addButtonContentDescription = stringResource(R.string.add_new_deductions)
+                onExtraActiveChange = onExtraActiveChange
             )
-
-            Spacer(modifier = Modifier.height(SCREEN_PADDING_VERTICAL))
         }
     }
 }

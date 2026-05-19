@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paycalculator.data.viewmodel
 
 import android.app.Application
 import android.content.Context
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
@@ -32,10 +33,17 @@ class MainViewModel(
 
     var selectedEmployer = mutableStateOf<Employers?>(null)
         private set
-    var selectedCutOffDate = mutableStateOf(prefs.getString(SELECTED_CUTOFF_DATE, "") ?: "")
+    var selectedCutOffDate = mutableStateOf("")
         private set
     var selectedEmployerId = prefs.getLong(SELECTED_EMPLOYER_ID, -1L)
         private set
+
+    var selectedTopLevelIndex = mutableIntStateOf(0)
+        private set
+
+    fun setSelectedTopLevelIndex(index: Int) {
+        selectedTopLevelIndex.intValue = index
+    }
 
     private var employer: Employers? = null
     private var taxType: TaxTypes? = null
@@ -245,9 +253,10 @@ class MainViewModel(
     fun setCutOffDate(date: String?) {
         cutOffDate = date
         selectedCutOffDate.value = date ?: ""
-        prefs.edit {
-            putString(SELECTED_CUTOFF_DATE, selectedCutOffDate.value)
-        }
+    }
+
+    fun getCutOffDate(): String? {
+        return cutOffDate ?: selectedCutOffDate.value.ifEmpty { null }
     }
 
     fun setExtraDefinitionFull(newExtra: ExtraDefTypeAndEmployer?) {

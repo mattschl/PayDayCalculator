@@ -26,7 +26,7 @@ interface PayCalculationsDao {
                 "ORDER BY eprEffectiveDate DESC " +
                 "LIMIT 1"
     )
-    fun getPayRate(employerId: Long, cutoffDate: String): EmployerPayRates
+    fun getPayRate(employerId: Long, cutoffDate: String): EmployerPayRates?
 
     @Query(
         "SELECT * FROM $TABLE_WORK_DATES " +
@@ -96,7 +96,7 @@ interface PayCalculationsDao {
                 "ORDER BY tdEffectiveDate DESC " +
                 "LIMIT 1"
     )
-    fun getCurrentEffectiveDate(cutoffDate: String): String
+    fun getCurrentEffectiveDate(cutoffDate: String): String?
 
     @RewriteQueriesToDropUnusedColumns
     @Transaction

@@ -35,6 +35,101 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
 import ms.mattschlenkrich.paycalculator.data.model.WorkDateExtraAndTypeAndDef
 import ms.mattschlenkrich.paycalculator.ui.timesheet.TimeSheetPaySummary
 
+@Composable
+fun TimeSheetContent(
+    modifier: Modifier = Modifier,
+    paySummary: TimeSheetPaySummary,
+    week1Summary: String,
+    week2Summary: String,
+    workDates: List<WorkDates>,
+    workDateExtras: Map<Long, List<WorkDateExtraAndTypeAndDef>>,
+    onWorkDateClick: (WorkDates) -> Unit,
+    onWorkDateLongClick: (WorkDates) -> Unit,
+    onViewPayDetailsClick: () -> Unit,
+    week1EndDate: String,
+    displayDate: (String) -> String,
+    formatHours: (WorkDates) -> String
+) {
+    val windowInfo = androidx.compose.ui.platform.LocalWindowInfo.current
+    val density = androidx.compose.ui.platform.LocalDensity.current
+    val columns = with(density) {
+        if (windowInfo.containerSize.width.toDp() >= 600.dp) 2 else 1
+    }
+
+    val activeWorkDates = workDates.filter { !it.wdIsDeleted }.sortedBy { it.wdDate }
+    val week1Dates = activeWorkDates.filter { it.wdDate <= week1EndDate }
+    val week2Dates = activeWorkDates.filter { it.wdDate > week1EndDate }
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(columns),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = SCREEN_PADDING_HORIZONTAL),
+        verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
+        horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
+        contentPadding = PaddingValues(bottom = 80.dp)
+    ) {
+        item(span = { GridItemSpan(columns) }) {
+            Spacer(modifier = Modifier.height(SCREEN_PADDING_VERTICAL))
+        }
+
+        item(span = { GridItemSpan(columns) }) {
+            TimeSheetSummaryCard(
+                paySummary = paySummary,
+                onViewPayDetailsClick = onViewPayDetailsClick
+            )
+        }
+
+        items(week1Dates) { workDate ->
+            WorkDateCard(
+                workDate = workDate,
+                extras = workDateExtras[workDate.workDateId] ?: emptyList(),
+                onWorkDateClick = { onWorkDateClick(workDate) },
+                onWorkDateLongClick = { onWorkDateLongClick(workDate) },
+                displayDate = displayDate,
+                formatHours = formatHours
+            )
+        }
+
+        if (week1Dates.isNotEmpty()) {
+            item(span = { GridItemSpan(columns) }) {
+                CenteredSummaryText(week1Summary)
+            }
+        }
+
+        if (week1Dates.isNotEmpty() && week2Dates.isNotEmpty()) {
+            item(span = { GridItemSpan(columns) }) {
+                androidx.compose.material3.HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    thickness = 2.dp,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                )
+            }
+        }
+
+        items(week2Dates) { workDate ->
+            WorkDateCard(
+                workDate = workDate,
+                extras = workDateExtras[workDate.workDateId] ?: emptyList(),
+                onWorkDateClick = { onWorkDateClick(workDate) },
+                onWorkDateLongClick = { onWorkDateLongClick(workDate) },
+                displayDate = displayDate,
+                formatHours = formatHours
+            )
+        }
+
+        if (week2Dates.isNotEmpty()) {
+            item(span = { GridItemSpan(columns) }) {
+                CenteredSummaryText(week2Summary)
+            }
+        }
+
+        item(span = { GridItemSpan(columns) }) {
+            Spacer(modifier = Modifier.height(SCREEN_PADDING_VERTICAL))
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimeSheetScreen(
@@ -59,16 +154,6 @@ fun TimeSheetScreen(
     displayDate: (String) -> String,
     formatHours: (WorkDates) -> String
 ) {
-    val windowInfo = androidx.compose.ui.platform.LocalWindowInfo.current
-    val density = androidx.compose.ui.platform.LocalDensity.current
-    val columns = with(density) {
-        if (windowInfo.containerSize.width.toDp() >= 600.dp) 2 else 1
-    }
-
-    val activeWorkDates = workDates.filter { !it.wdIsDeleted }.sortedBy { it.wdDate }
-    val week1Dates = activeWorkDates.filter { it.wdDate <= week1EndDate }
-    val week2Dates = activeWorkDates.filter { it.wdDate > week1EndDate }
-
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
@@ -84,87 +169,36 @@ fun TimeSheetScreen(
             }
         }
     ) { innerPadding ->
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(columns),
+        androidx.compose.foundation.layout.Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = SCREEN_PADDING_HORIZONTAL),
-            verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
-            horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
-            contentPadding = PaddingValues(bottom = 80.dp)
         ) {
-            item(span = { GridItemSpan(columns) }) {
-                Spacer(modifier = Modifier.height(SCREEN_PADDING_VERTICAL))
-            }
+            TimeSheetSelectionCard(
+                modifier = Modifier.padding(horizontal = SCREEN_PADDING_HORIZONTAL),
+                employers = employers,
+                selectedEmployer = selectedEmployer,
+                onEmployerSelected = onEmployerSelected,
+                onAddNewEmployer = onAddNewEmployer,
+                cutOffDates = cutOffDates,
+                selectedCutOffDate = selectedCutOffDate,
+                onCutOffDateSelected = onCutOffDateSelected,
+                onGenerateCutoffClick = onGenerateCutoffClick
+            )
 
-            item(span = { GridItemSpan(columns) }) {
-                TimeSheetSelectionCard(
-                    employers = employers,
-                    selectedEmployer = selectedEmployer,
-                    onEmployerSelected = onEmployerSelected,
-                    onAddNewEmployer = onAddNewEmployer,
-                    cutOffDates = cutOffDates,
-                    selectedCutOffDate = selectedCutOffDate,
-                    onCutOffDateSelected = onCutOffDateSelected,
-                    onGenerateCutoffClick = onGenerateCutoffClick
-                )
-            }
-
-            item(span = { GridItemSpan(columns) }) {
-                TimeSheetSummaryCard(
-                    paySummary = paySummary,
-                    onViewPayDetailsClick = onViewPayDetailsClick
-                )
-            }
-
-            items(week1Dates) { workDate ->
-                WorkDateCard(
-                    workDate = workDate,
-                    extras = workDateExtras[workDate.workDateId] ?: emptyList(),
-                    onWorkDateClick = { onWorkDateClick(workDate) },
-                    onWorkDateLongClick = { onWorkDateLongClick(workDate) },
-                    displayDate = displayDate,
-                    formatHours = formatHours
-                )
-            }
-
-            if (week1Dates.isNotEmpty()) {
-                item(span = { GridItemSpan(columns) }) {
-                    CenteredSummaryText(week1Summary)
-                }
-            }
-
-            if (week1Dates.isNotEmpty() && week2Dates.isNotEmpty()) {
-                item(span = { GridItemSpan(columns) }) {
-                    androidx.compose.material3.HorizontalDivider(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        thickness = 2.dp,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-                    )
-                }
-            }
-
-            items(week2Dates) { workDate ->
-                WorkDateCard(
-                    workDate = workDate,
-                    extras = workDateExtras[workDate.workDateId] ?: emptyList(),
-                    onWorkDateClick = { onWorkDateClick(workDate) },
-                    onWorkDateLongClick = { onWorkDateLongClick(workDate) },
-                    displayDate = displayDate,
-                    formatHours = formatHours
-                )
-            }
-
-            if (week2Dates.isNotEmpty()) {
-                item(span = { GridItemSpan(columns) }) {
-                    CenteredSummaryText(week2Summary)
-                }
-            }
-
-            item(span = { GridItemSpan(columns) }) {
-                Spacer(modifier = Modifier.height(SCREEN_PADDING_VERTICAL))
-            }
+            TimeSheetContent(
+                paySummary = paySummary,
+                week1Summary = week1Summary,
+                week2Summary = week2Summary,
+                workDates = workDates,
+                workDateExtras = workDateExtras,
+                onWorkDateClick = onWorkDateClick,
+                onWorkDateLongClick = onWorkDateLongClick,
+                onViewPayDetailsClick = onViewPayDetailsClick,
+                week1EndDate = week1EndDate,
+                displayDate = displayDate,
+                formatHours = formatHours
+            )
         }
     }
 }

@@ -70,3 +70,46 @@
     - [x] Update `TimeSheetRoute.kt` to use shared state
     - [x] Update `PayDetailRoute.kt` to use shared state
     - [x] Verify persistence across screens and app restart
+- [x] Default to current payday on app launch
+    - [x] Identify conflict between persistence and "start at current" requirement
+    - [x] Refactor `MainViewModel.kt` to reset payday on restart
+    - [x] Verify behavior
+- [x] Implement swipeable top-level navigation
+    - [x] Design `TopLevelPager` container
+    - [x] Refactor `MainViewModel.kt` to track pager index
+    - [x] Implement `TopLevelPager` using `HorizontalPager`
+    - [x] Update `MainActivity.kt` and `StandardNavigationBar.kt` to sync with pager
+    - [x] Verify swiping and navigation sync
+- [x] Vertical Swiping for Pay Periods
+    - [x] Analyze UI structure for Pager integration
+    - [x] Create implementation plan
+    - [x] Implement `VerticalPager` in `TimeSheetRoute.kt`
+    - [x] Implement `VerticalPager` in `PayDetailRoute.kt`
+    - [x] Refactor Screens to handle header visibility
+    - [x] Verify vertical swiping and selection sync
+- [x] Synchronized and Formatted Payday Selection
+    - [x] Identify missing date formatting in dropdowns
+    - [x] Create implementation plan
+    - [x] Add `displayDate` parameter to Selection Cards
+    - [x] Update dropdowns to use formatted dates
+    - [x] Switch to `animateScrollToPage` in routes
+    - [x] Verify visual feedback and sync
+- [x] Resolve app crashes and race conditions in navigation
+    - [x] Analyze `logcat` for `ParseException` and `NullPointerException`
+    - [x] Identify race conditions in Pager recomposition
+    - [x] Implement safe date parsing project-wide
+    - [x] Refactor DAOs to return nullable types for single-row queries
+    - [x] Add safe guards in `VerticalPager` loops
+    - [x] Verify stability on launch and during swiping
+- [x] Refine vertical payday synchronization
+    - [x] Identify stale data bug in `LaunchedEffect` keys
+    - [x] Update keys to include `cutOffDates`
+    - [x] Add value-equality checks to prevent redundant updates
+    - [x] Verify dropdown updates instantly while swiping
+- [x] Fix Cross-Screen Payday Continuity
+    - [x] Analyze neighbor sync race conditions
+    - [x] Create implementation plan
+    - [x] Add `beyondViewportPageCount` to TopLevelPager
+    - [x] Refactor selection guards in Routes for reliability
+    - [x] Optimize scroll behavior for background sync
+    - [x] Verify cross-screen continuity

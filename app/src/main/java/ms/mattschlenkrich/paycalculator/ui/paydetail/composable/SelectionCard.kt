@@ -25,16 +25,18 @@ import ms.mattschlenkrich.paycalculator.data.entity.Employers
 
 @Composable
 fun SelectionCard(
+    modifier: Modifier = Modifier,
     employers: List<Employers>,
     selectedEmployer: Employers?,
     onEmployerSelected: (Employers) -> Unit,
     onAddNewEmployer: () -> Unit,
     cutOffDates: List<String>,
     selectedCutOffDate: String,
-    onCutOffDateSelected: (String) -> Unit
+    onCutOffDateSelected: (String) -> Unit,
+    displayDate: (String) -> String = { it }
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -83,6 +85,7 @@ fun SelectionCard(
                     items = cutOffDates,
                     selectedItem = selectedCutOffDate,
                     onItemSelected = onCutOffDateSelected,
+                    itemToString = { if (it.isEmpty()) "" else displayDate(it) },
                     modifier = Modifier.weight(1f)
                 )
             }

@@ -22,10 +22,13 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.bottomNavItems
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 
 @Composable
 fun StandardNavigationBar(
+    mainViewModel: MainViewModel,
     navController: NavHostController,
     currentDestination: NavDestination?
 ) {
@@ -39,7 +42,14 @@ fun StandardNavigationBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
                 tonalElevation = 0.dp
             ) {
-                bottomNavItems.forEach { screen ->
+                bottomNavItems.forEachIndexed { index, screen ->
+                    val isPagerRoute = currentDestination?.route == Screen.MainPager.route
+                    val isSelected = if (isPagerRoute) {
+                        mainViewModel.selectedTopLevelIndex.intValue == index
+                    } else {
+                        currentDestination?.hierarchy?.any { it.route == screen.route } == true
+                    }
+
                     NavigationBarItem(
                         icon = {
                             Icon(
@@ -48,14 +58,19 @@ fun StandardNavigationBar(
                                 modifier = Modifier.size(20.dp)
                             )
                         },
-                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                        selected = isSelected,
                         onClick = {
-                            navController.navigate(screen.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+                            if (isPagerRoute) {
+                                mainViewModel.setSelectedTopLevelIndex(index)
+                            } else {
+                                mainViewModel.setSelectedTopLevelIndex(index)
+                                navController.navigate(Screen.MainPager.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
                             }
                         }
                     )

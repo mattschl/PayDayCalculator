@@ -578,7 +578,7 @@ class PayCalculationsAsync(
                 )
             }
             calculatedPayRate =
-                fixRateByInterval(rawPay.await())
+                rawPay.await()?.let { fixRateByInterval(it) } ?: 0.0
         }
         return calculatedPayRate
     }
@@ -693,7 +693,7 @@ class PayCalculationsAsync(
     private suspend fun getCurrentEffectiveDate(): String =
         withContext(defaultScope) {
             payCalculationsViewModel
-                .getCurrentEffectiveDate(currentPayPeriod.ppCutoffDate)
+                .getCurrentEffectiveDate(currentPayPeriod.ppCutoffDate) ?: ""
         }
 
     private suspend fun getTaxRules(effectiveDate: String) =

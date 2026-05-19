@@ -25,6 +25,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.Employers
 
 @Composable
 fun TimeSheetSelectionCard(
+    modifier: Modifier = Modifier,
     employers: List<Employers>,
     selectedEmployer: Employers?,
     onEmployerSelected: (Employers) -> Unit,
@@ -32,10 +33,11 @@ fun TimeSheetSelectionCard(
     cutOffDates: List<String>,
     selectedCutOffDate: String,
     onCutOffDateSelected: (String) -> Unit,
-    onGenerateCutoffClick: () -> Unit
+    onGenerateCutoffClick: () -> Unit,
+    displayDate: (String) -> String = { it }
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -84,6 +86,7 @@ fun TimeSheetSelectionCard(
                     items = cutOffDates,
                     selectedItem = selectedCutOffDate,
                     onItemSelected = onCutOffDateSelected,
+                    itemToString = { if (it.isEmpty()) "" else displayDate(it) },
                     modifier = Modifier.weight(1f)
                 )
                 IconButton(onClick = onGenerateCutoffClick) {

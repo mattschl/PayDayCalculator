@@ -55,7 +55,6 @@ import ms.mattschlenkrich.paycalculator.ui.areas.AreaUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.areas.AreaViewRoute
 import ms.mattschlenkrich.paycalculator.ui.employer.EmployerAddRoute
 import ms.mattschlenkrich.paycalculator.ui.employer.EmployerUpdateRoute
-import ms.mattschlenkrich.paycalculator.ui.employer.composable.EmployerListScreen
 import ms.mattschlenkrich.paycalculator.ui.extras.EmployerExtraDefinitionUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.extras.EmployerExtraDefinitionsAddRoute
 import ms.mattschlenkrich.paycalculator.ui.extras.ExtraRoute
@@ -66,10 +65,10 @@ import ms.mattschlenkrich.paycalculator.ui.extras.WorkExtraTypeUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.jobspec.JobSpecMergeRoute
 import ms.mattschlenkrich.paycalculator.ui.jobspec.JobSpecUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.jobspec.JobSpecViewRoute
+import ms.mattschlenkrich.paycalculator.ui.main.TopLevelPager
 import ms.mattschlenkrich.paycalculator.ui.material.MaterialMergeRoute
 import ms.mattschlenkrich.paycalculator.ui.material.MaterialUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.material.MaterialViewRoute
-import ms.mattschlenkrich.paycalculator.ui.paydetail.PayDetailRoute
 import ms.mattschlenkrich.paycalculator.ui.payrate.EmployerPayRateAddRoute
 import ms.mattschlenkrich.paycalculator.ui.payrate.EmployerPayRateUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.payrate.composable.EmployerPayRatesRoute
@@ -81,7 +80,6 @@ import ms.mattschlenkrich.paycalculator.ui.tax.TaxRuleAddRoute
 import ms.mattschlenkrich.paycalculator.ui.tax.TaxRuleUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.tax.TaxTypeAddRoute
 import ms.mattschlenkrich.paycalculator.ui.tax.TaxTypeUpdateRoute
-import ms.mattschlenkrich.paycalculator.ui.timesheet.TimeSheetRoute
 import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateAddRoute
 import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateExtraAddRoute
 import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateExtraUpdateRoute
@@ -225,6 +223,7 @@ fun MainScreen(
     val materialListLabel = stringResource(R.string.view_material_list)
 
     val currentScreen = (bottomNavItems + listOf(
+        Screen.MainPager,
         Screen.EmployerAdd,
         Screen.EmployerUpdate,
         Screen.TaxTypeAdd,
@@ -268,6 +267,12 @@ fun MainScreen(
         Screen.WorkOrderJobSpecUpdate
     )).find { it.route == currentDestination?.route }
 
+    val displayScreen = if (currentDestination?.route == Screen.MainPager.route) {
+        bottomNavItems[mainViewModel.selectedTopLevelIndex.intValue]
+    } else {
+        currentScreen
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -275,7 +280,7 @@ fun MainScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             StandardTopAppBar(
-                title = stringResource(currentScreen?.resourceId ?: R.string.app_name),
+                title = stringResource(displayScreen?.resourceId ?: R.string.app_name),
                 onBackClicked = if (navController.previousBackStackEntry != null) {
                     { navController.popBackStack() }
                 } else null,
@@ -305,6 +310,7 @@ fun MainScreen(
         },
         bottomBar = {
             StandardNavigationBar(
+                mainViewModel = mainViewModel,
                 navController = navController,
                 currentDestination = currentDestination
             )
@@ -312,41 +318,20 @@ fun MainScreen(
     ) { innerPadding ->
         NavHost(
             navController,
-            startDestination = Screen.TimeSheet.route,
+            startDestination = Screen.MainPager.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.TimeSheet.route) {
-                TimeSheetRoute(
-                    mainViewModel,
-                    employerViewModel,
-                    payDayViewModel,
-                    payCalculationsViewModel,
-                    payDetailViewModel,
-                    settingsViewModel,
-                    navController = navController
-                )
-            }
-            composable(Screen.PayDetails.route) {
-                PayDetailRoute(
-                    mainViewModel,
-                    employerViewModel,
-                    payDayViewModel,
-                    payCalculationsViewModel,
-                    payDetailViewModel,
-                    settingsViewModel,
-                    navController = navController
-                )
-            }
-            composable(Screen.Employers.route) {
-                EmployerListScreen(
+            composable(Screen.MainPager.route) {
+                TopLevelPager(
+                    mainViewModel = mainViewModel,
                     employerViewModel = employerViewModel,
-                    onEmployerClick = { employer ->
-                        mainViewModel.setEmployer(employer)
-                        navController.navigate(Screen.EmployerUpdate.route)
-                    },
-                    onAddClick = {
-                        navController.navigate(Screen.EmployerAdd.route)
-                    }
+                    workTaxViewModel = workTaxViewModel,
+                    workExtraViewModel = workExtraViewModel,
+                    payDayViewModel = payDayViewModel,
+                    payDetailViewModel = payDetailViewModel,
+                    payCalculationsViewModel = payCalculationsViewModel,
+                    settingsViewModel = settingsViewModel,
+                    navController = navController
                 )
             }
             composable(Screen.EmployerAdd.route) {

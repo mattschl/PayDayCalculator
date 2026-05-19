@@ -598,7 +598,7 @@ interface WorkOrderDao {
                 "WHERE woHistoryDeleted = 0"
     )
     suspend fun getWorkOrderHistoryMaterialCombined(woHistoryMaterialId: Long):
-            WorkOrderHistoryMaterialCombined
+            WorkOrderHistoryMaterialCombined?
 
     @Insert
     suspend fun insertArea(area: Areas)

@@ -14,6 +14,8 @@ sealed class Screen(
     object Taxes : Screen("taxes", R.string.taxes, R.drawable.ic_tax)
     object Extras : Screen("extras", R.string.pay_extras, R.drawable.ic_extras)
 
+    object MainPager : Screen("mainPager", R.string.app_name, 0)
+
     object EmployerAdd :
         Screen("employerAdd", R.string.add_an_employer, R.drawable.ic_employer_foreground)
 

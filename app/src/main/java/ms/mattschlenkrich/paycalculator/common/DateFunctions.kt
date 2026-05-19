@@ -46,9 +46,14 @@ class DateFunctions {
     }
 
     fun getDisplayDate(date: String): String {
-        return displayDateString.format(
-            dateChecker.parse(date)!!
-        )
+        if (date.isBlank()) return ""
+        return try {
+            displayDateString.format(
+                dateChecker.parse(date)!!
+            )
+        } catch (e: Exception) {
+            ""
+        }
     }
 
     fun get12HourDisplay(time: Calendar): String {
