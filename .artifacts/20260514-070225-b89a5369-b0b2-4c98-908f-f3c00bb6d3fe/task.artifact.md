@@ -113,3 +113,11 @@
     - [x] Refactor selection guards in Routes for reliability
     - [x] Optimize scroll behavior for background sync
     - [x] Verify cross-screen continuity
+- [x] Work Order Address Auto-Complete
+    - [x] Research address lookup methods
+    - [x] Create implementation plan
+    - [x] Add `getUniqueAddresses` to DAO, Repo, and ViewModel
+    - [x] Implement `AutoCompleteTextField` in `WorkOrderAddScreen`
+    - [x] Implement `AutoCompleteTextField` in `WorkOrderUpdateScreen`
+    - [x] Update Routes to provide suggestions
+    - [x] Verify functionality

@@ -44,6 +44,8 @@ fun WorkOrderUpdateRoute(
     }
 
     val employer = mainViewModel.getEmployer() ?: return
+    val addressSuggestions by workOrderViewModel.getUniqueAddresses(employer.employerId)
+        .observeAsState(emptyList())
 
     var woNumber by remember { mutableStateOf(initialWo.woNumber) }
     var address by remember { mutableStateOf(initialWo.woAddress) }
@@ -93,6 +95,7 @@ fun WorkOrderUpdateRoute(
             address = it
             addressError = false
         },
+        addressSuggestions = addressSuggestions,
         description = description,
         onDescriptionChange = {
             description = it

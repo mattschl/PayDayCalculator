@@ -73,6 +73,14 @@ interface WorkOrderDao {
     fun getWorkOrdersByEmployerId(employerId: Long): LiveData<List<WorkOrder>>
 
     @Query(
+        "SELECT DISTINCT woAddress FROM workOrders " +
+                "WHERE woEmployerId = :employerId " +
+                "AND woDeleted = 0 " +
+                "ORDER BY woAddress COLLATE NOCASE"
+    )
+    fun getUniqueAddresses(employerId: Long): LiveData<List<String>>
+
+    @Query(
         "SELECT * FROM workOrders " +
                 "WHERE woEmployerId = :employerId " +
                 "AND (woNumber LIKE :query " +

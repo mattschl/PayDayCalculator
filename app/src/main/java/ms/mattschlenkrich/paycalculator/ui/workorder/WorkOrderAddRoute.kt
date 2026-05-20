@@ -45,6 +45,12 @@ fun WorkOrderAddRoute(
     val initialWoNumber = mainViewModel.getWorkOrderNumber() ?: ""
     var woNumber by remember { mutableStateOf(initialWoNumber) }
     var address by remember { mutableStateOf("") }
+    val addressSuggestions by if (selectedEmployer != null) {
+        workOrderViewModel.getUniqueAddresses(selectedEmployer!!.employerId)
+            .observeAsState(emptyList())
+    } else {
+        remember { mutableStateOf(emptyList()) }
+    }
     var description by remember { mutableStateOf("") }
 
     var woNumberError by remember { mutableStateOf(false) }
@@ -73,6 +79,7 @@ fun WorkOrderAddRoute(
             address = it
             addressError = false
         },
+        addressSuggestions = addressSuggestions,
         description = description,
         onDescriptionChange = {
             description = it

@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
 import ms.mattschlenkrich.paycalculator.common.compose.CapitalizedOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
@@ -46,6 +47,7 @@ fun WorkOrderAddScreen(
     onWoNumberChange: (String) -> Unit,
     address: String,
     onAddressChange: (String) -> Unit,
+    addressSuggestions: List<String>,
     description: String,
     onDescriptionChange: (String) -> Unit,
     woNumberError: Boolean,
@@ -134,11 +136,12 @@ fun WorkOrderAddScreen(
                             isError = woNumberError
                         )
 
-                        CapitalizedOutlinedTextField(
+                        AutoCompleteTextField(
                             value = address,
                             onValueChange = onAddressChange,
-                            label = { Text(stringResource(R.string.address)) },
-                            placeholder = { Text(stringResource(R.string.enter_address)) },
+                            label = stringResource(R.string.address),
+                            suggestions = addressSuggestions,
+                            onItemSelected = onAddressChange,
                             modifier = Modifier.fillMaxWidth(),
                             isError = addressError
                         )

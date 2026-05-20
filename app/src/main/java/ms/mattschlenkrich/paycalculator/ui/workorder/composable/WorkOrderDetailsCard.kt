@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
 import ms.mattschlenkrich.paycalculator.common.compose.CapitalizedOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
@@ -26,6 +27,7 @@ fun WorkOrderDetailsCard(
     woNumberError: Boolean,
     address: String,
     onAddressChange: (String) -> Unit,
+    addressSuggestions: List<String>,
     addressError: Boolean,
     description: String,
     onDescriptionChange: (String) -> Unit,
@@ -57,10 +59,12 @@ fun WorkOrderDetailsCard(
                 isError = woNumberError
             )
 
-            CapitalizedOutlinedTextField(
+            AutoCompleteTextField(
                 value = address,
                 onValueChange = onAddressChange,
-                label = { Text(stringResource(R.string.address)) },
+                label = stringResource(R.string.address),
+                suggestions = addressSuggestions,
+                onItemSelected = onAddressChange,
                 modifier = Modifier.fillMaxWidth(),
                 isError = addressError
             )
