@@ -41,6 +41,13 @@ class MainViewModel(
     var selectedTopLevelIndex = mutableIntStateOf(0)
         private set
 
+    var isAuthenticated = mutableStateOf(false)
+        private set
+
+    fun setAuthenticated(authenticated: Boolean) {
+        isAuthenticated.value = authenticated
+    }
+
     fun setSelectedTopLevelIndex(index: Int) {
         selectedTopLevelIndex.intValue = index
     }

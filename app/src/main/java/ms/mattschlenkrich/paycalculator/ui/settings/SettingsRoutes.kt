@@ -16,9 +16,13 @@ fun SettingsRoute(
         payPeriodsLimit = settings?.payPeriodsLimit ?: 15,
         isDarkTheme = settings?.isDarkTheme ?: false,
         isSystemTheme = settings?.isSystemTheme ?: true,
+        isPasswordProtected = settings?.isPasswordProtected ?: false,
+        isPasswordSet = viewModel.isPasswordSet(),
         onFontSizeChange = { viewModel.updateFontSize(it) },
         onPayPeriodsLimitChange = { viewModel.updatePayPeriodsLimit(it) },
         onIsDarkThemeChange = { viewModel.updateIsDarkTheme(it) },
-        onIsSystemThemeChange = { viewModel.updateIsSystemTheme(it) }
+        onIsSystemThemeChange = { viewModel.updateIsSystemTheme(it) },
+        onIsPasswordProtectedChange = { viewModel.updateIsPasswordProtected(it) },
+        onPasswordSet = { viewModel.savePassword(it) }
     )
 }

@@ -53,6 +53,7 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTimeViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTimeViewModelFactory
 import ms.mattschlenkrich.paycalculator.ui.areas.AreaUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.areas.AreaViewRoute
+import ms.mattschlenkrich.paycalculator.ui.auth.AuthenticationScreen
 import ms.mattschlenkrich.paycalculator.ui.employer.EmployerAddRoute
 import ms.mattschlenkrich.paycalculator.ui.employer.EmployerUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.extras.EmployerExtraDefinitionUpdateRoute
@@ -138,24 +139,43 @@ class MainActivity : ComponentActivity() {
                 isDarkTheme = settings?.isDarkTheme ?: false,
                 fontSize = settings?.fontSize ?: 16f
             ) {
-                MainScreen(
-                    mainViewModel = mainViewModel,
-                    employerViewModel = employerViewModel,
-                    workTaxViewModel = workTaxViewModel,
-                    workExtraViewModel = workExtraViewModel,
-                    payDayViewModel = payDayViewModel,
-                    workOrderViewModel = workOrderViewModel,
-                    payDetailViewModel = payDetailViewModel,
-                    payCalculationsViewModel = payCalculationsViewModel,
-                    workTimeViewModel = workTimeViewModel,
-                    settingsViewModel = settingsViewModel,
-                    onSyncRequested = {
-                        val intent = Intent(this, SyncActivity::class.java)
-                        syncLauncher.launch(intent)
-                    }
-                )
+                val isAuthenticated by mainViewModel.isAuthenticated
+                val isPasswordProtected = settings?.isPasswordProtected ?: false
+
+                if (isPasswordProtected && !isAuthenticated) {
+                    AuthenticationScreen(
+                        onPasswordVerify = { password ->
+                            settingsViewModel.verifyPassword(password)
+                        },
+                        onAuthenticated = {
+                            mainViewModel.setAuthenticated(true)
+                        }
+                    )
+                } else {
+                    MainScreen(
+                        mainViewModel = mainViewModel,
+                        employerViewModel = employerViewModel,
+                        workTaxViewModel = workTaxViewModel,
+                        workExtraViewModel = workExtraViewModel,
+                        payDayViewModel = payDayViewModel,
+                        workOrderViewModel = workOrderViewModel,
+                        payDetailViewModel = payDetailViewModel,
+                        payCalculationsViewModel = payCalculationsViewModel,
+                        workTimeViewModel = workTimeViewModel,
+                        settingsViewModel = settingsViewModel,
+                        onSyncRequested = {
+                            val intent = Intent(this, SyncActivity::class.java)
+                            syncLauncher.launch(intent)
+                        }
+                    )
+                }
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mainViewModel.setAuthenticated(false)
     }
 
     private fun setupViewModels() {

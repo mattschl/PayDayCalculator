@@ -4,11 +4,13 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import ms.mattschlenkrich.paycalculator.common.security.SecurityManager
 import ms.mattschlenkrich.paycalculator.common.settings.Settings
 import ms.mattschlenkrich.paycalculator.common.settings.SettingsManager
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
     private val settingsManager = SettingsManager(application)
+    private val securityManager = SecurityManager(application)
     private val _settings = MutableLiveData<Settings>()
     val settings: LiveData<Settings> = _settings
 
@@ -40,5 +42,27 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             _settings.value?.copy(isSystemTheme = isSystem) ?: Settings(isSystemTheme = isSystem)
         _settings.value = newSettings
         settingsManager.saveSettings(newSettings)
+    }
+
+    fun updateIsPasswordProtected(isProtected: Boolean) {
+        val newSettings = _settings.value?.copy(isPasswordProtected = isProtected)
+            ?: Settings(isPasswordProtected = isProtected)
+        _settings.value = newSettings
+        settingsManager.saveSettings(newSettings)
+        if (!isProtected) {
+            securityManager.clearPassword()
+        }
+    }
+
+    fun savePassword(password: String) {
+        securityManager.savePassword(password)
+    }
+
+    fun verifyPassword(password: String): Boolean {
+        return securityManager.verifyPassword(password)
+    }
+
+    fun isPasswordSet(): Boolean {
+        return securityManager.isPasswordSet()
     }
 }

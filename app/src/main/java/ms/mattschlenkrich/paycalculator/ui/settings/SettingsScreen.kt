@@ -12,13 +12,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ms.mattschlenkrich.paycalculator.common.compose.NumberOutlinedTextField
@@ -38,11 +42,85 @@ fun SettingsScreen(
     payPeriodsLimit: Int,
     isDarkTheme: Boolean,
     isSystemTheme: Boolean,
+    isPasswordProtected: Boolean,
+    isPasswordSet: Boolean,
     onFontSizeChange: (Float) -> Unit,
     onPayPeriodsLimitChange: (Int) -> Unit,
     onIsDarkThemeChange: (Boolean) -> Unit,
-    onIsSystemThemeChange: (Boolean) -> Unit
+    onIsSystemThemeChange: (Boolean) -> Unit,
+    onIsPasswordProtectedChange: (Boolean) -> Unit,
+    onPasswordSet: (String) -> Unit
 ) {
+    var showPasswordDialog by remember { mutableStateOf(false) }
+    var passwordInput by remember { mutableStateOf("") }
+    var confirmPasswordInput by remember { mutableStateOf("") }
+    var passwordError by remember { mutableStateOf<String?>(null) }
+
+    if (showPasswordDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showPasswordDialog = false
+                passwordInput = ""
+                confirmPasswordInput = ""
+                passwordError = null
+            },
+            title = { Text("Set App Password") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = passwordInput,
+                        onValueChange = { passwordInput = it },
+                        label = { Text("New Password") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        value = confirmPasswordInput,
+                        onValueChange = { confirmPasswordInput = it },
+                        label = { Text("Confirm Password") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    if (passwordError != null) {
+                        Text(
+                            text = passwordError!!,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    if (passwordInput.isBlank()) {
+                        passwordError = "Password cannot be empty"
+                    } else if (passwordInput != confirmPasswordInput) {
+                        passwordError = "Passwords do not match"
+                    } else {
+                        onPasswordSet(passwordInput)
+                        onIsPasswordProtectedChange(true)
+                        showPasswordDialog = false
+                        passwordInput = ""
+                        confirmPasswordInput = ""
+                        passwordError = null
+                    }
+                }) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showPasswordDialog = false
+                    passwordInput = ""
+                    confirmPasswordInput = ""
+                    passwordError = null
+                }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
     Scaffold(
         /*  topBar = {
               TopAppBar(
@@ -169,6 +247,41 @@ fun SettingsScreen(
                         RadioButton(selected = isDarkTheme, onClick = null)
                         Text("Dark", modifier = Modifier.padding(start = 8.dp))
                     }
+                }
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            Text("Security:", style = MaterialTheme.typography.titleMedium)
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .selectable(
+                        selected = isPasswordProtected,
+                        onClick = {
+                            if (!isPasswordProtected) {
+                                showPasswordDialog = true
+                            } else {
+                                onIsPasswordProtectedChange(false)
+                            }
+                        },
+                        role = Role.Switch
+                    )
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Password Protection")
+                Switch(
+                    checked = isPasswordProtected,
+                    onCheckedChange = null
+                )
+            }
+
+            if (isPasswordProtected) {
+                TextButton(onClick = { showPasswordDialog = true }) {
+                    Text(if (isPasswordSet) "Change Password" else "Set Password")
                 }
             }
         }
