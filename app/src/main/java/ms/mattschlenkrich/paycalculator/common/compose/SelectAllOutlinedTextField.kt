@@ -14,6 +14,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 
@@ -22,6 +24,7 @@ fun SelectAllOutlinedTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    focusRequester: FocusRequester? = null,
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -62,7 +65,10 @@ fun SelectAllOutlinedTextField(
                         onValueChange(it.text)
                     }
                 },
-                modifier = Modifier
+                modifier = (if (focusRequester != null)
+                    Modifier.focusRequester(focusRequester)
+                else
+                    Modifier)
                     .fillMaxWidth()
                     .heightIn(min = StandardTextFieldDefaults.minHeight()),
                 singleLine = singleLine,

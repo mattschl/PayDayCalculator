@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.input.KeyboardType
 
 @Composable
@@ -11,6 +12,7 @@ fun DecimalOutlinedTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    focusRequester: FocusRequester? = null,
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
     singleLine: Boolean = true,
@@ -22,6 +24,7 @@ fun DecimalOutlinedTextField(
         label = label,
         placeholder = placeholder,
         modifier = modifier,
+        focusRequester = focusRequester,
         singleLine = singleLine,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Decimal

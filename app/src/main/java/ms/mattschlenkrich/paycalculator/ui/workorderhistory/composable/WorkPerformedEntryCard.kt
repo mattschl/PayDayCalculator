@@ -11,8 +11,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
@@ -37,6 +39,8 @@ fun WorkPerformedEntryCard(
     onWorkPerformedNoteChange: (String) -> Unit,
     onAddWorkPerformed: () -> Unit
 ) {
+    val focusRequester = remember { FocusRequester() }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -63,7 +67,8 @@ fun WorkPerformedEntryCard(
                 label = stringResource(id = R.string.work_performed),
                 suggestions = workPerformedList,
                 onItemSelected = onWorkPerformedSelected,
-                itemToString = { it.wpDescription }
+                itemToString = { it.wpDescription },
+                focusRequester = focusRequester
             )
             AutoCompleteTextField(
                 value = area,
@@ -83,7 +88,10 @@ fun WorkPerformedEntryCard(
                 singleLine = false
             )
             Button(
-                onClick = onAddWorkPerformed,
+                onClick = {
+                    onAddWorkPerformed()
+                    focusRequester.requestFocus()
+                },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary

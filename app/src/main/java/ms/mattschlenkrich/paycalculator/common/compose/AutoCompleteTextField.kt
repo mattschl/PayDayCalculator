@@ -22,6 +22,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.FlowPreview
@@ -35,6 +37,7 @@ fun <T> AutoCompleteTextField(
     suggestions: List<T>,
     onItemSelected: (T) -> Unit,
     modifier: Modifier = Modifier,
+    focusRequester: FocusRequester? = null,
     onLongClick: (() -> Unit)? = null,
     itemToString: (T) -> String = { it.toString() },
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
@@ -86,7 +89,10 @@ fun <T> AutoCompleteTextField(
                 }
                 expanded = true
             },
-            modifier = Modifier
+            modifier = (if (focusRequester != null)
+                Modifier.focusRequester(focusRequester)
+            else
+                Modifier)
                 .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true)
                 .fillMaxWidth()
                 .heightIn(min = StandardTextFieldDefaults.minHeight())
