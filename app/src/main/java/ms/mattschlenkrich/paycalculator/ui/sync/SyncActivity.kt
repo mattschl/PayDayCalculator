@@ -156,6 +156,10 @@ class SyncActivity : ComponentActivity() {
             val dbDir = File(applicationInfo.dataDir, "databases")
             if (!dbDir.exists()) dbDir.mkdirs()
 
+            // Clear any old drive backups to ensure consistency
+            dbDir.listFiles { _, name -> name.startsWith("pay_from_drive") }
+                ?.forEach { it.delete() }
+
             val dbFiles = driveFiles
                 .filter { (it.name.startsWith("pay_") || it.name == "pay.db") && it.name.endsWith(".db") }
                 .sortedBy { it.name }
@@ -174,7 +178,7 @@ class SyncActivity : ComponentActivity() {
                             remoteName
                         }
                         val internalFile = File(dbDir, localName)
-                        if (!internalFile.exists()) {
+                        if (!internalFile.exists() || localName.startsWith("pay_from_drive")) {
                             showProgress("Downloading $remoteName to app...")
                             helper.downloadBinaryFile(remoteName, internalFile, targetFolderId)
                             downloadCount++
@@ -270,6 +274,7 @@ class SyncActivity : ComponentActivity() {
                 showProgress("Creating fresh backup...")
                 withContext(Dispatchers.IO) {
                     PayDatabase.checkpoint(this@SyncActivity)
+                    PayDatabase.closeDatabase(this@SyncActivity)
                 }
 
                 val dbFile = File(dbDir, "pay.db")

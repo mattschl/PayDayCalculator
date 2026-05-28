@@ -79,6 +79,7 @@ fun WorkOrderUpdateScreen(
     historyList: List<WorkOrderHistoryWithDates>,
     onHistoryClick: (WorkOrderHistoryWithDates) -> Unit,
     historySummaryText: String,
+    hoursSummaryText: String,
     onAddHistoryClick: () -> Unit,
     workPerformedList: List<WorkPerformedAndQuantity>,
     materialsList: List<MaterialAndQuantity>,
@@ -202,6 +203,15 @@ fun WorkOrderUpdateScreen(
                                 fontWeight = FontWeight.Bold,
                                 fontStyle = FontStyle.Italic,
                                 color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                        if (hoursSummaryText.isNotBlank()) {
+                            Text(
+                                text = hoursSummaryText,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.tertiary,
+                                modifier = Modifier.padding(top = 2.dp)
                             )
                         }
                     }

@@ -21,7 +21,6 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.data.model.MaterialAndQuantity
-import ms.mattschlenkrich.paycalculator.data.model.WorkPerformedAndQuantity
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.ui.workorder.composable.WorkOrderUpdateScreen
@@ -68,14 +67,44 @@ fun WorkOrderUpdateRoute(
         workOrderViewModel.getWorkOrderHistoriesByWorkOrder(initialWo.workOrderId)
     }.observeAsState(emptyList())
 
+    val workOrderSummary by remember(initialWo.workOrderId) {
+        workOrderViewModel.getWorkOrderSummary(initialWo.workOrderId)
+    }.observeAsState()
+    val materialsSummary by remember(initialWo.workOrderId) {
+        workOrderViewModel.getWorkOrderMaterialsSummary(initialWo.workOrderId)
+    }.observeAsState(emptyList())
+    val workPerformedSummary by remember(initialWo.workOrderId) {
+        workOrderViewModel.getWorkOrderWorkPerformedSummary(initialWo.workOrderId)
+    }.observeAsState(emptyList())
+
     // Mocking summaries for now as they might need complex calculation
     val jobSpecSummaryText = "${addedJobSpecs.size} items"
     val historySummaryText = "${historyList.size} entries"
 
+    var hoursSummaryText = ""
+    workOrderSummary?.let {
+        if (it.totalRegHours > 0) hoursSummaryText += "${nf.displayNumberFromDouble(it.totalRegHours)} ${
+            stringResource(
+                R.string.hr
+            )
+        } "
+        if (it.totalOtHours > 0) hoursSummaryText += "| ${nf.displayNumberFromDouble(it.totalOtHours)} ${
+            stringResource(
+                R.string.ot
+            )
+        } "
+        if (it.totalDblOtHours > 0) hoursSummaryText += "| ${nf.displayNumberFromDouble(it.totalDblOtHours)} ${
+            stringResource(
+                R.string.dbl_ot
+            )
+        } "
+    }
+
     // Need to get these from somewhere, possibly another query
-    val workPerformedList =
-        emptyList<WorkPerformedAndQuantity>()
-    val materialsList = emptyList<MaterialAndQuantity>()
+    val workPerformedList = workPerformedSummary
+    val materialsList = materialsSummary.map {
+        MaterialAndQuantity(it.name, it.quantity)
+    }
 
     val context = LocalContext.current
     val errorLabel = stringResource(R.string.error_)
@@ -153,6 +182,7 @@ fun WorkOrderUpdateRoute(
             navController.navigate(Screen.WorkOrderHistoryUpdate.route)
         },
         historySummaryText = historySummaryText,
+        hoursSummaryText = hoursSummaryText,
         onAddHistoryClick = {
             // Need to set a work date for HistoryAdd, maybe navigate to TimeSheet to pick one?
             // Or use current?

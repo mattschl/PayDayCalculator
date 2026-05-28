@@ -82,6 +82,15 @@ class WorkOrderViewModel(
     fun getWorkOrderHistoryCombined(historyId: Long) =
         workOrderRepository.getWorkOrderHistoryCombined(historyId)
 
+    fun getWorkOrderSummary(workOrderId: Long) =
+        workOrderRepository.getWorkOrderSummary(workOrderId)
+
+    fun getWorkOrderMaterialsSummary(workOrderId: Long) =
+        workOrderRepository.getWorkOrderMaterialsSummary(workOrderId)
+
+    fun getWorkOrderWorkPerformedSummary(workOrderId: Long) =
+        workOrderRepository.getWorkOrderWorkPerformedSummary(workOrderId)
+
     val jobSpecsAll = workOrderRepository.getJobSpecs()
     val areasList = workOrderRepository.getAreasList()
     val workPerformedAll = workOrderRepository.getWorkPerformedAll()

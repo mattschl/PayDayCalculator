@@ -122,11 +122,15 @@ abstract class PayDatabase : RoomDatabase() {
             }
         }
 
+        fun closeDatabase(context: Context) {
+            resetInstance()
+        }
+
         fun checkpoint(context: Context) {
             synchronized(LOCK) {
                 try {
                     val db = instance ?: invoke(context)
-                    db.query("PRAGMA wal_checkpoint(FULL)", null).close()
+                    db.query("PRAGMA wal_checkpoint(TRUNCATE)", null).close()
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

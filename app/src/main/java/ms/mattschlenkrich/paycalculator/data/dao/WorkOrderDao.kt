@@ -23,13 +23,16 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformedMerged
 import ms.mattschlenkrich.paycalculator.data.model.JobSpecAndChild
 import ms.mattschlenkrich.paycalculator.data.model.MaterialAndChild
+import ms.mattschlenkrich.paycalculator.data.model.MaterialAndQuantity
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryCombined
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryMaterialCombined
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWorkPerformedCombined
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderJobSpecCombined
+import ms.mattschlenkrich.paycalculator.data.model.WorkOrderSummary
 import ms.mattschlenkrich.paycalculator.data.model.WorkPerformedAndChild
+import ms.mattschlenkrich.paycalculator.data.model.WorkPerformedAndQuantity
 
 @Dao
 interface WorkOrderDao {
@@ -166,6 +169,38 @@ interface WorkOrderDao {
                 "AND woHistoryDeleted = 0"
     )
     fun getWorkOrderHistoryCombined(historyId: Long): LiveData<WorkOrderHistoryCombined>
+
+    @Query(
+        "SELECT SUM(woHistoryRegHours) as totalRegHours, " +
+                "SUM(woHistoryOtHours) as totalOtHours, " +
+                "SUM(woHistoryDblOtHours) as totalDblOtHours " +
+                "FROM workOrderHistory " +
+                "WHERE woHistoryWorkOrderId = :workOrderId " +
+                "AND woHistoryDeleted = 0"
+    )
+    fun getWorkOrderSummary(workOrderId: Long): LiveData<WorkOrderSummary>
+
+    @Query(
+        "SELECT mName as name, SUM(wohmQuantity) as quantity " +
+                "FROM workOrderHistoryMaterials " +
+                "INNER JOIN materials ON wohmMaterialId = materialId " +
+                "WHERE wohmHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId AND woHistoryDeleted = 0) " +
+                "AND wohmIsDeleted = 0 " +
+                "GROUP BY mName " +
+                "ORDER BY mName"
+    )
+    fun getWorkOrderMaterialsSummary(workOrderId: Long): LiveData<List<MaterialAndQuantity>>
+
+    @Query(
+        "SELECT wpDescription as description, null as area, COUNT(*) as quantity " +
+                "FROM workOrderHistoryWorkPerformed " +
+                "INNER JOIN workPerformed ON wowpWorkPerformedId = workPerformedId " +
+                "WHERE wowpHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId AND woHistoryDeleted = 0) " +
+                "AND wowpIsDeleted = 0 " +
+                "GROUP BY wpDescription " +
+                "ORDER BY wpDescription"
+    )
+    fun getWorkOrderWorkPerformedSummary(workOrderId: Long): LiveData<List<WorkPerformedAndQuantity>>
 
     @Insert
     suspend fun insertTimeWorked(timeWorked: WorkOrderHistoryTimeWorked)

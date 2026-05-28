@@ -70,6 +70,15 @@ class WorkOrderRepository(private val db: PayDatabase) {
     fun getWorkOrderHistoryCombined(historyId: Long) =
         db.getWorkOrderDao().getWorkOrderHistoryCombined(historyId)
 
+    fun getWorkOrderSummary(workOrderId: Long) =
+        db.getWorkOrderDao().getWorkOrderSummary(workOrderId)
+
+    fun getWorkOrderMaterialsSummary(workOrderId: Long) =
+        db.getWorkOrderDao().getWorkOrderMaterialsSummary(workOrderId)
+
+    fun getWorkOrderWorkPerformedSummary(workOrderId: Long) =
+        db.getWorkOrderDao().getWorkOrderWorkPerformedSummary(workOrderId)
+
     suspend fun updateWorkOrderHistory(
         historyId: Long,
         regHours: Double,
