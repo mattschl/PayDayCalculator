@@ -181,24 +181,26 @@ interface WorkOrderDao {
     fun getWorkOrderSummary(workOrderId: Long): LiveData<WorkOrderSummary>
 
     @Query(
-        "SELECT mName as name, SUM(wohmQuantity) as quantity " +
-                "FROM workOrderHistoryMaterials " +
-                "INNER JOIN materials ON wohmMaterialId = materialId " +
-                "WHERE wohmHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId AND woHistoryDeleted = 0) " +
-                "AND wohmIsDeleted = 0 " +
-                "GROUP BY mName " +
-                "ORDER BY mName"
+        "SELECT m.mName as name, SUM(wohm.wohmQuantity) as quantity " +
+                "FROM workOrderHistoryMaterials wohm " +
+                "LEFT JOIN materialMerged ON wohm.wohmMaterialId = mmChildId AND mmIsDeleted = 0 " +
+                "INNER JOIN materials m ON m.materialId = COALESCE(mmMasterId, wohm.wohmMaterialId) " +
+                "WHERE wohm.wohmHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId AND woHistoryDeleted = 0) " +
+                "AND wohm.wohmIsDeleted = 0 " +
+                "GROUP BY m.mName " +
+                "ORDER BY m.mName"
     )
     fun getWorkOrderMaterialsSummary(workOrderId: Long): LiveData<List<MaterialAndQuantity>>
 
     @Query(
-        "SELECT wpDescription as description, null as area, COUNT(*) as quantity " +
-                "FROM workOrderHistoryWorkPerformed " +
-                "INNER JOIN workPerformed ON wowpWorkPerformedId = workPerformedId " +
-                "WHERE wowpHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId AND woHistoryDeleted = 0) " +
-                "AND wowpIsDeleted = 0 " +
-                "GROUP BY wpDescription " +
-                "ORDER BY wpDescription"
+        "SELECT wp.wpDescription as description, null as area, COUNT(*) as quantity " +
+                "FROM workOrderHistoryWorkPerformed wowp " +
+                "LEFT JOIN workPerformedMerged ON wowp.wowpWorkPerformedId = wpmChildId AND wpmIsDeleted = 0 " +
+                "INNER JOIN workPerformed wp ON wp.workPerformedId = COALESCE(wpmMasterId, wowp.wowpWorkPerformedId) " +
+                "WHERE wowp.wowpHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId AND woHistoryDeleted = 0) " +
+                "AND wowp.wowpIsDeleted = 0 " +
+                "GROUP BY wp.wpDescription " +
+                "ORDER BY wp.wpDescription"
     )
     fun getWorkOrderWorkPerformedSummary(workOrderId: Long): LiveData<List<WorkPerformedAndQuantity>>
 
