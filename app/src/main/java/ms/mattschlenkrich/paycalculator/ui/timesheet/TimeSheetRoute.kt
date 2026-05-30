@@ -345,7 +345,7 @@ fun TimeSheetRoute(
                         showWorkDateOptionsDialog = workDate
                     },
                     onViewPayDetailsClick = {
-                        navController.navigate(Screen.PayDetails.route)
+                        mainViewModel.setSelectedTopLevelIndex(1)
                     },
                     hrLabel = hrLabel,
                     otLabel = otLabel,

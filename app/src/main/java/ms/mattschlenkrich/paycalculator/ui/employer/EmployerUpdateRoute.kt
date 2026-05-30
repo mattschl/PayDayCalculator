@@ -131,7 +131,8 @@ fun EmployerUpdateRoute(
                     )
                 )
                 mainViewModel.setWorkExtraType(extra)
-                navController.navigate(Screen.Extras.route)
+                mainViewModel.setSelectedTopLevelIndex(4)
+                navController.popBackStack(Screen.MainPager.route, inclusive = false)
             },
             onAddExtraClick = {
                 mainViewModel.setEmployer(

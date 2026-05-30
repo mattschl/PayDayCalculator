@@ -186,7 +186,8 @@ fun WorkOrderUpdateRoute(
         onAddHistoryClick = {
             // Need to set a work date for HistoryAdd, maybe navigate to TimeSheet to pick one?
             // Or use current?
-            navController.navigate(Screen.TimeSheet.route)
+            mainViewModel.setSelectedTopLevelIndex(0)
+            navController.popBackStack(Screen.MainPager.route, inclusive = false)
         },
         workPerformedList = workPerformedList,
         materialsList = materialsList,

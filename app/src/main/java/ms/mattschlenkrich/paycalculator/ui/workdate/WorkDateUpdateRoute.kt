@@ -184,7 +184,10 @@ fun WorkDateUpdateRoute(
             mainViewModel.setWorkDateObject(updated)
 
             when (fragmentToGoTo) {
-                Screen.TimeSheet.route -> navController.popBackStack()
+                Screen.TimeSheet.route -> {
+                    mainViewModel.setSelectedTopLevelIndex(0)
+                    navController.popBackStack(Screen.MainPager.route, inclusive = false)
+                }
                 Screen.WorkDateTimes.route -> {
                     navController.navigate(Screen.WorkDateTimes.route)
                 }

@@ -29,9 +29,8 @@ fun WorkExtraTypeAddRoute(
             onUpdate = { newExtraType: WorkExtraTypes ->
                 workExtraViewModel.insertWorkExtraType(newExtraType)
                 mainViewModel.setWorkExtraType(newExtraType)
-                navController.navigate(Screen.Extras.route) {
-                    popUpTo(Screen.WorkExtraTypeAdd.route) { inclusive = true }
-                }
+                mainViewModel.setSelectedTopLevelIndex(4)
+                navController.popBackStack(Screen.MainPager.route, inclusive = false)
             },
             onDelete = {}
         )

@@ -137,7 +137,10 @@ fun WorkDateAddRoute(
             }
 
             when (fragmentToGoTo) {
-                Screen.TimeSheet.route -> navController.popBackStack()
+                Screen.TimeSheet.route -> {
+                    mainViewModel.setSelectedTopLevelIndex(0)
+                    navController.popBackStack(Screen.MainPager.route, inclusive = false)
+                }
                 Screen.WorkDateUpdate.route -> {
                     navController.navigate(Screen.WorkDateUpdate.route) {
                         popUpTo(Screen.WorkDateAdd.route) { inclusive = true }
