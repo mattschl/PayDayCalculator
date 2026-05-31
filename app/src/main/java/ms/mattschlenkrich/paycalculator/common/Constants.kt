@@ -5,7 +5,7 @@
 package ms.mattschlenkrich.paycalculator.common
 
 const val PAY_DB_NAME = "pay.db"
-const val PAY_DB_VERSION = 15
+const val PAY_DB_VERSION = 16
 
 const val SQLITE_DATE = "yyyy-LL-dd"
 const val SQLITE_TIME = "yyyy-LL-dd HH:mm:ss"
@@ -112,6 +112,7 @@ const val TABLE_WORK_PAY_PERIOD_EXTRAS = "workPayPeriodExtras"
 //const val WORK_PAY_PERIOD_EXTRA_UPDATE_TIME = "ppeUpdateTime"
 
 const val TABLE_WORK_PAY_PERIOD_TAX = "workPayPeriodTax"
+const val TABLE_SYNC_HISTORY = "syncHistory"
 const val PAY_PERIOD_TAX_CUTOFF_DATE = "wppCutoffDate"
 const val PAY_PERIOD_TAX_EMPLOYER_ID = "wppEmployerId"
 const val PAY_PERIOD_TAX_TYPE = "wppTaxType"
@@ -153,6 +154,7 @@ const val WAIT_1000 = 1000L
 
 const val PREFS_NAME = "PayCalculatorPrefs"
 const val SYNC_ACCOUNT_EMAIL = "sync_account_email"
+const val DEVICE_ID = "device_id"
 
 //const val FRAG_EMPLOYERS = "Employers"
 //const val FRAG_EMPLOYER_UPDATE = "EmployerUpdate"

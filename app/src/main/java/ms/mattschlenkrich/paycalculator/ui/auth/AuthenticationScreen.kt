@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,6 +35,7 @@ fun AuthenticationScreen(
     var passwordInput by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
     var showResetDialog by remember { mutableStateOf(false) }
+    var failedAttempts by remember { mutableIntStateOf(0) }
 
     if (showResetDialog) {
         var newPassword by remember { mutableStateOf("") }
@@ -133,9 +135,24 @@ fun AuthenticationScreen(
                 onClick = {
                     val result = onPasswordVerify(passwordInput)
                     when (result) {
-                        AuthResult.SUCCESS_CUSTOM -> onAuthenticated()
-                        AuthResult.SUCCESS_MASTER -> showResetDialog = true
-                        AuthResult.FAILURE -> error = "Incorrect Password"
+                        AuthResult.SUCCESS_CUSTOM -> {
+                            failedAttempts = 0
+                            onAuthenticated()
+                        }
+
+                        AuthResult.SUCCESS_MASTER -> {
+                            failedAttempts = 0
+                            showResetDialog = true
+                        }
+
+                        AuthResult.FAILURE -> {
+                            failedAttempts++
+                            error = if (failedAttempts >= 3) {
+                                "Incorrect Password. Please email the developer at matt_schl@hotmail.com to receive a reset password."
+                            } else {
+                                "Incorrect Password"
+                            }
+                        }
                     }
                 },
                 modifier = Modifier

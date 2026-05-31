@@ -43,10 +43,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.DEVICE_ID
+import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.PREFS_NAME
 import ms.mattschlenkrich.paycalculator.common.SYNC_ACCOUNT_EMAIL
 import ms.mattschlenkrich.paycalculator.common.compose.PayCalculatorTheme
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
+import ms.mattschlenkrich.paycalculator.data.entity.SyncHistory
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.sync.composable.SyncScreen
 import java.io.File
@@ -61,7 +65,7 @@ private const val TAG: String = "SyncActivity"
 
 class SyncActivity : ComponentActivity() {
 
-    private var mDriveServiceHelper: DriveServiceHelper? = null
+    private var mDriveServiceHelper by mutableStateOf<DriveServiceHelper?>(null)
     private var mCurrentAccount: Account? = null
 
     private var docContent by mutableStateOf("")
@@ -90,6 +94,7 @@ class SyncActivity : ComponentActivity() {
                 SyncScreen(
                     docContent = docContent,
                     isLoading = isLoading,
+                    isConnected = mDriveServiceHelper != null,
                     progressMessage = progressMessage,
                     syncProgress = syncProgress,
                     syncMax = syncMax,
@@ -214,6 +219,29 @@ class SyncActivity : ComponentActivity() {
     }
 
 
+    private suspend fun logSyncAttempt(status: String, summary: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                val deviceId = prefs.getLong(DEVICE_ID, 0L)
+                val db = PayDatabase(this@SyncActivity)
+                val syncHistory = SyncHistory(
+                    syncId = NumberFunctions().generateRandomIdAsLong(),
+                    syncTime = DateFunctions().getCurrentUTCTimeAsString(),
+                    syncSourceName = "Google Drive",
+                    syncDeviceId = deviceId,
+                    syncStatus = status,
+                    syncRecordsProcessed = summary
+                )
+                db.getSyncHistoryDao().insertSyncHistory(syncHistory)
+                db.getSyncHistoryDao().purgeOldSyncHistory(6)
+                Log.d(TAG, "Sync attempt logged and purged: $status")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to log sync attempt", e)
+            }
+        }
+    }
+
     fun performSync() {
         lifecycleScope.launch {
             try {
@@ -313,11 +341,11 @@ class SyncActivity : ComponentActivity() {
                 showProgress("Cleaning up old backups...")
                 val finalDriveFileList = helper.queryFiles(targetFolderId)
                 val finalDriveBackups = finalDriveFileList.files
-                    ?.filter { it.name.startsWith("pay") && it.name.endsWith(".db") }
+                    ?.filter { it.name.startsWith("pay_") && it.name.endsWith(".db") }
                     ?.sortedByDescending { it.name } ?: emptyList()
 
-                if (finalDriveBackups.size > 3) {
-                    val toDelete = finalDriveBackups.drop(3)
+                if (finalDriveBackups.size > 6) {
+                    val toDelete = finalDriveBackups.drop(6)
                     for (file in toDelete) {
                         Log.d(TAG, "Deleting old backup from Drive: ${file.name}")
                         helper.deleteFile(file.id)
@@ -335,9 +363,11 @@ class SyncActivity : ComponentActivity() {
                     "Sync, Cleanup, and Backup complete.",
                     Toast.LENGTH_SHORT
                 ).show()
+                logSyncAttempt("Success", docContent)
                 setResult(RESULT_OK)
 
             } catch (e: Exception) {
+                logSyncAttempt("Failed", e.message ?: "Unknown error")
                 handleError("Update failed", e)
             } finally {
                 hideProgress()

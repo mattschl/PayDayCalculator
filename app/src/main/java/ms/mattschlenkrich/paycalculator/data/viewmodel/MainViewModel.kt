@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
+import ms.mattschlenkrich.paycalculator.common.DEVICE_ID
+import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.PREFS_NAME
 import ms.mattschlenkrich.paycalculator.common.settings.SettingsManager
 import ms.mattschlenkrich.paycalculator.data.entity.EmployerPayRates
@@ -40,6 +42,22 @@ class MainViewModel(
     var selectedEmployerId = settingsManager.loadSettings().defaultEmployerId
         ?: prefs.getLong(SELECTED_EMPLOYER_ID, -1L)
         private set
+
+    private var deviceId: Long = 0L
+
+    init {
+        deviceId = prefs.getLong(DEVICE_ID, 0L)
+        if (deviceId == 0L) {
+            deviceId = NumberFunctions().generateRandomIdAsLong()
+            prefs.edit {
+                putLong(DEVICE_ID, deviceId)
+            }
+        }
+    }
+
+    fun getDeviceId(): Long {
+        return deviceId
+    }
 
     var selectedTopLevelIndex = mutableIntStateOf(0)
         private set

@@ -44,6 +44,7 @@ import ms.mattschlenkrich.paycalculator.R
 fun SyncScreen(
     docContent: String,
     isLoading: Boolean,
+    isConnected: Boolean,
     progressMessage: String,
     syncProgress: Int,
     syncMax: Int,
@@ -125,6 +126,7 @@ fun SyncScreen(
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Button(
                                 onClick = onSyncClick,
+                                enabled = isConnected && !isLoading,
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(horizontal = 4.dp)
@@ -133,6 +135,7 @@ fun SyncScreen(
                             }
                             Button(
                                 onClick = onQueryClick,
+                                enabled = isConnected && !isLoading,
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(horizontal = 4.dp)
@@ -145,12 +148,13 @@ fun SyncScreen(
                                     .weight(1f)
                                     .padding(horizontal = 4.dp)
                             ) {
-                                Text(stringResource(R.string.return_text))
+                                Text(stringResource(R.string.done))
                             }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Button(
                             onClick = { showDeleteConfirmation = true },
+                            enabled = isConnected && !isLoading,
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.error

@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ms.mattschlenkrich.paycalculator.common.compose.NumberOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
+import ms.mattschlenkrich.paycalculator.common.security.AuthResult
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,12 +55,75 @@ fun SettingsScreen(
     onIsSystemThemeChange: (Boolean) -> Unit,
     onIsPasswordProtectedChange: (Boolean) -> Unit,
     onPasswordSet: (String) -> Unit,
+    onPasswordVerify: (String) -> AuthResult,
     onDefaultEmployerChange: (Long?) -> Unit
 ) {
     var showPasswordDialog by remember { mutableStateOf(false) }
     var passwordInput by remember { mutableStateOf("") }
     var confirmPasswordInput by remember { mutableStateOf("") }
     var passwordError by remember { mutableStateOf<String?>(null) }
+
+    var showDisableConfirmDialog by remember { mutableStateOf(false) }
+    var disablePasswordInput by remember { mutableStateOf("") }
+    var disablePasswordError by remember { mutableStateOf<String?>(null) }
+
+    if (showDisableConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showDisableConfirmDialog = false
+                disablePasswordInput = ""
+                disablePasswordError = null
+            },
+            title = { Text("Confirm Disabling Protection") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Enter your current password or the recovery password to disable protection.")
+                    OutlinedTextField(
+                        value = disablePasswordInput,
+                        onValueChange = {
+                            disablePasswordInput = it
+                            disablePasswordError = null
+                        },
+                        label = { Text("Current Password") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = disablePasswordError != null
+                    )
+                    if (disablePasswordError != null) {
+                        Text(
+                            text = disablePasswordError!!,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    val result = onPasswordVerify(disablePasswordInput)
+                    if (result == AuthResult.SUCCESS_CUSTOM || result == AuthResult.SUCCESS_MASTER) {
+                        onIsPasswordProtectedChange(false)
+                        showDisableConfirmDialog = false
+                        disablePasswordInput = ""
+                        disablePasswordError = null
+                    } else {
+                        disablePasswordError = "Incorrect Password"
+                    }
+                }) {
+                    Text("Confirm")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDisableConfirmDialog = false
+                    disablePasswordInput = ""
+                    disablePasswordError = null
+                }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 
     if (showPasswordDialog) {
         AlertDialog(
@@ -303,7 +367,7 @@ fun SettingsScreen(
                             if (!isPasswordProtected) {
                                 showPasswordDialog = true
                             } else {
-                                onIsPasswordProtectedChange(false)
+                                showDisableConfirmDialog = true
                             }
                         },
                         role = Role.Switch

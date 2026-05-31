@@ -29,6 +29,7 @@ fun SettingsRoute(
         onIsSystemThemeChange = { viewModel.updateIsSystemTheme(it) },
         onIsPasswordProtectedChange = { viewModel.updateIsPasswordProtected(it) },
         onPasswordSet = { viewModel.savePassword(it) },
+        onPasswordVerify = { viewModel.verifyPassword(it) },
         onDefaultEmployerChange = { viewModel.updateDefaultEmployerId(it) }
     )
 }

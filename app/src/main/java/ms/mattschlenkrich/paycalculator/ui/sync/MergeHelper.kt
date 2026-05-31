@@ -41,6 +41,13 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             summary.append("  Remote file: ${remoteFile.name} (${remoteFile.length() / 1024} KB)\n")
             summary.append("  Local file: ${localFile.name} (${localFile.length() / 1024} KB)\n\n")
 
+            val lastSyncTime = getLastSyncTime(localDb)
+            if (lastSyncTime != null) {
+                summary.append("  Incremental sync enabled (last success: $lastSyncTime)\n\n")
+            } else {
+                summary.append("  Full sync enabled (no previous success found)\n\n")
+            }
+
             val tables = getTables()
             var totalNewRecords = 0
             var totalUpdatedRecords = 0
@@ -57,7 +64,7 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
                     continue
                 }
 
-                val results = findNewAndUpdatedRecords(localDb, remoteDb, spec)
+                val results = findNewAndUpdatedRecords(localDb, remoteDb, spec, lastSyncTime)
                 val newRecords = results.first
                 val updatedRecords = results.second
 
@@ -107,6 +114,22 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
         return exists
     }
 
+    private fun getLastSyncTime(db: SQLiteDatabase): String? {
+        if (!isTableExists(db, "syncHistory")) return null
+        return try {
+            val cursor = db.rawQuery(
+                "SELECT syncTime FROM syncHistory WHERE syncStatus = 'Success' ORDER BY syncTime DESC LIMIT 1",
+                null
+            )
+            var time: String? = null
+            if (cursor.moveToFirst()) time = cursor.getString(0)
+            cursor.close()
+            time
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     /**
      * Applies the synchronization from the remote database to the local one.
      */
@@ -128,6 +151,7 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
                 SQLiteDatabase.OPEN_READWRITE
             )
 
+            val lastSyncTime = getLastSyncTime(localDb)
             val tables = getTables()
             var totalNew = 0
             var totalUpdated = 0
@@ -157,8 +181,13 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
 
                 localDb.transaction {
                     try {
-                        val remoteCursor =
-                            remoteDb.rawQuery("SELECT * FROM ${spec.tableName}", null)
+                        val query = if (lastSyncTime != null && spec.updateTimeColumn != null) {
+                            "SELECT * FROM ${spec.tableName} WHERE ${spec.updateTimeColumn} > '$lastSyncTime'"
+                        } else {
+                            "SELECT * FROM ${spec.tableName}"
+                        }
+
+                        val remoteCursor = remoteDb.rawQuery(query, null)
                         remoteCount = remoteCursor.count
 
                         if (remoteCursor.moveToFirst()) {
@@ -372,11 +401,17 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
     private fun findNewAndUpdatedRecords(
         localDb: SQLiteDatabase,
         remoteDb: SQLiteDatabase,
-        spec: TableSpec
+        spec: TableSpec,
+        lastSyncTime: String? = null
     ): Pair<List<String>, List<String>> {
         val newItems = mutableListOf<String>()
         val updatedItems = mutableListOf<String>()
-        val query = "SELECT * FROM ${spec.tableName}"
+
+        val query = if (lastSyncTime != null && spec.updateTimeColumn != null) {
+            "SELECT * FROM ${spec.tableName} WHERE ${spec.updateTimeColumn} > '$lastSyncTime'"
+        } else {
+            "SELECT * FROM ${spec.tableName}"
+        }
 
         try {
             val cursor = remoteDb.rawQuery(query, null)

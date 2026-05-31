@@ -12,6 +12,7 @@ import ms.mattschlenkrich.paycalculator.data.dao.EmployerDao
 import ms.mattschlenkrich.paycalculator.data.dao.PayCalculationsDao
 import ms.mattschlenkrich.paycalculator.data.dao.PayDayDao
 import ms.mattschlenkrich.paycalculator.data.dao.PayDetailDao
+import ms.mattschlenkrich.paycalculator.data.dao.SyncHistoryDao
 import ms.mattschlenkrich.paycalculator.data.dao.WorkExtraDao
 import ms.mattschlenkrich.paycalculator.data.dao.WorkOrderDao
 import ms.mattschlenkrich.paycalculator.data.dao.WorkTaxDao
@@ -25,6 +26,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.JobSpecMerged
 import ms.mattschlenkrich.paycalculator.data.entity.Material
 import ms.mattschlenkrich.paycalculator.data.entity.MaterialMerged
 import ms.mattschlenkrich.paycalculator.data.entity.PayPeriods
+import ms.mattschlenkrich.paycalculator.data.entity.SyncHistory
 import ms.mattschlenkrich.paycalculator.data.entity.TaxEffectiveDates
 import ms.mattschlenkrich.paycalculator.data.entity.TaxTypes
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
@@ -70,6 +72,7 @@ import ms.mattschlenkrich.paycalculator.data.model.ExtraDefinitionAndType
         MaterialMerged::class,
         WorkPerformedMerged::class,
         WorkOrderHistoryTimeWorked::class,
+        SyncHistory::class,
     ],
     views = [ExtraDefinitionAndType::class],
 //    autoMigrations =
@@ -88,8 +91,24 @@ abstract class PayDatabase : RoomDatabase() {
     abstract fun getPayDetailDao(): PayDetailDao
     abstract fun getPayCalculationsDao(): PayCalculationsDao
     abstract fun getWorkTimeDao(): WorkTimeDao
+    abstract fun getSyncHistoryDao(): SyncHistoryDao
 
     companion object {
+        private val MIGRATION_15_16 = object : Migration(15, 16) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `syncHistory` (" +
+                            "`syncId` INTEGER NOT NULL, " +
+                            "`syncTime` TEXT NOT NULL, " +
+                            "`syncSourceName` TEXT NOT NULL, " +
+                            "`syncDeviceId` INTEGER NOT NULL, " +
+                            "`syncStatus` TEXT NOT NULL, " +
+                            "`syncRecordsProcessed` TEXT NOT NULL, " +
+                            "PRIMARY KEY(`syncId`))"
+                )
+            }
+        }
+
         private val MIGRATION_12_15 = object : Migration(12, 15) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE materialMerged RENAME COLUMN mUpdateTime TO mmUpdateTime")
@@ -152,7 +171,12 @@ abstract class PayDatabase : RoomDatabase() {
                 PAY_DB_NAME
             )
                 .createFromAsset(PAY_DB_NAME)
-                .addMigrations(MIGRATION_12_15, MIGRATION_13_15, MIGRATION_14_15)
+                .addMigrations(
+                    MIGRATION_12_15,
+                    MIGRATION_13_15,
+                    MIGRATION_14_15,
+                    MIGRATION_15_16
+                )
                 .build()
         }
     }
