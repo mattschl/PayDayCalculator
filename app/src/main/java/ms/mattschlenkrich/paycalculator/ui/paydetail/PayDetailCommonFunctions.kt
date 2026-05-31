@@ -2,9 +2,9 @@ package ms.mattschlenkrich.paycalculator.ui.paydetail
 
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras
 import ms.mattschlenkrich.paycalculator.data.model.ExtraContainer
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
-import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras
 
 fun insertOrUpdateExtraOnChange(
     extraContainer: ExtraContainer,
@@ -32,17 +32,19 @@ fun insertOrUpdateExtraOnChange(
         extraContainer.payPeriodExtra = newExtra
         payDayViewModel.updatePayPeriodExtra(newExtra)
     } else if (extraContainer.extraDefinitionAndType != null) {
-        val extraDefinitionAndType = extraContainer.extraDefinitionAndType!!
+        val extraAndType = extraContainer.extraDefinitionAndType!!
+        val type = extraAndType.extraType
+        val def = extraAndType.definition
         val newExtra = WorkPayPeriodExtras(
             nf.generateRandomIdAsLong(),
             payPeriodId,
-            extraDefinitionAndType.extraType.workExtraTypeId,
-            extraDefinitionAndType.extraType.wetName,
-            extraDefinitionAndType.extraType.wetAppliesTo,
-            extraDefinitionAndType.extraType.wetAttachTo,
-            extraDefinitionAndType.definition.weValue,
-            extraDefinitionAndType.definition.weIsFixed,
-            extraDefinitionAndType.extraType.wetIsCredit,
+            type.workExtraTypeId,
+            type.wetName,
+            type.wetAppliesTo,
+            type.wetAttachTo,
+            def.weValue,
+            def.weIsFixed,
+            type.wetIsCredit,
             delete,
             df.getCurrentUTCTimeAsString()
         )

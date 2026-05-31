@@ -3,7 +3,6 @@ package ms.mattschlenkrich.paycalculator.data.model
 import android.os.Parcelable
 import androidx.room.DatabaseView
 import androidx.room.Embedded
-import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_EXTRAS_DEFINITIONS
 import ms.mattschlenkrich.paycalculator.common.TABLE_WORK_EXTRA_TYPES
@@ -21,10 +20,6 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkExtrasDefinitions
 data class ExtraDefinitionAndType(
     @Embedded
     val definition: WorkExtrasDefinitions,
-    @Relation(
-        entity = WorkExtraTypes::class,
-        parentColumn = "weExtraTypeId",
-        entityColumn = "workExtraTypeId"
-    )
+    @Embedded
     val extraType: WorkExtraTypes
 ) : Parcelable

@@ -165,7 +165,7 @@ interface PayDayDao {
     fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String)
             : LiveData<List<WorkDateExtraAndTypeAndDef>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras)
 
     @Update
