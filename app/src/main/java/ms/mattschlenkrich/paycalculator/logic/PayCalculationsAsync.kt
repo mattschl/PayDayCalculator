@@ -499,14 +499,22 @@ class PayCalculationsAsync(
                 var excludeAsDuplicate = false
                 for (customExtra in customWorkDateExtras) {
                     if (extra.extraType.wetName == customExtra.wdeName) {
-                        excludeAsDuplicate = true
-                        break
+                        // Ensure this work date extra belongs to one of the dates in THIS pay period
+                        if (workDates.any { it.workDateId == customExtra.wdeWorkDateId }) {
+                            excludeAsDuplicate = true
+                            break
+                        }
                     }
                 }
-                for (customExtra in customExtrasByPay) {
-                    if (extra.extraType.wetName == customExtra.ppeName) {
-                        excludeAsDuplicate = true
-                        break
+                if (!excludeAsDuplicate) {
+                    for (customExtra in customExtrasByPay) {
+                        if (extra.extraType.wetName == customExtra.ppeName) {
+                            // Ensure this pay period extra belongs to THIS specific pay period
+                            if (customExtra.ppePayPeriodId == currentPayPeriod.payPeriodId) {
+                                excludeAsDuplicate = true
+                                break
+                            }
+                        }
                     }
                 }
                 if (!excludeAsDuplicate) {

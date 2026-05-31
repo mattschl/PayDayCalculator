@@ -147,19 +147,13 @@ interface PayDayDao {
     @Query(
         "SELECT DISTINCT workDateExtras.*, types.*, defs.* " +
                 "FROM workDateExtras " +
-                "LEFT JOIN " +
-                "workDates ON wdeWorkDateId = ( " +
-                "SELECT workDateId " +
-                "FROM workDates " +
-                "WHERE wdCutoffDate = :cutOff AND " +
-                "wdEmployerID = :employerId AND " +
-                "wdIsDeleted = 0 " +
-                ") " +
-                "LEFT JOIN workExtraTypes as types ON " +
-                "workExtraTypeId = wdeExtraTypeId " +
-                "LEFT JOIN workTaxRules as defs ON " +
-                "wdeExtraTypeId = wtType " +
-                " WHERE wdeIsDeleted = 0 " +
+                "INNER JOIN workDates ON wdeWorkDateId = workDateId " +
+                "LEFT JOIN workExtraTypes as types ON workExtraTypeId = wdeExtraTypeId " +
+                "LEFT JOIN workTaxRules as defs ON wdeExtraTypeId = wtType " +
+                "WHERE wdCutoffDate = :cutOff " +
+                "AND wdEmployerId = :employerId " +
+                "AND wdIsDeleted = 0 " +
+                "AND wdeIsDeleted = 0 " +
                 "ORDER BY wdeName "
     )
     fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String)

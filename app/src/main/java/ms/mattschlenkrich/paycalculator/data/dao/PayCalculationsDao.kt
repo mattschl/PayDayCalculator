@@ -42,14 +42,11 @@ interface PayCalculationsDao {
     @Query(
         "SELECT DISTINCT workDateExtras.* " +
                 "FROM workDateExtras " +
-                " JOIN  ( " +
-                "SELECT workDateId " +
-                "FROM workDates " +
-                "WHERE wdCutoffDate = :cutOff AND " +
-                "wdEmployerID = :employerId AND " +
-                "wdIsDeleted = 0 " +
-                ") ON wdeWorkDateId = workDateId " +
-                " WHERE wdeIsDeleted = 0 " +
+                "INNER JOIN workDates ON wdeWorkDateId = workDateId " +
+                "WHERE wdCutoffDate = :cutOff " +
+                "AND wdEmployerId = :employerId " +
+                "AND wdIsDeleted = 0 " +
+                "AND wdeIsDeleted = 0 " +
                 "ORDER BY wdeName "
     )
     fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String):

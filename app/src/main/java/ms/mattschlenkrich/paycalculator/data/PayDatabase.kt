@@ -90,6 +90,14 @@ abstract class PayDatabase : RoomDatabase() {
     abstract fun getWorkTimeDao(): WorkTimeDao
 
     companion object {
+        private val MIGRATION_12_15 = object : Migration(12, 15) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE materialMerged RENAME COLUMN mUpdateTime TO mmUpdateTime")
+                db.execSQL("DROP TABLE IF EXISTS workPayPeriodTax")
+                db.execSQL("DROP VIEW IF EXISTS ExtraTypeAndDefByDay")
+            }
+        }
+
         private val MIGRATION_13_15 = object : Migration(13, 15) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("DROP TABLE IF EXISTS workPayPeriodTax")
@@ -144,7 +152,7 @@ abstract class PayDatabase : RoomDatabase() {
                 PAY_DB_NAME
             )
                 .createFromAsset(PAY_DB_NAME)
-                .addMigrations(MIGRATION_13_15, MIGRATION_14_15)
+                .addMigrations(MIGRATION_12_15, MIGRATION_13_15, MIGRATION_14_15)
                 .build()
         }
     }
