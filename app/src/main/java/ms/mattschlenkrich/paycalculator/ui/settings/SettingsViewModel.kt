@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import ms.mattschlenkrich.paycalculator.common.security.AuthResult
 import ms.mattschlenkrich.paycalculator.common.security.SecurityManager
 import ms.mattschlenkrich.paycalculator.common.settings.Settings
 import ms.mattschlenkrich.paycalculator.common.settings.SettingsManager
@@ -58,11 +59,18 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         securityManager.savePassword(password)
     }
 
-    fun verifyPassword(password: String): Boolean {
+    fun verifyPassword(password: String): AuthResult {
         return securityManager.verifyPassword(password)
     }
 
     fun isPasswordSet(): Boolean {
         return securityManager.isPasswordSet()
+    }
+
+    fun updateDefaultEmployerId(id: Long?) {
+        val newSettings =
+            _settings.value?.copy(defaultEmployerId = id) ?: Settings(defaultEmployerId = id)
+        _settings.value = newSettings
+        settingsManager.saveSettings(newSettings)
     }
 }

@@ -274,7 +274,7 @@ class SyncActivity : ComponentActivity() {
                 showProgress("Creating fresh backup...")
                 withContext(Dispatchers.IO) {
                     PayDatabase.checkpoint(this@SyncActivity)
-                    PayDatabase.closeDatabase(this@SyncActivity)
+                    PayDatabase.closeDatabase()
                 }
 
                 val dbFile = File(dbDir, "pay.db")

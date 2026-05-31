@@ -5,5 +5,6 @@ data class Settings(
     val payPeriodsLimit: Int = 15,
     val isDarkTheme: Boolean = false,
     val isSystemTheme: Boolean = true,
-    val isPasswordProtected: Boolean = false
+    val isPasswordProtected: Boolean = false,
+    val defaultEmployerId: Long? = null
 )

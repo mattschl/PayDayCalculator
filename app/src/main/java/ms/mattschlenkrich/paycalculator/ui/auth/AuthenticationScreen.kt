@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,14 +23,72 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import ms.mattschlenkrich.paycalculator.common.security.AuthResult
 
 @Composable
 fun AuthenticationScreen(
-    onPasswordVerify: (String) -> Boolean,
+    onPasswordVerify: (String) -> AuthResult,
+    onPasswordSet: (String) -> Unit,
     onAuthenticated: () -> Unit
 ) {
     var passwordInput by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
+    var showResetDialog by remember { mutableStateOf(false) }
+
+    if (showResetDialog) {
+        var newPassword by remember { mutableStateOf("") }
+        var confirmPassword by remember { mutableStateOf("") }
+        var resetError by remember { mutableStateOf<String?>(null) }
+
+        AlertDialog(
+            onDismissRequest = { /* Force reset */ },
+            title = { Text("Reset Your Password") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        "You have used the master backup password. Please set a new custom password to continue.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    OutlinedTextField(
+                        value = newPassword,
+                        onValueChange = { newPassword = it },
+                        label = { Text("New Password") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        value = confirmPassword,
+                        onValueChange = { confirmPassword = it },
+                        label = { Text("Confirm Password") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    if (resetError != null) {
+                        Text(
+                            text = resetError!!,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    if (newPassword.isBlank()) {
+                        resetError = "Password cannot be empty"
+                    } else if (newPassword != confirmPassword) {
+                        resetError = "Passwords do not match"
+                    } else {
+                        onPasswordSet(newPassword)
+                        onAuthenticated()
+                        showResetDialog = false
+                    }
+                }) {
+                    Text("Save")
+                }
+            }
+        )
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -71,10 +131,11 @@ fun AuthenticationScreen(
 
             Button(
                 onClick = {
-                    if (onPasswordVerify(passwordInput)) {
-                        onAuthenticated()
-                    } else {
-                        error = "Incorrect Password"
+                    val result = onPasswordVerify(passwordInput)
+                    when (result) {
+                        AuthResult.SUCCESS_CUSTOM -> onAuthenticated()
+                        AuthResult.SUCCESS_MASTER -> showResetDialog = true
+                        AuthResult.FAILURE -> error = "Incorrect Password"
                     }
                 },
                 modifier = Modifier

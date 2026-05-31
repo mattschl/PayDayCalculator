@@ -34,6 +34,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ms.mattschlenkrich.paycalculator.common.compose.NumberOutlinedTextField
+import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
+import ms.mattschlenkrich.paycalculator.data.entity.Employers
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,12 +46,15 @@ fun SettingsScreen(
     isSystemTheme: Boolean,
     isPasswordProtected: Boolean,
     isPasswordSet: Boolean,
+    defaultEmployerId: Long?,
+    employers: List<Employers>,
     onFontSizeChange: (Float) -> Unit,
     onPayPeriodsLimitChange: (Int) -> Unit,
     onIsDarkThemeChange: (Boolean) -> Unit,
     onIsSystemThemeChange: (Boolean) -> Unit,
     onIsPasswordProtectedChange: (Boolean) -> Unit,
-    onPasswordSet: (String) -> Unit
+    onPasswordSet: (String) -> Unit,
+    onDefaultEmployerChange: (Long?) -> Unit
 ) {
     var showPasswordDialog by remember { mutableStateOf(false) }
     var passwordInput by remember { mutableStateOf("") }
@@ -194,6 +199,41 @@ fun SettingsScreen(
                     }
                 },
                 label = { Text("Limit") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text("Default Employer on Launch:", style = MaterialTheme.typography.titleMedium)
+
+            val noneEmployer = Employers(
+                employerId = -1L,
+                employerName = "None (Last Selected)",
+                payFrequency = "",
+                startDate = "",
+                dayOfWeek = "",
+                cutoffDaysBefore = 0,
+                midMonthlyDate = 0,
+                mainMonthlyDate = 0,
+                employerIsDeleted = false,
+                employerUpdateTime = ""
+            )
+
+            val dropdownItems = listOf(noneEmployer) + employers
+            val currentDefault = dropdownItems.find { it.employerId == (defaultEmployerId ?: -1L) }
+
+            SimpleDropdownField(
+                label = "Default Employer",
+                items = dropdownItems,
+                selectedItem = currentDefault,
+                onItemSelected = {
+                    if (it.employerId == -1L) {
+                        onDefaultEmployerChange(null)
+                    } else {
+                        onDefaultEmployerChange(it.employerId)
+                    }
+                },
+                itemToString = { it.employerName },
                 modifier = Modifier.fillMaxWidth()
             )
 

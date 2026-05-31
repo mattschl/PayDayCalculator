@@ -145,6 +145,9 @@ class MainActivity : ComponentActivity() {
                         onPasswordVerify = { password ->
                             settingsViewModel.verifyPassword(password)
                         },
+                        onPasswordSet = { password ->
+                            settingsViewModel.savePassword(password)
+                        },
                         onAuthenticated = {
                             mainViewModel.setAuthenticated(true)
                         }
@@ -661,7 +664,8 @@ fun MainScreen(
             }
             composable(Screen.Settings.route) {
                 SettingsRoute(
-                    settingsViewModel
+                    settingsViewModel,
+                    employerViewModel
                 )
             }
         }

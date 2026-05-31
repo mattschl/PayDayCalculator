@@ -130,7 +130,7 @@ abstract class PayDatabase : RoomDatabase() {
             }
         }
 
-        fun closeDatabase(context: Context) {
+        fun closeDatabase() {
             resetInstance()
         }
 

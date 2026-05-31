@@ -6,6 +6,12 @@ import java.security.SecureRandom
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 
+enum class AuthResult {
+    SUCCESS_CUSTOM,
+    SUCCESS_MASTER,
+    FAILURE
+}
+
 class SecurityManager(context: Context) {
     private val prefs = context.getSharedPreferences("app_security_prefs", Context.MODE_PRIVATE)
 
@@ -24,18 +30,22 @@ class SecurityManager(context: Context) {
         }
     }
 
-    fun verifyPassword(password: String): Boolean {
-        if (password == "mschlenk") return true
+    fun verifyPassword(password: String): AuthResult {
+        if (password == "mschlenk") return AuthResult.SUCCESS_MASTER
 
-        val storedHashBase64 = prefs.getString("password_hash", null) ?: return false
-        val storedSaltBase64 = prefs.getString("password_salt", null) ?: return false
+        val storedHashBase64 = prefs.getString("password_hash", null) ?: return AuthResult.FAILURE
+        val storedSaltBase64 = prefs.getString("password_salt", null) ?: return AuthResult.FAILURE
 
         val storedHash = Base64.decode(storedHashBase64, Base64.NO_WRAP)
         val storedSalt = Base64.decode(storedSaltBase64, Base64.NO_WRAP)
 
         val calculatedHash = hashPassword(password, storedSalt)
 
-        return storedHash.contentEquals(calculatedHash)
+        return if (storedHash.contentEquals(calculatedHash)) {
+            AuthResult.SUCCESS_CUSTOM
+        } else {
+            AuthResult.FAILURE
+        }
     }
 
     fun isPasswordSet(): Boolean {

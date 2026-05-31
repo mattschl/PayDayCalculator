@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
 import ms.mattschlenkrich.paycalculator.common.PREFS_NAME
+import ms.mattschlenkrich.paycalculator.common.settings.SettingsManager
 import ms.mattschlenkrich.paycalculator.data.entity.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.entity.Material
@@ -30,12 +31,14 @@ class MainViewModel(
     app: Application,
 ) : AndroidViewModel(app) {
     private val prefs = app.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val settingsManager = SettingsManager(app)
 
     var selectedEmployer = mutableStateOf<Employers?>(null)
         private set
     var selectedCutOffDate = mutableStateOf("")
         private set
-    var selectedEmployerId = prefs.getLong(SELECTED_EMPLOYER_ID, -1L)
+    var selectedEmployerId = settingsManager.loadSettings().defaultEmployerId
+        ?: prefs.getLong(SELECTED_EMPLOYER_ID, -1L)
         private set
 
     var selectedTopLevelIndex = mutableIntStateOf(0)
