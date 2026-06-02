@@ -29,7 +29,8 @@ fun WorkDateCard(
     onWorkDateClick: () -> Unit,
     onWorkDateLongClick: () -> Unit,
     displayDate: (String) -> String,
-    formatHours: (WorkDates) -> String
+    formatHours: (WorkDates) -> String,
+    isCompact: Boolean = false,
 ) {
     Card(
         modifier = Modifier
@@ -43,7 +44,7 @@ fun WorkDateCard(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
-        Column(modifier = Modifier.padding(4.dp)) {
+        Column(modifier = Modifier.padding(if (isCompact) 2.dp else 4.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -51,13 +52,13 @@ fun WorkDateCard(
             ) {
                 Text(
                     text = displayDate(workDate.wdDate),
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = if (isCompact) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = formatHours(workDate),
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = if (isCompact) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.secondary
                 )
             }
@@ -65,14 +66,14 @@ fun WorkDateCard(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 4.dp),
+                        .padding(top = if (isCompact) 2.dp else 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         Icons.Default.Info,
                         contentDescription = null,
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(if (isCompact) 14.dp else 16.dp),
                         tint = MaterialTheme.colorScheme.primary
                     )
                     Text(

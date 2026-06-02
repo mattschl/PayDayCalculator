@@ -57,7 +57,7 @@ fun TimeSheetRoute(
     payCalculationsViewModel: PayCalculationsViewModel,
     payDetailViewModel: PayDetailViewModel,
     settingsViewModel: SettingsViewModel = viewModel(),
-    navController: NavController
+    navController: NavController,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val nf = remember { NumberFunctions() }
@@ -88,12 +88,11 @@ fun TimeSheetRoute(
     val selectedCutOffDate = mainViewModel.selectedCutOffDate.value
 
     val pagerState = rememberPagerState(
-        initialPage = 0
+        initialPage = 0,
     ) { cutOffDates?.size ?: 0 }
 
-    // Initial selection from history
     LaunchedEffect(employers) {
-        if (selectedEmployer == null && employers.isNotEmpty()) {
+        if ((selectedEmployer == null) && employers.isNotEmpty()) {
             val savedEmployer = employers.find { it.employerId == mainViewModel.selectedEmployerId }
             mainViewModel.setEmployer(savedEmployer ?: employers.first())
         }
@@ -116,8 +115,8 @@ fun TimeSheetRoute(
                                 nf.generateRandomIdAsLong(),
                                 nextCutOff,
                                 selectedEmployer.employerId,
-                                false,
-                                df.getCurrentUTCTimeAsString()
+                                ppIsDeleted = false,
+                                ppUpdateTime = df.getCurrentUTCTimeAsString()
                             )
                         )
                         if (mainViewModel.selectedCutOffDate.value.isBlank()) {
@@ -138,8 +137,8 @@ fun TimeSheetRoute(
                                 nf.generateRandomIdAsLong(),
                                 nextCutOff,
                                 selectedEmployer.employerId,
-                                false,
-                                df.getCurrentUTCTimeAsString()
+                                ppIsDeleted = false,
+                                ppUpdateTime = df.getCurrentUTCTimeAsString()
                             )
                         )
                         if (mainViewModel.selectedCutOffDate.value.isBlank() ||
@@ -196,11 +195,13 @@ fun TimeSheetRoute(
         AlertDialog(
             onDismissRequest = { showWorkDateOptionsDialog = null },
             confirmButton = {
-                TextButton(onClick = {
-                    mainViewModel.setWorkDateObject(workDate)
-                    showWorkDateOptionsDialog = null
-                    navController.navigate(Screen.WorkDateUpdate.route)
-                }) {
+                TextButton(
+                    onClick = {
+                        mainViewModel.setWorkDateObject(workDate)
+                        showWorkDateOptionsDialog = null
+                        navController.navigate(Screen.WorkDateUpdate.route)
+                    }
+                ) {
                     Text(stringResource(R.string.open_caps))
                 }
             },
@@ -424,7 +425,7 @@ fun TimeSheetPage(
 
             val week1EndDate = try {
                 LocalDate.parse(cutoffDate).minusDays(7).toString()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 ""
             }
 
@@ -471,7 +472,7 @@ fun TimeSheetPage(
     val week1EndDate = remember(cutoffDate) {
         try {
             LocalDate.parse(cutoffDate).minusDays(7).toString()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             ""
         }
     }

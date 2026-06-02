@@ -114,7 +114,7 @@ class PayCalculationsAsync(
     private suspend fun processCustomExtraContainersByPay() =
         withContext(defaultScope) {
             for (extra in customExtrasByPay) {
-                val value = if (!extra.ppeIsFixed && extra.ppeValue >= 1.0)
+                val value = if (!extra.ppeIsFixed && (extra.ppeValue >= 1.0))
                     extra.ppeValue / 100.0
                 else extra.ppeValue
                 val total: Double = if (extra.ppeIsDeleted) {

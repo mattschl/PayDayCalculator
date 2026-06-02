@@ -6,7 +6,7 @@ import androidx.annotation.StringRes
 sealed class Screen(
     val route: String,
     @param:StringRes val resourceId: Int,
-    @param:DrawableRes val icon: Int
+    @param:DrawableRes val icon: Int,
 ) {
     object TimeSheet : Screen("timeSheet", R.string.time_sheet, R.drawable.ic_time_sheet)
     object PayDetails : Screen("payDetails", R.string.pay_details, R.drawable.ic_check_foreground)

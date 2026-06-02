@@ -49,9 +49,9 @@ class DateFunctions {
         if (date.isBlank()) return ""
         return try {
             displayDateString.format(
-                dateChecker.parse(date)!!
+                dateChecker.parse(date)!!,
             )
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             ""
         }
     }
@@ -80,17 +80,17 @@ class DateFunctions {
     fun getTimeWorked(startTime: String, endTime: String): Double {
         val tempStart = splitTimeFromDateTime(startTime)
         val tempEnd = splitTimeFromDateTime(endTime)
-        val hoursStart = tempStart[0].toDouble() * 60 + tempStart[1].toDouble()
-        val hoursEnd = tempEnd[0].toDouble() * 60 + tempEnd[1].toDouble()
+        val hoursStart = (tempStart[0].toDouble() * 60) + tempStart[1].toDouble()
+        val hoursEnd = (tempEnd[0].toDouble() * 60) + tempEnd[1].toDouble()
         return (hoursEnd - hoursStart) / 60
     }
 
     fun getTimeWorked(startTime: Calendar, endTime: Calendar): Double {
         val hoursStart =
-            startTime.get(Calendar.HOUR_OF_DAY).toDouble() * 60 + startTime.get(Calendar.MINUTE)
+            (startTime.get(Calendar.HOUR_OF_DAY).toDouble() * 60) + startTime.get(Calendar.MINUTE)
                 .toDouble()
         val hoursEnd =
-            endTime.get(Calendar.HOUR_OF_DAY).toDouble() * 60 + endTime.get(Calendar.MINUTE)
+            (endTime.get(Calendar.HOUR_OF_DAY).toDouble() * 60) + endTime.get(Calendar.MINUTE)
                 .toDouble()
         return (hoursEnd - hoursStart) / 60
     }

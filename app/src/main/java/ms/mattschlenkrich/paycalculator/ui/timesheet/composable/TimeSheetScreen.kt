@@ -22,6 +22,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -50,11 +52,11 @@ fun TimeSheetContent(
     displayDate: (String) -> String,
     formatHours: (WorkDates) -> String
 ) {
-    val windowInfo = androidx.compose.ui.platform.LocalWindowInfo.current
-    val density = androidx.compose.ui.platform.LocalDensity.current
-    val columns = with(density) {
-        if (windowInfo.containerSize.width.toDp() >= 600.dp) 2 else 1
-    }
+    val windowInfo = LocalWindowInfo.current
+    val density = LocalDensity.current
+    val widthDp = with(density) { windowInfo.containerSize.width.toDp() }
+    val columns = if (widthDp >= 600.dp) 2 else 1
+    val isCompact = widthDp < 480.dp
 
     val activeWorkDates = workDates.filter { !it.wdIsDeleted }.sortedBy { it.wdDate }
     val week1Dates = activeWorkDates.filter { it.wdDate <= week1EndDate }
@@ -65,8 +67,8 @@ fun TimeSheetContent(
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = SCREEN_PADDING_HORIZONTAL),
-        verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
-        horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
+        verticalArrangement = Arrangement.spacedBy(if (isCompact) ELEMENT_SPACING / 2 else ELEMENT_SPACING),
+        horizontalArrangement = Arrangement.spacedBy(if (isCompact) ELEMENT_SPACING / 2 else ELEMENT_SPACING),
         contentPadding = PaddingValues(bottom = 80.dp)
     ) {
         item(span = { GridItemSpan(columns) }) {
@@ -87,20 +89,21 @@ fun TimeSheetContent(
                 onWorkDateClick = { onWorkDateClick(workDate) },
                 onWorkDateLongClick = { onWorkDateLongClick(workDate) },
                 displayDate = displayDate,
-                formatHours = formatHours
+                formatHours = formatHours,
+                isCompact = isCompact
             )
         }
 
         if (week1Dates.isNotEmpty()) {
             item(span = { GridItemSpan(columns) }) {
-                CenteredSummaryText(week1Summary)
+                CenteredSummaryText(text = week1Summary, isCompact = isCompact)
             }
         }
 
         if (week1Dates.isNotEmpty() && week2Dates.isNotEmpty()) {
             item(span = { GridItemSpan(columns) }) {
                 androidx.compose.material3.HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp),
+                    modifier = Modifier.padding(vertical = if (isCompact) 4.dp else 8.dp),
                     thickness = 2.dp,
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                 )
@@ -114,13 +117,14 @@ fun TimeSheetContent(
                 onWorkDateClick = { onWorkDateClick(workDate) },
                 onWorkDateLongClick = { onWorkDateLongClick(workDate) },
                 displayDate = displayDate,
-                formatHours = formatHours
+                formatHours = formatHours,
+                isCompact = isCompact
             )
         }
 
         if (week2Dates.isNotEmpty()) {
             item(span = { GridItemSpan(columns) }) {
-                CenteredSummaryText(week2Summary)
+                CenteredSummaryText(text = week2Summary, isCompact = isCompact)
             }
         }
 
@@ -204,7 +208,7 @@ fun TimeSheetScreen(
 }
 
 @Composable
-fun CenteredSummaryText(text: String) {
+fun CenteredSummaryText(text: String, isCompact: Boolean = false) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
@@ -213,6 +217,6 @@ fun CenteredSummaryText(text: String) {
         textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(vertical = if (isCompact) 2.dp else 4.dp)
     )
 }
