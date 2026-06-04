@@ -57,6 +57,7 @@ import java.io.File
 import java.security.MessageDigest
 import java.security.SecureRandom
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -143,6 +144,14 @@ class SyncActivity : ComponentActivity() {
     }
 
 
+    private suspend fun isFirstSync(): Boolean {
+        return withContext(Dispatchers.IO) {
+            val db = PayDatabase(this@SyncActivity)
+            val history = db.getSyncHistoryDao().getLastSyncHistory()
+            history == null
+        }
+    }
+
     private suspend fun performDownload(helper: DriveServiceHelper, targetFolderId: String) {
         showProgress("Searching for backups...")
         val fileList: FileList = helper.queryFiles(targetFolderId)
@@ -156,18 +165,30 @@ class SyncActivity : ComponentActivity() {
             dbDir.listFiles { _, name -> name.startsWith("pay_from_drive") }
                 ?.forEach { it.delete() }
 
-            val fourWeeksAgo = System.currentTimeMillis() - (28 * 24 * 60 * 60 * 1000L)
-            val dbFiles = driveFiles
+            val fourWeeksAgoMs = System.currentTimeMillis() - (28 * 24 * 60 * 60 * 1000L)
+            val isFirstSync = isFirstSync()
+
+            val allDbFiles = driveFiles
                 .filter { (it.name.startsWith("pay_") || it.name == "pay.db") && it.name.endsWith(".db") }
-                .filter { (it.modifiedTime?.value ?: 0L) > fourWeeksAgo }
                 .sortedBy { it.name }
 
-            var downloadCount = 0
-            if (dbFiles.isEmpty()) {
-                Log.d(TAG, "No backups found from the last 28 days.")
+            val dbFilesToDownload = if (isFirstSync && allDbFiles.isNotEmpty()) {
+                // For first sync, we MUST have the latest file regardless of age.
+                // Plus any other files in the 28-day window to be safe.
+                val latest = allDbFiles.last()
+                allDbFiles.filter {
+                    it == latest || (it.modifiedTime?.value ?: 0L) > fourWeeksAgoMs
+                }.distinct()
+            } else {
+                allDbFiles.filter { (it.modifiedTime?.value ?: 0L) > fourWeeksAgoMs }
             }
 
-            for (dbFile in dbFiles) {
+            var downloadCount = 0
+            if (dbFilesToDownload.isEmpty()) {
+                Log.d(TAG, "No backups found to download.")
+            }
+
+            for (dbFile in dbFilesToDownload) {
                 val relatedSuffixes = listOf("", "-wal", "-shm")
                 for (suffix in relatedSuffixes) {
                     val remoteName = dbFile.name + suffix
@@ -213,7 +234,7 @@ class SyncActivity : ComponentActivity() {
                     syncRecordsProcessed = summary
                 )
                 db.getSyncHistoryDao().insertSyncHistory(syncHistory)
-                db.getSyncHistoryDao().purgeOldSyncHistory(6)
+                db.getSyncHistoryDao().purgeOldSyncHistory(50)
                 Log.d(TAG, "Sync attempt logged and purged: $status")
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to log sync attempt", e)
@@ -329,15 +350,57 @@ class SyncActivity : ComponentActivity() {
                     ?.filter { it.name.startsWith("pay_") && it.name.endsWith(".db") }
                     ?.sortedByDescending { it.name } ?: emptyList()
 
-                if (finalDriveBackups.size > 6) {
-                    val toDelete = finalDriveBackups.drop(6)
-                    for (file in toDelete) {
-                        Log.d(TAG, "Deleting old backup from Drive: ${file.name}")
-                        helper.deleteFile(file.id)
-                        listOf("-wal", "-shm").forEach { suffix ->
-                            val extraName = "${file.name}$suffix"
-                            finalDriveFileList.files?.find { it.name == extraName }?.let {
-                                helper.deleteFile(it.id)
+                if (finalDriveBackups.isNotEmpty()) {
+                    val db = PayDatabase(this@SyncActivity)
+                    val formatter = SimpleDateFormat("yyyy-LL-dd HH:mm:ss", Locale.CANADA)
+                    formatter.timeZone = TimeZone.getTimeZone("UTC")
+                    val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                    calendar.add(Calendar.DAY_OF_YEAR, -28)
+                    val hardLimit = formatter.format(calendar.time)
+
+                    val globalBaseline =
+                        db.getSyncHistoryDao().getEarliestLastSuccessSyncTime(hardLimit)
+                            ?: hardLimit
+
+                    // Logic:
+                    // 1. Always keep the 3 most recent backups (already sorted descending)
+                    // 2. Delete any backup older than 28 days
+                    // 3. Delete any backup older than the global baseline (meaning all active devices have seen it)
+
+                    val driveDateFormatter =
+                        SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+                    driveDateFormatter.timeZone = TimeZone.getTimeZone("UTC")
+
+                    finalDriveBackups.forEachIndexed { index, file ->
+                        val isProtected = index < 3
+                        val fileTimestamp = try {
+                            // Extract yyyyMMdd_HHmmss from pay_yyyyMMdd_HHmmss[_merged].db
+                            val parts = file.name.split("_")
+                            if (parts.size >= 3) {
+                                val tsPart = "${parts[1]}_${parts[2].take(6)}"
+                                driveDateFormatter.parse(tsPart)
+                            } else null
+                        } catch (_: Exception) {
+                            null
+                        }
+
+                        val fileTimeStr = fileTimestamp?.let { formatter.format(it) } ?: ""
+
+                        val isTooOld = fileTimeStr.isNotEmpty() && fileTimeStr < hardLimit
+                        val isRedundant = fileTimeStr.isNotEmpty() && fileTimeStr < globalBaseline
+
+                        if (!isProtected && (isTooOld || isRedundant)) {
+                            Log.d(
+                                TAG,
+                                "Culling redundant backup: ${file.name} (Time: $fileTimeStr, Baseline: $globalBaseline)"
+                            )
+                            helper.deleteFile(file.id)
+                            // Clean up sidecars
+                            listOf("-wal", "-shm").forEach { suffix ->
+                                val extraName = "${file.name}$suffix"
+                                finalDriveFileList.files?.find { it.name == extraName }?.let {
+                                    helper.deleteFile(it.id)
+                                }
                             }
                         }
                     }

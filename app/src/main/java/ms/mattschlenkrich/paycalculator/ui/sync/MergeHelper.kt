@@ -46,7 +46,11 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             summary.append("  Local file: ${localFile.name} (${localFile.length() / 1024} KB)\n\n")
 
             val lookbackTime = getLookbackTime(localDb)
-            summary.append("  Safety Window: Analyzing records updated since: $lookbackTime (4-week safety buffer)\n\n")
+            if (lookbackTime == "1970-01-01 00:00:00") {
+                summary.append("  Safety Window: Full Restore mode enabled (no previous history found)\n\n")
+            } else {
+                summary.append("  Safety Window: Analyzing records updated since: $lookbackTime (Optimized Global Baseline)\n\n")
+            }
 
             val tables = getTables()
             var totalNewRecords = 0
@@ -120,11 +124,11 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
 
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
         calendar.add(Calendar.DAY_OF_YEAR, -28) // 4-week safety window
-        val fourWeeksAgo = formatter.format(calendar.time)
+        val hardLimit = formatter.format(calendar.time)
 
         val earliestLastSync = try {
             val query =
-                "SELECT MIN(lastSync) FROM (SELECT MAX(syncTime) as lastSync FROM syncHistory WHERE syncStatus = 'Success' GROUP BY syncDeviceId)"
+                "SELECT MIN(lastSync) FROM (SELECT MAX(syncTime) as lastSync FROM syncHistory WHERE syncStatus = 'Success' AND syncTime > '$hardLimit' GROUP BY syncDeviceId)"
             val cursor = localDb.rawQuery(query, null)
             var time: String? = null
             if (cursor.moveToFirst()) time = cursor.getString(0)
@@ -134,12 +138,24 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             null
         }
 
-        // Return the earlier of: the earliest device's last successful sync OR 4 weeks ago.
-        // Earlier time means a wider search window.
-        return if (earliestLastSync == null || fourWeeksAgo < earliestLastSync) {
-            fourWeeksAgo
+        if (earliestLastSync == null) return "1970-01-01 00:00:00"
+
+        // Add 2-hour safety buffer to the earliest sync found
+        val bufferedTime = try {
+            val syncCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+            syncCal.time = formatter.parse(earliestLastSync)!!
+            syncCal.add(Calendar.HOUR_OF_DAY, -2)
+            formatter.format(syncCal.time)
+        } catch (e: Exception) {
+            hardLimit
+        }
+
+        // Return the later (more recent) of: the buffered earliest sync OR the 4-week hard limit.
+        // This ensures we always have a safety net, but don't look back a full 4 weeks if not needed.
+        return if (bufferedTime < hardLimit) {
+            hardLimit
         } else {
-            earliestLastSync
+            bufferedTime
         }
     }
 
