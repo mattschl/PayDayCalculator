@@ -1,5 +1,7 @@
 package ms.mattschlenkrich.paycalculator.ui.settings
 
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -48,6 +50,7 @@ fun SettingsScreen(
     isPasswordProtected: Boolean,
     isPasswordSet: Boolean,
     defaultEmployerId: Long?,
+    minColumnWidth: Int,
     employers: List<Employers>,
     onFontSizeChange: (Float) -> Unit,
     onPayPeriodsLimitChange: (Int) -> Unit,
@@ -56,7 +59,8 @@ fun SettingsScreen(
     onIsPasswordProtectedChange: (Boolean) -> Unit,
     onPasswordSet: (String) -> Unit,
     onPasswordVerify: (String) -> AuthResult,
-    onDefaultEmployerChange: (Long?) -> Unit
+    onDefaultEmployerChange: (Long?) -> Unit,
+    onMinColumnWidthChange: (Int) -> Unit
 ) {
     var showPasswordDialog by remember { mutableStateOf(false) }
     var passwordInput by remember { mutableStateOf("") }
@@ -265,6 +269,41 @@ fun SettingsScreen(
                 label = { Text("Limit") },
                 modifier = Modifier.fillMaxWidth()
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text("Grid Column Density:", style = MaterialTheme.typography.titleMedium)
+
+            val columnOptions = listOf(
+                "Ultra High (Most Columns)" to 120,
+                "Very High" to 180,
+                "High" to 240,
+                "Medium (Default)" to DEFAULT_MIN_COLUMN_WIDTH,
+                "Low (Fewer Columns)" to 480
+            )
+
+            columnOptions.forEach { (label, width) ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .selectable(
+                            selected = (width == minColumnWidth),
+                            onClick = { onMinColumnWidthChange(width) },
+                            role = Role.RadioButton
+                        )
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = (width == minColumnWidth),
+                        onClick = null
+                    )
+                    Text(
+                        text = label,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 

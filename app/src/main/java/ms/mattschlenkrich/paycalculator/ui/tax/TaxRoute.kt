@@ -1,5 +1,7 @@
 package ms.mattschlenkrich.paycalculator.ui.tax
 
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
+
 import android.app.DatePickerDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +41,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
@@ -50,17 +55,23 @@ import ms.mattschlenkrich.paycalculator.data.entity.TaxTypes
 import ms.mattschlenkrich.paycalculator.data.entity.WorkTaxRules
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModel
+import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 
 @Composable
 fun TaxRoute(
     mainViewModel: MainViewModel,
     workTaxViewModel: WorkTaxViewModel,
-    navController: NavController
+    navController: NavController,
+    settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
     val universalEffectiveDateLabel = stringResource(R.string.choose_a_universal_effective_date)
+
+    val settings by settingsViewModel.settings.observeAsState()
+    val minColumnWidth = settings?.minColumnWidth ?: DEFAULT_MIN_COLUMN_WIDTH
 
     val taxTypes by workTaxViewModel.getTaxTypes().observeAsState(emptyList())
     val effectiveDates by workTaxViewModel.getTaxEffectiveDates().observeAsState(emptyList())
@@ -114,19 +125,22 @@ fun TaxRoute(
                     }-${
                         dayOfMonth.toString().padStart(2, '0')
                     }"
-                    workTaxViewModel.insertEffectiveDate(
-                        TaxEffectiveDates(
-                            display,
-                            nf.generateRandomIdAsLong(),
-                            false,
-                            df.getCurrentUTCTimeAsString()
+                    coroutineScope.launch {
+                        workTaxViewModel.insertEffectiveDate(
+                            TaxEffectiveDates(
+                                display,
+                                nf.generateRandomIdAsLong(),
+                                false,
+                                df.getCurrentUTCTimeAsString()
+                            )
                         )
-                    )
+                    }
                 }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
             )
             datePickerDialog.setTitle(universalEffectiveDateLabel)
             datePickerDialog.show()
-        }
+        },
+        minColumnWidth = minColumnWidth
     )
 }
 
@@ -142,9 +156,10 @@ fun TaxRulesContent(
     onAddTaxRule: (String, String, Int) -> Unit,
     onUpdateTaxType: (TaxTypes) -> Unit,
     onTaxRuleSelected: (WorkTaxRules) -> Unit,
-    onChooseEffectiveDate: () -> Unit
+    onChooseEffectiveDate: () -> Unit,
+    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
 ) {
-    val columns = calculateGridColumns()
+    val columns = calculateGridColumns(minColumnWidth)
 
     val taxTypes by workTaxViewModel.getTaxTypes().observeAsState(emptyList())
     val effectiveDates by workTaxViewModel.getTaxEffectiveDates().observeAsState(emptyList())

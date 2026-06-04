@@ -1,5 +1,8 @@
 package ms.mattschlenkrich.paycalculator.ui.material.composable
 
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
+
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -39,9 +42,10 @@ fun MaterialViewScreen(
     materialList: List<Material>,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
-    onMaterialClick: (Material) -> Unit
+    onMaterialClick: (Material) -> Unit,
+    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
 ) {
-    val columns = calculateGridColumns()
+    val columns = calculateGridColumns(minColumnWidth)
     val nf = NumberFunctions()
 
     Scaffold(

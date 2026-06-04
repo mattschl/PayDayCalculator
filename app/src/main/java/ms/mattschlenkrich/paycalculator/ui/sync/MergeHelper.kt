@@ -7,12 +7,16 @@ import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import androidx.core.database.sqlite.transaction
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_NAME
+import ms.mattschlenkrich.paycalculator.common.SQLITE_TIME
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
 
 private const val TAG = "MergeHelper"
 
 class MergeHelper(private val context: Context, private val remoteDbPath: String) {
-
 
     /**
      * Analyzes the remote database and compares it with the local one.
@@ -41,12 +45,8 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             summary.append("  Remote file: ${remoteFile.name} (${remoteFile.length() / 1024} KB)\n")
             summary.append("  Local file: ${localFile.name} (${localFile.length() / 1024} KB)\n\n")
 
-            val lastSyncTime = getLastSyncTime(localDb)
-            if (lastSyncTime != null) {
-                summary.append("  Incremental sync enabled (last success: $lastSyncTime)\n\n")
-            } else {
-                summary.append("  Full sync enabled (no previous success found)\n\n")
-            }
+            val lookbackTime = getLookbackTime(localDb)
+            summary.append("  Safety Window: Analyzing records updated since: $lookbackTime (4-week safety buffer)\n\n")
 
             val tables = getTables()
             var totalNewRecords = 0
@@ -64,7 +64,7 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
                     continue
                 }
 
-                val results = findNewAndUpdatedRecords(localDb, remoteDb, spec, lastSyncTime)
+                val results = findNewAndUpdatedRecords(localDb, remoteDb, spec, lookbackTime)
                 val newRecords = results.first
                 val updatedRecords = results.second
 
@@ -114,19 +114,32 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
         return exists
     }
 
-    private fun getLastSyncTime(db: SQLiteDatabase): String? {
-        if (!isTableExists(db, "syncHistory")) return null
-        return try {
-            val cursor = db.rawQuery(
-                "SELECT syncTime FROM syncHistory WHERE syncStatus = 'Success' ORDER BY syncTime DESC LIMIT 1",
-                null
-            )
+    private fun getLookbackTime(localDb: SQLiteDatabase): String {
+        val formatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
+        formatter.timeZone = TimeZone.getTimeZone("UTC")
+
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        calendar.add(Calendar.DAY_OF_YEAR, -28) // 4-week safety window
+        val fourWeeksAgo = formatter.format(calendar.time)
+
+        val earliestLastSync = try {
+            val query =
+                "SELECT MIN(lastSync) FROM (SELECT MAX(syncTime) as lastSync FROM syncHistory WHERE syncStatus = 'Success' GROUP BY syncDeviceId)"
+            val cursor = localDb.rawQuery(query, null)
             var time: String? = null
             if (cursor.moveToFirst()) time = cursor.getString(0)
             cursor.close()
             time
         } catch (e: Exception) {
             null
+        }
+
+        // Return the earlier of: the earliest device's last successful sync OR 4 weeks ago.
+        // Earlier time means a wider search window.
+        return if (earliestLastSync == null || fourWeeksAgo < earliestLastSync) {
+            fourWeeksAgo
+        } else {
+            earliestLastSync
         }
     }
 
@@ -151,7 +164,7 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
                 SQLiteDatabase.OPEN_READWRITE
             )
 
-            val lastSyncTime = getLastSyncTime(localDb)
+            val lookbackTime = getLookbackTime(localDb)
             val tables = getTables()
             var totalNew = 0
             var totalUpdated = 0
@@ -181,8 +194,8 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
 
                 localDb.transaction {
                     try {
-                        val query = if (lastSyncTime != null && spec.updateTimeColumn != null) {
-                            "SELECT * FROM ${spec.tableName} WHERE ${spec.updateTimeColumn} > '$lastSyncTime'"
+                        val query = if (spec.updateTimeColumn != null) {
+                            "SELECT * FROM ${spec.tableName} WHERE ${spec.updateTimeColumn} > '$lookbackTime'"
                         } else {
                             "SELECT * FROM ${spec.tableName}"
                         }
@@ -266,7 +279,7 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
                 }
                 localCountCursor.close()
 
-                if (localCount < remoteCount) {
+                if (localCount < remoteCount && spec.tableName != "syncHistory") {
                     mismatchTables.add(spec.tableName)
                 }
 
@@ -420,16 +433,20 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
                     val status = checkRecordStatus(localDb, remoteDb, cursor, spec)
                     val displayName = try {
                         if (spec.keys.isNotEmpty()) {
-                            cursor.getString(cursor.getColumnIndexOrThrow(spec.keys[0])).trim()
+                            val colIdx = cursor.getColumnIndex(spec.keys[0])
+                            if (colIdx != -1) cursor.getString(colIdx).trim() else "Unknown"
                         } else if (spec.fks.isNotEmpty()) {
                             val fk = spec.fks[0]
-                            getNameFromTable(
-                                remoteDb,
-                                fk.parentTable,
-                                fk.parentPk,
-                                fk.parentNaturalKey,
-                                cursor.getLong(cursor.getColumnIndexOrThrow(fk.fkColumn))
-                            )
+                            val colIdx = cursor.getColumnIndex(fk.fkColumn)
+                            if (colIdx != -1) {
+                                getNameFromTable(
+                                    remoteDb,
+                                    fk.parentTable,
+                                    fk.parentPk,
+                                    fk.parentNaturalKey,
+                                    cursor.getLong(colIdx)
+                                )
+                            } else "Unknown"
                         } else {
                             "Unknown record"
                         }
@@ -497,17 +514,17 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
                 status =
                     if (remoteUpdateTime != null && (localUpdateTime == null || remoteUpdateTime > localUpdateTime)) {
                         RecordStatus.UPDATED
-                } else if (remoteUpdateTime != null && remoteUpdateTime == localUpdateTime) {
-                    // Timestamps are equal, update only if data actually differs
-                    if (isDataDifferent(localCursor, remoteCursor, spec)) {
-                        RecordStatus.UPDATED
+                    } else if (remoteUpdateTime != null && remoteUpdateTime == localUpdateTime) {
+                        // Timestamps are equal, update only if data actually differs
+                        if (isDataDifferent(localCursor, remoteCursor, spec)) {
+                            RecordStatus.UPDATED
+                        } else {
+                            RecordStatus.EXISTS
+                        }
                     } else {
+                        // Local record is newer or remoteUpdateTime is null
                         RecordStatus.EXISTS
                     }
-                } else {
-                    // Local record is newer or remoteUpdateTime is null
-                        RecordStatus.EXISTS
-                }
             } else {
                 // No timestamp available, must compare all data columns
                 status = if (isDataDifferent(localCursor, remoteCursor, spec)) {
@@ -918,6 +935,12 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             pkColumn = "woHistoryTimeWorkedId",
             isDeletedColumn = "wohtIsDeleted",
             updateTimeColumn = "wohtUpdateTime"
+        ),
+        TableSpec(
+            "syncHistory",
+            listOf("syncTime", "syncDeviceId"),
+            pkColumn = "syncId",
+            updateTimeColumn = "syncTime"
         )
     )
 

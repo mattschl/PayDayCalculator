@@ -18,7 +18,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
@@ -92,9 +91,23 @@ fun WorkDateAddRoute(
         }
     }
 
-    val onSaveWorkDate = { fragmentToGoTo: String ->
-        coroutineScope.launch {
-            val workDate = WorkDates(
+    val onSaveWorkDate: suspend (String) -> Unit = { fragmentToGoTo: String ->
+        var workDate = payDayViewModel.getWorkDateSync(
+            payPeriod.ppEmployerId, curDateString, payPeriod.ppCutoffDate
+        )
+        if (workDate != null) {
+            workDate = workDate.copy(
+                wdRegHours = regHours.toDoubleOrNull() ?: 0.0,
+                wdOtHours = otHours.toDoubleOrNull() ?: 0.0,
+                wdDblOtHours = dblOtHours.toDoubleOrNull() ?: 0.0,
+                wdStatHours = statHours.toDoubleOrNull() ?: 0.0,
+                wdNote = note.ifBlank { null },
+                wdIsDeleted = false,
+                wdUpdateTime = df.getCurrentUTCTimeAsString()
+            )
+            payDayViewModel.updateWorkDate(workDate)
+        } else {
+            workDate = WorkDates(
                 nf.generateRandomIdAsLong(),
                 payPeriod.payPeriodId,
                 payPeriod.ppEmployerId,
@@ -109,57 +122,57 @@ fun WorkDateAddRoute(
                 df.getCurrentUTCTimeAsString()
             )
             payDayViewModel.insertWorkDate(workDate)
-            mainViewModel.setWorkDateObject(workDate)
-            delay(WAIT_250)
+        }
+        mainViewModel.setWorkDateObject(workDate)
 
-            // Save selected extras
-            selectedExtras.forEach { typeId ->
-                val extraTypeAndDef = workExtraViewModel.getExtraTypeAndDefByTypeIdSync(
-                    typeId, payPeriod.ppCutoffDate
-                )
-                if (extraTypeAndDef != null) {
-                    payDayViewModel.insertWorkDateExtra(
-                        WorkDateExtras(
-                            nf.generateRandomIdAsLong(),
-                            workDate.workDateId,
-                            extraTypeAndDef.extraType.workExtraTypeId,
-                            extraTypeAndDef.extraType.wetName,
-                            extraTypeAndDef.extraType.wetAppliesTo,
-                            extraTypeAndDef.extraType.wetAttachTo,
-                            extraTypeAndDef.definition.weValue,
-                            extraTypeAndDef.definition.weIsFixed,
-                            extraTypeAndDef.extraType.wetIsCredit,
-                            false,
-                            df.getCurrentUTCTimeAsString()
-                        )
+        // Save selected extras
+        selectedExtras.forEach { typeId ->
+            val extraTypeAndDef = workExtraViewModel.getExtraTypeAndDefByTypeIdSync(
+                typeId, payPeriod.ppCutoffDate
+            )
+            if (extraTypeAndDef != null) {
+                payDayViewModel.insertWorkDateExtra(
+                    WorkDateExtras(
+                        nf.generateRandomIdAsLong(),
+                        workDate.workDateId,
+                        extraTypeAndDef.extraType.workExtraTypeId,
+                        extraTypeAndDef.extraType.wetName,
+                        extraTypeAndDef.extraType.wetAppliesTo,
+                        extraTypeAndDef.extraType.wetAttachTo,
+                        extraTypeAndDef.definition.weValue,
+                        extraTypeAndDef.definition.weIsFixed,
+                        extraTypeAndDef.extraType.wetIsCredit,
+                        false,
+                        df.getCurrentUTCTimeAsString()
                     )
+                )
+            }
+        }
+
+        when (fragmentToGoTo) {
+            Screen.TimeSheet.route -> {
+                mainViewModel.setSelectedTopLevelIndex(0)
+                navController.popBackStack(Screen.MainPager.route, inclusive = false)
+            }
+
+            Screen.WorkDateUpdate.route -> {
+                navController.navigate(Screen.WorkDateUpdate.route) {
+                    popUpTo(Screen.WorkDateAdd.route) { inclusive = true }
                 }
             }
 
-            when (fragmentToGoTo) {
-                Screen.TimeSheet.route -> {
-                    mainViewModel.setSelectedTopLevelIndex(0)
-                    navController.popBackStack(Screen.MainPager.route, inclusive = false)
+            Screen.WorkDateTimes.route -> {
+                navController.navigate(Screen.WorkDateUpdate.route) {
+                    popUpTo(Screen.WorkDateAdd.route) { inclusive = true }
                 }
-                Screen.WorkDateUpdate.route -> {
-                    navController.navigate(Screen.WorkDateUpdate.route) {
-                        popUpTo(Screen.WorkDateAdd.route) { inclusive = true }
-                    }
-                }
+                navController.navigate(Screen.WorkDateTimes.route)
+            }
 
-                Screen.WorkDateTimes.route -> {
-                    navController.navigate(Screen.WorkDateUpdate.route) {
-                        popUpTo(Screen.WorkDateAdd.route) { inclusive = true }
-                    }
-                    navController.navigate(Screen.WorkDateTimes.route)
+            Screen.WorkOrderHistoryAdd.route -> {
+                navController.navigate(Screen.WorkDateUpdate.route) {
+                    popUpTo(Screen.WorkDateAdd.route) { inclusive = true }
                 }
-
-                Screen.WorkOrderHistoryAdd.route -> {
-                    navController.navigate(Screen.WorkDateUpdate.route) {
-                        popUpTo(Screen.WorkDateAdd.route) { inclusive = true }
-                    }
-                    navController.navigate(Screen.WorkOrderHistoryAdd.route)
-                }
+                navController.navigate(Screen.WorkOrderHistoryAdd.route)
             }
         }
     }
@@ -233,25 +246,20 @@ fun WorkDateAddRoute(
                     HolidayPayCalculator(
                         payDayViewModel, payPeriod.ppEmployerId, curDateString
                     )
-                delay(WAIT_1000)
-                val stat = round(holidayPayCalculator.getStatHours() * 4) / 4
+                val stat = round(holidayPayCalculator.calculateStatHours() * 4) / 4
                 statHours = nf.displayNumberFromDouble(stat)
             }
         },
         note = note,
         onNoteChange = { note = it },
         onUpdateTimeClick = {
-            onSaveWorkDate(Screen.WorkDateUpdate.route)
             coroutineScope.launch {
-                delay(WAIT_250)
-                navController.navigate(Screen.WorkDateTimes.route)
+                onSaveWorkDate(Screen.WorkDateTimes.route)
             }
         },
         onAddHistoryClick = {
-            onSaveWorkDate(Screen.WorkDateUpdate.route)
             coroutineScope.launch {
-                delay(WAIT_250)
-                navController.navigate(Screen.WorkOrderHistoryAdd.route)
+                onSaveWorkDate(Screen.WorkOrderHistoryAdd.route)
             }
         },
         onSaveClick = {
@@ -260,7 +268,9 @@ fun WorkDateAddRoute(
                 existingWorkDate = existing
                 showDateUsedDialog = true
             } else {
-                onSaveWorkDate(Screen.WorkDateUpdate.route)
+                coroutineScope.launch {
+                    onSaveWorkDate(Screen.WorkDateUpdate.route)
+                }
             }
         },
         extras = extras,
@@ -272,7 +282,16 @@ fun WorkDateAddRoute(
                     coroutineScope.launch {
                         val existing = usedWorkDatesList.find { it.wdDate == curDateString }
                         val currentWorkDate = if (existing != null) {
-                            existing
+                            if (existing.wdIsDeleted) {
+                                val revived = existing.copy(
+                                    wdIsDeleted = false,
+                                    wdUpdateTime = df.getCurrentUTCTimeAsString()
+                                )
+                                payDayViewModel.updateWorkDate(revived)
+                                revived
+                            } else {
+                                existing
+                            }
                         } else {
                             val newWorkDate = WorkDates(
                                 nf.generateRandomIdAsLong(),

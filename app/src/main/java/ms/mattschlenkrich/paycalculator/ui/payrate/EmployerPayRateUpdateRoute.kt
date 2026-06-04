@@ -8,9 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
@@ -28,6 +30,8 @@ fun EmployerPayRateUpdateRoute(
     val context = LocalContext.current
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
+
+    val coroutineScope = rememberCoroutineScope()
 
     val payRate = mainViewModel.getPayRate() ?: return
 //    val employer = mainViewModel.getEmployer() ?: return
@@ -64,15 +68,17 @@ fun EmployerPayRateUpdateRoute(
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
-                employerViewModel.updatePayRate(
-                    payRate.copy(
-                        eprEffectiveDate = effectiveDate,
-                        eprPayRate = nf.getDoubleFromDollars(wage),
-                        eprPerPeriod = selectedFrequency.ordinal,
-                        eprUpdateTime = df.getCurrentUTCTimeAsString()
+                coroutineScope.launch {
+                    employerViewModel.updatePayRate(
+                        payRate.copy(
+                            eprEffectiveDate = effectiveDate,
+                            eprPayRate = nf.getDoubleFromDollars(wage),
+                            eprPerPeriod = selectedFrequency.ordinal,
+                            eprUpdateTime = df.getCurrentUTCTimeAsString()
+                        )
                     )
-                )
-                navController.popBackStack()
+                    navController.popBackStack()
+                }
             }
         },
     )

@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
@@ -321,7 +320,6 @@ fun PayDetailPage(
                         extra, !active, payPeriod.payPeriodId,
                         payDayViewModel, nf, df
                     )
-                    delay(WAIT_250)
                     trigger++
                 }
             }

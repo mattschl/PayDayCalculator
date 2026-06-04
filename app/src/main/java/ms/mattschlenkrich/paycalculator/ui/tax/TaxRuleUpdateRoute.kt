@@ -8,10 +8,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
@@ -26,6 +28,7 @@ fun TaxRuleUpdateRoute(
     navController: NavController
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
     val errorLabel = stringResource(R.string.error_)
@@ -81,8 +84,10 @@ fun TaxRuleUpdateRoute(
                     wtBracketAmount = nf.getDoubleFromDollars(upperLimit),
                     wtUpdateTime = df.getCurrentUTCTimeAsString()
                 )
-                workTaxViewModel.updateTaxRule(updatedTaxRule)
-                navController.popBackStack()
+                coroutineScope.launch {
+                    workTaxViewModel.updateTaxRule(updatedTaxRule)
+                    navController.popBackStack()
+                }
             } else {
                 Toast.makeText(
                     context,
@@ -96,8 +101,10 @@ fun TaxRuleUpdateRoute(
                 wtIsDeleted = true,
                 wtUpdateTime = df.getCurrentUTCTimeAsString()
             )
-            workTaxViewModel.updateTaxRule(deletedTaxRule)
-            navController.popBackStack()
+            coroutineScope.launch {
+                workTaxViewModel.updateTaxRule(deletedTaxRule)
+                navController.popBackStack()
+            }
         },
         onBackClick = { navController.popBackStack() }
     )

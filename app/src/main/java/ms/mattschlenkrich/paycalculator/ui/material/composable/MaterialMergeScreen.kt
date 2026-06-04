@@ -2,6 +2,9 @@
 
 package ms.mattschlenkrich.paycalculator.ui.material.composable
 
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
+
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -63,9 +66,10 @@ fun MaterialMergeScreen(
     onChildSelected: (Material) -> Unit,
     onMergeAction: (Int) -> Unit,
     onDoneClick: () -> Unit,
-    onListItemSelected: (Material) -> Unit
+    onListItemSelected: (Material) -> Unit,
+    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
 ) {
-    val columns = calculateGridColumns()
+    val columns = calculateGridColumns(minColumnWidth)
 
     var showMergeOptionsDialog by remember {
         mutableStateOf(

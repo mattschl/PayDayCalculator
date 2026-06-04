@@ -8,9 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
@@ -29,6 +31,8 @@ fun EmployerPayRateAddRoute(
     val context = LocalContext.current
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
+
+    val coroutineScope = rememberCoroutineScope()
 
     val employer = mainViewModel.getEmployer() ?: return
 
@@ -62,18 +66,20 @@ fun EmployerPayRateAddRoute(
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
-                employerViewModel.insertPayRate(
-                    EmployerPayRates(
-                        nf.generateRandomIdAsLong(),
-                        employer.employerId,
-                        effectiveDate,
-                        selectedFrequency.ordinal,
-                        nf.getDoubleFromDollars(wage),
-                        false,
-                        df.getCurrentUTCTimeAsString()
+                coroutineScope.launch {
+                    employerViewModel.insertPayRate(
+                        EmployerPayRates(
+                            nf.generateRandomIdAsLong(),
+                            employer.employerId,
+                            effectiveDate,
+                            selectedFrequency.ordinal,
+                            nf.getDoubleFromDollars(wage),
+                            false,
+                            df.getCurrentUTCTimeAsString()
+                        )
                     )
-                )
-                navController.popBackStack()
+                    navController.popBackStack()
+                }
             }
         },
     )

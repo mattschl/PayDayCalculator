@@ -6,7 +6,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras
 import ms.mattschlenkrich.paycalculator.data.model.ExtraContainer
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
 
-fun insertOrUpdateExtraOnChange(
+suspend fun insertOrUpdateExtraOnChange(
     extraContainer: ExtraContainer,
     delete: Boolean,
     payPeriodId: Long,

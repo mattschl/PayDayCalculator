@@ -181,8 +181,10 @@ fun EmployerUpdateRoute(
                         mainMonthDate,
                         df
                     )
-                    employerViewModel.updateEmployer(updatedEmployer)
-                    navController.popBackStack()
+                    coroutineScope.launch {
+                        employerViewModel.updateEmployer(updatedEmployer)
+                        navController.popBackStack()
+                    }
                 } else {
                     Toast.makeText(
                         context,

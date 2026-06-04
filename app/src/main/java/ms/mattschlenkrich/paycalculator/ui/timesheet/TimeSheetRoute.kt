@@ -1,5 +1,7 @@
 package ms.mattschlenkrich.paycalculator.ui.timesheet
 
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -65,6 +67,7 @@ fun TimeSheetRoute(
     val projections = remember { PayDateProjections() }
 
     val settings by settingsViewModel.settings.observeAsState()
+    val minColumnWidth = settings?.minColumnWidth ?: DEFAULT_MIN_COLUMN_WIDTH
     val payPeriodsLimit = settings?.payPeriodsLimit ?: 15
 
     val hrLabel = stringResource(R.string.hr)
@@ -356,7 +359,8 @@ fun TimeSheetRoute(
                     hrsLabel = hrsLabel,
                     otHrsLabel = otHrsLabel,
                     dblOtHrsLabel = dblOtHrsLabel,
-                    otherHrsLabel = otherHrsLabel
+                    otherHrsLabel = otherHrsLabel,
+                    minColumnWidth = minColumnWidth
                 )
             }
         }
@@ -383,7 +387,8 @@ fun TimeSheetPage(
     hrsLabel: String,
     otHrsLabel: String,
     dblOtHrsLabel: String,
-    otherHrsLabel: String
+    otherHrsLabel: String,
+    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
 ) {
     val workDates by payDayViewModel.getWorkDateList(
         employer.employerId,
@@ -498,6 +503,7 @@ fun TimeSheetPage(
                 otherHrsLabel,
                 pipeLabel
             )
-        }
+        },
+        minColumnWidth = minColumnWidth
     )
 }

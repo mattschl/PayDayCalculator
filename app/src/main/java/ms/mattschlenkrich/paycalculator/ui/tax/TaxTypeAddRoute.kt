@@ -12,10 +12,12 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
@@ -34,6 +36,7 @@ fun TaxTypeAddRoute(
     navController: NavController
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
     val errorLabel = stringResource(R.string.error_)
@@ -93,13 +96,15 @@ fun TaxTypeAddRoute(
                     false,
                     df.getCurrentUTCTimeAsString()
                 )
-                workTaxViewModel.insertTaxTypeWithEmployerLinks(
-                    taxType,
-                    employers,
-                    df.getCurrentUTCTimeAsString()
-                )
-                savedTaxType = taxType
-                showNextStepDialog = true
+                coroutineScope.launch {
+                    workTaxViewModel.insertTaxTypeWithEmployerLinks(
+                        taxType,
+                        employers,
+                        df.getCurrentUTCTimeAsString()
+                    )
+                    savedTaxType = taxType
+                    showNextStepDialog = true
+                }
             } else {
                 Toast.makeText(
                     context,

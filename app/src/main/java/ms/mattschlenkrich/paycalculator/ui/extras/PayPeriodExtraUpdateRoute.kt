@@ -3,7 +3,9 @@ package ms.mattschlenkrich.paycalculator.ui.extras
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
@@ -30,6 +32,8 @@ fun PayPeriodExtraUpdateRoute(
         employer.employerId, payPeriod.ppCutoffDate
     ).observeAsState(emptyList())
 
+    val coroutineScope = rememberCoroutineScope()
+
     PayPeriodExtraScreen(
         curPayPeriod = payPeriod,
         employerName = employer.employerName,
@@ -38,17 +42,21 @@ fun PayPeriodExtraUpdateRoute(
         existingWorkDateExtras = existingWorkDateExtras,
         defaultExtras = defaultExtras,
         onUpdate = { extra ->
-            payDayViewModel.updatePayPeriodExtra(extra)
-            navController.popBackStack()
+            coroutineScope.launch {
+                payDayViewModel.updatePayPeriodExtra(extra)
+                navController.popBackStack()
+            }
         },
         onDelete = { extra ->
-            payDayViewModel.updatePayPeriodExtra(
-                extra.copy(
-                    ppeIsDeleted = true,
-                    ppeUpdateTime = DateFunctions().getCurrentUTCTimeAsString()
+            coroutineScope.launch {
+                payDayViewModel.updatePayPeriodExtra(
+                    extra.copy(
+                        ppeIsDeleted = true,
+                        ppeUpdateTime = DateFunctions().getCurrentUTCTimeAsString()
+                    )
                 )
-            )
-            navController.popBackStack()
+                navController.popBackStack()
+            }
         },
         onCancel = { navController.popBackStack() }
     )

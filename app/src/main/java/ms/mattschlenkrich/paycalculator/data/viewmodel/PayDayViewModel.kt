@@ -2,8 +2,6 @@ package ms.mattschlenkrich.paycalculator.data.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.data.entity.PayPeriods
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
@@ -26,10 +24,14 @@ class PayDayViewModel(
     suspend fun getPayPeriodSync(cutOff: String, employerId: Long) =
         payDayRepository.getPayPeriodSync(cutOff, employerId)
 
-    fun updateWorkDate(workDate: WorkDates) =
-        viewModelScope.launch {
-            payDayRepository.updateWorkDate(workDate)
-        }
+    suspend fun getWorkDateSync(workDateId: Long) =
+        payDayRepository.getWorkDateSync(workDateId)
+
+    suspend fun getWorkDateSync(employerId: Long, date: String, cutOff: String) =
+        payDayRepository.getWorkDateSync(employerId, date, cutOff)
+
+    suspend fun updateWorkDate(workDate: WorkDates) =
+        payDayRepository.updateWorkDate(workDate)
 
     fun getWorkDateList(employerId: Long, cutOff: String) =
         payDayRepository.getWorkDateList(employerId, cutOff)
@@ -40,42 +42,30 @@ class PayDayViewModel(
     fun getWorkDateListUsed(employerId: Long, cutOff: String) =
         payDayRepository.getWorkDateListUsed(employerId, cutOff)
 
-    fun insertWorkDate(workDate: WorkDates) =
-        viewModelScope.launch {
-            payDayRepository.insertWorkDate(workDate)
-        }
+    suspend fun insertWorkDate(workDate: WorkDates) =
+        payDayRepository.insertWorkDate(workDate)
 
-    fun insertWorkDateExtra(workDateExtra: WorkDateExtras) =
-        viewModelScope.launch {
-            payDayRepository.insertWorkDateExtra(workDateExtra)
-        }
+    suspend fun insertWorkDateExtra(workDateExtra: WorkDateExtras) =
+        payDayRepository.insertWorkDateExtra(workDateExtra)
 
-    fun updateWorkDateExtra(workDateExtra: WorkDateExtras) =
-        viewModelScope.launch {
-            payDayRepository.updateWorkDateExtra(workDateExtra)
-        }
+    suspend fun updateWorkDateExtra(workDateExtra: WorkDateExtras) =
+        payDayRepository.updateWorkDateExtra(workDateExtra)
 
     fun getWorkDateExtras(workDateId: Long) =
         payDayRepository.getWorkDateExtras(workDateId)
 
-    fun deleteWorkDateExtra(
+    suspend fun deleteWorkDateExtra(
         extraName: String, workDateId: Long, updateTime: String
-    ) = viewModelScope.launch {
-        payDayRepository.deleteWorkDateExtra(extraName, workDateId, updateTime)
-    }
+    ) = payDayRepository.deleteWorkDateExtra(extraName, workDateId, updateTime)
 
     fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String) =
         payDayRepository.getWorkDateExtrasPerPay(employerId, cutOff)
 
-    fun insertPayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras) =
-        viewModelScope.launch {
-            payDayRepository.insertPayPeriodExtra(payPeriodExtra)
-        }
+    suspend fun insertPayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras) =
+        payDayRepository.insertPayPeriodExtra(payPeriodExtra)
 
-    fun updatePayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras) =
-        viewModelScope.launch {
-            payDayRepository.updatePayPeriodExtra(payPeriodExtra)
-        }
+    suspend fun updatePayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras) =
+        payDayRepository.updatePayPeriodExtra(payPeriodExtra)
 
     fun getPayPeriodExtras(payPeriodId: Long) =
         payDayRepository.getPayPeriodExtras(payPeriodId)

@@ -78,8 +78,15 @@ interface PayDayDao {
     @Query(
         "SELECT * FROM $TABLE_WORK_DATES " +
                 "WHERE wdEmployerId = :employerId " +
+                "AND wdDate = :date " +
+                "AND wdCutoffDate = :cutOff"
+    )
+    suspend fun getWorkDateSync(employerId: Long, date: String, cutOff: String): WorkDates?
+
+    @Query(
+        "SELECT * FROM $TABLE_WORK_DATES " +
+                "WHERE wdEmployerId = :employerId " +
                 "AND wdCutoffDate = :cutOff " +
-                "AND wdIsDeleted = 0 " +
                 "ORDER BY wdDate"
     )
     fun getWorkDateListUsed(employerId: Long, cutOff: String): LiveData<List<WorkDates>>

@@ -2,6 +2,9 @@
 
 package ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable
 
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
+
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -93,6 +96,7 @@ fun WorkOrderHistoryUpdateScreen(
     onUpdateWorkPerformedDefinition: (WorkOrderHistoryWorkPerformedCombined) -> Unit,
     onUpdateMaterialInHistory: (MaterialInSequence) -> Unit,
     onUpdateMaterialDefinition: (MaterialInSequence) -> Unit,
+    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
 ) {
     var showWorkPerformedDialog by remember { mutableStateOf(false) }
     var selectedWorkPerformed by remember {
@@ -104,7 +108,7 @@ fun WorkOrderHistoryUpdateScreen(
     var showMaterialDialog by remember { mutableStateOf(false) }
     var selectedMaterial by remember { mutableStateOf<MaterialInSequence?>(null) }
 
-    val columns = calculateGridColumns()
+    val columns = calculateGridColumns(minColumnWidth)
 
     WorkPerformedOptionsDialog(
         showDialog = showWorkPerformedDialog,

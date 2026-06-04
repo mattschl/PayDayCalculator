@@ -1,5 +1,7 @@
 package ms.mattschlenkrich.paycalculator.ui.settings
 
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -22,6 +24,7 @@ fun SettingsRoute(
         isPasswordProtected = settings?.isPasswordProtected ?: false,
         isPasswordSet = viewModel.isPasswordSet(),
         defaultEmployerId = settings?.defaultEmployerId,
+        minColumnWidth = settings?.minColumnWidth ?: DEFAULT_MIN_COLUMN_WIDTH,
         employers = employers,
         onFontSizeChange = { viewModel.updateFontSize(it) },
         onPayPeriodsLimitChange = { viewModel.updatePayPeriodsLimit(it) },
@@ -30,6 +33,7 @@ fun SettingsRoute(
         onIsPasswordProtectedChange = { viewModel.updateIsPasswordProtected(it) },
         onPasswordSet = { viewModel.savePassword(it) },
         onPasswordVerify = { viewModel.verifyPassword(it) },
-        onDefaultEmployerChange = { viewModel.updateDefaultEmployerId(it) }
+        onDefaultEmployerChange = { viewModel.updateDefaultEmployerId(it) },
+        onMinColumnWidthChange = { viewModel.updateMinColumnWidth(it) }
     )
 }

@@ -1,5 +1,8 @@
 package ms.mattschlenkrich.paycalculator.ui.areas.composable
 
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
+
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -25,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
@@ -38,9 +42,10 @@ fun AreaViewScreen(
     areaList: List<Areas>,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
-    onAreaClick: (Areas) -> Unit
+    onAreaClick: (Areas) -> Unit,
+    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
 ) {
-    val columns = calculateGridColumns()
+    val columns = calculateGridColumns(minColumnWidth)
 
     Scaffold(
 //        topBar = {

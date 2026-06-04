@@ -1,5 +1,8 @@
 package ms.mattschlenkrich.paycalculator.ui.payrate.composable
 
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
+
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,10 +65,11 @@ fun EmployerPayRatesScreen(
     onAddPayRate: (Employers?) -> Unit,
     onUpdatePayRate: (EmployerPayRates, Employers) -> Unit,
     onAddEmployer: () -> Unit,
+    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    val columns = calculateGridColumns()
+    val columns = calculateGridColumns(minColumnWidth)
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),

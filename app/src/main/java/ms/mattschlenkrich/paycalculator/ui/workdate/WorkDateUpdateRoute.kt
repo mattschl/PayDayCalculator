@@ -2,6 +2,8 @@
 
 package ms.mattschlenkrich.paycalculator.ui.workdate
 
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
+
 import android.app.DatePickerDialog
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
@@ -17,8 +19,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
@@ -33,6 +35,7 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.workdate.composable.WorkDateUpdateScreen
 import kotlin.math.round
 
@@ -42,12 +45,16 @@ fun WorkDateUpdateRoute(
     payDayViewModel: PayDayViewModel,
     workExtraViewModel: WorkExtraViewModel,
     workOrderViewModel: WorkOrderViewModel,
-    navController: NavController
+    navController: NavController,
+    settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
+
+    val settings by settingsViewModel.settings.observeAsState()
+    val minColumnWidth = settings?.minColumnWidth ?: DEFAULT_MIN_COLUMN_WIDTH
 
     val currentWorkDate = mainViewModel.getWorkDateObject() ?: run {
         LaunchedEffect(Unit) {
@@ -168,33 +175,32 @@ fun WorkDateUpdateRoute(
         }
     }
 
-    val onUpdateWorkDate = { fragmentToGoTo: String ->
-        coroutineScope.launch {
-            val updated = currentWorkDate.copy(
-                wdDate = curDateString,
-                wdRegHours = regHours.toDoubleOrNull() ?: 0.0,
-                wdOtHours = otHours.toDoubleOrNull() ?: 0.0,
-                wdDblOtHours = dblOtHours.toDoubleOrNull() ?: 0.0,
-                wdStatHours = statHours.toDoubleOrNull() ?: 0.0,
-                wdNote = note.ifBlank { null },
-                wdIsDeleted = false,
-                wdUpdateTime = df.getCurrentUTCTimeAsString()
-            )
-            payDayViewModel.updateWorkDate(updated)
-            mainViewModel.setWorkDateObject(updated)
+    val onUpdateWorkDate: suspend (String) -> Unit = { fragmentToGoTo: String ->
+        val updated = currentWorkDate.copy(
+            wdDate = curDateString,
+            wdRegHours = regHours.toDoubleOrNull() ?: 0.0,
+            wdOtHours = otHours.toDoubleOrNull() ?: 0.0,
+            wdDblOtHours = dblOtHours.toDoubleOrNull() ?: 0.0,
+            wdStatHours = statHours.toDoubleOrNull() ?: 0.0,
+            wdNote = note.ifBlank { null },
+            wdIsDeleted = false,
+            wdUpdateTime = df.getCurrentUTCTimeAsString()
+        )
+        payDayViewModel.updateWorkDate(updated)
+        mainViewModel.setWorkDateObject(updated)
 
-            when (fragmentToGoTo) {
-                Screen.TimeSheet.route -> {
-                    mainViewModel.setSelectedTopLevelIndex(0)
-                    navController.popBackStack(Screen.MainPager.route, inclusive = false)
-                }
-                Screen.WorkDateTimes.route -> {
-                    navController.navigate(Screen.WorkDateTimes.route)
-                }
+        when (fragmentToGoTo) {
+            Screen.TimeSheet.route -> {
+                mainViewModel.setSelectedTopLevelIndex(0)
+                navController.popBackStack(Screen.MainPager.route, inclusive = false)
+            }
 
-                Screen.WorkOrderHistoryAdd.route -> {
-                    navController.navigate(Screen.WorkOrderHistoryAdd.route)
-                }
+            Screen.WorkDateTimes.route -> {
+                navController.navigate(Screen.WorkDateTimes.route)
+            }
+
+            Screen.WorkOrderHistoryAdd.route -> {
+                navController.navigate(Screen.WorkOrderHistoryAdd.route)
             }
         }
     }
@@ -226,8 +232,10 @@ fun WorkDateUpdateRoute(
             onDismissRequest = { showReplaceDateDialog = false },
             confirmButton = {
                 TextButton(onClick = {
-                    onUpdateWorkDate(Screen.TimeSheet.route)
-                    showReplaceDateDialog = false
+                    coroutineScope.launch {
+                        onUpdateWorkDate(Screen.TimeSheet.route)
+                        showReplaceDateDialog = false
+                    }
                 }) {
                     Text(stringResource(R.string.yes))
                 }
@@ -281,7 +289,6 @@ fun WorkDateUpdateRoute(
                     coroutineScope.launch {
                         workOrderViewModel.removeAllWorkPerformedFromWorkOderHistory(history.history.woHistoryId)
                         workOrderViewModel.removeAllMaterialsFromWorkOrderHistory(history.history.woHistoryId)
-                        delay(WAIT_500)
                         workOrderViewModel.deleteWorkOrderHistory(history.history.woHistoryId)
                     }
                     showDeleteHistoryConfirmDialog = null
@@ -334,9 +341,11 @@ fun WorkDateUpdateRoute(
             onDismissRequest = { showDeleteExtraConfirmDialog = null },
             confirmButton = {
                 TextButton(onClick = {
-                    payDayViewModel.deleteWorkDateExtra(
-                        extra.wdeName, extra.wdeWorkDateId, df.getCurrentUTCTimeAsString()
-                    )
+                    coroutineScope.launch {
+                        payDayViewModel.deleteWorkDateExtra(
+                            extra.wdeName, extra.wdeWorkDateId, df.getCurrentUTCTimeAsString()
+                        )
+                    }
                     showDeleteExtraConfirmDialog = null
                 }) {
                     Text(stringResource(R.string.delete))
@@ -383,15 +392,22 @@ fun WorkDateUpdateRoute(
                     HolidayPayCalculator(
                         payDayViewModel, currentWorkDate.wdEmployerId, curDateString
                     )
-                delay(WAIT_1000)
-                val stat = round(holidayPayCalculator.getStatHours() * 4) / 4
+                val stat = round(holidayPayCalculator.calculateStatHours() * 4) / 4
                 statHours = nf.displayNumberFromDouble(stat)
             }
         },
         note = note,
         onNoteChange = { note = it },
-        onUpdateTimeClick = { onUpdateWorkDate(Screen.WorkDateTimes.route) },
-        onAddHistoryClick = { onUpdateWorkDate(Screen.WorkOrderHistoryAdd.route) },
+        onUpdateTimeClick = {
+            coroutineScope.launch {
+                onUpdateWorkDate(Screen.WorkDateTimes.route)
+            }
+        },
+        onAddHistoryClick = {
+            coroutineScope.launch {
+                onUpdateWorkDate(Screen.WorkOrderHistoryAdd.route)
+            }
+        },
         onTransferClick = {
             regHours = nf.displayNumberFromDouble(historyRegHours)
             otHours = nf.displayNumberFromDouble(historyOtHours)
@@ -401,7 +417,9 @@ fun WorkDateUpdateRoute(
             if (curDateString != currentWorkDate.wdDate && usedWorkDatesList.any { it.wdDate == curDateString }) {
                 showReplaceDateDialog = true
             } else {
-                onUpdateWorkDate(Screen.TimeSheet.route)
+                coroutineScope.launch {
+                    onUpdateWorkDate(Screen.TimeSheet.route)
+                }
             }
         },
         histories = histories,
@@ -418,26 +436,28 @@ fun WorkDateUpdateRoute(
         ) workOrderSummary else "",
         extras = displayExtras,
         onExtraClick = { extra ->
-            if (!extra.wdeIsDeleted) {
-                payDayViewModel.deleteWorkDateExtra(
-                    extra.wdeName, extra.wdeWorkDateId, df.getCurrentUTCTimeAsString()
-                )
-            } else {
-                if (extra.workDateExtraId != 0L) {
-                    payDayViewModel.updateWorkDateExtra(
-                        extra.copy(
-                            wdeIsDeleted = false,
-                            wdeUpdateTime = df.getCurrentUTCTimeAsString()
-                        )
+            coroutineScope.launch {
+                if (!extra.wdeIsDeleted) {
+                    payDayViewModel.deleteWorkDateExtra(
+                        extra.wdeName, extra.wdeWorkDateId, df.getCurrentUTCTimeAsString()
                     )
                 } else {
-                    payDayViewModel.insertWorkDateExtra(
-                        extra.copy(
-                            workDateExtraId = nf.generateRandomIdAsLong(),
-                            wdeIsDeleted = false,
-                            wdeUpdateTime = df.getCurrentUTCTimeAsString()
+                    if (extra.workDateExtraId != 0L) {
+                        payDayViewModel.updateWorkDateExtra(
+                            extra.copy(
+                                wdeIsDeleted = false,
+                                wdeUpdateTime = df.getCurrentUTCTimeAsString()
+                            )
                         )
-                    )
+                    } else {
+                        payDayViewModel.insertWorkDateExtra(
+                            extra.copy(
+                                workDateExtraId = nf.generateRandomIdAsLong(),
+                                wdeIsDeleted = false,
+                                wdeUpdateTime = df.getCurrentUTCTimeAsString()
+                            )
+                        )
+                    }
                 }
             }
         },
@@ -447,6 +467,7 @@ fun WorkDateUpdateRoute(
         onAddExtraClick = {
             mainViewModel.setWorkDateObject(currentWorkDate)
             navController.navigate(Screen.WorkDateExtraAdd.route)
-        }
+        },
+        minColumnWidth = minColumnWidth
     )
 }

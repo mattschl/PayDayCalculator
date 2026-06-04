@@ -43,6 +43,13 @@ interface WorkTaxDao {
     )
     fun getTaxTypes(): LiveData<List<TaxTypes>>
 
+    @Query(
+        "SELECT * FROM $TABLE_TAX_TYPES " +
+                "WHERE ttIsDeleted = 0 " +
+                "ORDER BY $WORK_TAX_TYPE COLLATE NOCASE"
+    )
+    suspend fun getTaxTypesSync(): List<TaxTypes>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTaxRule(taxRule: WorkTaxRules)
 

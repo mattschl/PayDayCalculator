@@ -3,7 +3,9 @@ package ms.mattschlenkrich.paycalculator.ui.extras
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkExtraViewModel
@@ -28,6 +30,8 @@ fun PayPeriodExtraAddRoute(
         employer.employerId, payPeriod.ppCutoffDate
     ).observeAsState(emptyList())
 
+    val coroutineScope = rememberCoroutineScope()
+
     PayPeriodExtraScreen(
         curPayPeriod = payPeriod,
         employerName = employer.employerName,
@@ -36,8 +40,10 @@ fun PayPeriodExtraAddRoute(
         existingWorkDateExtras = existingWorkDateExtras,
         defaultExtras = defaultExtras,
         onUpdate = { extra ->
-            payDayViewModel.insertPayPeriodExtra(extra)
-            navController.popBackStack()
+            coroutineScope.launch {
+                payDayViewModel.insertPayPeriodExtra(extra)
+                navController.popBackStack()
+            }
         },
         onDelete = {},
         onCancel = { navController.popBackStack() }

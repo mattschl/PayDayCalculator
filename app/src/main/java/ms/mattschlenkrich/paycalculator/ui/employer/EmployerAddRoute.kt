@@ -16,7 +16,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
@@ -82,9 +81,7 @@ fun EmployerAddRoute(
                         )
                         coroutineScope.launch {
                             employerViewModel.insertEmployer(curEmployer)
-                            delay(WAIT_250)
                             addEmployerTaxRules(curEmployer.employerId, workTaxViewModel, df)
-                            delay(WAIT_250)
                             mainViewModel.setEmployer(curEmployer)
                             navController.navigate(Screen.EmployerUpdate.route) {
                                 popUpTo(Screen.EmployerAdd.route) { inclusive = true }

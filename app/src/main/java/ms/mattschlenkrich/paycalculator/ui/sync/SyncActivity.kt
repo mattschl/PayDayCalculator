@@ -145,19 +145,10 @@ class SyncActivity : ComponentActivity() {
 
     private suspend fun performDownload(helper: DriveServiceHelper, targetFolderId: String) {
         showProgress("Searching for backups...")
-        try {
-            val fileList: FileList = helper.queryFiles(targetFolderId)
-            val driveFiles = fileList.files ?: emptyList()
+        val fileList: FileList = helper.queryFiles(targetFolderId)
+        val driveFiles = fileList.files ?: emptyList()
 
-            if (driveFiles.isEmpty()) {
-                Toast.makeText(
-                    this@SyncActivity,
-                    "No backups found on Drive",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return
-            }
-
+        if (driveFiles.isNotEmpty()) {
             val dbDir = File(applicationInfo.dataDir, "databases")
             if (!dbDir.exists()) dbDir.mkdirs()
 
@@ -165,11 +156,16 @@ class SyncActivity : ComponentActivity() {
             dbDir.listFiles { _, name -> name.startsWith("pay_from_drive") }
                 ?.forEach { it.delete() }
 
+            val fourWeeksAgo = System.currentTimeMillis() - (28 * 24 * 60 * 60 * 1000L)
             val dbFiles = driveFiles
                 .filter { (it.name.startsWith("pay_") || it.name == "pay.db") && it.name.endsWith(".db") }
+                .filter { (it.modifiedTime?.value ?: 0L) > fourWeeksAgo }
                 .sortedBy { it.name }
 
             var downloadCount = 0
+            if (dbFiles.isEmpty()) {
+                Log.d(TAG, "No backups found from the last 28 days.")
+            }
 
             for (dbFile in dbFiles) {
                 val relatedSuffixes = listOf("", "-wal", "-shm")
@@ -196,25 +192,8 @@ class SyncActivity : ComponentActivity() {
                 Log.d(TAG, "Downloaded $downloadCount new files to ${dbDir.absolutePath}")
                 setResult(RESULT_OK)
                 PayDatabase.resetInstance()
-                Toast.makeText(
-                    this@SyncActivity,
-                    "Downloaded $downloadCount files to app storage",
-                    Toast.LENGTH_LONG
-                ).show()
-            } else {
-                Toast.makeText(
-                    this@SyncActivity,
-                    "Local backups are already up to date.",
-                    Toast.LENGTH_SHORT
-                ).show()
             }
-
             docContent = "Files stored in: ${dbDir.absolutePath}"
-
-        } catch (e: Exception) {
-            handleError("Failed to download backups", e)
-        } finally {
-            hideProgress()
         }
     }
 
@@ -251,7 +230,11 @@ class SyncActivity : ComponentActivity() {
                 }
 
                 val targetFolderId = getTargetFolderId()
-                performDownload(helper, targetFolderId)
+                try {
+                    performDownload(helper, targetFolderId)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Download phase failed, proceeding to backup", e)
+                }
 
                 val dbDir = File(applicationInfo.dataDir, "databases")
                 val localBackups = dbDir.listFiles { _, name ->
@@ -296,7 +279,9 @@ class SyncActivity : ComponentActivity() {
                     db.invalidationTracker.refreshVersionsAsync()
                     PayDatabase.resetInstance()
                 } else {
-                    docContent = "No backups found to sync."
+                    if (docContent.isBlank()) {
+                        docContent = "No new backups to merge from the last 4 weeks."
+                    }
                 }
 
                 showProgress("Creating fresh backup...")

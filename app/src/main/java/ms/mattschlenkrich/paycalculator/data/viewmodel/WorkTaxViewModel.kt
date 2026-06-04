@@ -2,9 +2,6 @@ package ms.mattschlenkrich.paycalculator.data.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.data.entity.EmployerTaxTypes
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.entity.TaxEffectiveDates
@@ -17,11 +14,11 @@ class WorkTaxViewModel(
     private val workTaxRepository: WorkTaxRepository
 ) : AndroidViewModel(app) {
 
-    fun insertTaxTypeWithEmployerLinks(
+    suspend fun insertTaxTypeWithEmployerLinks(
         taxType: TaxTypes,
         employers: List<Employers>,
         currentTime: String
-    ) = viewModelScope.launch(Dispatchers.IO) {
+    ) {
         workTaxRepository.insertTaxType(taxType)
         employers.forEach { employer ->
             workTaxRepository.insertEmployerTaxType(
@@ -36,44 +33,35 @@ class WorkTaxViewModel(
         }
     }
 
-    fun updateWorkTaxType(workTaxType: TaxTypes) =
-        viewModelScope.launch {
-            workTaxRepository.updateWorkTaxType(workTaxType)
-        }
+    suspend fun updateWorkTaxType(workTaxType: TaxTypes) =
+        workTaxRepository.updateWorkTaxType(workTaxType)
 
     fun getTaxTypes() =
         workTaxRepository.getTaxTypes()
 
-    fun insertTaxRule(taxRule: WorkTaxRules) =
-        viewModelScope.launch {
-            workTaxRepository.insertTaxRule(taxRule)
-        }
+    suspend fun getTaxTypesSync() =
+        workTaxRepository.getTaxTypesSync()
 
-    fun updateTaxRule(taxRule: WorkTaxRules) =
-        viewModelScope.launch {
-            workTaxRepository.updateTaxRule(taxRule)
-        }
+    suspend fun insertTaxRule(taxRule: WorkTaxRules) =
+        workTaxRepository.insertTaxRule(taxRule)
+
+    suspend fun updateTaxRule(taxRule: WorkTaxRules) =
+        workTaxRepository.updateTaxRule(taxRule)
 
     fun getTaxRules(taxType: String, effectiveDate: String) =
         workTaxRepository.getTaxRules(taxType, effectiveDate)
 
-    fun insertEffectiveDate(effectiveDate: TaxEffectiveDates) =
-        viewModelScope.launch {
-            workTaxRepository.insertEffectiveDate(effectiveDate)
-        }
+    suspend fun insertEffectiveDate(effectiveDate: TaxEffectiveDates) =
+        workTaxRepository.insertEffectiveDate(effectiveDate)
 
     fun getTaxEffectiveDates() =
         workTaxRepository.getTaxEffectiveDates()
 
-    fun insertEmployerTaxType(employerTaxTypes: EmployerTaxTypes) =
-        viewModelScope.launch {
-            workTaxRepository.insertEmployerTaxType(employerTaxTypes)
-        }
+    suspend fun insertEmployerTaxType(employerTaxTypes: EmployerTaxTypes) =
+        workTaxRepository.insertEmployerTaxType(employerTaxTypes)
 
-    fun updateEmployerTaxType(employerTaxTypes: EmployerTaxTypes) =
-        viewModelScope.launch(Dispatchers.IO) {
-            workTaxRepository.updateEmployerTaxType(employerTaxTypes)
-        }
+    suspend fun updateEmployerTaxType(employerTaxTypes: EmployerTaxTypes) =
+        workTaxRepository.updateEmployerTaxType(employerTaxTypes)
 
     fun getEmployerTaxTypes(employerId: Long) =
         workTaxRepository.getEmployerTaxTypes(employerId)

@@ -2,6 +2,9 @@
 
 package ms.mattschlenkrich.paycalculator.ui.workorder.composable
 
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
+
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -83,9 +86,10 @@ fun WorkOrderUpdateScreen(
     onAddHistoryClick: () -> Unit,
     workPerformedList: List<WorkPerformedAndQuantity>,
     materialsList: List<MaterialAndQuantity>,
-    onDoneClick: () -> Unit
+    onDoneClick: () -> Unit,
+    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
 ) {
-    val columns = calculateGridColumns()
+    val columns = calculateGridColumns(minColumnWidth)
     val df = DateFunctions()
     val nf = NumberFunctions()
 

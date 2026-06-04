@@ -78,7 +78,10 @@ fun WorkOrderHistoryTimeRoute(
 
     LaunchedEffect(allTimesByDate) {
         val totalWorkedHours = allTimesByDate
-            .filter { it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value }
+            .filter {
+                it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value &&
+                        !it.workOrderHistory.workOrderHistory.woHistoryDeleted
+            }
             .sumOf {
                 df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
             }
@@ -90,7 +93,9 @@ fun WorkOrderHistoryTimeRoute(
     }
 
     var startTime by remember(allTimesByDate) {
-        val latestTime = allTimesByDate.maxOfOrNull { it.timeWorked.wohtEndTime }
+        val latestTime = allTimesByDate
+            .filter { !it.workOrderHistory.workOrderHistory.woHistoryDeleted }
+            .maxOfOrNull { it.timeWorked.wohtEndTime }
         val timePart = latestTime?.let {
             df.splitTimeFromDateTime(it).joinToString(":")
         } ?: "08:30"
@@ -99,7 +104,10 @@ fun WorkOrderHistoryTimeRoute(
     var endTime by remember(startTime, selectedTimeType) {
         val now = df.roundCalendarTimeUpTo15Minutes(Calendar.getInstance())
         val hoursBefore = allTimesByDate
-            .filter { it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value }
+            .filter {
+                it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value &&
+                        !it.workOrderHistory.workOrderHistory.woHistoryDeleted
+            }
             .sumOf {
                 df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
             }

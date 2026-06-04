@@ -1,5 +1,8 @@
 package ms.mattschlenkrich.paycalculator.ui.timesheet.composable
 
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
+
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -50,12 +53,13 @@ fun TimeSheetContent(
     onViewPayDetailsClick: () -> Unit,
     week1EndDate: String,
     displayDate: (String) -> String,
-    formatHours: (WorkDates) -> String
+    formatHours: (WorkDates) -> String,
+    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
 ) {
     val windowInfo = LocalWindowInfo.current
     val density = LocalDensity.current
     val widthDp = with(density) { windowInfo.containerSize.width.toDp() }
-    val columns = if (widthDp >= 600.dp) 2 else 1
+    val columns = maxOf(1, (widthDp.value / minColumnWidth).toInt())
     val isCompact = widthDp < 480.dp
 
     val activeWorkDates = workDates.filter { !it.wdIsDeleted }.sortedBy { it.wdDate }
@@ -156,7 +160,8 @@ fun TimeSheetScreen(
     onGenerateCutoffClick: () -> Unit,
     week1EndDate: String,
     displayDate: (String) -> String,
-    formatHours: (WorkDates) -> String
+    formatHours: (WorkDates) -> String,
+    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -201,7 +206,8 @@ fun TimeSheetScreen(
                 onViewPayDetailsClick = onViewPayDetailsClick,
                 week1EndDate = week1EndDate,
                 displayDate = displayDate,
-                formatHours = formatHours
+                formatHours = formatHours,
+                minColumnWidth = minColumnWidth
             )
         }
     }

@@ -1,5 +1,8 @@
 package ms.mattschlenkrich.paycalculator.ui.jobspec.composable
 
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
+
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -38,9 +41,10 @@ fun JobSpecViewScreen(
     jobSpecList: List<JobSpec>,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
-    onJobSpecClick: (JobSpec) -> Unit
+    onJobSpecClick: (JobSpec) -> Unit,
+    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
 ) {
-    val columns = calculateGridColumns()
+    val columns = calculateGridColumns(minColumnWidth)
 
     Scaffold(
         /* topBar = {

@@ -73,4 +73,11 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         _settings.value = newSettings
         settingsManager.saveSettings(newSettings)
     }
+
+    fun updateMinColumnWidth(width: Int) {
+        val newSettings =
+            _settings.value?.copy(minColumnWidth = width) ?: Settings(minColumnWidth = width)
+        _settings.value = newSettings
+        settingsManager.saveSettings(newSettings)
+    }
 }

@@ -2,8 +2,6 @@ package ms.mattschlenkrich.paycalculator.data.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.Areas
@@ -26,12 +24,10 @@ class WorkOrderViewModel(
     private val workOrderRepository: WorkOrderRepository
 ) : AndroidViewModel(app) {
 
-    fun insertWorkOrder(workOrder: WorkOrder) =
-        viewModelScope.launch {
-            workOrderRepository.insertWorkOrder(workOrder)
-        }
+    suspend fun insertWorkOrder(workOrder: WorkOrder) =
+        workOrderRepository.insertWorkOrder(workOrder)
 
-    fun updateWorkOrder(workOrder: WorkOrder) = viewModelScope.launch {
+    suspend fun updateWorkOrder(workOrder: WorkOrder) =
         workOrderRepository.updateWorkOrder(
             workOrder.workOrderId,
             workOrder.woNumber,
@@ -41,7 +37,6 @@ class WorkOrderViewModel(
             workOrder.woDeleted,
             workOrder.woUpdateTime
         )
-    }
 
     suspend fun findWorkOrder(workOrderNum: String, employerId: Long) =
         workOrderRepository.findWorkOrder(workOrderNum, employerId)
@@ -55,23 +50,20 @@ class WorkOrderViewModel(
     fun getUniqueAddresses(employerId: Long) =
         workOrderRepository.getUniqueAddresses(employerId)
 
-    fun insertWorkOrderHistory(history: WorkOrderHistory) = viewModelScope.launch {
+    suspend fun insertWorkOrderHistory(history: WorkOrderHistory) =
         workOrderRepository.insertWorkOrderHistory(history)
-    }
 
-    fun updateWorkOrderHistory(history: WorkOrderHistory) = viewModelScope.launch {
+    suspend fun updateWorkOrderHistory(history: WorkOrderHistory) =
         workOrderRepository.updateWorkOrderHistory(history)
-    }
 
     suspend fun getWorkOrderHistory(workOrderId: Long, workDateId: Long) =
         workOrderRepository.getWorkOrderHistory(workOrderId, workDateId)
 
-    fun deleteWorkOrderHistory(historyId: Long) = viewModelScope.launch {
+    suspend fun deleteWorkOrderHistory(historyId: Long) =
         workOrderRepository.deleteWorkOrderHistory(
             historyId,
             DateFunctions().getCurrentUTCTimeAsString()
         )
-    }
 
     fun getWorkOrderHistoriesByDate(workDateId: Long) =
         workOrderRepository.getWorkOrderHistoriesByDate(workDateId)
@@ -96,17 +88,17 @@ class WorkOrderViewModel(
     val workPerformedAll = workOrderRepository.getWorkPerformedAll()
     val materialsList = workOrderRepository.getMaterialsList()
 
-    fun insertWorkOrderHistoryTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
-        viewModelScope.launch { workOrderRepository.insertTimeWorked(timeWorked) }
+    suspend fun insertWorkOrderHistoryTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
+        workOrderRepository.insertTimeWorked(timeWorked)
 
-    fun updateWorkOrderHistoryTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
-        viewModelScope.launch { workOrderRepository.updateTimeWorked(timeWorked) }
+    suspend fun updateWorkOrderHistoryTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
+        workOrderRepository.updateTimeWorked(timeWorked)
 
     fun getWorkOrderHistoryTimesByHistory(historyId: Long) =
         workOrderRepository.getTimeWorkedForWorkOrderHistory(historyId)
 
-    fun deleteTimeWorked(timeWorkedId: Long, updateTime: String) =
-        viewModelScope.launch { workOrderRepository.deleteTimeWorked(timeWorkedId, updateTime) }
+    suspend fun deleteTimeWorked(timeWorkedId: Long, updateTime: String) =
+        workOrderRepository.deleteTimeWorked(timeWorkedId, updateTime)
 
     fun getTimeWorkedPerDay(workDateId: Long) =
         workOrderRepository.getTimeWorkedPerDay(workDateId)
@@ -125,40 +117,30 @@ class WorkOrderViewModel(
     fun getJobSpecAndChildList(jobSpecId: Long) =
         workOrderRepository.getJobSpecAndChildList(jobSpecId)
 
-    fun insertJobSpecMerged(jobSpecMerged: JobSpecMerged) =
-        viewModelScope.launch {
-            workOrderRepository.insertJobSpecMerged(jobSpecMerged)
-        }
+    suspend fun insertJobSpecMerged(jobSpecMerged: JobSpecMerged) =
+        workOrderRepository.insertJobSpecMerged(jobSpecMerged)
 
-    fun deleteJobSpecMerged(jobSpecMergedId: Long, updateTime: String) =
-        viewModelScope.launch {
-            workOrderRepository.deleteJobSpecMerged(jobSpecMergedId, updateTime)
-        }
+    suspend fun deleteJobSpecMerged(jobSpecMergedId: Long, updateTime: String) =
+        workOrderRepository.deleteJobSpecMerged(jobSpecMergedId, updateTime)
 
-    fun updateJobSpecMerged(oldJobSpecId: Long, newJobSpecId: Long) =
-        viewModelScope.launch {
-            workOrderRepository.updateJobSpecMerged(oldJobSpecId, newJobSpecId)
-        }
+    suspend fun updateJobSpecMerged(oldJobSpecId: Long, newJobSpecId: Long) =
+        workOrderRepository.updateJobSpecMerged(oldJobSpecId, newJobSpecId)
 
-    fun updateJobSpec(jobSpec: JobSpec) = viewModelScope.launch {
+    suspend fun updateJobSpec(jobSpec: JobSpec) =
         workOrderRepository.updateJobSpec(jobSpec)
-    }
 
-    fun deleteJobSpec(jobSpecId: Long, updateTime: String) = viewModelScope.launch {
+    suspend fun deleteJobSpec(jobSpecId: Long, updateTime: String) =
         workOrderRepository.deleteJobSpec(jobSpecId, updateTime)
-    }
 
     suspend fun getJobSpecsAllSync() = workOrderRepository.getJobSpecsAllSync()
 
     fun searchJobSpecs(query: String) = workOrderRepository.searchJobSpecs(query)
 
-    fun insertWorkOrderJobSpec(workOrderJobSpec: WorkOrderJobSpec) = viewModelScope.launch {
+    suspend fun insertWorkOrderJobSpec(workOrderJobSpec: WorkOrderJobSpec) =
         workOrderRepository.insertWorkOrderJobSpec(workOrderJobSpec)
-    }
 
-    fun updateWorkOrderJobSpec(workOrderJobSpec: WorkOrderJobSpec) = viewModelScope.launch {
+    suspend fun updateWorkOrderJobSpec(workOrderJobSpec: WorkOrderJobSpec) =
         workOrderRepository.updateWorkOrderJobSpec(workOrderJobSpec)
-    }
 
     fun getWorkOrderJobSpecs(workOrderId: Long) =
         workOrderRepository.getWorkOrderJobSpecs(workOrderId)
@@ -243,32 +225,25 @@ class WorkOrderViewModel(
         return newMaterial
     }
 
-    fun deleteWorkPerformed(workPerformedId: Long, updateTime: String) = viewModelScope.launch {
+    suspend fun deleteWorkPerformed(workPerformedId: Long, updateTime: String) =
         workOrderRepository.deleteWorkPerformed(workPerformedId, updateTime)
-    }
 
     suspend fun getWorkPerformedAllSync() = workOrderRepository.getWorkPerformedAllSync()
 
     fun getWorkPerformedAndChildList(workPerformedId: Long) =
         workOrderRepository.getWorkPerformedAndChildList(workPerformedId)
 
-    fun insertWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged) =
-        viewModelScope.launch {
-            workOrderRepository.insertWorkPerformedMerged(workPerformedMerged)
-        }
+    suspend fun insertWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged) =
+        workOrderRepository.insertWorkPerformedMerged(workPerformedMerged)
 
-    fun deleteWorkPerformedMerged(workPerformedMergedId: Long, updateTime: String) =
-        viewModelScope.launch {
-            workOrderRepository.deleteWorkPerformedMerged(
-                workPerformedMergedId,
-                updateTime
-            )
-        }
+    suspend fun deleteWorkPerformedMerged(workPerformedMergedId: Long, updateTime: String) =
+        workOrderRepository.deleteWorkPerformedMerged(
+            workPerformedMergedId,
+            updateTime
+        )
 
-    fun updateWorkPerformedMerged(oldWorkPerformedId: Long, newWorkPerformedId: Long) =
-        viewModelScope.launch {
-            workOrderRepository.updateWorkPerformedMerged(oldWorkPerformedId, newWorkPerformedId)
-        }
+    suspend fun updateWorkPerformedMerged(oldWorkPerformedId: Long, newWorkPerformedId: Long) =
+        workOrderRepository.updateWorkPerformedMerged(oldWorkPerformedId, newWorkPerformedId)
 
     fun searchFromWorkPerformed(query: String) = workOrderRepository.searchFromWorkPerformed(query)
 
@@ -278,40 +253,32 @@ class WorkOrderViewModel(
     fun getWorkPerformed(workPerformedId: Long) =
         workOrderRepository.getWorkPerformed(workPerformedId)
 
-    fun updateWorkPerformed(workPerformed: WorkPerformed) = viewModelScope.launch {
+    suspend fun updateWorkPerformed(workPerformed: WorkPerformed) =
         workOrderRepository.updateWorkPerformed(workPerformed)
-    }
 
-    fun insertWorkOrderHistoryWorkPerformed(
+    suspend fun insertWorkOrderHistoryWorkPerformed(
         workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
-    ) = viewModelScope.launch {
-        workOrderRepository.insertWorkOrderHistoryWorkPerformed(
-            workOrderHistoryWorkPerformed
-        )
-    }
+    ) = workOrderRepository.insertWorkOrderHistoryWorkPerformed(
+        workOrderHistoryWorkPerformed
+    )
 
-    fun updateWorkOrderHistoryWorkPerformed(
+    suspend fun updateWorkOrderHistoryWorkPerformed(
         workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
-    ) = viewModelScope.launch {
-        workOrderRepository.updateWorkOrderHistoryWorkPerformed(
-            workOrderHistoryWorkPerformed
-        )
-    }
+    ) = workOrderRepository.updateWorkOrderHistoryWorkPerformed(
+        workOrderHistoryWorkPerformed
+    )
 
-    fun removeAllWorkPerformedFromWorkOderHistory(historyId: Long) =
-        viewModelScope.launch {
-            workOrderRepository.removeAllWorkPerformedFromWorkOrderHistory(
-                historyId,
-                DateFunctions().getCurrentUTCTimeAsString()
-            )
-        }
+    suspend fun removeAllWorkPerformedFromWorkOderHistory(historyId: Long) =
+        workOrderRepository.removeAllWorkPerformedFromWorkOrderHistory(
+            historyId,
+            DateFunctions().getCurrentUTCTimeAsString()
+        )
 
     fun getWorkPerformedCombinedByWorkOrderHistory(historyId: Long) =
         workOrderRepository.getWorkPerformedCombinedByWorkOrderHistory(historyId)
 
-    fun updateMaterial(material: Material) = viewModelScope.launch {
+    suspend fun updateMaterial(material: Material) =
         workOrderRepository.updateMaterial(material)
-    }
 
     fun getMaterialAndChildList(materialId: Long) =
         workOrderRepository.getMaterialAndChildList(materialId)
@@ -326,58 +293,43 @@ class WorkOrderViewModel(
     suspend fun getMaterialSync(mName: String) =
         workOrderRepository.getMaterialSync(mName)
 
-    fun updateMaterialMerged(oldMaterialID: Long, newMaterialID: Long, updateTime: String) =
-        viewModelScope.launch {
-            workOrderRepository.updateMaterialMerged(
-                oldMaterialID,
-                newMaterialID,
-                updateTime
-            )
-        }
+    suspend fun updateMaterialMerged(oldMaterialID: Long, newMaterialID: Long, updateTime: String) =
+        workOrderRepository.updateMaterialMerged(
+            oldMaterialID,
+            newMaterialID,
+            updateTime
+        )
 
-    fun deleteMaterialMerged(childId: Long, updateTime: String) = viewModelScope.launch {
+    suspend fun deleteMaterialMerged(childId: Long, updateTime: String) =
         workOrderRepository.deleteMaterialMerged(childId, updateTime)
-    }
 
-    fun insertMaterialMerged(materialMerged: MaterialMerged) =
-        viewModelScope.launch { workOrderRepository.insertMaterialMerged(materialMerged) }
+    suspend fun insertMaterialMerged(materialMerged: MaterialMerged) =
+        workOrderRepository.insertMaterialMerged(materialMerged)
 
-    fun deleteMaterial(materialId: Long, updateTime: String) =
-        viewModelScope.launch {
-            workOrderRepository.deleteMaterial(materialId, updateTime)
-        }
+    suspend fun deleteMaterial(materialId: Long, updateTime: String) =
+        workOrderRepository.deleteMaterial(materialId, updateTime)
 
-    fun insertWorkOrderHistoryMaterial(workOrderHistoryMaterial: WorkOrderHistoryMaterial) =
-        viewModelScope.launch {
-            workOrderRepository.insertWorkOrderHistoryMaterial(workOrderHistoryMaterial)
-        }
+    suspend fun insertWorkOrderHistoryMaterial(workOrderHistoryMaterial: WorkOrderHistoryMaterial) =
+        workOrderRepository.insertWorkOrderHistoryMaterial(workOrderHistoryMaterial)
 
-    fun removeAllMaterialsFromWorkOrderHistory(historyId: Long) =
-        viewModelScope.launch {
-            workOrderRepository.removeAllMaterialsFromWorkOrderHistory(
-                historyId,
-                DateFunctions().getCurrentUTCTimeAsString()
-            )
-        }
+    suspend fun removeAllMaterialsFromWorkOrderHistory(historyId: Long) =
+        workOrderRepository.removeAllMaterialsFromWorkOrderHistory(
+            historyId,
+            DateFunctions().getCurrentUTCTimeAsString()
+        )
 
-    fun deleteWorkOrderHistoryWorkPerformed(
+    suspend fun deleteWorkOrderHistoryWorkPerformed(
         historyWorkPerformedId: Long,
         updateTime: String = DateFunctions()
             .getCurrentUTCTimeAsString()
-    ) = viewModelScope.launch {
-        workOrderRepository.deleteWorkOrderHistoryWorkPerformed(historyWorkPerformedId, updateTime)
-    }
+    ) = workOrderRepository.deleteWorkOrderHistoryWorkPerformed(historyWorkPerformedId, updateTime)
 
-    fun updateWorkOrderHistoryMaterial(workOrderHistoryMaterial: WorkOrderHistoryMaterial) =
-        viewModelScope.launch {
-            workOrderRepository.updateWorkOrderHistoryMaterial(workOrderHistoryMaterial)
-        }
+    suspend fun updateWorkOrderHistoryMaterial(workOrderHistoryMaterial: WorkOrderHistoryMaterial) =
+        workOrderRepository.updateWorkOrderHistoryMaterial(workOrderHistoryMaterial)
 
-    fun deleteWorkOrderHistoryMaterial(
+    suspend fun deleteWorkOrderHistoryMaterial(
         historyMaterialId: Long, updateTime: String
-    ) = viewModelScope.launch {
-        workOrderRepository.deleteWorkOrderHistoryMaterial(historyMaterialId, updateTime)
-    }
+    ) = workOrderRepository.deleteWorkOrderHistoryMaterial(historyMaterialId, updateTime)
 
     fun getMaterialsByHistory(historyId: Long) =
         workOrderRepository.getMaterialsByHistory(historyId)
@@ -385,7 +337,8 @@ class WorkOrderViewModel(
     suspend fun getWorkOrderHistoryMaterialCombined(woHistoryMaterialId: Long) =
         workOrderRepository.getWorkOrderHistoryMaterialCombined(woHistoryMaterialId)
 
-    fun updateArea(area: Areas) = viewModelScope.launch { workOrderRepository.updateArea(area) }
+    suspend fun updateArea(area: Areas) =
+        workOrderRepository.updateArea(area)
 
     suspend fun getAreasListSync() = workOrderRepository.getAreasListSync()
 

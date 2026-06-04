@@ -10,10 +10,12 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
@@ -27,6 +29,7 @@ fun TaxTypeUpdateRoute(
     navController: NavController
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val df = remember { DateFunctions() }
     val errorLabel = stringResource(R.string.error_)
     val errorMessages = mapOf(
@@ -59,8 +62,10 @@ fun TaxTypeUpdateRoute(
                     ttBasedOn = selectedBasedOn,
                     ttUpdateTime = df.getCurrentUTCTimeAsString()
                 )
-                workTaxViewModel.updateWorkTaxType(updatedTaxType)
-                navController.popBackStack()
+                coroutineScope.launch {
+                    workTaxViewModel.updateWorkTaxType(updatedTaxType)
+                    navController.popBackStack()
+                }
             } else {
                 Toast.makeText(
                     context,

@@ -14,6 +14,8 @@ class WorkTaxRepository(private val db: PayDatabase) {
 
     fun getTaxTypes() = db.getWorkTaxDao().getTaxTypes()
 
+    suspend fun getTaxTypesSync() = db.getWorkTaxDao().getTaxTypesSync()
+
     suspend fun insertTaxRule(taxRule: WorkTaxRules) = db.getWorkTaxDao().insertTaxRule(taxRule)
 
     suspend fun updateTaxRule(taxRule: WorkTaxRules) = db.getWorkTaxDao().updateTaxRule(taxRule)
