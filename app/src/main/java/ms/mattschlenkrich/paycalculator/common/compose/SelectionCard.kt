@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.timesheet.composable
+package ms.mattschlenkrich.paycalculator.common.compose
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,14 +17,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 
 @Composable
-fun TimeSheetSelectionCard(
+fun SelectionCard(
     modifier: Modifier = Modifier,
     employers: List<Employers>,
     selectedEmployer: Employers?,
@@ -33,14 +33,15 @@ fun TimeSheetSelectionCard(
     cutOffDates: List<String>,
     selectedCutOffDate: String,
     onCutOffDateSelected: (String) -> Unit,
-    onGenerateCutoffClick: () -> Unit,
-    displayDate: (String) -> String = { it }
+    onGenerateCutoffClick: (() -> Unit)? = null,
+    displayDate: (String) -> String = { it },
+    containerColor: Color = MaterialTheme.colorScheme.surface
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = containerColor
         )
     ) {
         Column(
@@ -89,11 +90,13 @@ fun TimeSheetSelectionCard(
                     itemToString = { if (it.isEmpty()) "" else displayDate(it) },
                     modifier = Modifier.weight(1f)
                 )
-                IconButton(onClick = onGenerateCutoffClick) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = stringResource(R.string.generate_a_new_cut_off)
-                    )
+                if (onGenerateCutoffClick != null) {
+                    IconButton(onClick = onGenerateCutoffClick) {
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = stringResource(R.string.generate_a_new_cut_off)
+                        )
+                    }
                 }
             }
         }
