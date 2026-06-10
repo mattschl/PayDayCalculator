@@ -1,7 +1,5 @@
 package ms.mattschlenkrich.paycalculator.ui.timesheet
 
-import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
-
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,6 +31,7 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
@@ -107,9 +106,9 @@ fun TimeSheetRoute(
             val today = LocalDate.now().toString()
             if (dates.isEmpty()) {
                 coroutineScope.launch {
-                    val nextCutOff = projections.generateNextCutOff(
+                    val nextCutOff = projections.getCutOffForDate(
                         selectedEmployer,
-                        ""
+                        today
                     )
                     if (nextCutOff.isNotEmpty()) {
                         mainViewModel.setPayPeriod(null)
@@ -122,9 +121,7 @@ fun TimeSheetRoute(
                                 ppUpdateTime = df.getCurrentUTCTimeAsString()
                             )
                         )
-                        if (mainViewModel.selectedCutOffDate.value.isBlank()) {
-                            mainViewModel.setCutOffDate(nextCutOff)
-                        }
+                        mainViewModel.setCutOffDate(nextCutOff)
                     }
                 }
             } else if (dates.first().ppCutoffDate < today) {
@@ -144,16 +141,13 @@ fun TimeSheetRoute(
                                 ppUpdateTime = df.getCurrentUTCTimeAsString()
                             )
                         )
-                        if (mainViewModel.selectedCutOffDate.value.isBlank() ||
-                            !dates.any { it.ppCutoffDate == mainViewModel.selectedCutOffDate.value }
-                        ) {
-                            mainViewModel.setCutOffDate(nextCutOff)
-                        }
+                        mainViewModel.setCutOffDate(nextCutOff)
                     }
                 }
             } else {
                 if (mainViewModel.selectedCutOffDate.value.isBlank() ||
-                    !dates.any { it.ppCutoffDate == mainViewModel.selectedCutOffDate.value }
+                    !dates.any { it.ppCutoffDate == mainViewModel.selectedCutOffDate.value } ||
+                    mainViewModel.selectedCutOffDate.value > today
                 ) {
                     val currentCutOff =
                         dates.lastOrNull { it.ppCutoffDate >= today }?.ppCutoffDate
@@ -177,14 +171,16 @@ fun TimeSheetRoute(
         }
     }
 
-    // Sync Pager selection back to ViewModel
+    // Sync Pager selection back to ViewModel (only on user interaction)
     LaunchedEffect(pagerState, cutOffDates) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
-            val dates = cutOffDates ?: return@collect
-            if (page < dates.size) {
-                val newDate = dates[page].ppCutoffDate
-                if (mainViewModel.selectedCutOffDate.value != newDate) {
-                    mainViewModel.setCutOffDate(newDate)
+            if (pagerState.isScrollInProgress) {
+                val dates = cutOffDates ?: return@collect
+                if (page < dates.size) {
+                    val newDate = dates[page].ppCutoffDate
+                    if (mainViewModel.selectedCutOffDate.value != newDate) {
+                        mainViewModel.setCutOffDate(newDate)
+                    }
                 }
             }
         }

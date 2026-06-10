@@ -29,7 +29,6 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.model.ExtraContainer
@@ -86,9 +85,13 @@ fun PayDetailRoute(
     LaunchedEffect(cutOffDates, selectedEmployer) {
         val dates = cutOffDates ?: return@LaunchedEffect
         if (selectedEmployer != null && dates.isNotEmpty()) {
-            if (mainViewModel.selectedCutOffDate.value.isBlank() || !dates.any { it.ppCutoffDate == mainViewModel.selectedCutOffDate.value }) {
+            val today = LocalDate.now().toString()
+            if (mainViewModel.selectedCutOffDate.value.isBlank() ||
+                !dates.any { it.ppCutoffDate == mainViewModel.selectedCutOffDate.value } ||
+                mainViewModel.selectedCutOffDate.value > today
+            ) {
                 val currentCutOff =
-                    dates.lastOrNull { it.ppCutoffDate >= LocalDate.now().toString() }?.ppCutoffDate
+                    dates.lastOrNull { it.ppCutoffDate >= today }?.ppCutoffDate
                         ?: dates.first().ppCutoffDate
                 mainViewModel.setCutOffDate(currentCutOff)
             }
@@ -108,14 +111,16 @@ fun PayDetailRoute(
         }
     }
 
-    // Sync Pager selection back to ViewModel
+    // Sync Pager selection back to ViewModel (only on user interaction)
     LaunchedEffect(pagerState, cutOffDates) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
-            val dates = cutOffDates ?: return@collect
-            if (page < dates.size) {
-                val newDate = dates[page].ppCutoffDate
-                if (mainViewModel.selectedCutOffDate.value != newDate) {
-                    mainViewModel.setCutOffDate(newDate)
+            if (pagerState.isScrollInProgress) {
+                val dates = cutOffDates ?: return@collect
+                if (page < dates.size) {
+                    val newDate = dates[page].ppCutoffDate
+                    if (mainViewModel.selectedCutOffDate.value != newDate) {
+                        mainViewModel.setCutOffDate(newDate)
+                    }
                 }
             }
         }
@@ -225,7 +230,7 @@ fun PayDetailPage(
                         .toString()
                 )
             } catch (e: Exception) {
-                ""
+                "exception is ${e.toString()}"
             }
 
             paySummary =
