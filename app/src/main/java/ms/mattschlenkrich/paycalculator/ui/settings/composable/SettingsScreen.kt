@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.settings
+package ms.mattschlenkrich.paycalculator.ui.settings.composable
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

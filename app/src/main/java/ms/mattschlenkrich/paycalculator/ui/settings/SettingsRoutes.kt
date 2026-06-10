@@ -1,12 +1,12 @@
 package ms.mattschlenkrich.paycalculator.ui.settings
 
-import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.ui.settings.composable.SettingsScreen
 
 @Composable
 fun SettingsRoute(
