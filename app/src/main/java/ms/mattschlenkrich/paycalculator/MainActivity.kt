@@ -16,7 +16,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
@@ -134,12 +135,14 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val settings by settingsViewModel.settings.observeAsState()
-            val configuration = LocalConfiguration.current
+            val windowInfo = LocalWindowInfo.current
+            val density = LocalDensity.current
 
-            LaunchedEffect(settings?.minColumnWidth, configuration.screenWidthDp) {
+            LaunchedEffect(settings?.minColumnWidth, windowInfo.containerSize) {
                 val minWidth = settings?.minColumnWidth ?: 360
-                val columns = maxOf(1, configuration.screenWidthDp / minWidth)
-                paddingScale.value = 1f / columns
+                val widthDp = with(density) { windowInfo.containerSize.width.toDp() }
+                val columns = maxOf(1, (widthDp.value / minWidth).toInt())
+                paddingScale.floatValue = 1f / columns
             }
 
             PayCalculatorTheme(
