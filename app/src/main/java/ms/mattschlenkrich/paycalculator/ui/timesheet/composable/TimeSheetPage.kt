@@ -69,7 +69,23 @@ fun TimeSheetPage(
     var week1SummaryString by remember { mutableStateOf("") }
     var week2SummaryString by remember { mutableStateOf("") }
 
+    // Cache to prevent redundant calculations on recomposition
+    val calculationCache = remember { mutableMapOf<String, TimeSheetPaySummary>() }
+    val summaryCache = remember { mutableMapOf<String, Pair<String, String>>() }
+    val cacheKey = "${employer.employerId}_$cutoffDate"
+
     LaunchedEffect(workDates, employer, cutoffDate) {
+        if (workDates.isEmpty()) return@LaunchedEffect
+
+        // Check cache first
+        if (calculationCache.containsKey(cacheKey) && summaryCache.containsKey(cacheKey)) {
+            paySummary = calculationCache[cacheKey]!!
+            val summaries = summaryCache[cacheKey]!!
+            week1SummaryString = summaries.first
+            week2SummaryString = summaries.second
+            return@LaunchedEffect
+        }
+
         val payPeriod = payDayViewModel.getPayPeriodSync(
             cutoffDate,
             employer.employerId
@@ -113,7 +129,7 @@ fun TimeSheetPage(
                 nf.displayNumberFromDouble(payCalculations.getHoursStat())
             } other "
 
-            paySummary = TimeSheetPaySummary(
+            val newSummary = TimeSheetPaySummary(
                 grossPay = nf.displayDollars(payCalculations.getPayGross()),
                 deductions = nf.displayDollars(-payCalculations.getDebitTotalsByPay() - payCalculations.getAllTaxDeductions()),
                 netPay = nf.displayDollars(payCalculations.getPayGross() - payCalculations.getDebitTotalsByPay() - payCalculations.getAllTaxDeductions()),
@@ -125,8 +141,13 @@ fun TimeSheetPage(
                     zeroHrLabel
                 })
             )
-            week1SummaryString = wk1Summary.ifBlank { zeroHrLabel }
-            week2SummaryString = wk2Summary.ifBlank { zeroHrLabel }
+            paySummary = newSummary
+            calculationCache[cacheKey] = newSummary
+            val w1 = wk1Summary.ifBlank { zeroHrLabel }
+            val w2 = wk2Summary.ifBlank { zeroHrLabel }
+            week1SummaryString = w1
+            week2SummaryString = w2
+            summaryCache[cacheKey] = Pair(w1, w2)
         }
     }
 
@@ -144,21 +165,23 @@ fun TimeSheetPage(
         week2Summary = week2SummaryString,
         workDates = workDates,
         workDateExtras = workDateExtras,
-        onWorkDateClick = onWorkDateClick,
-        onWorkDateLongClick = onWorkDateLongClick,
-        onViewPayDetailsClick = onViewPayDetailsClick,
+        onWorkDateClick = remember(onWorkDateClick) { onWorkDateClick },
+        onWorkDateLongClick = remember(onWorkDateLongClick) { onWorkDateLongClick },
+        onViewPayDetailsClick = remember(onViewPayDetailsClick) { onViewPayDetailsClick },
         week1EndDate = week1EndDate,
-        displayDate = { if (it.isBlank()) "" else df.getDisplayDate(it) },
-        formatHours = { workDate ->
-            formatWorkDateHoursString(
-                workDate,
-                nf,
-                hrsLabel,
-                otHrsLabel,
-                dblOtHrsLabel,
-                otherHrsLabel,
-                pipeLabel
-            )
+        displayDate = remember(df) { { if (it.isBlank()) "" else df.getDisplayDate(it) } },
+        formatHours = remember(nf, hrsLabel, otHrsLabel, dblOtHrsLabel, otherHrsLabel, pipeLabel) {
+            { workDate ->
+                formatWorkDateHoursString(
+                    workDate,
+                    nf,
+                    hrsLabel,
+                    otHrsLabel,
+                    dblOtHrsLabel,
+                    otherHrsLabel,
+                    pipeLabel
+                )
+            }
         },
         minColumnWidth = minColumnWidth
     )

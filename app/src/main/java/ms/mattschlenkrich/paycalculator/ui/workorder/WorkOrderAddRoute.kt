@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.StringFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
@@ -32,6 +33,7 @@ fun WorkOrderAddRoute(
 ) {
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
+    val sf = remember { StringFunctions() }
     val coroutineScope = rememberCoroutineScope()
 
     val employers by employerViewModel.getEmployers().observeAsState(emptyList())
@@ -76,13 +78,13 @@ fun WorkOrderAddRoute(
         },
         address = address,
         onAddressChange = {
-            address = it
+            address = sf.toTitleCase(it)
             addressError = false
         },
         addressSuggestions = addressSuggestions,
         description = description,
         onDescriptionChange = {
-            description = it
+            description = sf.capitalizeFirst(it)
             descriptionError = false
         },
         woNumberError = woNumberError,

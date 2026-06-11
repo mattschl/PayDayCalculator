@@ -1,7 +1,5 @@
 package ms.mattschlenkrich.paycalculator.ui.tax
 
-import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
-
 import android.app.DatePickerDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,12 +38,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
@@ -160,6 +160,9 @@ fun TaxRulesContent(
     minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
 ) {
     val columns = calculateGridColumns(minColumnWidth)
+    val dynamicPadding = (16 / columns).dp
+    val dynamicVerticalPadding = (24 / columns).dp
+    val dynamicItemPadding = (12 / columns).dp
 
     val taxTypes by workTaxViewModel.getTaxTypes().observeAsState(emptyList())
     val effectiveDates by workTaxViewModel.getTaxEffectiveDates().observeAsState(emptyList())
@@ -179,7 +182,7 @@ fun TaxRulesContent(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(horizontal = dynamicPadding, vertical = dynamicVerticalPadding)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -206,7 +209,7 @@ fun TaxRulesContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp),
+                    .padding(top = dynamicVerticalPadding),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 SimpleDropdownField(
@@ -225,13 +228,13 @@ fun TaxRulesContent(
                 }
             }
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            HorizontalDivider(modifier = Modifier.padding(vertical = dynamicVerticalPadding))
 
             if (selectedTaxType != null && selectedEffectiveDate != null) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 8.dp),
+                        .padding(bottom = dynamicItemPadding),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -256,13 +259,14 @@ fun TaxRulesContent(
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(columns),
                     modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(dynamicItemPadding),
+                    verticalArrangement = Arrangement.spacedBy(dynamicItemPadding)
                 ) {
                     items(taxRules.sortedBy { it.wtLevel }) { rule ->
                         TaxRuleItem(
                             rule = rule,
                             nf = nf,
+                            padding = dynamicItemPadding,
                             onClick = { onTaxRuleSelected(rule) }
                         )
                     }
@@ -276,6 +280,7 @@ fun TaxRulesContent(
 fun TaxRuleItem(
     rule: WorkTaxRules,
     nf: NumberFunctions,
+    padding: Dp = 8.dp,
     onClick: () -> Unit
 ) {
     Card(
@@ -285,7 +290,7 @@ fun TaxRuleItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(padding)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

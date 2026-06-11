@@ -15,6 +15,7 @@ fun CapitalizedOutlinedTextField(
     placeholder: @Composable (() -> Unit)? = null,
     singleLine: Boolean = true,
     isError: Boolean = false,
+    capitalization: KeyboardCapitalization = KeyboardCapitalization.Words,
     contentPadding: PaddingValues = StandardTextFieldDefaults.contentPadding(),
 ) {
     SelectAllOutlinedTextField(
@@ -26,7 +27,7 @@ fun CapitalizedOutlinedTextField(
         singleLine = singleLine,
         isError = isError,
         keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.Words
+            capitalization = capitalization
         ),
         contentPadding = contentPadding
     )

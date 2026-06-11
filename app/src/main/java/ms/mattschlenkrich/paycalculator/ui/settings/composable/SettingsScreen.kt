@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ms.mattschlenkrich.paycalculator.common.compose.NumberOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
+import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
 import ms.mattschlenkrich.paycalculator.common.security.AuthResult
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 
@@ -56,6 +57,11 @@ fun SettingsScreen(
     onDefaultEmployerChange: (Long?) -> Unit,
     onMinColumnWidthChange: (Int) -> Unit
 ) {
+    val columns = calculateGridColumns(minColumnWidth)
+    val dynamicPadding = (16 / columns).dp
+    val dynamicVerticalPadding = (24 / columns).dp
+    val dynamicItemPadding = (12 / columns).dp
+
     var showPasswordDialog by remember { mutableStateOf(false) }
     var showDisableConfirmDialog by remember { mutableStateOf(false) }
 
@@ -89,21 +95,26 @@ fun SettingsScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(horizontal = dynamicPadding, vertical = dynamicVerticalPadding)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(dynamicVerticalPadding)
         ) {
             Text(
                 text = "Sample Text at current font size",
                 fontSize = fontSize.sp,
-                modifier = Modifier.padding(bottom = 32.dp)
+                modifier = Modifier.padding(bottom = dynamicVerticalPadding)
             )
 
             Text("Select Font Size:", style = MaterialTheme.typography.titleMedium)
-            FontSizeSelector(currentSize = fontSize, onFontSizeChange = onFontSizeChange)
+            FontSizeSelector(
+                currentSize = fontSize,
+                onFontSizeChange = onFontSizeChange,
+                itemPadding = dynamicItemPadding,
+                textPadding = dynamicPadding
+            )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(dynamicVerticalPadding))
 
             Text("Pay Periods to Show:", style = MaterialTheme.typography.titleMedium)
 
@@ -123,15 +134,17 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(dynamicVerticalPadding))
 
             Text("Grid Column Density:", style = MaterialTheme.typography.titleMedium)
             ColumnDensitySelector(
                 currentMinWidth = minColumnWidth,
-                onMinColumnWidthChange = onMinColumnWidthChange
+                onMinColumnWidthChange = onMinColumnWidthChange,
+                itemPadding = dynamicItemPadding,
+                textPadding = dynamicPadding
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(dynamicVerticalPadding))
 
             Text("Default Employer on Launch:", style = MaterialTheme.typography.titleMedium)
 
@@ -166,17 +179,18 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            HorizontalDivider(modifier = Modifier.padding(vertical = dynamicVerticalPadding))
 
             Text("Theme Selection:", style = MaterialTheme.typography.titleMedium)
             ThemeSelector(
                 isSystemTheme = isSystemTheme,
                 isDarkTheme = isDarkTheme,
                 onIsSystemThemeChange = onIsSystemThemeChange,
-                onIsDarkThemeChange = onIsDarkThemeChange
+                onIsDarkThemeChange = onIsDarkThemeChange,
+                itemPadding = dynamicItemPadding
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            HorizontalDivider(modifier = Modifier.padding(vertical = dynamicVerticalPadding))
 
             Text("Security:", style = MaterialTheme.typography.titleMedium)
 
@@ -194,7 +208,7 @@ fun SettingsScreen(
                         },
                         role = Role.Switch
                     )
-                    .padding(vertical = 8.dp),
+                    .padding(vertical = dynamicItemPadding),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {

@@ -35,7 +35,6 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectionCard
-import ms.mattschlenkrich.paycalculator.data.entity.PayPeriods
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
@@ -90,6 +89,9 @@ fun TimeSheetRoute(
         initialPage = 0,
     ) { cutOffDates?.size ?: 0 }
 
+    val initialSelectionLoaded = remember { mutableStateOf(false) }
+
+    // Initial selection from history
     LaunchedEffect(employers) {
         if ((selectedEmployer == null) && employers.isNotEmpty()) {
             val savedEmployer = employers.find { it.employerId == mainViewModel.selectedEmployerId }
@@ -109,16 +111,11 @@ fun TimeSheetRoute(
                     )
                     if (nextCutOff.isNotEmpty()) {
                         mainViewModel.setPayPeriod(null)
-                        payDayViewModel.insertPayPeriodSync(
-                            PayPeriods(
-                                nf.generateRandomIdAsLong(),
-                                nextCutOff,
-                                selectedEmployer.employerId,
-                                ppIsDeleted = false,
-                                ppUpdateTime = df.getCurrentUTCTimeAsString()
-                            )
-                        )
-                        mainViewModel.setCutOffDate(nextCutOff)
+                        payDayViewModel.findOrCreatePayPeriod(
+                            nextCutOff,
+                            selectedEmployer.employerId,
+                            df.getCurrentUTCTimeAsString()
+                        ) { nf.generateRandomIdAsLong() }
                     }
                 }
             } else if (dates.first().ppCutoffDate < today) {
@@ -129,55 +126,47 @@ fun TimeSheetRoute(
                     )
                     if (nextCutOff.isNotEmpty()) {
                         mainViewModel.setPayPeriod(null)
-                        payDayViewModel.insertPayPeriodSync(
-                            PayPeriods(
-                                nf.generateRandomIdAsLong(),
-                                nextCutOff,
-                                selectedEmployer.employerId,
-                                ppIsDeleted = false,
-                                ppUpdateTime = df.getCurrentUTCTimeAsString()
-                            )
-                        )
-                        mainViewModel.setCutOffDate(nextCutOff)
+                        payDayViewModel.findOrCreatePayPeriod(
+                            nextCutOff,
+                            selectedEmployer.employerId,
+                            df.getCurrentUTCTimeAsString()
+                        ) { nf.generateRandomIdAsLong() }
                     }
                 }
             } else {
                 if (mainViewModel.selectedCutOffDate.value.isBlank() ||
-                    !dates.any { it.ppCutoffDate == mainViewModel.selectedCutOffDate.value } ||
-                    mainViewModel.selectedCutOffDate.value > today
+                    !dates.any { it.ppCutoffDate == mainViewModel.selectedCutOffDate.value }
                 ) {
                     val currentCutOff =
                         dates.lastOrNull { it.ppCutoffDate >= today }?.ppCutoffDate
                             ?: dates.first().ppCutoffDate
                     mainViewModel.setCutOffDate(currentCutOff)
                 }
+                initialSelectionLoaded.value = true
             }
         }
     }
 
     // Sync ViewModel selection to Pager
-    LaunchedEffect(selectedCutOffDate, cutOffDates) {
+    LaunchedEffect(selectedCutOffDate, cutOffDates, initialSelectionLoaded.value) {
         val dates = cutOffDates ?: return@LaunchedEffect
+        if (!initialSelectionLoaded.value) return@LaunchedEffect
+
         val index = dates.indexOfFirst { it.ppCutoffDate == selectedCutOffDate }
         if (index != -1 && pagerState.currentPage != index) {
-            if (mainViewModel.selectedTopLevelIndex.intValue == 0) {
-                pagerState.animateScrollToPage(index)
-            } else {
-                pagerState.scrollToPage(index)
-            }
+            pagerState.scrollToPage(index)
         }
     }
 
     // Sync Pager selection back to ViewModel (only on user interaction)
-    LaunchedEffect(pagerState, cutOffDates) {
-        snapshotFlow { pagerState.currentPage }.collect { page ->
-            if (pagerState.isScrollInProgress) {
-                val dates = cutOffDates ?: return@collect
-                if (page < dates.size) {
-                    val newDate = dates[page].ppCutoffDate
-                    if (mainViewModel.selectedCutOffDate.value != newDate) {
-                        mainViewModel.setCutOffDate(newDate)
-                    }
+    LaunchedEffect(pagerState, cutOffDates, initialSelectionLoaded.value) {
+        if (!initialSelectionLoaded.value) return@LaunchedEffect
+        snapshotFlow { pagerState.settledPage }.collect { page ->
+            val dates = cutOffDates ?: return@collect
+            if (page < dates.size) {
+                val newDate = dates[page].ppCutoffDate
+                if (mainViewModel.selectedCutOffDate.value != newDate) {
+                    mainViewModel.setCutOffDate(newDate)
                 }
             }
         }
@@ -185,6 +174,53 @@ fun TimeSheetRoute(
 
     var showWorkDateOptionsDialog by remember { mutableStateOf<WorkDates?>(null) }
     var showDeleteWorkDateConfirmDialog by remember { mutableStateOf<WorkDates?>(null) }
+    var showDeletePayPeriodConfirmDialog by remember { mutableStateOf(false) }
+
+    if (showDeletePayPeriodConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeletePayPeriodConfirmDialog = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    coroutineScope.launch {
+                        val payPeriod = payDayViewModel.getPayPeriodSync(
+                            selectedCutOffDate,
+                            selectedEmployer!!.employerId
+                        )
+                        if (payPeriod != null) {
+                            payDayViewModel.updatePayPeriod(
+                                payPeriod.copy(
+                                    ppIsDeleted = true,
+                                    ppUpdateTime = df.getCurrentUTCTimeAsString()
+                                )
+                            )
+                            mainViewModel.setCutOffDate("")
+                            mainViewModel.setPayPeriod(null)
+                        }
+                    }
+                    showDeletePayPeriodConfirmDialog = false
+                }) {
+                    Text(stringResource(R.string.delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDeletePayPeriodConfirmDialog = false
+                }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            title = { Text("Delete Pay Period") },
+            text = {
+                Text(
+                    "Are you sure you want to delete the pay period ending on ${
+                        df.getDisplayDate(
+                            selectedCutOffDate
+                        )
+                    }? This will not delete the work dates themselves, but they will no longer be grouped under this cutoff."
+                )
+            }
+        )
+    }
 
     if (showWorkDateOptionsDialog != null) {
         val workDate = showWorkDateOptionsDialog!!
@@ -286,18 +322,17 @@ fun TimeSheetRoute(
                             dates.firstOrNull()?.ppCutoffDate ?: ""
                         )
                         if (nextCutOff.isNotEmpty()) {
-                            payDayViewModel.insertPayPeriodSync(
-                                PayPeriods(
-                                    nf.generateRandomIdAsLong(),
-                                    nextCutOff,
-                                    selectedEmployer.employerId,
-                                    false,
-                                    df.getCurrentUTCTimeAsString()
-                                )
-                            )
+                            payDayViewModel.findOrCreatePayPeriod(
+                                nextCutOff,
+                                selectedEmployer.employerId,
+                                df.getCurrentUTCTimeAsString()
+                            ) { nf.generateRandomIdAsLong() }
                         }
                     }
                 }
+            },
+            onDeleteCutoffClick = {
+                showDeletePayPeriodConfirmDialog = true
             },
             displayDate = { if (it.isBlank()) "" else df.getDisplayDate(it) }
         )

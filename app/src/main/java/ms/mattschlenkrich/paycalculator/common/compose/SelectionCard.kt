@@ -1,13 +1,15 @@
 package ms.mattschlenkrich.paycalculator.common.compose
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -23,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SelectionCard(
     modifier: Modifier = Modifier,
@@ -34,6 +37,7 @@ fun SelectionCard(
     selectedCutOffDate: String,
     onCutOffDateSelected: (String) -> Unit,
     onGenerateCutoffClick: (() -> Unit)? = null,
+    onDeleteCutoffClick: (() -> Unit)? = null,
     displayDate: (String) -> String = { it },
     containerColor: Color = MaterialTheme.colorScheme.surface
 ) {
@@ -44,17 +48,24 @@ fun SelectionCard(
             containerColor = containerColor
         )
     ) {
-        Column(
-            modifier = Modifier.padding(4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+        FlowRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SCREEN_PADDING_HORIZONTAL / 2),
+            horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
+            verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING / 2),
+            maxItemsInEachRow = 2
         ) {
+            // Employer Selection
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .weight(1f)
+                    .widthIn(min = 280.dp)
             ) {
                 Text(
                     text = stringResource(R.string.employer),
-                    modifier = Modifier.width(100.dp),
+                    modifier = Modifier.padding(end = 8.dp),
                     style = MaterialTheme.typography.bodyLarge
                 )
                 SimpleDropdownField(
@@ -73,13 +84,16 @@ fun SelectionCard(
                 }
             }
 
+            // Cut-off Date Selection
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .weight(1f)
+                    .widthIn(min = 280.dp)
             ) {
                 Text(
                     text = stringResource(R.string.cut_off_date),
-                    modifier = Modifier.width(100.dp),
+                    modifier = Modifier.padding(end = 8.dp),
                     style = MaterialTheme.typography.bodyLarge
                 )
                 SimpleDropdownField(
@@ -95,6 +109,15 @@ fun SelectionCard(
                         Icon(
                             Icons.Default.Add,
                             contentDescription = stringResource(R.string.generate_a_new_cut_off)
+                        )
+                    }
+                }
+                if (onDeleteCutoffClick != null && selectedCutOffDate.isNotEmpty()) {
+                    IconButton(onClick = onDeleteCutoffClick) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "Delete this pay period",
+                            tint = MaterialTheme.colorScheme.error
                         )
                     }
                 }

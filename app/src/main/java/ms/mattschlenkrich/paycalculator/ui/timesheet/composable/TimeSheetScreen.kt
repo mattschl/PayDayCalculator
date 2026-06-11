@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -51,9 +52,18 @@ fun TimeSheetContent(
     val columns = maxOf(1, (widthDp.value / minColumnWidth).toInt())
     val isCompact = widthDp < 480.dp
 
-    val activeWorkDates = workDates.filter { !it.wdIsDeleted }.sortedBy { it.wdDate }
-    val week1Dates = activeWorkDates.filter { it.wdDate <= week1EndDate }
-    val week2Dates = activeWorkDates.filter { it.wdDate > week1EndDate }
+    val activeWorkDates = remember(workDates) {
+        workDates.filter { !it.wdIsDeleted }.sortedBy { it.wdDate }
+    }
+    val week1Dates = remember(activeWorkDates, week1EndDate) {
+        activeWorkDates.filter { it.wdDate <= week1EndDate }
+    }
+    val week2Dates = remember(activeWorkDates, week1EndDate) {
+        activeWorkDates.filter { it.wdDate > week1EndDate }
+    }
+
+    val displayDateMemo = remember(displayDate) { displayDate }
+    val formatHoursMemo = remember(formatHours) { formatHours }
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(columns),
@@ -75,14 +85,17 @@ fun TimeSheetContent(
             )
         }
 
-        items(week1Dates) { workDate ->
+        items(
+            items = week1Dates,
+            key = { it.workDateId }
+        ) { workDate ->
             WorkDateCard(
                 workDate = workDate,
                 extras = workDateExtras[workDate.workDateId] ?: emptyList(),
                 onWorkDateClick = { onWorkDateClick(workDate) },
                 onWorkDateLongClick = { onWorkDateLongClick(workDate) },
-                displayDate = displayDate,
-                formatHours = formatHours,
+                displayDate = displayDateMemo,
+                formatHours = formatHoursMemo,
                 isCompact = isCompact
             )
         }
@@ -103,14 +116,17 @@ fun TimeSheetContent(
             }
         }
 
-        items(week2Dates) { workDate ->
+        items(
+            items = week2Dates,
+            key = { it.workDateId }
+        ) { workDate ->
             WorkDateCard(
                 workDate = workDate,
                 extras = workDateExtras[workDate.workDateId] ?: emptyList(),
                 onWorkDateClick = { onWorkDateClick(workDate) },
                 onWorkDateLongClick = { onWorkDateLongClick(workDate) },
-                displayDate = displayDate,
-                formatHours = formatHours,
+                displayDate = displayDateMemo,
+                formatHours = formatHoursMemo,
                 isCompact = isCompact
             )
         }

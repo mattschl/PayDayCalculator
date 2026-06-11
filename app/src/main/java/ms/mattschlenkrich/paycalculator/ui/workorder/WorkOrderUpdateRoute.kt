@@ -2,12 +2,9 @@
 
 package ms.mattschlenkrich.paycalculator.ui.workorder
 
-import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
-
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -21,8 +18,10 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.StringFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.data.model.MaterialAndQuantity
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
@@ -39,6 +38,7 @@ fun WorkOrderUpdateRoute(
 ) {
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
+    val sf = remember { StringFunctions() }
     val coroutineScope = rememberCoroutineScope()
 
     val settings by settingsViewModel.settings.observeAsState()
@@ -130,13 +130,13 @@ fun WorkOrderUpdateRoute(
         },
         address = address,
         onAddressChange = {
-            address = it
+            address = sf.toTitleCase(it)
             addressError = false
         },
         addressSuggestions = addressSuggestions,
         description = description,
         onDescriptionChange = {
-            description = it
+            description = sf.capitalizeFirst(it)
             descriptionError = false
         },
         woNumberError = woNumberError,

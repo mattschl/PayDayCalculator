@@ -6,18 +6,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
@@ -28,6 +34,7 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayCalculationsViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDetailViewModel
+import ms.mattschlenkrich.paycalculator.logic.PayDateProjections
 import ms.mattschlenkrich.paycalculator.ui.paydetail.composable.PayDetailPage
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import java.time.LocalDate
@@ -42,8 +49,10 @@ fun PayDetailRoute(
     settingsViewModel: SettingsViewModel = viewModel(),
     navController: NavController
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val nf = remember { NumberFunctions() }
     val df = remember { DateFunctions() }
+    val projections = remember { PayDateProjections() }
 
     val settings by settingsViewModel.settings.observeAsState()
     val payPeriodsLimit = settings?.payPeriodsLimit ?: 15
@@ -62,6 +71,55 @@ fun PayDetailRoute(
         initialPage = 0
     ) { cutOffDates?.size ?: 0 }
 
+    val initialSelectionLoaded = remember { mutableStateOf(false) }
+    var showDeletePayPeriodConfirmDialog by remember { mutableStateOf(false) }
+
+    if (showDeletePayPeriodConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeletePayPeriodConfirmDialog = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    coroutineScope.launch {
+                        val payPeriod = payDayViewModel.getPayPeriodSync(
+                            selectedCutOffDate,
+                            selectedEmployer!!.employerId
+                        )
+                        if (payPeriod != null) {
+                            payDayViewModel.updatePayPeriod(
+                                payPeriod.copy(
+                                    ppIsDeleted = true,
+                                    ppUpdateTime = df.getCurrentUTCTimeAsString()
+                                )
+                            )
+                            mainViewModel.setCutOffDate("")
+                            mainViewModel.setPayPeriod(null)
+                        }
+                    }
+                    showDeletePayPeriodConfirmDialog = false
+                }) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDeletePayPeriodConfirmDialog = false
+                }) {
+                    Text("Cancel")
+                }
+            },
+            title = { Text("Delete Pay Period") },
+            text = {
+                Text(
+                    "Are you sure you want to delete the pay period ending on ${
+                        df.getDisplayDate(
+                            selectedCutOffDate
+                        )
+                    }? This will not delete the work dates themselves, but they will no longer be grouped under this cutoff."
+                )
+            }
+        )
+    }
+
     // Initial selection from history
     LaunchedEffect(employers) {
         if (selectedEmployer == null && employers.isNotEmpty()) {
@@ -72,43 +130,72 @@ fun PayDetailRoute(
 
     LaunchedEffect(cutOffDates, selectedEmployer) {
         val dates = cutOffDates ?: return@LaunchedEffect
-        if (selectedEmployer != null && dates.isNotEmpty()) {
+        if (selectedEmployer != null) {
             val today = LocalDate.now().toString()
-            if (mainViewModel.selectedCutOffDate.value.isBlank() ||
-                !dates.any { it.ppCutoffDate == mainViewModel.selectedCutOffDate.value } ||
-                mainViewModel.selectedCutOffDate.value > today
-            ) {
-                val currentCutOff =
-                    dates.lastOrNull { it.ppCutoffDate >= today }?.ppCutoffDate
-                        ?: dates.first().ppCutoffDate
-                mainViewModel.setCutOffDate(currentCutOff)
+            if (dates.isEmpty()) {
+                coroutineScope.launch {
+                    val nextCutOff = projections.getCutOffForDate(
+                        selectedEmployer,
+                        today
+                    )
+                    if (nextCutOff.isNotEmpty()) {
+                        mainViewModel.setPayPeriod(null)
+                        payDayViewModel.findOrCreatePayPeriod(
+                            nextCutOff,
+                            selectedEmployer.employerId,
+                            df.getCurrentUTCTimeAsString()
+                        ) { nf.generateRandomIdAsLong() }
+                    }
+                }
+            } else if (dates.first().ppCutoffDate < today) {
+                coroutineScope.launch {
+                    val nextCutOff = projections.generateNextCutOff(
+                        selectedEmployer,
+                        dates.first().ppCutoffDate
+                    )
+                    if (nextCutOff.isNotEmpty()) {
+                        mainViewModel.setPayPeriod(null)
+                        payDayViewModel.findOrCreatePayPeriod(
+                            nextCutOff,
+                            selectedEmployer.employerId,
+                            df.getCurrentUTCTimeAsString()
+                        ) { nf.generateRandomIdAsLong() }
+                    }
+                }
+            } else {
+                if (mainViewModel.selectedCutOffDate.value.isBlank() ||
+                    !dates.any { it.ppCutoffDate == mainViewModel.selectedCutOffDate.value }
+                ) {
+                    val currentCutOff =
+                        dates.lastOrNull { it.ppCutoffDate >= today }?.ppCutoffDate
+                            ?: dates.first().ppCutoffDate
+                    mainViewModel.setCutOffDate(currentCutOff)
+                }
+                initialSelectionLoaded.value = true
             }
         }
     }
 
     // Sync ViewModel selection to Pager
-    LaunchedEffect(selectedCutOffDate, cutOffDates) {
+    LaunchedEffect(selectedCutOffDate, cutOffDates, initialSelectionLoaded.value) {
         val dates = cutOffDates ?: return@LaunchedEffect
+        if (!initialSelectionLoaded.value) return@LaunchedEffect
+
         val index = dates.indexOfFirst { it.ppCutoffDate == selectedCutOffDate }
         if (index != -1 && pagerState.currentPage != index) {
-            if (mainViewModel.selectedTopLevelIndex.intValue == 1) {
-                pagerState.animateScrollToPage(index)
-            } else {
-                pagerState.scrollToPage(index)
-            }
+            pagerState.scrollToPage(index)
         }
     }
 
     // Sync Pager selection back to ViewModel (only on user interaction)
-    LaunchedEffect(pagerState, cutOffDates) {
-        snapshotFlow { pagerState.currentPage }.collect { page ->
-            if (pagerState.isScrollInProgress) {
-                val dates = cutOffDates ?: return@collect
-                if (page < dates.size) {
-                    val newDate = dates[page].ppCutoffDate
-                    if (mainViewModel.selectedCutOffDate.value != newDate) {
-                        mainViewModel.setCutOffDate(newDate)
-                    }
+    LaunchedEffect(pagerState, cutOffDates, initialSelectionLoaded.value) {
+        if (!initialSelectionLoaded.value) return@LaunchedEffect
+        snapshotFlow { pagerState.settledPage }.collect { page ->
+            val dates = cutOffDates ?: return@collect
+            if (page < dates.size) {
+                val newDate = dates[page].ppCutoffDate
+                if (mainViewModel.selectedCutOffDate.value != newDate) {
+                    mainViewModel.setCutOffDate(newDate)
                 }
             }
         }
@@ -131,6 +218,9 @@ fun PayDetailRoute(
             cutOffDates = cutOffDates?.map { it.ppCutoffDate } ?: emptyList(),
             selectedCutOffDate = selectedCutOffDate,
             onCutOffDateSelected = { mainViewModel.setCutOffDate(it) },
+            onDeleteCutoffClick = {
+                showDeletePayPeriodConfirmDialog = true
+            },
             displayDate = { if (it.isBlank()) "" else df.getDisplayDate(it) },
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )

@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
@@ -24,6 +26,7 @@ import androidx.navigation.compose.rememberNavController
 import ms.mattschlenkrich.paycalculator.common.compose.PayCalculatorTheme
 import ms.mattschlenkrich.paycalculator.common.compose.StandardNavigationBar
 import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
+import ms.mattschlenkrich.paycalculator.common.compose.paddingScale
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
 import ms.mattschlenkrich.paycalculator.data.repository.EmployerRepository
 import ms.mattschlenkrich.paycalculator.data.repository.PayCalculationsRepository
@@ -131,6 +134,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val settings by settingsViewModel.settings.observeAsState()
+            val configuration = LocalConfiguration.current
+
+            LaunchedEffect(settings?.minColumnWidth, configuration.screenWidthDp) {
+                val minWidth = settings?.minColumnWidth ?: 360
+                val columns = maxOf(1, configuration.screenWidthDp / minWidth)
+                paddingScale.value = 1f / columns
+            }
 
             PayCalculatorTheme(
                 isSystemTheme = settings?.isSystemTheme ?: true,

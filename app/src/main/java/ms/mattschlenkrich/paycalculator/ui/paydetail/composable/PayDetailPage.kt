@@ -52,6 +52,10 @@ fun PayDetailPage(
     var trigger by remember { mutableIntStateOf(0) }
     var showOverrideDialog by remember { mutableStateOf<ExtraContainer?>(null) }
 
+    // Cache to prevent redundant calculations
+    val calculationCache = remember { mutableMapOf<String, Unit>() }
+    val cacheKey = "${employer.employerId}_${cutoffDate}_$trigger"
+
     val payDayIsLabel = stringResource(R.string.pay_day_is_)
     val netLabel = stringResource(R.string.net_)
     val regLabel = stringResource(R.string.reg_hours)
@@ -62,6 +66,8 @@ fun PayDetailPage(
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(employer, cutoffDate, trigger) {
+        if (calculationCache.containsKey(cacheKey)) return@LaunchedEffect
+        
         val payPeriod = payDayViewModel.getPayPeriodSync(
             cutoffDate,
             employer.employerId
@@ -149,6 +155,7 @@ fun PayDetailPage(
                     items,
                     nf.displayDollars(payCalculations.getPayAllHourly())
                 )
+            calculationCache[cacheKey] = Unit
         }
     }
 

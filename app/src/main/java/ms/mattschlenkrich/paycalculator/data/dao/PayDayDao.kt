@@ -40,6 +40,16 @@ interface PayDayDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPayPeriod(payPeriod: PayPeriods)
 
+    @Update
+    suspend fun updatePayPeriod(payPeriod: PayPeriods)
+
+    @Query(
+        "SELECT * FROM payPeriods " +
+                "WHERE ppCutoffDate = :cutOff " +
+                "AND ppEmployerId = :employerId"
+    )
+    suspend fun getPayPeriodAnySync(cutOff: String, employerId: Long): PayPeriods?
+
     @Query(
         "SELECT * FROM payPeriods " +
                 "WHERE ppCutoffDate = :cutOff " +

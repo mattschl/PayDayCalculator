@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
@@ -143,7 +144,10 @@ fun WorkOrderAddScreen(
                             suggestions = addressSuggestions,
                             onItemSelected = onAddressChange,
                             modifier = Modifier.fillMaxWidth(),
-                            isError = addressError
+                            isError = addressError,
+                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                                capitalization = KeyboardCapitalization.Words
+                            )
                         )
                     }
                 }
@@ -174,7 +178,8 @@ fun WorkOrderAddScreen(
                                 .fillMaxWidth()
                                 .height(120.dp),
                             singleLine = false,
-                            isError = descriptionError
+                            isError = descriptionError,
+                            capitalization = KeyboardCapitalization.Sentences
                         )
                     }
                 }

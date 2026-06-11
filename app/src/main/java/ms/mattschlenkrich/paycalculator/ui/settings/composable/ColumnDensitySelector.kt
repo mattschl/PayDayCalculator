@@ -10,13 +10,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 
 @Composable
 fun ColumnDensitySelector(
     currentMinWidth: Int,
-    onMinColumnWidthChange: (Int) -> Unit
+    onMinColumnWidthChange: (Int) -> Unit,
+    itemPadding: Dp = 8.dp,
+    textPadding: Dp = 16.dp
 ) {
     val columnOptions = listOf(
         "Ultra High (Most Columns)" to 120,
@@ -35,7 +38,7 @@ fun ColumnDensitySelector(
                     onClick = { onMinColumnWidthChange(width) },
                     role = Role.RadioButton
                 )
-                .padding(vertical = 8.dp),
+                .padding(vertical = itemPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
             RadioButton(
@@ -44,7 +47,7 @@ fun ColumnDensitySelector(
             )
             Text(
                 text = label,
-                modifier = Modifier.padding(start = 16.dp)
+                modifier = Modifier.padding(start = textPadding)
             )
         }
     }

@@ -10,13 +10,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
 fun FontSizeSelector(
     currentSize: Float,
-    onFontSizeChange: (Float) -> Unit
+    onFontSizeChange: (Float) -> Unit,
+    itemPadding: Dp = 8.dp,
+    textPadding: Dp = 16.dp
 ) {
     val fontSizes = listOf(
         "Small" to 12f,
@@ -34,7 +37,7 @@ fun FontSizeSelector(
                     onClick = { onFontSizeChange(size) },
                     role = Role.RadioButton
                 )
-                .padding(vertical = 8.dp),
+                .padding(vertical = itemPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
             RadioButton(
@@ -44,7 +47,7 @@ fun FontSizeSelector(
             Text(
                 text = "$label ($size sp)",
                 fontSize = size.sp,
-                modifier = Modifier.padding(start = 16.dp)
+                modifier = Modifier.padding(start = textPadding)
             )
         }
     }

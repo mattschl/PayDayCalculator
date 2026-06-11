@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
@@ -66,7 +67,10 @@ fun WorkOrderDetailsCard(
                 suggestions = addressSuggestions,
                 onItemSelected = onAddressChange,
                 modifier = Modifier.fillMaxWidth(),
-                isError = addressError
+                isError = addressError,
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Words
+                )
             )
 
             CapitalizedOutlinedTextField(
@@ -75,7 +79,8 @@ fun WorkOrderDetailsCard(
                 label = { Text(stringResource(R.string.general_job_description)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = false,
-                isError = descriptionError
+                isError = descriptionError,
+                capitalization = KeyboardCapitalization.Sentences
             )
         }
     }

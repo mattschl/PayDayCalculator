@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -19,7 +20,8 @@ fun ThemeSelector(
     isSystemTheme: Boolean,
     isDarkTheme: Boolean,
     onIsSystemThemeChange: (Boolean) -> Unit,
-    onIsDarkThemeChange: (Boolean) -> Unit
+    onIsDarkThemeChange: (Boolean) -> Unit,
+    itemPadding: Dp = 8.dp
 ) {
     Row(
         modifier = Modifier
@@ -29,7 +31,7 @@ fun ThemeSelector(
                 onClick = { onIsSystemThemeChange(!isSystemTheme) },
                 role = Role.Switch
             )
-            .padding(vertical = 8.dp),
+            .padding(vertical = itemPadding),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

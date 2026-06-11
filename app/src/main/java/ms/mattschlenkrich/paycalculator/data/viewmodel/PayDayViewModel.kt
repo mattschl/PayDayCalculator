@@ -21,8 +21,41 @@ class PayDayViewModel(
     suspend fun insertPayPeriodSync(cutOff: PayPeriods) =
         payDayRepository.insertPayPeriod(cutOff)
 
+    suspend fun updatePayPeriod(payPeriod: PayPeriods) =
+        payDayRepository.updatePayPeriod(payPeriod)
+
     suspend fun getPayPeriodSync(cutOff: String, employerId: Long) =
         payDayRepository.getPayPeriodSync(cutOff, employerId)
+
+    suspend fun getPayPeriodAnySync(cutOff: String, employerId: Long) =
+        payDayRepository.getPayPeriodAnySync(cutOff, employerId)
+
+    suspend fun findOrCreatePayPeriod(
+        cutoffDate: String,
+        employerId: Long,
+        updateTime: String,
+        generateId: () -> Long
+    ): PayPeriods {
+        val existing = getPayPeriodAnySync(cutoffDate, employerId)
+        return if (existing != null) {
+            val updated = existing.copy(
+                ppIsDeleted = false,
+                ppUpdateTime = updateTime
+            )
+            updatePayPeriod(updated)
+            updated
+        } else {
+            val newPeriod = PayPeriods(
+                generateId(),
+                cutoffDate,
+                employerId,
+                false,
+                updateTime
+            )
+            insertPayPeriodSync(newPeriod)
+            newPeriod
+        }
+    }
 
     suspend fun getWorkDateSync(workDateId: Long) =
         payDayRepository.getWorkDateSync(workDateId)
