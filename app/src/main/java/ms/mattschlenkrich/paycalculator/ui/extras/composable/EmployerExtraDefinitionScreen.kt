@@ -1,5 +1,3 @@
-@file:Suppress("AssignedValueIsNeverRead")
-
 package ms.mattschlenkrich.paycalculator.ui.extras.composable
 
 import androidx.compose.foundation.layout.Arrangement

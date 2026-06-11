@@ -57,9 +57,6 @@ class PayDayViewModel(
         }
     }
 
-    suspend fun getWorkDateSync(workDateId: Long) =
-        payDayRepository.getWorkDateSync(workDateId)
-
     suspend fun getWorkDateSync(employerId: Long, date: String, cutOff: String) =
         payDayRepository.getWorkDateSync(employerId, date, cutOff)
 

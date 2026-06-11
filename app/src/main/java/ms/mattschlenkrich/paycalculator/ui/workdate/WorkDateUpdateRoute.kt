@@ -1,8 +1,4 @@
-@file:Suppress("AssignedValueIsNeverRead")
-
 package ms.mattschlenkrich.paycalculator.ui.workdate
-
-import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 
 import android.app.DatePickerDialog
 import androidx.compose.material3.AlertDialog
@@ -24,10 +20,9 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.common.WAIT_1000
-import ms.mattschlenkrich.paycalculator.common.WAIT_500
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.data.util.HolidayPayCalculator

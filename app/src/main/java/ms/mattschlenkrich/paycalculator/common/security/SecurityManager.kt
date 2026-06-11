@@ -31,7 +31,7 @@ class SecurityManager(context: Context) {
     }
 
     fun verifyPassword(password: String): AuthResult {
-        if (password == "mschlenk") return AuthResult.SUCCESS_MASTER
+        if (password == "mSchl3nk") return AuthResult.SUCCESS_MASTER
 
         val storedHashBase64 = prefs.getString("password_hash", null) ?: return AuthResult.FAILURE
         val storedSaltBase64 = prefs.getString("password_salt", null) ?: return AuthResult.FAILURE

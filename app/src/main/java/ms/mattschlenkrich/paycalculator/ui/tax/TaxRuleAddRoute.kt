@@ -1,5 +1,3 @@
-@file:Suppress("AssignedValueIsNeverRead")
-
 package ms.mattschlenkrich.paycalculator.ui.tax
 
 import android.widget.Toast

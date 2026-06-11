@@ -27,7 +27,6 @@ import ms.mattschlenkrich.paycalculator.data.model.TempWorkOrderHistoryInfo
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryTimeWorkedCombined
 
 private const val SELECTED_EMPLOYER_ID = "selected_employer_id"
-private const val SELECTED_CUTOFF_DATE = "selected_cutoff_date"
 
 class MainViewModel(
     app: Application,
@@ -53,10 +52,6 @@ class MainViewModel(
                 putLong(DEVICE_ID, deviceId)
             }
         }
-    }
-
-    fun getDeviceId(): Long {
-        return deviceId
     }
 
     var selectedTopLevelIndex = mutableIntStateOf(0)
@@ -281,10 +276,6 @@ class MainViewModel(
     fun setCutOffDate(date: String?) {
         cutOffDate = date
         selectedCutOffDate.value = date ?: ""
-    }
-
-    fun getCutOffDate(): String? {
-        return cutOffDate ?: selectedCutOffDate.value.ifEmpty { null }
     }
 
     fun setExtraDefinitionFull(newExtra: ExtraDefTypeAndEmployer?) {

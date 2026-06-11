@@ -53,7 +53,7 @@ fun SelectionCard(
                 .fillMaxWidth()
                 .padding(SCREEN_PADDING_HORIZONTAL / 2),
             horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
-            verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING / 2),
+            verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
             maxItemsInEachRow = 2
         ) {
             // Employer Selection
@@ -92,7 +92,7 @@ fun SelectionCard(
                     .widthIn(min = 280.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.cut_off_date),
+                    text = stringResource(R.string.cut_off),
                     modifier = Modifier.padding(end = 8.dp),
                     style = MaterialTheme.typography.bodyLarge
                 )

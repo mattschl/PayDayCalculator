@@ -1,8 +1,4 @@
-@file:Suppress("AssignedValueIsNeverRead")
-
 package ms.mattschlenkrich.paycalculator.ui.workorder.composable
-
-import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 
 
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +33,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING

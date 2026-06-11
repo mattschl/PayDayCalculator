@@ -1,5 +1,3 @@
-@file:Suppress("AssignedValueIsNeverRead")
-
 package ms.mattschlenkrich.paycalculator.ui.employer
 
 import android.app.DatePickerDialog
@@ -22,7 +20,6 @@ import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.PayDayFrequencies
-import ms.mattschlenkrich.paycalculator.common.WAIT_250
 import ms.mattschlenkrich.paycalculator.common.WorkDayOfWeek
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel

@@ -1,8 +1,4 @@
-@file:Suppress("AssignedValueIsNeverRead")
-
 package ms.mattschlenkrich.paycalculator.ui.areas
-
-import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

@@ -26,6 +26,7 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable.WorkOrderHistoryTimeUpdateScreen
 import java.util.Calendar
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun WorkOrderHistoryTimeUpdateRoute(
@@ -67,7 +68,7 @@ fun WorkOrderHistoryTimeUpdateRoute(
 
     LaunchedEffect(errorMessage) {
         if (errorMessage != null) {
-            delay(3000)
+            delay(3000.milliseconds)
             errorMessage = null
         }
     }

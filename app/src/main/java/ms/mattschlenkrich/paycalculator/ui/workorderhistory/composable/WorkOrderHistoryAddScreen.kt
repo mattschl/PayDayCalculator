@@ -1,5 +1,3 @@
-@file:Suppress("AssignedValueIsNeverRead")
-
 package ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable
 
 import androidx.compose.foundation.layout.Column

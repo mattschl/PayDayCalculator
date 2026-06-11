@@ -1,7 +1,5 @@
 package ms.mattschlenkrich.paycalculator.ui.areas.composable
 
-import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
-
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
