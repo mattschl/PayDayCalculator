@@ -55,10 +55,11 @@ fun SyncScreen(
                         .fillMaxSize()
                         .padding(8.dp)
                 ) {
-                    SyncLogDisplay(
-                        docContent = docContent,
-                        onDocContentChange = onDocContentChange
-                    )
+                    Box(modifier = Modifier.weight(1f)) {
+                        SyncLogDisplay(
+                            docContent = docContent
+                        )
+                    }
 
                     if (syncMax > 0) {
                         Spacer(modifier = Modifier.height(8.dp))

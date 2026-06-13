@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paycalculator.common.security
 
 import android.content.Context
 import android.util.Base64
+import ms.mattschlenkrich.paycalculator.BuildConfig
 import java.security.SecureRandom
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
@@ -31,7 +32,7 @@ class SecurityManager(context: Context) {
     }
 
     fun verifyPassword(password: String): AuthResult {
-        if (password == "mSchl3nk") return AuthResult.SUCCESS_MASTER
+        if (password == BuildConfig.MASTER_PASSWORD) return AuthResult.SUCCESS_MASTER
 
         val storedHashBase64 = prefs.getString("password_hash", null) ?: return AuthResult.FAILURE
         val storedSaltBase64 = prefs.getString("password_salt", null) ?: return AuthResult.FAILURE

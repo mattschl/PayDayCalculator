@@ -1,5 +1,3 @@
-@file:Suppress("KotlinConstantConditions")
-
 package ms.mattschlenkrich.paycalculator.common.compose
 
 import androidx.compose.foundation.combinedClickable
@@ -26,9 +24,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import kotlinx.coroutines.FlowPreview
 
-@OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> AutoCompleteTextField(
     value: String,
@@ -62,13 +59,14 @@ fun <T> AutoCompleteTextField(
     }
 
     // Snappy filtering logic using derivedStateOf
-    val filteredSuggestions by remember(textFieldValue.text, suggestions) {
+    val filteredSuggestions by remember(suggestions, itemToString) {
         derivedStateOf {
-            if (textFieldValue.text.isEmpty()) {
+            val query = textFieldValue.text
+            if (query.isEmpty()) {
                 suggestions.take(50).toList()
             } else {
                 suggestions.asSequence()
-                    .filter { itemToString(it).contains(textFieldValue.text, ignoreCase = true) }
+                    .filter { itemToString(it).contains(query, ignoreCase = true) }
                     .take(50)
                     .toList()
             }
@@ -118,7 +116,7 @@ fun <T> AutoCompleteTextField(
 
         if (expanded && filteredSuggestions.isNotEmpty()) {
             ExposedDropdownMenu(
-                expanded = expanded,
+                expanded = true,
                 onDismissRequest = { expanded = false },
                 modifier = Modifier.exposedDropdownSize()
             ) {

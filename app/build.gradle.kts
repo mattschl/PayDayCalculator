@@ -1,4 +1,5 @@
 import com.android.build.api.dsl.ApplicationExtension
+import java.util.Properties
 
 plugins {
     id("com.android.application")
@@ -8,23 +9,28 @@ plugins {
 }
 
 extensions.configure<ApplicationExtension> {
+
     signingConfigs {
-        getByName("debug") {
+        create("customDebug") {
             storeFile =
-                file("/mnt/047353E96D6DD7F2/Projects/AndroidProject/keystore/paycalculator_debug.jks")
+                file("/home/matt/Downloads/keystore/paycalculator_debug.jks")
             storePassword = "!935Gr8t"
             keyPassword = "!935Gr8t"
             keyAlias = "pay_debug"
+            enableV1Signing = true
+            enableV2Signing = true
         }
         create("release") {
             storeFile =
-//                file("C:\\Users\\matt_\\OneDrive\\projects\\AndroidProject\\keystore\\matt_signing.jks")
-                file("/mnt/02D83355D83345E7/project/AndroidProject/keystore/matt__new_signing.jks")
+                file("/home/matt/Downloads/keystore/paycalculator_debug.jks")
             storePassword = "!935Gr8t"
-            keyAlias = "key0"
             keyPassword = "!935Gr8t"
+            keyAlias = "pay_debug"
+            enableV1Signing = true
+            enableV2Signing = true
         }
     }
+
     namespace = "ms.mattschlenkrich.paycalculator"
     compileSdk = 37
 
@@ -36,12 +42,24 @@ extensions.configure<ApplicationExtension> {
         versionName = "v1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        signingConfig = signingConfigs.getByName("debug")
+        signingConfig = signingConfigs.getByName("customDebug")
+
+        val properties = Properties()
+        val localPropertiesFile = project.rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            properties.load(localPropertiesFile.inputStream())
+        }
+        val masterPassword = properties.getProperty("master.password")
+        buildConfigField("String", "MASTER_PASSWORD", "\"$masterPassword\"")
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("customDebug")
+        }
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -56,6 +74,7 @@ extensions.configure<ApplicationExtension> {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     compileOptions {

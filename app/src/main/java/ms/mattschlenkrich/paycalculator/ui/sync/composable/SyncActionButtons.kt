@@ -74,7 +74,7 @@ fun SyncActionButtons(
                 containerColor = MaterialTheme.colorScheme.secondary
             )
         ) {
-            Text("Change Google Account")
+            Text(if (isConnected) "Change Google Account" else "Connect to Google Drive")
         }
     }
 }

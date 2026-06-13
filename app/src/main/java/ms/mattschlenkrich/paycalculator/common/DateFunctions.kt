@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paycalculator.common
 
-import android.annotation.SuppressLint
 import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -10,7 +9,6 @@ import kotlin.math.round
 
 private const val TAG = "DateFunctions"
 
-@SuppressLint("WrongCommentType")
 class DateFunctions {
     private val dateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
     private val timeFormatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)

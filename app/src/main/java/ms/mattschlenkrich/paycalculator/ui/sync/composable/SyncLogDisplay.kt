@@ -1,35 +1,35 @@
 package ms.mattschlenkrich.paycalculator.ui.sync.composable
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun SyncLogDisplay(
-    docContent: String,
-    onDocContentChange: (String) -> Unit
+    docContent: String
 ) {
-    BasicTextField(
-        value = docContent,
-        onValueChange = onDocContentChange,
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(.75f)
+            .fillMaxSize()
             .background(MaterialTheme.colorScheme.surfaceVariant)
-            .padding(8.dp),
-        readOnly = true,
-        textStyle = MaterialTheme.typography.bodySmall.copy(
-            fontFamily = FontFamily.Monospace,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        ),
-        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary)
-    )
+            .verticalScroll(rememberScrollState())
+            .padding(8.dp)
+    ) {
+        Text(
+            text = docContent,
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontFamily = FontFamily.Monospace,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        )
+    }
 }
