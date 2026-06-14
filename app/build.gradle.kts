@@ -10,22 +10,26 @@ plugins {
 
 extensions.configure<ApplicationExtension> {
 
+    val properties = Properties()
+    val localPropertiesFile = project.rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        properties.load(localPropertiesFile.inputStream())
+    }
+
     signingConfigs {
         create("customDebug") {
-            storeFile =
-                file("/home/matt/Downloads/keystore/paycalculator_debug.jks")
-            storePassword = "!935Gr8t"
-            keyPassword = "!935Gr8t"
-            keyAlias = "pay_debug"
+            storeFile = properties.getProperty("keystore.file")?.let { file(it) }
+            storePassword = properties.getProperty("keystore.password")
+            keyAlias = properties.getProperty("key.alias")
+            keyPassword = properties.getProperty("key.password")
             enableV1Signing = true
             enableV2Signing = true
         }
         create("release") {
-            storeFile =
-                file("/home/matt/Downloads/keystore/paycalculator_debug.jks")
-            storePassword = "!935Gr8t"
-            keyPassword = "!935Gr8t"
-            keyAlias = "pay_debug"
+            storeFile = properties.getProperty("keystore.file")?.let { file(it) }
+            storePassword = properties.getProperty("keystore.password")
+            keyAlias = properties.getProperty("key.alias")
+            keyPassword = properties.getProperty("key.password")
             enableV1Signing = true
             enableV2Signing = true
         }
@@ -44,11 +48,6 @@ extensions.configure<ApplicationExtension> {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         signingConfig = signingConfigs.getByName("customDebug")
 
-        val properties = Properties()
-        val localPropertiesFile = project.rootProject.file("local.properties")
-        if (localPropertiesFile.exists()) {
-            properties.load(localPropertiesFile.inputStream())
-        }
         val masterPassword = properties.getProperty("master.password")
         buildConfigField("String", "MASTER_PASSWORD", "\"$masterPassword\"")
     }

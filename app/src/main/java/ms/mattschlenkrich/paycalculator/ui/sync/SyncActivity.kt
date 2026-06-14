@@ -41,6 +41,7 @@ import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.sync.composable.SyncScreen
 import java.security.MessageDigest
 import java.security.SecureRandom
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val TAG: String = "SyncActivity"
 
@@ -147,7 +148,9 @@ class SyncActivity : ComponentActivity() {
         lifecycleScope.launch {
             try {
                 val serverClientId = getString(R.string.default_web_client_id)
-                // val nonce = generateNonce() // Removed to rule out system hang
+                val nonce = generateNonce() // Removed to rule out system hang
+
+
 
                 Log.i(TAG, "Starting sign-in with serverClientId: $serverClientId")
                 syncViewModel.docContent = "Attempting sign-in...\n"
@@ -157,7 +160,7 @@ class SyncActivity : ComponentActivity() {
                     .setFilterByAuthorizedAccounts(false)
                     .setServerClientId(serverClientId)
                     .setAutoSelectEnabled(false)
-                    // .setNonce(nonce)
+                    .setNonce(nonce)
                     .build()
 
                 val request = GetCredentialRequest.Builder()
@@ -165,7 +168,7 @@ class SyncActivity : ComponentActivity() {
                     .build()
 
                 Log.i(TAG, "Calling credentialManager.getCredential")
-                val result = kotlinx.coroutines.withTimeout(10000) {
+                val result = kotlinx.coroutines.withTimeout(10000.milliseconds) {
                     credentialManager.getCredential(this@SyncActivity, request)
                 }
                 syncViewModel.isLoading = false
