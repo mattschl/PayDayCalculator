@@ -24,7 +24,8 @@ fun SyncActionButtons(
     onQueryClick: () -> Unit,
     onReturnClick: () -> Unit,
     onClearBackupsClick: () -> Unit,
-    onChangeAccountClick: () -> Unit
+    onChangeAccountClick: () -> Unit,
+    onLegacyConnectClick: () -> Unit = {}
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(modifier = Modifier.fillMaxWidth()) {
@@ -67,14 +68,42 @@ fun SyncActionButtons(
             Text("Clear All Backups from Google Drive")
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = onChangeAccountClick,
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary
-            )
-        ) {
-            Text(if (isConnected) "Change Google Account" else "Connect to Google Drive")
+
+        if (!isConnected) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = onChangeAccountClick,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 4.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text("Connect (New)")
+                }
+                Button(
+                    onClick = onLegacyConnectClick,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 4.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    Text("Connect (Legacy)")
+                }
+            }
+        } else {
+            Button(
+                onClick = onChangeAccountClick,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary
+                )
+            ) {
+                Text("Change Google Account")
+            }
         }
     }
 }

@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -31,17 +34,18 @@ fun SyncScreen(
     syncProgress: Int,
     syncMax: Int,
     errorMessage: String?,
-    onDocContentChange: (String) -> Unit,
     onQueryClick: () -> Unit,
     onSyncClick: () -> Unit,
     onReturnClick: () -> Unit,
     onChangeAccountClick: () -> Unit,
-    onClearBackupsClick: () -> Unit
+    onClearBackupsClick: () -> Unit,
+    onLegacyConnectClick: () -> Unit = {}
 ) {
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
     Scaffold(
-        contentWindowInsets = WindowInsets(0, 0, 0, 0)
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        modifier = Modifier.safeDrawingPadding()
     ) { innerPadding ->
         Surface(
             modifier = Modifier
@@ -54,8 +58,9 @@ fun SyncScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(8.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    Box(modifier = Modifier.weight(1f)) {
+                    Box(modifier = Modifier.height(300.dp)) {
                         SyncLogDisplay(
                             docContent = docContent
                         )
@@ -83,8 +88,12 @@ fun SyncScreen(
                         onQueryClick = onQueryClick,
                         onReturnClick = onReturnClick,
                         onClearBackupsClick = { showDeleteConfirmation = true },
-                        onChangeAccountClick = onChangeAccountClick
+                        onChangeAccountClick = onChangeAccountClick,
+                        onLegacyConnectClick = onLegacyConnectClick
                     )
+
+                    // Extra padding at the bottom to ensure buttons are clear of the nav bar
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
 
                 if (showDeleteConfirmation) {

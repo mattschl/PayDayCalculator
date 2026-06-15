@@ -3,11 +3,11 @@ package ms.mattschlenkrich.paycalculator.ui.sync
 import android.accounts.Account
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -21,6 +21,12 @@ import androidx.credentials.exceptions.GetCredentialException
 import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Scope
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
@@ -40,7 +46,6 @@ import ms.mattschlenkrich.paycalculator.common.compose.PayCalculatorTheme
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.sync.composable.SyncScreen
 import java.security.MessageDigest
-import java.security.SecureRandom
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val TAG: String = "SyncActivity"
@@ -50,15 +55,22 @@ class SyncActivity : ComponentActivity() {
     private var mCurrentAccount: Account? = null
 
     private lateinit var credentialManager: CredentialManager
+    private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var settingsViewModel: SettingsViewModel
     private lateinit var syncViewModel: SyncViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Temporarily disable to rule out layout-driven freezes
-        // enableEdgeToEdge()
+        enableEdgeToEdge()
 
         credentialManager = CredentialManager.create(this)
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .requestScopes(Scope(DriveScopes.DRIVE_APPDATA))
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
+
         settingsViewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
         syncViewModel = ViewModelProvider(this)[SyncViewModel::class.java]
 
@@ -76,36 +88,45 @@ class SyncActivity : ComponentActivity() {
                     syncProgress = syncViewModel.syncProgress,
                     syncMax = syncViewModel.syncMax,
                     errorMessage = syncViewModel.errorMessage,
-                    onDocContentChange = { /* read only */ },
                     onQueryClick = { syncViewModel.query { handleError("Query failed", it) } },
                     onSyncClick = { syncViewModel.performSync { handleError("Sync failed", it) } },
                     onReturnClick = { finish() },
                     onClearBackupsClick = {
                         syncViewModel.clearBackups {
-                            handleError(
-                                "Clear backups failed",
-                                it
-                            )
+                            handleError("Clear backups failed", it)
                         }
                     },
                     onChangeAccountClick = {
-                        getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-                            .edit {
-                                remove(SYNC_ACCOUNT_EMAIL)
-                            }
-                        syncViewModel.driveServiceHelper = null
-                        signInWithCredentialManager()
+                        signOut {
+                            signInWithCredentialManager()
+                        }
+                    },
+                    onLegacyConnectClick = {
+                        signOut {
+                            signInWithLegacyFlow()
+                        }
                     }
                 )
             }
         }
 
-        // Initiate sign-in with Credential Manager if no saved email
         val savedEmail = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
             .getString(SYNC_ACCOUNT_EMAIL, null)
 
         if (savedEmail != null) {
             initializeDriveService(savedEmail)
+        }
+    }
+
+    private fun signOut(onComplete: () -> Unit) {
+        googleSignInClient.signOut().addOnCompleteListener {
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .edit {
+                    remove(SYNC_ACCOUNT_EMAIL)
+                }
+            syncViewModel.driveServiceHelper = null
+            mCurrentAccount = null
+            onComplete()
         }
     }
 
@@ -116,12 +137,10 @@ class SyncActivity : ComponentActivity() {
                 val firstError = e.details?.errors?.firstOrNull()
                 "Google API Error: [${firstError?.reason}] ${firstError?.message}"
             }
-
             is UserRecoverableAuthIOException -> {
                 recoverAuthLauncher.launch(e.intent)
                 "Authorization required. Please follow the prompt."
             }
-
             else -> e.message ?: "Unknown error"
         }
 
@@ -144,23 +163,17 @@ class SyncActivity : ComponentActivity() {
     }
 
     private fun signInWithCredentialManager() {
-        Log.i(TAG, "signInWithCredentialManager called")
+        Log.i(TAG, "Starting Credential Manager sign-in")
         lifecycleScope.launch {
             try {
                 val serverClientId = getString(R.string.default_web_client_id)
-                val nonce = generateNonce() // Removed to rule out system hang
-
-
-
-                Log.i(TAG, "Starting sign-in with serverClientId: $serverClientId")
-                syncViewModel.docContent = "Attempting sign-in...\n"
+                syncViewModel.docContent = "Attempting Credential Manager sign-in...\n"
                 syncViewModel.isLoading = true
 
                 val googleIdOption = GetGoogleIdOption.Builder()
                     .setFilterByAuthorizedAccounts(false)
                     .setServerClientId(serverClientId)
                     .setAutoSelectEnabled(false)
-                    .setNonce(nonce)
                     .build()
 
                 val request = GetCredentialRequest.Builder()
@@ -176,9 +189,8 @@ class SyncActivity : ComponentActivity() {
                 handleSignInResult(result.credential)
             } catch (e: kotlinx.coroutines.TimeoutCancellationException) {
                 syncViewModel.isLoading = false
-                Log.e(TAG, "Sign-in timed out. System dialog did not appear.")
-                val msg =
-                    "Sign-in timed out. Please check your internet and Google account settings."
+                Log.e(TAG, "Sign-in timed out. ${e.toString()}")
+                val msg = "Sign-in timed out. Try Legacy method if this continues."
                 syncViewModel.errorMessage = msg
                 Toast.makeText(this@SyncActivity, msg, Toast.LENGTH_LONG).show()
             } catch (e: GetCredentialException) {
@@ -188,53 +200,68 @@ class SyncActivity : ComponentActivity() {
             } catch (e: Exception) {
                 syncViewModel.isLoading = false
                 Log.e(TAG, "Unexpected sign-in error", e)
-                val msg = "Sign-in error: ${e.message}"
-                syncViewModel.errorMessage = msg
-                Toast.makeText(this@SyncActivity, msg, Toast.LENGTH_LONG).show()
             }
         }
     }
 
     private fun handleCredentialException(e: GetCredentialException) {
         val errorMessage = when (e) {
-            is GetCredentialCancellationException -> {
-                Log.w(TAG, "Sign-in was canceled by the user.")
-                "Sign-in was canceled."
-            }
-
+            is GetCredentialCancellationException -> "Sign-in was canceled."
             is NoCredentialException -> {
-                Log.e(TAG, "No credentials available.")
                 val fingerprint = logSHA1Fingerprint()
-                syncViewModel.docContent += "\n--- CONFIGURATION ERROR ---\n" +
-                        "The system reports no accounts found for this request.\n" +
-                        "This usually means the App Signature (SHA-1) or Client ID does not match the Google Cloud Console settings.\n\n" +
-                        "Your Device SHA-1:\n$fingerprint\n\n" +
-                        "Please ensure this fingerprint is registered for Client ID: ${getString(R.string.default_web_client_id)} in the Google Cloud Console."
-                "No credentials available. See log for details."
+                syncViewModel.docContent += "\n--- CONFIG ERROR ---\nSHA-1: $fingerprint\n"
+                "No credentials available. Verify SHA-1 in Console."
             }
 
-            else -> {
-                val msg = "Credential Manager error (${e.javaClass.simpleName}): ${e.message}"
-                Log.e(TAG, msg)
-                msg
-            }
+            else -> "Error: ${e.message}"
         }
         syncViewModel.errorMessage = errorMessage
         Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
+    }
+
+    private val legacySignInLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        syncViewModel.isLoading = false
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            handleLegacySignInResult(account)
+        } catch (e: ApiException) {
+            Log.e(TAG, "Legacy Sign-In failed: ${e.statusCode}", e)
+            syncViewModel.errorMessage = "Legacy Sign-In failed: ${e.statusCode}"
+            if (e.statusCode == 10 || e.statusCode == 12500) {
+                val fingerprint = logSHA1Fingerprint()
+                syncViewModel.docContent += "\n--- LEGACY CONFIG ERROR (${e.statusCode}) ---\nSHA-1: $fingerprint\n"
+            }
+        }
+    }
+
+    private fun signInWithLegacyFlow() {
+        Log.i(TAG, "Starting Legacy sign-in")
+        syncViewModel.isLoading = true
+        syncViewModel.docContent = "Attempting Legacy sign-in...\n"
+        legacySignInLauncher.launch(googleSignInClient.signInIntent)
+    }
+
+    private fun handleLegacySignInResult(account: GoogleSignInAccount?) {
+        if (account != null && account.email != null) {
+            val email = account.email!!
+            Log.d(TAG, "Legacy Signed in as $email")
+            syncViewModel.docContent += "Successfully signed in as: $email\n"
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit {
+                putString(SYNC_ACCOUNT_EMAIL, email)
+            }
+            initializeDriveService(email)
+        }
     }
 
     private fun logSHA1Fingerprint(): String {
         var fingerprint = "Unknown"
         try {
             val packageInfo =
-                packageManager.getPackageInfo(
-                    packageName,
-                    PackageManager.GET_SIGNING_CERTIFICATES
-                )
-
-            val signatures =
-                packageInfo.signingInfo?.apkContentsSigners
-
+                packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES)
+            val signatures = packageInfo.signingInfo?.apkContentsSigners
             signatures?.forEach { signature ->
                 val md = MessageDigest.getInstance("SHA-1")
                 val digest = md.digest(signature.toByteArray())
@@ -247,79 +274,40 @@ class SyncActivity : ComponentActivity() {
         return fingerprint
     }
 
-    private fun generateNonce(): String {
-        val rawNonce = ByteArray(16)
-        SecureRandom().nextBytes(rawNonce)
-        return Base64.encodeToString(
-            rawNonce,
-            Base64.NO_WRAP or Base64.NO_PADDING or Base64.URL_SAFE
-        )
-    }
-
     private fun handleSignInResult(credential: Credential) {
         if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
             try {
                 val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
                 val email = googleIdTokenCredential.id
-                Log.d(TAG, "Signed in as $email")
                 syncViewModel.docContent += "Successfully signed in as: $email\n"
-                getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-                    .edit {
-                        putString(SYNC_ACCOUNT_EMAIL, email)
-                    }
+                getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit {
+                    putString(SYNC_ACCOUNT_EMAIL, email)
+                }
                 initializeDriveService(email)
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to parse Google ID Token", e)
-                val msg = "Sign-in failed: ${e.message}"
-                syncViewModel.errorMessage = msg
-                Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+                handleError("Parse Error", e)
             }
-        } else {
-            val msg = "Unexpected credential type: ${credential.type}"
-            Log.e(TAG, msg)
-            syncViewModel.errorMessage = msg
-            Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
         }
     }
 
     private fun initializeDriveService(email: String) {
-        if (email.isBlank()) {
-            Log.e(TAG, "Email is blank, cannot initialize Drive service.")
-            return
-        }
-
+        if (email.isBlank()) return
         val account = Account(email, "com.google")
         mCurrentAccount = account
-
-        if (syncViewModel.driveServiceHelper != null && mCurrentAccount == account) {
-            Log.d(TAG, "Drive service already initialized for $email.")
-            return
-        }
-
-        Log.d(TAG, "Initializing Drive service for $email")
-
+        if (syncViewModel.driveServiceHelper != null && mCurrentAccount == account) return
+        
         try {
-            val credential = GoogleAccountCredential.usingOAuth2(
-                applicationContext,
-                DRIVE_SCOPES
-            )
+            val credential = GoogleAccountCredential.usingOAuth2(applicationContext, DRIVE_SCOPES)
             credential.selectedAccount = account
-
-            val googleDriveService = Drive.Builder(
-                HTTP_TRANSPORT,
-                JSON_FACTORY,
-                credential
-            )
+            val googleDriveService = Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                 .setApplicationName(getString(R.string.app_name))
                 .build()
-
             syncViewModel.driveServiceHelper = DriveServiceHelper(googleDriveService)
             mCurrentAccount = account
-            Log.d(TAG, "Drive service successfully initialized.")
+            Log.d(TAG, "Drive service initialized for $email")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to initialize Drive service", e)
             syncViewModel.driveServiceHelper = null
-            mCurrentAccount = null
         }
     }
 
