@@ -150,8 +150,26 @@ fun WorkOrderHistoryUpdateRoute(
         note = note,
         onNoteChange = { note = it },
         onAddTimeClick = {
-            mainViewModel.setWorkOrderHistory(history)
-            navController.navigate(Screen.WorkOrderHistoryTime.route)
+            coroutineScope.launch {
+                val wo = workOrderViewModel.findWorkOrder(
+                    workOrderNumber,
+                    employer.employerId
+                )
+                if (wo != null) {
+                    workOrderViewModel.updateWorkOrderHistory(
+                        history.copy(
+                            woHistoryWorkOrderId = wo.workOrderId,
+                            woHistoryRegHours = regHours.toDoubleOrNull() ?: 0.0,
+                            woHistoryOtHours = otHours.toDoubleOrNull() ?: 0.0,
+                            woHistoryDblOtHours = dblOtHours.toDoubleOrNull() ?: 0.0,
+                            woHistoryNote = note,
+                            woHistoryUpdateTime = df.getCurrentUTCTimeAsString()
+                        )
+                    )
+                }
+                mainViewModel.setWorkOrderHistory(history)
+                navController.navigate(Screen.WorkOrderHistoryTime.route)
+            }
         },
         addTimeButtonText = if (timeWorkedList.isNotEmpty()) stringResource(R.string.edit_times)
         else stringResource(R.string.add_time),
@@ -187,7 +205,7 @@ fun WorkOrderHistoryUpdateRoute(
                         )
                     )
                     workPerformed = ""
-                    area = ""
+                    // area = "" // Do not reset the area as per user request
                     workPerformedNote = ""
                 }
             }

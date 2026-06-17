@@ -652,12 +652,22 @@ fun MainScreen(
                     navController
                 )
             }
-            composable(Screen.PayPeriodExtraAdd.route) {
+            composable(
+                route = Screen.PayPeriodExtraAdd.route,
+                arguments = listOf(
+                    androidx.navigation.navArgument("isCredit") {
+                        type = androidx.navigation.NavType.BoolType
+                        defaultValue = false
+                    }
+                )
+            ) { backStackEntry ->
+                val isCredit = backStackEntry.arguments?.getBoolean("isCredit") ?: false
                 PayPeriodExtraAddRoute(
                     mainViewModel,
                     payDayViewModel,
                     workExtraViewModel,
-                    navController
+                    navController,
+                    isCredit
                 )
             }
             composable(Screen.PayPeriodExtraUpdate.route) {

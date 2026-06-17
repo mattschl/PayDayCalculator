@@ -16,7 +16,8 @@ fun PayPeriodExtraAddRoute(
     mainViewModel: MainViewModel,
     payDayViewModel: PayDayViewModel,
     workExtraViewModel: WorkExtraViewModel,
-    navController: NavController
+    navController: NavController,
+    isCredit: Boolean = false,
 ) {
     val payPeriod = mainViewModel.getPayPeriod() ?: return
     val employer = mainViewModel.getEmployer() ?: return
@@ -46,6 +47,7 @@ fun PayPeriodExtraAddRoute(
             }
         },
         onDelete = {},
-        onCancel = { navController.popBackStack() }
+        onCancel = { navController.popBackStack() },
+        initialIsCredit = isCredit
     )
 }

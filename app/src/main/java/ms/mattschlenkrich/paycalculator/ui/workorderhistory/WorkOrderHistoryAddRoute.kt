@@ -29,6 +29,10 @@ fun WorkOrderHistoryAddRoute(
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
 
+    LaunchedEffect(Unit) {
+        mainViewModel.setWorkOrderHistory(null)
+    }
+
     val workDate = mainViewModel.getWorkDateObject() ?: run {
         LaunchedEffect(Unit) {
             navController.popBackStack()
@@ -132,9 +136,8 @@ fun WorkOrderHistoryAddRoute(
                     workOrderViewModel.insertWorkOrderHistory(history)
                     mainViewModel.setTempWorkOrderHistoryInfo(null)
                     mainViewModel.setWorkOrder(null)
-                    navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
-                        popUpTo(Screen.WorkOrderHistoryAdd.route) { inclusive = true }
-                    }
+                    mainViewModel.setWorkOrderHistory(history)
+                    navController.popBackStack()
                 }
             }
         },

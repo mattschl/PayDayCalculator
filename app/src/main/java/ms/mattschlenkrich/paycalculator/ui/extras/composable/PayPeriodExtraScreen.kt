@@ -55,7 +55,8 @@ fun PayPeriodExtraScreen(
     defaultExtras: List<ExtraDefinitionAndType>,
     onUpdate: (WorkPayPeriodExtras) -> Unit,
     onDelete: (WorkPayPeriodExtras) -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    initialIsCredit: Boolean = false
 ) {
     val nf = NumberFunctions()
     val df = DateFunctions()
@@ -74,7 +75,11 @@ fun PayPeriodExtraScreen(
         )
     }
     var isFixed by remember { mutableStateOf(initialExtra?.ppeIsFixed ?: true) }
-    var isCredit by remember { mutableStateOf(initialExtra?.ppeIsCredit ?: false) }
+    var isCredit by remember {
+        mutableStateOf(
+            initialExtra?.ppeIsCredit ?: initialIsCredit
+        )
+    }
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var showDuplicateDialog by remember { mutableStateOf<Pair<String, String>?>(null) }

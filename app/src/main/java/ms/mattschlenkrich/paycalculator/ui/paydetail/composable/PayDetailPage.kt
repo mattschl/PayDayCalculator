@@ -166,10 +166,10 @@ fun PayDetailPage(
         deductions = deductions,
         taxes = taxes,
         onAddCreditClick = {
-            navController.navigate(Screen.PayPeriodExtraAdd.route)
+            navController.navigate(Screen.PayPeriodExtraAdd.createRoute(true))
         },
         onAddDeductionClick = {
-            navController.navigate(Screen.PayPeriodExtraAdd.route)
+            navController.navigate(Screen.PayPeriodExtraAdd.createRoute(false))
         },
         onExtraClick = { extra ->
             if (extra.payPeriodExtra != null) {

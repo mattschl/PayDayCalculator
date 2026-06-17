@@ -50,7 +50,9 @@ sealed class Screen(
         Screen("workExtraTypeUpdate", R.string.update_extra_type, R.drawable.ic_extras)
 
     object PayPeriodExtraAdd :
-        Screen("payPeriodExtraAdd", R.string.add_new_extra, R.drawable.ic_extras)
+        Screen("payPeriodExtraAdd/{isCredit}", R.string.add_new_extra, R.drawable.ic_extras) {
+        fun createRoute(isCredit: Boolean) = "payPeriodExtraAdd/$isCredit"
+    }
 
     object PayPeriodExtraUpdate :
         Screen("payPeriodExtraUpdate", R.string.update_extra_type, R.drawable.ic_extras)

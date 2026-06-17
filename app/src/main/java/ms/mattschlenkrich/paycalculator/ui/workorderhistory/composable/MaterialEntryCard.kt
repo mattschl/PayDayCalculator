@@ -63,8 +63,7 @@ fun MaterialEntryCard(
                     value = materialQty,
                     onValueChange = onMaterialQtyChange,
                     label = { Text(stringResource(id = R.string.qty)) },
-                    modifier = Modifier.width(40.dp),
-                    focusRequester = focusRequester
+                    modifier = Modifier.width(40.dp)
                 )
                 AutoCompleteTextField(
                     value = material,
@@ -73,7 +72,8 @@ fun MaterialEntryCard(
                     suggestions = materialList,
                     onItemSelected = onMaterialSelected,
                     modifier = Modifier.fillMaxWidth(),
-                    itemToString = { it.mName }
+                    itemToString = { it.mName },
+                    focusRequester = focusRequester
                 )
             }
             Button(
