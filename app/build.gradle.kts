@@ -5,7 +5,7 @@ plugins {
     id("com.android.application")
     id("com.google.devtools.ksp")
     id("kotlin-parcelize")
-    kotlin("plugin.compose") version "2.3.21"
+    kotlin("plugin.compose") version "2.4.0"
 }
 
 extensions.configure<ApplicationExtension> {
