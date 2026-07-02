@@ -157,7 +157,9 @@ abstract class PayDatabase : RoomDatabase() {
             synchronized(LOCK) {
                 try {
                     val db = instance ?: invoke(context)
+                    // Force a full checkpoint and then flatten the database to a single file
                     db.query("PRAGMA wal_checkpoint(TRUNCATE)", null).close()
+                    db.query("PRAGMA journal_mode=DELETE", null).close()
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

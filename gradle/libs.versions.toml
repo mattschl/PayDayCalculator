@@ -23,8 +23,8 @@ mockk = "1.14.11"
 navigationCompose = "2.9.8"
 playServicesAuth = "21.6.0"
 room = "2.8.4"
-runtimeLivedata = "1.11.3"
-ui = "1.11.3"
+runtimeLivedata = "1.11.4"
+ui = "1.11.4"
 
 [libraries]
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }

@@ -2,6 +2,8 @@ package ms.mattschlenkrich.paycalculator
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -63,6 +65,8 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
+            Log.d("MainActivity", "Sync confirmed, restarting activity to reload data.")
+            Toast.makeText(this, "Data refreshed from sync.", Toast.LENGTH_SHORT).show()
             val intent = Intent(this, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(intent)
@@ -74,6 +78,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        // Ensure we start with a fresh database instance after any sync
+        PayDatabase.resetInstance()
         setupViewModels()
 
         setContent {

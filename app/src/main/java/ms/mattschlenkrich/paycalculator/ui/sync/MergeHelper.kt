@@ -16,7 +16,7 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
      * Analyzes the remote database and compares it with the local one.
      * Returns a summary of records that are present in the remote DB but not locally.
      */
-    fun getSyncSummary(): String {
+    fun getSyncSummary(ignoreTimestamps: Boolean = false): String {
         val summary = StringBuilder()
         var remoteDb: SQLiteDatabase? = null
         var localDb: SQLiteDatabase? = null
@@ -39,11 +39,12 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
             summary.append("  Remote file: ${remoteFile.name} (${remoteFile.length() / 1024} KB)\n")
             summary.append("  Local file: ${localFile.name} (${localFile.length() / 1024} KB)\n\n")
 
-            val lookbackTime = getLookbackTime(localDb)
+            val lookbackTime =
+                if (ignoreTimestamps) "1970-01-01 00:00:00" else getLookbackTime(localDb)
             if (lookbackTime == "1970-01-01 00:00:00") {
-                summary.append("  Safety Window: Full Restore mode enabled (no previous history found)\n\n")
+                summary.append("  Safety Window: Full Sync mode enabled\n\n")
             } else {
-                summary.append("  Safety Window: Analyzing records updated since: $lookbackTime (Optimized Global Baseline)\n\n")
+                summary.append("  Safety Window: Analyzing records updated since: $lookbackTime\n\n")
             }
 
             val tables = getTables()
@@ -105,7 +106,10 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
     /**
      * Applies the synchronization from the remote database to the local one.
      */
-    fun applySync(onProgress: (Int, Int) -> Unit = { _, _ -> }): String {
+    fun applySync(
+        ignoreTimestamps: Boolean = false,
+        onProgress: (Int, Int) -> Unit = { _, _ -> }
+    ): String {
         val summary = StringBuilder()
         var remoteDb: SQLiteDatabase? = null
         var localDb: SQLiteDatabase? = null
@@ -123,7 +127,8 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
                 SQLiteDatabase.OPEN_READWRITE
             )
 
-            val lookbackTime = getLookbackTime(localDb)
+            val lookbackTime =
+                if (ignoreTimestamps) "1970-01-01 00:00:00" else getLookbackTime(localDb)
             val tables = getTables()
             var totalNew = 0
             var totalUpdated = 0
@@ -215,10 +220,10 @@ class MergeHelper(private val context: Context, private val remoteDbPath: String
 
                                     if (status == RecordStatus.NEW) tableNewCount++ else tableUpdatedCount++
                                 } else {
-                                    Log.e(
-                                        TAG,
-                                        "Failed to sync record in ${spec.tableName}: $values"
-                                    )
+                                    val errorMsg =
+                                        "Failed to sync record in ${spec.tableName} (status: $status): $values"
+                                    Log.e(TAG, errorMsg)
+                                    summary.append("  [ERR] $errorMsg\n")
                                 }
                             } while (remoteCursor.moveToNext())
                         }

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -89,8 +90,14 @@ class SyncActivity : ComponentActivity() {
                     syncMax = syncViewModel.syncMax,
                     errorMessage = syncViewModel.errorMessage,
                     onQueryClick = { syncViewModel.query { handleError("Query failed", it) } },
-                    onSyncClick = { syncViewModel.performSync { handleError("Sync failed", it) } },
-                    onReturnClick = { finish() },
+                    onSyncClick = {
+                        syncViewModel.performSync {
+                            handleError("Sync failed", it)
+                        }
+                    },
+                    onReturnClick = {
+                        handleExit()
+                    },
                     onClearBackupsClick = {
                         syncViewModel.clearBackups {
                             handleError("Clear backups failed", it)
@@ -116,6 +123,12 @@ class SyncActivity : ComponentActivity() {
         if (savedEmail != null) {
             initializeDriveService(savedEmail)
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                handleExit()
+            }
+        })
     }
 
     private fun signOut(onComplete: () -> Unit) {
@@ -181,7 +194,7 @@ class SyncActivity : ComponentActivity() {
                     .build()
 
                 Log.i(TAG, "Calling credentialManager.getCredential")
-                val result = kotlinx.coroutines.withTimeout(10000.milliseconds) {
+                val result = kotlinx.coroutines.withTimeout(30000.milliseconds) {
                     credentialManager.getCredential(this@SyncActivity, request)
                 }
                 syncViewModel.isLoading = false
@@ -288,6 +301,14 @@ class SyncActivity : ComponentActivity() {
                 handleError("Parse Error", e)
             }
         }
+    }
+
+    private fun handleExit() {
+        if (syncViewModel.syncPerformed) {
+            Log.d(TAG, "Sync was performed, setting RESULT_OK before exit.")
+            setResult(RESULT_OK)
+        }
+        finish()
     }
 
     private fun initializeDriveService(email: String) {

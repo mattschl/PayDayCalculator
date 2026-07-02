@@ -36,6 +36,8 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     var syncProgress by mutableIntStateOf(0)
     var syncMax by mutableIntStateOf(0)
     var errorMessage by mutableStateOf<String?>(null)
+    var syncPerformed by mutableStateOf(false)
+        private set
 
     private fun showProgress(message: String) {
         Log.d(TAG, "Progress: $message")
@@ -52,11 +54,16 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
         return "appDataFolder"
     }
 
-    private suspend fun isFirstSync(): Boolean {
+    private suspend fun isDatabaseEmpty(): Boolean {
         return withContext(Dispatchers.IO) {
-            val db = PayDatabase(getApplication())
-            val history = db.getSyncHistoryDao().getLastSyncHistory()
-            history == null
+            try {
+                val db = PayDatabase(getApplication())
+                val employerCount = db.getEmployerDao().getEmployerCountSync()
+                employerCount == 0
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to check if database is empty", e)
+                true // Assume empty on error to trigger full sync
+            }
         }
     }
 
@@ -74,19 +81,17 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 ?.forEach { it.delete() }
 
             val fourWeeksAgoMs = System.currentTimeMillis() - (28 * 24 * 60 * 60 * 1000L)
-            val isFirstSync = isFirstSync()
-
             val allDbFiles = driveFiles
                 .filter { (it.name.startsWith("pay_") || it.name == "pay.db") && it.name.endsWith(".db") }
                 .sortedBy { it.name }
 
-            val dbFilesToDownload = if (isFirstSync && allDbFiles.isNotEmpty()) {
+            val dbFilesToDownload = if (allDbFiles.isNotEmpty()) {
                 val latest = allDbFiles.last()
                 allDbFiles.filter {
                     it == latest || (it.modifiedTime?.value ?: 0L) > fourWeeksAgoMs
                 }.distinct()
             } else {
-                allDbFiles.filter { (it.modifiedTime?.value ?: 0L) > fourWeeksAgoMs }
+                emptyList()
             }
 
             var downloadCount = 0
@@ -168,19 +173,33 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     name.startsWith("pay_") && name.endsWith(".db")
                 }?.sortedBy { it.name } ?: emptyList()
 
+                val dbEmpty = isDatabaseEmpty()
+
                 if (localBackups.isNotEmpty()) {
+                    showProgress("Preparing database for merge...")
+                    withContext(Dispatchers.IO) {
+                        PayDatabase.checkpoint(context)
+                        PayDatabase.closeDatabase()
+                        // Explicitly delete WAL files to prevent Room from ignoring main DB updates
+                        File(dbDir, "pay.db-wal").delete()
+                        File(dbDir, "pay.db-shm").delete()
+                    }
+
                     val summaryBuilder = StringBuilder("Sync Analysis and Results:\n\n")
+                    if (dbEmpty) summaryBuilder.append("--- DATABASE EMPTY: Triggering Full Sync ---\n\n")
+
                     for (localDb in localBackups) {
                         showProgress("Analyzing ${localDb.name}...")
                         val mergeHelper = MergeHelper(context, localDb.absolutePath)
 
-                        val analysis = mergeHelper.getSyncSummary()
+                        val analysis = mergeHelper.getSyncSummary(ignoreTimestamps = dbEmpty)
                         summaryBuilder.append("--- ANALYSIS: ${localDb.name} ---\n")
                         summaryBuilder.append(analysis).append("\n\n")
                         docContent = summaryBuilder.toString()
 
                         showProgress("Applying changes from ${localDb.name}...")
-                        val summary = mergeHelper.applySync { progress, total ->
+                        val summary =
+                            mergeHelper.applySync(ignoreTimestamps = dbEmpty) { progress, total ->
                             syncMax = total
                             syncProgress = progress
                             progressMessage =
@@ -192,6 +211,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     }
 
                     syncMax = 0
+                    syncPerformed = true
                     Log.d(TAG, "Sync Result: $docContent")
 
                     showProgress("Cleaning up local backups...")
@@ -202,9 +222,12 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                         File(localDb.absolutePath + "-shm").delete()
                     }
 
-                    val db = PayDatabase(context)
-                    db.invalidationTracker.refreshVersionsAsync()
-                    PayDatabase.resetInstance()
+                    withContext(Dispatchers.IO) {
+                        // One last cleanup of WAL files created during raw SQLite merge
+                        File(dbDir, "pay.db-wal").delete()
+                        File(dbDir, "pay.db-shm").delete()
+                        PayDatabase.resetInstance()
+                    }
                 } else {
                     if (docContent.isBlank()) {
                         docContent = "No new backups to merge from the last 4 weeks."

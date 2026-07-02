@@ -21,6 +21,12 @@ interface EmployerDao {
     suspend fun updateEmployer(employers: Employers)
 
     @Query(
+        "SELECT COUNT(*) FROM $TABLE_EMPLOYERS " +
+                "WHERE employerIsDeleted = 0"
+    )
+    suspend fun getEmployerCountSync(): Int
+
+    @Query(
         "SELECT * FROM $TABLE_EMPLOYERS " +
                 "WHERE employerId = :employerId " +
                 "AND employerIsDeleted = 0"
