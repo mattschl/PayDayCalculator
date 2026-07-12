@@ -22,6 +22,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -89,7 +90,7 @@ fun TimeSheetRoute(
         initialPage = 0,
     ) { cutOffDates?.size ?: 0 }
 
-    val initialSelectionLoaded = remember { mutableStateOf(false) }
+    val initialSelectionLoaded = rememberSaveable { mutableStateOf(false) }
 
     // Initial selection from history
     LaunchedEffect(employers) {
@@ -172,9 +173,9 @@ fun TimeSheetRoute(
         }
     }
 
-    var showWorkDateOptionsDialog by remember { mutableStateOf<WorkDates?>(null) }
-    var showDeleteWorkDateConfirmDialog by remember { mutableStateOf<WorkDates?>(null) }
-    var showDeletePayPeriodConfirmDialog by remember { mutableStateOf(false) }
+    var showWorkDateOptionsDialog by rememberSaveable { mutableStateOf<WorkDates?>(null) }
+    var showDeleteWorkDateConfirmDialog by rememberSaveable { mutableStateOf<WorkDates?>(null) }
+    var showDeletePayPeriodConfirmDialog by rememberSaveable { mutableStateOf(false) }
 
     if (showDeletePayPeriodConfirmDialog) {
         AlertDialog(

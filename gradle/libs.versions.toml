@@ -1,6 +1,5 @@
 [versions]
 apiClient = "2.9.0"
-appcompat = "1.7.1"
 activityCompose = "1.13.0"
 coreKtx = "1.19.0"
 credentials = "1.6.0"
@@ -11,7 +10,6 @@ gsonVersion = "2.14.0"
 junit = "4.13.2"
 junitJupiter = "6.1.1"
 junitVersion = "1.3.0"
-kotlinParcelizeRuntime = "2.4.0"
 kotlinxCoroutinesAndroid = "1.11.0"
 lifecycle = "2.11.0"
 material = "1.7.8"
@@ -27,7 +25,6 @@ runtimeLivedata = "1.11.4"
 ui = "1.11.4"
 
 [libraries]
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credentials" }
@@ -56,7 +53,6 @@ google-api-services-drive = { group = "com.google.apis", name = "google-api-serv
 googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
-kotlin-parcelize-runtime = { module = "org.jetbrains.kotlin:kotlin-parcelize-runtime", version.ref = "kotlinParcelizeRuntime" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockitoCore" }

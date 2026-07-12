@@ -8,6 +8,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -53,19 +54,19 @@ fun WorkOrderUpdateRoute(
     val addressSuggestions by workOrderViewModel.getUniqueAddresses(employer.employerId)
         .observeAsState(emptyList())
 
-    var woNumber by remember { mutableStateOf(initialWo.woNumber) }
-    var address by remember { mutableStateOf(initialWo.woAddress) }
-    var description by remember { mutableStateOf(initialWo.woDescription) }
+    var woNumber by rememberSaveable { mutableStateOf(initialWo.woNumber) }
+    var address by rememberSaveable { mutableStateOf(initialWo.woAddress) }
+    var description by rememberSaveable { mutableStateOf(initialWo.woDescription) }
 
-    var woNumberError by remember { mutableStateOf(false) }
-    var addressError by remember { mutableStateOf(false) }
-    var descriptionError by remember { mutableStateOf(false) }
+    var woNumberError by rememberSaveable { mutableStateOf(false) }
+    var addressError by rememberSaveable { mutableStateOf(false) }
+    var descriptionError by rememberSaveable { mutableStateOf(false) }
 
-    var jobSpecText by remember { mutableStateOf("") }
+    var jobSpecText by rememberSaveable { mutableStateOf("") }
     val jobSpecSuggestions by workOrderViewModel.jobSpecsAll.observeAsState(emptyList())
-    var areaText by remember { mutableStateOf("") }
+    var areaText by rememberSaveable { mutableStateOf("") }
     val areaSuggestions by workOrderViewModel.areasList.observeAsState(emptyList())
-    var workPerformedNote by remember { mutableStateOf("") }
+    var workPerformedNote by rememberSaveable { mutableStateOf("") }
 
     val addedJobSpecs by remember(initialWo.workOrderId) {
         workOrderViewModel.getWorkOrderJobSpecs(initialWo.workOrderId)
@@ -77,6 +78,13 @@ fun WorkOrderUpdateRoute(
     val workOrderSummary by remember(initialWo.workOrderId) {
         workOrderViewModel.getWorkOrderSummary(initialWo.workOrderId)
     }.observeAsState()
+
+    var calculationRate by rememberSaveable { mutableStateOf("") }
+    val totalHours = (workOrderSummary?.totalRegHours ?: 0.0) +
+            (workOrderSummary?.totalOtHours ?: 0.0) +
+            (workOrderSummary?.totalDblOtHours ?: 0.0)
+    val totalCalculation = nf.displayDollars((calculationRate.toDoubleOrNull() ?: 0.0) * totalHours)
+
     val materialsSummary by remember(initialWo.workOrderId) {
         workOrderViewModel.getWorkOrderMaterialsSummary(initialWo.workOrderId)
     }.observeAsState(emptyList())
@@ -190,6 +198,9 @@ fun WorkOrderUpdateRoute(
         },
         historySummaryText = historySummaryText,
         hoursSummaryText = hoursSummaryText,
+        calculationRate = calculationRate,
+        onCalculationRateChange = { calculationRate = it },
+        totalCalculationText = totalCalculation,
         onAddHistoryClick = {
             // Need to set a work date for HistoryAdd, maybe navigate to TimeSheet to pick one?
             // Or use current?

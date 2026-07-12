@@ -95,15 +95,9 @@ kotlin {
 }
 
 dependencies {
-    implementation(libs.kotlin.parcelize.runtime)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
     implementation(libs.gson)
     implementation(libs.material)
-    implementation(libs.mockito.core)
-    implementation(libs.mockito.kotlin)
-    implementation(libs.mockk)
-    implementation(libs.androidx.junit.ktx)
     implementation(libs.google.api.client)
     implementation(libs.google.api.client.android)
     implementation(libs.google.api.services.drive)
@@ -112,9 +106,15 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
+
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.mockk)
+
     androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.junit.ktx)
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(libs.androidx.room.runtime)
@@ -141,5 +141,4 @@ dependencies {
     implementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
-
 }

@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -27,8 +28,8 @@ fun WorkOrderViewRoute(
     val settings by settingsViewModel.settings.observeAsState()
     val minColumnWidth = settings?.minColumnWidth ?: DEFAULT_MIN_COLUMN_WIDTH
     val employers by employerViewModel.getEmployers().observeAsState(emptyList())
-    var selectedEmployer by remember { mutableStateOf(mainViewModel.getEmployer()) }
-    var searchQuery by remember { mutableStateOf("") }
+    var selectedEmployer by rememberSaveable { mutableStateOf(mainViewModel.getEmployer()) }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
 
     val workOrders by if (selectedEmployer != null) {
         if (searchQuery.isEmpty()) {

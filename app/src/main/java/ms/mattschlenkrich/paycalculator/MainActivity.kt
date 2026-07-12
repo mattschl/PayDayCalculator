@@ -67,6 +67,7 @@ class MainActivity : ComponentActivity() {
         if (result.resultCode == RESULT_OK) {
             Log.d("MainActivity", "Sync confirmed, restarting activity to reload data.")
             Toast.makeText(this, "Data refreshed from sync.", Toast.LENGTH_SHORT).show()
+            PayDatabase.resetInstance()
             val intent = Intent(this, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(intent)
@@ -78,8 +79,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        // Ensure we start with a fresh database instance after any sync
-        PayDatabase.resetInstance()
         setupViewModels()
 
         setContent {
@@ -138,7 +137,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         super.onStop()
-        mainViewModel.setAuthenticated(false)
+        if (!isChangingConfigurations) {
+            mainViewModel.setAuthenticated(false)
+        }
     }
 
     private fun setupViewModels() {

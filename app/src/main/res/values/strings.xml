@@ -302,4 +302,6 @@
     <string name="edit_description_in_database">Edit description in database</string>
     <string name="create_override">Create Override?</string>
     <string name="this_is_a_default_extra_override">This is a default extra. Would you like to create an override for this payday to edit it?</string>
+    <string name="calculation_rate">Calculation Rate</string>
+    <string name="total_calculation">Total Calculation</string>
 </resources>
