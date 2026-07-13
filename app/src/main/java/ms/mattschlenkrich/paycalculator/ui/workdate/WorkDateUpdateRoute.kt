@@ -1,6 +1,9 @@
 package ms.mattschlenkrich.paycalculator.ui.workdate
 
 import android.app.DatePickerDialog
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -13,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,6 +28,7 @@ import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
+import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.data.util.HolidayPayCalculator
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
@@ -43,6 +48,69 @@ fun WorkDateUpdateRoute(
     navController: NavController,
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
+    val initialWorkDate = mainViewModel.getWorkDateObject() ?: run {
+        LaunchedEffect(Unit) {
+            navController.popBackStack()
+        }
+        return
+    }
+
+    val usedWorkDatesList by payDayViewModel.getWorkDateList(
+        initialWorkDate.wdEmployerId, initialWorkDate.wdCutoffDate
+    ).observeAsState(emptyList())
+
+    if (usedWorkDatesList.isEmpty()) {
+        return
+    }
+
+    val initialIndex = remember(usedWorkDatesList) {
+        val index = usedWorkDatesList.indexOfFirst { it.workDateId == initialWorkDate.workDateId }
+        if (index == -1) 0 else index
+    }
+
+    val pagerState = rememberPagerState(
+        initialPage = initialIndex
+    ) { usedWorkDatesList.size }
+
+    // Update mainViewModel when swiping so other screens know which date is active
+    LaunchedEffect(pagerState.currentPage) {
+        if (pagerState.currentPage < usedWorkDatesList.size) {
+            mainViewModel.setWorkDateObject(usedWorkDatesList[pagerState.currentPage])
+        }
+    }
+
+    HorizontalPager(
+        state = pagerState,
+        modifier = Modifier.fillMaxSize(),
+        beyondViewportPageCount = 1
+    ) { page ->
+        val workDate = usedWorkDatesList[page]
+        WorkDateUpdatePageContent(
+            workDate = workDate,
+            mainViewModel = mainViewModel,
+            payDayViewModel = payDayViewModel,
+            workExtraViewModel = workExtraViewModel,
+            workOrderViewModel = workOrderViewModel,
+            navController = navController,
+            settingsViewModel = settingsViewModel,
+            usedWorkDatesList = usedWorkDatesList,
+            isCurrentPage = pagerState.currentPage == page
+        )
+    }
+}
+
+@Composable
+fun WorkDateUpdatePageContent(
+    workDate: WorkDates,
+    mainViewModel: MainViewModel,
+    payDayViewModel: PayDayViewModel,
+    workExtraViewModel: WorkExtraViewModel,
+    workOrderViewModel: WorkOrderViewModel,
+    navController: NavController,
+    settingsViewModel: SettingsViewModel,
+    usedWorkDatesList: List<WorkDates>,
+    isCurrentPage: Boolean
+) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val df = remember { DateFunctions() }
@@ -51,57 +119,46 @@ fun WorkDateUpdateRoute(
     val settings by settingsViewModel.settings.observeAsState()
     val minColumnWidth = settings?.minColumnWidth ?: DEFAULT_MIN_COLUMN_WIDTH
 
-    val currentWorkDate = mainViewModel.getWorkDateObject() ?: run {
-        LaunchedEffect(Unit) {
-            navController.popBackStack()
-        }
-        return
-    }
-
-    var curDateString by remember(currentWorkDate.wdDate) { mutableStateOf(currentWorkDate.wdDate) }
-    var regHours by remember(currentWorkDate.wdRegHours) {
+    var curDateString by remember(workDate.wdDate) { mutableStateOf(workDate.wdDate) }
+    var regHours by remember(workDate.wdRegHours) {
         mutableStateOf(
             nf.displayNumberFromDouble(
-                currentWorkDate.wdRegHours
+                workDate.wdRegHours
             )
         )
     }
-    var otHours by remember(currentWorkDate.wdOtHours) {
+    var otHours by remember(workDate.wdOtHours) {
         mutableStateOf(
             nf.displayNumberFromDouble(
-                currentWorkDate.wdOtHours
+                workDate.wdOtHours
             )
         )
     }
-    var dblOtHours by remember(currentWorkDate.wdDblOtHours) {
+    var dblOtHours by remember(workDate.wdDblOtHours) {
         mutableStateOf(
             nf.displayNumberFromDouble(
-                currentWorkDate.wdDblOtHours
+                workDate.wdDblOtHours
             )
         )
     }
-    var statHours by remember(currentWorkDate.wdStatHours) {
+    var statHours by remember(workDate.wdStatHours) {
         mutableStateOf(
             nf.displayNumberFromDouble(
-                currentWorkDate.wdStatHours
+                workDate.wdStatHours
             )
         )
     }
-    var note by remember { mutableStateOf(currentWorkDate.wdNote ?: "") }
-
-    val usedWorkDatesList by payDayViewModel.getWorkDateList(
-        currentWorkDate.wdEmployerId, currentWorkDate.wdCutoffDate
-    ).observeAsState(emptyList())
+    var note by remember(workDate.wdNote) { mutableStateOf(workDate.wdNote ?: "") }
 
     val histories by workOrderViewModel.getWorkOrderHistoriesByDate(
-        currentWorkDate.workDateId
+        workDate.workDateId
     ).observeAsState(emptyList())
 
-    val currentExtras by payDayViewModel.getWorkDateExtras(currentWorkDate.workDateId)
+    val currentExtras by payDayViewModel.getWorkDateExtras(workDate.workDateId)
         .observeAsState(emptyList())
 
     val allPossibleExtras by workExtraViewModel.getExtraTypesAndDefByDaily(
-        currentWorkDate.wdEmployerId, currentWorkDate.wdCutoffDate
+        workDate.wdEmployerId, workDate.wdCutoffDate
     ).observeAsState(emptyList())
 
     val displayExtras = remember(currentExtras, allPossibleExtras) {
@@ -111,7 +168,7 @@ fun WorkDateUpdateRoute(
                 list.add(
                     WorkDateExtras(
                         0,
-                        currentWorkDate.workDateId,
+                        workDate.workDateId,
                         null,
                         typeDef.extraType.wetName,
                         typeDef.extraType.wetAppliesTo,
@@ -171,7 +228,7 @@ fun WorkDateUpdateRoute(
     }
 
     val onUpdateWorkDate: suspend (String) -> Unit = { fragmentToGoTo: String ->
-        val updated = currentWorkDate.copy(
+        val updated = workDate.copy(
             wdDate = curDateString,
             wdRegHours = regHours.toDoubleOrNull() ?: 0.0,
             wdOtHours = otHours.toDoubleOrNull() ?: 0.0,
@@ -196,6 +253,25 @@ fun WorkDateUpdateRoute(
 
             Screen.WorkOrderHistoryAdd.route -> {
                 navController.navigate(Screen.WorkOrderHistoryAdd.route)
+            }
+        }
+    }
+
+    // Save changes when swiping away from this page
+    LaunchedEffect(isCurrentPage) {
+        if (!isCurrentPage) {
+            val updated = workDate.copy(
+                wdDate = curDateString,
+                wdRegHours = regHours.toDoubleOrNull() ?: 0.0,
+                wdOtHours = otHours.toDoubleOrNull() ?: 0.0,
+                wdDblOtHours = dblOtHours.toDoubleOrNull() ?: 0.0,
+                wdStatHours = statHours.toDoubleOrNull() ?: 0.0,
+                wdNote = note.ifBlank { null },
+                wdIsDeleted = false,
+                wdUpdateTime = df.getCurrentUTCTimeAsString()
+            )
+            if (updated != workDate) {
+                payDayViewModel.updateWorkDate(updated)
             }
         }
     }
@@ -385,7 +461,7 @@ fun WorkDateUpdateRoute(
             coroutineScope.launch {
                 val holidayPayCalculator =
                     HolidayPayCalculator(
-                        payDayViewModel, currentWorkDate.wdEmployerId, curDateString
+                        payDayViewModel, workDate.wdEmployerId, curDateString
                     )
                 val stat = round(holidayPayCalculator.calculateStatHours() * 4) / 4
                 statHours = nf.displayNumberFromDouble(stat)
@@ -409,7 +485,7 @@ fun WorkDateUpdateRoute(
             dblOtHours = nf.displayNumberFromDouble(historyDblOtHours)
         },
         onDoneClick = {
-            if (curDateString != currentWorkDate.wdDate && usedWorkDatesList.any { it.wdDate == curDateString }) {
+            if (curDateString != workDate.wdDate && usedWorkDatesList.any { it.wdDate == curDateString }) {
                 showReplaceDateDialog = true
             } else {
                 coroutineScope.launch {
@@ -460,7 +536,7 @@ fun WorkDateUpdateRoute(
             showExtraOptionsDialog = extra
         },
         onAddExtraClick = {
-            mainViewModel.setWorkDateObject(currentWorkDate)
+            mainViewModel.setWorkDateObject(workDate)
             navController.navigate(Screen.WorkDateExtraAdd.route)
         },
         minColumnWidth = minColumnWidth
