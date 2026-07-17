@@ -14,14 +14,14 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.Areas
+import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.ui.areas.composable.AreaUpdateScreen
 
 @Composable
 fun AreaUpdateRoute(
     mainViewModel: MainViewModel,
-    workOrderViewModel: WorkOrderViewModel,
+    areaViewModel: AreaViewModel,
     navController: NavController
 ) {
     val df = remember { DateFunctions() }
@@ -35,8 +35,8 @@ fun AreaUpdateRoute(
         return
     }
 
-    val areaList by workOrderViewModel.areasList.observeAsState(emptyList())
-    val oldArea by workOrderViewModel.getArea(areaId).observeAsState()
+    val areaList by areaViewModel.searchAreas("").observeAsState(emptyList())
+    val oldArea by areaViewModel.getArea(areaId).observeAsState()
 
     oldArea?.let { area ->
         var name by remember(area.areaId) { mutableStateOf(area.areaName) }
@@ -57,7 +57,7 @@ fun AreaUpdateRoute(
                 }
 
                 coroutineScope.launch {
-                    workOrderViewModel.updateArea(
+                    areaViewModel.updateArea(
                         Areas(
                             area.areaId,
                             trimmedName,

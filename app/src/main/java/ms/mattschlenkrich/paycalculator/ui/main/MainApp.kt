@@ -14,13 +14,17 @@ import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.bottomNavItems
 import ms.mattschlenkrich.paycalculator.common.compose.StandardNavigationBar
 import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
+import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.JobSpecViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MaterialViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayCalculationsViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkPerformedViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTimeViewModel
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
@@ -33,6 +37,10 @@ fun MainApp(
     workExtraViewModel: WorkExtraViewModel,
     payDayViewModel: PayDayViewModel,
     workOrderViewModel: WorkOrderViewModel,
+    jobSpecViewModel: JobSpecViewModel,
+    materialViewModel: MaterialViewModel,
+    workPerformedViewModel: WorkPerformedViewModel,
+    areaViewModel: AreaViewModel,
     payDetailViewModel: PayDetailViewModel,
     payCalculationsViewModel: PayCalculationsViewModel,
     workTimeViewModel: WorkTimeViewModel,
@@ -151,6 +159,10 @@ fun MainApp(
             workExtraViewModel = workExtraViewModel,
             payDayViewModel = payDayViewModel,
             workOrderViewModel = workOrderViewModel,
+            jobSpecViewModel = jobSpecViewModel,
+            materialViewModel = materialViewModel,
+            workPerformedViewModel = workPerformedViewModel,
+            areaViewModel = areaViewModel,
             payDetailViewModel = payDetailViewModel,
             payCalculationsViewModel = payCalculationsViewModel,
             workTimeViewModel = workTimeViewModel,

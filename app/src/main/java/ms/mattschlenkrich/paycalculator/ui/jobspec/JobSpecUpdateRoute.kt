@@ -14,14 +14,14 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.data.viewmodel.JobSpecViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.ui.jobspec.composable.JobSpecUpdateScreen
 
 @Composable
 fun JobSpecUpdateRoute(
     mainViewModel: MainViewModel,
-    workOrderViewModel: WorkOrderViewModel,
+    jobSpecViewModel: JobSpecViewModel,
     navController: NavController
 ) {
     val df = remember { DateFunctions() }
@@ -35,8 +35,8 @@ fun JobSpecUpdateRoute(
         return
     }
 
-    val originalJs by workOrderViewModel.getJobSpec(jsId).observeAsState()
-    val jobSpecList by workOrderViewModel.jobSpecsAll.observeAsState(emptyList())
+    val originalJs by jobSpecViewModel.getJobSpec(jsId).observeAsState()
+    val jobSpecList by jobSpecViewModel.searchJobSpecs("").observeAsState(emptyList())
 
     originalJs?.let { js ->
         var name by remember(js.jobSpecId) { mutableStateOf(js.jsName) }
@@ -52,7 +52,7 @@ fun JobSpecUpdateRoute(
                     return@JobSpecUpdateScreen
 
                 coroutineScope.launch {
-                    workOrderViewModel.updateJobSpec(
+                    jobSpecViewModel.updateJobSpec(
                         js.copy(
                             jsName = trimmedName,
                             jsUpdateTime = df.getCurrentUTCTimeAsString()

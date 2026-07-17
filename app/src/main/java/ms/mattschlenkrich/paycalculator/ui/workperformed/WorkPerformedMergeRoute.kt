@@ -17,14 +17,14 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformedMerged
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkPerformedViewModel
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.workperformed.composable.WorkPerformedMergeScreen
 
 @Composable
 fun WorkPerformedMergeRoute(
     mainViewModel: MainViewModel,
-    workOrderViewModel: WorkOrderViewModel,
+    workPerformedViewModel: WorkPerformedViewModel,
     navController: NavController,
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
@@ -43,9 +43,10 @@ fun WorkPerformedMergeRoute(
         return
     }
 
-    val workPerformedList by workOrderViewModel.workPerformedAll.observeAsState(emptyList())
-    val parentWorkPerformed by workOrderViewModel.getWorkPerformed(wpId).observeAsState()
-    val childList by workOrderViewModel.getWorkPerformedAndChildList(wpId)
+    val workPerformedList by workPerformedViewModel.getWorkPerformedAll()
+        .observeAsState(emptyList())
+    val parentWorkPerformed by workPerformedViewModel.getWorkPerformed(wpId).observeAsState()
+    val childList by workPerformedViewModel.getWorkPerformedAndChildList(wpId)
         .observeAsState(emptyList())
 
     var parentDescription by remember { mutableStateOf("") }
@@ -73,7 +74,7 @@ fun WorkPerformedMergeRoute(
         childList = childList,
         onRemoveChild = { child ->
             coroutineScope.launch {
-                workOrderViewModel.deleteWorkPerformedMerged(
+                workPerformedViewModel.deleteWorkPerformedMerged(
                     child.workPerformedMerged.workPerformedMergeId,
                     df.getCurrentUTCTimeAsString()
                 )
@@ -90,7 +91,7 @@ fun WorkPerformedMergeRoute(
             if (childId != null && childId != wpId) {
                 coroutineScope.launch {
                     if (action == 1) { // Keep
-                        workOrderViewModel.insertWorkPerformedMerged(
+                        workPerformedViewModel.insertWorkPerformedMerged(
                             WorkPerformedMerged(
                                 nf.generateRandomIdAsLong(),
                                 wpId,
@@ -100,8 +101,8 @@ fun WorkPerformedMergeRoute(
                             )
                         )
                     } else if (action == 2) { // Replace and delete
-                        workOrderViewModel.updateWorkPerformedMerged(childId, wpId)
-                        workOrderViewModel.deleteWorkPerformed(
+                        workPerformedViewModel.updateWorkPerformedMerged(childId, wpId)
+                        workPerformedViewModel.deleteWorkPerformed(
                             childId,
                             df.getCurrentUTCTimeAsString()
                         )

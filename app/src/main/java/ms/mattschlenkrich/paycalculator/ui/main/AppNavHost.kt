@@ -8,13 +8,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import ms.mattschlenkrich.paycalculator.Screen
+import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.JobSpecViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MaterialViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayCalculationsViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkPerformedViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTimeViewModel
 import ms.mattschlenkrich.paycalculator.ui.areas.AreaUpdateRoute
@@ -72,6 +76,10 @@ fun AppNavHost(
     workExtraViewModel: WorkExtraViewModel,
     payDayViewModel: PayDayViewModel,
     workOrderViewModel: WorkOrderViewModel,
+    jobSpecViewModel: JobSpecViewModel,
+    materialViewModel: MaterialViewModel,
+    workPerformedViewModel: WorkPerformedViewModel,
+    areaViewModel: AreaViewModel,
     payDetailViewModel: PayDetailViewModel,
     payCalculationsViewModel: PayCalculationsViewModel,
     workTimeViewModel: WorkTimeViewModel,
@@ -241,6 +249,9 @@ fun AppNavHost(
             WorkOrderHistoryUpdateRoute(
                 mainViewModel,
                 workOrderViewModel,
+                workPerformedViewModel,
+                materialViewModel,
+                areaViewModel,
                 navController
             )
         }
@@ -248,6 +259,8 @@ fun AppNavHost(
             WorkOrderHistoryWorkPerformedUpdateRoute(
                 mainViewModel,
                 workOrderViewModel,
+                workPerformedViewModel,
+                areaViewModel,
                 navController
             )
         }
@@ -263,6 +276,8 @@ fun AppNavHost(
             WorkOrderUpdateRoute(
                 mainViewModel,
                 workOrderViewModel,
+                jobSpecViewModel,
+                areaViewModel,
                 navController
             )
         }
@@ -291,83 +306,84 @@ fun AppNavHost(
             WorkOrderHistoryMaterialUpdateRoute(
                 mainViewModel,
                 workOrderViewModel,
+                materialViewModel,
                 navController
             )
         }
         composable(Screen.JobSpecs.route) {
             JobSpecViewRoute(
                 mainViewModel,
-                workOrderViewModel,
+                jobSpecViewModel,
                 navController
             )
         }
         composable(Screen.JobSpecUpdate.route) {
             JobSpecUpdateRoute(
                 mainViewModel,
-                workOrderViewModel,
+                jobSpecViewModel,
                 navController
             )
         }
         composable(Screen.JobSpecMerge.route) {
             JobSpecMergeRoute(
                 mainViewModel,
-                workOrderViewModel,
+                jobSpecViewModel,
                 navController
             )
         }
         composable(Screen.Areas.route) {
             AreaViewRoute(
                 mainViewModel,
-                workOrderViewModel,
+                areaViewModel,
                 navController
             )
         }
         composable(Screen.AreaUpdate.route) {
             AreaUpdateRoute(
                 mainViewModel,
-                workOrderViewModel,
+                areaViewModel,
                 navController
             )
         }
         composable(Screen.WorkPerformed.route) {
             WorkPerformedViewRoute(
                 mainViewModel,
-                workOrderViewModel,
+                workPerformedViewModel,
                 navController
             )
         }
         composable(Screen.Materials.route) {
             MaterialViewRoute(
                 mainViewModel,
-                workOrderViewModel,
+                materialViewModel,
                 navController
             )
         }
         composable(Screen.MaterialUpdate.route) {
             MaterialUpdateRoute(
                 mainViewModel,
-                workOrderViewModel,
+                materialViewModel,
                 navController
             )
         }
         composable(Screen.MaterialMerge.route) {
             MaterialMergeRoute(
                 mainViewModel,
-                workOrderViewModel,
+                materialViewModel,
                 navController
             )
         }
         composable(Screen.WorkPerformedUpdate.route) {
             WorkPerformedUpdateRoute(
                 mainViewModel,
-                workOrderViewModel,
+                workPerformedViewModel,
                 navController
             )
         }
         composable(Screen.WorkPerformedMerge.route) {
             WorkPerformedMergeRoute(
                 mainViewModel,
-                workOrderViewModel,
+                workPerformedViewModel,
                 navController
             )
         }
@@ -408,7 +424,8 @@ fun AppNavHost(
         composable(Screen.WorkOrderJobSpecUpdate.route) {
             WorkOrderJobSpecUpdateRoute(
                 mainViewModel,
-                workOrderViewModel,
+                jobSpecViewModel,
+                areaViewModel,
                 navController
             )
         }

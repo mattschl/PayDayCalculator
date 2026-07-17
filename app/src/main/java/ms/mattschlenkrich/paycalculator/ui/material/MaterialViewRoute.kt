@@ -11,25 +11,22 @@ import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MaterialViewModel
 import ms.mattschlenkrich.paycalculator.ui.material.composable.MaterialViewScreen
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 
 @Composable
 fun MaterialViewRoute(
     mainViewModel: MainViewModel,
-    workOrderViewModel: WorkOrderViewModel,
+    materialViewModel: MaterialViewModel,
     navController: NavController,
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val settings by settingsViewModel.settings.observeAsState()
     val minColumnWidth = settings?.minColumnWidth ?: DEFAULT_MIN_COLUMN_WIDTH
     var searchQuery by remember { mutableStateOf("") }
-    val materialList by if (searchQuery.isEmpty()) {
-        workOrderViewModel.materialsList.observeAsState(emptyList())
-    } else {
-        workOrderViewModel.searchMaterials("%$searchQuery%").observeAsState(emptyList())
-    }
+    val materialList by materialViewModel.searchMaterials("%$searchQuery%")
+        .observeAsState(emptyList())
 
     MaterialViewScreen(
         materialList = materialList,

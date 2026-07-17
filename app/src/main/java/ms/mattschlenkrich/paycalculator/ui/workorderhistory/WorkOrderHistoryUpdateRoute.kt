@@ -20,8 +20,11 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.data.model.MaterialInSequence
+import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MaterialViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkPerformedViewModel
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable.WorkOrderHistoryUpdateScreen
 
@@ -29,6 +32,9 @@ import ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable.WorkOrder
 fun WorkOrderHistoryUpdateRoute(
     mainViewModel: MainViewModel,
     workOrderViewModel: WorkOrderViewModel,
+    workPerformedViewModel: WorkPerformedViewModel,
+    materialViewModel: MaterialViewModel,
+    areaViewModel: AreaViewModel,
     navController: NavController,
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
@@ -86,21 +92,22 @@ fun WorkOrderHistoryUpdateRoute(
     var note by remember { mutableStateOf(history.woHistoryNote ?: "") }
 
     var workPerformed by remember { mutableStateOf("") }
-    val workPerformedList by workOrderViewModel.workPerformedAll.observeAsState(emptyList())
+    val workPerformedList by workPerformedViewModel.getWorkPerformedAll()
+        .observeAsState(emptyList())
     var area by remember { mutableStateOf("") }
-    val areaList by workOrderViewModel.areasList.observeAsState(emptyList())
+    val areaList by areaViewModel.getAreasList().observeAsState(emptyList())
     var workPerformedNote by remember { mutableStateOf("") }
     val workPerformedActualList by remember(history.woHistoryId) {
-        workOrderViewModel.getWorkPerformedCombinedByWorkOrderHistory(
+        workPerformedViewModel.getWorkPerformedCombinedByWorkOrderHistory(
             history.woHistoryId
         )
     }.observeAsState(emptyList())
 
     var materialQty by remember { mutableStateOf("") }
     var materialName by remember { mutableStateOf("") }
-    val materialList by workOrderViewModel.materialsList.observeAsState(emptyList())
+    val materialList by materialViewModel.getMaterialsList().observeAsState(emptyList())
     val materialActualList by remember(history.woHistoryId) {
-        workOrderViewModel.getMaterialsByHistory(history.woHistoryId)
+        materialViewModel.getMaterialsByHistory(history.woHistoryId)
     }.observeAsState(emptyList())
 
     val timeWorkedList by remember(history.woHistoryId) {
@@ -189,10 +196,10 @@ fun WorkOrderHistoryUpdateRoute(
         onWorkPerformedNoteChange = { workPerformedNote = it },
         onAddWorkPerformed = {
             coroutineScope.launch {
-                val wp = workOrderViewModel.getOrCreateWorkPerformed(workPerformed)
-                val a = workOrderViewModel.getOrCreateArea(area)
+                val wp = workPerformedViewModel.getOrCreateWorkPerformed(workPerformed)
+                val a = areaViewModel.getOrCreateArea(area)
                 if (wp != null) {
-                    workOrderViewModel.insertWorkOrderHistoryWorkPerformed(
+                    workPerformedViewModel.insertWorkOrderHistoryWorkPerformed(
                         WorkOrderHistoryWorkPerformed(
                             nf.generateRandomIdAsLong(),
                             history.woHistoryId,
@@ -214,7 +221,7 @@ fun WorkOrderHistoryUpdateRoute(
         onWorkPerformedItemClick = { item, action ->
             if (action == 0) { // Delete
                 coroutineScope.launch {
-                    workOrderViewModel.deleteWorkOrderHistoryWorkPerformed(
+                    workPerformedViewModel.deleteWorkOrderHistoryWorkPerformed(
                         item.workOrderHistoryWorkPerformed.workOrderHistoryWorkPerformedId,
                         df.getCurrentUTCTimeAsString()
                     )
@@ -231,9 +238,9 @@ fun WorkOrderHistoryUpdateRoute(
         },
         onAddMaterial = {
             coroutineScope.launch {
-                val m = workOrderViewModel.getOrCreateMaterial(materialName)
+                val m = materialViewModel.getOrCreateMaterial(materialName)
                 if (m != null) {
-                    workOrderViewModel.insertWorkOrderHistoryMaterial(
+                    materialViewModel.insertWorkOrderHistoryMaterial(
                         WorkOrderHistoryMaterial(
                             nf.generateRandomIdAsLong(),
                             history.woHistoryId,
@@ -262,7 +269,7 @@ fun WorkOrderHistoryUpdateRoute(
         onMaterialItemClick = { item, action ->
             if (action == 0) { // Delete
                 coroutineScope.launch {
-                    workOrderViewModel.deleteWorkOrderHistoryMaterial(
+                    materialViewModel.deleteWorkOrderHistoryMaterial(
                         item.workOrderHistoryMaterialId,
                         df.getCurrentUTCTimeAsString()
                     )
@@ -272,10 +279,10 @@ fun WorkOrderHistoryUpdateRoute(
         onDone = {
             coroutineScope.launch {
                 if (workPerformed.isNotBlank()) {
-                    val wp = workOrderViewModel.getOrCreateWorkPerformed(workPerformed)
-                    val a = workOrderViewModel.getOrCreateArea(area)
+                    val wp = workPerformedViewModel.getOrCreateWorkPerformed(workPerformed)
+                    val a = areaViewModel.getOrCreateArea(area)
                     if (wp != null) {
-                        workOrderViewModel.insertWorkOrderHistoryWorkPerformed(
+                        workPerformedViewModel.insertWorkOrderHistoryWorkPerformed(
                             WorkOrderHistoryWorkPerformed(
                                 nf.generateRandomIdAsLong(),
                                 history.woHistoryId,
@@ -290,9 +297,9 @@ fun WorkOrderHistoryUpdateRoute(
                     }
                 }
                 if (materialName.isNotBlank()) {
-                    val m = workOrderViewModel.getOrCreateMaterial(materialName)
+                    val m = materialViewModel.getOrCreateMaterial(materialName)
                     if (m != null) {
-                        workOrderViewModel.insertWorkOrderHistoryMaterial(
+                        materialViewModel.insertWorkOrderHistoryMaterial(
                             WorkOrderHistoryMaterial(
                                 nf.generateRandomIdAsLong(),
                                 history.woHistoryId,
@@ -338,7 +345,7 @@ fun WorkOrderHistoryUpdateRoute(
         },
         onUpdateMaterialDefinition = { item ->
             coroutineScope.launch {
-                val material = workOrderViewModel.getMaterialSync(item.materialId)
+                val material = materialViewModel.getMaterialSync(item.materialId)
                 if (material != null) {
                     mainViewModel.setMaterial(material)
                     navController.navigate(Screen.MaterialUpdate.route)

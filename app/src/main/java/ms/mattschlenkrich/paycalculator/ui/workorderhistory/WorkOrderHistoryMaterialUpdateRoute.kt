@@ -16,6 +16,7 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryMaterialCombined
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MaterialViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable.WorkOrderHistoryMaterialUpdateScreen
 
@@ -23,6 +24,7 @@ import ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable.WorkOrder
 fun WorkOrderHistoryMaterialUpdateRoute(
     mainViewModel: MainViewModel,
     workOrderViewModel: WorkOrderViewModel,
+    materialViewModel: MaterialViewModel,
     navController: NavController
 ) {
     val df = remember { DateFunctions() }
@@ -41,7 +43,7 @@ fun WorkOrderHistoryMaterialUpdateRoute(
 
     val historyWithDates by workOrderViewModel.getWorkOrderHistory(initialHistory.woHistoryId)
         .observeAsState()
-    val materialSuggestions by workOrderViewModel.materialsList.observeAsState(emptyList())
+    val materialSuggestions by materialViewModel.getMaterialsList().observeAsState(emptyList())
 
     var materialHistory by remember {
         mutableStateOf<WorkOrderHistoryMaterialCombined?>(
@@ -49,7 +51,7 @@ fun WorkOrderHistoryMaterialUpdateRoute(
         )
     }
     LaunchedEffect(materialId) {
-        materialHistory = workOrderViewModel.getWorkOrderHistoryMaterialCombined(materialId)
+        materialHistory = materialViewModel.getWorkOrderHistoryMaterialCombined(materialId)
     }
 
     if (materialHistory == null || historyWithDates == null) return
@@ -75,9 +77,9 @@ fun WorkOrderHistoryMaterialUpdateRoute(
         }",
         onDoneClick = {
             coroutineScope.launch {
-                val material = workOrderViewModel.getMaterialSync(mName)
+                val material = materialViewModel.getMaterialSync(mName)
                 if (material != null) {
-                    workOrderViewModel.updateWorkOrderHistoryMaterial(
+                    materialViewModel.updateWorkOrderHistoryMaterial(
                         materialHistory!!.workOrderHistoryMaterial.copy(
                             wohmMaterialId = material.materialId,
                             wohmQuantity = qty.toDoubleOrNull() ?: 0.0,

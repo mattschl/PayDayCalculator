@@ -42,15 +42,14 @@ class MainViewModel(
         ?: prefs.getLong(SELECTED_EMPLOYER_ID, -1L)
         private set
 
-    private var deviceId: Long = 0L
+    var deviceId: Long = 0L
+        private set
 
     init {
         deviceId = prefs.getLong(DEVICE_ID, 0L)
         if (deviceId == 0L) {
             deviceId = NumberFunctions().generateRandomIdAsLong()
-            prefs.edit {
-                putLong(DEVICE_ID, deviceId)
-            }
+            prefs.edit { putLong(DEVICE_ID, deviceId) }
         }
     }
 
@@ -69,273 +68,188 @@ class MainViewModel(
     }
 
     private var employer: Employers? = null
+    fun getEmployer(): Employers? = employer ?: selectedEmployer.value
+    fun setEmployer(newEmployer: Employers?) {
+        employer = newEmployer
+        selectedEmployer.value = newEmployer
+        selectedEmployerId = newEmployer?.employerId ?: -1L
+        prefs.edit { putLong(SELECTED_EMPLOYER_ID, selectedEmployerId) }
+    }
+
     private var taxType: TaxTypes? = null
+    fun getTaxType(): TaxTypes? = taxType
+    fun setTaxType(newTaxType: TaxTypes?) {
+        taxType = newTaxType
+    }
+
     private var taxTypeString: String? = null
+    fun getTaxTypeString(): String? = taxTypeString
+    fun setTaxTypeString(newType: String?) {
+        taxTypeString = newType
+    }
+
     private var taxRule: WorkTaxRules? = null
+    fun getTaxRule(): WorkTaxRules? = taxRule
+    fun setTaxRule(newTaxRule: WorkTaxRules?) {
+        taxRule = newTaxRule
+    }
+
     private var effectiveDateString: String? = null
+    fun getEffectiveDateString(): String? = effectiveDateString
+    fun setEffectiveDateString(newDate: String?) {
+        effectiveDateString = newDate
+    }
+
     private var taxLevel: Int? = null
+    fun getTaxLevel(): Int? = taxLevel
+    fun setTaxLevel(newLevel: Int?) {
+        taxLevel = newLevel
+    }
+
     private var extraDefinitionFull: ExtraDefTypeAndEmployer? = null
+    fun getExtraDefinitionFull(): ExtraDefTypeAndEmployer? = extraDefinitionFull
+    fun setExtraDefinitionFull(newExtra: ExtraDefTypeAndEmployer?) {
+        extraDefinitionFull = newExtra
+    }
+
     private var extraType: WorkExtraTypes? = null
-    private var workDateExtraList = ArrayList<WorkDateExtras>()
-    private var workDateExtra: WorkDateExtras? = null
-    private var workDateObject: WorkDates? = null
-    private var cutOffDate: String? = null
-    private var payPeriod: PayPeriods? = null
-    private var payRate: EmployerPayRates? = null
-    private var payPeriodExtra: WorkPayPeriodExtras? = null
-    private var tempWorkOrderHistoryInfo: TempWorkOrderHistoryInfo? = null
-    private var workOrderHistory: WorkOrderHistory? = null
-    private var workOrderNumber: String? = null
-    private var workOrder: WorkOrder? = null
-    private var workOrderJobSpecId: Long? = null
-    private var jobSpecId: Long? = null
-    private var jobSpecIsMaster: Boolean = true
-    private var workPerformedId: Long? = null
-    private var workPerformedIsParent: Boolean = true
-    private var workPerformedHistoryId: Long? = null
-    private var material: Material? = null
-    private var materialId: Long? = null
-    private var materialIsParent: Boolean = true
-    private var areaId: Long? = null
-    private var workOrderHistoryTimeWorkedCombined: WorkOrderHistoryTimeWorkedCombined? = null
-
-    fun getMaterialIsParent(): Boolean {
-        return materialIsParent
-    }
-
-    fun setMaterialIsParent(isParent: Boolean) {
-        materialIsParent = isParent
-    }
-
-
-    fun setMaterialId(newMaterialId: Long?) {
-        materialId = newMaterialId
-    }
-
-    fun getMaterialId(): Long? {
-        return materialId
-    }
-
-    fun setWorkOrderHistoryTimeWorkedCombined(newWorkOrderHistoryTimeWorkedCombined: WorkOrderHistoryTimeWorkedCombined?) {
-        workOrderHistoryTimeWorkedCombined = newWorkOrderHistoryTimeWorkedCombined
-    }
-
-    fun getWorkOrderHistoryTimeWorkedCombined(): WorkOrderHistoryTimeWorkedCombined? {
-        return workOrderHistoryTimeWorkedCombined
-
-    }
-
-    fun getWorkOrderJobSpecId(): Long? {
-        return workOrderJobSpecId
-    }
-
-    fun setWorkOrderJobSpecId(newWorkOrderJobSpecId: Long?) {
-        workOrderJobSpecId = newWorkOrderJobSpecId
-    }
-
-    fun getJobSpecId(): Long? {
-        return jobSpecId
-    }
-
-    fun setJobSpecId(newJobSpecId: Long?) {
-        jobSpecId = newJobSpecId
-    }
-
-    fun setJobSpecIsMaster(isMaster: Boolean) {
-        jobSpecIsMaster = isMaster
-    }
-
-    fun getJobSpecIsMaster(): Boolean {
-        return jobSpecIsMaster
-    }
-
-    fun setWorkPerformedHistoryId(newWorkPerformedHistoryId: Long?) {
-        workPerformedHistoryId = newWorkPerformedHistoryId
-    }
-
-    fun getWorkPerformedHistoryId(): Long? {
-        return workPerformedHistoryId
-    }
-
-    fun setWorkPerformedIsMaster(isMaster: Boolean) {
-        workPerformedIsParent = isMaster
-    }
-
-    fun getWorkPerformedIsMaster(): Boolean {
-        return workPerformedIsParent
-    }
-
-    fun setAreaId(newAreaId: Long?) {
-        areaId = newAreaId
-    }
-
-    fun getAreaId(): Long? {
-        return areaId
-    }
-
-    fun setMaterial(newMaterial: Material?) {
-        material = newMaterial
-    }
-
-    fun getMaterial(): Material? {
-        return material
-    }
-
-    fun setWorkPerformedId(newWorkPerformedId: Long?) {
-        workPerformedId = newWorkPerformedId
-    }
-
-    fun getWorkPerformedId(): Long? {
-        return workPerformedId
-    }
-
-    fun getWorkOrder(): WorkOrder? {
-        return workOrder
-    }
-
-    fun setWorkOrder(newWorkOrder: WorkOrder?) {
-        workOrder = newWorkOrder
-    }
-
-    fun setWorkOrderNumber(newWorkOrderNumber: String?) {
-        workOrderNumber = newWorkOrderNumber
-    }
-
-    fun getWorkOrderNumber(): String? {
-        return workOrderNumber
-    }
-
-    fun setWorkOrderHistory(newWorkOrderHistory: WorkOrderHistory?) {
-        workOrderHistory = newWorkOrderHistory
-    }
-
-    fun getWorkOrderHistory(): WorkOrderHistory? {
-        return workOrderHistory
-    }
-
-    fun setTempWorkOrderHistoryInfo(newInfo: TempWorkOrderHistoryInfo?) {
-        tempWorkOrderHistoryInfo = newInfo
-    }
-
-    fun getTempWorkOrderHistoryInfo(): TempWorkOrderHistoryInfo? {
-        return tempWorkOrderHistoryInfo
-    }
-
-    fun setPayPeriodExtra(newExtra: WorkPayPeriodExtras?) {
-        payPeriodExtra = newExtra
-    }
-
-    fun getPayPeriodExtra(): WorkPayPeriodExtras? {
-        return payPeriodExtra
-    }
-
-    fun getWorkDateExtra(): WorkDateExtras? {
-        return workDateExtra
-    }
-
-    fun setWorkDateExtra(newExtra: WorkDateExtras?) {
-        workDateExtra = newExtra
-    }
-
-    fun setWorkDateExtraList(extraList: ArrayList<WorkDateExtras>) {
-        workDateExtraList = extraList
-    }
-
-    fun setPayRate(newRate: EmployerPayRates?) {
-        payRate = newRate
-    }
-
-    fun getPayRate(): EmployerPayRates? {
-        return payRate
-    }
-
-    fun getWorkExtraType(): WorkExtraTypes? {
-        return extraType
-    }
-
+    fun getWorkExtraType(): WorkExtraTypes? = extraType
     fun setWorkExtraType(newExtra: WorkExtraTypes?) {
         extraType = newExtra
     }
 
+    private var workDateExtraList = ArrayList<WorkDateExtras>()
+    fun getWorkDateExtraList(): ArrayList<WorkDateExtras> = workDateExtraList
+    fun setWorkDateExtraList(extraList: ArrayList<WorkDateExtras>) {
+        workDateExtraList = extraList
+    }
+
+    private var workDateExtra: WorkDateExtras? = null
+    fun getWorkDateExtra(): WorkDateExtras? = workDateExtra
+    fun setWorkDateExtra(newExtra: WorkDateExtras?) {
+        workDateExtra = newExtra
+    }
+
+    private var workDateObject: WorkDates? = null
+    fun getWorkDateObject(): WorkDates? = workDateObject
     fun setWorkDateObject(newDate: WorkDates?) {
         workDateObject = newDate
     }
 
-    fun getWorkDateObject(): WorkDates? {
-        return workDateObject
-    }
-
-    fun setPayPeriod(newPayPeriod: PayPeriods?) {
-        payPeriod = newPayPeriod
-    }
-
-    fun getPayPeriod(): PayPeriods? {
-        return payPeriod
-    }
-
+    private var cutOffDate: String? = null
+    fun getCutOffDate(): String? = cutOffDate
     fun setCutOffDate(date: String?) {
         cutOffDate = date
         selectedCutOffDate.value = date ?: ""
     }
 
-    fun setExtraDefinitionFull(newExtra: ExtraDefTypeAndEmployer?) {
-        extraDefinitionFull = newExtra
+    private var payPeriod: PayPeriods? = null
+    fun getPayPeriod(): PayPeriods? = payPeriod
+    fun setPayPeriod(newPayPeriod: PayPeriods?) {
+        payPeriod = newPayPeriod
     }
 
-    fun getExtraDefinitionFull(): ExtraDefTypeAndEmployer? {
-        return extraDefinitionFull
+    private var payRate: EmployerPayRates? = null
+    fun getPayRate(): EmployerPayRates? = payRate
+    fun setPayRate(newRate: EmployerPayRates?) {
+        payRate = newRate
     }
 
-    fun setEffectiveDateString(newDate: String?) {
-        effectiveDateString = newDate
+    private var payPeriodExtra: WorkPayPeriodExtras? = null
+    fun getPayPeriodExtra(): WorkPayPeriodExtras? = payPeriodExtra
+    fun setPayPeriodExtra(newExtra: WorkPayPeriodExtras?) {
+        payPeriodExtra = newExtra
     }
 
-    fun getEffectiveDateString(): String? {
-        return effectiveDateString
+    private var tempWorkOrderHistoryInfo: TempWorkOrderHistoryInfo? = null
+    fun getTempWorkOrderHistoryInfo(): TempWorkOrderHistoryInfo? = tempWorkOrderHistoryInfo
+    fun setTempWorkOrderHistoryInfo(newInfo: TempWorkOrderHistoryInfo?) {
+        tempWorkOrderHistoryInfo = newInfo
     }
 
-    fun setTaxTypeString(newType: String?) {
-        taxTypeString = newType
+    private var workOrderHistory: WorkOrderHistory? = null
+    fun getWorkOrderHistory(): WorkOrderHistory? = workOrderHistory
+    fun setWorkOrderHistory(newWorkOrderHistory: WorkOrderHistory?) {
+        workOrderHistory = newWorkOrderHistory
     }
 
-    fun setTaxLevel(newLevel: Int?) {
-        taxLevel = newLevel
+    private var workOrderNumber: String? = null
+    fun getWorkOrderNumber(): String? = workOrderNumber
+    fun setWorkOrderNumber(newWorkOrderNumber: String?) {
+        workOrderNumber = newWorkOrderNumber
     }
 
-    fun setEmployer(newEmployer: Employers?) {
-        employer = newEmployer
-        selectedEmployer.value = newEmployer
-        selectedEmployerId = newEmployer?.employerId ?: -1L
-        prefs.edit {
-            putLong(SELECTED_EMPLOYER_ID, selectedEmployerId)
-        }
+    private var workOrder: WorkOrder? = null
+    fun getWorkOrder(): WorkOrder? = workOrder
+    fun setWorkOrder(newWorkOrder: WorkOrder?) {
+        workOrder = newWorkOrder
     }
 
-    fun setTaxType(newTaxType: TaxTypes?) {
-        taxType = newTaxType
+    private var workOrderJobSpecId: Long? = null
+    fun getWorkOrderJobSpecId(): Long? = workOrderJobSpecId
+    fun setWorkOrderJobSpecId(newWorkOrderJobSpecId: Long?) {
+        workOrderJobSpecId = newWorkOrderJobSpecId
     }
 
-    fun setTaxRule(newTaxRule: WorkTaxRules?) {
-        taxRule = newTaxRule
+    private var jobSpecId: Long? = null
+    fun getJobSpecId(): Long? = jobSpecId
+    fun setJobSpecId(newJobSpecId: Long?) {
+        jobSpecId = newJobSpecId
     }
 
-    fun getTaxTypeString(): String? {
-        return taxTypeString
+    private var jobSpecIsMaster: Boolean = true
+    fun getJobSpecIsMaster(): Boolean = jobSpecIsMaster
+    fun setJobSpecIsMaster(isMaster: Boolean) {
+        jobSpecIsMaster = isMaster
     }
 
-    fun getTaxLevel(): Int? {
-        return taxLevel
+    private var workPerformedId: Long? = null
+    fun getWorkPerformedId(): Long? = workPerformedId
+    fun setWorkPerformedId(newWorkPerformedId: Long?) {
+        workPerformedId = newWorkPerformedId
     }
 
-    fun getEmployer(): Employers? {
-        return employer ?: selectedEmployer.value
+    private var workPerformedIsParent: Boolean = true
+    fun getWorkPerformedIsMaster(): Boolean = workPerformedIsParent
+    fun setWorkPerformedIsMaster(isMaster: Boolean) {
+        workPerformedIsParent = isMaster
     }
 
-    fun getTaxType(): TaxTypes? {
-        return taxType
+    private var workPerformedHistoryId: Long? = null
+    fun getWorkPerformedHistoryId(): Long? = workPerformedHistoryId
+    fun setWorkPerformedHistoryId(newWorkPerformedHistoryId: Long?) {
+        workPerformedHistoryId = newWorkPerformedHistoryId
     }
 
-    fun getTaxRule(): WorkTaxRules? {
-        return taxRule
+    private var material: Material? = null
+    fun getMaterial(): Material? = material
+    fun setMaterial(newMaterial: Material?) {
+        material = newMaterial
+    }
+
+    private var materialId: Long? = null
+    fun getMaterialId(): Long? = materialId
+    fun setMaterialId(newMaterialId: Long?) {
+        materialId = newMaterialId
+    }
+
+    private var materialIsParent: Boolean = true
+    fun getMaterialIsParent(): Boolean = materialIsParent
+    fun setMaterialIsParent(isParent: Boolean) {
+        materialIsParent = isParent
+    }
+
+    private var areaId: Long? = null
+    fun getAreaId(): Long? = areaId
+    fun setAreaId(newAreaId: Long?) {
+        areaId = newAreaId
+    }
+
+    private var workOrderHistoryTimeWorkedCombined: WorkOrderHistoryTimeWorkedCombined? = null
+    fun getWorkOrderHistoryTimeWorkedCombined(): WorkOrderHistoryTimeWorkedCombined? =
+        workOrderHistoryTimeWorkedCombined
+
+    fun setWorkOrderHistoryTimeWorkedCombined(newWorkOrderHistoryTimeWorkedCombined: WorkOrderHistoryTimeWorkedCombined?) {
+        workOrderHistoryTimeWorkedCombined = newWorkOrderHistoryTimeWorkedCombined
     }
 }

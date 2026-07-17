@@ -11,25 +11,22 @@ import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkPerformedViewModel
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.workperformed.composable.WorkPerformedViewScreen
 
 @Composable
 fun WorkPerformedViewRoute(
     mainViewModel: MainViewModel,
-    workOrderViewModel: WorkOrderViewModel,
+    workPerformedViewModel: WorkPerformedViewModel,
     navController: NavController,
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val settings by settingsViewModel.settings.observeAsState()
     val minColumnWidth = settings?.minColumnWidth ?: DEFAULT_MIN_COLUMN_WIDTH
     var searchQuery by remember { mutableStateOf("") }
-    val workPerformedList by if (searchQuery.isEmpty()) {
-        workOrderViewModel.workPerformedAll.observeAsState(emptyList())
-    } else {
-        workOrderViewModel.searchFromWorkPerformed("%$searchQuery%").observeAsState(emptyList())
-    }
+    val workPerformedList by workPerformedViewModel.searchFromWorkPerformed("%$searchQuery%")
+        .observeAsState(emptyList())
 
     WorkPerformedViewScreen(
         workPerformedList = workPerformedList,

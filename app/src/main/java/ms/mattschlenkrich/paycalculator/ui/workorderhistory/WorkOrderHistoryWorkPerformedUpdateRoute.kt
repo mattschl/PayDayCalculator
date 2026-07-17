@@ -9,14 +9,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkPerformedViewModel
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable.WorkOrderHistoryWorkPerformedUpdateScreen
 
 @Composable
 fun WorkOrderHistoryWorkPerformedUpdateRoute(
     mainViewModel: MainViewModel,
     workOrderViewModel: WorkOrderViewModel,
+    workPerformedViewModel: WorkPerformedViewModel,
+    areaViewModel: AreaViewModel,
     navController: NavController
 ) {
     val df = remember { DateFunctions() }
@@ -34,12 +38,12 @@ fun WorkOrderHistoryWorkPerformedUpdateRoute(
 
     val workOrderHistoryWithDates by workOrderViewModel.getWorkOrderHistory(history.woHistoryId)
         .observeAsState()
-    val workPerformedHistory by workOrderViewModel.getWorkPerformedHistoryById(
+    val workPerformedHistory by workPerformedViewModel.getWorkPerformedHistoryById(
         workPerformedHistoryId
     ).observeAsState()
-    val workPerformedSuggestions by workOrderViewModel.workPerformedAll
+    val workPerformedSuggestions by workPerformedViewModel.getWorkPerformedAll()
         .observeAsState(emptyList())
-    val areaSuggestions by workOrderViewModel.areasList.observeAsState(emptyList())
+    val areaSuggestions by areaViewModel.getAreasList().observeAsState(emptyList())
 
     WorkOrderHistoryWorkPerformedUpdateScreen(
         originalWorkOrderHistory = workOrderHistoryWithDates,
@@ -48,12 +52,12 @@ fun WorkOrderHistoryWorkPerformedUpdateRoute(
         areaSuggestions = areaSuggestions,
         onUpdate = { wpDescription, areaName, note ->
             coroutineScope.launch {
-                val wp = workOrderViewModel.getWorkPerformedSync(wpDescription)
-                val a = workOrderViewModel.getOrCreateArea(areaName)
+                val wp = workPerformedViewModel.getWorkPerformedSync(wpDescription)
+                val a = areaViewModel.getOrCreateArea(areaName)
 
                 workPerformedHistory?.let { current ->
                     if (wp != null) {
-                        workOrderViewModel.updateWorkOrderHistoryWorkPerformed(
+                        workPerformedViewModel.updateWorkOrderHistoryWorkPerformed(
                             current.workOrderHistoryWorkPerformed.copy(
                                 wowpWorkPerformedId = wp.workPerformedId,
                                 wowpAreaId = a?.areaId,

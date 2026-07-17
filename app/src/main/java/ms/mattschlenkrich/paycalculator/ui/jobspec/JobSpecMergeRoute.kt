@@ -16,15 +16,15 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpecMerged
+import ms.mattschlenkrich.paycalculator.data.viewmodel.JobSpecViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.ui.jobspec.composable.JobSpecMergeScreen
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 
 @Composable
 fun JobSpecMergeRoute(
     mainViewModel: MainViewModel,
-    workOrderViewModel: WorkOrderViewModel,
+    jobSpecViewModel: JobSpecViewModel,
     navController: NavController,
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
@@ -43,9 +43,9 @@ fun JobSpecMergeRoute(
         return
     }
 
-    val jobSpecList by workOrderViewModel.jobSpecsAll.observeAsState(emptyList())
-    val parentJobSpec by workOrderViewModel.getJobSpec(jsId).observeAsState()
-    val childList by workOrderViewModel.getJobSpecAndChildList(jsId)
+    val jobSpecList by jobSpecViewModel.searchJobSpecs("").observeAsState(emptyList())
+    val parentJobSpec by jobSpecViewModel.getJobSpec(jsId).observeAsState()
+    val childList by jobSpecViewModel.getJobSpecAndChildList(jsId)
         .observeAsState(emptyList())
 
     var parentDescription by remember { mutableStateOf("") }
@@ -73,7 +73,7 @@ fun JobSpecMergeRoute(
         childList = childList,
         onRemoveChild = { child ->
             coroutineScope.launch {
-                workOrderViewModel.deleteJobSpecMerged(
+                jobSpecViewModel.deleteJobSpecMerged(
                     child.jobSpecMerged.jobSpecMergedId,
                     df.getCurrentUTCTimeAsString()
                 )
@@ -90,7 +90,7 @@ fun JobSpecMergeRoute(
             if (childId != null && childId != jsId) {
                 coroutineScope.launch {
                     if (action == 1) { // Keep
-                        workOrderViewModel.insertJobSpecMerged(
+                        jobSpecViewModel.insertJobSpecMerged(
                             JobSpecMerged(
                                 nf.generateRandomIdAsLong(),
                                 jsId,
@@ -100,8 +100,8 @@ fun JobSpecMergeRoute(
                             )
                         )
                     } else if (action == 2) { // Replace and delete
-                        workOrderViewModel.updateJobSpecMerged(childId, jsId)
-                        workOrderViewModel.deleteJobSpec(
+                        jobSpecViewModel.updateJobSpecMerged(childId, jsId)
+                        jobSpecViewModel.deleteJobSpec(
                             childId,
                             df.getCurrentUTCTimeAsString()
                         )

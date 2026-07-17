@@ -17,13 +17,13 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.Material
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MaterialViewModel
 import ms.mattschlenkrich.paycalculator.ui.material.composable.MaterialUpdateScreen
 
 @Composable
 fun MaterialUpdateRoute(
     mainViewModel: MainViewModel,
-    workOrderViewModel: WorkOrderViewModel,
+    materialViewModel: MaterialViewModel,
     navController: NavController
 ) {
     val df = remember { DateFunctions() }
@@ -37,7 +37,7 @@ fun MaterialUpdateRoute(
         return
     }
 
-    val materialList by workOrderViewModel.materialsList.observeAsState(emptyList())
+    val materialList by materialViewModel.getMaterialsList().observeAsState(emptyList())
 
     var name by remember { mutableStateOf(oldMaterial.mName) }
     var cost by remember { mutableStateOf(nf.displayDollars(oldMaterial.mCost)) }
@@ -67,7 +67,7 @@ fun MaterialUpdateRoute(
                     oldMaterial.mIsDeleted,
                     df.getCurrentUTCTimeAsString()
                 )
-                workOrderViewModel.updateMaterial(material)
+                materialViewModel.updateMaterial(material)
                 mainViewModel.setMaterial(material)
                 navController.popBackStack()
             }
@@ -82,7 +82,7 @@ fun MaterialUpdateRoute(
                     oldMaterial.mIsDeleted,
                     df.getCurrentUTCTimeAsString()
                 )
-                workOrderViewModel.updateMaterial(material)
+                materialViewModel.updateMaterial(material)
                 mainViewModel.setMaterial(material)
                 mainViewModel.setMaterialId(oldMaterial.materialId)
                 // Defaulting to Master for now, or could show dialog

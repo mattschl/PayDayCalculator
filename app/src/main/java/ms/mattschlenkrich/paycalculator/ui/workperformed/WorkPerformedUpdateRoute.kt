@@ -15,13 +15,13 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkPerformedViewModel
 import ms.mattschlenkrich.paycalculator.ui.workperformed.composable.WorkPerformedUpdateScreen
 
 @Composable
 fun WorkPerformedUpdateRoute(
     mainViewModel: MainViewModel,
-    workOrderViewModel: WorkOrderViewModel,
+    workPerformedViewModel: WorkPerformedViewModel,
     navController: NavController
 ) {
     val df = remember { DateFunctions() }
@@ -35,8 +35,9 @@ fun WorkPerformedUpdateRoute(
         return
     }
 
-    val originalWp by workOrderViewModel.getWorkPerformed(wpId).observeAsState()
-    val workPerformedList by workOrderViewModel.workPerformedAll.observeAsState(emptyList())
+    val originalWp by workPerformedViewModel.getWorkPerformed(wpId).observeAsState()
+    val workPerformedList by workPerformedViewModel.getWorkPerformedAll()
+        .observeAsState(emptyList())
 
     originalWp?.let { wp ->
         var description by remember(wp.workPerformedId) { mutableStateOf(wp.wpDescription) }
@@ -52,7 +53,7 @@ fun WorkPerformedUpdateRoute(
                     }) return@WorkPerformedUpdateScreen
 
                 coroutineScope.launch {
-                    workOrderViewModel.updateWorkPerformed(
+                    workPerformedViewModel.updateWorkPerformed(
                         wp.copy(
                             wpDescription = trimmedDescription,
                             wpUpdateTime = df.getCurrentUTCTimeAsString()

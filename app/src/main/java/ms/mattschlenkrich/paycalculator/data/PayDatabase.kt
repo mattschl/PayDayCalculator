@@ -8,13 +8,18 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_VERSION
+import ms.mattschlenkrich.paycalculator.data.dao.AreaDao
 import ms.mattschlenkrich.paycalculator.data.dao.EmployerDao
+import ms.mattschlenkrich.paycalculator.data.dao.JobSpecDao
+import ms.mattschlenkrich.paycalculator.data.dao.MaterialDao
 import ms.mattschlenkrich.paycalculator.data.dao.PayCalculationsDao
 import ms.mattschlenkrich.paycalculator.data.dao.PayDayDao
 import ms.mattschlenkrich.paycalculator.data.dao.PayDetailDao
 import ms.mattschlenkrich.paycalculator.data.dao.SyncHistoryDao
 import ms.mattschlenkrich.paycalculator.data.dao.WorkExtraDao
 import ms.mattschlenkrich.paycalculator.data.dao.WorkOrderDao
+import ms.mattschlenkrich.paycalculator.data.dao.WorkOrderTimeDao
+import ms.mattschlenkrich.paycalculator.data.dao.WorkPerformedDao
 import ms.mattschlenkrich.paycalculator.data.dao.WorkTaxDao
 import ms.mattschlenkrich.paycalculator.data.dao.WorkTimeDao
 import ms.mattschlenkrich.paycalculator.data.entity.Areas
@@ -92,6 +97,11 @@ abstract class PayDatabase : RoomDatabase() {
     abstract fun getPayCalculationsDao(): PayCalculationsDao
     abstract fun getWorkTimeDao(): WorkTimeDao
     abstract fun getSyncHistoryDao(): SyncHistoryDao
+    abstract fun getJobSpecDao(): JobSpecDao
+    abstract fun getMaterialDao(): MaterialDao
+    abstract fun getWorkPerformedDao(): WorkPerformedDao
+    abstract fun getAreaDao(): AreaDao
+    abstract fun getWorkOrderTimeDao(): WorkOrderTimeDao
 
     companion object {
         private val MIGRATION_15_16 = object : Migration(15, 16) {

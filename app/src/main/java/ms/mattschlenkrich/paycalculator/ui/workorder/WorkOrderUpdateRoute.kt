@@ -23,6 +23,8 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.StringFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.data.model.MaterialAndQuantity
+import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.JobSpecViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
@@ -32,6 +34,8 @@ import ms.mattschlenkrich.paycalculator.ui.workorder.composable.WorkOrderUpdateS
 fun WorkOrderUpdateRoute(
     mainViewModel: MainViewModel,
     workOrderViewModel: WorkOrderViewModel,
+    jobSpecViewModel: JobSpecViewModel,
+    areaViewModel: AreaViewModel,
     navController: NavController,
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
@@ -63,13 +67,14 @@ fun WorkOrderUpdateRoute(
     var descriptionError by rememberSaveable { mutableStateOf(false) }
 
     var jobSpecText by rememberSaveable { mutableStateOf("") }
-    val jobSpecSuggestions by workOrderViewModel.jobSpecsAll.observeAsState(emptyList())
+    val jobSpecSuggestions by jobSpecViewModel.searchJobSpecs("")
+        .observeAsState(emptyList())
     var areaText by rememberSaveable { mutableStateOf("") }
-    val areaSuggestions by workOrderViewModel.areasList.observeAsState(emptyList())
+    val areaSuggestions by areaViewModel.searchAreas("").observeAsState(emptyList())
     var workPerformedNote by rememberSaveable { mutableStateOf("") }
 
     val addedJobSpecs by remember(initialWo.workOrderId) {
-        workOrderViewModel.getWorkOrderJobSpecs(initialWo.workOrderId)
+        jobSpecViewModel.getWorkOrderJobSpecs(initialWo.workOrderId)
     }.observeAsState(emptyList())
     val historyList by remember(initialWo.workOrderId) {
         workOrderViewModel.getWorkOrderHistoriesByWorkOrder(initialWo.workOrderId)
@@ -161,9 +166,9 @@ fun WorkOrderUpdateRoute(
         onAddJobSpecClick = {
             if (jobSpecText.isNotBlank()) {
                 coroutineScope.launch {
-                    val js = workOrderViewModel.getOrCreateJobSpec(jobSpecText.trim())
-                    val a = workOrderViewModel.getOrCreateArea(areaText.trim())
-                    workOrderViewModel.insertWorkOrderJobSpec(
+                    val js = jobSpecViewModel.getOrCreateJobSpec(jobSpecText.trim())
+                    val a = areaViewModel.getOrCreateArea(areaText.trim())
+                    jobSpecViewModel.insertWorkOrderJobSpec(
                         WorkOrderJobSpec(
                             nf.generateRandomIdAsLong(),
                             initialWo.workOrderId,
@@ -240,9 +245,9 @@ fun WorkOrderUpdateRoute(
 
             coroutineScope.launch {
                 if (jobSpecText.isNotBlank()) {
-                    val js = workOrderViewModel.getOrCreateJobSpec(jobSpecText.trim())
-                    val a = workOrderViewModel.getOrCreateArea(areaText.trim())
-                    workOrderViewModel.insertWorkOrderJobSpec(
+                    val js = jobSpecViewModel.getOrCreateJobSpec(jobSpecText.trim())
+                    val a = areaViewModel.getOrCreateArea(areaText.trim())
+                    jobSpecViewModel.insertWorkOrderJobSpec(
                         WorkOrderJobSpec(
                             nf.generateRandomIdAsLong(),
                             initialWo.workOrderId,

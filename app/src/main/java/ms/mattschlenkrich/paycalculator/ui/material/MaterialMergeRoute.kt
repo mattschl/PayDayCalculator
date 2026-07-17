@@ -17,14 +17,14 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.Material
 import ms.mattschlenkrich.paycalculator.data.entity.MaterialMerged
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MaterialViewModel
 import ms.mattschlenkrich.paycalculator.ui.material.composable.MaterialMergeScreen
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 
 @Composable
 fun MaterialMergeRoute(
     mainViewModel: MainViewModel,
-    workOrderViewModel: WorkOrderViewModel,
+    materialViewModel: MaterialViewModel,
     navController: NavController,
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
@@ -49,9 +49,9 @@ fun MaterialMergeRoute(
         }
     }
 
-    val materialList by workOrderViewModel.materialsList.observeAsState(emptyList())
-    val parentMaterial by workOrderViewModel.getMaterial(materialId).observeAsState()
-    val childList by workOrderViewModel.getMaterialAndChildList(materialId)
+    val materialList by materialViewModel.getMaterialsList().observeAsState(emptyList())
+    val parentMaterial by materialViewModel.getMaterial(materialId).observeAsState()
+    val childList by materialViewModel.getMaterialAndChildList(materialId)
         .observeAsState(emptyList())
 
     var parentDescription by remember { mutableStateOf("") }
@@ -79,7 +79,7 @@ fun MaterialMergeRoute(
         childList = childList,
         onRemoveChild = { child ->
             coroutineScope.launch {
-                workOrderViewModel.deleteMaterialMerged(
+                materialViewModel.deleteMaterialMerged(
                     child.materialMerged.materialMergeId,
                     df.getCurrentUTCTimeAsString()
                 )
@@ -96,7 +96,7 @@ fun MaterialMergeRoute(
             if (childId != null && childId != materialId) {
                 coroutineScope.launch {
                     if (action == 1) { // Keep
-                        workOrderViewModel.insertMaterialMerged(
+                        materialViewModel.insertMaterialMerged(
                             MaterialMerged(
                                 nf.generateRandomIdAsLong(),
                                 materialId,
@@ -106,12 +106,12 @@ fun MaterialMergeRoute(
                             )
                         )
                     } else if (action == 2) { // Replace and delete
-                        workOrderViewModel.updateMaterialMerged(
+                        materialViewModel.updateMaterialMerged(
                             childId,
                             materialId,
                             df.getCurrentUTCTimeAsString()
                         )
-                        workOrderViewModel.deleteMaterial(
+                        materialViewModel.deleteMaterial(
                             childId,
                             df.getCurrentUTCTimeAsString()
                         )

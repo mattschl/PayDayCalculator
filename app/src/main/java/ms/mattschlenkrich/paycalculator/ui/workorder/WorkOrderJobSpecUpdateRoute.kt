@@ -9,14 +9,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.JobSpecViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.ui.workorder.composable.WorkOrderJobSpecUpdateScreen
 
 @Composable
 fun WorkOrderJobSpecUpdateRoute(
     mainViewModel: MainViewModel,
-    workOrderViewModel: WorkOrderViewModel,
+    jobSpecViewModel: JobSpecViewModel,
+    areaViewModel: AreaViewModel,
     navController: NavController
 ) {
     val df = remember { DateFunctions() }
@@ -32,9 +34,9 @@ fun WorkOrderJobSpecUpdateRoute(
         return
     }
 
-    val originalWojs by workOrderViewModel.getWorkOrderJobSpec(wojsId).observeAsState()
-    val jobSpecSuggestions by workOrderViewModel.jobSpecsAll.observeAsState(emptyList())
-    val areaSuggestions by workOrderViewModel.areasList.observeAsState(emptyList())
+    val originalWojs by jobSpecViewModel.getWorkOrderJobSpec(wojsId).observeAsState()
+    val jobSpecSuggestions by jobSpecViewModel.searchJobSpecs("").observeAsState(emptyList())
+    val areaSuggestions by areaViewModel.getAreasList().observeAsState(emptyList())
 
     WorkOrderJobSpecUpdateScreen(
         workOrder = wo,
@@ -43,10 +45,10 @@ fun WorkOrderJobSpecUpdateRoute(
         areaSuggestions = areaSuggestions,
         onUpdate = { jsName, areaName, note ->
             coroutineScope.launch {
-                val js = workOrderViewModel.getOrCreateJobSpec(jsName.trim())
-                val a = workOrderViewModel.getOrCreateArea(areaName.trim())
+                val js = jobSpecViewModel.getOrCreateJobSpec(jsName.trim())
+                val a = areaViewModel.getOrCreateArea(areaName.trim())
                 originalWojs?.let { combined ->
-                    workOrderViewModel.updateWorkOrderJobSpec(
+                    jobSpecViewModel.updateWorkOrderJobSpec(
                         combined.workOrderJobSpec.copy(
                             wojsJobSpecId = js.jobSpecId,
                             wojsAreaId = a?.areaId,

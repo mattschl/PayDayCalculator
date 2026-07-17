@@ -10,26 +10,22 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
+import ms.mattschlenkrich.paycalculator.data.viewmodel.JobSpecViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.ui.jobspec.composable.JobSpecViewScreen
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 
 @Composable
 fun JobSpecViewRoute(
     mainViewModel: MainViewModel,
-    workOrderViewModel: WorkOrderViewModel,
+    jobSpecViewModel: JobSpecViewModel,
     navController: NavController,
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val settings by settingsViewModel.settings.observeAsState()
     val minColumnWidth = settings?.minColumnWidth ?: DEFAULT_MIN_COLUMN_WIDTH
     var searchQuery by remember { mutableStateOf("") }
-    val jobSpecList by if (searchQuery.isEmpty()) {
-        workOrderViewModel.jobSpecsAll.observeAsState(emptyList())
-    } else {
-        workOrderViewModel.searchJobSpecs("%$searchQuery%").observeAsState(emptyList())
-    }
+    val jobSpecList by jobSpecViewModel.searchJobSpecs("%$searchQuery%").observeAsState(emptyList())
 
     JobSpecViewScreen(
         jobSpecList = jobSpecList,

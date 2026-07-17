@@ -17,18 +17,28 @@ import androidx.lifecycle.ViewModelProvider
 import ms.mattschlenkrich.paycalculator.common.compose.PayCalculatorTheme
 import ms.mattschlenkrich.paycalculator.common.compose.paddingScale
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
+import ms.mattschlenkrich.paycalculator.data.repository.AreaRepository
 import ms.mattschlenkrich.paycalculator.data.repository.EmployerRepository
+import ms.mattschlenkrich.paycalculator.data.repository.JobSpecRepository
+import ms.mattschlenkrich.paycalculator.data.repository.MaterialRepository
 import ms.mattschlenkrich.paycalculator.data.repository.PayCalculationsRepository
 import ms.mattschlenkrich.paycalculator.data.repository.PayDayRepository
 import ms.mattschlenkrich.paycalculator.data.repository.PayDetailRepository
 import ms.mattschlenkrich.paycalculator.data.repository.WorkExtraRepository
 import ms.mattschlenkrich.paycalculator.data.repository.WorkOrderRepository
+import ms.mattschlenkrich.paycalculator.data.repository.WorkPerformedRepository
 import ms.mattschlenkrich.paycalculator.data.repository.WorkTaxRepository
 import ms.mattschlenkrich.paycalculator.data.repository.WorkTimeRepository
+import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModelFactory
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModelFactory
+import ms.mattschlenkrich.paycalculator.data.viewmodel.JobSpecViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.JobSpecViewModelFactory
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModelFactory
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MaterialViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MaterialViewModelFactory
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayCalculationsViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayCalculationsViewModelFactory
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
@@ -39,6 +49,8 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkExtraViewModelFactory
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModelFactory
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkPerformedViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkPerformedViewModelFactory
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModelFactory
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTimeViewModel
@@ -56,6 +68,10 @@ class MainActivity : ComponentActivity() {
     internal lateinit var workExtraViewModel: WorkExtraViewModel
     internal lateinit var payDayViewModel: PayDayViewModel
     internal lateinit var workOrderViewModel: WorkOrderViewModel
+    internal lateinit var jobSpecViewModel: JobSpecViewModel
+    internal lateinit var materialViewModel: MaterialViewModel
+    internal lateinit var workPerformedViewModel: WorkPerformedViewModel
+    internal lateinit var areaViewModel: AreaViewModel
     internal lateinit var payDetailViewModel: PayDetailViewModel
     internal lateinit var payCalculationsViewModel: PayCalculationsViewModel
     internal lateinit var workTimeViewModel: WorkTimeViewModel
@@ -121,6 +137,10 @@ class MainActivity : ComponentActivity() {
                         workExtraViewModel = workExtraViewModel,
                         payDayViewModel = payDayViewModel,
                         workOrderViewModel = workOrderViewModel,
+                        jobSpecViewModel = jobSpecViewModel,
+                        materialViewModel = materialViewModel,
+                        workPerformedViewModel = workPerformedViewModel,
+                        areaViewModel = areaViewModel,
                         payDetailViewModel = payDetailViewModel,
                         payCalculationsViewModel = payCalculationsViewModel,
                         workTimeViewModel = workTimeViewModel,
@@ -166,6 +186,22 @@ class MainActivity : ComponentActivity() {
             this,
             WorkOrderViewModelFactory(application, WorkOrderRepository(db))
         )[WorkOrderViewModel::class.java]
+        jobSpecViewModel = ViewModelProvider(
+            this,
+            JobSpecViewModelFactory(application, JobSpecRepository(db))
+        )[JobSpecViewModel::class.java]
+        materialViewModel = ViewModelProvider(
+            this,
+            MaterialViewModelFactory(application, MaterialRepository(db))
+        )[MaterialViewModel::class.java]
+        workPerformedViewModel = ViewModelProvider(
+            this,
+            WorkPerformedViewModelFactory(application, WorkPerformedRepository(db))
+        )[WorkPerformedViewModel::class.java]
+        areaViewModel = ViewModelProvider(
+            this,
+            AreaViewModelFactory(application, AreaRepository(db))
+        )[AreaViewModel::class.java]
         payDetailViewModel = ViewModelProvider(
             this,
             PayDetailViewModelFactory(application, PayDetailRepository(db))

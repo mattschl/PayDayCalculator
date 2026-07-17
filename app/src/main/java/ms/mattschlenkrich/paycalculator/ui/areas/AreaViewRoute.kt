@@ -10,26 +10,22 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
+import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
-import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.ui.areas.composable.AreaViewScreen
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 
 @Composable
 fun AreaViewRoute(
     mainViewModel: MainViewModel,
-    workOrderViewModel: WorkOrderViewModel,
+    areaViewModel: AreaViewModel,
     navController: NavController,
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val settings by settingsViewModel.settings.observeAsState()
     val minColumnWidth = settings?.minColumnWidth ?: DEFAULT_MIN_COLUMN_WIDTH
     var searchQuery by remember { mutableStateOf("") }
-    val areaList by if (searchQuery.isEmpty()) {
-        workOrderViewModel.areasList.observeAsState(emptyList())
-    } else {
-        workOrderViewModel.searchAreas("%$searchQuery%").observeAsState(emptyList())
-    }
+    val areaList by areaViewModel.searchAreas("%$searchQuery%").observeAsState(emptyList())
 
     AreaViewScreen(
         areaList = areaList,
