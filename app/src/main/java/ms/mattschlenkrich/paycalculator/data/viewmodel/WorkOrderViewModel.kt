@@ -74,6 +74,11 @@ class WorkOrderViewModel(
     fun getWorkOrderWorkPerformedSummary(workOrderId: Long) =
         workOrderRepository.getWorkOrderWorkPerformedSummary(workOrderId)
 
+    val jobSpecsAll = workOrderRepository.getJobSpecs()
+    val areasList = workOrderRepository.getAreasList()
+    val workPerformedAll = workOrderRepository.getWorkPerformedAll()
+    val materialsList = workOrderRepository.getMaterialsList()
+
     suspend fun insertWorkOrderHistoryTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
         workOrderRepository.insertTimeWorked(timeWorked)
 

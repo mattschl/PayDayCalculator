@@ -52,7 +52,7 @@ interface WorkPerformedDao {
     fun getWorkPerformedAndChildList(workPerformedId: Long): LiveData<List<WorkPerformedAndChild>>
 
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged)
 
     @Query(
@@ -96,7 +96,7 @@ interface WorkPerformedDao {
     @Update
     suspend fun updateWorkPerformed(workPerformed: WorkPerformed)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWorkOrderHistoryWorkPerformed(
         workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
     )

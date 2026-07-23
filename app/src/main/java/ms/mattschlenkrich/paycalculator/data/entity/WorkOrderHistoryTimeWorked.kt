@@ -19,8 +19,8 @@ import kotlinx.parcelize.Parcelize
         )
     ],
     indices = [
-        Index(value = ["wohtDateId", "wohtStartTime"], unique = true),
-        Index(value = ["wohtDateId", "wohtEndTime"], unique = true)
+        Index(value = ["wohtDateId", "wohtStartTime"]),
+        Index(value = ["wohtDateId", "wohtEndTime"])
     ]
 )
 @Parcelize

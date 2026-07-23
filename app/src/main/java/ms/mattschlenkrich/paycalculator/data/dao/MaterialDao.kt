@@ -98,7 +98,7 @@ interface MaterialDao {
     )
     suspend fun deleteMaterial(materialId: Long, updateTime: String)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertMaterialMerged(materialMerged: MaterialMerged)
 
 

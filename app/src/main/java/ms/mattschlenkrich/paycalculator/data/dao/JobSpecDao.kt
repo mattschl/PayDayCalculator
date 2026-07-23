@@ -3,6 +3,7 @@ package ms.mattschlenkrich.paycalculator.data.dao
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
@@ -31,7 +32,7 @@ interface JobSpecDao {
     )
     fun getJobSpecAndChildList(jobSpecId: Long): LiveData<List<JobSpecAndChild>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertJobSpecMerged(jobSpecMerged: JobSpecMerged)
 
     @Query(
@@ -49,7 +50,7 @@ interface JobSpecDao {
     )
     suspend fun updateJobSpecMerged(oldJobSpecId: Long, newJobSpecId: Long)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertJobSpec(jobSpec: JobSpec)
 
     @Update
@@ -85,7 +86,7 @@ interface JobSpecDao {
     )
     fun searchJobSpecs(query: String): LiveData<List<JobSpec>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWorkOrderJobSpec(workOrderJobSpec: WorkOrderJobSpec)
 
     @Update

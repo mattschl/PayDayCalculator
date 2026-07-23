@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paycalculator.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import ms.mattschlenkrich.paycalculator.common.TABLE_SYNC_HISTORY
@@ -9,7 +10,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.SyncHistory
 
 @Dao
 interface SyncHistoryDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertSyncHistory(syncHistory: SyncHistory)
 
     @Update

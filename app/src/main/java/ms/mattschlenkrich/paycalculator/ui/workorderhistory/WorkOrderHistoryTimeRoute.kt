@@ -404,34 +404,32 @@ fun WorkOrderHistoryTimeRoute(
 
             val isDuplicateStart =
                 allTimesByDate.any { it.timeWorked.wohtStartTime == currentStart }
+            val isDuplicateEnd =
+                allTimesByDate.any { it.timeWorked.wohtEndTime == currentEnd }
 
-            if (isDuplicateStart) {
-                errorMessage = duplicateStartTimeError
+            val hasOverlap = allTimesByDate.any {
+                (currentStart >= it.timeWorked.wohtStartTime && currentStart < it.timeWorked.wohtEndTime) ||
+                        (currentEnd > it.timeWorked.wohtStartTime && currentEnd <= it.timeWorked.wohtEndTime) ||
+                        (currentStart <= it.timeWorked.wohtStartTime && currentEnd >= it.timeWorked.wohtEndTime)
+            }
+
+            val entry = WorkOrderHistoryTimeWorked(
+                nf.generateRandomIdAsLong(),
+                history.woHistoryId,
+                historyWithDates!!.workDate.workDateId,
+                currentStart,
+                currentEnd,
+                selectedTimeType,
+                false,
+                df.getCurrentUTCTimeAsString()
+            )
+
+            if (isDuplicateStart || isDuplicateEnd || hasOverlap) {
+                showOverlapConfirmDialog = entry
             } else {
-                val hasOverlap = allTimesByDate.any {
-                    (currentStart >= it.timeWorked.wohtStartTime && currentStart < it.timeWorked.wohtEndTime) ||
-                            (currentEnd > it.timeWorked.wohtStartTime && currentEnd <= it.timeWorked.wohtEndTime) ||
-                            (currentStart <= it.timeWorked.wohtStartTime && currentEnd >= it.timeWorked.wohtEndTime)
-                }
-
-                val entry = WorkOrderHistoryTimeWorked(
-                    nf.generateRandomIdAsLong(),
-                    history.woHistoryId,
-                    historyWithDates!!.workDate.workDateId,
-                    currentStart,
-                    currentEnd,
-                    selectedTimeType,
-                    false,
-                    df.getCurrentUTCTimeAsString()
-                )
-
-                if (hasOverlap) {
-                    showOverlapConfirmDialog = entry
-                } else {
-                    coroutineScope.launch {
-                        workOrderViewModel.insertWorkOrderHistoryTimeWorked(entry)
-                        startTime = endTime.clone() as Calendar
-                    }
+                coroutineScope.launch {
+                    workOrderViewModel.insertWorkOrderHistoryTimeWorked(entry)
+                    startTime = endTime.clone() as Calendar
                 }
             }
         },
@@ -445,7 +443,7 @@ fun WorkOrderHistoryTimeRoute(
             }
         },
         existingTimes = existingTimes,
-        allTimesForDay = existingTimes,
+        allTimesForDay = allTimesByDate,
         onTimeClick = { combined ->
             mainViewModel.setWorkOrderHistoryTimeWorkedCombined(combined)
             navController.navigate(Screen.WorkOrderHistoryTimeUpdate.route)

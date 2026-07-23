@@ -3,19 +3,19 @@ package ms.mattschlenkrich.paycalculator.data.dao
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
-import androidx.room.Update
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryTimeWorkedCombined
 
 @Dao
 interface WorkOrderTimeDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTimeWorked(timeWorked: WorkOrderHistoryTimeWorked)
 
-    @Update
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateTimeWorked(timeWorked: WorkOrderHistoryTimeWorked)
 
     @Query(

@@ -151,6 +151,7 @@
     <string name="original_material_">Original Material: </string>
     <string name="original_quantity_">Original Quantity: </string>
     <string name="error_start_time_already_used">Error: This start time has already been used today.</string>
+    <string name="error_end_time_already_used">Error: This end time has already been used today.</string>
     <string name="confirm_overlap">This time entry overlaps with another. Are you sure you want to save it?</string>
     <string name="original_time">"Original time is "</string>
     <string name="ot_">"Ot: "</string>

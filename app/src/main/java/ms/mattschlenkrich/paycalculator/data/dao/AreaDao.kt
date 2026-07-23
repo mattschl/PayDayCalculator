@@ -3,13 +3,14 @@ package ms.mattschlenkrich.paycalculator.data.dao
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import ms.mattschlenkrich.paycalculator.data.entity.Areas
 
 @Dao
 interface AreaDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertArea(area: Areas)
 
     @Update

@@ -176,28 +176,27 @@ fun WorkOrderHistoryTimeUpdateRoute(
             val otherTimes =
                 allTimesByDate.filter { it.timeWorked.woHistoryTimeWorkedId != combined.timeWorked.woHistoryTimeWorkedId }
             val isDuplicateStart = otherTimes.any { it.timeWorked.wohtStartTime == currentStart }
+            val isDuplicateEnd = otherTimes.any { it.timeWorked.wohtEndTime == currentEnd }
 
-            if (isDuplicateStart) {
-                errorMessage = duplicateStartTimeError
+            val hasOverlap = otherTimes.any {
+                (currentStart >= it.timeWorked.wohtStartTime && currentStart < it.timeWorked.wohtEndTime) ||
+                        (currentEnd > it.timeWorked.wohtStartTime && currentEnd <= it.timeWorked.wohtEndTime) ||
+                        (currentStart <= it.timeWorked.wohtStartTime && currentEnd >= it.timeWorked.wohtEndTime)
+            }
+
+            val entry = combined.timeWorked.copy(
+                wohtStartTime = currentStart,
+                wohtEndTime = currentEnd,
+                wohtTimeType = selectedTimeType,
+                wohtUpdateTime = df.getCurrentUTCTimeAsString()
+            )
+
+            if (isDuplicateStart || isDuplicateEnd || hasOverlap) {
+                showOverlapConfirmDialog = entry
             } else {
-                val hasOverlap = otherTimes.any {
-                    (currentStart >= it.timeWorked.wohtStartTime && currentStart < it.timeWorked.wohtEndTime) ||
-                            (currentEnd > it.timeWorked.wohtStartTime && currentEnd <= it.timeWorked.wohtEndTime) ||
-                            (currentStart <= it.timeWorked.wohtStartTime && currentEnd >= it.timeWorked.wohtEndTime)
-                }
-
-                val entry = combined.timeWorked.copy(
-                    wohtStartTime = currentStart,
-                    wohtEndTime = currentEnd,
-                    wohtTimeType = selectedTimeType,
-                    wohtUpdateTime = df.getCurrentUTCTimeAsString()
-                )
-
-                if (!hasOverlap) {
-                    coroutineScope.launch {
-                        workOrderViewModel.updateWorkOrderHistoryTimeWorked(entry)
-                        navController.popBackStack()
-                    }
+                coroutineScope.launch {
+                    workOrderViewModel.updateWorkOrderHistoryTimeWorked(entry)
+                    navController.popBackStack()
                 }
             }
         },

@@ -14,6 +14,8 @@ class WorkOrderRepository(private val db: PayDatabase) {
     private val workOrderTimeDao = db.getWorkOrderTimeDao()
     private val workPerformedDao = db.getWorkPerformedDao()
     private val materialDao = db.getMaterialDao()
+    private val jobSpecDao = db.getJobSpecDao()
+    private val areaDao = db.getAreaDao()
 
     suspend fun insertWorkOrder(workOrder: WorkOrder) = workOrderDao.insertWorkOrder(workOrder)
 
@@ -234,4 +236,102 @@ class WorkOrderRepository(private val db: PayDatabase) {
 
     suspend fun removeAllMaterialsFromWorkOrderHistory(historyId: Long, updateTime: String) =
         materialDao.removeAllMaterialsFromWorkOrderHistory(historyId, updateTime)
+
+    // Specialized JobSpec delegations
+    fun getJobSpecs() = jobSpecDao.getJobSpecsAll()
+    suspend fun getJobSpecsAllSync() = jobSpecDao.getJobSpecsAllSync()
+    fun searchJobSpecs(query: String) = jobSpecDao.searchJobSpecs(query)
+    fun getJobSpec(jobSpecId: Long) = jobSpecDao.getJobSpec(jobSpecId)
+    fun getJobSpecAndChildList(jobSpecId: Long) = jobSpecDao.getJobSpecAndChildList(jobSpecId)
+    suspend fun insertJobSpec(jobSpec: ms.mattschlenkrich.paycalculator.data.entity.JobSpec) =
+        jobSpecDao.insertJobSpec(jobSpec)
+
+    suspend fun updateJobSpec(jobSpec: ms.mattschlenkrich.paycalculator.data.entity.JobSpec) =
+        jobSpecDao.updateJobSpec(jobSpec)
+
+    suspend fun deleteJobSpec(jobSpecId: Long, updateTime: String) =
+        jobSpecDao.deleteJobSpec(jobSpecId, updateTime)
+
+    suspend fun insertJobSpecMerged(jobSpecMerged: ms.mattschlenkrich.paycalculator.data.entity.JobSpecMerged) =
+        jobSpecDao.insertJobSpecMerged(jobSpecMerged)
+
+    suspend fun deleteJobSpecMerged(jobSpecMergedId: Long, updateTime: String) =
+        jobSpecDao.deleteJobSpecMerged(jobSpecMergedId, updateTime)
+
+    suspend fun updateJobSpecMerged(oldJobSpecId: Long, newJobSpecId: Long) =
+        jobSpecDao.updateJobSpecMerged(oldJobSpecId, newJobSpecId)
+
+    suspend fun insertWorkOrderJobSpec(workOrderJobSpec: ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec) =
+        jobSpecDao.insertWorkOrderJobSpec(workOrderJobSpec)
+
+    suspend fun updateWorkOrderJobSpec(workOrderJobSpec: ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec) =
+        jobSpecDao.updateWorkOrderJobSpec(workOrderJobSpec)
+
+    fun getWorkOrderJobSpecs(workOrderId: Long) = jobSpecDao.getWorkOrderJobSpecs(workOrderId)
+    fun getWorkOrderJobSpec(workOrderJobSpecId: Long) =
+        jobSpecDao.getWorkOrderJobSpec(workOrderJobSpecId)
+
+    // Specialized Material delegations
+    suspend fun insertMaterial(material: ms.mattschlenkrich.paycalculator.data.entity.Material) =
+        materialDao.insertMaterial(material)
+
+    suspend fun updateMaterial(material: ms.mattschlenkrich.paycalculator.data.entity.Material) =
+        materialDao.updateMaterial(material)
+
+    fun getMaterialsList() = materialDao.getMaterialsList()
+    suspend fun getMaterialsListSync() = materialDao.getMaterialsListSync()
+    fun getMaterialAndChildList(materialId: Long) = materialDao.getMaterialAndChildList(materialId)
+    fun searchMaterials(query: String) = materialDao.searchMaterials(query)
+    fun getMaterial(materialId: Long) = materialDao.getMaterial(materialId)
+    suspend fun getMaterialSync(materialId: Long) = materialDao.getMaterialSync(materialId)
+    suspend fun getMaterialSync(mName: String) = materialDao.getMaterialSync(mName)
+    suspend fun insertMaterialMerged(materialMerged: ms.mattschlenkrich.paycalculator.data.entity.MaterialMerged) =
+        materialDao.insertMaterialMerged(materialMerged)
+
+    suspend fun deleteMaterialMerged(materialMergeId: Long, updateTime: String) =
+        materialDao.deleteMaterialMerged(materialMergeId, updateTime)
+
+    suspend fun deleteMaterial(materialId: Long, updateTime: String) =
+        materialDao.deleteMaterial(materialId, updateTime)
+
+    // Specialized WorkPerformed delegations
+    suspend fun insertWorkPerformed(workPerformed: ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed) =
+        workPerformedDao.insertWorkPerformed(workPerformed)
+
+    suspend fun deleteWorkPerformed(workPerformedId: Long, updateTime: String) =
+        workPerformedDao.deleteWorkPerformed(workPerformedId, updateTime)
+
+    suspend fun deleteWorkPerformedMerged(workPerformedMergedId: Long, updateTime: String) =
+        workPerformedDao.deleteWorkPerformedMerged(workPerformedMergedId, updateTime)
+
+    fun getWorkPerformedAll() = workPerformedDao.getWorkPerformedAll()
+    suspend fun getWorkPerformedAllSync() = workPerformedDao.getWorkPerformedAllSync()
+    fun getWorkPerformedAndChildList(workPerformedId: Long) =
+        workPerformedDao.getWorkPerformedAndChildList(workPerformedId)
+
+    suspend fun insertWorkPerformedMerged(workPerformedMerged: ms.mattschlenkrich.paycalculator.data.entity.WorkPerformedMerged) =
+        workPerformedDao.insertWorkPerformedMerged(workPerformedMerged)
+
+    suspend fun updateWorkPerformedMerged(oldWorkPerformedId: Long, newWorkPerformedId: Long) =
+        workPerformedDao.updateWorkPerformedMerged(oldWorkPerformedId, newWorkPerformedId)
+
+    fun searchFromWorkPerformed(query: String) = workPerformedDao.searchFromWorkPerformed(query)
+    suspend fun getWorkPerformedSync(description: String) =
+        workPerformedDao.getWorkPerformedSync(description)
+
+    fun getWorkPerformed(workPerformedId: Long) = workPerformedDao.getWorkPerformed(workPerformedId)
+    suspend fun updateWorkPerformed(workPerformed: ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed) =
+        workPerformedDao.updateWorkPerformed(workPerformed)
+
+    // Specialized Area delegations
+    suspend fun insertArea(area: ms.mattschlenkrich.paycalculator.data.entity.Areas) =
+        areaDao.insertArea(area)
+
+    suspend fun updateArea(area: ms.mattschlenkrich.paycalculator.data.entity.Areas) =
+        areaDao.updateArea(area)
+
+    fun getAreasList() = areaDao.getAreasList()
+    suspend fun getAreasListSync() = areaDao.getAreasListSync()
+    fun getArea(areaId: Long) = areaDao.getArea(areaId)
+    fun searchAreas(query: String) = areaDao.searchAreas(query)
 }

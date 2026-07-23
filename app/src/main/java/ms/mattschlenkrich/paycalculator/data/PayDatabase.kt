@@ -104,6 +104,24 @@ abstract class PayDatabase : RoomDatabase() {
     abstract fun getWorkOrderTimeDao(): WorkOrderTimeDao
 
     companion object {
+        private val MIGRATION_17_18 = object : Migration(17, 18) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("DROP INDEX IF EXISTS `index_workOrderHistoryTimeWorked_wohtDateId_wohtStartTime`")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_workOrderHistoryTimeWorked_wohtDateId_wohtStartTime` ON `workOrderHistoryTimeWorked` (`wohtDateId`, `wohtStartTime`)")
+                db.execSQL("DROP INDEX IF EXISTS `index_workOrderHistoryTimeWorked_wohtDateId_wohtEndTime`")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_workOrderHistoryTimeWorked_wohtDateId_wohtEndTime` ON `workOrderHistoryTimeWorked` (`wohtDateId`, `wohtEndTime`)")
+            }
+        }
+
+        private val MIGRATION_16_17 = object : Migration(16, 17) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("DROP INDEX IF EXISTS `index_workOrderHistoryTimeWorked_wohtDateId_wohtStartTime`")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_workOrderHistoryTimeWorked_wohtDateId_wohtStartTime` ON `workOrderHistoryTimeWorked` (`wohtDateId`, `wohtStartTime`)")
+                db.execSQL("DROP INDEX IF EXISTS `index_workOrderHistoryTimeWorked_wohtDateId_wohtEndTime`")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_workOrderHistoryTimeWorked_wohtDateId_wohtEndTime` ON `workOrderHistoryTimeWorked` (`wohtDateId`, `wohtEndTime`)")
+            }
+        }
+
         private val MIGRATION_15_16 = object : Migration(15, 16) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(
@@ -187,7 +205,9 @@ abstract class PayDatabase : RoomDatabase() {
                     MIGRATION_12_15,
                     MIGRATION_13_15,
                     MIGRATION_14_15,
-                    MIGRATION_15_16
+                    MIGRATION_15_16,
+                    MIGRATION_16_17,
+                    MIGRATION_17_18
                 )
                 .build()
         }
