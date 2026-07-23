@@ -43,6 +43,23 @@ class PayCalculationsTest {
 
     @Test
     fun getPayRateFromDb_answerIs_31_93() = runBlocking {
+        org.mockito.Mockito.`when`(
+            payCalculationsViewModel.getPayRate(
+                employerMock.employerId,
+                payPeriodMock.ppCutoffDate
+            )
+        ).thenReturn(
+            ms.mattschlenkrich.paycalculator.data.entity.EmployerPayRates(
+                0L,
+                employerMock.employerId,
+                "2025-01-01",
+                ms.mattschlenkrich.paycalculator.common.PayRateBasedOn.HOURLY.value,
+                31.93,
+                false,
+                ""
+            )
+        )
+
         val payCalculationsAsync = PayCalculationsAsync(
             payCalculationsViewModel,
             payDetailViewModel,
