@@ -1,18 +1,22 @@
 package ms.mattschlenkrich.paycalculator.ui.paydetail.composable
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.common.compose.MAX_CONTENT_WIDTH
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.data.model.ExtraContainer
@@ -33,41 +37,47 @@ fun PayDetailContent(
     onExtraClick: (ExtraContainer) -> Unit,
     onExtraActiveChange: (ExtraContainer, Boolean) -> Unit
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = SCREEN_PADDING_HORIZONTAL)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
     ) {
-        Spacer(modifier = Modifier.height(SCREEN_PADDING_VERTICAL))
+        Column(
+            modifier = Modifier
+                .widthIn(max = MAX_CONTENT_WIDTH)
+                .fillMaxSize()
+                .padding(horizontal = SCREEN_PADDING_HORIZONTAL)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+        ) {
+            Spacer(modifier = Modifier.height(SCREEN_PADDING_VERTICAL))
 
-        SummaryCard(data = paySummary)
+            SummaryCard(data = paySummary)
 
-        HourlyBreakdownCard(data = hourlyBreakdown)
+            HourlyBreakdownCard(data = hourlyBreakdown)
 
-        ExtrasCard(
-            title = stringResource(R.string.credits),
-            extras = credits,
-            total = paySummary.totalCredits,
-            onAddClick = onAddCreditClick,
-            onExtraClick = onExtraClick,
-            onActiveChange = onExtraActiveChange,
-            addButtonContentDescription = stringResource(R.string.add_new_credit)
-        )
+            ExtrasCard(
+                title = stringResource(R.string.credits),
+                extras = credits,
+                total = paySummary.totalCredits,
+                onAddClick = onAddCreditClick,
+                onExtraClick = onExtraClick,
+                onActiveChange = onExtraActiveChange,
+                addButtonContentDescription = stringResource(R.string.add_new_credit)
+            )
 
-        ExtrasCard(
-            title = stringResource(R.string.deductions),
-            extras = deductions,
-            taxes = taxes,
-            total = paySummary.totalDeductions,
-            onAddClick = onAddDeductionClick,
-            onExtraClick = onExtraClick,
-            onActiveChange = onExtraActiveChange,
-            addButtonContentDescription = stringResource(R.string.add_new_deductions)
-        )
+            ExtrasCard(
+                title = stringResource(R.string.deductions),
+                extras = deductions,
+                taxes = taxes,
+                total = paySummary.totalDeductions,
+                onAddClick = onAddDeductionClick,
+                onExtraClick = onExtraClick,
+                onActiveChange = onExtraActiveChange,
+                addButtonContentDescription = stringResource(R.string.add_new_deductions)
+            )
 
-        Spacer(modifier = Modifier.height(SCREEN_PADDING_VERTICAL))
+            Spacer(modifier = Modifier.height(SCREEN_PADDING_VERTICAL))
+        }
     }
 }
 

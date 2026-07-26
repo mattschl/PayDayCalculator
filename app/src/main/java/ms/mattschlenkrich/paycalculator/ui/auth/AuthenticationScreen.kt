@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.security.AuthResult
 
 @Composable
@@ -46,7 +48,7 @@ fun AuthenticationScreen(
             onDismissRequest = { /* Force reset */ },
             title = { Text("Reset Your Password") },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING / 2)) {
                     Text(
                         "You have used the master backup password. Please set a new custom password to continue.",
                         style = MaterialTheme.typography.bodyMedium
@@ -99,14 +101,14 @@ fun AuthenticationScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(32.dp),
+                .padding(horizontal = SCREEN_PADDING_HORIZONTAL * 2),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Text(
                 text = "App Protected",
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 32.dp)
+                modifier = Modifier.padding(bottom = ELEMENT_SPACING * 2)
             )
 
             OutlinedTextField(
@@ -156,7 +158,7 @@ fun AuthenticationScreen(
                     }
                 },
                 modifier = Modifier
-                    .padding(top = 24.dp)
+                    .padding(top = ELEMENT_SPACING)
                     .fillMaxWidth()
             ) {
                 Text("Unlock")

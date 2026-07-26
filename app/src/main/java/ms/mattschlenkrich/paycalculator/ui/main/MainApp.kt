@@ -2,17 +2,24 @@ package ms.mattschlenkrich.paycalculator.ui.main
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.bottomNavItems
-import ms.mattschlenkrich.paycalculator.common.compose.StandardNavigationBar
 import ms.mattschlenkrich.paycalculator.common.compose.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
@@ -108,65 +115,96 @@ fun MainApp(
         currentScreen
     }
 
-    Scaffold(
+    NavigationSuiteScaffold(
+        navigationSuiteItems = {
+            bottomNavItems.forEachIndexed { index, screen ->
+                val isPagerRoute = currentDestination?.route == Screen.MainPager.route
+                val isSelected = if (isPagerRoute) {
+                    mainViewModel.selectedTopLevelIndex.intValue == index
+                } else {
+                    currentDestination?.hierarchy?.any { it.route == screen.route } == true
+                }
+                item(
+                    icon = {
+                        Icon(
+                            painterResource(id = screen.icon),
+                            contentDescription = stringResource(screen.resourceId),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    },
+                    label = { Text(stringResource(screen.resourceId)) },
+                    selected = isSelected,
+                    onClick = {
+                        if (isPagerRoute) {
+                            mainViewModel.setSelectedTopLevelIndex(index)
+                        } else {
+                            mainViewModel.setSelectedTopLevelIndex(index)
+                            navController.navigate(Screen.MainPager.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    }
+                )
+            }
+        },
         modifier = Modifier
             .fillMaxSize()
-            .imePadding(),
-        topBar = {
-            StandardTopAppBar(
-                title = stringResource(displayScreen?.resourceId ?: R.string.app_name),
-                onBackClicked = if (navController.previousBackStackEntry != null) {
-                    { navController.popBackStack() }
-                } else null,
-                onSettingsClicked = { navController.navigate(Screen.Settings.route) },
-                onMenuAction = { action ->
-                    when (action) {
-                        "Sync Data" -> onSyncRequested()
-                        workOrderListLabel -> navController.navigate(
-                            Screen.WorkOrders.route
-                        )
+            .imePadding()
+    ) {
+        Scaffold(
+            topBar = {
+                StandardTopAppBar(
+                    title = stringResource(displayScreen?.resourceId ?: R.string.app_name),
+                    onBackClicked = if (navController.previousBackStackEntry != null) {
+                        { navController.popBackStack() }
+                    } else null,
+                    onSettingsClicked = { navController.navigate(Screen.Settings.route) },
+                    onMenuAction = { action ->
+                        when (action) {
+                            "Sync Data" -> onSyncRequested()
+                            workOrderListLabel -> navController.navigate(
+                                Screen.WorkOrders.route
+                            )
 
-                        jobSpecListLabel -> navController.navigate(
-                            Screen.JobSpecs.route
-                        )
+                            jobSpecListLabel -> navController.navigate(
+                                Screen.JobSpecs.route
+                            )
 
-                        areasListLabel -> navController.navigate(Screen.Areas.route)
-                        workPerformedListLabel -> navController.navigate(
-                            Screen.WorkPerformed.route
-                        )
+                            areasListLabel -> navController.navigate(Screen.Areas.route)
+                            workPerformedListLabel -> navController.navigate(
+                                Screen.WorkPerformed.route
+                            )
 
-                        materialListLabel -> navController.navigate(
-                            Screen.Materials.route
-                        )
+                            materialListLabel -> navController.navigate(
+                                Screen.Materials.route
+                            )
+                        }
                     }
-                }
-            )
-        },
-        bottomBar = {
-            StandardNavigationBar(
-                mainViewModel = mainViewModel,
+                )
+            }
+        ) { innerPadding ->
+            AppNavHost(
                 navController = navController,
-                currentDestination = currentDestination
+                innerPadding = innerPadding,
+                mainViewModel = mainViewModel,
+                employerViewModel = employerViewModel,
+                workTaxViewModel = workTaxViewModel,
+                workExtraViewModel = workExtraViewModel,
+                payDayViewModel = payDayViewModel,
+                workOrderViewModel = workOrderViewModel,
+                jobSpecViewModel = jobSpecViewModel,
+                materialViewModel = materialViewModel,
+                workPerformedViewModel = workPerformedViewModel,
+                areaViewModel = areaViewModel,
+                payDetailViewModel = payDetailViewModel,
+                payCalculationsViewModel = payCalculationsViewModel,
+                workTimeViewModel = workTimeViewModel,
+                settingsViewModel = settingsViewModel
             )
         }
-    ) { innerPadding ->
-        AppNavHost(
-            navController = navController,
-            innerPadding = innerPadding,
-            mainViewModel = mainViewModel,
-            employerViewModel = employerViewModel,
-            workTaxViewModel = workTaxViewModel,
-            workExtraViewModel = workExtraViewModel,
-            payDayViewModel = payDayViewModel,
-            workOrderViewModel = workOrderViewModel,
-            jobSpecViewModel = jobSpecViewModel,
-            materialViewModel = materialViewModel,
-            workPerformedViewModel = workPerformedViewModel,
-            areaViewModel = areaViewModel,
-            payDetailViewModel = payDetailViewModel,
-            payCalculationsViewModel = payCalculationsViewModel,
-            workTimeViewModel = workTimeViewModel,
-            settingsViewModel = settingsViewModel
-        )
     }
 }
