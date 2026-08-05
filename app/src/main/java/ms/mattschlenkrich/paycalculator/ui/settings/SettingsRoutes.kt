@@ -25,6 +25,9 @@ fun SettingsRoute(
         isPasswordSet = viewModel.isPasswordSet(),
         defaultEmployerId = settings?.defaultEmployerId,
         minColumnWidth = settings?.minColumnWidth ?: DEFAULT_MIN_COLUMN_WIDTH,
+        regularStartTime = settings?.regularStartTime ?: "08:30",
+        regularEndTime = settings?.regularEndTime ?: "17:00",
+        regularDays = settings?.regularDays ?: listOf(2, 3, 4, 5, 6),
         employers = employers,
         onFontSizeChange = { viewModel.updateFontSize(it) },
         onPayPeriodsLimitChange = { viewModel.updatePayPeriodsLimit(it) },
@@ -34,6 +37,9 @@ fun SettingsRoute(
         onPasswordSet = { viewModel.savePassword(it) },
         onPasswordVerify = { viewModel.verifyPassword(it) },
         onDefaultEmployerChange = { viewModel.updateDefaultEmployerId(it) },
-        onMinColumnWidthChange = { viewModel.updateMinColumnWidth(it) }
+        onMinColumnWidthChange = { viewModel.updateMinColumnWidth(it) },
+        onRegularStartTimeChange = { viewModel.updateRegularStartTime(it) },
+        onRegularEndTimeChange = { viewModel.updateRegularEndTime(it) },
+        onRegularDaysChange = { viewModel.updateRegularDays(it) }
     )
 }

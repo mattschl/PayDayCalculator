@@ -9,6 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import ms.mattschlenkrich.paycalculator.common.DEVICE_ID
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.PREFS_NAME
+import ms.mattschlenkrich.paycalculator.common.settings.Settings
 import ms.mattschlenkrich.paycalculator.common.settings.SettingsManager
 import ms.mattschlenkrich.paycalculator.data.entity.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
@@ -251,5 +252,9 @@ class MainViewModel(
 
     fun setWorkOrderHistoryTimeWorkedCombined(newWorkOrderHistoryTimeWorkedCombined: WorkOrderHistoryTimeWorkedCombined?) {
         workOrderHistoryTimeWorkedCombined = newWorkOrderHistoryTimeWorkedCombined
+    }
+
+    fun loadSettings(): Settings {
+        return settingsManager.loadSettings()
     }
 }

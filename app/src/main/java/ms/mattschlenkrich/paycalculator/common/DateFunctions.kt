@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paycalculator.common
 
-import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -29,11 +28,42 @@ class DateFunctions {
         return timeFormatter.format(calendar.time).split(" ")[1]
     }
 
+    fun getDateTimeDisplay(calendar: Calendar): String {
+        return timeFormatter.format(calendar.time)
+    }
+
     fun getCalendarFromTime(time: String): Calendar {
         val cal = Calendar.getInstance()
         val tempTime = time.split(":")
         cal.set(Calendar.HOUR_OF_DAY, tempTime[0].toInt())
         cal.set(Calendar.MINUTE, tempTime[1].toInt())
+        cal.set(Calendar.SECOND, 0)
+        cal.set(Calendar.MILLISECOND, 0)
+        return cal
+    }
+
+    fun getCalendarFromDateTime(dateTime: String): Calendar {
+        val cal = Calendar.getInstance()
+        try {
+            cal.time = timeFormatter.parse(dateTime)!!
+        } catch (_: Exception) {
+        }
+        return cal
+    }
+
+    fun getCalendarFromDateAndTime(date: String, time: String): Calendar {
+        val cal = Calendar.getInstance()
+        try {
+            cal.time = timeFormatter.parse("$date $time:00")!!
+        } catch (_: Exception) {
+            try {
+                cal.time = dateChecker.parse(date)!!
+                val tempTime = time.split(":")
+                cal.set(Calendar.HOUR_OF_DAY, tempTime[0].toInt())
+                cal.set(Calendar.MINUTE, tempTime[1].toInt())
+            } catch (_: Exception) {
+            }
+        }
         cal.set(Calendar.SECOND, 0)
         cal.set(Calendar.MILLISECOND, 0)
         return cal
@@ -59,7 +89,8 @@ class DateFunctions {
     }
 
     fun get12HourDisplay(time: String): String {
-        val tempTime = time.split(":")
+        val tempTime =
+            if (time.contains(" ")) time.split(" ").last().split(":") else time.split(":")
         return if (tempTime[0].toInt() == 0) {
             "12:${tempTime[1]} AM"
         } else if (tempTime[0].toInt() < 12) {
@@ -76,21 +107,21 @@ class DateFunctions {
     }
 
     fun getTimeWorked(startTime: String, endTime: String): Double {
-        val tempStart = splitTimeFromDateTime(startTime)
-        val tempEnd = splitTimeFromDateTime(endTime)
-        val hoursStart = (tempStart[0].toDouble() * 60) + tempStart[1].toDouble()
-        val hoursEnd = (tempEnd[0].toDouble() * 60) + tempEnd[1].toDouble()
-        return (hoursEnd - hoursStart) / 60
+        return try {
+            val start = timeFormatter.parse(startTime)!!
+            val end = timeFormatter.parse(endTime)!!
+            (end.time - start.time).toDouble() / (1000.0 * 60.0 * 60.0)
+        } catch (_: Exception) {
+            val tempStart = splitTimeFromDateTime(startTime)
+            val tempEnd = splitTimeFromDateTime(endTime)
+            val hoursStart = (tempStart[0].toDouble() * 60) + tempStart[1].toDouble()
+            val hoursEnd = (tempEnd[0].toDouble() * 60) + tempEnd[1].toDouble()
+            (hoursEnd - hoursStart) / 60
+        }
     }
 
     fun getTimeWorked(startTime: Calendar, endTime: Calendar): Double {
-        val hoursStart =
-            (startTime.get(Calendar.HOUR_OF_DAY).toDouble() * 60) + startTime.get(Calendar.MINUTE)
-                .toDouble()
-        val hoursEnd =
-            (endTime.get(Calendar.HOUR_OF_DAY).toDouble() * 60) + endTime.get(Calendar.MINUTE)
-                .toDouble()
-        return (hoursEnd - hoursStart) / 60
+        return (endTime.timeInMillis - startTime.timeInMillis).toDouble() / (1000.0 * 60.0 * 60.0)
     }
 
     fun roundCalendarTimeTo15Minutes(time: Calendar): Calendar {
@@ -131,19 +162,9 @@ class DateFunctions {
 
     fun addHoursToCalendar(time: Calendar, hours: Double): Calendar {
         val tempTime = time.clone() as Calendar
-        Log.d(TAG, "addHoursToCalendar: started with time = ${tempTime.time} and hours = $hours")
-        tempTime.add(Calendar.HOUR_OF_DAY, hours.toInt())
-        Log.d(
-            TAG,
-            "addHoursToCalendar: after add hours with time = ${tempTime.time} modulo is ${hours % 1}"
-        )
-        tempTime.add(Calendar.MINUTE, ((hours % 1) * 60).toInt())
-        Log.d(
-            TAG,
-            "addHoursToCalendar: after add minutes with time = ${tempTime.time} and the modulus is ${((hours % 1) * 60).toInt()}"
-        )
+        tempTime.add(Calendar.MINUTE, (hours * 60).toInt())
         tempTime.set(Calendar.SECOND, 0)
-        roundCalendarTimeTo15Minutes(tempTime)
+        tempTime.set(Calendar.MILLISECOND, 0)
         return tempTime
     }
 
@@ -165,5 +186,16 @@ class DateFunctions {
             }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
         )
         datePickerDialog.show()
+    }
+
+    fun getNextDate(date: String): String {
+        return try {
+            val cal = Calendar.getInstance()
+            cal.time = dateChecker.parse(date)!!
+            cal.add(Calendar.DAY_OF_YEAR, 1)
+            dateFormat.format(cal.time)
+        } catch (_: Exception) {
+            date
+        }
     }
 }

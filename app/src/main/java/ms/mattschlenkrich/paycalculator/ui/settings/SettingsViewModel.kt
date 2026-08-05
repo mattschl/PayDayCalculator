@@ -80,4 +80,25 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         _settings.value = newSettings
         settingsManager.saveSettings(newSettings)
     }
+
+    fun updateRegularStartTime(time: String) {
+        val newSettings =
+            _settings.value?.copy(regularStartTime = time) ?: Settings(regularStartTime = time)
+        _settings.value = newSettings
+        settingsManager.saveSettings(newSettings)
+    }
+
+    fun updateRegularEndTime(time: String) {
+        val newSettings =
+            _settings.value?.copy(regularEndTime = time) ?: Settings(regularEndTime = time)
+        _settings.value = newSettings
+        settingsManager.saveSettings(newSettings)
+    }
+
+    fun updateRegularDays(days: List<Int>) {
+        val newSettings =
+            _settings.value?.copy(regularDays = days) ?: Settings(regularDays = days)
+        _settings.value = newSettings
+        settingsManager.saveSettings(newSettings)
+    }
 }

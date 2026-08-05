@@ -41,6 +41,7 @@ fun WorkOrderHistoryTimeUpdateRoute(
     val duplicateStartTimeError = stringResource(R.string.error_start_time_already_used)
     val adjustedRegHours = stringResource(R.string.time_adjusted_to_not_exceed_8_reg_hours)
     val adjustedOtHours = stringResource(R.string.time_adjusted_to_not_exceed_12_ot_hours)
+    val settings = remember { mainViewModel.loadSettings() }
 
     val combined = mainViewModel.getWorkOrderHistoryTimeWorkedCombined() ?: run {
         LaunchedEffect(Unit) {
@@ -51,12 +52,12 @@ fun WorkOrderHistoryTimeUpdateRoute(
 
     var startTime by remember {
         mutableStateOf(
-            df.getCalendarFromTime(combined.timeWorked.wohtStartTime.substringAfter(" "))
+            df.getCalendarFromDateTime(combined.timeWorked.wohtStartTime)
         )
     }
     var endTime by remember {
         mutableStateOf(
-            df.getCalendarFromTime(combined.timeWorked.wohtEndTime.substringAfter(" "))
+            df.getCalendarFromDateTime(combined.timeWorked.wohtEndTime)
         )
     }
     var selectedTimeType by remember { mutableIntStateOf(combined.timeWorked.wohtTimeType) }
@@ -70,6 +71,42 @@ fun WorkOrderHistoryTimeUpdateRoute(
         if (errorMessage != null) {
             delay(3000.milliseconds)
             errorMessage = null
+        }
+    }
+
+    LaunchedEffect(startTime) {
+        val totalWorkedHours = allTimesByDate
+            .filter { it.timeWorked.woHistoryTimeWorkedId != combined.timeWorked.woHistoryTimeWorkedId }
+            .filter { it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value }
+            .sumOf {
+                df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
+            }
+
+        val workDayCalendar = df.getCalendarFromDateTime(combined.workDate.wdDate + " 00:00:00")
+        val dayOfWeek = workDayCalendar.get(Calendar.DAY_OF_WEEK)
+        val isRegularDay = settings.regularDays.contains(dayOfWeek)
+
+        val regStartCal = df.getCalendarFromTime(settings.regularStartTime)
+        val regEndCal = df.getCalendarFromTime(settings.regularEndTime)
+
+        val startTimeMinutes =
+            startTime.get(Calendar.HOUR_OF_DAY) * 60 + startTime.get(Calendar.MINUTE)
+        val regStartMinutes =
+            regStartCal.get(Calendar.HOUR_OF_DAY) * 60 + regStartCal.get(Calendar.MINUTE)
+        val regEndMinutes =
+            regEndCal.get(Calendar.HOUR_OF_DAY) * 60 + regEndCal.get(Calendar.MINUTE)
+
+        val isWithinRegularTime = if (regStartMinutes < regEndMinutes) {
+            startTimeMinutes in regStartMinutes until regEndMinutes
+        } else {
+            startTimeMinutes >= regStartMinutes || startTimeMinutes < regEndMinutes
+        }
+
+        selectedTimeType = when {
+            totalWorkedHours >= 12.0 -> TimeWorkedTypes.DBL_OT_HOURS.value
+            !isRegularDay || !isWithinRegularTime -> TimeWorkedTypes.OT_HOURS.value
+            totalWorkedHours < 8.0 -> TimeWorkedTypes.REG_HOURS.value
+            else -> TimeWorkedTypes.OT_HOURS.value
         }
     }
 
@@ -99,6 +136,7 @@ fun WorkOrderHistoryTimeUpdateRoute(
             },
             dismissButton = {
                 androidx.compose.material3.TextButton(onClick = {
+                    showOverlapConfirmDialog = null
                 }) {
                     androidx.compose.material3.Text(stringResource(R.string.cancel))
                 }
@@ -110,17 +148,17 @@ fun WorkOrderHistoryTimeUpdateRoute(
         infoText = stringResource(R.string.work_order) + " ${combined.workOrderHistory.workOrder.woNumber}\n" +
                 combined.workOrderHistory.workOrder.woDescription,
         originalTimeText = stringResource(R.string.original_time) + " " +
-                df.get12HourDisplay(combined.timeWorked.wohtStartTime.substringAfter(" ")) +
+                df.get12HourDisplay(combined.timeWorked.wohtStartTime) +
                 " - " +
-                df.get12HourDisplay(combined.timeWorked.wohtEndTime.substringAfter(" ")),
+                df.get12HourDisplay(combined.timeWorked.wohtEndTime),
         startTime = startTime,
         endTime = endTime,
         totalTimeText = nf.displayNumberFromDouble(totalHours) + " " + stringResource(R.string.hours),
         selectedTimeType = selectedTimeType,
-        onTimeTypeChange = { },
+        onTimeTypeChange = { selectedTimeType = it },
         onStartTimeClick = {
             TimePickerDialog(context, { _, h, m ->
-                val newStart = Calendar.getInstance().apply {
+                val newStart = (startTime.clone() as Calendar).apply {
                     set(Calendar.HOUR_OF_DAY, h)
                     set(Calendar.MINUTE, m)
                 }
@@ -130,12 +168,17 @@ fun WorkOrderHistoryTimeUpdateRoute(
         },
         onEndTimeClick = {
             TimePickerDialog(context, { _, h, m ->
-                val newEnd = df.roundCalendarTimeUpTo15Minutes(
-                    Calendar.getInstance().apply {
-                        set(Calendar.HOUR_OF_DAY, h)
-                        set(Calendar.MINUTE, m)
-                    }
-                )
+                var newEnd = (endTime.clone() as Calendar).apply {
+                    set(Calendar.HOUR_OF_DAY, h)
+                    set(Calendar.MINUTE, m)
+                }
+                newEnd = df.roundCalendarTimeUpTo15Minutes(newEnd)
+
+                if (newEnd.before(startTime)) {
+                    newEnd.add(Calendar.DAY_OF_YEAR, 1)
+                } else if (newEnd.timeInMillis - startTime.timeInMillis > 24 * 60 * 60 * 1000) {
+                    newEnd.add(Calendar.DAY_OF_YEAR, -1)
+                }
 
                 val hoursBefore = allTimesByDate
                     .filter { it.timeWorked.woHistoryTimeWorkedId != combined.timeWorked.woHistoryTimeWorkedId }
@@ -164,14 +207,8 @@ fun WorkOrderHistoryTimeUpdateRoute(
             }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false).show()
         },
         onSaveClick = {
-            val currentStart = df.getDateTimeFromDateAndTime(
-                combined.workDate.wdDate,
-                df.getTimeDisplay(startTime)
-            )
-            val currentEnd = df.getDateTimeFromDateAndTime(
-                combined.workDate.wdDate,
-                df.getTimeDisplay(endTime)
-            )
+            val currentStart = df.getDateTimeDisplay(startTime)
+            val currentEnd = df.getDateTimeDisplay(endTime)
 
             val otherTimes =
                 allTimesByDate.filter { it.timeWorked.woHistoryTimeWorkedId != combined.timeWorked.woHistoryTimeWorkedId }
