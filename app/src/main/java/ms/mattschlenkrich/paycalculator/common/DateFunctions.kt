@@ -91,14 +91,16 @@ class DateFunctions {
     fun get12HourDisplay(time: String): String {
         val tempTime =
             if (time.contains(" ")) time.split(" ").last().split(":") else time.split(":")
-        return if (tempTime[0].toInt() == 0) {
-            "12:${tempTime[1]} AM"
-        } else if (tempTime[0].toInt() < 12) {
-            "${tempTime[0]}:${tempTime[1]} AM"
-        } else if (tempTime[0].toInt() == 12) {
-            "12:${tempTime[1]} PM"
+        val hour = tempTime[0].toInt()
+        val minute = tempTime[1]
+        return if (hour == 0) {
+            "12:$minute AM"
+        } else if (hour < 12) {
+            "$hour:$minute AM"
+        } else if (hour == 12) {
+            "12:$minute PM"
         } else {
-            "${tempTime[0].toInt() - 12}:${tempTime[1]} PM"
+            "${hour - 12}:$minute PM"
         }
     }
 

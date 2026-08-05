@@ -1,9 +1,10 @@
 package ms.mattschlenkrich.paycalculator.common
 
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.NumberFormat
 import java.util.Locale
 import java.util.UUID
-import kotlin.math.round
 import kotlin.math.roundToInt
 
 class NumberFunctions {
@@ -53,6 +54,6 @@ class NumberFunctions {
     }
 
     fun roundTo2Decimals(num: Double): Double {
-        return round(num * 100) / 100
+        return BigDecimal.valueOf(num).setScale(2, RoundingMode.HALF_UP).toDouble()
     }
 }
