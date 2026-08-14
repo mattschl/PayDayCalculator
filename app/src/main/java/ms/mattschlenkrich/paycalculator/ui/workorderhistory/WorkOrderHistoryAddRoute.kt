@@ -4,8 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.Screen
@@ -64,6 +66,8 @@ fun WorkOrderHistoryAddRoute(
     val selectedWo = mainViewModel.getWorkOrder()
     val finalWoNumber = selectedWo?.woNumber ?: initialWorkOrderNumber
 
+    var isSaving by remember { mutableStateOf(false) }
+
     WorkOrderHistoryAddScreen(
         workOrderList = workOrderList,
         initialWorkOrderNumber = finalWoNumber,
@@ -119,50 +123,66 @@ fun WorkOrderHistoryAddRoute(
             }
         },
         onDone = { number, reg, ot, dbl, nt, _ ->
-            val wo = workOrderList.find { it.woNumber == number }
-            if (wo != null) {
-                coroutineScope.launch {
-                    val history = WorkOrderHistory(
-                        nf.generateRandomIdAsLong(),
-                        wo.workOrderId,
-                        workDate.workDateId,
-                        reg.toDoubleOrNull() ?: 0.0,
-                        ot.toDoubleOrNull() ?: 0.0,
-                        dbl.toDoubleOrNull() ?: 0.0,
-                        nt,
-                        false,
-                        df.getCurrentUTCTimeAsString()
-                    )
-                    workOrderViewModel.insertWorkOrderHistory(history)
-                    mainViewModel.setTempWorkOrderHistoryInfo(null)
-                    mainViewModel.setWorkOrder(null)
-                    mainViewModel.setWorkOrderHistory(history)
-                    navController.popBackStack()
+            if (!isSaving) {
+                val wo = workOrderList.find { it.woNumber == number }
+                if (wo != null) {
+                    isSaving = true
+                    coroutineScope.launch {
+                        try {
+                            val history = WorkOrderHistory(
+                                nf.generateRandomIdAsLong(),
+                                wo.workOrderId,
+                                workDate.workDateId,
+                                reg.toDoubleOrNull() ?: 0.0,
+                                ot.toDoubleOrNull() ?: 0.0,
+                                dbl.toDoubleOrNull() ?: 0.0,
+                                nt,
+                                false,
+                                df.getCurrentUTCTimeAsString()
+                            )
+                            workOrderViewModel.insertWorkOrderHistory(history)
+                            mainViewModel.setTempWorkOrderHistoryInfo(null)
+                            mainViewModel.setWorkOrder(null)
+                            mainViewModel.setWorkOrderHistory(history)
+                            navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
+                                popUpTo(Screen.WorkOrderHistoryAdd.route) { inclusive = true }
+                            }
+                        } catch (_: Exception) {
+                            isSaving = false
+                        }
+                    }
                 }
             }
         },
         onAddTime = { number, reg, ot, dbl, nt, _ ->
-            val wo = workOrderList.find { it.woNumber == number }
-            if (wo != null) {
-                coroutineScope.launch {
-                    val historyId = nf.generateRandomIdAsLong()
-                    val history = WorkOrderHistory(
-                        historyId,
-                        wo.workOrderId,
-                        workDate.workDateId,
-                        reg.toDoubleOrNull() ?: 0.0,
-                        ot.toDoubleOrNull() ?: 0.0,
-                        dbl.toDoubleOrNull() ?: 0.0,
-                        nt,
-                        false,
-                        df.getCurrentUTCTimeAsString()
-                    )
-                    workOrderViewModel.insertWorkOrderHistory(history)
-                    mainViewModel.setTempWorkOrderHistoryInfo(null)
-                    mainViewModel.setWorkOrder(null)
-                    mainViewModel.setWorkOrderHistory(history)
-                    navController.navigate(Screen.WorkOrderHistoryTime.route) {
-                        popUpTo(Screen.WorkOrderHistoryAdd.route) { inclusive = true }
+            if (!isSaving) {
+                val wo = workOrderList.find { it.woNumber == number }
+                if (wo != null) {
+                    isSaving = true
+                    coroutineScope.launch {
+                        try {
+                            val historyId = nf.generateRandomIdAsLong()
+                            val history = WorkOrderHistory(
+                                historyId,
+                                wo.workOrderId,
+                                workDate.workDateId,
+                                reg.toDoubleOrNull() ?: 0.0,
+                                ot.toDoubleOrNull() ?: 0.0,
+                                dbl.toDoubleOrNull() ?: 0.0,
+                                nt,
+                                false,
+                                df.getCurrentUTCTimeAsString()
+                            )
+                            workOrderViewModel.insertWorkOrderHistory(history)
+                            mainViewModel.setTempWorkOrderHistoryInfo(null)
+                            mainViewModel.setWorkOrder(null)
+                            mainViewModel.setWorkOrderHistory(history)
+                            navController.navigate(Screen.WorkOrderHistoryTime.route) {
+                                popUpTo(Screen.WorkOrderHistoryAdd.route) { inclusive = true }
+                            }
+                        } catch (_: Exception) {
+                            isSaving = false
+                        }
                     }
                 }
             }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -93,6 +94,7 @@ fun WorkOrderHistoryUpdateScreen(
     onUpdateWorkPerformedDefinition: (WorkOrderHistoryWorkPerformedCombined) -> Unit,
     onUpdateMaterialInHistory: (MaterialInSequence) -> Unit,
     onUpdateMaterialDefinition: (MaterialInSequence) -> Unit,
+    isSaving: Boolean = false,
     minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
 ) {
     var showWorkPerformedDialog by remember { mutableStateOf(false) }
@@ -129,14 +131,22 @@ fun WorkOrderHistoryUpdateScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onDone,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                onClick = { if (!isSaving) onDone() },
+                containerColor = if (isSaving) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.primary,
+                contentColor = if (isSaving) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimary
             ) {
-                Icon(
-                    Icons.Default.Done,
-                    contentDescription = stringResource(id = R.string.done)
-                )
+                if (isSaving) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.padding(8.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(
+                        Icons.Default.Done,
+                        contentDescription = stringResource(id = R.string.done)
+                    )
+                }
             }
         }
     ) { paddingValues ->

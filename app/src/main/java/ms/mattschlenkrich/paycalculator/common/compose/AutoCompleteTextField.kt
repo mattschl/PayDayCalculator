@@ -108,6 +108,7 @@ fun <T> AutoCompleteTextField(
                 value = textFieldValue.text,
                 innerTextField = innerTextField,
                 interactionSource = interactionSource,
+                singleLine = false,
                 label = { Text(label) },
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
                 isError = isError,
@@ -135,8 +136,7 @@ fun <T> AutoCompleteTextField(
                         },
                         modifier = Modifier
                             .heightIn(
-                                min = StandardTextFieldDefaults.minHeight(),
-                                max = StandardTextFieldDefaults.maxHeight()
+                                min = StandardTextFieldDefaults.minHeight()
                             )
                             .fillMaxWidth(),
                         contentPadding = StandardTextFieldDefaults.dropdownItemPadding()

@@ -116,6 +116,8 @@ fun WorkOrderHistoryUpdateRoute(
 
     val isWorkOrderValid = workOrderList.any { it.woNumber == workOrderNumber }
 
+    var isSaving by remember { mutableStateOf(false) }
+
     WorkOrderHistoryUpdateScreen(
         workDateDisplay = df.getDisplayDate(workDate.wdDate),
         employerName = employer.employerName,
@@ -277,58 +279,65 @@ fun WorkOrderHistoryUpdateRoute(
             }
         },
         onDone = {
-            coroutineScope.launch {
-                if (workPerformed.isNotBlank()) {
-                    val wp = workPerformedViewModel.getOrCreateWorkPerformed(workPerformed)
-                    val a = areaViewModel.getOrCreateArea(area)
-                    if (wp != null) {
-                        workPerformedViewModel.insertWorkOrderHistoryWorkPerformed(
-                            WorkOrderHistoryWorkPerformed(
-                                nf.generateRandomIdAsLong(),
-                                history.woHistoryId,
-                                wp.workPerformedId,
-                                a?.areaId,
-                                workPerformedNote,
-                                workPerformedActualList.size + 1,
-                                false,
-                                df.getCurrentUTCTimeAsString()
-                            )
+            if (!isSaving) {
+                isSaving = true
+                coroutineScope.launch {
+                    try {
+                        if (workPerformed.isNotBlank()) {
+                            val wp = workPerformedViewModel.getOrCreateWorkPerformed(workPerformed)
+                            val a = areaViewModel.getOrCreateArea(area)
+                            if (wp != null) {
+                                workPerformedViewModel.insertWorkOrderHistoryWorkPerformed(
+                                    WorkOrderHistoryWorkPerformed(
+                                        nf.generateRandomIdAsLong(),
+                                        history.woHistoryId,
+                                        wp.workPerformedId,
+                                        a?.areaId,
+                                        workPerformedNote,
+                                        workPerformedActualList.size + 1,
+                                        false,
+                                        df.getCurrentUTCTimeAsString()
+                                    )
+                                )
+                            }
+                        }
+                        if (materialName.isNotBlank()) {
+                            val m = materialViewModel.getOrCreateMaterial(materialName)
+                            if (m != null) {
+                                materialViewModel.insertWorkOrderHistoryMaterial(
+                                    WorkOrderHistoryMaterial(
+                                        nf.generateRandomIdAsLong(),
+                                        history.woHistoryId,
+                                        m.materialId,
+                                        materialQty.toDoubleOrNull() ?: 1.0,
+                                        materialActualList.size + 1,
+                                        false,
+                                        df.getCurrentUTCTimeAsString()
+                                    )
+                                )
+                            }
+                        }
+                        val wo = workOrderViewModel.findWorkOrder(
+                            workOrderNumber,
+                            employer.employerId
                         )
+                        if (wo != null) {
+                            workOrderViewModel.updateWorkOrderHistory(
+                                history.copy(
+                                    woHistoryWorkOrderId = wo.workOrderId,
+                                    woHistoryRegHours = regHours.toDoubleOrNull() ?: 0.0,
+                                    woHistoryOtHours = otHours.toDoubleOrNull() ?: 0.0,
+                                    woHistoryDblOtHours = dblOtHours.toDoubleOrNull() ?: 0.0,
+                                    woHistoryNote = note,
+                                    woHistoryUpdateTime = df.getCurrentUTCTimeAsString()
+                                )
+                            )
+                        }
+                        navController.popBackStack()
+                    } catch (_: Exception) {
+                        isSaving = false
                     }
                 }
-                if (materialName.isNotBlank()) {
-                    val m = materialViewModel.getOrCreateMaterial(materialName)
-                    if (m != null) {
-                        materialViewModel.insertWorkOrderHistoryMaterial(
-                            WorkOrderHistoryMaterial(
-                                nf.generateRandomIdAsLong(),
-                                history.woHistoryId,
-                                m.materialId,
-                                materialQty.toDoubleOrNull() ?: 1.0,
-                                materialActualList.size + 1,
-                                false,
-                                df.getCurrentUTCTimeAsString()
-                            )
-                        )
-                    }
-                }
-                val wo = workOrderViewModel.findWorkOrder(
-                    workOrderNumber,
-                    employer.employerId
-                )
-                if (wo != null) {
-                    workOrderViewModel.updateWorkOrderHistory(
-                        history.copy(
-                            woHistoryWorkOrderId = wo.workOrderId,
-                            woHistoryRegHours = regHours.toDoubleOrNull() ?: 0.0,
-                            woHistoryOtHours = otHours.toDoubleOrNull() ?: 0.0,
-                            woHistoryDblOtHours = dblOtHours.toDoubleOrNull() ?: 0.0,
-                            woHistoryNote = note,
-                            woHistoryUpdateTime = df.getCurrentUTCTimeAsString()
-                        )
-                    )
-                }
-                navController.popBackStack()
             }
         },
         onUpdateWorkPerformed = { item ->
@@ -352,6 +361,7 @@ fun WorkOrderHistoryUpdateRoute(
                 }
             }
         },
+        isSaving = isSaving,
         minColumnWidth = minColumnWidth
     )
 }
