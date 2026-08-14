@@ -1,12 +1,24 @@
 package ms.mattschlenkrich.paycalculator.ui.workdate
 
 import android.app.DatePickerDialog
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,10 +27,12 @@ import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -27,6 +41,7 @@ import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWithDates
@@ -99,6 +114,7 @@ fun WorkDateUpdateRoute(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkDateUpdatePageContent(
     workDate: WorkDates,
@@ -276,162 +292,244 @@ fun WorkDateUpdatePageContent(
         }
     }
 
-    var showReplaceDateDialog by remember { mutableStateOf(false) }
-    var showHistoryOptionsDialog by remember {
+    var showReplaceDateDialog by rememberSaveable { mutableStateOf(false) }
+    var showHistoryOptionsDialog by rememberSaveable {
         mutableStateOf<WorkOrderHistoryWithDates?>(
             null
         )
     }
-    var showDeleteHistoryConfirmDialog by remember {
+    var showDeleteHistoryConfirmDialog by rememberSaveable {
         mutableStateOf<WorkOrderHistoryWithDates?>(
             null
         )
     }
-    var showExtraOptionsDialog by remember {
+    var showExtraOptionsDialog by rememberSaveable {
         mutableStateOf<WorkDateExtras?>(
             null
         )
     }
-    var showDeleteExtraConfirmDialog by remember {
+    var showDeleteExtraConfirmDialog by rememberSaveable {
         mutableStateOf<WorkDateExtras?>(
             null
         )
     }
 
     if (showReplaceDateDialog) {
-        AlertDialog(
+        ModalBottomSheet(
             onDismissRequest = { showReplaceDateDialog = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    coroutineScope.launch {
-                        onUpdateWorkDate(Screen.TimeSheet.route)
-                        showReplaceDateDialog = false
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+            ) {
+                Text(
+                    text = stringResource(R.string.this_date_is_already_used),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(stringResource(R.string.would_you_like_to_replace_the_old_information_for_this_work_date))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = { showReplaceDateDialog = false }) {
+                        Text(stringResource(R.string.no))
                     }
-                }) {
-                    Text(stringResource(R.string.yes))
+                    TextButton(onClick = {
+                        coroutineScope.launch {
+                            onUpdateWorkDate(Screen.TimeSheet.route)
+                            showReplaceDateDialog = false
+                        }
+                    }) {
+                        Text(stringResource(R.string.yes))
+                    }
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = { showReplaceDateDialog = false }) {
-                    Text(stringResource(R.string.no))
-                }
-            },
-            title = { Text(stringResource(R.string.this_date_is_already_used)) },
-            text = { Text(stringResource(R.string.would_you_like_to_replace_the_old_information_for_this_work_date)) }
-        )
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
     }
 
     if (showHistoryOptionsDialog != null) {
         val history = showHistoryOptionsDialog!!
-        AlertDialog(
+        ModalBottomSheet(
             onDismissRequest = { showHistoryOptionsDialog = null },
-            confirmButton = {
-                TextButton(onClick = {
-                    mainViewModel.setWorkOrderHistory(history.history)
-                    showHistoryOptionsDialog = null
-                    navController.navigate(Screen.WorkOrderHistoryUpdate.route)
-                }) {
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+            ) {
+                Text(
+                    text = stringResource(R.string.choose_option_for_wo) + history.workOrder.woNumber +
+                            stringResource(R.string._on_) + df.getDisplayDate(history.workDate.wdDate),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Button(
+                    onClick = {
+                        mainViewModel.setWorkOrderHistory(history.history)
+                        showHistoryOptionsDialog = null
+                        navController.navigate(Screen.WorkOrderHistoryUpdate.route)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text(stringResource(R.string.open_caps))
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showDeleteHistoryConfirmDialog = history
-                    showHistoryOptionsDialog = null
-                }) {
+                Button(
+                    onClick = {
+                        showDeleteHistoryConfirmDialog = history
+                        showHistoryOptionsDialog = null
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
                     Text(stringResource(R.string.delete))
                 }
-            },
-            title = {
-                Text(
-                    stringResource(R.string.choose_option_for_wo) + history.workOrder.woNumber +
-                            stringResource(R.string._on_) + df.getDisplayDate(history.workDate.wdDate)
-                )
+                Spacer(modifier = Modifier.height(32.dp))
             }
-        )
+        }
     }
 
     if (showDeleteHistoryConfirmDialog != null) {
         val history = showDeleteHistoryConfirmDialog!!
-        AlertDialog(
+        ModalBottomSheet(
             onDismissRequest = { showDeleteHistoryConfirmDialog = null },
-            confirmButton = {
-                TextButton(onClick = {
-                    coroutineScope.launch {
-                        workOrderViewModel.removeAllWorkPerformedFromWorkOderHistory(history.history.woHistoryId)
-                        workOrderViewModel.removeAllMaterialsFromWorkOrderHistory(history.history.woHistoryId)
-                        workOrderViewModel.deleteWorkOrderHistory(history.history.woHistoryId)
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+            ) {
+                Text(
+                    text = stringResource(R.string.are_you_sure_you_want_to_delete_wo) + history.workOrder.woNumber,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(stringResource(R.string.this_cannot_be_undone))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = { showDeleteHistoryConfirmDialog = null }) {
+                        Text(stringResource(R.string.cancel))
                     }
-                    showDeleteHistoryConfirmDialog = null
-                }) {
-                    Text(stringResource(R.string.delete))
+                    TextButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                workOrderViewModel.removeAllWorkPerformedFromWorkOderHistory(history.history.woHistoryId)
+                                workOrderViewModel.removeAllMaterialsFromWorkOrderHistory(history.history.woHistoryId)
+                                workOrderViewModel.deleteWorkOrderHistory(history.history.woHistoryId)
+                            }
+                            showDeleteHistoryConfirmDialog = null
+                        },
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text(stringResource(R.string.delete))
+                    }
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showDeleteHistoryConfirmDialog = null
-                }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            },
-            title = { Text(stringResource(R.string.are_you_sure_you_want_to_delete_wo) + history.workOrder.woNumber) },
-            text = { Text(stringResource(R.string.this_cannot_be_undone)) }
-        )
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
     }
 
     if (showExtraOptionsDialog != null) {
         val extra = showExtraOptionsDialog!!
-        AlertDialog(
+        ModalBottomSheet(
             onDismissRequest = { showExtraOptionsDialog = null },
-            confirmButton = {
-                TextButton(onClick = {
-                    mainViewModel.setWorkDateExtra(extra)
-                    mainViewModel.setWorkDateExtraList(displayExtras.toCollection(ArrayList()))
-                    showExtraOptionsDialog = null
-                    navController.navigate(Screen.WorkDateExtraUpdate.route)
-                }) {
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+            ) {
+                Text(
+                    text = stringResource(R.string.extra_options),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(extra.wdeName)
+                Button(
+                    onClick = {
+                        mainViewModel.setWorkDateExtra(extra)
+                        mainViewModel.setWorkDateExtraList(displayExtras.toCollection(ArrayList()))
+                        showExtraOptionsDialog = null
+                        navController.navigate(Screen.WorkDateExtraUpdate.route)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text(stringResource(R.string.modify))
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showDeleteExtraConfirmDialog = extra
-                    showExtraOptionsDialog = null
-                }) {
+                Button(
+                    onClick = {
+                        showDeleteExtraConfirmDialog = extra
+                        showExtraOptionsDialog = null
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
                     Text(stringResource(R.string.delete))
                 }
-            },
-            title = { Text(stringResource(R.string.extra_options)) },
-            text = { Text(extra.wdeName) }
-        )
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
     }
 
     if (showDeleteExtraConfirmDialog != null) {
         val extra = showDeleteExtraConfirmDialog!!
-        AlertDialog(
+        ModalBottomSheet(
             onDismissRequest = { showDeleteExtraConfirmDialog = null },
-            confirmButton = {
-                TextButton(onClick = {
-                    coroutineScope.launch {
-                        payDayViewModel.deleteWorkDateExtra(
-                            extra.wdeName, extra.wdeWorkDateId, df.getCurrentUTCTimeAsString()
-                        )
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+            ) {
+                Text(
+                    text = stringResource(R.string.are_you_sure_you_want_to_delete_) + extra.wdeName,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(stringResource(R.string.this_cannot_be_undone))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = { showDeleteExtraConfirmDialog = null }) {
+                        Text(stringResource(R.string.cancel))
                     }
-                    showDeleteExtraConfirmDialog = null
-                }) {
-                    Text(stringResource(R.string.delete))
+                    TextButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                payDayViewModel.deleteWorkDateExtra(
+                                    extra.wdeName,
+                                    extra.wdeWorkDateId,
+                                    df.getCurrentUTCTimeAsString()
+                                )
+                            }
+                            showDeleteExtraConfirmDialog = null
+                        },
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text(stringResource(R.string.delete))
+                    }
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showDeleteExtraConfirmDialog = null
-                }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            },
-            title = { Text(stringResource(R.string.are_you_sure_you_want_to_delete_) + extra.wdeName) },
-            text = { Text(stringResource(R.string.this_cannot_be_undone)) }
-        )
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
     }
 
     WorkDateUpdateScreen(

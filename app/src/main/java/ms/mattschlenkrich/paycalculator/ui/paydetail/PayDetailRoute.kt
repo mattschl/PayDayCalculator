@@ -1,16 +1,23 @@
 package ms.mattschlenkrich.paycalculator.ui.paydetail
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -18,9 +25,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -39,6 +48,7 @@ import ms.mattschlenkrich.paycalculator.ui.paydetail.composable.PayDetailPage
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import java.time.LocalDate
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PayDetailRoute(
     mainViewModel: MainViewModel,
@@ -71,44 +81,23 @@ fun PayDetailRoute(
         initialPage = 0
     ) { cutOffDates?.size ?: 0 }
 
-    val initialSelectionLoaded = remember { mutableStateOf(false) }
-    var showDeletePayPeriodConfirmDialog by remember { mutableStateOf(false) }
+    val initialSelectionLoaded = rememberSaveable { mutableStateOf(false) }
+    var showDeletePayPeriodConfirmDialog by rememberSaveable { mutableStateOf(false) }
 
     if (showDeletePayPeriodConfirmDialog) {
-        AlertDialog(
+        ModalBottomSheet(
             onDismissRequest = { showDeletePayPeriodConfirmDialog = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    coroutineScope.launch {
-                        val payPeriod = payDayViewModel.getPayPeriodSync(
-                            selectedCutOffDate,
-                            selectedEmployer!!.employerId
-                        )
-                        if (payPeriod != null) {
-                            payDayViewModel.updatePayPeriod(
-                                payPeriod.copy(
-                                    ppIsDeleted = true,
-                                    ppUpdateTime = df.getCurrentUTCTimeAsString()
-                                )
-                            )
-                            mainViewModel.setCutOffDate("")
-                            mainViewModel.setPayPeriod(null)
-                        }
-                    }
-                    showDeletePayPeriodConfirmDialog = false
-                }) {
-                    Text("Delete")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showDeletePayPeriodConfirmDialog = false
-                }) {
-                    Text("Cancel")
-                }
-            },
-            title = { Text("Delete Pay Period") },
-            text = {
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "Delete Pay Period",
+                    style = MaterialTheme.typography.titleLarge
+                )
                 Text(
                     "Are you sure you want to delete the pay period ending on ${
                         df.getDisplayDate(
@@ -116,8 +105,40 @@ fun PayDetailRoute(
                         )
                     }? This will not delete the work dates themselves, but they will no longer be grouped under this cutoff."
                 )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = {
+                        showDeletePayPeriodConfirmDialog = false
+                    }) {
+                        Text("Cancel")
+                    }
+                    TextButton(onClick = {
+                        coroutineScope.launch {
+                            val payPeriod = payDayViewModel.getPayPeriodSync(
+                                selectedCutOffDate,
+                                selectedEmployer!!.employerId
+                            )
+                            if (payPeriod != null) {
+                                payDayViewModel.updatePayPeriod(
+                                    payPeriod.copy(
+                                        ppIsDeleted = true,
+                                        ppUpdateTime = df.getCurrentUTCTimeAsString()
+                                    )
+                                )
+                                mainViewModel.setCutOffDate("")
+                                mainViewModel.setPayPeriod(null)
+                            }
+                        }
+                        showDeletePayPeriodConfirmDialog = false
+                    }) {
+                        Text("Delete")
+                    }
+                }
+                Spacer(modifier = Modifier.height(32.dp))
             }
-        )
+        }
     }
 
     // Initial selection from history

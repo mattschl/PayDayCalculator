@@ -7,6 +7,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -66,7 +67,7 @@ fun WorkOrderHistoryAddRoute(
     val selectedWo = mainViewModel.getWorkOrder()
     val finalWoNumber = selectedWo?.woNumber ?: initialWorkOrderNumber
 
-    var isSaving by remember { mutableStateOf(false) }
+    var isSaving by rememberSaveable { mutableStateOf(false) }
 
     WorkOrderHistoryAddScreen(
         workOrderList = workOrderList,

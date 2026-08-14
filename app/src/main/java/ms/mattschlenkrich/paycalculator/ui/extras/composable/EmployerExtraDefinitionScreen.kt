@@ -3,9 +3,11 @@ package ms.mattschlenkrich.paycalculator.ui.extras.composable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -13,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -21,20 +22,24 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
@@ -63,7 +68,7 @@ fun EmployerExtraDefinitionScreen(
     val forcedFixed = initialDefinitionFull?.extraType?.wetAppliesTo == 1
     val forcedPercent = initialDefinitionFull?.extraType?.wetAppliesTo == 4
 
-    var isFixed by remember {
+    var isFixed by rememberSaveable {
         mutableStateOf(
             if (forcedFixed) true
             else if (forcedPercent) false
@@ -71,7 +76,7 @@ fun EmployerExtraDefinitionScreen(
         )
     }
 
-    var valueString by remember {
+    var valueString by rememberSaveable {
         mutableStateOf(
             initialDefinitionFull?.let {
                 if (isFixed) nf.displayDollars(it.definition.weValue)
@@ -79,39 +84,53 @@ fun EmployerExtraDefinitionScreen(
             } ?: ""
         )
     }
-    var effectiveDate by remember {
+    var effectiveDate by rememberSaveable {
         mutableStateOf(
             initialDefinitionFull?.definition?.weEffectiveDate ?: df.getCurrentDateAsString()
         )
     }
 
-    var showDeleteConfirm by remember { mutableStateOf(false) }
+    var showDeleteConfirm by rememberSaveable { mutableStateOf(false) }
 
     if (showDeleteConfirm && initialDefinitionFull != null) {
-        AlertDialog(
+        ModalBottomSheet(
             onDismissRequest = { showDeleteConfirm = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    onDelete(initialDefinitionFull.definition)
-                    showDeleteConfirm = false
-                }) {
-                    Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteConfirm = false }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            },
-            title = { Text(stringResource(R.string.confirm_leave)) }, // Need a delete confirm string
-            text = {
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.confirm_leave), // Need a delete confirm string
+                    style = MaterialTheme.typography.titleLarge
+                )
                 Text(
                     stringResource(R.string.are_you_sure_you_want_to_delete_) +
                             " " + initialDefinitionFull.extraType.wetName +
                             " (" + initialDefinitionFull.definition.weEffectiveDate + ")?"
                 )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = { showDeleteConfirm = false }) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                    TextButton(onClick = {
+                        onDelete(initialDefinitionFull.definition)
+                        showDeleteConfirm = false
+                    }) {
+                        Text(
+                            stringResource(R.string.delete),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(32.dp))
             }
-        )
+        }
     }
 
     Scaffold(

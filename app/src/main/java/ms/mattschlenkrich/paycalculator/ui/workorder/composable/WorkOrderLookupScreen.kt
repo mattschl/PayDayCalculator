@@ -5,22 +5,25 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -166,29 +169,40 @@ fun WorkOrderLookupScreen(
     }
 
     showDialog?.let { workOrder ->
-        AlertDialog(
+        ModalBottomSheet(
             onDismissRequest = { showDialog = null },
-            title = { Text(stringResource(R.string.choose) + " " + workOrder.woNumber) },
-            text = {
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.choose) + " " + workOrder.woNumber,
+                    style = MaterialTheme.typography.titleLarge
+                )
                 Text(
                     stringResource(R.string.would_you_like_to_use_this_work_order) +
                             "\n\n" + workOrder.woDescription
                 )
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    onWorkOrderSelected(workOrder)
-                    showDialog = null
-                }) {
-                    Text(stringResource(R.string.yes))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = { showDialog = null }) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                    TextButton(onClick = {
+                        onWorkOrderSelected(workOrder)
+                        showDialog = null
+                    }) {
+                        Text(stringResource(R.string.yes))
+                    }
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDialog = null }) {
-                    Text(stringResource(R.string.cancel))
-                }
+                Spacer(modifier = Modifier.height(32.dp))
             }
-        )
+        }
     }
 }
 

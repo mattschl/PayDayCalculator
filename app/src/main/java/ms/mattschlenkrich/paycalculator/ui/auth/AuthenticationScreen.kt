@@ -2,22 +2,27 @@ package ms.mattschlenkrich.paycalculator.ui.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,70 +33,83 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.security.AuthResult
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AuthenticationScreen(
     onPasswordVerify: (String) -> AuthResult,
     onPasswordSet: (String) -> Unit,
     onAuthenticated: () -> Unit
 ) {
-    var passwordInput by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf<String?>(null) }
-    var showResetDialog by remember { mutableStateOf(false) }
-    var failedAttempts by remember { mutableIntStateOf(0) }
+    var passwordInput by rememberSaveable { mutableStateOf("") }
+    var error by rememberSaveable { mutableStateOf<String?>(null) }
+    var showResetDialog by rememberSaveable { mutableStateOf(false) }
+    var failedAttempts by rememberSaveable { mutableIntStateOf(0) }
 
     if (showResetDialog) {
-        var newPassword by remember { mutableStateOf("") }
-        var confirmPassword by remember { mutableStateOf("") }
-        var resetError by remember { mutableStateOf<String?>(null) }
+        var newPassword by rememberSaveable { mutableStateOf("") }
+        var confirmPassword by rememberSaveable { mutableStateOf("") }
+        var resetError by rememberSaveable { mutableStateOf<String?>(null) }
 
-        AlertDialog(
-            onDismissRequest = { /* Force reset */ },
-            title = { Text("Reset Your Password") },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING / 2)) {
+        ModalBottomSheet(
+            onDismissRequest = { /* Force reset - maybe don't allow dismiss? */ },
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING / 2)
+            ) {
+                Text(
+                    text = "Reset Your Password",
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(
+                    "You have used the master backup password. Please set a new custom password to continue.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                OutlinedTextField(
+                    value = newPassword,
+                    onValueChange = { newPassword = it },
+                    label = { Text("New Password") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    label = { Text("Confirm Password") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                if (resetError != null) {
                     Text(
-                        "You have used the master backup password. Please set a new custom password to continue.",
-                        style = MaterialTheme.typography.bodyMedium
+                        text = resetError!!,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
                     )
-                    OutlinedTextField(
-                        value = newPassword,
-                        onValueChange = { newPassword = it },
-                        label = { Text("New Password") },
-                        visualTransformation = PasswordVisualTransformation(),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = confirmPassword,
-                        onValueChange = { confirmPassword = it },
-                        label = { Text("Confirm Password") },
-                        visualTransformation = PasswordVisualTransformation(),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    if (resetError != null) {
-                        Text(
-                            text = resetError!!,
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodySmall
-                        )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = {
+                        if (newPassword.isBlank()) {
+                            resetError = "Password cannot be empty"
+                        } else if (newPassword != confirmPassword) {
+                            resetError = "Passwords do not match"
+                        } else {
+                            onPasswordSet(newPassword)
+                            onAuthenticated()
+                            showResetDialog = false
+                        }
+                    }) {
+                        Text("Save")
                     }
                 }
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    if (newPassword.isBlank()) {
-                        resetError = "Password cannot be empty"
-                    } else if (newPassword != confirmPassword) {
-                        resetError = "Passwords do not match"
-                    } else {
-                        onPasswordSet(newPassword)
-                        onAuthenticated()
-                        showResetDialog = false
-                    }
-                }) {
-                    Text("Save")
-                }
+                Spacer(modifier = Modifier.height(32.dp))
             }
-        )
+        }
     }
 
     Surface(

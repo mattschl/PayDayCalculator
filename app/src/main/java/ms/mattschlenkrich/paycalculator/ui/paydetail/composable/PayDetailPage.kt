@@ -1,8 +1,18 @@
 package ms.mattschlenkrich.paycalculator.ui.paydetail.composable
 
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -11,7 +21,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -32,6 +44,7 @@ import ms.mattschlenkrich.paycalculator.ui.paydetail.PaySummaryData
 import ms.mattschlenkrich.paycalculator.ui.paydetail.insertOrUpdateExtraOnChange
 import java.time.LocalDate
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PayDetailPage(
     employer: Employers,
@@ -198,38 +211,51 @@ fun PayDetailPage(
 
     if (showOverrideDialog != null) {
         val extra = showOverrideDialog!!
-        AlertDialog(
-            onDismissRequest = { },
-            title = { Text(stringResource(R.string.create_override)) },
-            text = { Text(stringResource(R.string.this_is_a_default_extra_override)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    coroutineScope.launch {
-                        val payPeriod = payDayViewModel.getPayPeriodSync(
-                            cutoffDate,
-                            employer.employerId
-                        )
-                        if (payPeriod != null) {
-                            insertOrUpdateExtraOnChange(
-                                extra, false, payPeriod.payPeriodId,
-                                payDayViewModel, nf, df
+        ModalBottomSheet(
+            onDismissRequest = { showOverrideDialog = null },
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.create_override),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(stringResource(R.string.this_is_a_default_extra_override))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = { showOverrideDialog = null }) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                    TextButton(onClick = {
+                        coroutineScope.launch {
+                            val payPeriod = payDayViewModel.getPayPeriodSync(
+                                cutoffDate,
+                                employer.employerId
                             )
-                            // The helper sets the new extra in extra.payPeriodExtra
-                            if (extra.payPeriodExtra != null) {
-                                mainViewModel.setPayPeriodExtra(extra.payPeriodExtra!!)
-                                navController.navigate(Screen.PayPeriodExtraUpdate.route)
+                            if (payPeriod != null) {
+                                insertOrUpdateExtraOnChange(
+                                    extra, false, payPeriod.payPeriodId,
+                                    payDayViewModel, nf, df
+                                )
+                                // The helper sets the new extra in extra.payPeriodExtra
+                                if (extra.payPeriodExtra != null) {
+                                    mainViewModel.setPayPeriodExtra(extra.payPeriodExtra!!)
+                                    navController.navigate(Screen.PayPeriodExtraUpdate.route)
+                                }
                             }
                         }
+                    }) {
+                        Text(stringResource(R.string.yes))
                     }
-                }) {
-                    Text(stringResource(R.string.yes))
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = { showOverrideDialog = null }) {
-                    Text(stringResource(R.string.cancel))
-                }
+                Spacer(modifier = Modifier.height(32.dp))
             }
-        )
+        }
     }
 }

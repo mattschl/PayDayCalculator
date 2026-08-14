@@ -7,6 +7,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -54,9 +55,9 @@ fun MaterialMergeRoute(
     val childList by materialViewModel.getMaterialAndChildList(materialId)
         .observeAsState(emptyList())
 
-    var parentDescription by remember { mutableStateOf("") }
-    var childDescription by remember { mutableStateOf("") }
-    var selectedChild by remember {
+    var parentDescription by rememberSaveable { mutableStateOf("") }
+    var childDescription by rememberSaveable { mutableStateOf("") }
+    var selectedChild by rememberSaveable {
         mutableStateOf<Material?>(
             null
         )

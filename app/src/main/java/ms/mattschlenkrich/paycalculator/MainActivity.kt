@@ -95,8 +95,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        // Ensure we start with a fresh database instance
-        PayDatabase.resetInstance()
         setupViewModels()
 
         setContent {

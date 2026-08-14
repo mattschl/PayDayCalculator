@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.ui.extras.composable
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,24 +12,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
@@ -61,27 +65,27 @@ fun PayPeriodExtraScreen(
     val nf = NumberFunctions()
     val df = DateFunctions()
 
-    var name by remember { mutableStateOf(initialExtra?.ppeName ?: "") }
-    var appliesTo by remember {
+    var name by rememberSaveable { mutableStateOf(initialExtra?.ppeName ?: "") }
+    var appliesTo by rememberSaveable {
         mutableIntStateOf(
             initialExtra?.ppeAppliesTo ?: ExtraAttachToFrequencies.PER_PAY.value
         )
     }
-    var valueString by remember {
+    var valueString by rememberSaveable {
         mutableStateOf(
             if (initialExtra == null) "0.00"
             else if (initialExtra.ppeIsFixed) nf.displayDollars(initialExtra.ppeValue)
             else nf.getPercentStringFromDouble(initialExtra.ppeValue)
         )
     }
-    var isFixed by remember { mutableStateOf(initialExtra?.ppeIsFixed ?: true) }
-    var isCredit by remember {
+    var isFixed by rememberSaveable { mutableStateOf(initialExtra?.ppeIsFixed ?: true) }
+    var isCredit by rememberSaveable {
         mutableStateOf(
             initialExtra?.ppeIsCredit ?: initialIsCredit
         )
     }
 
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var showDuplicateDialog by remember { mutableStateOf<Pair<String, String>?>(null) }
 
     val nameExistsError = stringResource(R.string.this_extra_name_has_already_been_used)
@@ -89,35 +93,48 @@ fun PayPeriodExtraScreen(
     val valueMissingError = stringResource(R.string.this_extra_must_have_a_value)
 
     if (showDuplicateDialog != null) {
-        AlertDialog(
+        ModalBottomSheet(
             onDismissRequest = { showDuplicateDialog = null },
-            title = { Text(stringResource(R.string.confirm_adding_duplicate_extra__) + showDuplicateDialog!!.first) },
-            text = { Text(showDuplicateDialog!!.second) },
-            confirmButton = {
-                TextButton(onClick = {
-                    performSave(
-                        nf,
-                        df,
-                        name,
-                        appliesTo,
-                        valueString,
-                        isFixed,
-                        isCredit,
-                        initialExtra,
-                        curPayPeriod,
-                        onUpdate
-                    )
-                    showDuplicateDialog = null
-                }) {
-                    Text(stringResource(R.string.yes))
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.confirm_adding_duplicate_extra__) + showDuplicateDialog!!.first,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(showDuplicateDialog!!.second)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = { showDuplicateDialog = null }) {
+                        Text(stringResource(R.string.no))
+                    }
+                    TextButton(onClick = {
+                        performSave(
+                            nf,
+                            df,
+                            name,
+                            appliesTo,
+                            valueString,
+                            isFixed,
+                            isCredit,
+                            initialExtra,
+                            curPayPeriod,
+                            onUpdate
+                        )
+                        showDuplicateDialog = null
+                    }) {
+                        Text(stringResource(R.string.yes))
+                    }
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDuplicateDialog = null }) {
-                    Text(stringResource(R.string.no))
-                }
+                Spacer(modifier = Modifier.height(32.dp))
             }
-        )
+        }
     }
 
     val title = (if (initialExtra == null) stringResource(R.string.add_an_extra_to_this_pay_period)

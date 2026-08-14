@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
@@ -34,9 +35,9 @@ fun EmployerPayRateUpdateRoute(
     val payRate = mainViewModel.getPayRate() ?: return
 //    val employer = mainViewModel.getEmployer() ?: return
 
-    var effectiveDate by remember { mutableStateOf(payRate.eprEffectiveDate) }
-    var wage by remember { mutableStateOf(nf.displayDollars(payRate.eprPayRate)) }
-    var selectedFrequency by remember {
+    var effectiveDate by rememberSaveable { mutableStateOf(payRate.eprEffectiveDate) }
+    var wage by rememberSaveable { mutableStateOf(nf.displayDollars(payRate.eprPayRate)) }
+    var selectedFrequency by rememberSaveable {
         mutableStateOf(PayRateBasedOn.entries[payRate.eprPerPeriod])
     }
 

@@ -7,6 +7,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -37,25 +38,25 @@ fun WorkOrderAddRoute(
     val employers by employerViewModel.getEmployers().observeAsState(emptyList())
     val currentEmployer = mainViewModel.getEmployer()
 
-    var selectedEmployer by remember {
+    var selectedEmployer by rememberSaveable {
         mutableStateOf(
             currentEmployer
         )
     }
     val initialWoNumber = mainViewModel.getWorkOrderNumber() ?: ""
-    var woNumber by remember { mutableStateOf(initialWoNumber) }
-    var address by remember { mutableStateOf("") }
+    var woNumber by rememberSaveable { mutableStateOf(initialWoNumber) }
+    var address by rememberSaveable { mutableStateOf("") }
     val addressSuggestions by if (selectedEmployer != null) {
         workOrderViewModel.getUniqueAddresses(selectedEmployer!!.employerId)
             .observeAsState(emptyList())
     } else {
         remember { mutableStateOf(emptyList()) }
     }
-    var description by remember { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
 
-    var woNumberError by remember { mutableStateOf(false) }
-    var addressError by remember { mutableStateOf(false) }
-    var descriptionError by remember { mutableStateOf(false) }
+    var woNumberError by rememberSaveable { mutableStateOf(false) }
+    var addressError by rememberSaveable { mutableStateOf(false) }
+    var descriptionError by rememberSaveable { mutableStateOf(false) }
 
     val context = LocalContext.current
     val errorLabel = stringResource(R.string.error_)

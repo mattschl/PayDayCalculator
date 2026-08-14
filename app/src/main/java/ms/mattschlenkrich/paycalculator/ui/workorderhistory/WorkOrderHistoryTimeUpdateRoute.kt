@@ -1,6 +1,19 @@
 package ms.mattschlenkrich.paycalculator.ui.workorderhistory
 
 import android.app.TimePickerDialog
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -11,8 +24,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -28,6 +43,7 @@ import ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable.WorkOrder
 import java.util.Calendar
 import kotlin.time.Duration.Companion.milliseconds
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkOrderHistoryTimeUpdateRoute(
     mainViewModel: MainViewModel,
@@ -120,28 +136,41 @@ fun WorkOrderHistoryTimeUpdateRoute(
 
     if (showOverlapConfirmDialog != null) {
         val entry = showOverlapConfirmDialog!!
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { },
-            title = { androidx.compose.material3.Text(stringResource(R.string.save)) },
-            text = { androidx.compose.material3.Text(stringResource(R.string.confirm_overlap)) },
-            confirmButton = {
-                androidx.compose.material3.TextButton(onClick = {
-                    coroutineScope.launch {
-                        workOrderViewModel.updateWorkOrderHistoryTimeWorked(entry)
-                        navController.popBackStack()
+        ModalBottomSheet(
+            onDismissRequest = { showOverlapConfirmDialog = null },
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.save),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(stringResource(R.string.confirm_overlap))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = {
+                        showOverlapConfirmDialog = null
+                    }) {
+                        Text(stringResource(R.string.cancel))
                     }
-                }) {
-                    androidx.compose.material3.Text(stringResource(R.string.save))
+                    TextButton(onClick = {
+                        coroutineScope.launch {
+                            workOrderViewModel.updateWorkOrderHistoryTimeWorked(entry)
+                            navController.popBackStack()
+                        }
+                    }) {
+                        Text(stringResource(R.string.save))
+                    }
                 }
-            },
-            dismissButton = {
-                androidx.compose.material3.TextButton(onClick = {
-                    showOverlapConfirmDialog = null
-                }) {
-                    androidx.compose.material3.Text(stringResource(R.string.cancel))
-                }
+                Spacer(modifier = Modifier.height(32.dp))
             }
-        )
+        }
     }
 
     WorkOrderHistoryTimeUpdateScreen(

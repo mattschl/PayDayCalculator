@@ -1,14 +1,16 @@
 package ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -17,13 +19,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,13 +58,13 @@ fun WorkOrderHistoryAddScreen(
     displayDate: String,
     displayEmployer: String
 ) {
-    var workOrderNumber by remember { mutableStateOf(initialWorkOrderNumber) }
-    var regHours by remember { mutableStateOf(initialRegHours) }
-    var otHours by remember { mutableStateOf(initialOtHours) }
-    var dblOtHours by remember { mutableStateOf(initialDblOtHours) }
-    var note by remember { mutableStateOf(initialNote) }
+    var workOrderNumber by rememberSaveable { mutableStateOf(initialWorkOrderNumber) }
+    var regHours by rememberSaveable { mutableStateOf(initialRegHours) }
+    var otHours by rememberSaveable { mutableStateOf(initialOtHours) }
+    var dblOtHours by rememberSaveable { mutableStateOf(initialDblOtHours) }
+    var note by rememberSaveable { mutableStateOf(initialNote) }
 
-    var showCreateDialog by remember { mutableStateOf(false) }
+    var showCreateDialog by rememberSaveable { mutableStateOf(false) }
 
     val currentWorkOrder = workOrderList.find { it.woNumber == workOrderNumber }
     val isWorkOrderValid = currentWorkOrder != null
@@ -264,23 +268,43 @@ fun WorkOrderHistoryAddScreen(
     }
 
     if (showCreateDialog) {
-        AlertDialog(
+        ModalBottomSheet(
             onDismissRequest = { showCreateDialog = false },
-            title = { Text(stringResource(R.string.create_work_order_) + " $workOrderNumber?") },
-            text = { Text(stringResource(R.string.this_work_order_does_not_exist)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    showCreateDialog = false
-                    onWorkOrderAddEdit(workOrderNumber, regHours, otHours, dblOtHours, note, false)
-                }) {
-                    Text(stringResource(R.string.yes))
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.create_work_order_) + " $workOrderNumber?",
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(stringResource(R.string.this_work_order_does_not_exist))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = { showCreateDialog = false }) {
+                        Text(stringResource(R.string.no))
+                    }
+                    TextButton(onClick = {
+                        showCreateDialog = false
+                        onWorkOrderAddEdit(
+                            workOrderNumber,
+                            regHours,
+                            otHours,
+                            dblOtHours,
+                            note,
+                            false
+                        )
+                    }) {
+                        Text(stringResource(R.string.yes))
+                    }
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = { showCreateDialog = false }) {
-                    Text(stringResource(R.string.no))
-                }
+                Spacer(modifier = Modifier.height(32.dp))
             }
-        )
+        }
     }
 }

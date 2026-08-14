@@ -5,9 +5,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -15,7 +17,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -25,9 +26,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -75,10 +78,19 @@ fun JobSpecMergeScreen(
     }
 
     if (showMergeOptionsDialog) {
-        AlertDialog(
+        ModalBottomSheet(
             onDismissRequest = { showMergeOptionsDialog = false },
-            title = { Text(stringResource(R.string.choose_merge_option)) },
-            text = {
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.choose_merge_option),
+                    style = MaterialTheme.typography.titleLarge
+                )
                 Column(
                     verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
                 ) {
@@ -101,16 +113,19 @@ fun JobSpecMergeScreen(
                         Text(stringResource(R.string.merge_replace_all))
                     }
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showMergeOptionsDialog = false
-                }) {
-                    Text(stringResource(R.string.cancel))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = {
+                        showMergeOptionsDialog = false
+                    }) {
+                        Text(stringResource(R.string.cancel))
+                    }
                 }
-            },
-            confirmButton = {}
-        )
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
     }
 
     Scaffold(

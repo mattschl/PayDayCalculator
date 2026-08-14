@@ -7,6 +7,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
@@ -45,7 +46,7 @@ fun WorkOrderHistoryMaterialUpdateRoute(
         .observeAsState()
     val materialSuggestions by materialViewModel.getMaterialsList().observeAsState(emptyList())
 
-    var materialHistory by remember {
+    var materialHistory by rememberSaveable {
         mutableStateOf<WorkOrderHistoryMaterialCombined?>(
             null
         )
@@ -56,8 +57,8 @@ fun WorkOrderHistoryMaterialUpdateRoute(
 
     if (materialHistory == null || historyWithDates == null) return
 
-    var mName by remember { mutableStateOf(materialHistory!!.material.mName) }
-    var qty by remember { mutableStateOf(nf.displayNumberFromDouble(materialHistory!!.workOrderHistoryMaterial.wohmQuantity)) }
+    var mName by rememberSaveable { mutableStateOf(materialHistory!!.material.mName) }
+    var qty by rememberSaveable { mutableStateOf(nf.displayNumberFromDouble(materialHistory!!.workOrderHistoryMaterial.wohmQuantity)) }
 
     WorkOrderHistoryMaterialUpdateScreen(
         info = stringResource(R.string.edit_material_used_for_wo_) +

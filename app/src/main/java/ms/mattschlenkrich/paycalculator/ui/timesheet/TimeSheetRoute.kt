@@ -1,20 +1,27 @@
 package ms.mattschlenkrich.paycalculator.ui.timesheet
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -47,6 +55,7 @@ import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.timesheet.composable.TimeSheetPage
 import java.time.LocalDate
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimeSheetRoute(
     mainViewModel: MainViewModel,
@@ -178,40 +187,19 @@ fun TimeSheetRoute(
     var showDeletePayPeriodConfirmDialog by rememberSaveable { mutableStateOf(false) }
 
     if (showDeletePayPeriodConfirmDialog) {
-        AlertDialog(
+        ModalBottomSheet(
             onDismissRequest = { showDeletePayPeriodConfirmDialog = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    coroutineScope.launch {
-                        val payPeriod = payDayViewModel.getPayPeriodSync(
-                            selectedCutOffDate,
-                            selectedEmployer!!.employerId
-                        )
-                        if (payPeriod != null) {
-                            payDayViewModel.updatePayPeriod(
-                                payPeriod.copy(
-                                    ppIsDeleted = true,
-                                    ppUpdateTime = df.getCurrentUTCTimeAsString()
-                                )
-                            )
-                            mainViewModel.setCutOffDate("")
-                            mainViewModel.setPayPeriod(null)
-                        }
-                    }
-                    showDeletePayPeriodConfirmDialog = false
-                }) {
-                    Text(stringResource(R.string.delete))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showDeletePayPeriodConfirmDialog = false
-                }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            },
-            title = { Text("Delete Pay Period") },
-            text = {
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "Delete Pay Period",
+                    style = MaterialTheme.typography.titleLarge
+                )
                 Text(
                     "Are you sure you want to delete the pay period ending on ${
                         df.getDisplayDate(
@@ -219,76 +207,126 @@ fun TimeSheetRoute(
                         )
                     }? This will not delete the work dates themselves, but they will no longer be grouped under this cutoff."
                 )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = {
+                        showDeletePayPeriodConfirmDialog = false
+                    }) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                    TextButton(onClick = {
+                        coroutineScope.launch {
+                            val payPeriod = payDayViewModel.getPayPeriodSync(
+                                selectedCutOffDate,
+                                selectedEmployer!!.employerId
+                            )
+                            if (payPeriod != null) {
+                                payDayViewModel.updatePayPeriod(
+                                    payPeriod.copy(
+                                        ppIsDeleted = true,
+                                        ppUpdateTime = df.getCurrentUTCTimeAsString()
+                                    )
+                                )
+                                mainViewModel.setCutOffDate("")
+                                mainViewModel.setPayPeriod(null)
+                            }
+                        }
+                        showDeletePayPeriodConfirmDialog = false
+                    }) {
+                        Text(stringResource(R.string.delete))
+                    }
+                }
+                Spacer(modifier = Modifier.height(32.dp))
             }
-        )
+        }
     }
 
     if (showWorkDateOptionsDialog != null) {
         val workDate = showWorkDateOptionsDialog!!
-        AlertDialog(
+        ModalBottomSheet(
             onDismissRequest = { showWorkDateOptionsDialog = null },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        mainViewModel.setWorkDateObject(workDate)
-                        showWorkDateOptionsDialog = null
-                        navController.navigate(Screen.WorkDateUpdate.route)
-                    }
-                ) {
-                    Text(stringResource(R.string.open_caps))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showDeleteWorkDateConfirmDialog = workDate
-                    showWorkDateOptionsDialog = null
-                }) {
-                    Text(stringResource(R.string.delete))
-                }
-            },
-            title = {
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
                 Text(
-                    stringResource(R.string.choose_option_for) + df.getDisplayDate(workDate.wdDate)
+                    text = stringResource(R.string.choose_option_for) + df.getDisplayDate(workDate.wdDate),
+                    style = MaterialTheme.typography.titleLarge
                 )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = {
+                        showDeleteWorkDateConfirmDialog = workDate
+                        showWorkDateOptionsDialog = null
+                    }) {
+                        Text(stringResource(R.string.delete))
+                    }
+                    TextButton(
+                        onClick = {
+                            mainViewModel.setWorkDateObject(workDate)
+                            showWorkDateOptionsDialog = null
+                            navController.navigate(Screen.WorkDateUpdate.route)
+                        }
+                    ) {
+                        Text(stringResource(R.string.open_caps))
+                    }
+                }
+                Spacer(modifier = Modifier.height(32.dp))
             }
-        )
+        }
     }
 
     if (showDeleteWorkDateConfirmDialog != null) {
         val workDate = showDeleteWorkDateConfirmDialog!!
-        AlertDialog(
+        ModalBottomSheet(
             onDismissRequest = { showDeleteWorkDateConfirmDialog = null },
-            confirmButton = {
-                TextButton(onClick = {
-                    coroutineScope.launch {
-                        payDayViewModel.updateWorkDate(
-                            workDate.copy(
-                                wdIsDeleted = true,
-                                wdUpdateTime = df.getCurrentUTCTimeAsString()
-                            )
-                        )
-                    }
-                    showDeleteWorkDateConfirmDialog = null
-                }) {
-                    Text(stringResource(R.string.delete))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showDeleteWorkDateConfirmDialog = null
-                }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            },
-            title = {
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
                 Text(
-                    stringResource(R.string.are_you_sure_you_want_to_delete) + df.getDisplayDate(
+                    text = stringResource(R.string.are_you_sure_you_want_to_delete) + df.getDisplayDate(
                         workDate.wdDate
-                    )
+                    ),
+                    style = MaterialTheme.typography.titleLarge
                 )
-            },
-            text = { Text(stringResource(R.string.this_cannot_be_undone)) }
-        )
+                Text(stringResource(R.string.this_cannot_be_undone))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = {
+                        showDeleteWorkDateConfirmDialog = null
+                    }) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                    TextButton(onClick = {
+                        coroutineScope.launch {
+                            payDayViewModel.updateWorkDate(
+                                workDate.copy(
+                                    wdIsDeleted = true,
+                                    wdUpdateTime = df.getCurrentUTCTimeAsString()
+                                )
+                            )
+                        }
+                        showDeleteWorkDateConfirmDialog = null
+                    }) {
+                        Text(stringResource(R.string.delete))
+                    }
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
     }
 
     Column(

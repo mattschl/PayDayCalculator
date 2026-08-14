@@ -22,7 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,23 +55,23 @@ fun WorkDateExtraScreen(
     val nf = NumberFunctions()
     val df = DateFunctions()
 
-    var name by remember { mutableStateOf(initialExtra?.wdeName ?: "") }
-    var appliesTo by remember {
+    var name by rememberSaveable { mutableStateOf(initialExtra?.wdeName ?: "") }
+    var appliesTo by rememberSaveable {
         mutableIntStateOf(
             initialExtra?.wdeAppliesTo ?: ExtraAppliesToFrequencies.HOURLY.value
         )
     }
-    var valueString by remember {
+    var valueString by rememberSaveable {
         mutableStateOf(
             if (initialExtra == null) "0.00"
             else if (initialExtra.wdeIsFixed) nf.displayDollars(initialExtra.wdeValue)
             else nf.getPercentStringFromDouble(initialExtra.wdeValue)
         )
     }
-    var isFixed by remember { mutableStateOf(initialExtra?.wdeIsFixed ?: true) }
-    var isCredit by remember { mutableStateOf(initialExtra?.wdeIsCredit ?: false) }
+    var isFixed by rememberSaveable { mutableStateOf(initialExtra?.wdeIsFixed ?: true) }
+    var isCredit by rememberSaveable { mutableStateOf(initialExtra?.wdeIsCredit ?: false) }
 
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
 
     val nameExistsError = stringResource(R.string.this_extra_name_has_already_been_used)
     val nameMissingError = stringResource(R.string.the_extra_must_have_a_name)

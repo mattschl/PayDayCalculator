@@ -9,6 +9,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -43,13 +44,13 @@ fun EmployerUpdateRoute(
 
     val currentEmployer = mainViewModel.getEmployer()
     if (currentEmployer != null) {
-        var name by remember { mutableStateOf(currentEmployer.employerName) }
-        var frequency by remember { mutableStateOf(currentEmployer.payFrequency) }
-        var startDate by remember { mutableStateOf(currentEmployer.startDate) }
-        var dayOfWeek by remember { mutableStateOf(currentEmployer.dayOfWeek) }
-        var daysBefore by remember { mutableStateOf(currentEmployer.cutoffDaysBefore.toString()) }
-        var midMonthDate by remember { mutableStateOf(currentEmployer.midMonthlyDate.toString()) }
-        var mainMonthDate by remember { mutableStateOf(currentEmployer.mainMonthlyDate.toString()) }
+        var name by rememberSaveable { mutableStateOf(currentEmployer.employerName) }
+        var frequency by rememberSaveable { mutableStateOf(currentEmployer.payFrequency) }
+        var startDate by rememberSaveable { mutableStateOf(currentEmployer.startDate) }
+        var dayOfWeek by rememberSaveable { mutableStateOf(currentEmployer.dayOfWeek) }
+        var daysBefore by rememberSaveable { mutableStateOf(currentEmployer.cutoffDaysBefore.toString()) }
+        var midMonthDate by rememberSaveable { mutableStateOf(currentEmployer.midMonthlyDate.toString()) }
+        var mainMonthDate by rememberSaveable { mutableStateOf(currentEmployer.mainMonthlyDate.toString()) }
 
         val taxes by workTaxViewModel.getEmployerTaxTypes(currentEmployer.employerId)
             .observeAsState(emptyList())

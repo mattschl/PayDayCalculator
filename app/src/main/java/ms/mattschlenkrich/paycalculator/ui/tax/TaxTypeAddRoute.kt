@@ -1,9 +1,19 @@
 package ms.mattschlenkrich.paycalculator.ui.tax
 
 import android.widget.Toast
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -12,8 +22,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -26,6 +38,7 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.ui.tax.composable.TaxTypeScreen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaxTypeAddRoute(
     mainViewModel: MainViewModel,
@@ -52,31 +65,44 @@ fun TaxTypeAddRoute(
     val employers by employerViewModel.getEmployers().observeAsState(emptyList())
 
     if (showNextStepDialog && savedTaxType != null) {
-        AlertDialog(
+        ModalBottomSheet(
             onDismissRequest = { /* Prevent dismiss */ },
-            title = { Text(stringResource(R.string.choose_next_steps_for) + savedTaxType!!.taxType) },
-            text = { Text(stringResource(R.string.the_tax_type_has_been_added_but_there_are_no_rules_yet_)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    mainViewModel.setTaxType(savedTaxType)
-                    mainViewModel.setTaxTypeString(savedTaxType!!.taxType)
-                    navController.navigate(Screen.TaxRuleAdd.route) {
-                        popUpTo(Screen.TaxTypeAdd.route) { inclusive = true }
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.choose_next_steps_for) + savedTaxType!!.taxType,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(stringResource(R.string.the_tax_type_has_been_added_but_there_are_no_rules_yet_))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = {
+                        mainViewModel.setTaxType(savedTaxType)
+                        mainViewModel.setTaxTypeString(savedTaxType!!.taxType)
+                        navController.popBackStack()
+                    }) {
+                        Text(stringResource(R.string.no))
                     }
-                }) {
-                    Text(stringResource(R.string.yes))
+                    TextButton(onClick = {
+                        mainViewModel.setTaxType(savedTaxType)
+                        mainViewModel.setTaxTypeString(savedTaxType!!.taxType)
+                        navController.navigate(Screen.TaxRuleAdd.route) {
+                            popUpTo(Screen.TaxTypeAdd.route) { inclusive = true }
+                        }
+                    }) {
+                        Text(stringResource(R.string.yes))
+                    }
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    mainViewModel.setTaxType(savedTaxType)
-                    mainViewModel.setTaxTypeString(savedTaxType!!.taxType)
-                    navController.popBackStack()
-                }) {
-                    Text(stringResource(R.string.no))
-                }
+                Spacer(modifier = Modifier.height(32.dp))
             }
-        )
+        }
     }
 
     TaxTypeScreen(

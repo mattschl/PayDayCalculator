@@ -1,9 +1,19 @@
 package ms.mattschlenkrich.paycalculator.ui.workdate
 
 import android.app.DatePickerDialog
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -12,9 +22,12 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -31,6 +44,7 @@ import ms.mattschlenkrich.paycalculator.ui.workdate.composable.WorkDateAddScreen
 import java.time.LocalDate
 import kotlin.math.round
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkDateAddRoute(
     mainViewModel: MainViewModel,
@@ -50,12 +64,12 @@ fun WorkDateAddRoute(
         return
     }
 
-    var curDateString by remember { mutableStateOf("") }
-    var regHours by remember { mutableStateOf("") }
-    var otHours by remember { mutableStateOf("") }
-    var dblOtHours by remember { mutableStateOf("") }
-    var statHours by remember { mutableStateOf("") }
-    var note by remember { mutableStateOf("") }
+    var curDateString by rememberSaveable { mutableStateOf("") }
+    var regHours by rememberSaveable { mutableStateOf("") }
+    var otHours by rememberSaveable { mutableStateOf("") }
+    var dblOtHours by rememberSaveable { mutableStateOf("") }
+    var statHours by rememberSaveable { mutableStateOf("") }
+    var note by rememberSaveable { mutableStateOf("") }
 
     val usedWorkDatesList by payDayViewModel.getWorkDateListUsed(
         payPeriod.ppEmployerId, payPeriod.ppCutoffDate
@@ -173,41 +187,54 @@ fun WorkDateAddRoute(
         }
     }
 
-    var showDateUsedDialog by remember { mutableStateOf(false) }
-    var existingWorkDate by remember { mutableStateOf<WorkDates?>(null) }
+    var showDateUsedDialog by rememberSaveable { mutableStateOf(false) }
+    var existingWorkDate by rememberSaveable { mutableStateOf<WorkDates?>(null) }
 
     if (showDateUsedDialog && existingWorkDate != null) {
-        AlertDialog(
+        ModalBottomSheet(
             onDismissRequest = { showDateUsedDialog = false },
-            title = { Text(stringResource(R.string.this_date_is_already_used)) },
-            text = { Text(stringResource(R.string.would_you_like_to_replace_the_old_information_for_this_work_date)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    showDateUsedDialog = false
-                    coroutineScope.launch {
-                        payDayViewModel.updateWorkDate(
-                            existingWorkDate!!.copy(
-                                wdRegHours = regHours.toDoubleOrNull() ?: 0.0,
-                                wdOtHours = otHours.toDoubleOrNull() ?: 0.0,
-                                wdDblOtHours = dblOtHours.toDoubleOrNull() ?: 0.0,
-                                wdStatHours = statHours.toDoubleOrNull() ?: 0.0,
-                                wdNote = note.ifBlank { null },
-                                wdIsDeleted = false,
-                                wdUpdateTime = df.getCurrentUTCTimeAsString()
-                            )
-                        )
-                        onSaveWorkDate(Screen.TimeSheet.route)
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.this_date_is_already_used),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(stringResource(R.string.would_you_like_to_replace_the_old_information_for_this_work_date))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = { showDateUsedDialog = false }) {
+                        Text(stringResource(R.string.no))
                     }
-                }) {
-                    Text(stringResource(R.string.yes))
+                    TextButton(onClick = {
+                        showDateUsedDialog = false
+                        coroutineScope.launch {
+                            payDayViewModel.updateWorkDate(
+                                existingWorkDate!!.copy(
+                                    wdRegHours = regHours.toDoubleOrNull() ?: 0.0,
+                                    wdOtHours = otHours.toDoubleOrNull() ?: 0.0,
+                                    wdDblOtHours = dblOtHours.toDoubleOrNull() ?: 0.0,
+                                    wdStatHours = statHours.toDoubleOrNull() ?: 0.0,
+                                    wdNote = note.ifBlank { null },
+                                    wdIsDeleted = false,
+                                    wdUpdateTime = df.getCurrentUTCTimeAsString()
+                                )
+                            )
+                            onSaveWorkDate(Screen.TimeSheet.route)
+                        }
+                    }) {
+                        Text(stringResource(R.string.yes))
+                    }
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = { }) {
-                    Text(stringResource(R.string.no))
-                }
+                Spacer(modifier = Modifier.height(32.dp))
             }
-        )
+        }
     }
 
     WorkDateAddScreen(

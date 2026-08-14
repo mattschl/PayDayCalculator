@@ -2,17 +2,30 @@ package ms.mattschlenkrich.paycalculator.ui.employer
 
 import android.app.DatePickerDialog
 import android.widget.Toast
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -27,6 +40,7 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.ui.employer.composable.EmployerScreen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmployerAddRoute(
     mainViewModel: MainViewModel,
@@ -45,58 +59,71 @@ fun EmployerAddRoute(
         R.string.for_semi_monthly_pay_days_there_needs_to_be_a_mid_month_pay_day to stringResource(R.string.for_semi_monthly_pay_days_there_needs_to_be_a_mid_month_pay_day)
     )
 
-    var name by remember { mutableStateOf("") }
-    var frequency by remember { mutableStateOf(PayDayFrequencies.BI_WEEKLY.toString()) }
-    var startDate by remember { mutableStateOf(df.getCurrentDateAsString()) }
-    var dayOfWeek by remember { mutableStateOf(WorkDayOfWeek.FRIDAY.toString()) }
-    var daysBefore by remember { mutableStateOf("6") }
-    var midMonthDate by remember { mutableStateOf("15") }
-    var mainMonthDate by remember { mutableStateOf("31") }
+    var name by rememberSaveable { mutableStateOf("") }
+    var frequency by rememberSaveable { mutableStateOf(PayDayFrequencies.BI_WEEKLY.toString()) }
+    var startDate by rememberSaveable { mutableStateOf(df.getCurrentDateAsString()) }
+    var dayOfWeek by rememberSaveable { mutableStateOf(WorkDayOfWeek.FRIDAY.toString()) }
+    var daysBefore by rememberSaveable { mutableStateOf("6") }
+    var midMonthDate by rememberSaveable { mutableStateOf("15") }
+    var mainMonthDate by rememberSaveable { mutableStateOf("31") }
 
-    var showDialog by remember { mutableStateOf(false) }
+    var showDialog by rememberSaveable { mutableStateOf(false) }
 
     if (showDialog) {
-        AlertDialog(
+        ModalBottomSheet(
             onDismissRequest = { showDialog = false },
-            title = { Text(stringResource(R.string.choose_next_steps_for) + " " + name) },
-            text = { Text(stringResource(R.string.would_you_like_to_go_to_the_next_step)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDialog = false
-                        val curEmployer = Employers(
-                            nf.generateRandomIdAsLong(),
-                            name,
-                            frequency,
-                            startDate,
-                            dayOfWeek,
-                            daysBefore.toIntOrNull() ?: 0,
-                            midMonthDate.toIntOrNull() ?: 0,
-                            mainMonthDate.toIntOrNull() ?: 0,
-                            false,
-                            df.getCurrentUTCTimeAsString()
-                        )
-                        coroutineScope.launch {
-                            employerViewModel.insertEmployer(curEmployer)
-                            addEmployerTaxRules(curEmployer.employerId, workTaxViewModel, df)
-                            mainViewModel.setEmployer(curEmployer)
-                            navController.navigate(Screen.EmployerUpdate.route) {
-                                popUpTo(Screen.EmployerAdd.route) { inclusive = true }
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.choose_next_steps_for) + " " + name,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(stringResource(R.string.would_you_like_to_go_to_the_next_step))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(
+                        onClick = { showDialog = false }
+                    ) {
+                        Text(stringResource(R.string.go_back))
+                    }
+                    TextButton(
+                        onClick = {
+                            showDialog = false
+                            val curEmployer = Employers(
+                                nf.generateRandomIdAsLong(),
+                                name,
+                                frequency,
+                                startDate,
+                                dayOfWeek,
+                                daysBefore.toIntOrNull() ?: 0,
+                                midMonthDate.toIntOrNull() ?: 0,
+                                mainMonthDate.toIntOrNull() ?: 0,
+                                false,
+                                df.getCurrentUTCTimeAsString()
+                            )
+                            coroutineScope.launch {
+                                employerViewModel.insertEmployer(curEmployer)
+                                addEmployerTaxRules(curEmployer.employerId, workTaxViewModel, df)
+                                mainViewModel.setEmployer(curEmployer)
+                                navController.navigate(Screen.EmployerUpdate.route) {
+                                    popUpTo(Screen.EmployerAdd.route) { inclusive = true }
+                                }
                             }
                         }
+                    ) {
+                        Text(stringResource(R.string.yes))
                     }
-                ) {
-                    Text(stringResource(R.string.yes))
                 }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showDialog = false }
-                ) {
-                    Text(stringResource(R.string.go_back))
-                }
+                Spacer(modifier = Modifier.height(32.dp))
             }
-        )
+        }
     }
 
     EmployerScreen(
