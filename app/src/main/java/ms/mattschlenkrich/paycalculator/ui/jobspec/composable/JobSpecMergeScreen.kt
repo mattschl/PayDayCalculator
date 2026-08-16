@@ -274,7 +274,7 @@ fun JobSpecChildItem(child: JobSpecAndChild, onRemoveChild: (JobSpecAndChild) ->
         val isDeleted = child.jobSpecChild.jsIsDeleted
         Text(
             text = if (isDeleted) {
-                child.jobSpecChild.jsName + " " + stringResource(R.string._deleted_)
+                "${child.jobSpecChild.jsName} ${stringResource(R.string._deleted_)}"
             } else {
                 child.jobSpecChild.jsName
             },

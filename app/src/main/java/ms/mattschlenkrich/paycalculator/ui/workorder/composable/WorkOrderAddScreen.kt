@@ -109,7 +109,7 @@ fun WorkOrderAddScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = stringResource(R.string.employer) + ": ",
+                                    text = "${stringResource(R.string.employer)}: ",
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                                 Text(

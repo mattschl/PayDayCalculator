@@ -85,8 +85,11 @@ fun TaxRuleScreen(
                     style = MaterialTheme.typography.titleLarge
                 )
                 Text(
-                    stringResource(R.string.are_you_sure_you_want_to_delete_) +
-                            " " + taxType + " " + stringResource(R.string.level) + " " + taxLevel + "?"
+                    "${stringResource(R.string.are_you_sure_you_want_to_delete_)} $taxType ${
+                        stringResource(
+                            R.string.level
+                        )
+                    } $taxLevel?"
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),

@@ -37,7 +37,7 @@ fun JobSpecItem(
         ) {
             Text(
                 text = if (item.jsIsDeleted) {
-                    item.jsName + " " + stringResource(R.string.deleted)
+                    "${item.jsName} ${stringResource(R.string.deleted)}"
                 } else {
                     item.jsName
                 },

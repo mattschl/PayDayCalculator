@@ -41,7 +41,7 @@ fun MaterialItem(
         ) {
             Text(
                 text = if (item.mIsDeleted) {
-                    item.mName + " " + stringResource(R.string._deleted_)
+                    "${item.mName} ${stringResource(R.string._deleted_)}"
                 } else {
                     item.mName
                 },
@@ -59,11 +59,11 @@ fun MaterialItem(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Cost: " + nf.displayDollars(item.mCost),
+                    text = "Cost: ${nf.displayDollars(item.mCost)}",
                     style = MaterialTheme.typography.bodySmall
                 )
                 Text(
-                    text = "Price: " + nf.displayDollars(item.mPrice),
+                    text = "Price: ${nf.displayDollars(item.mPrice)}",
                     style = MaterialTheme.typography.bodySmall
                 )
             }

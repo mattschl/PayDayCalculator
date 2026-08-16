@@ -31,7 +31,7 @@ fun AreaItem(
     ) {
         Text(
             text = if (area.areaIsDeleted) {
-                area.areaName + " " + stringResource(R.string._deleted_)
+                "${area.areaName} ${stringResource(R.string._deleted_)}"
             } else {
                 area.areaName
             },

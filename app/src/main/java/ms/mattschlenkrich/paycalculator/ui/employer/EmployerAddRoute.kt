@@ -80,7 +80,7 @@ fun EmployerAddRoute(
                     .padding(16.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.choose_next_steps_for) + " " + name,
+                    text = "${stringResource(R.string.choose_next_steps_for)} $name",
                     style = MaterialTheme.typography.titleLarge
                 )
                 Text(stringResource(R.string.would_you_like_to_go_to_the_next_step))

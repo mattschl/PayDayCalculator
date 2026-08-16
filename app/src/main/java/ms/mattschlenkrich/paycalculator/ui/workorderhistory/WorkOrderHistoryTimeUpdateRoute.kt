@@ -98,7 +98,7 @@ fun WorkOrderHistoryTimeUpdateRoute(
                 df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
             }
 
-        val workDayCalendar = df.getCalendarFromDateTime(combined.workDate.wdDate + " 00:00:00")
+        val workDayCalendar = df.getCalendarFromDateTime("${combined.workDate.wdDate} 00:00:00")
         val dayOfWeek = workDayCalendar.get(Calendar.DAY_OF_WEEK)
         val isRegularDay = settings.regularDays.contains(dayOfWeek)
 
@@ -174,15 +174,15 @@ fun WorkOrderHistoryTimeUpdateRoute(
     }
 
     WorkOrderHistoryTimeUpdateScreen(
-        infoText = stringResource(R.string.work_order) + " ${combined.workOrderHistory.workOrder.woNumber}\n" +
+        infoText = "${stringResource(R.string.work_order)} ${combined.workOrderHistory.workOrder.woNumber}\n" +
                 combined.workOrderHistory.workOrder.woDescription,
-        originalTimeText = stringResource(R.string.original_time) + " " +
+        originalTimeText = "${stringResource(R.string.original_time)} " +
                 df.get12HourDisplay(combined.timeWorked.wohtStartTime) +
                 " - " +
                 df.get12HourDisplay(combined.timeWorked.wohtEndTime),
         startTime = startTime,
         endTime = endTime,
-        totalTimeText = nf.displayNumberFromDouble(totalHours) + " " + stringResource(R.string.hours),
+        totalTimeText = "${nf.displayNumberFromDouble(totalHours)} ${stringResource(R.string.hours)}",
         selectedTimeType = selectedTimeType,
         onTimeTypeChange = { selectedTimeType = it },
         onStartTimeClick = {

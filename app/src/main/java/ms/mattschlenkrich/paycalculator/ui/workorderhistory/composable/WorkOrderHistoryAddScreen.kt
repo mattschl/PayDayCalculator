@@ -137,7 +137,7 @@ fun WorkOrderHistoryAddScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = stringResource(R.string.employer) + " ",
+                            text = "${stringResource(R.string.employer)} ",
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontStyle = FontStyle.Italic
                             ),
@@ -278,7 +278,7 @@ fun WorkOrderHistoryAddScreen(
                     .padding(16.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.create_work_order_) + " $workOrderNumber?",
+                    text = "${stringResource(R.string.create_work_order_)} $workOrderNumber?",
                     style = MaterialTheme.typography.titleLarge
                 )
                 Text(stringResource(R.string.this_work_order_does_not_exist))

@@ -40,7 +40,7 @@ fun ExtraDefinitionItem(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = stringResource(R.string.effective_date) + " " + item.definition.weEffectiveDate,
+                    text = "${stringResource(R.string.effective_date)} ${item.definition.weEffectiveDate}",
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold

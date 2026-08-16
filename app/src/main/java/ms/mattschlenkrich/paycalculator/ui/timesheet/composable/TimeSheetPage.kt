@@ -133,7 +133,7 @@ fun TimeSheetPage(
                 grossPay = nf.displayDollars(payCalculations.getPayGross()),
                 deductions = nf.displayDollars(-payCalculations.getDebitTotalsByPay() - payCalculations.getAllTaxDeductions()),
                 netPay = nf.displayDollars(payCalculations.getPayGross() - payCalculations.getDebitTotalsByPay() - payCalculations.getAllTaxDeductions()),
-                totalHoursDescription = totalsLabel + " " + totalHoursDesc.trim(),
+                totalHoursDescription = "$totalsLabel ${totalHoursDesc.trim()}",
                 week1Total = week1Label + (wk1Summary.ifBlank {
                     zeroHrLabel
                 }),

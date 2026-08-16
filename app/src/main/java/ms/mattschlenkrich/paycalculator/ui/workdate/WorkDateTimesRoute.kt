@@ -132,7 +132,7 @@ fun WorkDateTimesRoute(
                 df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
             }
 
-        val workDayCalendar = df.getCalendarFromDateTime(workDate.wdDate + " 00:00:00")
+        val workDayCalendar = df.getCalendarFromDateTime("${workDate.wdDate} 00:00:00")
         val dayOfWeek = workDayCalendar.get(Calendar.DAY_OF_WEEK)
         val isRegularDay = settings.regularDays.contains(dayOfWeek)
 
@@ -234,8 +234,11 @@ fun WorkDateTimesRoute(
                     style = MaterialTheme.typography.titleLarge
                 )
                 Text(
-                    df.get12HourDisplay(combinedItem.timeWorked.wohtStartTime) + " - " +
-                            df.get12HourDisplay(combinedItem.timeWorked.wohtEndTime)
+                    "${df.get12HourDisplay(combinedItem.timeWorked.wohtStartTime)} - ${
+                        df.get12HourDisplay(
+                            combinedItem.timeWorked.wohtEndTime
+                        )
+                    }"
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),

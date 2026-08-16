@@ -274,7 +274,7 @@ fun ChildItem(child: MaterialAndChild, onRemoveChild: (MaterialAndChild) -> Unit
         val isDeleted = child.materialChild.mIsDeleted
         Text(
             text = if (isDeleted) {
-                child.materialChild.mName + " " + stringResource(R.string._deleted_)
+                "${child.materialChild.mName} ${stringResource(R.string._deleted_)}"
             } else {
                 child.materialChild.mName
             },

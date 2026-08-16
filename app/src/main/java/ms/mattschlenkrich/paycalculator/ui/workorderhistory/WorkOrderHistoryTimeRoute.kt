@@ -288,14 +288,11 @@ fun WorkOrderHistoryTimeRoute(
                     style = MaterialTheme.typography.titleLarge
                 )
                 Text(
-                    df.get12HourDisplay(
-                        df.splitTimeFromDateTime(combinedItem.timeWorked.wohtStartTime)
-                            .joinToString(":")
-                    ) + " - " +
-                            df.get12HourDisplay(
-                                df.splitTimeFromDateTime(combinedItem.timeWorked.wohtEndTime)
-                                    .joinToString(":")
-                            )
+                    "${df.get12HourDisplay(combinedItem.timeWorked.wohtStartTime)} - ${
+                        df.get12HourDisplay(
+                            combinedItem.timeWorked.wohtEndTime
+                        )
+                    }"
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -361,7 +358,7 @@ fun WorkOrderHistoryTimeRoute(
     }
 
     WorkOrderHistoryTimeScreen(
-        infoText = stringResource(R.string.work_order) + " ${historyWithDates!!.workOrder.woNumber}\n" +
+        infoText = "${stringResource(R.string.work_order)} ${historyWithDates!!.workOrder.woNumber}\n" +
                 historyWithDates!!.workOrder.woDescription,
         hoursSummaryText = buildString {
             val workedHours = existingTimes.filter {
@@ -412,7 +409,7 @@ fun WorkOrderHistoryTimeRoute(
         },
         startTime = startTime,
         endTime = endTime,
-        totalTimeText = nf.displayNumberFromDouble(totalHours) + " " + stringResource(R.string.hours),
+        totalTimeText = "${nf.displayNumberFromDouble(totalHours)} ${stringResource(R.string.hours)}",
         selectedTimeType = selectedTimeType,
         onTimeTypeChange = { selectedTimeType = it },
         onStartTimeClick = {

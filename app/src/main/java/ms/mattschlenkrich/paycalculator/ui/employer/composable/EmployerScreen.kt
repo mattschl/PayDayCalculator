@@ -119,7 +119,7 @@ fun EmployerScreen(
                     onClick = onStartDateClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(stringResource(R.string.first_cheque_date) + ": " + startDate)
+                    Text("${stringResource(R.string.first_cheque_date)}: $startDate")
                 }
 
                 SimpleDropdownField(

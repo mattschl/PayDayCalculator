@@ -37,7 +37,7 @@ fun WorkPerformedItem(
         ) {
             Text(
                 text = if (item.wpIsDeleted) {
-                    item.wpDescription + " " + stringResource(R.string._deleted_)
+                    "${item.wpDescription} ${stringResource(R.string._deleted_)}"
                 } else {
                     item.wpDescription
                 },

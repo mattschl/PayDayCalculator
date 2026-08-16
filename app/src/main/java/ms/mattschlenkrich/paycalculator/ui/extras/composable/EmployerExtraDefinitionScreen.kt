@@ -107,9 +107,7 @@ fun EmployerExtraDefinitionScreen(
                     style = MaterialTheme.typography.titleLarge
                 )
                 Text(
-                    stringResource(R.string.are_you_sure_you_want_to_delete_) +
-                            " " + initialDefinitionFull.extraType.wetName +
-                            " (" + initialDefinitionFull.definition.weEffectiveDate + ")?"
+                    "${stringResource(R.string.are_you_sure_you_want_to_delete_)} ${initialDefinitionFull.extraType.wetName} (${initialDefinitionFull.definition.weEffectiveDate})?"
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),

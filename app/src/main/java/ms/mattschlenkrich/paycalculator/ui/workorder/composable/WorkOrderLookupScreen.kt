@@ -90,7 +90,7 @@ fun WorkOrderLookupScreen(
                         modifier = Modifier.padding(bottom = ELEMENT_SPACING)
                     ) {
                         Text(
-                            text = stringResource(R.string.employer) + ": ",
+                            text = "${stringResource(R.string.employer)}: ",
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
@@ -179,12 +179,11 @@ fun WorkOrderLookupScreen(
                     .padding(16.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.choose) + " " + workOrder.woNumber,
+                    text = "${stringResource(R.string.choose)} ${workOrder.woNumber}",
                     style = MaterialTheme.typography.titleLarge
                 )
                 Text(
-                    stringResource(R.string.would_you_like_to_use_this_work_order) +
-                            "\n\n" + workOrder.woDescription
+                    "${stringResource(R.string.would_you_like_to_use_this_work_order)}\n\n${workOrder.woDescription}"
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),

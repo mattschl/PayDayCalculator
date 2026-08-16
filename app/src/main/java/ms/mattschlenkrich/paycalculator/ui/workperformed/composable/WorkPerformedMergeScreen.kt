@@ -211,9 +211,11 @@ fun WorkPerformedMergeScreen(
                                     val isDeleted = child.workPerformedChild.wpIsDeleted
                                     Text(
                                         text = if (isDeleted) {
-                                            child.workPerformedChild.wpDescription + " " + stringResource(
-                                                R.string._deleted_
-                                            )
+                                            "${child.workPerformedChild.wpDescription} ${
+                                                stringResource(
+                                                    R.string._deleted_
+                                                )
+                                            }"
                                         } else {
                                             child.workPerformedChild.wpDescription
                                         },
