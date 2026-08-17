@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paycalculator.ui.workdate
 
-import android.app.DatePickerDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -338,8 +337,11 @@ fun WorkDateUpdatePageContent(
                 verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
             ) {
                 Text(
-                    text = stringResource(R.string.choose_option_for_wo) + history.workOrder.woNumber +
-                            stringResource(R.string._on_) + df.getDisplayDate(history.workDate.wdDate),
+                    text = "${stringResource(R.string.choose_option_for_wo)}${history.workOrder.woNumber}${
+                        stringResource(
+                            R.string._on_
+                        )
+                    }${df.getDisplayDate(history.workDate.wdDate)}",
                     style = MaterialTheme.typography.titleLarge
                 )
                 Button(
@@ -457,17 +459,9 @@ fun WorkDateUpdatePageContent(
     WorkDateUpdateScreen(
         dateText = df.getDisplayDate(curDateString),
         onDateClick = {
-            val curDateAll = curDateString.split("-")
-            DatePickerDialog(
-                context, { _, year, monthOfYear, dayOfMonth ->
-                    val month = monthOfYear + 1
-                    curDateString = "$year-${
-                        month.toString().padStart(2, '0')
-                    }-${
-                        dayOfMonth.toString().padStart(2, '0')
-                    }"
-                }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
-            ).show()
+            df.showDatePicker(context, curDateString) {
+                curDateString = it
+            }
         },
         regHours = regHours,
         onRegHoursChange = { regHours = it },

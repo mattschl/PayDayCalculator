@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paycalculator.ui.payrate
 
-import android.app.DatePickerDialog
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,45 +15,46 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.PayRateBasedOn
+import ms.mattschlenkrich.paycalculator.data.entity.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.ui.payrate.composable.PayRateScreen
 
 @Composable
-fun EmployerPayRateUpdateRoute(
+fun EmployerPayRateRoute(
     mainViewModel: MainViewModel,
     employerViewModel: EmployerViewModel,
-    navController: NavController
+    navController: NavController,
+    isUpdate: Boolean
 ) {
     val context = LocalContext.current
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
-
     val coroutineScope = rememberCoroutineScope()
 
-    val payRate = mainViewModel.getPayRate() ?: return
-//    val employer = mainViewModel.getEmployer() ?: return
+    val employer = mainViewModel.getEmployer() ?: return
+    val initialPayRate = if (isUpdate) mainViewModel.getPayRate() else null
+    if (isUpdate && initialPayRate == null) return
 
-    var effectiveDate by rememberSaveable { mutableStateOf(payRate.eprEffectiveDate) }
-    var wage by rememberSaveable { mutableStateOf(nf.displayDollars(payRate.eprPayRate)) }
+    var effectiveDate by rememberSaveable {
+        mutableStateOf(initialPayRate?.eprEffectiveDate ?: df.getCurrentDateAsString())
+    }
+    var wage by rememberSaveable {
+        mutableStateOf(if (isUpdate) nf.displayDollars(initialPayRate!!.eprPayRate) else "")
+    }
     var selectedFrequency by rememberSaveable {
-        mutableStateOf(PayRateBasedOn.entries[payRate.eprPerPeriod])
+        mutableStateOf(
+            if (isUpdate) PayRateBasedOn.entries[initialPayRate!!.eprPerPeriod]
+            else PayRateBasedOn.HOURLY
+        )
     }
 
     PayRateScreen(
         effectiveDate = df.getDisplayDate(effectiveDate),
         onEffectiveDateClick = {
-            val curDateAll = effectiveDate.split("-")
-            DatePickerDialog(
-                context, { _, year, monthOfYear, dayOfMonth ->
-                    val month = monthOfYear + 1
-                    effectiveDate = "$year-${
-                        month.toString().padStart(2, '0')
-                    }-${
-                        dayOfMonth.toString().padStart(2, '0')
-                    }"
-                }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
-            ).show()
+            df.showDatePicker(context, effectiveDate) {
+                effectiveDate = it
+            }
         },
         wage = wage,
         onWageChange = { wage = it },
@@ -68,14 +68,29 @@ fun EmployerPayRateUpdateRoute(
                 ).show()
             } else {
                 coroutineScope.launch {
-                    employerViewModel.updatePayRate(
-                        payRate.copy(
+                    val payRate = if (isUpdate) {
+                        initialPayRate!!.copy(
                             eprEffectiveDate = effectiveDate,
                             eprPayRate = nf.getDoubleFromDollars(wage),
                             eprPerPeriod = selectedFrequency.ordinal,
                             eprUpdateTime = df.getCurrentUTCTimeAsString()
                         )
-                    )
+                    } else {
+                        EmployerPayRates(
+                            nf.generateRandomIdAsLong(),
+                            employer.employerId,
+                            effectiveDate,
+                            selectedFrequency.ordinal,
+                            nf.getDoubleFromDollars(wage),
+                            false,
+                            df.getCurrentUTCTimeAsString()
+                        )
+                    }
+                    if (isUpdate) {
+                        employerViewModel.updatePayRate(payRate)
+                    } else {
+                        employerViewModel.insertPayRate(payRate)
+                    }
                     navController.popBackStack()
                 }
             }

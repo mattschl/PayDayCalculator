@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paycalculator.ui.employer
 
-import android.app.DatePickerDialog
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -65,19 +64,9 @@ fun EmployerUpdateRoute(
             onFrequencyChange = { frequency = it },
             startDate = startDate,
             onStartDateClick = {
-                val curDateAll = startDate.split("-")
-                DatePickerDialog(
-                    context, { _, year, monthOfYear, dayOfMonth ->
-                        val month = monthOfYear + 1
-                        startDate =
-                            "$year-${month.toString().padStart(2, '0')}-${
-                                dayOfMonth.toString().padStart(2, '0')
-                            }"
-                    },
-                    curDateAll[0].toInt(),
-                    curDateAll[1].toInt() - 1,
-                    curDateAll[2].toInt()
-                ).show()
+                df.showDatePicker(context, startDate) {
+                    startDate = it
+                }
             },
             dayOfWeek = dayOfWeek,
             onDayOfWeekChange = { dayOfWeek = it },

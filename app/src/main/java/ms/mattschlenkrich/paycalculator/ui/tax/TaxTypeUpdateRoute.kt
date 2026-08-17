@@ -56,7 +56,7 @@ fun TaxTypeUpdateRoute(
             val errorResId = validateTaxTypeUpdate(taxTypeState, curTaxType, taxTypeList)
             if (errorResId == null) {
                 val updatedTaxType = curTaxType.copy(
-                    taxType = taxTypeState,
+                    taxType = taxTypeState.trim(),
                     ttBasedOn = selectedBasedOn,
                     ttUpdateTime = df.getCurrentUTCTimeAsString()
                 )

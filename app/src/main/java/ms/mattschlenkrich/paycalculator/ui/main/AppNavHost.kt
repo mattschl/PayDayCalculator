@@ -25,30 +25,24 @@ import ms.mattschlenkrich.paycalculator.ui.areas.AreaUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.areas.AreaViewRoute
 import ms.mattschlenkrich.paycalculator.ui.employer.EmployerAddRoute
 import ms.mattschlenkrich.paycalculator.ui.employer.EmployerUpdateRoute
-import ms.mattschlenkrich.paycalculator.ui.extras.EmployerExtraDefinitionUpdateRoute
-import ms.mattschlenkrich.paycalculator.ui.extras.EmployerExtraDefinitionsAddRoute
-import ms.mattschlenkrich.paycalculator.ui.extras.PayPeriodExtraAddRoute
-import ms.mattschlenkrich.paycalculator.ui.extras.PayPeriodExtraUpdateRoute
-import ms.mattschlenkrich.paycalculator.ui.extras.WorkExtraTypeAddRoute
-import ms.mattschlenkrich.paycalculator.ui.extras.WorkExtraTypeUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.extras.EmployerExtraDefinitionRoute
+import ms.mattschlenkrich.paycalculator.ui.extras.PayPeriodExtraRoute
+import ms.mattschlenkrich.paycalculator.ui.extras.WorkExtraTypeRoute
 import ms.mattschlenkrich.paycalculator.ui.jobspec.JobSpecMergeRoute
 import ms.mattschlenkrich.paycalculator.ui.jobspec.JobSpecUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.jobspec.JobSpecViewRoute
 import ms.mattschlenkrich.paycalculator.ui.material.MaterialMergeRoute
 import ms.mattschlenkrich.paycalculator.ui.material.MaterialUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.material.MaterialViewRoute
-import ms.mattschlenkrich.paycalculator.ui.payrate.EmployerPayRateAddRoute
-import ms.mattschlenkrich.paycalculator.ui.payrate.EmployerPayRateUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.payrate.EmployerPayRateRoute
 import ms.mattschlenkrich.paycalculator.ui.payrate.composable.EmployerPayRatesRoute
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsRoute
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
-import ms.mattschlenkrich.paycalculator.ui.tax.TaxRuleAddRoute
-import ms.mattschlenkrich.paycalculator.ui.tax.TaxRuleUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.tax.TaxRuleRoute
 import ms.mattschlenkrich.paycalculator.ui.tax.TaxTypeAddRoute
 import ms.mattschlenkrich.paycalculator.ui.tax.TaxTypeUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateAddRoute
-import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateExtraAddRoute
-import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateExtraUpdateRoute
+import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateExtraRoute
 import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateTimesRoute
 import ms.mattschlenkrich.paycalculator.ui.workdate.WorkDateUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderAddRoute
@@ -128,17 +122,19 @@ fun AppNavHost(
             )
         }
         composable(Screen.EmployerPayRateAdd.route) {
-            EmployerPayRateAddRoute(
+            EmployerPayRateRoute(
                 mainViewModel,
                 employerViewModel,
-                navController
+                navController,
+                isUpdate = false
             )
         }
         composable(Screen.EmployerPayRateUpdate.route) {
-            EmployerPayRateUpdateRoute(
+            EmployerPayRateRoute(
                 mainViewModel,
                 employerViewModel,
-                navController
+                navController,
+                isUpdate = true
             )
         }
         composable(Screen.TaxTypeAdd.route) {
@@ -157,45 +153,51 @@ fun AppNavHost(
             )
         }
         composable(Screen.TaxRuleAdd.route) {
-            TaxRuleAddRoute(
+            TaxRuleRoute(
                 mainViewModel,
                 workTaxViewModel,
-                navController
+                navController,
+                isUpdate = false
             )
         }
         composable(Screen.TaxRuleUpdate.route) {
-            TaxRuleUpdateRoute(
+            TaxRuleRoute(
                 mainViewModel,
                 workTaxViewModel,
-                navController
+                navController,
+                isUpdate = true
             )
         }
         composable(Screen.EmployerExtraDefinitionsAdd.route) {
-            EmployerExtraDefinitionsAddRoute(
+            EmployerExtraDefinitionRoute(
                 mainViewModel,
                 workExtraViewModel,
-                navController
+                navController,
+                isUpdate = false
             )
         }
         composable(Screen.EmployerExtraDefinitionUpdate.route) {
-            EmployerExtraDefinitionUpdateRoute(
+            EmployerExtraDefinitionRoute(
                 mainViewModel,
                 workExtraViewModel,
-                navController
+                navController,
+                isUpdate = true
             )
         }
         composable(Screen.WorkExtraTypeAdd.route) {
-            WorkExtraTypeAddRoute(
+            WorkExtraTypeRoute(
                 mainViewModel,
                 workExtraViewModel,
-                navController
+                navController,
+                isUpdate = false
             )
         }
         composable(Screen.WorkExtraTypeUpdate.route) {
-            WorkExtraTypeUpdateRoute(
+            WorkExtraTypeRoute(
                 mainViewModel,
                 workExtraViewModel,
-                navController
+                navController,
+                isUpdate = true
             )
         }
         composable(Screen.WorkDateAdd.route) {
@@ -224,17 +226,19 @@ fun AppNavHost(
             )
         }
         composable(Screen.WorkDateExtraAdd.route) {
-            WorkDateExtraAddRoute(
+            WorkDateExtraRoute(
                 mainViewModel,
                 payDayViewModel,
-                navController
+                navController,
+                isUpdate = false
             )
         }
         composable(Screen.WorkDateExtraUpdate.route) {
-            WorkDateExtraUpdateRoute(
+            WorkDateExtraRoute(
                 mainViewModel,
                 payDayViewModel,
-                navController
+                navController,
+                isUpdate = true
             )
         }
         composable(Screen.WorkOrderHistoryAdd.route) {
@@ -405,20 +409,22 @@ fun AppNavHost(
             )
         ) { backStackEntry ->
             val isCredit = backStackEntry.arguments?.getBoolean("isCredit") ?: false
-            PayPeriodExtraAddRoute(
+            PayPeriodExtraRoute(
                 mainViewModel,
                 payDayViewModel,
                 workExtraViewModel,
                 navController,
-                isCredit
+                isUpdate = false,
+                isCredit = isCredit
             )
         }
         composable(Screen.PayPeriodExtraUpdate.route) {
-            PayPeriodExtraUpdateRoute(
+            PayPeriodExtraRoute(
                 mainViewModel,
                 payDayViewModel,
                 workExtraViewModel,
-                navController
+                navController,
+                isUpdate = true
             )
         }
         composable(Screen.WorkOrderJobSpecUpdate.route) {

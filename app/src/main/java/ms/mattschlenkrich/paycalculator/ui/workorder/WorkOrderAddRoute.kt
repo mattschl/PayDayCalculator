@@ -61,9 +61,11 @@ fun WorkOrderAddRoute(
     val context = LocalContext.current
     val errorLabel = stringResource(R.string.error_)
     val noEmployerError = stringResource(R.string.the_work_order_must_have_an_employer)
-    val noNumberError = stringResource(R.string.the_work_order_must_have_a_number)
-    val noAddressError = stringResource(R.string.the_work_order_must_have_an_address)
-    val noDescriptionError = stringResource(R.string.the_work_order_must_have_a_description)
+    val errorMessages = mapOf(
+        R.string.the_work_order_must_have_a_number to stringResource(R.string.the_work_order_must_have_a_number),
+        R.string.the_work_order_must_have_an_address to stringResource(R.string.the_work_order_must_have_an_address),
+        R.string.the_work_order_must_have_a_description to stringResource(R.string.the_work_order_must_have_a_description)
+    )
 
     WorkOrderAddScreen(
         employers = employers,
@@ -99,29 +101,16 @@ fun WorkOrderAddRoute(
                 ).show()
                 return@WorkOrderAddScreen
             }
-            if (woNumber.isBlank()) {
-                woNumberError = true
+            val errorResId = validateWorkOrder(woNumber, address, description)
+            if (errorResId != null) {
+                when (errorResId) {
+                    R.string.the_work_order_must_have_a_number -> woNumberError = true
+                    R.string.the_work_order_must_have_an_address -> addressError = true
+                    R.string.the_work_order_must_have_a_description -> descriptionError = true
+                }
                 Toast.makeText(
                     context,
-                    errorLabel + noNumberError,
-                    Toast.LENGTH_LONG
-                ).show()
-                return@WorkOrderAddScreen
-            }
-            if (address.isBlank()) {
-                addressError = true
-                Toast.makeText(
-                    context,
-                    errorLabel + noAddressError,
-                    Toast.LENGTH_LONG
-                ).show()
-                return@WorkOrderAddScreen
-            }
-            if (description.isBlank()) {
-                descriptionError = true
-                Toast.makeText(
-                    context,
-                    errorLabel + noDescriptionError,
+                    errorLabel + (errorMessages[errorResId] ?: ""),
                     Toast.LENGTH_LONG
                 ).show()
                 return@WorkOrderAddScreen

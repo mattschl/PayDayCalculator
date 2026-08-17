@@ -1,20 +1,7 @@
 package ms.mattschlenkrich.paycalculator.ui.employer
 
-import android.app.DatePickerDialog
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,10 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
@@ -34,7 +19,7 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.PayDayFrequencies
 import ms.mattschlenkrich.paycalculator.common.WorkDayOfWeek
-import ms.mattschlenkrich.paycalculator.data.entity.Employers
+import ms.mattschlenkrich.paycalculator.common.compose.ConfirmationBottomSheet
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModel
@@ -69,62 +54,34 @@ fun EmployerAddRoute(
 
     var showDialog by rememberSaveable { mutableStateOf(false) }
 
-    if (showDialog) {
-        ModalBottomSheet(
-            onDismissRequest = { showDialog = false },
-            sheetState = rememberModalBottomSheetState()
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = "${stringResource(R.string.choose_next_steps_for)} $name",
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Text(stringResource(R.string.would_you_like_to_go_to_the_next_step))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    TextButton(
-                        onClick = { showDialog = false }
-                    ) {
-                        Text(stringResource(R.string.go_back))
-                    }
-                    TextButton(
-                        onClick = {
-                            showDialog = false
-                            val curEmployer = Employers(
-                                nf.generateRandomIdAsLong(),
-                                name,
-                                frequency,
-                                startDate,
-                                dayOfWeek,
-                                daysBefore.toIntOrNull() ?: 0,
-                                midMonthDate.toIntOrNull() ?: 0,
-                                mainMonthDate.toIntOrNull() ?: 0,
-                                false,
-                                df.getCurrentUTCTimeAsString()
-                            )
-                            coroutineScope.launch {
-                                employerViewModel.insertEmployer(curEmployer)
-                                addEmployerTaxRules(curEmployer.employerId, workTaxViewModel, df)
-                                mainViewModel.setEmployer(curEmployer)
-                                navController.navigate(Screen.EmployerUpdate.route) {
-                                    popUpTo(Screen.EmployerAdd.route) { inclusive = true }
-                                }
-                            }
-                        }
-                    ) {
-                        Text(stringResource(R.string.yes))
-                    }
+    ConfirmationBottomSheet(
+        showDialog = showDialog,
+        onDismissRequest = { showDialog = false },
+        title = "${stringResource(R.string.choose_next_steps_for)} $name",
+        message = stringResource(R.string.would_you_like_to_go_to_the_next_step),
+        dismissButtonText = stringResource(R.string.go_back),
+        onConfirm = {
+            val curEmployer = getCurrentEmployer(
+                nf.generateRandomIdAsLong(),
+                name,
+                frequency,
+                startDate,
+                dayOfWeek,
+                daysBefore,
+                midMonthDate,
+                mainMonthDate,
+                df
+            )
+            coroutineScope.launch {
+                employerViewModel.insertEmployer(curEmployer)
+                addEmployerTaxRules(curEmployer.employerId, workTaxViewModel, df)
+                mainViewModel.setEmployer(curEmployer)
+                navController.navigate(Screen.EmployerUpdate.route) {
+                    popUpTo(Screen.EmployerAdd.route) { inclusive = true }
                 }
-                Spacer(modifier = Modifier.height(32.dp))
             }
         }
-    }
+    )
 
     EmployerScreen(
         isUpdate = false,
@@ -134,19 +91,9 @@ fun EmployerAddRoute(
         onFrequencyChange = { frequency = it },
         startDate = startDate,
         onStartDateClick = {
-            val curDateAll = startDate.split("-")
-            DatePickerDialog(
-                context,
-                { _, year, monthOfYear, dayOfMonth ->
-                    val month = monthOfYear + 1
-                    startDate = "$year-${
-                        month.toString().padStart(2, '0')
-                    }-${dayOfMonth.toString().padStart(2, '0')}"
-                },
-                curDateAll[0].toInt(),
-                curDateAll[1].toInt() - 1,
-                curDateAll[2].toInt()
-            ).show()
+            df.showDatePicker(context, startDate) {
+                startDate = it
+            }
         },
         dayOfWeek = dayOfWeek,
         onDayOfWeekChange = { dayOfWeek = it },

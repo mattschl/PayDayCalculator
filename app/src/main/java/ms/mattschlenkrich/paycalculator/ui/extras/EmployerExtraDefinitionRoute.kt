@@ -10,16 +10,19 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.ui.extras.composable.EmployerExtraDefinitionScreen
 
 @Composable
-fun EmployerExtraDefinitionsAddRoute(
+fun EmployerExtraDefinitionRoute(
     mainViewModel: MainViewModel,
     workExtraViewModel: WorkExtraViewModel,
-    navController: NavController
+    navController: NavController,
+    isUpdate: Boolean
 ) {
-    val curEmployer = mainViewModel.getEmployer()
-    val curExtraType = mainViewModel.getWorkExtraType()
-
-    EmployerExtraDefinitionScreen(
-        initialDefinitionFull = if (curEmployer != null && curExtraType != null) {
+    val df = DateFunctions()
+    val initialDefinitionFull = if (isUpdate) {
+        mainViewModel.getExtraDefinitionFull()
+    } else {
+        val curEmployer = mainViewModel.getEmployer()
+        val curExtraType = mainViewModel.getWorkExtraType()
+        if (curEmployer != null && curExtraType != null) {
             ExtraDefTypeAndEmployer(
                 definition = WorkExtrasDefinitions(
                     workExtraDefId = 0L,
@@ -27,21 +30,33 @@ fun EmployerExtraDefinitionsAddRoute(
                     weExtraTypeId = curExtraType.workExtraTypeId,
                     weValue = 0.0,
                     weIsFixed = true,
-                    weEffectiveDate = DateFunctions()
-                        .getCurrentDateAsString(),
+                    weEffectiveDate = df.getCurrentDateAsString(),
                     weIsDeleted = false,
-                    weUpdateTime = DateFunctions()
-                        .getCurrentUTCTimeAsString()
+                    weUpdateTime = df.getCurrentUTCTimeAsString()
                 ),
                 employer = curEmployer,
                 extraType = curExtraType
             )
-        } else null,
+        } else null
+    }
+
+    EmployerExtraDefinitionScreen(
+        initialDefinitionFull = initialDefinitionFull,
         onUpdate = { definition ->
-            workExtraViewModel.insertWorkExtraDefinition(definition)
+            if (isUpdate) {
+                workExtraViewModel.updateWorkExtraDefinition(definition)
+            } else {
+                workExtraViewModel.insertWorkExtraDefinition(definition)
+            }
             navController.popBackStack()
         },
-        onDelete = { /* Not applicable for Add */ },
+        onDelete = { definition ->
+            workExtraViewModel.deleteWorkExtraDefinition(
+                definition.workExtraDefId,
+                df.getCurrentUTCTimeAsString()
+            )
+            navController.popBackStack()
+        },
         onCancel = { navController.popBackStack() }
     )
 }

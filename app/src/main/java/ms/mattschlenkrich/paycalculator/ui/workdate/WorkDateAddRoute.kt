@@ -1,19 +1,6 @@
 package ms.mattschlenkrich.paycalculator.ui.workdate
 
-import android.app.DatePickerDialog
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,16 +11,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.compose.ConfirmationBottomSheet
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
 import ms.mattschlenkrich.paycalculator.data.util.HolidayPayCalculator
@@ -190,70 +176,35 @@ fun WorkDateAddRoute(
     var showDateUsedDialog by rememberSaveable { mutableStateOf(false) }
     var existingWorkDate by rememberSaveable { mutableStateOf<WorkDates?>(null) }
 
-    if (showDateUsedDialog && existingWorkDate != null) {
-        ModalBottomSheet(
-            onDismissRequest = { showDateUsedDialog = false },
-            sheetState = rememberModalBottomSheetState()
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.this_date_is_already_used),
-                    style = MaterialTheme.typography.titleLarge
+    ConfirmationBottomSheet(
+        showDialog = showDateUsedDialog && existingWorkDate != null,
+        onDismissRequest = { showDateUsedDialog = false },
+        title = stringResource(R.string.this_date_is_already_used),
+        message = stringResource(R.string.would_you_like_to_replace_the_old_information_for_this_work_date),
+        onConfirm = {
+            coroutineScope.launch {
+                payDayViewModel.updateWorkDate(
+                    existingWorkDate!!.copy(
+                        wdRegHours = regHours.toDoubleOrNull() ?: 0.0,
+                        wdOtHours = otHours.toDoubleOrNull() ?: 0.0,
+                        wdDblOtHours = dblOtHours.toDoubleOrNull() ?: 0.0,
+                        wdStatHours = statHours.toDoubleOrNull() ?: 0.0,
+                        wdNote = note.ifBlank { null },
+                        wdIsDeleted = false,
+                        wdUpdateTime = df.getCurrentUTCTimeAsString()
+                    )
                 )
-                Text(stringResource(R.string.would_you_like_to_replace_the_old_information_for_this_work_date))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    TextButton(onClick = { showDateUsedDialog = false }) {
-                        Text(stringResource(R.string.no))
-                    }
-                    TextButton(onClick = {
-                        showDateUsedDialog = false
-                        coroutineScope.launch {
-                            payDayViewModel.updateWorkDate(
-                                existingWorkDate!!.copy(
-                                    wdRegHours = regHours.toDoubleOrNull() ?: 0.0,
-                                    wdOtHours = otHours.toDoubleOrNull() ?: 0.0,
-                                    wdDblOtHours = dblOtHours.toDoubleOrNull() ?: 0.0,
-                                    wdStatHours = statHours.toDoubleOrNull() ?: 0.0,
-                                    wdNote = note.ifBlank { null },
-                                    wdIsDeleted = false,
-                                    wdUpdateTime = df.getCurrentUTCTimeAsString()
-                                )
-                            )
-                            onSaveWorkDate(Screen.TimeSheet.route)
-                        }
-                    }) {
-                        Text(stringResource(R.string.yes))
-                    }
-                }
-                Spacer(modifier = Modifier.height(32.dp))
+                onSaveWorkDate(Screen.TimeSheet.route)
             }
         }
-    }
+    )
 
     WorkDateAddScreen(
         dateText = if (curDateString.isNotEmpty()) df.getDisplayDate(curDateString) else "",
         onDateClick = {
-            val curDateAll = (curDateString.ifEmpty {
-                LocalDate.now()
-                    .toString()
-            }).split("-")
-            DatePickerDialog(
-                context, { _, year, monthOfYear, dayOfMonth ->
-                    val month = monthOfYear + 1
-                    curDateString = "$year-${
-                        month.toString().padStart(2, '0')
-                    }-${
-                        dayOfMonth.toString().padStart(2, '0')
-                    }"
-                }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
-            ).show()
+            df.showDatePicker(context, curDateString.ifEmpty { LocalDate.now().toString() }) {
+                curDateString = it
+            }
         },
         regHours = regHours,
         onRegHoursChange = { regHours = it },
