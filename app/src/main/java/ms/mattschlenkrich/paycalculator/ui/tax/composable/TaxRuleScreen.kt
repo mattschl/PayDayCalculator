@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paycalculator.ui.tax.composable
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,12 +23,9 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.compose.ConfirmationBottomSheet
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
@@ -70,48 +67,20 @@ fun TaxRuleScreen(
 ) {
     var showDeleteConfirm by remember { mutableStateOf(false) }
 
-    if (showDeleteConfirm && onDeleteClick != null) {
-        ModalBottomSheet(
-            onDismissRequest = { showDeleteConfirm = false },
-            sheetState = rememberModalBottomSheetState()
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.modify_or_delete),
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Text(
-                    "${stringResource(R.string.are_you_sure_you_want_to_delete_)} $taxType ${
-                        stringResource(
-                            R.string.level
-                        )
-                    } $taxLevel?"
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    TextButton(onClick = { showDeleteConfirm = false }) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                    TextButton(onClick = {
-                        onDeleteClick()
-                        showDeleteConfirm = false
-                    }) {
-                        Text(
-                            stringResource(R.string.delete),
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(32.dp))
-            }
-        }
-    }
+    ConfirmationBottomSheet(
+        showDialog = showDeleteConfirm && onDeleteClick != null,
+        onDismissRequest = { showDeleteConfirm = false },
+        title = stringResource(R.string.modify_or_delete),
+        message = "${stringResource(R.string.are_you_sure_you_want_to_delete_)} $taxType ${
+            stringResource(
+                R.string.level
+            )
+        } $taxLevel?",
+        confirmButtonText = stringResource(R.string.delete),
+        dismissButtonText = stringResource(R.string.cancel),
+        isDelete = true,
+        onConfirm = { onDeleteClick?.invoke() }
+    )
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),

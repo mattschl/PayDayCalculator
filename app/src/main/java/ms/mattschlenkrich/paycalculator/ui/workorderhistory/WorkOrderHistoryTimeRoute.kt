@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paycalculator.ui.workorderhistory
 
-import android.app.TimePickerDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,6 +35,8 @@ import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
+import ms.mattschlenkrich.paycalculator.common.compose.ConfirmationBottomSheet
+import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
@@ -168,109 +169,66 @@ fun WorkOrderHistoryTimeRoute(
     }
     var showUnsavedDialog by rememberSaveable { mutableStateOf(false) }
 
-    if (showOverlapConfirmDialog != null) {
-        val entry = showOverlapConfirmDialog!!
-        ModalBottomSheet(
-            onDismissRequest = { showOverlapConfirmDialog = null },
-            sheetState = rememberModalBottomSheetState()
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.save),
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Text(stringResource(R.string.confirm_overlap))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    TextButton(onClick = { showOverlapConfirmDialog = null }) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                    TextButton(onClick = {
-                        coroutineScope.launch {
-                            workOrderViewModel.insertWorkOrderHistoryTimeWorked(entry)
-                            startTime = endTime.clone() as Calendar
-                            showOverlapConfirmDialog = null
-                        }
-                    }) {
-                        Text(stringResource(R.string.save))
-                    }
+    ConfirmationBottomSheet(
+        showDialog = showOverlapConfirmDialog != null,
+        onDismissRequest = { showOverlapConfirmDialog = null },
+        title = stringResource(R.string.save),
+        message = stringResource(R.string.confirm_overlap),
+        onConfirm = {
+            showOverlapConfirmDialog?.let { entry ->
+                coroutineScope.launch {
+                    workOrderViewModel.insertWorkOrderHistoryTimeWorked(entry)
+                    startTime = endTime.clone() as Calendar
                 }
-                Spacer(modifier = Modifier.height(32.dp))
             }
         }
-    }
+    )
 
-    if (showUnsavedDialog) {
-        ModalBottomSheet(
-            onDismissRequest = { showUnsavedDialog = false },
-            sheetState = rememberModalBottomSheetState()
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.confirm_leave),
-                    style = MaterialTheme.typography.titleLarge
+    ConfirmationBottomSheet(
+        showDialog = showUnsavedDialog,
+        onDismissRequest = { showUnsavedDialog = false },
+        title = stringResource(R.string.confirm_leave),
+        message = stringResource(R.string.would_you_like_to_save_time_entered),
+        dismissButtonText = stringResource(R.string.go_back),
+        onConfirm = {
+            coroutineScope.launch {
+                workOrderViewModel.insertWorkOrderHistoryTimeWorked(
+                    WorkOrderHistoryTimeWorked(
+                        nf.generateRandomIdAsLong(),
+                        history.woHistoryId,
+                        historyWithDates!!.workDate.workDateId,
+                        df.getDateTimeFromDateAndTime(
+                            historyWithDates!!.workDate.wdDate,
+                            df.getTimeDisplay(startTime)
+                        ),
+                        df.getDateTimeFromDateAndTime(
+                            historyWithDates!!.workDate.wdDate,
+                            df.getTimeDisplay(endTime)
+                        ),
+                        selectedTimeType,
+                        false,
+                        df.getCurrentUTCTimeAsString()
+                    )
                 )
-                Text(stringResource(R.string.would_you_like_to_save_time_entered))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    TextButton(onClick = {
-                        showUnsavedDialog = false
-                        navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
-                            popUpTo(Screen.WorkOrderHistoryTime.route) { inclusive = true }
-                        }
-                    }) {
-                        Text(stringResource(R.string.no))
-                    }
-                    TextButton(onClick = {
-                        showUnsavedDialog = false
-                    }) {
-                        Text(stringResource(R.string.go_back))
-                    }
-                    TextButton(onClick = {
-                        coroutineScope.launch {
-                            workOrderViewModel.insertWorkOrderHistoryTimeWorked(
-                                WorkOrderHistoryTimeWorked(
-                                    nf.generateRandomIdAsLong(),
-                                    history.woHistoryId,
-                                    historyWithDates!!.workDate.workDateId,
-                                    df.getDateTimeFromDateAndTime(
-                                        historyWithDates!!.workDate.wdDate,
-                                        df.getTimeDisplay(startTime)
-                                    ),
-                                    df.getDateTimeFromDateAndTime(
-                                        historyWithDates!!.workDate.wdDate,
-                                        df.getTimeDisplay(endTime)
-                                    ),
-                                    selectedTimeType,
-                                    false,
-                                    df.getCurrentUTCTimeAsString()
-                                )
-                            )
-                            showUnsavedDialog = false
-                            navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
-                                popUpTo(Screen.WorkOrderHistoryTime.route) { inclusive = true }
-                            }
-                        }
-                    }) {
-                        Text(stringResource(R.string.save))
-                    }
+                navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
+                    popUpTo(Screen.WorkOrderHistoryTime.route) { inclusive = true }
                 }
-                Spacer(modifier = Modifier.height(32.dp))
+            }
+        },
+        content = {
+            TextButton(
+                onClick = {
+                    showUnsavedDialog = false
+                    navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
+                        popUpTo(Screen.WorkOrderHistoryTime.route) { inclusive = true }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.no))
             }
         }
-    }
+    )
 
     if (showTimeOptionsDialog != null) {
         val combinedItem = showTimeOptionsDialog!!
@@ -281,7 +239,8 @@ fun WorkOrderHistoryTimeRoute(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING / 2)
             ) {
                 Text(
                     text = stringResource(R.string.time_entry_options),
@@ -317,45 +276,25 @@ fun WorkOrderHistoryTimeRoute(
         }
     }
 
-    if (showDeleteConfirmDialog != null) {
-        val combinedItem = showDeleteConfirmDialog!!
-        ModalBottomSheet(
-            onDismissRequest = { showDeleteConfirmDialog = null },
-            sheetState = rememberModalBottomSheetState()
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.delete_time_entry),
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Text(stringResource(R.string.this_cannot_be_undone))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    TextButton(onClick = { showDeleteConfirmDialog = null }) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                    TextButton(onClick = {
-                        coroutineScope.launch {
-                            workOrderViewModel.deleteTimeWorked(
-                                combinedItem.timeWorked.woHistoryTimeWorkedId,
-                                df.getCurrentUTCTimeAsString()
-                            )
-                        }
-                        showDeleteConfirmDialog = null
-                    }) {
-                        Text(stringResource(R.string.delete))
-                    }
+    ConfirmationBottomSheet(
+        showDialog = showDeleteConfirmDialog != null,
+        onDismissRequest = { showDeleteConfirmDialog = null },
+        title = stringResource(R.string.delete_time_entry),
+        message = stringResource(R.string.this_cannot_be_undone),
+        confirmButtonText = stringResource(R.string.delete),
+        dismissButtonText = stringResource(R.string.cancel),
+        isDelete = true,
+        onConfirm = {
+            showDeleteConfirmDialog?.let { combinedItem ->
+                coroutineScope.launch {
+                    workOrderViewModel.deleteTimeWorked(
+                        combinedItem.timeWorked.woHistoryTimeWorkedId,
+                        df.getCurrentUTCTimeAsString()
+                    )
                 }
-                Spacer(modifier = Modifier.height(32.dp))
             }
         }
-    }
+    )
 
     WorkOrderHistoryTimeScreen(
         infoText = "${stringResource(R.string.work_order)} ${historyWithDates!!.workOrder.woNumber}\n" +
@@ -413,30 +352,21 @@ fun WorkOrderHistoryTimeRoute(
         selectedTimeType = selectedTimeType,
         onTimeTypeChange = { selectedTimeType = it },
         onStartTimeClick = {
-            TimePickerDialog(context, { _, h, m ->
-                val newStart = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, h)
-                    set(Calendar.MINUTE, m)
-                }
+            df.showTimePicker(context, startTime) { newStart ->
                 startTime = df.roundCalendarTimeDownTo15Minutes(newStart)
                 errorMessage = null
-            }, startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), false).show()
+            }
         },
         onEndTimeClick = {
-            TimePickerDialog(context, { _, h, m ->
-                val newEnd = df.roundCalendarTimeUpTo15Minutes(
-                    Calendar.getInstance().apply {
-                        set(Calendar.HOUR_OF_DAY, h)
-                        set(Calendar.MINUTE, m)
-                    }
-                )
+            df.showTimePicker(context, endTime) { newEnd ->
+                val roundedEnd = df.roundCalendarTimeUpTo15Minutes(newEnd)
 
                 val hoursBefore = allTimesByDate.filter {
                     it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value
                 }.sumOf {
                     df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
                 }
-                val newSegmentHours = df.getTimeWorked(startTime, newEnd)
+                val newSegmentHours = df.getTimeWorked(startTime, roundedEnd)
 
                 if (selectedTimeType == TimeWorkedTypes.REG_HOURS.value &&
                     hoursBefore + newSegmentHours > 8.0
@@ -451,10 +381,10 @@ fun WorkOrderHistoryTimeRoute(
                     endTime = df.addHoursToCalendar(startTime, allowedHours)
                     errorMessage = adjustedOtHours
                 } else {
-                    endTime = newEnd
+                    endTime = roundedEnd
                 }
                 errorMessage = null
-            }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false).show()
+            }
         },
         onEnterTimeClick = {
             val currentStart = df.getDateTimeFromDateAndTime(

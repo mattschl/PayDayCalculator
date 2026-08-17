@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paycalculator.ui.workorderhistory
 
-import android.app.TimePickerDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -186,27 +185,19 @@ fun WorkOrderHistoryTimeUpdateRoute(
         selectedTimeType = selectedTimeType,
         onTimeTypeChange = { selectedTimeType = it },
         onStartTimeClick = {
-            TimePickerDialog(context, { _, h, m ->
-                val newStart = (startTime.clone() as Calendar).apply {
-                    set(Calendar.HOUR_OF_DAY, h)
-                    set(Calendar.MINUTE, m)
-                }
+            df.showTimePicker(context, startTime) { newStart ->
                 startTime = df.roundCalendarTimeDownTo15Minutes(newStart)
                 errorMessage = null
-            }, startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), false).show()
+            }
         },
         onEndTimeClick = {
-            TimePickerDialog(context, { _, h, m ->
-                var newEnd = (endTime.clone() as Calendar).apply {
-                    set(Calendar.HOUR_OF_DAY, h)
-                    set(Calendar.MINUTE, m)
-                }
-                newEnd = df.roundCalendarTimeUpTo15Minutes(newEnd)
+            df.showTimePicker(context, endTime) { newEnd ->
+                val roundedEnd = df.roundCalendarTimeUpTo15Minutes(newEnd)
 
-                if (newEnd.before(startTime)) {
-                    newEnd.add(Calendar.DAY_OF_YEAR, 1)
-                } else if (newEnd.timeInMillis - startTime.timeInMillis > 24 * 60 * 60 * 1000) {
-                    newEnd.add(Calendar.DAY_OF_YEAR, -1)
+                if (roundedEnd.before(startTime)) {
+                    roundedEnd.add(Calendar.DAY_OF_YEAR, 1)
+                } else if (roundedEnd.timeInMillis - startTime.timeInMillis > 24 * 60 * 60 * 1000) {
+                    roundedEnd.add(Calendar.DAY_OF_YEAR, -1)
                 }
 
                 val hoursBefore = allTimesByDate
@@ -215,7 +206,7 @@ fun WorkOrderHistoryTimeUpdateRoute(
                     .sumOf {
                         df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)
                     }
-                val newSegmentHours = df.getTimeWorked(startTime, newEnd)
+                val newSegmentHours = df.getTimeWorked(startTime, roundedEnd)
 
                 if (selectedTimeType == TimeWorkedTypes.REG_HOURS.value &&
                     hoursBefore + newSegmentHours > 8.0
@@ -230,10 +221,10 @@ fun WorkOrderHistoryTimeUpdateRoute(
                     endTime = df.addHoursToCalendar(startTime, allowedHours)
                     errorMessage = adjustedOtHours
                 } else {
-                    endTime = newEnd
+                    endTime = roundedEnd
                     errorMessage = null
                 }
-            }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false).show()
+            }
         },
         onSaveClick = {
             val currentStart = df.getDateTimeDisplay(startTime)

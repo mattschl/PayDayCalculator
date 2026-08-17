@@ -190,6 +190,23 @@ class DateFunctions {
         datePickerDialog.show()
     }
 
+    fun showTimePicker(
+        context: android.content.Context,
+        initialTime: Calendar,
+        onTimeSelected: (Calendar) -> Unit
+    ) {
+        val timePickerDialog = android.app.TimePickerDialog(
+            context, { _, h, m ->
+                val newTime = (initialTime.clone() as Calendar).apply {
+                    set(Calendar.HOUR_OF_DAY, h)
+                    set(Calendar.MINUTE, m)
+                }
+                onTimeSelected(newTime)
+            }, initialTime.get(Calendar.HOUR_OF_DAY), initialTime.get(Calendar.MINUTE), false
+        )
+        timePickerDialog.show()
+    }
+
     fun getNextDate(date: String): String {
         return try {
             val cal = Calendar.getInstance()

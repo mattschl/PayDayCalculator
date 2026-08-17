@@ -3,25 +3,21 @@ package ms.mattschlenkrich.paycalculator.ui.auth
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -31,9 +27,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.common.compose.StandardBottomSheet
 import ms.mattschlenkrich.paycalculator.common.security.AuthResult
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AuthenticationScreen(
     onPasswordVerify: (String) -> AuthResult,
@@ -46,68 +42,57 @@ fun AuthenticationScreen(
     var failedAttempts by rememberSaveable { mutableIntStateOf(0) }
 
     if (showResetDialog) {
-        var newPassword by rememberSaveable { mutableStateOf("") }
-        var confirmPassword by rememberSaveable { mutableStateOf("") }
-        var resetError by rememberSaveable { mutableStateOf<String?>(null) }
+        var newPassword by remember { mutableStateOf("") }
+        var confirmPassword by remember { mutableStateOf("") }
+        var resetError by remember { mutableStateOf<String?>(null) }
 
-        ModalBottomSheet(
+        StandardBottomSheet(
+            showDialog = showResetDialog,
             onDismissRequest = { /* Force reset - maybe don't allow dismiss? */ },
-            sheetState = rememberModalBottomSheetState()
+            title = "Reset Your Password"
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING / 2)
+            Text(
+                "You have used the master backup password. Please set a new custom password to continue.",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            OutlinedTextField(
+                value = newPassword,
+                onValueChange = { newPassword = it },
+                label = { Text("New Password") },
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                label = { Text("Confirm Password") },
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth()
+            )
+            if (resetError != null) {
+                Text(
+                    text = resetError!!,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
             ) {
-                Text(
-                    text = "Reset Your Password",
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Text(
-                    "You have used the master backup password. Please set a new custom password to continue.",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                OutlinedTextField(
-                    value = newPassword,
-                    onValueChange = { newPassword = it },
-                    label = { Text("New Password") },
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                OutlinedTextField(
-                    value = confirmPassword,
-                    onValueChange = { confirmPassword = it },
-                    label = { Text("Confirm Password") },
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                if (resetError != null) {
-                    Text(
-                        text = resetError!!,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    TextButton(onClick = {
-                        if (newPassword.isBlank()) {
-                            resetError = "Password cannot be empty"
-                        } else if (newPassword != confirmPassword) {
-                            resetError = "Passwords do not match"
-                        } else {
-                            onPasswordSet(newPassword)
-                            onAuthenticated()
-                            showResetDialog = false
-                        }
-                    }) {
-                        Text("Save")
+                TextButton(onClick = {
+                    if (newPassword.isBlank()) {
+                        resetError = "Password cannot be empty"
+                    } else if (newPassword != confirmPassword) {
+                        resetError = "Passwords do not match"
+                    } else {
+                        onPasswordSet(newPassword)
+                        onAuthenticated()
+                        showResetDialog = false
                     }
+                }) {
+                    Text("Save")
                 }
-                Spacer(modifier = Modifier.height(32.dp))
             }
         }
     }

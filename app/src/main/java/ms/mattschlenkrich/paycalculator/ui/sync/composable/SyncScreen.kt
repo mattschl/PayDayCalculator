@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import ms.mattschlenkrich.paycalculator.common.compose.ConfirmationBottomSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,15 +97,16 @@ fun SyncScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                if (showDeleteConfirmation) {
-                    SyncDeleteConfirmationDialog(
-                        onDismiss = { showDeleteConfirmation = false },
-                        onConfirm = {
-                            showDeleteConfirmation = false
-                            onClearBackupsClick()
-                        }
-                    )
-                }
+                ConfirmationBottomSheet(
+                    showDialog = showDeleteConfirmation,
+                    onDismissRequest = { showDeleteConfirmation = false },
+                    title = "Confirm Deletion",
+                    message = "Are you sure you want to delete all backup files from Google Drive? This action cannot be undone.",
+                    confirmButtonText = "Delete",
+                    dismissButtonText = "Cancel",
+                    isDelete = true,
+                    onConfirm = { onClearBackupsClick() }
+                )
 
                 if (isLoading) {
                     SyncLoadingOverlay(progressMessage = progressMessage)
