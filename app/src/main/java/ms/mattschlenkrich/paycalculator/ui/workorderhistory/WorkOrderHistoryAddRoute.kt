@@ -178,9 +178,10 @@ fun WorkOrderHistoryAddRoute(
                             mainViewModel.setTempWorkOrderHistoryInfo(null)
                             mainViewModel.setWorkOrder(null)
                             mainViewModel.setWorkOrderHistory(history)
-                            navController.navigate(Screen.WorkOrderHistoryTime.route) {
+                            navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
                                 popUpTo(Screen.WorkOrderHistoryAdd.route) { inclusive = true }
                             }
+                            navController.navigate(Screen.WorkOrderHistoryTime.route)
                         } catch (_: Exception) {
                             isSaving = false
                         }

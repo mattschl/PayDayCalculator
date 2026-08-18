@@ -210,18 +210,14 @@ fun WorkOrderHistoryTimeRoute(
                         df.getCurrentUTCTimeAsString()
                     )
                 )
-                navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
-                    popUpTo(Screen.WorkOrderHistoryTime.route) { inclusive = true }
-                }
+                navController.popBackStack()
             }
         },
         content = {
             TextButton(
                 onClick = {
                     showUnsavedDialog = false
-                    navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
-                        popUpTo(Screen.WorkOrderHistoryTime.route) { inclusive = true }
-                    }
+                    navController.popBackStack()
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -431,9 +427,7 @@ fun WorkOrderHistoryTimeRoute(
             if (totalHours > 0.0) {
                 showUnsavedDialog = true
             } else {
-                navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
-                    popUpTo(Screen.WorkOrderHistoryTime.route) { inclusive = true }
-                }
+                navController.popBackStack()
             }
         },
         existingTimes = existingTimes,

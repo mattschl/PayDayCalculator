@@ -134,28 +134,28 @@ fun WorkDateUpdatePageContent(
     val minColumnWidth = settings?.minColumnWidth ?: DEFAULT_MIN_COLUMN_WIDTH
 
     var curDateString by remember(workDate.wdDate) { mutableStateOf(workDate.wdDate) }
-    var regHours by remember(workDate.wdRegHours) {
+    var regHours by remember(workDate.wdUpdateTime) {
         mutableStateOf(
             nf.displayNumberFromDouble(
                 workDate.wdRegHours
             )
         )
     }
-    var otHours by remember(workDate.wdOtHours) {
+    var otHours by remember(workDate.wdUpdateTime) {
         mutableStateOf(
             nf.displayNumberFromDouble(
                 workDate.wdOtHours
             )
         )
     }
-    var dblOtHours by remember(workDate.wdDblOtHours) {
+    var dblOtHours by remember(workDate.wdUpdateTime) {
         mutableStateOf(
             nf.displayNumberFromDouble(
                 workDate.wdDblOtHours
             )
         )
     }
-    var statHours by remember(workDate.wdStatHours) {
+    var statHours by remember(workDate.wdUpdateTime) {
         mutableStateOf(
             nf.displayNumberFromDouble(
                 workDate.wdStatHours

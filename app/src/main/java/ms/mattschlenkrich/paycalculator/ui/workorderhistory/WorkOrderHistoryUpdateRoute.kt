@@ -69,21 +69,21 @@ fun WorkOrderHistoryUpdateRoute(
         .observeAsState(emptyList())
     var workOrderDescription by rememberSaveable { mutableStateOf(historyWithDates!!.workOrder.woDescription) }
 
-    var regHours by rememberSaveable(history.woHistoryRegHours) {
+    var regHours by rememberSaveable(history.woHistoryUpdateTime) {
         mutableStateOf(
             nf.displayNumberFromDouble(
                 history.woHistoryRegHours
             )
         )
     }
-    var otHours by rememberSaveable(history.woHistoryOtHours) {
+    var otHours by rememberSaveable(history.woHistoryUpdateTime) {
         mutableStateOf(
             nf.displayNumberFromDouble(
                 history.woHistoryOtHours
             )
         )
     }
-    var dblOtHours by rememberSaveable(history.woHistoryDblOtHours) {
+    var dblOtHours by rememberSaveable(history.woHistoryUpdateTime) {
         mutableStateOf(
             nf.displayNumberFromDouble(
                 history.woHistoryDblOtHours
