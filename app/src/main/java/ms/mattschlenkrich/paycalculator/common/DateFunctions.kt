@@ -112,13 +112,21 @@ class DateFunctions {
         return try {
             val start = timeFormatter.parse(startTime)!!
             val end = timeFormatter.parse(endTime)!!
-            (end.time - start.time).toDouble() / (1000.0 * 60.0 * 60.0)
+            var diff = (end.time - start.time).toDouble() / (1000.0 * 60.0 * 60.0)
+            if (diff < 0 && startTime.substring(0, 10) == endTime.substring(0, 10)) {
+                diff += 24.0
+            }
+            diff
         } catch (_: Exception) {
             val tempStart = splitTimeFromDateTime(startTime)
             val tempEnd = splitTimeFromDateTime(endTime)
             val hoursStart = (tempStart[0].toDouble() * 60) + tempStart[1].toDouble()
             val hoursEnd = (tempEnd[0].toDouble() * 60) + tempEnd[1].toDouble()
-            (hoursEnd - hoursStart) / 60
+            var diff = (hoursEnd - hoursStart) / 60
+            if (diff < 0) {
+                diff += 24
+            }
+            diff
         }
     }
 

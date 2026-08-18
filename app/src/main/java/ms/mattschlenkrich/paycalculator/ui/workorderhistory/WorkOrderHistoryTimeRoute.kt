@@ -109,10 +109,16 @@ fun WorkOrderHistoryTimeRoute(
         val latestTime = allTimesByDate
             .filter { !it.workOrderHistory.workOrderHistory.woHistoryDeleted }
             .maxOfOrNull { it.timeWorked.wohtEndTime }
-        val timePart = latestTime?.let {
-            df.splitTimeFromDateTime(it).joinToString(":")
-        } ?: "08:30"
-        mutableStateOf(df.getCalendarFromTime(timePart))
+        if (latestTime != null) {
+            mutableStateOf(df.getCalendarFromDateTime(latestTime))
+        } else {
+            mutableStateOf(
+                df.getCalendarFromDateAndTime(
+                    historyWithDates!!.workDate.wdDate,
+                    "08:30"
+                )
+            )
+        }
     }
     var endTime by remember(startTime, selectedTimeType) {
         val now = df.roundCalendarTimeUpTo15Minutes(Calendar.getInstance())
@@ -197,14 +203,8 @@ fun WorkOrderHistoryTimeRoute(
                         nf.generateRandomIdAsLong(),
                         history.woHistoryId,
                         historyWithDates!!.workDate.workDateId,
-                        df.getDateTimeFromDateAndTime(
-                            historyWithDates!!.workDate.wdDate,
-                            df.getTimeDisplay(startTime)
-                        ),
-                        df.getDateTimeFromDateAndTime(
-                            historyWithDates!!.workDate.wdDate,
-                            df.getTimeDisplay(endTime)
-                        ),
+                        df.getDateTimeDisplay(startTime),
+                        df.getDateTimeDisplay(endTime),
                         selectedTimeType,
                         false,
                         df.getCurrentUTCTimeAsString()
@@ -357,6 +357,12 @@ fun WorkOrderHistoryTimeRoute(
             df.showTimePicker(context, endTime) { newEnd ->
                 val roundedEnd = df.roundCalendarTimeUpTo15Minutes(newEnd)
 
+                if (roundedEnd.before(startTime)) {
+                    roundedEnd.add(Calendar.DAY_OF_YEAR, 1)
+                } else if (roundedEnd.timeInMillis - startTime.timeInMillis > 24 * 60 * 60 * 1000) {
+                    roundedEnd.add(Calendar.DAY_OF_YEAR, -1)
+                }
+
                 val hoursBefore = allTimesByDate.filter {
                     it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value
                 }.sumOf {
@@ -383,14 +389,8 @@ fun WorkOrderHistoryTimeRoute(
             }
         },
         onEnterTimeClick = {
-            val currentStart = df.getDateTimeFromDateAndTime(
-                historyWithDates!!.workDate.wdDate,
-                df.getTimeDisplay(startTime)
-            )
-            val currentEnd = df.getDateTimeFromDateAndTime(
-                historyWithDates!!.workDate.wdDate,
-                df.getTimeDisplay(endTime)
-            )
+            val currentStart = df.getDateTimeDisplay(startTime)
+            val currentEnd = df.getDateTimeDisplay(endTime)
 
             val isDuplicateStart =
                 allTimesByDate.any { it.timeWorked.wohtStartTime == currentStart }
