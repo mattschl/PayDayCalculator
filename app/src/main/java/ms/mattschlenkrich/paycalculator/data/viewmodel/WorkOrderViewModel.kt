@@ -29,6 +29,8 @@ class WorkOrderViewModel(
             workOrder.woUpdateTime
         )
 
+    fun getWorkOrder(workOrderId: Long) = workOrderRepository.getWorkOrder(workOrderId)
+
     suspend fun findWorkOrder(workOrderNum: String, employerId: Long) =
         workOrderRepository.findWorkOrder(workOrderNum, employerId)
 
@@ -137,6 +139,18 @@ class WorkOrderViewModel(
     suspend fun removeAllMaterialsFromWorkOrderHistory(historyId: Long) =
         workOrderRepository.removeAllMaterialsFromWorkOrderHistory(
             historyId,
+            DateFunctions().getCurrentUTCTimeAsString()
+        )
+
+    suspend fun removeAllTimeWorkedFromWorkOrderHistory(historyId: Long) =
+        workOrderRepository.removeAllTimeWorkedFromWorkOrderHistory(
+            historyId,
+            DateFunctions().getCurrentUTCTimeAsString()
+        )
+
+    suspend fun deleteWorkDate(workDateId: Long) =
+        workOrderRepository.deleteWorkDate(
+            workDateId,
             DateFunctions().getCurrentUTCTimeAsString()
         )
 

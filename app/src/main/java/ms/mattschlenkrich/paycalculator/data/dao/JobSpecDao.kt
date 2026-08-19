@@ -86,7 +86,7 @@ interface JobSpecDao {
     )
     fun searchJobSpecs(query: String): LiveData<List<JobSpec>>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkOrderJobSpec(workOrderJobSpec: WorkOrderJobSpec)
 
     @Update

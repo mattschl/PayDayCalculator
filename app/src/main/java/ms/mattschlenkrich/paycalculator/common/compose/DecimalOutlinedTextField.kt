@@ -12,6 +12,7 @@ fun DecimalOutlinedTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    onLongClick: (() -> Unit)? = null,
     focusRequester: FocusRequester? = null,
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
@@ -24,6 +25,7 @@ fun DecimalOutlinedTextField(
         label = label,
         placeholder = placeholder,
         modifier = modifier,
+        onLongClick = onLongClick,
         focusRequester = focusRequester,
         singleLine = singleLine,
         keyboardOptions = KeyboardOptions(

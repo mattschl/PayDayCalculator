@@ -16,6 +16,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,9 +66,21 @@ fun PayDetailPage(
     var trigger by remember { mutableIntStateOf(0) }
     var showOverrideDialog by remember { mutableStateOf<ExtraContainer?>(null) }
 
-    // Cache to prevent redundant calculations
-    val calculationCache = remember { mutableMapOf<String, Unit>() }
-    val cacheKey = "${employer.employerId}_${cutoffDate}_$trigger"
+    val workDates by payDayViewModel.getWorkDateList(
+        employer.employerId,
+        cutoffDate
+    ).observeAsState(emptyList())
+
+    val workDateExtras by payDayViewModel.getWorkDateExtrasPerPay(
+        employer.employerId,
+        cutoffDate
+    ).observeAsState(emptyList())
+
+    val payPeriod by payDayViewModel.getPayPeriod(cutoffDate, employer.employerId).observeAsState()
+
+    val payPeriodExtras by payDayViewModel.getPayPeriodExtras(
+        payPeriod?.payPeriodId ?: 0L
+    ).observeAsState(emptyList())
 
     val payDayIsLabel = stringResource(R.string.pay_day_is_)
     val netLabel = stringResource(R.string.net_)
@@ -78,21 +91,19 @@ fun PayDetailPage(
 
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(employer, cutoffDate, trigger) {
-        if (calculationCache.containsKey(cacheKey)) return@LaunchedEffect
-        
-        val payPeriod = payDayViewModel.getPayPeriodSync(
+    LaunchedEffect(employer, cutoffDate, trigger, workDates, workDateExtras, payPeriodExtras) {
+        val curPayPeriod = payDayViewModel.getPayPeriodSync(
             cutoffDate,
             employer.employerId
         )
-        if (payPeriod != null) {
-            mainViewModel.setPayPeriod(payPeriod)
+        if (curPayPeriod != null) {
+            mainViewModel.setPayPeriod(curPayPeriod)
             val payCalculations =
                 PayCalculationsAsync(
                     payCalculationsViewModel,
                     payDetailViewModel,
                     employer,
-                    payPeriod
+                    curPayPeriod
                 )
             payCalculations.waitForCalculations()
 
@@ -168,7 +179,6 @@ fun PayDetailPage(
                     items,
                     nf.displayDollars(payCalculations.getPayAllHourly())
                 )
-            calculationCache[cacheKey] = Unit
         }
     }
 
@@ -194,13 +204,13 @@ fun PayDetailPage(
         },
         onExtraActiveChange = { extra, active ->
             coroutineScope.launch {
-                val payPeriod = payDayViewModel.getPayPeriodSync(
+                val curPayPeriod = payDayViewModel.getPayPeriodSync(
                     cutoffDate,
                     employer.employerId
                 )
-                if (payPeriod != null) {
+                if (curPayPeriod != null) {
                     insertOrUpdateExtraOnChange(
-                        extra, !active, payPeriod.payPeriodId,
+                        extra, !active, curPayPeriod.payPeriodId,
                         payDayViewModel, nf, df
                     )
                     trigger++
@@ -234,13 +244,13 @@ fun PayDetailPage(
                     }
                     TextButton(onClick = {
                         coroutineScope.launch {
-                            val payPeriod = payDayViewModel.getPayPeriodSync(
+                            val curPayPeriod = payDayViewModel.getPayPeriodSync(
                                 cutoffDate,
                                 employer.employerId
                             )
-                            if (payPeriod != null) {
+                            if (curPayPeriod != null) {
                                 insertOrUpdateExtraOnChange(
-                                    extra, false, payPeriod.payPeriodId,
+                                    extra, false, curPayPeriod.payPeriodId,
                                     payDayViewModel, nf, df
                                 )
                                 // The helper sets the new extra in extra.payPeriodExtra

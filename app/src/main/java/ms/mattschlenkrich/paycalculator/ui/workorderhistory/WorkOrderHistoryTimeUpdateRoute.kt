@@ -175,6 +175,22 @@ fun WorkOrderHistoryTimeUpdateRoute(
     WorkOrderHistoryTimeUpdateScreen(
         infoText = "${stringResource(R.string.work_order)} ${combined.workOrderHistory.workOrder.woNumber}\n" +
                 combined.workOrderHistory.workOrder.woDescription,
+        hoursSummaryText = buildString {
+            val workedHours = allTimesByDate
+                .filter { it.timeWorked.wohtHistoryId == combined.timeWorked.wohtHistoryId }
+                .filter { it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value }
+                .sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) }
+
+            val totalWorkedDayHours = allTimesByDate
+                .filter { it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value }
+                .sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) }
+
+            append("${stringResource(R.string.total_hours)} ${nf.displayNumberFromDouble(workedHours)}")
+
+            if (totalWorkedDayHours > workedHours) {
+                append("\nDay Total: ${nf.displayNumberFromDouble(totalWorkedDayHours)}")
+            }
+        },
         originalTimeText = "${stringResource(R.string.original_time)} " +
                 df.get12HourDisplay(combined.timeWorked.wohtStartTime) +
                 " - " +

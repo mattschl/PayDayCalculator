@@ -300,18 +300,22 @@ fun WorkOrderHistoryTimeRoute(
                 it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value
             }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) }
 
+            val totalWorkedDayHours = allTimesByDate.filter {
+                it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value
+            }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) }
+
             val breakHours = existingTimes.filter {
                 it.timeWorked.wohtTimeType == TimeWorkedTypes.BREAK.value
             }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) }
 
-            append(stringResource(R.string.total_hours))
-            append(" ")
-            append(nf.displayNumberFromDouble(workedHours))
+            append("${stringResource(R.string.total_hours)} ${nf.displayNumberFromDouble(workedHours)}")
 
             if (breakHours > 0.0) {
-                append(" (")
-                append(nf.displayNumberFromDouble(breakHours))
-                append(" break)")
+                append(" (${nf.displayNumberFromDouble(breakHours)} break)")
+            }
+
+            if (totalWorkedDayHours > workedHours) {
+                append("\nDay Total: ${nf.displayNumberFromDouble(totalWorkedDayHours)}")
             }
 
             val reg = existingTimes.filter {

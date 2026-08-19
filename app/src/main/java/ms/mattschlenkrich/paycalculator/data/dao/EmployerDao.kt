@@ -40,7 +40,7 @@ interface EmployerDao {
     )
     fun getEmployers(): LiveData<List<Employers>>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPayRate(payRate: EmployerPayRates)
 
     @Update
@@ -53,4 +53,10 @@ interface EmployerDao {
                 "ORDER BY eprEffectiveDate DESC"
     )
     fun getEmployerPayRates(employerId: Long): LiveData<List<EmployerPayRates>>
+
+    @Query(
+        "SELECT * FROM $TABLE_EMPLOYERS " +
+                "WHERE $EMPLOYER_NAME = :name"
+    )
+    suspend fun findEmployerByNameAnySync(name: String): Employers?
 }

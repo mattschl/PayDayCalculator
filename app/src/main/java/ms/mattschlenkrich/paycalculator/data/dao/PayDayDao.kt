@@ -56,6 +56,14 @@ interface PayDayDao {
                 "AND ppEmployerId = :employerId " +
                 "AND ppIsDeleted = 0"
     )
+    fun getPayPeriod(cutOff: String, employerId: Long): LiveData<PayPeriods>
+
+    @Query(
+        "SELECT * FROM payPeriods " +
+                "WHERE ppCutoffDate = :cutOff " +
+                "AND ppEmployerId = :employerId " +
+                "AND ppIsDeleted = 0"
+    )
     suspend fun getPayPeriodSync(cutOff: String, employerId: Long): PayPeriods?
 
     @Query(
@@ -135,7 +143,7 @@ interface PayDayDao {
         updateTime: String
     )
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkDateExtra(workDateExtra: WorkDateExtras)
 
     @Update
@@ -158,6 +166,22 @@ interface PayDayDao {
     suspend fun deleteWorkDateExtra(
         extraName: String, workDateId: Long, updateTime: String
     )
+
+    @Query(
+        "UPDATE $TABLE_WORK_DATE_EXTRAS " +
+                "SET wdeIsDeleted = 1, " +
+                "wdeUpdateTime = :updateTime " +
+                "WHERE wdeWorkDateId = :workDateId"
+    )
+    suspend fun removeAllWorkDateExtras(workDateId: Long, updateTime: String)
+
+    @Query(
+        "UPDATE $TABLE_WORK_DATES " +
+                "SET wdIsDeleted = 1, " +
+                "wdUpdateTime = :updateTime " +
+                "WHERE workDateId = :workDateId"
+    )
+    suspend fun deleteWorkDate(workDateId: Long, updateTime: String)
 
     @RewriteQueriesToDropUnusedColumns
     @Transaction
@@ -190,4 +214,18 @@ interface PayDayDao {
                 "ORDER BY ppeName"
     )
     fun getPayPeriodExtras(payPeriodId: Long): LiveData<List<WorkPayPeriodExtras>>
+
+    @Query(
+        "SELECT * FROM workDates " +
+                "WHERE wdEmployerId = :employerId " +
+                "AND wdDate = :date " +
+                "AND wdCutoffDate = :cutOff"
+    )
+    suspend fun getWorkDateAnySync(employerId: Long, date: String, cutOff: String): WorkDates?
+
+    @Query(
+        "SELECT * FROM workDates " +
+                "WHERE workDateId = :workDateId"
+    )
+    suspend fun getWorkDateByIdAnySync(workDateId: Long): WorkDates?
 }

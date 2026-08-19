@@ -134,28 +134,40 @@ fun WorkDateUpdatePageContent(
     val minColumnWidth = settings?.minColumnWidth ?: DEFAULT_MIN_COLUMN_WIDTH
 
     var curDateString by remember(workDate.wdDate) { mutableStateOf(workDate.wdDate) }
-    var regHours by remember(workDate.wdUpdateTime) {
+    var regHours by remember(
+        workDate.wdRegHours,
+        workDate.wdUpdateTime
+    ) {
         mutableStateOf(
             nf.displayNumberFromDouble(
                 workDate.wdRegHours
             )
         )
     }
-    var otHours by remember(workDate.wdUpdateTime) {
+    var otHours by remember(
+        workDate.wdOtHours,
+        workDate.wdUpdateTime
+    ) {
         mutableStateOf(
             nf.displayNumberFromDouble(
                 workDate.wdOtHours
             )
         )
     }
-    var dblOtHours by remember(workDate.wdUpdateTime) {
+    var dblOtHours by remember(
+        workDate.wdDblOtHours,
+        workDate.wdUpdateTime
+    ) {
         mutableStateOf(
             nf.displayNumberFromDouble(
                 workDate.wdDblOtHours
             )
         )
     }
-    var statHours by remember(workDate.wdUpdateTime) {
+    var statHours by remember(
+        workDate.wdStatHours,
+        workDate.wdUpdateTime
+    ) {
         mutableStateOf(
             nf.displayNumberFromDouble(
                 workDate.wdStatHours
@@ -291,6 +303,7 @@ fun WorkDateUpdatePageContent(
     }
 
     var showReplaceDateDialog by rememberSaveable { mutableStateOf(false) }
+    var showDeleteDateConfirmDialog by rememberSaveable { mutableStateOf(false) }
     var showHistoryOptionsDialog by rememberSaveable {
         mutableStateOf<WorkOrderHistoryWithDates?>(
             null
@@ -320,6 +333,26 @@ fun WorkDateUpdatePageContent(
         onConfirm = {
             coroutineScope.launch {
                 onUpdateWorkDate(Screen.TimeSheet.route)
+            }
+        }
+    )
+
+    ConfirmationBottomSheet(
+        showDialog = showDeleteDateConfirmDialog,
+        onDismissRequest = { showDeleteDateConfirmDialog = false },
+        title = stringResource(R.string.confirm_leave),
+        message = "${stringResource(R.string.are_you_sure_you_want_to_delete_)} ${
+            df.getDisplayDate(
+                workDate.wdDate
+            )
+        }?",
+        confirmButtonText = stringResource(R.string.delete),
+        dismissButtonText = stringResource(R.string.cancel),
+        isDelete = true,
+        onConfirm = {
+            coroutineScope.launch {
+                workOrderViewModel.deleteWorkDate(workDate.workDateId)
+                navController.popBackStack()
             }
         }
     )
@@ -382,8 +415,6 @@ fun WorkDateUpdatePageContent(
         onConfirm = {
             showDeleteHistoryConfirmDialog?.let { history ->
                 coroutineScope.launch {
-                    workOrderViewModel.removeAllWorkPerformedFromWorkOderHistory(history.history.woHistoryId)
-                    workOrderViewModel.removeAllMaterialsFromWorkOrderHistory(history.history.woHistoryId)
                     workOrderViewModel.deleteWorkOrderHistory(history.history.woHistoryId)
                 }
             }
@@ -481,6 +512,11 @@ fun WorkDateUpdatePageContent(
                 statHours = nf.displayNumberFromDouble(stat)
             }
         },
+        onRefreshHours = {
+            regHours = nf.displayNumberFromDouble(historyRegHours)
+            otHours = nf.displayNumberFromDouble(historyOtHours)
+            dblOtHours = nf.displayNumberFromDouble(historyDblOtHours)
+        },
         note = note,
         onNoteChange = { note = it },
         onUpdateTimeClick = {
@@ -497,6 +533,9 @@ fun WorkDateUpdatePageContent(
             regHours = nf.displayNumberFromDouble(historyRegHours)
             otHours = nf.displayNumberFromDouble(historyOtHours)
             dblOtHours = nf.displayNumberFromDouble(historyDblOtHours)
+        },
+        onDeleteDateClick = {
+            showDeleteDateConfirmDialog = true
         },
         onDoneClick = {
             if (curDateString != workDate.wdDate && usedWorkDatesList.any { it.wdDate == curDateString }) {

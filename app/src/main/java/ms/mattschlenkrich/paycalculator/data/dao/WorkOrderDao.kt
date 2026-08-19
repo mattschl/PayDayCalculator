@@ -43,11 +43,25 @@ interface WorkOrderDao {
 
     @Query(
         "SELECT * FROM workOrders " +
+                "WHERE workOrderId = :workOrderId " +
+                "AND woDeleted = 0"
+    )
+    fun getWorkOrder(workOrderId: Long): LiveData<WorkOrder>
+
+    @Query(
+        "SELECT * FROM workOrders " +
                 "WHERE woNumber = :workOrderNum " +
                 "AND woEmployerId = :employerId " +
                 "AND woDeleted = 0"
     )
     suspend fun findWorkOrder(workOrderNum: String, employerId: Long): WorkOrder?
+
+    @Query(
+        "SELECT * FROM workOrders " +
+                "WHERE woNumber = :workOrderNum " +
+                "AND woEmployerId = :employerId"
+    )
+    suspend fun findWorkOrderAnySync(workOrderNum: String, employerId: Long): WorkOrder?
 
     @Query(
         "SELECT * FROM workOrders " +
@@ -207,4 +221,17 @@ interface WorkOrderDao {
                 "AND woHistoryDeleted = 0"
     )
     suspend fun getWorkOrderHistorySync(workOrderId: Long, workDateId: Long): WorkOrderHistory?
+
+    @Query(
+        "SELECT * FROM workOrderHistory " +
+                "WHERE woHistoryWorkOrderId = :workOrderId " +
+                "AND woHistoryWorkDateId = :workDateId"
+    )
+    suspend fun getWorkOrderHistoryAnySync(workOrderId: Long, workDateId: Long): WorkOrderHistory?
+
+    @Query(
+        "SELECT * FROM workOrderHistory " +
+                "WHERE woHistoryId = :historyId"
+    )
+    suspend fun getWorkOrderHistoryByIdAnySync(historyId: Long): WorkOrderHistory?
 }

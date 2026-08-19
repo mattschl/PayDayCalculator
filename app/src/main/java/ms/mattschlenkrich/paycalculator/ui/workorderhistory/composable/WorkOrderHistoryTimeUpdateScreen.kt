@@ -44,6 +44,7 @@ import java.util.Calendar
 @Composable
 fun WorkOrderHistoryTimeUpdateScreen(
     infoText: String,
+    hoursSummaryText: String = "",
     originalTimeText: String,
     startTime: Calendar,
     endTime: Calendar,
@@ -141,6 +142,15 @@ fun WorkOrderHistoryTimeUpdateScreen(
                             text = infoText,
                             style = MaterialTheme.typography.bodyMedium
                         )
+                        if (hoursSummaryText.isNotEmpty()) {
+                            Text(
+                                text = hoursSummaryText,
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                         Text(
                             text = originalTimeText,
                             style = MaterialTheme.typography.titleMedium,

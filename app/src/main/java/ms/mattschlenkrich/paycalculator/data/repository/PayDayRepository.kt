@@ -18,6 +18,9 @@ class PayDayRepository(private val db: PayDatabase) {
     suspend fun updatePayPeriod(payPeriod: PayPeriods) =
         db.getPayDayDao().updatePayPeriod(payPeriod)
 
+    fun getPayPeriod(cutOff: String, employerId: Long) =
+        db.getPayDayDao().getPayPeriod(cutOff, employerId)
+
     suspend fun getPayPeriodSync(cutOff: String, employerId: Long) =
         db.getPayDayDao().getPayPeriodSync(cutOff, employerId)
 
@@ -36,9 +39,57 @@ class PayDayRepository(private val db: PayDatabase) {
     fun getWorkDateListUsed(employerId: Long, cutOff: String) =
         db.getPayDayDao().getWorkDateListUsed(employerId, cutOff)
 
-    suspend fun insertWorkDate(workDate: WorkDates) = db.getPayDayDao().insertWorkDate(workDate)
+    suspend fun insertWorkDate(workDate: WorkDates) {
+        val existing = db.getPayDayDao().getWorkDateAnySync(
+            workDate.wdEmployerId,
+            workDate.wdDate,
+            workDate.wdCutoffDate
+        )
+        if (existing != null) {
+            val updated = workDate.copy(
+                workDateId = existing.workDateId,
+                wdIsDeleted = false
+            )
+            db.getPayDayDao().updateWorkDate(updated)
+            val updateTime = ms.mattschlenkrich.paycalculator.common.DateFunctions()
+                .getCurrentUTCTimeAsString()
+            val histories =
+                db.getWorkOrderDao().getWorkOrderHistoriesByDateSync(existing.workDateId)
+            histories.forEach { history ->
+                db.getWorkOrderDao().deleteWorkOrderHistory(history.woHistoryId, updateTime)
+                db.getWorkPerformedDao()
+                    .removeAllWorkPerformedFromWorkOrderHistory(history.woHistoryId, updateTime)
+                db.getMaterialDao()
+                    .removeAllMaterialsFromWorkOrderHistory(history.woHistoryId, updateTime)
+                db.getWorkOrderTimeDao()
+                    .removeAllTimeWorkedFromWorkOrderHistory(history.woHistoryId, updateTime)
+            }
+            db.getPayDayDao().removeAllWorkDateExtras(existing.workDateId, updateTime)
+        } else {
+            db.getPayDayDao().insertWorkDate(workDate)
+        }
+    }
 
-    suspend fun updateWorkDate(workDate: WorkDates) = db.getPayDayDao().updateWorkDate(workDate)
+    suspend fun updateWorkDate(workDate: WorkDates) {
+        val existing = db.getPayDayDao().getWorkDateByIdAnySync(workDate.workDateId)
+        if (existing != null && existing.wdIsDeleted && !workDate.wdIsDeleted) {
+            val updateTime = ms.mattschlenkrich.paycalculator.common.DateFunctions()
+                .getCurrentUTCTimeAsString()
+            val histories =
+                db.getWorkOrderDao().getWorkOrderHistoriesByDateSync(workDate.workDateId)
+            histories.forEach { history ->
+                db.getWorkOrderDao().deleteWorkOrderHistory(history.woHistoryId, updateTime)
+                db.getWorkPerformedDao()
+                    .removeAllWorkPerformedFromWorkOrderHistory(history.woHistoryId, updateTime)
+                db.getMaterialDao()
+                    .removeAllMaterialsFromWorkOrderHistory(history.woHistoryId, updateTime)
+                db.getWorkOrderTimeDao()
+                    .removeAllTimeWorkedFromWorkOrderHistory(history.woHistoryId, updateTime)
+            }
+            db.getPayDayDao().removeAllWorkDateExtras(workDate.workDateId, updateTime)
+        }
+        db.getPayDayDao().updateWorkDate(workDate)
+    }
 
     suspend fun insertWorkDateExtra(workDateExtra: WorkDateExtras) =
         db.getPayDayDao().insertWorkDateExtra(workDateExtra)

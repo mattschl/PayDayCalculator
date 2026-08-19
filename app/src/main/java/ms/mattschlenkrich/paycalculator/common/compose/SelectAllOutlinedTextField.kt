@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.common.compose
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 
@@ -24,6 +26,7 @@ fun SelectAllOutlinedTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    onLongClick: (() -> Unit)? = null,
     focusRequester: FocusRequester? = null,
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
@@ -54,6 +57,18 @@ fun SelectAllOutlinedTextField(
         }
     }
 
+    val combinedModifier = modifier.then(
+        if (onLongClick != null) {
+            Modifier.pointerInput(onLongClick) {
+                detectTapGestures(
+                    onLongPress = { onLongClick.invoke() }
+                )
+            }
+        } else {
+            Modifier
+        }
+    )
+
     StandardDecorationBox(
         value = textFieldValueState.text,
         innerTextField = {
@@ -79,7 +94,7 @@ fun SelectAllOutlinedTextField(
             )
         },
         interactionSource = interactionSource,
-        modifier = modifier,
+        modifier = combinedModifier,
         singleLine = singleLine,
         isError = isError,
         label = label,

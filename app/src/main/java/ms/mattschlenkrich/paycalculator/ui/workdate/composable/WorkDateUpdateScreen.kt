@@ -1,7 +1,5 @@
 package ms.mattschlenkrich.paycalculator.ui.workdate.composable
 
-import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
-
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +18,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -39,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
@@ -62,11 +62,13 @@ fun WorkDateUpdateScreen(
     statHours: String,
     onStatHoursChange: (String) -> Unit,
     onStatHoursLongClick: () -> Unit,
+    onRefreshHours: () -> Unit,
     note: String,
     onNoteChange: (String) -> Unit,
     onUpdateTimeClick: () -> Unit,
     onAddHistoryClick: () -> Unit,
     onTransferClick: () -> Unit,
+    onDeleteDateClick: () -> Unit,
     onDoneClick: () -> Unit,
     histories: List<WorkOrderHistoryWithDates>,
     onHistoryClick: (WorkOrderHistoryWithDates) -> Unit,
@@ -139,6 +141,13 @@ fun WorkDateUpdateScreen(
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold
                         )
+                        IconButton(onClick = onDeleteDateClick) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = stringResource(R.string.delete),
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
 
                     Row(
@@ -149,12 +158,14 @@ fun WorkDateUpdateScreen(
                             value = regHours,
                             onValueChange = onRegHoursChange,
                             label = { Text(stringResource(R.string.reg_hours)) },
+                            onLongClick = onRefreshHours,
                             modifier = Modifier.weight(1f)
                         )
                         DecimalOutlinedTextField(
                             value = otHours,
                             onValueChange = onOtHoursChange,
                             label = { Text(stringResource(R.string.overtime_hours)) },
+                            onLongClick = onRefreshHours,
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -167,6 +178,7 @@ fun WorkDateUpdateScreen(
                             value = dblOtHours,
                             onValueChange = onDblOtHoursChange,
                             label = { Text(stringResource(R.string.double_overtime)) },
+                            onLongClick = onRefreshHours,
                             modifier = Modifier.weight(1f)
                         )
                         DecimalOutlinedTextField(

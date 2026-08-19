@@ -60,6 +60,12 @@ fun TimeSheetPage(
         extrasList.groupBy { it.extra.wdeWorkDateId }
     }
 
+    val payPeriod by payDayViewModel.getPayPeriod(cutoffDate, employer.employerId).observeAsState()
+
+    val payPeriodExtras by payDayViewModel.getPayPeriodExtras(
+        payPeriod?.payPeriodId ?: 0L
+    ).observeAsState(emptyList())
+
     val totalsLabel = stringResource(R.string.totals)
     val week1Label = stringResource(R.string.week_1_)
     val week2Label = stringResource(R.string.week_2_)
@@ -69,34 +75,20 @@ fun TimeSheetPage(
     var week1SummaryString by remember { mutableStateOf("") }
     var week2SummaryString by remember { mutableStateOf("") }
 
-    // Cache to prevent redundant calculations on recomposition
-    val calculationCache = remember { mutableMapOf<String, TimeSheetPaySummary>() }
-    val summaryCache = remember { mutableMapOf<String, Pair<String, String>>() }
-    val cacheKey = "${employer.employerId}_$cutoffDate"
-
-    LaunchedEffect(workDates, employer, cutoffDate) {
+    LaunchedEffect(workDates, extrasList, payPeriodExtras, employer, cutoffDate) {
         if (workDates.isEmpty()) return@LaunchedEffect
 
-        // Check cache first
-        if (calculationCache.containsKey(cacheKey) && summaryCache.containsKey(cacheKey)) {
-            paySummary = calculationCache[cacheKey]!!
-            val summaries = summaryCache[cacheKey]!!
-            week1SummaryString = summaries.first
-            week2SummaryString = summaries.second
-            return@LaunchedEffect
-        }
-
-        val payPeriod = payDayViewModel.getPayPeriodSync(
+        val curPayPeriod = payDayViewModel.getPayPeriodSync(
             cutoffDate,
             employer.employerId
         )
-        if (payPeriod != null) {
+        if (curPayPeriod != null) {
             val payCalculations =
                 PayCalculationsAsync(
                     payCalculationsViewModel,
                     payDetailViewModel,
                     employer,
-                    payPeriod
+                    curPayPeriod
                 )
             payCalculations.waitForCalculations()
 
@@ -129,7 +121,7 @@ fun TimeSheetPage(
                 nf.displayNumberFromDouble(payCalculations.getHoursStat())
             } other "
 
-            val newSummary = TimeSheetPaySummary(
+            paySummary = TimeSheetPaySummary(
                 grossPay = nf.displayDollars(payCalculations.getPayGross()),
                 deductions = nf.displayDollars(-payCalculations.getDebitTotalsByPay() - payCalculations.getAllTaxDeductions()),
                 netPay = nf.displayDollars(payCalculations.getPayGross() - payCalculations.getDebitTotalsByPay() - payCalculations.getAllTaxDeductions()),
@@ -141,13 +133,8 @@ fun TimeSheetPage(
                     zeroHrLabel
                 })
             )
-            paySummary = newSummary
-            calculationCache[cacheKey] = newSummary
-            val w1 = wk1Summary.ifBlank { zeroHrLabel }
-            val w2 = wk2Summary.ifBlank { zeroHrLabel }
-            week1SummaryString = w1
-            week2SummaryString = w2
-            summaryCache[cacheKey] = Pair(w1, w2)
+            week1SummaryString = wk1Summary.ifBlank { zeroHrLabel }
+            week2SummaryString = wk2Summary.ifBlank { zeroHrLabel }
         }
     }
 

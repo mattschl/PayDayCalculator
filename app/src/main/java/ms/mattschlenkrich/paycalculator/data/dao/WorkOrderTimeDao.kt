@@ -39,6 +39,14 @@ interface WorkOrderTimeDao {
     )
     suspend fun getTimeWorkedSync(timeWorkedId: Long): WorkOrderHistoryTimeWorked?
 
+    @Query(
+        "UPDATE workOrderHistoryTimeWorked " +
+                "SET wohtIsDeleted = 1, " +
+                "wohtUpdateTime = :updateTime " +
+                "WHERE wohtHistoryId = :historyId"
+    )
+    suspend fun removeAllTimeWorkedFromWorkOrderHistory(historyId: Long, updateTime: String)
+
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(

@@ -116,15 +116,16 @@ class DateFunctions {
             if (diff < 0 && startTime.substring(0, 10) == endTime.substring(0, 10)) {
                 diff += 24.0
             }
-            diff
+            // Round to 4 decimal places to avoid floating point inaccuracies during sum
+            round(diff * 10000.0) / 10000.0
         } catch (_: Exception) {
             val tempStart = splitTimeFromDateTime(startTime)
             val tempEnd = splitTimeFromDateTime(endTime)
             val hoursStart = (tempStart[0].toDouble() * 60) + tempStart[1].toDouble()
             val hoursEnd = (tempEnd[0].toDouble() * 60) + tempEnd[1].toDouble()
-            var diff = (hoursEnd - hoursStart) / 60
+            var diff = (hoursEnd - hoursStart) / 60.0
             if (diff < 0) {
-                diff += 24
+                diff += 24.0
             }
             diff
         }

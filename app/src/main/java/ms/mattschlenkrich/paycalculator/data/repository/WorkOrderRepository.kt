@@ -17,7 +17,29 @@ class WorkOrderRepository(private val db: PayDatabase) {
     private val jobSpecDao = db.getJobSpecDao()
     private val areaDao = db.getAreaDao()
 
-    suspend fun insertWorkOrder(workOrder: WorkOrder) = workOrderDao.insertWorkOrder(workOrder)
+    suspend fun insertWorkOrder(workOrder: WorkOrder) {
+        val existing = workOrderDao.findWorkOrderAnySync(
+            workOrder.woNumber,
+            workOrder.woEmployerId
+        )
+        if (existing != null) {
+            val updated = workOrder.copy(
+                workOrderId = existing.workOrderId,
+                woDeleted = false
+            )
+            updateWorkOrder(
+                updated.workOrderId,
+                updated.woNumber,
+                updated.woEmployerId,
+                updated.woAddress,
+                updated.woDescription,
+                updated.woDeleted,
+                updated.woUpdateTime
+            )
+        } else {
+            workOrderDao.insertWorkOrder(workOrder)
+        }
+    }
 
     suspend fun updateWorkOrder(
         workOrderId: Long,
@@ -30,6 +52,8 @@ class WorkOrderRepository(private val db: PayDatabase) {
     ) = workOrderDao.updateWorkOrder(
         workOrderId, workOrderNumber, employerId, address, description, isDeleted, updateTime
     )
+
+    fun getWorkOrder(workOrderId: Long) = workOrderDao.getWorkOrder(workOrderId)
 
     suspend fun findWorkOrder(workOrderNum: String, employerId: Long) =
         workOrderDao.findWorkOrder(workOrderNum, employerId)
@@ -44,20 +68,90 @@ class WorkOrderRepository(private val db: PayDatabase) {
         workOrderDao.searchWorkOrders(employerId, query)
 
     suspend fun insertWorkOrderHistory(history: WorkOrderHistory) {
-        workOrderDao.insertWorkOrderHistory(history)
+        val existing = workOrderDao.getWorkOrderHistoryAnySync(
+            history.woHistoryWorkOrderId,
+            history.woHistoryWorkDateId
+        )
+        if (existing != null) {
+            val updated = history.copy(
+                woHistoryId = existing.woHistoryId,
+                woHistoryDeleted = false
+            )
+            workOrderDao.updateWorkOrderHistory(updated)
+            val updateTime = DateFunctions().getCurrentUTCTimeAsString()
+            workPerformedDao.removeAllWorkPerformedFromWorkOrderHistory(
+                existing.woHistoryId,
+                updateTime
+            )
+            materialDao.removeAllMaterialsFromWorkOrderHistory(
+                existing.woHistoryId,
+                updateTime
+            )
+            workOrderTimeDao.removeAllTimeWorkedFromWorkOrderHistory(
+                existing.woHistoryId,
+                updateTime
+            )
+        } else {
+            workOrderDao.insertWorkOrderHistory(history)
+        }
         synchronizeWorkDate(history.woHistoryWorkDateId)
     }
 
     suspend fun updateWorkOrderHistory(history: WorkOrderHistory) {
-        workOrderDao.updateWorkOrderHistory(history)
-        synchronizeWorkDate(history.woHistoryWorkDateId)
+        val existing = workOrderDao.getWorkOrderHistoryByIdAnySync(history.woHistoryId)
+        if (existing != null && existing.woHistoryDeleted && !history.woHistoryDeleted) {
+            val updateTime = DateFunctions().getCurrentUTCTimeAsString()
+            workPerformedDao.removeAllWorkPerformedFromWorkOrderHistory(
+                history.woHistoryId,
+                updateTime
+            )
+            materialDao.removeAllMaterialsFromWorkOrderHistory(
+                history.woHistoryId,
+                updateTime
+            )
+            workOrderTimeDao.removeAllTimeWorkedFromWorkOrderHistory(
+                history.woHistoryId,
+                updateTime
+            )
+        }
+        val times = workOrderTimeDao.getTimeWorkedForWorkOrderHistorySync(history.woHistoryId)
+        val finalHistory = if (times.isNotEmpty()) {
+            var totalReg = 0.0
+            var totalOt = 0.0
+            var totalDbl = 0.0
+            for (time in times) {
+                val hours = DateFunctions().getTimeWorked(time.wohtStartTime, time.wohtEndTime)
+                when (time.wohtTimeType) {
+                    ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.REG_HOURS.value -> totalReg += hours
+                    ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.OT_HOURS.value -> totalOt += hours
+                    ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.DBL_OT_HOURS.value -> totalDbl += hours
+                }
+            }
+            history.copy(
+                woHistoryRegHours = totalReg,
+                woHistoryOtHours = totalOt,
+                woHistoryDblOtHours = totalDbl
+            )
+        } else {
+            history
+        }
+        workOrderDao.updateWorkOrderHistory(finalHistory)
+        synchronizeWorkDate(finalHistory.woHistoryWorkDateId)
     }
 
     suspend fun getWorkOrderHistory(workOrderId: Long, workDateId: Long) =
         workOrderDao.getWorkOrderHistorySync(workOrderId, workDateId)
 
-    suspend fun deleteWorkOrderHistory(historyId: Long, updateTime: String) =
+    suspend fun deleteWorkOrderHistory(historyId: Long, updateTime: String) {
+        val history = workOrderDao.getWorkOrderHistorySync(historyId)
         workOrderDao.deleteWorkOrderHistory(historyId, updateTime)
+        workPerformedDao.removeAllWorkPerformedFromWorkOrderHistory(historyId, updateTime)
+        materialDao.removeAllMaterialsFromWorkOrderHistory(historyId, updateTime)
+        workOrderTimeDao.removeAllTimeWorkedFromWorkOrderHistory(historyId, updateTime)
+        if (history != null) {
+            synchronizeWorkDate(history.woHistoryWorkDateId)
+        }
+    }
 
     fun getWorkOrderHistoriesByDate(workDateId: Long) =
         workOrderDao.getWorkOrderHistoriesByDate(workDateId)
@@ -146,12 +240,14 @@ class WorkOrderRepository(private val db: PayDatabase) {
         var totalOt = 0.0
         var totalDbl = 0.0
 
-        for (time in times) {
-            val hours = DateFunctions().getTimeWorked(time.wohtStartTime, time.wohtEndTime)
-            when (time.wohtTimeType) {
-                ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.REG_HOURS.value -> totalReg += hours
-                ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.OT_HOURS.value -> totalOt += hours
-                ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.DBL_OT_HOURS.value -> totalDbl += hours
+        if (times.isNotEmpty()) {
+            for (time in times) {
+                val hours = DateFunctions().getTimeWorked(time.wohtStartTime, time.wohtEndTime)
+                when (time.wohtTimeType) {
+                    ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.REG_HOURS.value -> totalReg += hours
+                    ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.OT_HOURS.value -> totalOt += hours
+                    ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes.DBL_OT_HOURS.value -> totalDbl += hours
+                }
             }
         }
 
@@ -195,7 +291,12 @@ class WorkOrderRepository(private val db: PayDatabase) {
 
     suspend fun insertWorkOrderHistoryWorkPerformed(
         workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
-    ) = workPerformedDao.insertWorkOrderHistoryWorkPerformed(workOrderHistoryWorkPerformed)
+    ) {
+        // Since there is a unique index, we check if one already exists (including deleted)
+        // However, the DAO doesn't have a lookup by unique keys yet.
+        // I'll use REPLACE strategy in DAO or check here.
+        workPerformedDao.insertWorkOrderHistoryWorkPerformed(workOrderHistoryWorkPerformed)
+    }
 
     suspend fun updateWorkOrderHistoryWorkPerformed(
         workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
@@ -236,6 +337,18 @@ class WorkOrderRepository(private val db: PayDatabase) {
 
     suspend fun removeAllMaterialsFromWorkOrderHistory(historyId: Long, updateTime: String) =
         materialDao.removeAllMaterialsFromWorkOrderHistory(historyId, updateTime)
+
+    suspend fun removeAllTimeWorkedFromWorkOrderHistory(historyId: Long, updateTime: String) =
+        workOrderTimeDao.removeAllTimeWorkedFromWorkOrderHistory(historyId, updateTime)
+
+    suspend fun deleteWorkDate(workDateId: Long, updateTime: String) {
+        val histories = workOrderDao.getWorkOrderHistoriesByDateSync(workDateId)
+        histories.forEach { history ->
+            deleteWorkOrderHistory(history.woHistoryId, updateTime)
+        }
+        payDayDao.removeAllWorkDateExtras(workDateId, updateTime)
+        payDayDao.deleteWorkDate(workDateId, updateTime)
+    }
 
     // Specialized JobSpec delegations
     fun getJobSpecs() = jobSpecDao.getJobSpecsAll()

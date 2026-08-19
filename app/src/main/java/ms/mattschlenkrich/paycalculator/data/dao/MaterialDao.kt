@@ -110,7 +110,7 @@ interface MaterialDao {
     )
     suspend fun removeAllMaterialsFromWorkOrderHistory(historyId: Long, updateTime: String)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkOrderHistoryMaterial(
         workOrderHistoryMaterial: WorkOrderHistoryMaterial
     )

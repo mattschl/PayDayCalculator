@@ -18,6 +18,7 @@ import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.data.model.MaterialInSequence
@@ -61,36 +62,49 @@ fun WorkOrderHistoryUpdateRoute(
     }
 
     val history = historyWithDates!!.history
+    val workOrder = historyWithDates!!.workOrder
     val workDate = historyWithDates!!.workDate
     val employer = mainViewModel.getEmployer() ?: return
 
-    var workOrderNumber by rememberSaveable { mutableStateOf(historyWithDates!!.workOrder.woNumber) }
+    var workOrderNumber by rememberSaveable(workOrder.woNumber) { mutableStateOf(workOrder.woNumber) }
     val workOrderList by workOrderViewModel.getWorkOrdersByEmployerId(employer.employerId)
         .observeAsState(emptyList())
-    var workOrderDescription by rememberSaveable { mutableStateOf(historyWithDates!!.workOrder.woDescription) }
+    var workOrderDescription by rememberSaveable(workOrder.woDescription) { mutableStateOf(workOrder.woDescription) }
 
-    var regHours by rememberSaveable(history.woHistoryUpdateTime) {
+    var regHours by rememberSaveable(
+        history.woHistoryRegHours,
+        history.woHistoryUpdateTime
+    ) {
         mutableStateOf(
             nf.displayNumberFromDouble(
                 history.woHistoryRegHours
             )
         )
     }
-    var otHours by rememberSaveable(history.woHistoryUpdateTime) {
+    var otHours by rememberSaveable(
+        history.woHistoryOtHours,
+        history.woHistoryUpdateTime
+    ) {
         mutableStateOf(
             nf.displayNumberFromDouble(
                 history.woHistoryOtHours
             )
         )
     }
-    var dblOtHours by rememberSaveable(history.woHistoryUpdateTime) {
+    var dblOtHours by rememberSaveable(
+        history.woHistoryDblOtHours,
+        history.woHistoryUpdateTime
+    ) {
         mutableStateOf(
             nf.displayNumberFromDouble(
                 history.woHistoryDblOtHours
             )
         )
     }
-    var note by rememberSaveable { mutableStateOf(history.woHistoryNote ?: "") }
+    var note by rememberSaveable(
+        history.woHistoryNote,
+        history.woHistoryUpdateTime
+    ) { mutableStateOf(history.woHistoryNote ?: "") }
 
     var workPerformed by rememberSaveable { mutableStateOf("") }
     val workPerformedList by workPerformedViewModel.getWorkPerformedAll()
@@ -118,6 +132,21 @@ fun WorkOrderHistoryUpdateRoute(
     val isWorkOrderValid = workOrderList.any { it.woNumber == workOrderNumber }
 
     var isSaving by rememberSaveable { mutableStateOf(false) }
+
+    val onRefreshHours = {
+        val workedHours = timeWorkedList.filter {
+            it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value
+        }
+        regHours = nf.displayNumberFromDouble(workedHours.filter {
+            it.timeWorked.wohtTimeType == TimeWorkedTypes.REG_HOURS.value
+        }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) })
+        otHours = nf.displayNumberFromDouble(workedHours.filter {
+            it.timeWorked.wohtTimeType == TimeWorkedTypes.OT_HOURS.value
+        }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) })
+        dblOtHours = nf.displayNumberFromDouble(workedHours.filter {
+            it.timeWorked.wohtTimeType == TimeWorkedTypes.DBL_OT_HOURS.value
+        }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) })
+    }
 
     WorkOrderHistoryUpdateScreen(
         workDateDisplay = df.getDisplayDate(workDate.wdDate),
@@ -157,6 +186,7 @@ fun WorkOrderHistoryUpdateRoute(
         onOtHoursChange = { otHours = it },
         dblOtHours = dblOtHours,
         onDblOtHoursChange = { dblOtHours = it },
+        onRefreshHours = onRefreshHours,
         note = note,
         onNoteChange = { note = it },
         onAddTimeClick = {

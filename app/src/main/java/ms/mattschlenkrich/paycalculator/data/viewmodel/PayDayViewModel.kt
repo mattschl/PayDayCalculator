@@ -24,6 +24,9 @@ class PayDayViewModel(
     suspend fun updatePayPeriod(payPeriod: PayPeriods) =
         payDayRepository.updatePayPeriod(payPeriod)
 
+    fun getPayPeriod(cutOff: String, employerId: Long) =
+        payDayRepository.getPayPeriod(cutOff, employerId)
+
     suspend fun getPayPeriodSync(cutOff: String, employerId: Long) =
         payDayRepository.getPayPeriodSync(cutOff, employerId)
 

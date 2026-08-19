@@ -96,7 +96,7 @@ interface WorkPerformedDao {
     @Update
     suspend fun updateWorkPerformed(workPerformed: WorkPerformed)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkOrderHistoryWorkPerformed(
         workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
     )

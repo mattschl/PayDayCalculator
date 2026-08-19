@@ -41,15 +41,39 @@ fun EmployerUpdateRoute(
         R.string.for_semi_monthly_pay_days_there_needs_to_be_a_mid_month_pay_day to stringResource(R.string.for_semi_monthly_pay_days_there_needs_to_be_a_mid_month_pay_day)
     )
 
-    val currentEmployer = mainViewModel.getEmployer()
-    if (currentEmployer != null) {
-        var name by rememberSaveable { mutableStateOf(currentEmployer.employerName) }
-        var frequency by rememberSaveable { mutableStateOf(currentEmployer.payFrequency) }
-        var startDate by rememberSaveable { mutableStateOf(currentEmployer.startDate) }
-        var dayOfWeek by rememberSaveable { mutableStateOf(currentEmployer.dayOfWeek) }
-        var daysBefore by rememberSaveable { mutableStateOf(currentEmployer.cutoffDaysBefore.toString()) }
-        var midMonthDate by rememberSaveable { mutableStateOf(currentEmployer.midMonthlyDate.toString()) }
-        var mainMonthDate by rememberSaveable { mutableStateOf(currentEmployer.mainMonthlyDate.toString()) }
+    val initialEmployer = mainViewModel.getEmployer()
+    if (initialEmployer != null) {
+        val currentEmployer by employerViewModel.getEmployer(initialEmployer.employerId)
+            .observeAsState(initialEmployer)
+
+        var name by rememberSaveable(
+            currentEmployer.employerName,
+            currentEmployer.employerUpdateTime
+        ) { mutableStateOf(currentEmployer.employerName) }
+        var frequency by rememberSaveable(
+            currentEmployer.payFrequency,
+            currentEmployer.employerUpdateTime
+        ) { mutableStateOf(currentEmployer.payFrequency) }
+        var startDate by rememberSaveable(
+            currentEmployer.startDate,
+            currentEmployer.employerUpdateTime
+        ) { mutableStateOf(currentEmployer.startDate) }
+        var dayOfWeek by rememberSaveable(
+            currentEmployer.dayOfWeek,
+            currentEmployer.employerUpdateTime
+        ) { mutableStateOf(currentEmployer.dayOfWeek) }
+        var daysBefore by rememberSaveable(
+            currentEmployer.cutoffDaysBefore,
+            currentEmployer.employerUpdateTime
+        ) { mutableStateOf(currentEmployer.cutoffDaysBefore.toString()) }
+        var midMonthDate by rememberSaveable(
+            currentEmployer.midMonthlyDate,
+            currentEmployer.employerUpdateTime
+        ) { mutableStateOf(currentEmployer.midMonthlyDate.toString()) }
+        var mainMonthDate by rememberSaveable(
+            currentEmployer.mainMonthlyDate,
+            currentEmployer.employerUpdateTime
+        ) { mutableStateOf(currentEmployer.mainMonthlyDate.toString()) }
 
         val taxes by workTaxViewModel.getEmployerTaxTypes(currentEmployer.employerId)
             .observeAsState(emptyList())
