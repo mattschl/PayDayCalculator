@@ -7,7 +7,18 @@ import ms.mattschlenkrich.paycalculator.data.entity.TaxTypes
 import ms.mattschlenkrich.paycalculator.data.entity.WorkTaxRules
 
 class WorkTaxRepository(private val db: PayDatabase) {
-    suspend fun insertTaxType(workTaxType: TaxTypes) = db.getWorkTaxDao().insertTaxType(workTaxType)
+    suspend fun insertTaxType(workTaxType: TaxTypes) {
+        val existing = db.getWorkTaxDao().getTaxTypeAnySync(workTaxType.taxType)
+        if (existing != null) {
+            val updated = workTaxType.copy(
+                taxTypeId = existing.taxTypeId,
+                ttIsDeleted = false
+            )
+            db.getWorkTaxDao().updateWorkTaxType(updated)
+        } else {
+            db.getWorkTaxDao().insertTaxType(workTaxType)
+        }
+    }
 
     suspend fun updateWorkTaxType(workTaxType: TaxTypes) =
         db.getWorkTaxDao().updateWorkTaxType(workTaxType)

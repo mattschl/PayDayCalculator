@@ -88,6 +88,12 @@ interface WorkPerformedDao {
 
     @Query(
         "SELECT * FROM workPerformed " +
+                "WHERE wpDescription = :description"
+    )
+    suspend fun getWorkPerformedAnySync(description: String): WorkPerformed?
+
+    @Query(
+        "SELECT * FROM workPerformed " +
                 "WHERE workPerformedId = :workPerformedId " +
                 "AND wpIsDeleted = 0"
     )

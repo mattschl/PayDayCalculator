@@ -6,7 +6,7 @@ import java.util.Locale
 import java.util.TimeZone
 import kotlin.math.round
 
-private const val TAG = "DateFunctions"
+//private const val TAG = "DateFunctions"
 
 class DateFunctions {
     private val dateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
@@ -69,9 +69,9 @@ class DateFunctions {
         return cal
     }
 
-    fun getDateTimeFromDateAndTime(date: String, time: String): String {
-        return "$date $time"
-    }
+//    fun getDateTimeFromDateAndTime(date: String, time: String): String {
+//        return "$date $time"
+//    }
 
     fun getDisplayDate(date: String): String {
         if (date.isBlank()) return ""
@@ -113,7 +113,7 @@ class DateFunctions {
             val start = timeFormatter.parse(startTime)!!
             val end = timeFormatter.parse(endTime)!!
             var diff = (end.time - start.time).toDouble() / (1000.0 * 60.0 * 60.0)
-            if (diff < 0 && startTime.substring(0, 10) == endTime.substring(0, 10)) {
+            if (diff < 0 && (startTime.substring(0, 10) == endTime.substring(0, 10))) {
                 diff += 24.0
             }
             // Round to 4 decimal places to avoid floating point inaccuracies during sum
@@ -135,16 +135,16 @@ class DateFunctions {
         return (endTime.timeInMillis - startTime.timeInMillis).toDouble() / (1000.0 * 60.0 * 60.0)
     }
 
-    fun roundCalendarTimeTo15Minutes(time: Calendar): Calendar {
-        val tempTime = time.clone() as Calendar
-        val minutes = tempTime.get(Calendar.MINUTE)
-        val divided = minutes / 15.0
-        val roundedInt = round(divided)
-        val roundedMinute = (roundedInt * 15).toInt()
-        tempTime.set(Calendar.MINUTE, roundedMinute)
-        tempTime.set(Calendar.SECOND, 0)
-        return tempTime
-    }
+//    fun roundCalendarTimeTo15Minutes(time: Calendar): Calendar {
+//        val tempTime = time.clone() as Calendar
+//        val minutes = tempTime.get(Calendar.MINUTE)
+//        val divided = minutes / 15.0
+//        val roundedInt = round(divided)
+//        val roundedMinute = (roundedInt * 15).toInt()
+//        tempTime.set(Calendar.MINUTE, roundedMinute)
+//        tempTime.set(Calendar.SECOND, 0)
+//        return tempTime
+//    }
 
     fun roundCalendarTimeUpTo15Minutes(time: Calendar): Calendar {
         val tempTime = time.clone() as Calendar

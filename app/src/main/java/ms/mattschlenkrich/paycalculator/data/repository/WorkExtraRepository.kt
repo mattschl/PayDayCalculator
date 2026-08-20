@@ -20,8 +20,21 @@ class WorkExtraRepository(private val db: PayDatabase) {
 
     fun getExtraDefTypes(employerId: Long) = db.getWorkExtraDao().getExtraDefTypes(employerId)
 
-    suspend fun insertWorkExtraType(workExtraType: WorkExtraTypes) =
-        db.getWorkExtraDao().insertWorkExtraType(workExtraType)
+    suspend fun insertWorkExtraType(workExtraType: WorkExtraTypes) {
+        val existing = db.getWorkExtraDao().findWorkExtraTypeByNameAnySync(
+            workExtraType.wetEmployerId,
+            workExtraType.wetName
+        )
+        if (existing != null) {
+            val updated = workExtraType.copy(
+                workExtraTypeId = existing.workExtraTypeId,
+                wetIsDeleted = false
+            )
+            db.getWorkExtraDao().updateWorkExtraType(updated)
+        } else {
+            db.getWorkExtraDao().insertWorkExtraType(workExtraType)
+        }
+    }
 
     suspend fun updateWorkExtraType(extraType: WorkExtraTypes) =
         db.getWorkExtraDao().updateWorkExtraType(extraType)

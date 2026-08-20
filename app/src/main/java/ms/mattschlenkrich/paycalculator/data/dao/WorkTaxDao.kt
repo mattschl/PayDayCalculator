@@ -50,6 +50,12 @@ interface WorkTaxDao {
     )
     suspend fun getTaxTypesSync(): List<TaxTypes>
 
+    @Query(
+        "SELECT * FROM $TABLE_TAX_TYPES " +
+                "WHERE $WORK_TAX_TYPE = :taxType"
+    )
+    suspend fun getTaxTypeAnySync(taxType: String): TaxTypes?
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTaxRule(taxRule: WorkTaxRules)
 

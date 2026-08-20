@@ -92,8 +92,8 @@ fun WorkOrderHistoryTimeRoute(
     LaunchedEffect(allTimesByDate) {
         val totalWorkedHours = allTimesByDate
             .filter {
-                it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value &&
-                        !it.workOrderHistory.workOrderHistory.woHistoryDeleted
+                (it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value) &&
+                        (!it.workOrderHistory.workOrderHistory.woHistoryDeleted)
             }
             .sumOf {
                 df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime)

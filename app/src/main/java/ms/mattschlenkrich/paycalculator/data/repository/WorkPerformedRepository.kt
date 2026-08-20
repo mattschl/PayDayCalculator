@@ -6,8 +6,18 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformedMerged
 
 class WorkPerformedRepository(private val db: PayDatabase) {
-    suspend fun insertWorkPerformed(workPerformed: WorkPerformed) =
-        db.getWorkPerformedDao().insertWorkPerformed(workPerformed)
+    suspend fun insertWorkPerformed(workPerformed: WorkPerformed) {
+        val existing = db.getWorkPerformedDao().getWorkPerformedAnySync(workPerformed.wpDescription)
+        if (existing != null) {
+            val updated = workPerformed.copy(
+                workPerformedId = existing.workPerformedId,
+                wpIsDeleted = false
+            )
+            db.getWorkPerformedDao().updateWorkPerformed(updated)
+        } else {
+            db.getWorkPerformedDao().insertWorkPerformed(workPerformed)
+        }
+    }
 
     suspend fun deleteWorkPerformed(workPerformedId: Long, updateTime: String) =
         db.getWorkPerformedDao().deleteWorkPerformed(workPerformedId, updateTime)

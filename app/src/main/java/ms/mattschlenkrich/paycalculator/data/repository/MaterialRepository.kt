@@ -6,7 +6,19 @@ import ms.mattschlenkrich.paycalculator.data.entity.MaterialMerged
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
 
 class MaterialRepository(private val db: PayDatabase) {
-    suspend fun insertMaterial(material: Material) = db.getMaterialDao().insertMaterial(material)
+    suspend fun insertMaterial(material: Material) {
+        val existing = db.getMaterialDao().getMaterialAnySync(material.mName)
+        if (existing != null) {
+            val updated = material.copy(
+                materialId = existing.materialId,
+                mIsDeleted = false
+            )
+            db.getMaterialDao().updateMaterial(updated)
+        } else {
+            db.getMaterialDao().insertMaterial(material)
+        }
+    }
+
     suspend fun updateMaterial(material: Material) = db.getMaterialDao().updateMaterial(material)
     fun getMaterialsList() = db.getMaterialDao().getMaterialsList()
     suspend fun getMaterialsListSync() = db.getMaterialDao().getMaterialsListSync()

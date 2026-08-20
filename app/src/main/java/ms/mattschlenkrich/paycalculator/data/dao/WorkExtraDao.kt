@@ -63,6 +63,13 @@ interface WorkExtraDao {
     @Query(
         "SELECT * FROM $TABLE_WORK_EXTRA_TYPES " +
                 "WHERE wetEmployerId = :employerId " +
+                "AND wetName = :name"
+    )
+    suspend fun findWorkExtraTypeByNameAnySync(employerId: Long, name: String): WorkExtraTypes?
+
+    @Query(
+        "SELECT * FROM $TABLE_WORK_EXTRA_TYPES " +
+                "WHERE wetEmployerId = :employerId " +
                 "AND wetIsDeleted = 0 " +
                 "ORDER BY wetName COLLATE NOCASE"
     )
