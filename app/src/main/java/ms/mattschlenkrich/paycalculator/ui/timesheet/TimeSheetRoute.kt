@@ -44,6 +44,7 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectionCard
+import ms.mattschlenkrich.paycalculator.common.compose.draggableFab
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
@@ -382,7 +383,8 @@ fun TimeSheetRoute(
                 FloatingActionButton(
                     onClick = { navController.navigate(Screen.WorkDateAdd.route) },
                     containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.draggableFab()
                 ) {
                     Icon(
                         Icons.Default.Add,

@@ -13,11 +13,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.model.MaterialAndQuantity
+import ms.mattschlenkrich.paycalculator.data.model.ExpenseSummary
 
 @Composable
-fun WorkOrderMaterialSummaryItem(
-    material: MaterialAndQuantity,
+fun WorkOrderExpenseSummaryItem(
+    expense: ExpenseSummary,
     nf: NumberFunctions
 ) {
     Card(
@@ -31,25 +31,22 @@ fun WorkOrderMaterialSummaryItem(
             modifier = Modifier.padding(4.dp)
         ) {
             Text(
-                text = nf.displayNumberFromDouble(material.quantity),
+                text = nf.displayDollars(expense.totalAmount),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-            if (material.totalAmount > 0.0) {
-                Text(
-                    text = nf.displayDollars(material.totalAmount),
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.secondary,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
             Text(
-                text = material.name,
+                text = expense.supplier,
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = expense.type,
                 style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()

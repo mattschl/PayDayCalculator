@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
 
 @Parcelize
 data class WorkOrderHistoryCombined(
@@ -23,6 +24,12 @@ data class WorkOrderHistoryCombined(
         parentColumn = "woHistoryWorkDateId",
         entityColumn = "workDateId"
     )
-    var workDate: WorkDates
+    var workDate: WorkDates,
+    @Relation(
+        entity = WorkOrderHistoryExpense::class,
+        parentColumn = "woHistoryId",
+        entityColumn = "woheHistoryId"
+    )
+    val expenses: List<WorkOrderHistoryExpense>
 
 ) : Parcelable

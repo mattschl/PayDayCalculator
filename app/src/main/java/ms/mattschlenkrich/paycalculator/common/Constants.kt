@@ -1,7 +1,7 @@
 package ms.mattschlenkrich.paycalculator.common
 
 const val PAY_DB_NAME = "pay.db"
-const val PAY_DB_VERSION = 18
+const val PAY_DB_VERSION = 19
 
 const val SQLITE_DATE = "yyyy-MM-dd"
 const val SQLITE_TIME = "yyyy-MM-dd HH:mm:ss"

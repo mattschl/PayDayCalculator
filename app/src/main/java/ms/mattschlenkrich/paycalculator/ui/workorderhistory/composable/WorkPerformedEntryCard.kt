@@ -97,7 +97,7 @@ fun WorkPerformedEntryCard(
                     containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
-                Text(stringResource(id = R.string.add))
+                Text(stringResource(id = R.string.add_work_performed))
             }
         }
     }

@@ -37,6 +37,7 @@ import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.TimeTypeRadioButton
 import ms.mattschlenkrich.paycalculator.common.compose.TimeWorkedItem
+import ms.mattschlenkrich.paycalculator.common.compose.draggableFab
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryTimeWorkedCombined
 import java.util.Calendar
 
@@ -83,7 +84,8 @@ fun WorkOrderHistoryTimeScreen(
             FloatingActionButton(
                 onClick = onDoneClick,
                 containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.draggableFab()
             ) {
                 Icon(
                     imageVector = Icons.Default.Done,

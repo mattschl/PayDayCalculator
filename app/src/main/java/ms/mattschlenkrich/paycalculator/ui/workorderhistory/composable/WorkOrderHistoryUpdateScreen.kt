@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -12,6 +13,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -34,9 +36,11 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
+import ms.mattschlenkrich.paycalculator.common.compose.draggableFab
 import ms.mattschlenkrich.paycalculator.data.entity.Areas
 import ms.mattschlenkrich.paycalculator.data.entity.Material
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed
 import ms.mattschlenkrich.paycalculator.data.model.MaterialInSequence
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWorkPerformedCombined
@@ -89,6 +93,11 @@ fun WorkOrderHistoryUpdateScreen(
     onAddMaterial: () -> Unit,
     materialActualList: List<MaterialInSequence>,
     onMaterialItemClick: (MaterialInSequence, Int) -> Unit,
+    // Expenses
+    expenseActualList: List<WorkOrderHistoryExpense>,
+    onAddExpense: (String, String, String, String) -> Unit,
+    onUpdateExpense: (WorkOrderHistoryExpense) -> Unit,
+    onDeleteExpense: (Long) -> Unit,
     // Actions
     onDone: () -> Unit,
     onUpdateWorkPerformed: (WorkOrderHistoryWorkPerformedCombined) -> Unit,
@@ -107,6 +116,9 @@ fun WorkOrderHistoryUpdateScreen(
 
     var showMaterialDialog by rememberSaveable { mutableStateOf(false) }
     var selectedMaterial by rememberSaveable { mutableStateOf<MaterialInSequence?>(null) }
+
+    var showExpenseDialog by rememberSaveable { mutableStateOf(false) }
+    var selectedExpense by rememberSaveable { mutableStateOf<WorkOrderHistoryExpense?>(null) }
 
     val columns = calculateGridColumns(minColumnWidth)
 
@@ -128,13 +140,23 @@ fun WorkOrderHistoryUpdateScreen(
         onEditMaterialDefinition = onUpdateMaterialDefinition
     )
 
+    WorkOrderHistoryExpenseDialog(
+        showDialog = showExpenseDialog,
+        onDismissRequest = { showExpenseDialog = false },
+        expense = selectedExpense,
+        onAddExpense = onAddExpense,
+        onUpdateExpense = onUpdateExpense,
+        onDeleteExpense = onDeleteExpense
+    )
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { if (!isSaving) onDone() },
                 containerColor = if (isSaving) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.primary,
-                contentColor = if (isSaving) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimary
+                contentColor = if (isSaving) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.draggableFab()
             ) {
                 if (isSaving) {
                     CircularProgressIndicator(
@@ -184,7 +206,7 @@ fun WorkOrderHistoryUpdateScreen(
                     onDblOtHoursChange = onDblOtHoursChange,
                     onRefreshHours = onRefreshHours,
                     note = note,
-                    onNoteChange = onNoteChange,
+                    onNoteChange = { nt -> onNoteChange(nt) },
                     onAddTimeClick = onAddTimeClick,
                     addTimeButtonText = addTimeButtonText
                 )
@@ -257,6 +279,40 @@ fun WorkOrderHistoryUpdateScreen(
                         onClick = {
                             selectedMaterial = item
                             showMaterialDialog = true
+                        }
+                    )
+                }
+            }
+
+            item(span = StaggeredGridItemSpan.FullLine) {
+                Button(
+                    onClick = {
+                        selectedExpense = null
+                        showExpenseDialog = true
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = stringResource(R.string.add_expense))
+                }
+            }
+
+            if (expenseActualList.isNotEmpty()) {
+                item(span = StaggeredGridItemSpan.FullLine) {
+                    Text(
+                        text = stringResource(R.string.expenses),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+                items(expenseActualList) { item ->
+                    WorkOrderHistoryExpenseItem(
+                        item = item,
+                        index = expenseActualList.indexOf(item),
+                        onClick = {
+                            selectedExpense = item
+                            showExpenseDialog = true
                         }
                     )
                 }

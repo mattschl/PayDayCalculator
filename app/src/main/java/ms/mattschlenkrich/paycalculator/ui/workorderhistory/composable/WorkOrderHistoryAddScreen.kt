@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable
 
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -27,14 +29,18 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
@@ -63,6 +69,8 @@ fun WorkOrderHistoryAddScreen(
     var otHours by rememberSaveable { mutableStateOf(initialOtHours) }
     var dblOtHours by rememberSaveable { mutableStateOf(initialDblOtHours) }
     var note by rememberSaveable { mutableStateOf(initialNote) }
+
+    var fabOffset by remember { mutableStateOf(Offset.Zero) }
 
     var showCreateDialog by rememberSaveable { mutableStateOf(false) }
 
@@ -94,7 +102,20 @@ fun WorkOrderHistoryAddScreen(
                     }
                 },
                 containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier
+                    .offset {
+                        IntOffset(
+                            fabOffset.x.toInt(),
+                            fabOffset.y.toInt()
+                        )
+                    }
+                    .pointerInput(Unit) {
+                        detectDragGestures { change, dragAmount ->
+                            change.consume()
+                            fabOffset += dragAmount
+                        }
+                    }
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_done),

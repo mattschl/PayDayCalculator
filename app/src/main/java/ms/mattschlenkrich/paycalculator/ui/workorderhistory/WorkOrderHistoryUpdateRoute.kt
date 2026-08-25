@@ -19,6 +19,7 @@ import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.data.model.MaterialInSequence
@@ -123,6 +124,10 @@ fun WorkOrderHistoryUpdateRoute(
     val materialList by materialViewModel.getMaterialsList().observeAsState(emptyList())
     val materialActualList by remember(history.woHistoryId) {
         materialViewModel.getMaterialsByHistory(history.woHistoryId)
+    }.observeAsState(emptyList())
+
+    val expenseActualList by remember(history.woHistoryId) {
+        workOrderViewModel.getExpensesByHistory(history.woHistoryId)
     }.observeAsState(emptyList())
 
     val timeWorkedList by remember(history.woHistoryId) {
@@ -307,6 +312,38 @@ fun WorkOrderHistoryUpdateRoute(
                         df.getCurrentUTCTimeAsString()
                     )
                 }
+            }
+        },
+        expenseActualList = expenseActualList,
+        onAddExpense = { type, supplier, invoiceNo, amount ->
+            coroutineScope.launch {
+                workOrderViewModel.insertWorkOrderHistoryExpense(
+                    WorkOrderHistoryExpense(
+                        nf.generateRandomIdAsLong(),
+                        history.woHistoryId,
+                        type,
+                        supplier,
+                        invoiceNo,
+                        nf.getDoubleFromDollars(amount),
+                        false,
+                        df.getCurrentUTCTimeAsString()
+                    )
+                )
+            }
+        },
+        onUpdateExpense = { expense ->
+            coroutineScope.launch {
+                workOrderViewModel.updateWorkOrderHistoryExpense(
+                    expense.copy(woheUpdateTime = df.getCurrentUTCTimeAsString())
+                )
+            }
+        },
+        onDeleteExpense = { expenseId ->
+            coroutineScope.launch {
+                workOrderViewModel.deleteWorkOrderHistoryExpense(
+                    expenseId,
+                    df.getCurrentUTCTimeAsString()
+                )
             }
         },
         onDone = {

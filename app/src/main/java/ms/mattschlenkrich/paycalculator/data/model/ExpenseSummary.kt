@@ -4,8 +4,8 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class MaterialAndQuantity(
-    val name: String,
-    var quantity: Double,
-    val totalAmount: Double = 0.0
+data class ExpenseSummary(
+    val supplier: String,
+    val type: String,
+    val totalAmount: Double
 ) : Parcelable

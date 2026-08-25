@@ -45,12 +45,16 @@ import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
+import ms.mattschlenkrich.paycalculator.common.compose.draggableFab
 import ms.mattschlenkrich.paycalculator.data.entity.Areas
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
+import ms.mattschlenkrich.paycalculator.data.model.ExpenseSummary
 import ms.mattschlenkrich.paycalculator.data.model.MaterialAndQuantity
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paycalculator.data.model.WorkPerformedAndQuantity
+import ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable.WorkOrderHistoryExpenseItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,12 +89,19 @@ fun WorkOrderUpdateScreen(
     onHistoryClick: (WorkOrderHistoryWithDates) -> Unit,
     historySummaryText: String,
     hoursSummaryText: String,
-    calculationRate: String,
-    onCalculationRateChange: (String) -> Unit,
-    totalCalculationText: String,
+    laborRate: String,
+    onLaborRateChange: (String) -> Unit,
+    markupRate: String,
+    onMarkupRateChange: (String) -> Unit,
+    laborTotalText: String,
+    materialTotalText: String,
+    expenseTotalText: String,
+    grandTotalText: String,
     onAddHistoryClick: () -> Unit,
     workPerformedList: List<WorkPerformedAndQuantity>,
     materialsList: List<MaterialAndQuantity>,
+    expensesList: List<ExpenseSummary>,
+    individualExpenses: List<WorkOrderHistoryExpense>,
     onDoneClick: () -> Unit,
     minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
 ) {
@@ -115,7 +126,8 @@ fun WorkOrderUpdateScreen(
             FloatingActionButton(
                 onClick = onDoneClick,
                 containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.draggableFab()
             ) {
                 Icon(
                     imageVector = Icons.Default.Done,
@@ -163,7 +175,7 @@ fun WorkOrderUpdateScreen(
                         modifier = Modifier.padding(ELEMENT_SPACING)
                     ) {
                         Text(
-                            text = stringResource(R.string.total_calculation),
+                            text = stringResource(R.string.total_summary),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
@@ -173,20 +185,72 @@ fun WorkOrderUpdateScreen(
                             horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
                         ) {
                             SelectAllOutlinedTextField(
-                                value = calculationRate,
-                                onValueChange = onCalculationRateChange,
-                                label = { Text(stringResource(R.string.calculation_rate)) },
+                                value = laborRate,
+                                onValueChange = onLaborRateChange,
+                                label = { Text(stringResource(R.string.labor_rate)) },
                                 modifier = Modifier.weight(1f),
                                 keyboardOptions = KeyboardOptions(
                                     keyboardType = KeyboardType.Decimal
                                 )
                             )
-                            Text(
-                                text = totalCalculationText,
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.tertiary
+                            SelectAllOutlinedTextField(
+                                value = markupRate,
+                                onValueChange = onMarkupRateChange,
+                                label = { Text(stringResource(R.string.markup_rate)) },
+                                modifier = Modifier.weight(1f),
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Decimal
+                                )
                             )
+                            Column(
+                                horizontalAlignment = Alignment.End
+                            ) {
+                                Row {
+                                    Text(
+                                        text = "${stringResource(R.string.labor)}: ",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        text = laborTotalText,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Row {
+                                    Text(
+                                        text = "${stringResource(R.string.material)}: ",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        text = materialTotalText,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Row {
+                                    Text(
+                                        text = "${stringResource(R.string.expenses)}: ",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        text = expenseTotalText,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Text(
+                                    text = grandTotalText,
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
                         }
                     }
                 }
@@ -268,7 +332,9 @@ fun WorkOrderUpdateScreen(
                         onClick = onAddHistoryClick,
                         containerColor = MaterialTheme.colorScheme.secondary,
                         contentColor = MaterialTheme.colorScheme.onSecondary,
-                        modifier = Modifier.padding(4.dp)
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .draggableFab()
                     ) {
                         Icon(
                             Icons.Default.Add,
@@ -337,6 +403,55 @@ fun WorkOrderUpdateScreen(
                             Spacer(modifier = Modifier.weight(1f))
                         }
                     }
+                }
+            }
+
+            if (expensesList.isNotEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(R.string.invoices),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                    )
+                }
+
+                val expChunks = expensesList.chunked(columns)
+                items(expChunks) { chunk ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+                    ) {
+                        chunk.forEach { expense ->
+                            Box(modifier = Modifier.weight(1f)) {
+                                WorkOrderExpenseSummaryItem(expense, nf)
+                            }
+                        }
+                        repeat(columns - chunk.size) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+
+            if (individualExpenses.isNotEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(R.string.expenses),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                    )
+                }
+
+                items(individualExpenses) { expense ->
+                    WorkOrderHistoryExpenseItem(
+                        item = expense,
+                        index = individualExpenses.indexOf(expense),
+                        onClick = {} // View only at work order level? Or navigate to history?
+                    )
                 }
             }
 

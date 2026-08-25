@@ -10,6 +10,8 @@ import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
+import ms.mattschlenkrich.paycalculator.data.model.ExpenseSummary
 import ms.mattschlenkrich.paycalculator.data.model.MaterialAndQuantity
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryCombined
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWithDates
@@ -127,8 +129,6 @@ interface WorkOrderDao {
     )
     suspend fun deleteWorkOrderHistory(historyId: Long, updateTime: String)
 
-    @RewriteQueriesToDropUnusedColumns
-    @Transaction
     @Query(
         "SELECT * FROM workOrderHistory " +
                 "WHERE woHistoryWorkDateId = :workDateId " +
@@ -177,7 +177,7 @@ interface WorkOrderDao {
     fun getWorkOrderSummary(workOrderId: Long): LiveData<WorkOrderSummary>
 
     @Query(
-        "SELECT m.mName as name, SUM(wohm.wohmQuantity) as quantity " +
+        "SELECT m.mName as name, SUM(wohm.wohmQuantity) as quantity, SUM(m.mPrice * wohm.wohmQuantity) as totalAmount " +
                 "FROM workOrderHistoryMaterials wohm " +
                 "LEFT JOIN materialMerged ON wohm.wohmMaterialId = mmChildId AND mmIsDeleted = 0 " +
                 "INNER JOIN materials m ON m.materialId = COALESCE(mmMasterId, wohm.wohmMaterialId) " +
@@ -199,6 +199,24 @@ interface WorkOrderDao {
                 "ORDER BY wp.wpDescription"
     )
     fun getWorkOrderWorkPerformedSummary(workOrderId: Long): LiveData<List<WorkPerformedAndQuantity>>
+
+    @Query(
+        "SELECT woheSupplier as supplier, woheType as type, SUM(woheAmount) as totalAmount " +
+                "FROM `workOrderHistoryExpense-*-` " +
+                "WHERE woheHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId AND woHistoryDeleted = 0) " +
+                "AND woheIsDeleted = 0 " +
+                "GROUP BY woheSupplier, woheType " +
+                "ORDER BY woheSupplier, woheType"
+    )
+    fun getWorkOrderExpensesSummary(workOrderId: Long): LiveData<List<ExpenseSummary>>
+
+    @Query(
+        "SELECT * FROM `workOrderHistoryExpense-*-` " +
+                "WHERE woheHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId AND woHistoryDeleted = 0) " +
+                "AND woheIsDeleted = 0 " +
+                "ORDER BY woheUpdateTime DESC"
+    )
+    fun getWorkOrderExpensesAll(workOrderId: Long): LiveData<List<WorkOrderHistoryExpense>>
 
     @Query(
         "SELECT * FROM workOrderHistory " +
@@ -234,4 +252,26 @@ interface WorkOrderDao {
                 "WHERE woHistoryId = :historyId"
     )
     suspend fun getWorkOrderHistoryByIdAnySync(historyId: Long): WorkOrderHistory?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertWorkOrderHistoryExpense(expense: WorkOrderHistoryExpense)
+
+    @Update
+    suspend fun updateWorkOrderHistoryExpense(expense: WorkOrderHistoryExpense)
+
+    @Query(
+        "UPDATE `workOrderHistoryExpense-*-` " +
+                "SET woheIsDeleted = 1, " +
+                "woheUpdateTime = :updateTime " +
+                "WHERE woHistoryExpenseId = :expenseId"
+    )
+    suspend fun deleteWorkOrderHistoryExpense(expenseId: Long, updateTime: String)
+
+    @Query(
+        "SELECT * FROM `workOrderHistoryExpense-*-` " +
+                "WHERE woheHistoryId = :historyId " +
+                "AND woheIsDeleted = 0 " +
+                "ORDER BY woheUpdateTime"
+    )
+    fun getExpensesByHistory(historyId: Long): LiveData<List<WorkOrderHistoryExpense>>
 }

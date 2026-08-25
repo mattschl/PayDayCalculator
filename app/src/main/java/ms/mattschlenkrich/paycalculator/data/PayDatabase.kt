@@ -40,6 +40,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkExtraTypes
 import ms.mattschlenkrich.paycalculator.data.entity.WorkExtrasDefinitions
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
@@ -78,6 +79,7 @@ import ms.mattschlenkrich.paycalculator.data.model.ExtraDefinitionAndType
         WorkPerformedMerged::class,
         WorkOrderHistoryTimeWorked::class,
         SyncHistory::class,
+        WorkOrderHistoryExpense::class,
     ],
     views = [ExtraDefinitionAndType::class],
 //    autoMigrations =
@@ -104,6 +106,25 @@ abstract class PayDatabase : RoomDatabase() {
     abstract fun getWorkOrderTimeDao(): WorkOrderTimeDao
 
     companion object {
+        private val MIGRATION_18_19 = object : Migration(18, 19) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `workOrderHistoryExpense-*-` (" +
+                            "`woHistoryExpenseId` INTEGER NOT NULL, " +
+                            "`woheHistoryId` INTEGER NOT NULL, " +
+                            "`woheType` TEXT NOT NULL, " +
+                            "`woheSupplier` TEXT NOT NULL, " +
+                            "`woheInvoiceNo` TEXT NOT NULL, " +
+                            "`woheAmount` REAL NOT NULL, " +
+                            "`woheIsDeleted` INTEGER NOT NULL, " +
+                            "`woheUpdateTime` TEXT NOT NULL, " +
+                            "PRIMARY KEY(`woHistoryExpenseId`), " +
+                            "FOREIGN KEY(`woheHistoryId`) REFERENCES `workOrderHistory`(`woHistoryId`) ON UPDATE NO ACTION ON DELETE NO ACTION )"
+                )
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_workOrderHistoryExpense-*-_woheHistoryId` ON `workOrderHistoryExpense-*-` (`woheHistoryId`)")
+            }
+        }
+
         private val MIGRATION_17_18 = object : Migration(17, 18) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("DROP INDEX IF EXISTS `index_workOrderHistoryTimeWorked_wohtDateId_wohtStartTime`")
@@ -207,7 +228,8 @@ abstract class PayDatabase : RoomDatabase() {
                     MIGRATION_14_15,
                     MIGRATION_15_16,
                     MIGRATION_16_17,
-                    MIGRATION_17_18
+                    MIGRATION_17_18,
+                    MIGRATION_18_19
                 )
                 .build()
         }

@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
@@ -75,6 +76,12 @@ class WorkOrderViewModel(
 
     fun getWorkOrderWorkPerformedSummary(workOrderId: Long) =
         workOrderRepository.getWorkOrderWorkPerformedSummary(workOrderId)
+
+    fun getWorkOrderExpensesSummary(workOrderId: Long) =
+        workOrderRepository.getWorkOrderExpensesSummary(workOrderId)
+
+    fun getWorkOrderExpensesAll(workOrderId: Long) =
+        workOrderRepository.getWorkOrderExpensesAll(workOrderId)
 
     val jobSpecsAll = workOrderRepository.getJobSpecs()
     val areasList = workOrderRepository.getAreasList()
@@ -172,4 +179,16 @@ class WorkOrderViewModel(
 
     suspend fun getWorkOrderHistoryMaterialCombined(woHistoryMaterialId: Long) =
         workOrderRepository.getWorkOrderHistoryMaterialCombined(woHistoryMaterialId)
+
+    suspend fun insertWorkOrderHistoryExpense(expense: WorkOrderHistoryExpense) =
+        workOrderRepository.insertWorkOrderHistoryExpense(expense)
+
+    suspend fun updateWorkOrderHistoryExpense(expense: WorkOrderHistoryExpense) =
+        workOrderRepository.updateWorkOrderHistoryExpense(expense)
+
+    suspend fun deleteWorkOrderHistoryExpense(expenseId: Long, updateTime: String) =
+        workOrderRepository.deleteWorkOrderHistoryExpense(expenseId, updateTime)
+
+    fun getExpensesByHistory(historyId: Long) =
+        workOrderRepository.getExpensesByHistory(historyId)
 }

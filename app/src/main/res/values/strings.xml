@@ -32,6 +32,8 @@
     <string name="add_tax_rule">* Add Tax Rule *</string>
     <string name="add_time">Add Time</string>
     <string name="add">Add</string>
+    <string name="add_work_performed">Add Work Performed</string>
+    <string name="add_material">Add Material</string>
     <string name="added_manually">Added Manually</string>
     <string name="address">Address</string>
     <string name="an_exemption_is_indicated_but_no_amount_was_entered">An exemption is indicated but no amount was entered!</string>
@@ -303,6 +305,21 @@
     <string name="edit_description_in_database">Edit description in database</string>
     <string name="create_override">Create Override?</string>
     <string name="this_is_a_default_extra_override">This is a default extra. Would you like to create an override for this payday to edit it?</string>
-    <string name="calculation_rate">Calculation Rate</string>
-    <string name="total_calculation">Total Calculation</string>
+    <string name="labor_rate">Labor Rate</string>
+    <string name="markup_rate">Markup %</string>
+    <string name="total_summary">Total Summary</string>
+    <string name="labor">Labor</string>
+    <string name="expenses">Expenses</string>
+    <string name="invoices">Invoices</string>
+    <string name="add_expense">Add Expense</string>
+    <string name="expense_type">Type (e.g., Gas, Parking)</string>
+    <string name="supplier">Supplier</string>
+    <string name="invoice_no">Invoice No</string>
+    <string name="amount">Amount</string>
+    <string name="expense_options">Expense Options</string>
+    <string name="delete_expense">Delete Expense</string>
+    <string name="update_expense">Update Expense</string>
+    <string name="expense_type_is_required">Expense type is required</string>
+    <string name="amount_cannot_be_zero">Amount cannot be zero</string>
+    <string name="invalid_amount">Invalid amount</string>
 </resources>

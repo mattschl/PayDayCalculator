@@ -86,7 +86,7 @@ fun MaterialEntryCard(
                     containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
-                Text(stringResource(id = R.string.add))
+                Text(stringResource(id = R.string.add_material))
             }
         }
     }

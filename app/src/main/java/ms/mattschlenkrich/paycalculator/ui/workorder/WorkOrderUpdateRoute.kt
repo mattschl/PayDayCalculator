@@ -22,7 +22,6 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.StringFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec
-import ms.mattschlenkrich.paycalculator.data.model.MaterialAndQuantity
 import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.JobSpecViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
@@ -98,18 +97,21 @@ fun WorkOrderUpdateRoute(
         workOrderViewModel.getWorkOrderSummary(initialWo.workOrderId)
     }.observeAsState()
 
-    var calculationRate by rememberSaveable { mutableStateOf("") }
-    val totalHours = (workOrderSummary?.totalRegHours ?: 0.0) +
-            (workOrderSummary?.totalOtHours ?: 0.0) +
-            (workOrderSummary?.totalDblOtHours ?: 0.0)
-    val totalCalculation = nf.displayDollars((calculationRate.toDoubleOrNull() ?: 0.0) * totalHours)
-
     val materialsSummary by remember(initialWo.workOrderId) {
         workOrderViewModel.getWorkOrderMaterialsSummary(initialWo.workOrderId)
     }.observeAsState(emptyList())
     val workPerformedSummary by remember(initialWo.workOrderId) {
         workOrderViewModel.getWorkOrderWorkPerformedSummary(initialWo.workOrderId)
     }.observeAsState(emptyList())
+    val expensesSummary by remember(initialWo.workOrderId) {
+        workOrderViewModel.getWorkOrderExpensesSummary(initialWo.workOrderId)
+    }.observeAsState(emptyList())
+    val individualExpenses by remember(initialWo.workOrderId) {
+        workOrderViewModel.getWorkOrderExpensesAll(initialWo.workOrderId)
+    }.observeAsState(emptyList())
+
+    var laborRate by rememberSaveable { mutableStateOf("") }
+    var markupRate by rememberSaveable { mutableStateOf("") }
 
     // Mocking summaries for now as they might need complex calculation
     val jobSpecSummaryText = "${addedJobSpecs.size} items"
@@ -134,11 +136,28 @@ fun WorkOrderUpdateRoute(
         } "
     }
 
+    val totalHours = (workOrderSummary?.totalRegHours ?: 0.0) +
+            (workOrderSummary?.totalOtHours ?: 0.0) +
+            (workOrderSummary?.totalDblOtHours ?: 0.0)
+    val laborTotal = (laborRate.toDoubleOrNull() ?: 0.0) * totalHours
+    val materialsTotal = materialsSummary.sumOf { it.totalAmount }
+    val expensesTotal = expensesSummary.sumOf { it.totalAmount }
+
+    val markupValue = markupRate.toDoubleOrNull() ?: 0.0
+    val factor = (100.0 - markupValue) / 100.0
+    val markedUpMaterials = if (factor > 0.0) materialsTotal / factor else materialsTotal
+    val markedUpExpenses = if (factor > 0.0) expensesTotal / factor else expensesTotal
+
+    val grandTotal = laborTotal + markedUpMaterials + markedUpExpenses
+
+    val laborTotalText = nf.displayDollars(laborTotal)
+    val materialTotalText = nf.displayDollars(markedUpMaterials)
+    val expenseTotalText = nf.displayDollars(markedUpExpenses)
+    val grandTotalText = nf.displayDollars(grandTotal)
+
     // Need to get these from somewhere, possibly another query
     val workPerformedList = workPerformedSummary
-    val materialsList = materialsSummary.map {
-        MaterialAndQuantity(it.name, it.quantity)
-    }
+    val materialsList = materialsSummary
 
     val context = LocalContext.current
     val errorLabel = stringResource(R.string.error_)
@@ -219,9 +238,14 @@ fun WorkOrderUpdateRoute(
         },
         historySummaryText = historySummaryText,
         hoursSummaryText = hoursSummaryText,
-        calculationRate = calculationRate,
-        onCalculationRateChange = { calculationRate = it },
-        totalCalculationText = totalCalculation,
+        laborRate = laborRate,
+        onLaborRateChange = { laborRate = it },
+        markupRate = markupRate,
+        onMarkupRateChange = { markupRate = it },
+        laborTotalText = laborTotalText,
+        materialTotalText = materialTotalText,
+        expenseTotalText = expenseTotalText,
+        grandTotalText = grandTotalText,
         onAddHistoryClick = {
             // Need to set a work date for HistoryAdd, maybe navigate to TimeSheet to pick one?
             // Or use current?
@@ -230,6 +254,8 @@ fun WorkOrderUpdateRoute(
         },
         workPerformedList = workPerformedList,
         materialsList = materialsList,
+        expensesList = expensesSummary,
+        individualExpenses = individualExpenses,
         onDoneClick = {
             val errorResId = validateWorkOrder(woNumber, address, description)
             if (errorResId != null) {

@@ -4,6 +4,7 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
@@ -170,6 +171,12 @@ class WorkOrderRepository(private val db: PayDatabase) {
 
     fun getWorkOrderWorkPerformedSummary(workOrderId: Long) =
         workOrderDao.getWorkOrderWorkPerformedSummary(workOrderId)
+
+    fun getWorkOrderExpensesSummary(workOrderId: Long) =
+        workOrderDao.getWorkOrderExpensesSummary(workOrderId)
+
+    fun getWorkOrderExpensesAll(workOrderId: Long) =
+        workOrderDao.getWorkOrderExpensesAll(workOrderId)
 
     suspend fun updateWorkOrderHistory(
         historyId: Long,
@@ -447,4 +454,16 @@ class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun getAreasListSync() = areaDao.getAreasListSync()
     fun getArea(areaId: Long) = areaDao.getArea(areaId)
     fun searchAreas(query: String) = areaDao.searchAreas(query)
+
+    suspend fun insertWorkOrderHistoryExpense(expense: WorkOrderHistoryExpense) =
+        workOrderDao.insertWorkOrderHistoryExpense(expense)
+
+    suspend fun updateWorkOrderHistoryExpense(expense: WorkOrderHistoryExpense) =
+        workOrderDao.updateWorkOrderHistoryExpense(expense)
+
+    suspend fun deleteWorkOrderHistoryExpense(expenseId: Long, updateTime: String) =
+        workOrderDao.deleteWorkOrderHistoryExpense(expenseId, updateTime)
+
+    fun getExpensesByHistory(historyId: Long) =
+        workOrderDao.getExpensesByHistory(historyId)
 }
