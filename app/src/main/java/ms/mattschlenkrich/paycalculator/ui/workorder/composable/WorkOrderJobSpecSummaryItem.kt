@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder.composable
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,19 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.data.model.MaterialAndQuantity
+import ms.mattschlenkrich.paycalculator.data.model.JobSpecAndQuantity
 
 @Composable
-fun WorkOrderMaterialSummaryItem(
-    material: MaterialAndQuantity,
-    nf: NumberFunctions,
-    onClick: (MaterialAndQuantity) -> Unit = {}
+fun WorkOrderJobSpecSummaryItem(
+    js: JobSpecAndQuantity
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick(material) },
+        modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -35,25 +29,15 @@ fun WorkOrderMaterialSummaryItem(
             modifier = Modifier.padding(4.dp)
         ) {
             Text(
-                text = nf.displayNumberFromDouble(material.quantity),
+                text = js.quantity.toString(),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-            if (material.totalAmount > 0.0) {
-                Text(
-                    text = nf.displayDollars(material.totalAmount),
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.secondary,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
             Text(
-                text = material.name,
+                text = js.name,
                 style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()

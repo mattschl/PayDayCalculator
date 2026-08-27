@@ -12,6 +12,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
 import ms.mattschlenkrich.paycalculator.data.model.ExpenseSummary
+import ms.mattschlenkrich.paycalculator.data.model.JobSpecAndQuantity
 import ms.mattschlenkrich.paycalculator.data.model.MaterialAndQuantity
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryCombined
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWithDates
@@ -177,28 +178,40 @@ interface WorkOrderDao {
     fun getWorkOrderSummary(workOrderId: Long): LiveData<WorkOrderSummary>
 
     @Query(
-        "SELECT m.mName as name, SUM(wohm.wohmQuantity) as quantity, SUM(m.mPrice * wohm.wohmQuantity) as totalAmount " +
+        "SELECT m.materialId as materialId, m.mName as name, SUM(wohm.wohmQuantity) as quantity, SUM(m.mPrice * wohm.wohmQuantity) as totalAmount " +
                 "FROM workOrderHistoryMaterials wohm " +
                 "LEFT JOIN materialMerged ON wohm.wohmMaterialId = mmChildId AND mmIsDeleted = 0 " +
                 "INNER JOIN materials m ON m.materialId = COALESCE(mmMasterId, wohm.wohmMaterialId) " +
                 "WHERE wohm.wohmHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId AND woHistoryDeleted = 0) " +
                 "AND wohm.wohmIsDeleted = 0 " +
-                "GROUP BY m.mName " +
+                "GROUP BY m.materialId " +
                 "ORDER BY m.mName"
     )
     fun getWorkOrderMaterialsSummary(workOrderId: Long): LiveData<List<MaterialAndQuantity>>
 
     @Query(
-        "SELECT wp.wpDescription as description, null as area, COUNT(*) as quantity " +
+        "SELECT wp.wpDescription as description, null as area, COUNT(DISTINCT wowp.workOrderHistoryWorkPerformedId) as quantity " +
                 "FROM workOrderHistoryWorkPerformed wowp " +
                 "LEFT JOIN workPerformedMerged ON wowp.wowpWorkPerformedId = wpmChildId AND wpmIsDeleted = 0 " +
                 "INNER JOIN workPerformed wp ON wp.workPerformedId = COALESCE(wpmMasterId, wowp.wowpWorkPerformedId) " +
                 "WHERE wowp.wowpHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId AND woHistoryDeleted = 0) " +
                 "AND wowp.wowpIsDeleted = 0 " +
-                "GROUP BY wp.wpDescription " +
+                "GROUP BY wp.workPerformedId " +
                 "ORDER BY wp.wpDescription"
     )
     fun getWorkOrderWorkPerformedSummary(workOrderId: Long): LiveData<List<WorkPerformedAndQuantity>>
+
+    @Query(
+        "SELECT js.jsName as name, COUNT(DISTINCT wojs.workOrderJobSpecId) as quantity " +
+                "FROM workOrderJobSpecs wojs " +
+                "LEFT JOIN jobSpecMerged ON wojs.wojsJobSpecId = jsmChildId AND jsmIsDeleted = 0 " +
+                "INNER JOIN jobSpecs js ON js.jobSpecId = COALESCE(jsmMasterId, wojs.wojsJobSpecId) " +
+                "WHERE wojs.wojsWorkOrderId = :workOrderId " +
+                "AND wojs.wojsIsDeleted = 0 " +
+                "GROUP BY js.jobSpecId " +
+                "ORDER BY js.jsName"
+    )
+    fun getWorkOrderJobSpecsSummary(workOrderId: Long): LiveData<List<JobSpecAndQuantity>>
 
     @Query(
         "SELECT woheSupplier as supplier, woheType as type, SUM(woheAmount) as totalAmount " +

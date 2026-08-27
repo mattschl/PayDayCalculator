@@ -7,7 +7,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -31,6 +35,8 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkOrderHistoryExpenseDialog(
+    mainViewModel: ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel,
+    navController: androidx.navigation.NavController,
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
     expense: WorkOrderHistoryExpense? = null,
@@ -55,6 +61,14 @@ fun WorkOrderHistoryExpenseDialog(
                 supplier = expense.woheSupplier
                 invoiceNo = expense.woheInvoiceNo
                 amount = nf.displayNumberFromDouble(expense.woheAmount)
+            }
+        }
+
+        LaunchedEffect(mainViewModel.getTransferNum()) {
+            val transferNum = mainViewModel.getTransferNum()
+            if (transferNum != 0.0) {
+                amount = nf.displayNumberFromDouble(transferNum)
+                mainViewModel.setTransferNum(0.0)
             }
         }
 
@@ -116,7 +130,18 @@ fun WorkOrderHistoryExpenseDialog(
                     onValueChange = { amount = it },
                     label = { Text(stringResource(R.string.amount)) },
                     modifier = Modifier.fillMaxWidth(),
-                    isError = isAmountError
+                    isError = isAmountError,
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            mainViewModel.setTransferNum(nf.getDoubleFromDollars(amount))
+                            navController.navigate(ms.mattschlenkrich.paycalculator.Screen.Calculator.route)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Calculate,
+                                contentDescription = "Calculate Amount"
+                            )
+                        }
+                    }
                 )
                 if (isAmountError) {
                     Text(

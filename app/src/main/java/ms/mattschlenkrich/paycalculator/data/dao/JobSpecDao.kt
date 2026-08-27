@@ -103,11 +103,20 @@ interface JobSpecDao {
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
-        "SELECT * FROM workOrderJobSpecs " +
-                "WHERE wojsIsDeleted = 0 " +
-                "AND wojsWorkOrderId = :workOrderId " +
-                "ORDER BY wojsSequence, " +
-                "wojsUpdateTime"
+        "SELECT COALESCE(jsmMasterId, wojsJobSpecId) as wojsJobSpecId, " +
+                "wojsWorkOrderId, " +
+                "null as workOrderJobSpecId, " +
+                "wojsAreaId, " +
+                "null as wojsNote, " +
+                "MIN(wojsSequence) as wojsSequence, " +
+                "0 as wojsIsDeleted, " +
+                "MAX(wojsUpdateTime) as wojsUpdateTime " +
+                "FROM workOrderJobSpecs " +
+                "LEFT JOIN jobSpecMerged ON wojsJobSpecId = jsmChildId AND jsmIsDeleted = 0 " +
+                "WHERE wojsWorkOrderId = :workOrderId " +
+                "AND wojsIsDeleted = 0 " +
+                "GROUP BY COALESCE(jsmMasterId, wojsJobSpecId), wojsAreaId " +
+                "ORDER BY wojsSequence, wojsUpdateTime"
     )
     fun getWorkOrderJobSpecs(workOrderId: Long): LiveData<List<WorkOrderJobSpecCombined>>
 

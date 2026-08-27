@@ -77,6 +77,9 @@ class WorkOrderViewModel(
     fun getWorkOrderWorkPerformedSummary(workOrderId: Long) =
         workOrderRepository.getWorkOrderWorkPerformedSummary(workOrderId)
 
+    fun getWorkOrderJobSpecsSummary(workOrderId: Long) =
+        workOrderRepository.getWorkOrderJobSpecsSummary(workOrderId)
+
     fun getWorkOrderExpensesSummary(workOrderId: Long) =
         workOrderRepository.getWorkOrderExpensesSummary(workOrderId)
 

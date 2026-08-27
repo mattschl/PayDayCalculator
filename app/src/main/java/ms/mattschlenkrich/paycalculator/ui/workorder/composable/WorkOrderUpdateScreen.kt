@@ -9,25 +9,30 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +41,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
@@ -50,15 +56,19 @@ import ms.mattschlenkrich.paycalculator.data.entity.Areas
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
 import ms.mattschlenkrich.paycalculator.data.model.ExpenseSummary
+import ms.mattschlenkrich.paycalculator.data.model.JobSpecAndQuantity
 import ms.mattschlenkrich.paycalculator.data.model.MaterialAndQuantity
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paycalculator.data.model.WorkPerformedAndQuantity
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable.WorkOrderHistoryExpenseItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkOrderUpdateScreen(
+    mainViewModel: MainViewModel,
+    navController: NavController,
     employerName: String,
     woNumber: String,
     onWoNumberChange: (String) -> Unit,
@@ -99,7 +109,9 @@ fun WorkOrderUpdateScreen(
     grandTotalText: String,
     onAddHistoryClick: () -> Unit,
     workPerformedList: List<WorkPerformedAndQuantity>,
+    jobSpecsSummaryList: List<JobSpecAndQuantity>,
     materialsList: List<MaterialAndQuantity>,
+    onUpdateMaterialPrice: (Long, Double) -> Unit,
     expensesList: List<ExpenseSummary>,
     individualExpenses: List<WorkOrderHistoryExpense>,
     onDoneClick: () -> Unit,
@@ -112,6 +124,8 @@ fun WorkOrderUpdateScreen(
     var showJobSpecDialog by remember { mutableStateOf(false) }
     var selectedJobSpecCombined by remember { mutableStateOf<WorkOrderJobSpecCombined?>(null) }
 
+    var showMaterialPriceDialog by rememberSaveable { mutableStateOf<MaterialAndQuantity?>(null) }
+
     JobSpecOptionsDialog(
         showDialog = showJobSpecDialog,
         onDismissRequest = { showJobSpecDialog = false },
@@ -119,6 +133,81 @@ fun WorkOrderUpdateScreen(
         onUpdateInWorkOrder = { onJobSpecClick(it) },
         onUpdateDefinition = { onUpdateJobSpecDefinition(it.jobSpec) }
     )
+
+    if (showMaterialPriceDialog != null) {
+        val material = showMaterialPriceDialog!!
+        var newPrice by remember {
+            mutableStateOf(
+                nf.displayDollars(
+                    if (material.quantity != 0.0) material.totalAmount / material.quantity
+                    else 0.0
+                )
+            )
+        }
+
+        LaunchedEffect(mainViewModel.getTransferNum()) {
+            val transferNum = mainViewModel.getTransferNum()
+            if (transferNum != 0.0) {
+                newPrice = nf.displayDollars(transferNum)
+                mainViewModel.setTransferNum(0.0)
+            }
+        }
+        androidx.compose.material3.ModalBottomSheet(
+            onDismissRequest = { showMaterialPriceDialog = null },
+            sheetState = androidx.compose.material3.rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+            ) {
+                Text(
+                    text = stringResource(R.string.update_material_used),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(material.name)
+                SelectAllOutlinedTextField(
+                    value = newPrice,
+                    onValueChange = { newPrice = it },
+                    label = { Text(stringResource(R.string.price)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            mainViewModel.setTransferNum(nf.getDoubleFromDollars(newPrice))
+                            navController.navigate(ms.mattschlenkrich.paycalculator.Screen.Calculator.route)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Calculate,
+                                contentDescription = "Calculate Price"
+                            )
+                        }
+                    }
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    androidx.compose.material3.TextButton(onClick = {
+                        showMaterialPriceDialog = null
+                    }) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                    androidx.compose.material3.TextButton(onClick = {
+                        onUpdateMaterialPrice(
+                            material.materialId,
+                            nf.getDoubleFromDollars(newPrice)
+                        )
+                        showMaterialPriceDialog = null
+                    }) {
+                        Text(stringResource(R.string.save))
+                    }
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
+    }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -377,6 +466,35 @@ fun WorkOrderUpdateScreen(
                 }
             }
 
+            if (jobSpecsSummaryList.isNotEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(R.string.job_specs),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                    )
+                }
+
+                val jsChunks = jobSpecsSummaryList.chunked(columns)
+                items(jsChunks) { chunk ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+                    ) {
+                        chunk.forEach { js ->
+                            Box(modifier = Modifier.weight(1f)) {
+                                WorkOrderJobSpecSummaryItem(js)
+                            }
+                        }
+                        repeat(columns - chunk.size) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+
             if (materialsList.isNotEmpty()) {
                 item {
                     Text(
@@ -396,7 +514,11 @@ fun WorkOrderUpdateScreen(
                     ) {
                         chunk.forEach { material ->
                             Box(modifier = Modifier.weight(1f)) {
-                                WorkOrderMaterialSummaryItem(material, nf)
+                                WorkOrderMaterialSummaryItem(
+                                    material = material,
+                                    nf = nf,
+                                    onClick = { showMaterialPriceDialog = it }
+                                )
                             }
                         }
                         repeat(columns - chunk.size) {

@@ -9,19 +9,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
 import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
@@ -31,6 +35,8 @@ import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkOrderHistoryMaterialUpdateScreen(
+    mainViewModel: ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel,
+    navController: androidx.navigation.NavController,
     info: String,
     materialName: String,
     onMaterialNameChange: (String) -> Unit,
@@ -41,6 +47,16 @@ fun WorkOrderHistoryMaterialUpdateScreen(
     originalQuantityLabel: String,
     onDoneClick: () -> Unit
 ) {
+    val nf = NumberFunctions()
+
+    LaunchedEffect(mainViewModel.getTransferNum()) {
+        val transferNum = mainViewModel.getTransferNum()
+        if (transferNum != 0.0) {
+            onQuantityChange(nf.displayNumberFromDouble(transferNum))
+            mainViewModel.setTransferNum(0.0)
+        }
+    }
+
     Scaffold(
         /* topBar = {
              TopAppBar(
@@ -107,6 +123,17 @@ fun WorkOrderHistoryMaterialUpdateScreen(
                 onValueChange = onQuantityChange,
                 label = { Text(stringResource(R.string.qty)) },
                 modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    IconButton(onClick = {
+                        mainViewModel.setTransferNum(nf.getDoubleFromDollars(quantity))
+                        navController.navigate(ms.mattschlenkrich.paycalculator.Screen.Calculator.route)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Calculate,
+                            contentDescription = "Calculate Quantity"
+                        )
+                    }
+                }
             )
         }
     }

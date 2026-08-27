@@ -44,6 +44,25 @@ fun MaterialUpdateRoute(
     var cost by rememberSaveable { mutableStateOf(nf.displayDollars(oldMaterial.mCost)) }
     var price by rememberSaveable { mutableStateOf(nf.displayDollars(oldMaterial.mPrice)) }
 
+    var calculatingField by rememberSaveable { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(mainViewModel.getTransferNum()) {
+        val transferNum = mainViewModel.getTransferNum()
+        if (transferNum != 0.0) {
+            when (calculatingField) {
+                "cost" -> {
+                    cost = nf.displayDollars(transferNum)
+                }
+
+                "price" -> {
+                    price = nf.displayDollars(transferNum)
+                }
+            }
+            mainViewModel.setTransferNum(0.0)
+            calculatingField = null
+        }
+    }
+
     MaterialUpdateScreen(
         name = name,
         onNameChange = { name = it },
@@ -51,6 +70,16 @@ fun MaterialUpdateRoute(
         onCostChange = { cost = it },
         price = price,
         onPriceChange = { price = it },
+        onCostCalcClick = {
+            calculatingField = "cost"
+            mainViewModel.setTransferNum(nf.getDoubleFromDollars(cost))
+            navController.navigate(Screen.Calculator.route)
+        },
+        onPriceCalcClick = {
+            calculatingField = "price"
+            mainViewModel.setTransferNum(nf.getDoubleFromDollars(price))
+            navController.navigate(Screen.Calculator.route)
+        },
         onUpdateClick = {
             if (name.isBlank() || cost.isBlank() || price.isBlank()) {
                 return@MaterialUpdateScreen

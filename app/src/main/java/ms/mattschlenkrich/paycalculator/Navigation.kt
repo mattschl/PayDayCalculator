@@ -142,6 +142,8 @@ sealed class Screen(
     object WorkOrderJobSpecUpdate :
         Screen("workOrderJobSpecUpdate", R.string.update_job_spec, R.drawable.ic_time_sheet)
 
+    object Calculator : Screen("calculator", R.string.app_name, 0) // or dedicated icon
+
     object Settings : Screen("settings", R.string.settings, R.drawable.ic_settings)
 }
 

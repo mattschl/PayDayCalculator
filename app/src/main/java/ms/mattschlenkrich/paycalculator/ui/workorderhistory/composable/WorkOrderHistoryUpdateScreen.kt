@@ -48,6 +48,8 @@ import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWorkPerformed
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkOrderHistoryUpdateScreen(
+    mainViewModel: ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel,
+    navController: androidx.navigation.NavController,
     workDateDisplay: String,
     employerName: String,
     workOrderNumber: String,
@@ -141,6 +143,8 @@ fun WorkOrderHistoryUpdateScreen(
     )
 
     WorkOrderHistoryExpenseDialog(
+        mainViewModel = mainViewModel,
+        navController = navController,
         showDialog = showExpenseDialog,
         onDismissRequest = { showExpenseDialog = false },
         expense = selectedExpense,

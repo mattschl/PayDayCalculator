@@ -137,6 +137,25 @@ interface MaterialDao {
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
+        "SELECT COALESCE(mmMasterId, wohmMaterialId) as wohmMaterialId, " +
+                "wohmHistoryId, " +
+                "null as workOrderHistoryMaterialId, " +
+                "SUM(wohmQuantity) as wohmQuantity, " +
+                "MIN(wohmSequence) as wohmSequence, " +
+                "0 as wohmIsDeleted, " +
+                "MAX(wohmUpdateTime) as wohmUpdateTime " +
+                "FROM workOrderHistoryMaterials " +
+                "LEFT JOIN materialMerged ON wohmMaterialId = mmChildId AND mmIsDeleted = 0 " +
+                "WHERE wohmHistoryId = :historyId " +
+                "AND wohmIsDeleted = 0 " +
+                "GROUP BY COALESCE(mmMasterId, wohmMaterialId) " +
+                "ORDER BY wohmUpdateTime"
+    )
+    fun getMaterialsByHistoryCombined(historyId: Long): LiveData<List<WorkOrderHistoryMaterialCombined>>
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
         "SELECT * FROM workOrderHistoryMaterials " +
                 "WHERE wohmHistoryId = :historyId " +
                 "AND wohmIsDeleted = 0 " +

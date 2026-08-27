@@ -254,6 +254,12 @@ class MainViewModel(
         workOrderHistoryTimeWorkedCombined = newWorkOrderHistoryTimeWorkedCombined
     }
 
+    private var transferNum: Double = 0.0
+    fun getTransferNum(): Double = transferNum
+    fun setTransferNum(num: Double) {
+        transferNum = num
+    }
+
     fun loadSettings(): Settings {
         return settingsManager.loadSettings()
     }

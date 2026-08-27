@@ -61,6 +61,8 @@ fun WorkOrderHistoryMaterialUpdateRoute(
     var qty by rememberSaveable { mutableStateOf(nf.displayNumberFromDouble(materialHistory!!.workOrderHistoryMaterial.wohmQuantity)) }
 
     WorkOrderHistoryMaterialUpdateScreen(
+        mainViewModel = mainViewModel,
+        navController = navController,
         info = stringResource(R.string.edit_material_used_for_wo_) +
                 " ${historyWithDates!!.workOrder.woNumber} " +
                 stringResource(R.string._at_) + " ${historyWithDates!!.workOrder.woAddress}\n" +

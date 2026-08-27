@@ -25,6 +25,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.JobSpecViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MaterialViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.workorder.composable.WorkOrderUpdateScreen
@@ -35,6 +36,7 @@ fun WorkOrderUpdateRoute(
     workOrderViewModel: WorkOrderViewModel,
     jobSpecViewModel: JobSpecViewModel,
     areaViewModel: AreaViewModel,
+    materialViewModel: MaterialViewModel,
     navController: NavController,
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
@@ -103,6 +105,9 @@ fun WorkOrderUpdateRoute(
     val workPerformedSummary by remember(initialWo.workOrderId) {
         workOrderViewModel.getWorkOrderWorkPerformedSummary(initialWo.workOrderId)
     }.observeAsState(emptyList())
+    val jobSpecsSummary by remember(initialWo.workOrderId) {
+        workOrderViewModel.getWorkOrderJobSpecsSummary(initialWo.workOrderId)
+    }.observeAsState(emptyList())
     val expensesSummary by remember(initialWo.workOrderId) {
         workOrderViewModel.getWorkOrderExpensesSummary(initialWo.workOrderId)
     }.observeAsState(emptyList())
@@ -168,6 +173,8 @@ fun WorkOrderUpdateRoute(
     )
 
     WorkOrderUpdateScreen(
+        mainViewModel = mainViewModel,
+        navController = navController,
         employerName = employer.employerName,
         woNumber = woNumber,
         onWoNumberChange = {
@@ -253,7 +260,13 @@ fun WorkOrderUpdateRoute(
             navController.popBackStack(Screen.MainPager.route, inclusive = false)
         },
         workPerformedList = workPerformedList,
+        jobSpecsSummaryList = jobSpecsSummary,
         materialsList = materialsList,
+        onUpdateMaterialPrice = { materialId, newPrice ->
+            coroutineScope.launch {
+                materialViewModel.updateMaterialPrice(materialId, newPrice)
+            }
+        },
         expensesList = expensesSummary,
         individualExpenses = individualExpenses,
         onDoneClick = {

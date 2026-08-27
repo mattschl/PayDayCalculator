@@ -122,6 +122,7 @@
     <string name="is_automatic">Is automatic</string>
     <string name="is_default">Is Default</string>
     <string name="job_spec">Job Spec</string>
+    <string name="job_specs">Job Specs</string>
     <string name="level_bracket">Level/Bracket</string>
     <string name="level">Level </string>
     <string name="main_monthly_pay_date">Main monthly pay date</string>

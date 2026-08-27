@@ -23,6 +23,7 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTimeViewModel
 import ms.mattschlenkrich.paycalculator.ui.areas.AreaUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.areas.AreaViewRoute
+import ms.mattschlenkrich.paycalculator.ui.calculator.CalculatorRoute
 import ms.mattschlenkrich.paycalculator.ui.employer.EmployerAddRoute
 import ms.mattschlenkrich.paycalculator.ui.employer.EmployerUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.extras.EmployerExtraDefinitionRoute
@@ -282,6 +283,7 @@ fun AppNavHost(
                 workOrderViewModel,
                 jobSpecViewModel,
                 areaViewModel,
+                materialViewModel,
                 navController
             )
         }
@@ -432,6 +434,12 @@ fun AppNavHost(
                 mainViewModel,
                 jobSpecViewModel,
                 areaViewModel,
+                navController
+            )
+        }
+        composable(Screen.Calculator.route) {
+            CalculatorRoute(
+                mainViewModel,
                 navController
             )
         }

@@ -52,6 +52,18 @@ class MaterialViewModel(
     suspend fun removeAllMaterialsFromWorkOrderHistory(historyId: Long, updateTime: String) =
         materialRepository.removeAllMaterialsFromWorkOrderHistory(historyId, updateTime)
 
+    suspend fun updateMaterialPrice(materialId: Long, newPrice: Double) {
+        val material = materialRepository.getMaterialSync(materialId)
+        if (material != null) {
+            materialRepository.updateMaterial(
+                material.copy(
+                    mPrice = newPrice,
+                    mUpdateTime = DateFunctions().getCurrentUTCTimeAsString()
+                )
+            )
+        }
+    }
+
     suspend fun getOrCreateMaterial(name: String): Material? {
         if (name.isBlank()) return null
         val existing = materialRepository.getMaterialsListSync().find {

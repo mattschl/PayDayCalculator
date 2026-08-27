@@ -172,6 +172,9 @@ class WorkOrderRepository(private val db: PayDatabase) {
     fun getWorkOrderWorkPerformedSummary(workOrderId: Long) =
         workOrderDao.getWorkOrderWorkPerformedSummary(workOrderId)
 
+    fun getWorkOrderJobSpecsSummary(workOrderId: Long) =
+        workOrderDao.getWorkOrderJobSpecsSummary(workOrderId)
+
     fun getWorkOrderExpensesSummary(workOrderId: Long) =
         workOrderDao.getWorkOrderExpensesSummary(workOrderId)
 

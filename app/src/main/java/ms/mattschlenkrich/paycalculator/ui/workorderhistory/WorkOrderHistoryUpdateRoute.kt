@@ -154,6 +154,8 @@ fun WorkOrderHistoryUpdateRoute(
     }
 
     WorkOrderHistoryUpdateScreen(
+        mainViewModel = mainViewModel,
+        navController = navController,
         workDateDisplay = df.getDisplayDate(workDate.wdDate),
         employerName = employer.employerName,
         workOrderNumber = workOrderNumber,
