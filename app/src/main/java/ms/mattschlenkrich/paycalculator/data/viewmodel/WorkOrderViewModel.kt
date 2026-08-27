@@ -13,7 +13,7 @@ import ms.mattschlenkrich.paycalculator.data.repository.WorkOrderRepository
 
 class WorkOrderViewModel(
     app: Application,
-    private val workOrderRepository: WorkOrderRepository
+    private val workOrderRepository: WorkOrderRepository,
 ) : AndroidViewModel(app) {
 
     suspend fun insertWorkOrder(workOrder: WorkOrder) =

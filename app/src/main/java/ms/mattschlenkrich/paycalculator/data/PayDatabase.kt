@@ -119,7 +119,7 @@ abstract class PayDatabase : RoomDatabase() {
                             "`woheIsDeleted` INTEGER NOT NULL, " +
                             "`woheUpdateTime` TEXT NOT NULL, " +
                             "PRIMARY KEY(`woHistoryExpenseId`), " +
-                            "FOREIGN KEY(`woheHistoryId`) REFERENCES `workOrderHistory`(`woHistoryId`) ON UPDATE NO ACTION ON DELETE NO ACTION )"
+                            "FOREIGN KEY(`woheHistoryId`) REFERENCES `workOrderHistory`(`woHistoryId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
                 )
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_workOrderHistoryExpense-*-_woheHistoryId` ON `workOrderHistoryExpense-*-` (`woheHistoryId`)")
             }

@@ -105,7 +105,7 @@ fun WorkOrderHistoryUpdateScreen(
     onUpdateMaterialInHistory: (MaterialInSequence) -> Unit,
     onUpdateMaterialDefinition: (MaterialInSequence) -> Unit,
     isSaving: Boolean = false,
-    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
+    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH,
 ) {
     var showWorkPerformedDialog by rememberSaveable { mutableStateOf(false) }
     var selectedWorkPerformed by rememberSaveable {
@@ -241,12 +241,11 @@ fun WorkOrderHistoryUpdateScreen(
                 items(workPerformedActualList) { item ->
                     WorkPerformedItem(
                         item = item,
-                        index = workPerformedActualList.indexOf(item),
-                        onClick = {
-                            selectedWorkPerformed = item
-                            showWorkPerformedDialog = true
-                        }
-                    )
+                        index = workPerformedActualList.indexOf(item)
+                    ) {
+                        selectedWorkPerformed = item
+                        showWorkPerformedDialog = true
+                    }
                 }
             }
 
@@ -275,12 +274,11 @@ fun WorkOrderHistoryUpdateScreen(
                 items(materialActualList) { item ->
                     WorkOrderHistoryMaterialItem(
                         item = item,
-                        index = materialActualList.indexOf(item),
-                        onClick = {
-                            selectedMaterial = item
-                            showMaterialDialog = true
-                        }
-                    )
+                        index = materialActualList.indexOf(item)
+                    ) {
+                        selectedMaterial = item
+                        showMaterialDialog = true
+                    }
                 }
             }
 
@@ -309,12 +307,11 @@ fun WorkOrderHistoryUpdateScreen(
                 items(expenseActualList) { item ->
                     WorkOrderHistoryExpenseItem(
                         item = item,
-                        index = expenseActualList.indexOf(item),
-                        onClick = {
-                            selectedExpense = item
-                            showExpenseDialog = true
-                        }
-                    )
+                        index = expenseActualList.indexOf(item)
+                    ) {
+                        selectedExpense = item
+                        showExpenseDialog = true
+                    }
                 }
             }
 

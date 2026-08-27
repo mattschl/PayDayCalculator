@@ -35,7 +35,7 @@ class WorkOrderRepository(private val db: PayDatabase) {
                 updated.woAddress,
                 updated.woDescription,
                 updated.woDeleted,
-                updated.woUpdateTime
+                updated.woUpdateTime,
             )
         } else {
             workOrderDao.insertWorkOrder(workOrder)
@@ -100,7 +100,7 @@ class WorkOrderRepository(private val db: PayDatabase) {
 
     suspend fun updateWorkOrderHistory(history: WorkOrderHistory) {
         val existing = workOrderDao.getWorkOrderHistoryByIdAnySync(history.woHistoryId)
-        if (existing != null && existing.woHistoryDeleted && !history.woHistoryDeleted) {
+        if (existing != null && (existing.woHistoryDeleted && !history.woHistoryDeleted)) {
             val updateTime = DateFunctions().getCurrentUTCTimeAsString()
             workPerformedDao.removeAllWorkPerformedFromWorkOrderHistory(
                 history.woHistoryId,
