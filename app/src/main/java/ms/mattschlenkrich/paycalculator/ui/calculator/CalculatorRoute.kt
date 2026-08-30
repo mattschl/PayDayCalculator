@@ -22,6 +22,7 @@ fun CalculatorRoute(
     val nf = remember { NumberFunctions() }
 
     var displayValue by remember { mutableStateOf("0") }
+    var isNewNumber by remember { mutableStateOf(true) }
     val formulaList = remember { mutableStateListOf("") }
     val operatorList = remember { mutableStateListOf("") }
     val prevNumberList = remember { mutableStateListOf(0.0) }
@@ -33,6 +34,7 @@ fun CalculatorRoute(
         val transferNum = mainViewModel.getTransferNum()
         if (transferNum != 0.0 && !transferNum.isNaN()) {
             displayValue = nf.displayNumberFromDouble(transferNum)
+            isNewNumber = true
         }
     }
 
@@ -43,81 +45,123 @@ fun CalculatorRoute(
             nf.getDoubleFromDollars(displayValue)
         }
 
-        if (operatorList.isEmpty() || operatorList[currentCounter] == "") {
-            if (formulaList.isEmpty()) {
-                formulaList.add(nf.displayNumberFromDouble(curNumber))
-                resultList.add(curNumber)
-                operatorList.add("")
-                prevNumberList.add(0.0)
-            } else {
-                formulaList[currentCounter] = nf.displayNumberFromDouble(curNumber)
+        if (operatorList.isEmpty() || currentCounter >= operatorList.size || operatorList[currentCounter] == "") {
+            val display = nf.displayNumberFromDouble(curNumber)
+            if (currentCounter < formulaList.size) {
+                formulaList[currentCounter] = display
                 resultList[currentCounter] = curNumber
+            } else {
+                formulaList.add(display)
+                resultList.add(curNumber)
+                if (operatorList.size <= currentCounter) operatorList.add("")
+                if (prevNumberList.size <= currentCounter) prevNumberList.add(0.0)
             }
         } else {
             val prev = prevNumberList[currentCounter]
             val op = operatorList[currentCounter]
-            val result = CalculatorLogic.calculate(prev, curNumber, op)
-            resultList[currentCounter] = result
-            formulaList[currentCounter] =
-                CalculatorLogic.formatFormula(prev, curNumber, op, result, nf)
+            if (isNewNumber) {
+                formulaList[currentCounter] = "${nf.displayNumberFromDouble(prev)} $op"
+                resultList[currentCounter] = prev
+            } else {
+                val result = CalculatorLogic.calculate(prev, curNumber, op)
+                resultList[currentCounter] = result
+                formulaList[currentCounter] =
+                    CalculatorLogic.formatFormula(prev, curNumber, op, result, nf)
+            }
         }
-        transferResult = resultList[currentCounter]
+        if (currentCounter < resultList.size) {
+            transferResult = resultList[currentCounter]
+        }
     }
 
     fun addDigit(digit: String) {
-        displayValue = CalculatorLogic.addDigit(displayValue, digit)
+        if (isNewNumber) {
+            displayValue = if (digit == ".") "0." else if (digit == "-") "-0" else digit
+            isNewNumber = false
+        } else {
+            displayValue = CalculatorLogic.addDigit(displayValue, digit)
+        }
         performMath()
     }
 
     fun performOperatorAction(operation: String) {
-        if (operatorList.isEmpty() || operatorList[currentCounter] == "") {
-            if (operatorList.isEmpty()) {
-                operatorList.add(operation)
-                prevNumberList.add(0.0)
-                formulaList.add("")
-                resultList.add(0.0)
-            } else {
+        if (isNewNumber) {
+            if (operatorList.isNotEmpty() && currentCounter < operatorList.size) {
                 operatorList[currentCounter] = operation
             }
-            prevNumberList[currentCounter] = if (displayValue == "0" || displayValue == "-0") {
-                0.0
-            } else {
-                nf.getDoubleFromDollars(displayValue)
-            }
-            displayValue = "0"
         } else {
-            operatorList[currentCounter] = operation
+            if (operatorList.isNotEmpty() && currentCounter < operatorList.size && operatorList[currentCounter] != "") {
+                val intermediateResult = resultList[currentCounter]
+                currentCounter++
+                prevNumberList.add(intermediateResult)
+                operatorList.add(operation)
+                formulaList.add("")
+                resultList.add(intermediateResult)
+                displayValue = nf.displayNumberFromDouble(intermediateResult)
+            } else {
+                val curVal = nf.getDoubleFromDollars(displayValue)
+                if (currentCounter < prevNumberList.size) {
+                    prevNumberList[currentCounter] = curVal
+                } else {
+                    prevNumberList.add(curVal)
+                }
+
+                if (currentCounter < operatorList.size) {
+                    operatorList[currentCounter] = operation
+                } else {
+                    operatorList.add(operation)
+                }
+            }
+            isNewNumber = true
         }
         performMath()
     }
 
     fun performEqualAction() {
-        currentCounter += 1
-        displayValue = nf.displayNumberFromDouble(resultList[currentCounter - 1])
-        prevNumberList.add(0.0)
+        if (operatorList.isEmpty() || currentCounter >= operatorList.size || operatorList[currentCounter] == "") return
+
+        val finalResult = resultList[currentCounter]
+        currentCounter++
+
+        displayValue = nf.displayNumberFromDouble(finalResult)
+        isNewNumber = true
+
+        prevNumberList.add(finalResult)
         operatorList.add("")
         formulaList.add("")
-        resultList.add(0.0)
+        resultList.add(finalResult)
+
         performMath()
     }
 
     fun clearAll() {
-        if (currentCounter < prevNumberList.size) {
-            prevNumberList[currentCounter] = 0.0
-            operatorList[currentCounter] = ""
-        }
+        formulaList.clear()
+        operatorList.clear()
+        prevNumberList.clear()
+        resultList.clear()
+
+        formulaList.add("")
+        operatorList.add("")
+        prevNumberList.add(0.0)
+        resultList.add(0.0)
+
+        currentCounter = 0
         displayValue = "0"
+        isNewNumber = true
         performMath()
     }
 
     fun clear() {
         displayValue = "0"
+        isNewNumber = true
         performMath()
     }
 
     fun performBackspace() {
-        displayValue = CalculatorLogic.backspace(displayValue)
-        performMath()
+        if (!isNewNumber) {
+            displayValue = CalculatorLogic.backspace(displayValue)
+            performMath()
+        }
     }
 
     CalculatorScreen(
