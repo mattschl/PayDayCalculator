@@ -1,7 +1,5 @@
 package ms.mattschlenkrich.paycalculator.ui.extras.composable
 
-import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
-
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.common.compose.LocalMinColumnWidth
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
@@ -58,7 +57,7 @@ fun EmployerExtraDefinitionsScreen(
     onUpdateExtraType: (Employers, WorkExtraTypes) -> Unit,
     onAddNewEmployer: () -> Unit,
     onAddNewExtraType: (Employers) -> Unit,
-    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
+    minColumnWidth: Int = LocalMinColumnWidth.current
 ) {
     val employers by employerViewModel.employersAll.observeAsState(emptyList())
     var selectedEmployer by remember { mutableStateOf(mainViewModel.getEmployer()) }

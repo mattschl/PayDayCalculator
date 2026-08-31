@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -24,6 +25,8 @@ import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import kotlin.math.max
 
 val paddingScale = mutableFloatStateOf(1f)
+
+val LocalMinColumnWidth = staticCompositionLocalOf { DEFAULT_MIN_COLUMN_WIDTH }
 
 val SCREEN_PADDING_HORIZONTAL: Dp
     get() = (6 * paddingScale.floatValue).dp
@@ -99,7 +102,7 @@ fun StandardItem(
 }
 
 @Composable
-fun calculateGridColumns(minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH): Int {
+fun calculateGridColumns(minColumnWidth: Int = LocalMinColumnWidth.current): Int {
     val windowInfo = LocalWindowInfo.current
     val density = LocalDensity.current
     return with(density) {

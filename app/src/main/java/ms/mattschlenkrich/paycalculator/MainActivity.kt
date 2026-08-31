@@ -112,7 +112,8 @@ class MainActivity : ComponentActivity() {
             PayCalculatorTheme(
                 isSystemTheme = settings?.isSystemTheme ?: true,
                 isDarkTheme = settings?.isDarkTheme ?: false,
-                fontSize = settings?.fontSize ?: 16f
+                fontSize = settings?.fontSize ?: 16f,
+                minColumnWidth = settings?.minColumnWidth ?: 360
             ) {
                 val isAuthenticated by mainViewModel.isAuthenticated
                 val isPasswordProtected = settings?.isPasswordProtected ?: false

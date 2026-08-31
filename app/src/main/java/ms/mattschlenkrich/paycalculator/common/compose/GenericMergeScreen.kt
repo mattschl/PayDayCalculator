@@ -42,7 +42,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,7 +64,7 @@ fun <T, C> GenericMergeScreen(
     masterTitleRes: Int,
     parentLabelRes: Int,
     childLabelRes: Int,
-    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
+    minColumnWidth: Int = LocalMinColumnWidth.current
 ) {
     val columns = calculateGridColumns(minColumnWidth)
 

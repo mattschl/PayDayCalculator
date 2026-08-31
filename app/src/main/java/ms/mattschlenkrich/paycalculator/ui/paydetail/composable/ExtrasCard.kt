@@ -38,6 +38,7 @@ import ms.mattschlenkrich.paycalculator.data.model.TaxAndAmount
 
 @Composable
 fun ExtrasCard(
+    modifier: Modifier = Modifier,
     title: String,
     extras: List<ExtraContainer>,
     taxes: List<TaxAndAmount> = emptyList(),
@@ -49,7 +50,7 @@ fun ExtrasCard(
 ) {
     val nf = NumberFunctions()
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface

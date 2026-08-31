@@ -1,7 +1,5 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder.composable
 
-import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
-
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.common.compose.LocalMinColumnWidth
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
@@ -63,7 +62,7 @@ fun WorkOrderViewScreen(
     workOrders: List<WorkOrder>,
     onWorkOrderClick: (WorkOrder) -> Unit,
     onAddNewWorkOrderClick: () -> Unit,
-    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
+    minColumnWidth: Int = LocalMinColumnWidth.current
 ) {
     val columns = calculateGridColumns(minColumnWidth)
 

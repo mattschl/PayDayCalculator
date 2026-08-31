@@ -43,10 +43,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.common.compose.LocalMinColumnWidth
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
@@ -115,7 +115,7 @@ fun WorkOrderUpdateScreen(
     expensesList: List<ExpenseSummary>,
     individualExpenses: List<WorkOrderHistoryExpense>,
     onDoneClick: () -> Unit,
-    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH
+    minColumnWidth: Int = LocalMinColumnWidth.current
 ) {
     val columns = calculateGridColumns(minColumnWidth)
     val df = DateFunctions()

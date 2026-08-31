@@ -212,8 +212,8 @@
     <string name="this_tax_type_already_exists">This tax type already exists!</string>
     <string name="this_work_order_does_not_exist">This Work Order does not exist. It must be created before continuing. Would you like to create it now?</string>
     <string name="time_sheet">Time Sheet</string>
-    <string name="total_credits">Total Credits</string>
-    <string name="total_deductions">Total Deductions</string>
+    <string name="total_credits">Credit Total</string>
+    <string name="total_deductions">Deducted Total</string>
     <string name="total_hourly">Total Hourly</string>
     <string name="total_hours">"Total hours: "</string>
     <string name="totals">Totals: </string>

@@ -79,7 +79,8 @@ class SyncActivity : ComponentActivity() {
             val settings by settingsViewModel.settings.observeAsState()
 
             PayCalculatorTheme(
-                fontSize = settings?.fontSize ?: 16f
+                fontSize = settings?.fontSize ?: 16f,
+                minColumnWidth = settings?.minColumnWidth ?: 360
             ) {
                 SyncScreen(
                     docContent = syncViewModel.docContent,

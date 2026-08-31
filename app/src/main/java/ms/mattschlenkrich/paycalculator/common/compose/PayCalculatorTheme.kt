@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
+import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 
 @Immutable
 data class ExtendedDimensions(
@@ -108,6 +109,7 @@ fun PayCalculatorTheme(
     isSystemTheme: Boolean = true,
     isDarkTheme: Boolean = false,
     fontSize: Float = 16f,
+    minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH,
     content: @Composable () -> Unit
 ) {
     val darkTheme = if (isSystemTheme) isSystemInDarkTheme() else isDarkTheme
@@ -161,6 +163,7 @@ fun PayCalculatorTheme(
     ) {
         CompositionLocalProvider(
             LocalExtendedDimensions provides dimensions,
+            LocalMinColumnWidth provides minColumnWidth,
             content = content
         )
     }
