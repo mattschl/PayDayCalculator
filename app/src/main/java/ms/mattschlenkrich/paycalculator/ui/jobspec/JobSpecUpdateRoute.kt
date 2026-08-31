@@ -42,7 +42,7 @@ fun JobSpecUpdateRoute(
         var name by remember(js.jobSpecId) { mutableStateOf(js.jsName) }
 
         JobSpecUpdateScreen(
-            title = stringResource(R.string.update_) + js.jsName,
+            title = stringResource(R.string.prefix_update) + js.jsName,
             jobSpecName = name,
             onJobSpecNameChange = { name = it },
             onUpdateClick = {

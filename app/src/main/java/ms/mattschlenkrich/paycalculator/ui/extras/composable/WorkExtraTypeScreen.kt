@@ -120,7 +120,7 @@ fun WorkExtraTypeScreen(
     val title = if (initialExtraType == null) {
         stringResource(R.string.add_a_new_extra_type)
     } else {
-        stringResource(R.string.update_extra_type_) + initialExtraType.wetName
+        stringResource(R.string.prefix_update_extra_type) + initialExtraType.wetName
     }
 
     Scaffold(
@@ -144,8 +144,8 @@ fun WorkExtraTypeScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
-                text = title + (if (initialExtraType == null) stringResource(R.string._for_) else stringResource(
-                    R.string.__for
+                text = title + (if (initialExtraType == null) stringResource(R.string.fmt_for_colon) else stringResource(
+                    R.string.fmt_for_newline
                 )) + initialEmployer.employerName,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(vertical = SCREEN_PADDING_VERTICAL)

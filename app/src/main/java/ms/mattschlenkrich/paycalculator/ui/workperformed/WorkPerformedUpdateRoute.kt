@@ -70,7 +70,7 @@ fun WorkPerformedUpdateRoute(
             onCancelClick = {
                 navController.popBackStack()
             },
-            title = stringResource(R.string.update_) + wp.wpDescription
+            title = stringResource(R.string.prefix_update) + wp.wpDescription
         )
     }
 }

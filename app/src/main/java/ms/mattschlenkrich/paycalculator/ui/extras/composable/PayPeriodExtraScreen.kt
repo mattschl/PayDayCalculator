@@ -112,7 +112,7 @@ fun PayPeriodExtraScreen(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = { showDuplicateDialog = null }) {
-                        Text(stringResource(R.string.no))
+                        Text(stringResource(R.string.label_no))
                     }
                     TextButton(onClick = {
                         performSave(
@@ -129,7 +129,7 @@ fun PayPeriodExtraScreen(
                         )
                         showDuplicateDialog = null
                     }) {
-                        Text(stringResource(R.string.yes))
+                        Text(stringResource(R.string.label_yes))
                     }
                 }
                 Spacer(modifier = Modifier.height(32.dp))
@@ -138,7 +138,7 @@ fun PayPeriodExtraScreen(
     }
 
     val title = (if (initialExtra == null) stringResource(R.string.add_an_extra_to_this_pay_period)
-    else stringResource(R.string.update_extra_) + initialExtra.ppeName)
+    else stringResource(R.string.prefix_update_extra) + initialExtra.ppeName)
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -170,8 +170,8 @@ fun PayPeriodExtraScreen(
         ) {
             Text(
                 text = title +
-                        stringResource(R.string.__for) + employerName +
-                        stringResource(R.string.pay_cutoff_) + curPayPeriod.ppCutoffDate,
+                        stringResource(R.string.fmt_for_newline) + employerName +
+                        stringResource(R.string.label_pay_cutoff_colon) + curPayPeriod.ppCutoffDate,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(vertical = SCREEN_PADDING_VERTICAL)
             )

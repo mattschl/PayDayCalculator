@@ -59,7 +59,7 @@ fun WorkOrderAddRoute(
     var descriptionError by rememberSaveable { mutableStateOf(false) }
 
     val context = LocalContext.current
-    val errorLabel = stringResource(R.string.error_)
+    val errorLabel = stringResource(R.string.prefix_error)
     val noEmployerError = stringResource(R.string.the_work_order_must_have_an_employer)
     val errorMessages = mapOf(
         R.string.the_work_order_must_have_a_number to stringResource(R.string.the_work_order_must_have_a_number),

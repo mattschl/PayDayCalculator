@@ -221,10 +221,10 @@ fun WorkDateUpdatePageContent(
         historyDblOtHours = histories.sumOf { it.history.woHistoryDblOtHours }
     }
 
-    val regLabel = stringResource(R.string.reg_)
-    val otLabel = stringResource(R.string.ot_)
+    val regLabel = stringResource(R.string.label_reg_colon)
+    val otLabel = stringResource(R.string.label_ot_colon)
     val dblOtLabel = stringResource(R.string.dbl_ot_)
-    val pipeLabel = stringResource(R.string.pipe)
+    val pipeLabel = stringResource(R.string.separator_pipe)
 
     val workOrderSummary = remember(
         historyRegHours,
@@ -372,7 +372,7 @@ fun WorkDateUpdatePageContent(
                 Text(
                     text = "${stringResource(R.string.choose_option_for_wo)}${history.workOrder.woNumber}${
                         stringResource(
-                            R.string._on_
+                            R.string.fmt_on_spaces
                         )
                     }${df.getDisplayDate(history.workDate.wdDate)}",
                     style = MaterialTheme.typography.titleLarge

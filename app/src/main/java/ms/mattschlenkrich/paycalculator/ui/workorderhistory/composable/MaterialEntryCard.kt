@@ -62,7 +62,7 @@ fun MaterialEntryCard(
                 DecimalOutlinedTextField(
                     value = materialQty,
                     onValueChange = onMaterialQtyChange,
-                    label = { Text(stringResource(id = R.string.qty)) },
+                    label = { Text(stringResource(id = R.string.label_qty)) },
                     modifier = Modifier.width(40.dp)
                 )
                 AutoCompleteTextField(

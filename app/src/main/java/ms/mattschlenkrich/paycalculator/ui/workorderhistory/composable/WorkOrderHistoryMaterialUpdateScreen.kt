@@ -121,7 +121,7 @@ fun WorkOrderHistoryMaterialUpdateScreen(
             DecimalOutlinedTextField(
                 value = quantity,
                 onValueChange = onQuantityChange,
-                label = { Text(stringResource(R.string.qty)) },
+                label = { Text(stringResource(R.string.label_qty)) },
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
                     IconButton(onClick = {

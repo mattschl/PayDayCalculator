@@ -30,7 +30,7 @@ fun WorkOrderJobSpecItem(
     ) {
         Text(
             text = "${combined.workOrderJobSpec.wojsSequence}) ${combined.jobSpec.jsName}" +
-                    (combined.area?.let { " ${stringResource(R.string._in_)} ${it.areaName}" }
+                    (combined.area?.let { " ${stringResource(R.string.fmt_in_spaces)} ${it.areaName}" }
                         ?: "") +
                     (combined.workOrderJobSpec.wojsNote?.let { " - $it" } ?: ""),
             style = MaterialTheme.typography.bodyMedium,

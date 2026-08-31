@@ -142,14 +142,14 @@ fun WorkOrderHistoryInfoCard(
                 DecimalOutlinedTextField(
                     value = regHours,
                     onValueChange = onRegHoursChange,
-                    label = { Text(stringResource(id = R.string.hr)) },
+                    label = { Text(stringResource(id = R.string.unit_hour)) },
                     onLongClick = onRefreshHours,
                     modifier = Modifier.weight(1f)
                 )
                 DecimalOutlinedTextField(
                     value = otHours,
                     onValueChange = onOtHoursChange,
-                    label = { Text(stringResource(id = R.string.ot)) },
+                    label = { Text(stringResource(id = R.string.unit_ot)) },
                     onLongClick = onRefreshHours,
                     modifier = Modifier.weight(1f)
                 )

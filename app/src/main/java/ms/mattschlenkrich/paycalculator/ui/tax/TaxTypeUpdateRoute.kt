@@ -29,7 +29,7 @@ fun TaxTypeUpdateRoute(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val df = remember { DateFunctions() }
-    val errorLabel = stringResource(R.string.error_)
+    val errorLabel = stringResource(R.string.prefix_error)
     val errorMessages = mapOf(
         R.string.the_tax_type_must_have_a_name to stringResource(R.string.the_tax_type_must_have_a_name),
         R.string.this_tax_type_already_exists to stringResource(R.string.this_tax_type_already_exists)

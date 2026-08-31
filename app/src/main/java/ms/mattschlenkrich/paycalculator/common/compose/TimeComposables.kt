@@ -69,10 +69,10 @@ fun TimeWorkedItem(
         val hours = df.getTimeWorked(item.timeWorked.wohtStartTime, item.timeWorked.wohtEndTime)
 
         val typeText = when (item.timeWorked.wohtTimeType) {
-            TimeWorkedTypes.REG_HOURS.value -> stringResource(R.string.reg_hrs_)
-            TimeWorkedTypes.OT_HOURS.value -> stringResource(R.string.ot_hrs_)
+            TimeWorkedTypes.REG_HOURS.value -> stringResource(R.string.label_reg_hours_colon)
+            TimeWorkedTypes.OT_HOURS.value -> stringResource(R.string.label_ot_hours_colon)
             TimeWorkedTypes.DBL_OT_HOURS.value -> stringResource(R.string.dblot_hrs_)
-            else -> stringResource(R.string._break)
+            else -> stringResource(R.string.label_break)
         }
 
         Column(modifier = Modifier.padding(6.dp)) {

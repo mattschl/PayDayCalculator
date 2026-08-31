@@ -31,7 +31,7 @@ fun TaxRuleRoute(
     val coroutineScope = rememberCoroutineScope()
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
-    val errorLabel = stringResource(R.string.error_)
+    val errorLabel = stringResource(R.string.prefix_error)
     val errorMessages = mapOf(
         R.string.there_should_be_a_percentage_here to stringResource(R.string.there_should_be_a_percentage_here),
         R.string.an_exemption_is_indicated_but_no_amount_was_entered to stringResource(R.string.an_exemption_is_indicated_but_no_amount_was_entered),

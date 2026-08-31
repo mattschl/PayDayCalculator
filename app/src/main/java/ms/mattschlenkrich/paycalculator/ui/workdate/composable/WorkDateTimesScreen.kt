@@ -236,12 +236,12 @@ fun WorkDateTimesScreen(
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         TimeTypeRadioButton(
-                            label = stringResource(R.string.reg),
+                            label = stringResource(R.string.unit_reg),
                             selected = selectedTimeType == TimeWorkedTypes.REG_HOURS.value,
                             onClick = { onTimeTypeChange(TimeWorkedTypes.REG_HOURS.value) }
                         )
                         TimeTypeRadioButton(
-                            label = stringResource(R.string.ot),
+                            label = stringResource(R.string.unit_ot),
                             selected = selectedTimeType == TimeWorkedTypes.OT_HOURS.value,
                             onClick = { onTimeTypeChange(TimeWorkedTypes.OT_HOURS.value) }
                         )
@@ -251,7 +251,7 @@ fun WorkDateTimesScreen(
                             onClick = { onTimeTypeChange(TimeWorkedTypes.DBL_OT_HOURS.value) }
                         )
                         TimeTypeRadioButton(
-                            label = stringResource(R.string._break),
+                            label = stringResource(R.string.label_break),
                             selected = selectedTimeType == TimeWorkedTypes.BREAK.value,
                             onClick = { onTimeTypeChange(TimeWorkedTypes.BREAK.value) }
                         )

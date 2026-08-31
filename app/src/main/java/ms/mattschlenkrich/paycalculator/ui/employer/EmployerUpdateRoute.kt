@@ -34,7 +34,7 @@ fun EmployerUpdateRoute(
     val context = LocalContext.current
     val df = remember { DateFunctions() }
     val coroutineScope = rememberCoroutineScope()
-    val errorLabel = stringResource(R.string.error_)
+    val errorLabel = stringResource(R.string.prefix_error)
     val errorMessages = mapOf(
         R.string.the_employer_must_have_a_name to stringResource(R.string.the_employer_must_have_a_name),
         R.string.the_number_of_days_before_the_pay_day_is_required to stringResource(R.string.the_number_of_days_before_the_pay_day_is_required),

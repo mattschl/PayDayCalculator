@@ -32,7 +32,8 @@ fun WorkPerformedItem(
     ) {
         Column(modifier = Modifier.padding(4.dp)) {
             val display = "${index + 1}) " + item.workPerformed.wpDescription +
-                    (item.area?.let { " ${stringResource(R.string._in_)} ${it.areaName}" } ?: "") +
+                    (item.area?.let { " ${stringResource(R.string.fmt_in_spaces)} ${it.areaName}" }
+                        ?: "") +
                     (if (item.workOrderHistoryWorkPerformed.wowpNote.isNullOrBlank()) "" else " - ${item.workOrderHistoryWorkPerformed.wowpNote}.")
 
             Text(

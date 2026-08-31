@@ -83,7 +83,7 @@ fun StandardItem(
         ) {
             Text(
                 text = if (isDeleted) {
-                    "$text ${stringResource(R.string._deleted_)}"
+                    "$text ${stringResource(R.string.marker_deleted)}"
                 } else {
                     text
                 },

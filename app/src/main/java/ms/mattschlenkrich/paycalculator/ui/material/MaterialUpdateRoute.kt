@@ -121,6 +121,6 @@ fun MaterialUpdateRoute(
             }
         },
         onCancelClick = { navController.popBackStack() },
-        title = stringResource(R.string.update_) + oldMaterial.mName
+        title = stringResource(R.string.prefix_update) + oldMaterial.mName
     )
 }

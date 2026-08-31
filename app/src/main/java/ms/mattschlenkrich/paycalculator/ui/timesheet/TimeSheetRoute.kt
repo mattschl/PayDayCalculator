@@ -76,13 +76,13 @@ fun TimeSheetRoute(
     val minColumnWidth = settings?.minColumnWidth ?: 360
     val payPeriodsLimit = settings?.payPeriodsLimit ?: 15
 
-    val hrLabel = stringResource(R.string.hr)
-    val otLabel = stringResource(R.string.ot)
+    val hrLabel = stringResource(R.string.unit_hour)
+    val otLabel = stringResource(R.string.unit_ot)
     val dblOtLabel = stringResource(R.string.dbl_ot)
     val otherHoursLabel = stringResource(R.string.other)
-    val pipeLabel = stringResource(R.string.pipe)
-    val hrsLabel = stringResource(R.string.hrs)
-    val otHrsLabel = stringResource(R.string.ot)
+    val pipeLabel = stringResource(R.string.separator_pipe)
+    val hrsLabel = stringResource(R.string.unit_hours)
+    val otHrsLabel = stringResource(R.string.unit_ot)
     val dblOtHrsLabel = stringResource(R.string.dbl_ot)
     val otherHrsLabel = stringResource(R.string.other)
 

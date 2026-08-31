@@ -89,7 +89,7 @@ fun WorkOrderViewScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.add_new),
+                    contentDescription = stringResource(R.string.label_new),
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
@@ -129,7 +129,7 @@ fun WorkOrderViewScreen(
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             )
                         ) {
-                            Text(stringResource(R.string.add))
+                            Text(stringResource(R.string.label_add))
                         }
                     }
 

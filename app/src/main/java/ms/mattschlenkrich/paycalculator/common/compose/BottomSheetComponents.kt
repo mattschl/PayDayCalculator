@@ -57,8 +57,8 @@ fun ConfirmationBottomSheet(
     onDismissRequest: () -> Unit,
     title: String,
     message: String? = null,
-    confirmButtonText: String = stringResource(R.string.yes),
-    dismissButtonText: String = stringResource(R.string.no),
+    confirmButtonText: String = stringResource(R.string.label_yes),
+    dismissButtonText: String = stringResource(R.string.label_no),
     isDelete: Boolean = false,
     onConfirm: () -> Unit,
     content: @Composable (ColumnScope.() -> Unit)? = null

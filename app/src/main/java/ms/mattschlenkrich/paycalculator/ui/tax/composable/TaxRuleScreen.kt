@@ -177,7 +177,7 @@ fun TaxRuleScreen(
                         SelectAllOutlinedTextField(
                             value = exemptionAmount,
                             onValueChange = onExemptionAmountChange,
-                            label = { Text(stringResource(R.string.exemption_)) },
+                            label = { Text(stringResource(R.string.label_exemption_colon)) },
                             modifier = Modifier.fillMaxWidth(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                             singleLine = true

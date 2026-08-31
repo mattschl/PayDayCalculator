@@ -132,7 +132,7 @@ fun WorkOrderAddScreen(
                             value = woNumber,
                             onValueChange = onWoNumberChange,
                             label = { Text(stringResource(R.string.work_order_number)) },
-                            placeholder = { Text(stringResource(R.string.text_zeros)) },
+                            placeholder = { Text(stringResource(R.string.placeholder_zeros)) },
                             modifier = Modifier.fillMaxWidth(),
                             isError = woNumberError
                         )

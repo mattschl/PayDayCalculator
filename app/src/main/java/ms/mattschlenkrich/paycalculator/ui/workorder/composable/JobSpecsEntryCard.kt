@@ -105,7 +105,7 @@ fun JobSpecsEntryCard(
                     containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
-                Text(stringResource(R.string.add))
+                Text(stringResource(R.string.label_add))
             }
         }
     }

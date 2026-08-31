@@ -37,7 +37,7 @@ fun TaxTypeAddRoute(
     val coroutineScope = rememberCoroutineScope()
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
-    val errorLabel = stringResource(R.string.error_)
+    val errorLabel = stringResource(R.string.prefix_error)
     val errorMessages = mapOf(
         R.string.the_tax_type_must_have_a_name to stringResource(R.string.the_tax_type_must_have_a_name),
         R.string.this_tax_type_already_exists to stringResource(R.string.this_tax_type_already_exists)
@@ -79,8 +79,8 @@ fun TaxTypeAddRoute(
             },
             title = "${stringResource(R.string.choose_next_steps_for)} ${savedTaxType?.taxType}",
             message = stringResource(R.string.the_tax_type_has_been_added_but_there_are_no_rules_yet_),
-            confirmButtonText = stringResource(R.string.yes),
-            dismissButtonText = stringResource(R.string.no),
+            confirmButtonText = stringResource(R.string.label_yes),
+            dismissButtonText = stringResource(R.string.label_no),
             onConfirm = {
                 mainViewModel.setTaxType(savedTaxType)
                 mainViewModel.setTaxTypeString(savedTaxType!!.taxType)

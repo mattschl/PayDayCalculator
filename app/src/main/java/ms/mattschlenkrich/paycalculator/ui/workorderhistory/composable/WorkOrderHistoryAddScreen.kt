@@ -235,13 +235,13 @@ fun WorkOrderHistoryAddScreen(
                         DecimalOutlinedTextField(
                             value = regHours,
                             onValueChange = { regHours = it },
-                            label = { Text(stringResource(R.string.hr)) },
+                            label = { Text(stringResource(R.string.unit_hour)) },
                             modifier = Modifier.weight(1f)
                         )
                         DecimalOutlinedTextField(
                             value = otHours,
                             onValueChange = { otHours = it },
-                            label = { Text(stringResource(R.string.ot)) },
+                            label = { Text(stringResource(R.string.unit_ot)) },
                             modifier = Modifier.weight(1f)
                         )
                         DecimalOutlinedTextField(
@@ -308,7 +308,7 @@ fun WorkOrderHistoryAddScreen(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = { showCreateDialog = false }) {
-                        Text(stringResource(R.string.no))
+                        Text(stringResource(R.string.label_no))
                     }
                     TextButton(onClick = {
                         showCreateDialog = false
@@ -321,7 +321,7 @@ fun WorkOrderHistoryAddScreen(
                             false
                         )
                     }) {
-                        Text(stringResource(R.string.yes))
+                        Text(stringResource(R.string.label_yes))
                     }
                 }
                 Spacer(modifier = Modifier.height(32.dp))

@@ -65,7 +65,7 @@ fun WorkOrderHistoryMaterialUpdateRoute(
         navController = navController,
         info = stringResource(R.string.edit_material_used_for_wo_) +
                 " ${historyWithDates!!.workOrder.woNumber} " +
-                stringResource(R.string._at_) + " ${historyWithDates!!.workOrder.woAddress}\n" +
+                stringResource(R.string.fmt_at_newline) + " ${historyWithDates!!.workOrder.woAddress}\n" +
                 historyWithDates!!.workOrder.woDescription,
         materialName = mName,
         onMaterialNameChange = { mName = it },

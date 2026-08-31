@@ -126,12 +126,12 @@ fun WorkOrderUpdateRoute(
     workOrderSummary?.let {
         if (it.totalRegHours > 0) hoursSummaryText += "${nf.displayNumberFromDouble(it.totalRegHours)} ${
             stringResource(
-                R.string.hr
+                R.string.unit_hour
             )
         } "
         if (it.totalOtHours > 0) hoursSummaryText += "| ${nf.displayNumberFromDouble(it.totalOtHours)} ${
             stringResource(
-                R.string.ot
+                R.string.unit_ot
             )
         } "
         if (it.totalDblOtHours > 0) hoursSummaryText += "| ${nf.displayNumberFromDouble(it.totalDblOtHours)} ${
@@ -165,7 +165,7 @@ fun WorkOrderUpdateRoute(
     val materialsList = materialsSummary
 
     val context = LocalContext.current
-    val errorLabel = stringResource(R.string.error_)
+    val errorLabel = stringResource(R.string.prefix_error)
     val errorMessages = mapOf(
         R.string.the_work_order_must_have_a_number to stringResource(R.string.the_work_order_must_have_a_number),
         R.string.the_work_order_must_have_an_address to stringResource(R.string.the_work_order_must_have_an_address),

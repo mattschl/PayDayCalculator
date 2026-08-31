@@ -96,7 +96,7 @@ fun WorkOrderJobSpecUpdateScreen(
         ) {
             workOrder?.let { wo ->
                 val info = stringResource(R.string.edit_the_job_spec_for_wo_) +
-                        " ${wo.woNumber}" + stringResource(R.string._at_) + " ${wo.woAddress}\n" +
+                        " ${wo.woNumber}" + stringResource(R.string.fmt_at_newline) + " ${wo.woAddress}\n" +
                         wo.woDescription
                 Text(
                     text = info,

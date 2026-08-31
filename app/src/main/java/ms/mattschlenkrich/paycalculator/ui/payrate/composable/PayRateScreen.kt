@@ -80,7 +80,7 @@ fun EmployerPayRatesScreen(
             ) {
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = stringResource(id = R.string.add_new)
+                    contentDescription = stringResource(id = R.string.label_new)
                 )
             }
         }

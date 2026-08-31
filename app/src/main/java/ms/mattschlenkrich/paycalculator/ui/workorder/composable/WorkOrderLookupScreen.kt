@@ -196,7 +196,7 @@ fun WorkOrderLookupScreen(
                         onWorkOrderSelected(workOrder)
                         showDialog = null
                     }) {
-                        Text(stringResource(R.string.yes))
+                        Text(stringResource(R.string.label_yes))
                     }
                 }
                 Spacer(modifier = Modifier.height(32.dp))

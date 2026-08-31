@@ -78,7 +78,7 @@ fun WorkDateExtraScreen(
     val valueMissingError = stringResource(R.string.this_extra_must_have_a_value)
 
     val title = (if (initialExtra == null) stringResource(R.string.add_a_one_time_extra)
-    else stringResource(R.string.update_extra_) + initialExtra.wdeName)
+    else stringResource(R.string.prefix_update_extra) + initialExtra.wdeName)
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -110,8 +110,8 @@ fun WorkDateExtraScreen(
         ) {
             Text(
                 text = title +
-                        stringResource(R.string.__for) + employerName +
-                        stringResource(R.string._on_) + df.getDisplayDate(initialWorkDate.wdDate),
+                        stringResource(R.string.fmt_for_newline) + employerName +
+                        stringResource(R.string.fmt_on_spaces) + df.getDisplayDate(initialWorkDate.wdDate),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(vertical = SCREEN_PADDING_VERTICAL)
             )

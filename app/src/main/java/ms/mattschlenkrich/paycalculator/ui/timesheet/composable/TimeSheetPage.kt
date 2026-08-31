@@ -67,9 +67,9 @@ fun TimeSheetPage(
     ).observeAsState(emptyList())
 
     val totalsLabel = stringResource(R.string.totals)
-    val week1Label = stringResource(R.string.week_1_)
-    val week2Label = stringResource(R.string.week_2_)
-    val zeroHrLabel = stringResource(R.string._0_hr)
+    val week1Label = stringResource(R.string.label_week_1_prefix)
+    val week2Label = stringResource(R.string.label_week_2_prefix)
+    val zeroHrLabel = stringResource(R.string.label_zero_hours)
 
     var paySummary by remember { mutableStateOf(TimeSheetPaySummary()) }
     var week1SummaryString by remember { mutableStateOf("") }

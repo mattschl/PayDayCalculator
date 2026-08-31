@@ -192,7 +192,7 @@ fun <T, C> GenericMergeScreen(
                                     val name = childToName(child)
                                     Text(
                                         text = if (isDeleted) {
-                                            "$name ${stringResource(R.string._deleted_)}"
+                                            "$name ${stringResource(R.string.marker_deleted)}"
                                         } else {
                                             name
                                         },

@@ -221,7 +221,7 @@ fun WorkOrderHistoryTimeRoute(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.no))
+                Text(stringResource(R.string.label_no))
             }
         }
     )

@@ -197,7 +197,7 @@ fun WorkOrderHistoryExpenseDialog(
                                 amountValue != null && amountValue != 0.0
                     ) {
                         Text(
-                            text = if (expense == null) stringResource(R.string.add)
+                            text = if (expense == null) stringResource(R.string.label_add)
                             else stringResource(R.string.update)
                         )
                     }

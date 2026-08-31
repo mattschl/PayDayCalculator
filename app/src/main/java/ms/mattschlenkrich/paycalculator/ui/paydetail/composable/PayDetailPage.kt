@@ -82,8 +82,8 @@ fun PayDetailPage(
         payPeriod?.payPeriodId ?: 0L
     ).observeAsState(emptyList())
 
-    val payDayIsLabel = stringResource(R.string.pay_day_is_)
-    val netLabel = stringResource(R.string.net_)
+    val payDayIsLabel = stringResource(R.string.label_pay_day_is_prefix)
+    val netLabel = stringResource(R.string.label_net_colon)
     val regLabel = stringResource(R.string.reg_hours)
     val otLabel = stringResource(R.string.overtime)
     val dblOtLabel = stringResource(R.string.double_overtime)
@@ -261,7 +261,7 @@ fun PayDetailPage(
                             }
                         }
                     }) {
-                        Text(stringResource(R.string.yes))
+                        Text(stringResource(R.string.label_yes))
                     }
                 }
                 Spacer(modifier = Modifier.height(32.dp))
