@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.PayDayFrequencies
@@ -103,7 +104,9 @@ fun EmployerScreen(
                     value = name,
                     onValueChange = onNameChange,
                     label = { Text(stringResource(R.string.employer_name)) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("EmployerNameField")
                 )
 
                 SimpleDropdownField(

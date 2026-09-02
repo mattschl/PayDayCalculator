@@ -231,4 +231,194 @@ class PayCalculationsAsyncTest {
         // Pay = 1600. Tax = 1600 * 0.10 = 160.
         assertEquals(160.0, calculator.getAllTaxDeductions(), 0.01)
     }
+
+    @Test
+    fun calculateTaxes_progressiveBrackets() = runBlocking {
+        // Employer frequency is Bi-Weekly (taxFactor = 26)
+        val taxType = TaxTypes(1L, "Progressive Tax", TaxBasedOn.TIME_WORKED_ONLY.value, false, "")
+
+        // Bracket 1: 0 to 13,000 @ 10% -> Adjusted Bracket = 13,000 / 26 = 500
+        val rule1 = WorkTaxRules(
+            1L, "Progressive Tax", 1, "2024-01-01", 0.10,
+            false, 0.0, true, 13000.0, false, ""
+        )
+        // Bracket 2: 13,000+ @ 20%
+        val rule2 = WorkTaxRules(
+            2L, "Progressive Tax", 2, "2024-01-01", 0.20,
+            false, 0.0, false, 0.0, false, ""
+        )
+
+        `when`(payCalculationsViewModel.getTaxTypes(employerId)).thenReturn(listOf(taxType))
+        `when`(payCalculationsViewModel.getCurrentEffectiveDate(cutoffDate)).thenReturn("2024-01-01")
+        `when`(payCalculationsViewModel.getTaxRules("2024-01-01")).thenReturn(listOf(rule1, rule2))
+
+        // 80 hours * 20 = 1600 gross for tax calculation
+        `when`(payDetailViewModel.getHoursReg(employerId, cutoffDate)).thenReturn(80.0)
+
+        val calculator = PayCalculationsAsync(
+            payCalculationsViewModel,
+            payDetailViewModel,
+            employer,
+            payPeriod
+        )
+        calculator.waitForCalculations()
+
+        // Bracket 1: min(1600, 500) = 500. Tax = 500 * 0.10 = 50.
+        // Bracket 2: max(0, 1600 - 500) = 1100. Tax = 1100 * 0.20 = 220.
+        // Total Tax = 50 + 220 = 270.
+        assertEquals(270.0, calculator.getAllTaxDeductions(), 0.01)
+    }
+
+    @Test
+    fun calculateTaxes_withExemption() = runBlocking {
+        // Employer frequency is Bi-Weekly (taxFactor = 26)
+        val taxType = TaxTypes(1L, "Income Tax", TaxBasedOn.TIME_WORKED_ONLY.value, false, "")
+
+        // Exemption: 15,600 @ 10% -> Adjusted Exemption = 15,600 / 26 = 600
+        val taxRule = WorkTaxRules(
+            1L, "Income Tax", 1, "2024-01-01", 0.10,
+            true, 15600.0, false, 0.0, false, ""
+        )
+
+        `when`(payCalculationsViewModel.getTaxTypes(employerId)).thenReturn(listOf(taxType))
+        `when`(payCalculationsViewModel.getCurrentEffectiveDate(cutoffDate)).thenReturn("2024-01-01")
+        `when`(payCalculationsViewModel.getTaxRules("2024-01-01")).thenReturn(listOf(taxRule))
+
+        // 80 hours * 20 = 1600 gross
+        `when`(payDetailViewModel.getHoursReg(employerId, cutoffDate)).thenReturn(80.0)
+
+        val calculator = PayCalculationsAsync(
+            payCalculationsViewModel,
+            payDetailViewModel,
+            employer,
+            payPeriod
+        )
+        calculator.waitForCalculations()
+
+        // Taxable = 1600 - 600 = 1000.
+        // Tax = 1000 * 0.10 = 100.
+        assertEquals(100.0, calculator.getAllTaxDeductions(), 0.01)
+    }
+
+    @Test
+    fun calculateTaxes_differentBases() = runBlocking {
+        // One tax on Time Worked (Reg+OT+Dbl), another on Gross (Time+Stats+Credits)
+        val taxType1 = TaxTypes(1L, "Work Tax", TaxBasedOn.TIME_WORKED_ONLY.value, false, "")
+        val taxType2 =
+            TaxTypes(2L, "Gross Tax", TaxBasedOn.TIME_WORKED_STATS_AND_EXTRAS.value, false, "")
+
+        val rule1 =
+            WorkTaxRules(1L, "Work Tax", 1, "2024-01-01", 0.10, false, 0.0, false, 0.0, false, "")
+        val rule2 =
+            WorkTaxRules(2L, "Gross Tax", 1, "2024-01-01", 0.05, false, 0.0, false, 0.0, false, "")
+
+        `when`(payCalculationsViewModel.getTaxTypes(employerId)).thenReturn(
+            listOf(
+                taxType1,
+                taxType2
+            )
+        )
+        `when`(payCalculationsViewModel.getCurrentEffectiveDate(cutoffDate)).thenReturn("2024-01-01")
+        `when`(payCalculationsViewModel.getTaxRules("2024-01-01")).thenReturn(listOf(rule1, rule2))
+
+        `when`(payDetailViewModel.getHoursReg(employerId, cutoffDate)).thenReturn(40.0) // 800
+        `when`(payDetailViewModel.getHoursStat(employerId, cutoffDate)).thenReturn(8.0) // 160
+
+        // Add a credit extra
+        val bonus = ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras(
+            1L, payPeriodId, null, "Bonus",
+            ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies.PER_PAY.value,
+            0, 40.0, true, true, false, ""
+        )
+        `when`(payCalculationsViewModel.getCustomPayPeriodExtras(payPeriodId)).thenReturn(
+            listOf(
+                bonus
+            )
+        )
+
+        val calculator = PayCalculationsAsync(
+            payCalculationsViewModel,
+            payDetailViewModel,
+            employer,
+            payPeriod
+        )
+        calculator.waitForCalculations()
+
+        // Time Worked Pay = 40 * 20 = 800.
+        // Stat Pay = 8 * 20 = 160.
+        // Credits = 40.
+        // Gross Pay = 800 + 160 + 40 = 1000.
+
+        // Rule 1 (Work Tax): 800 * 0.10 = 80.
+        // Rule 2 (Gross Tax): 1000 * 0.05 = 50.
+        // Total Tax = 80 + 50 = 130.
+        assertEquals(130.0, calculator.getAllTaxDeductions(), 0.01)
+    }
+
+    @Test
+    fun calculateExtras_percentageOfGross() = runBlocking {
+        // Pension = 5% of gross before percentage adjustments
+        val extraType = ms.mattschlenkrich.paycalculator.data.entity.WorkExtraTypes(
+            1L, "Pension", employerId,
+            ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies.PER_PAY_PERCENTAGE_OF_ALL.value,
+            0, true, true, false, ""
+        )
+        val extraDef = ms.mattschlenkrich.paycalculator.data.entity.WorkExtrasDefinitions(
+            1L, employerId, 1L, 5.0, false, "2024-01-01", false, ""
+        )
+        val extraAndDef =
+            ms.mattschlenkrich.paycalculator.data.model.ExtraDefinitionAndType(extraDef, extraType)
+
+        `when`(payCalculationsViewModel.getDefaultExtraTypesAndCurrentDef(employerId, cutoffDate))
+            .thenReturn(listOf(extraAndDef))
+        `when`(payDetailViewModel.getHoursReg(employerId, cutoffDate))
+            .thenReturn(50.0) // 1000
+
+        val calculator = PayCalculationsAsync(
+            payCalculationsViewModel,
+            payDetailViewModel,
+            employer,
+            payPeriod
+        )
+        calculator.waitForCalculations()
+
+        // Base Pay = 1000.
+        // Extra = 1000 * 0.05 = 50.
+        // Gross = 1000 + 50 = 1050.
+        assertEquals(50.0, calculator.getCreditTotalAll(), 0.01)
+        assertEquals(1050.0, calculator.getPayGross(), 0.01)
+    }
+
+    @Test
+    fun calculateTaxes_weeklyFrequency() = runBlocking {
+        val weeklyEmployer = Employers(
+            employerId, "Weekly Corp", "Weekly", "2024-01-01",
+            "Friday", 0, 7, 31, false, ""
+        )
+        // Adjusted Exemption = 5200 / 52 = 100
+        val taxRule = WorkTaxRules(
+            1L, "Income Tax", 1, "2024-01-01", 0.10,
+            true, 5200.0, false, 0.0, false, ""
+        )
+        val taxType = TaxTypes(1L, "Income Tax", TaxBasedOn.TIME_WORKED_ONLY.value, false, "")
+
+        `when`(payCalculationsViewModel.getTaxTypes(employerId)).thenReturn(listOf(taxType))
+        `when`(payCalculationsViewModel.getCurrentEffectiveDate(cutoffDate)).thenReturn("2024-01-01")
+        `when`(payCalculationsViewModel.getTaxRules("2024-01-01")).thenReturn(listOf(taxRule))
+
+        // 40 hours * 20 = 800 gross
+        `when`(payDetailViewModel.getHoursReg(employerId, cutoffDate)).thenReturn(40.0)
+
+        val calculator = PayCalculationsAsync(
+            payCalculationsViewModel,
+            payDetailViewModel,
+            weeklyEmployer,
+            payPeriod
+        )
+        calculator.waitForCalculations()
+
+        // Taxable = 800 - 100 = 700.
+        // Tax = 700 * 0.10 = 70.
+        assertEquals(70.0, calculator.getAllTaxDeductions(), 0.01)
+    }
 }
