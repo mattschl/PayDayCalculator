@@ -155,9 +155,9 @@ fun WorkOrderUpdateRoute(
     val totalHours = (workOrderSummary?.totalRegHours ?: 0.0) +
             (workOrderSummary?.totalOtHours ?: 0.0) +
             (workOrderSummary?.totalDblOtHours ?: 0.0)
-    val laborTotal = (laborRate.toDoubleOrNull() ?: 0.0) * totalHours
+    val laborTotal = nf.getDoubleFromDollars(laborRate) * totalHours
 
-    val markupValue = markupRate.toDoubleOrNull() ?: 0.0
+    val markupValue = nf.getDoubleFromDollars(markupRate)
     val factor = (100.0 - markupValue) / 100.0
 
     val materialsList = materialsSummary.map { item ->

@@ -143,7 +143,7 @@ fun WorkOrderUpdateScreen(
             mutableStateOf(nf.displayDollars(material.price))
         }
 
-        var isCostActive by remember { mutableStateOf(false) }
+        var isCostActive by rememberSaveable { mutableStateOf(false) }
 
         LaunchedEffect(mainViewModel.getTransferNum()) {
             val transferNum = mainViewModel.getTransferNum()
