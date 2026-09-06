@@ -111,7 +111,7 @@ fun WorkOrderUpdateScreen(
     workPerformedList: List<WorkPerformedAndQuantity>,
     jobSpecsSummaryList: List<JobSpecAndQuantity>,
     materialsList: List<MaterialAndQuantity>,
-    onUpdateMaterialPrice: (Long, Double) -> Unit,
+    onUpdateMaterialCostAndPrice: (Long, Double, Double) -> Unit,
     expensesList: List<ExpenseSummary>,
     individualExpenses: List<WorkOrderHistoryExpense>,
     onDoneClick: () -> Unit,
@@ -136,19 +136,23 @@ fun WorkOrderUpdateScreen(
 
     if (showMaterialPriceDialog != null) {
         val material = showMaterialPriceDialog!!
-        var newPrice by remember {
-            mutableStateOf(
-                nf.displayDollars(
-                    if (material.quantity != 0.0) material.totalAmount / material.quantity
-                    else 0.0
-                )
-            )
+        var newCost by remember {
+            mutableStateOf(nf.displayDollars(material.cost))
         }
+        var newPrice by remember {
+            mutableStateOf(nf.displayDollars(material.price))
+        }
+
+        var isCostActive by remember { mutableStateOf(false) }
 
         LaunchedEffect(mainViewModel.getTransferNum()) {
             val transferNum = mainViewModel.getTransferNum()
             if (transferNum != 0.0) {
-                newPrice = nf.displayDollars(transferNum)
+                if (isCostActive) {
+                    newCost = nf.displayDollars(transferNum)
+                } else {
+                    newPrice = nf.displayDollars(transferNum)
+                }
                 mainViewModel.setTransferNum(0.0)
             }
         }
@@ -168,6 +172,25 @@ fun WorkOrderUpdateScreen(
                 )
                 Text(material.name)
                 SelectAllOutlinedTextField(
+                    value = newCost,
+                    onValueChange = { newCost = it },
+                    label = { Text(stringResource(R.string.cost)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            isCostActive = true
+                            mainViewModel.setTransferNum(nf.getDoubleFromDollars(newCost))
+                            navController.navigate(ms.mattschlenkrich.paycalculator.Screen.Calculator.route)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Calculate,
+                                contentDescription = "Calculate Cost"
+                            )
+                        }
+                    }
+                )
+                SelectAllOutlinedTextField(
                     value = newPrice,
                     onValueChange = { newPrice = it },
                     label = { Text(stringResource(R.string.price)) },
@@ -175,6 +198,7 @@ fun WorkOrderUpdateScreen(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     trailingIcon = {
                         IconButton(onClick = {
+                            isCostActive = false
                             mainViewModel.setTransferNum(nf.getDoubleFromDollars(newPrice))
                             navController.navigate(ms.mattschlenkrich.paycalculator.Screen.Calculator.route)
                         }) {
@@ -195,8 +219,9 @@ fun WorkOrderUpdateScreen(
                         Text(stringResource(R.string.cancel))
                     }
                     androidx.compose.material3.TextButton(onClick = {
-                        onUpdateMaterialPrice(
+                        onUpdateMaterialCostAndPrice(
                             material.materialId,
+                            nf.getDoubleFromDollars(newCost),
                             nf.getDoubleFromDollars(newPrice)
                         )
                         showMaterialPriceDialog = null

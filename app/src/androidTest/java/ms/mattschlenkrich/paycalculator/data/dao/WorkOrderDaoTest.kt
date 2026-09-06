@@ -163,6 +163,8 @@ class WorkOrderDaoTest {
         assertEquals("Master Material", summary[0].name)
         assertEquals(5.0, summary[0].quantity, 0.01)
         assertEquals(50.0, summary[0].totalAmount, 0.01)
+        assertEquals(8.0, summary[0].cost, 0.01)
+        assertEquals(10.0, summary[0].price, 0.01)
     }
 
     @Test

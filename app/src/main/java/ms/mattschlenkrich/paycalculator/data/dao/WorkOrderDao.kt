@@ -178,7 +178,9 @@ interface WorkOrderDao {
     fun getWorkOrderSummary(workOrderId: Long): LiveData<WorkOrderSummary>
 
     @Query(
-        "SELECT m.materialId as materialId, m.mName as name, SUM(wohm.wohmQuantity) as quantity, SUM(m.mPrice * wohm.wohmQuantity) as totalAmount " +
+        "SELECT m.materialId as materialId, m.mName as name, SUM(wohm.wohmQuantity) as quantity, " +
+                "SUM(m.mPrice * wohm.wohmQuantity) as totalAmount, " +
+                "m.mCost as cost, m.mPrice as price " +
                 "FROM workOrderHistoryMaterials wohm " +
                 "LEFT JOIN materialMerged ON wohm.wohmMaterialId = mmChildId AND mmIsDeleted = 0 " +
                 "INNER JOIN materials m ON m.materialId = COALESCE(mmMasterId, wohm.wohmMaterialId) " +

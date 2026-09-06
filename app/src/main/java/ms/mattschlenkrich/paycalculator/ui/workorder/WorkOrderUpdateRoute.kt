@@ -118,6 +118,17 @@ fun WorkOrderUpdateRoute(
     var laborRate by rememberSaveable { mutableStateOf("") }
     var markupRate by rememberSaveable { mutableStateOf("") }
 
+    LaunchedEffect(settings) {
+        settings?.let {
+            if (laborRate.isEmpty() && it.defaultLaborRate > 0.0) {
+                laborRate = nf.displayNumberFromDouble(it.defaultLaborRate)
+            }
+            if (markupRate.isEmpty() && it.defaultMarkupRate > 0.0) {
+                markupRate = nf.displayNumberFromDouble(it.defaultMarkupRate)
+            }
+        }
+    }
+
     // Mocking summaries for now as they might need complex calculation
     val jobSpecSummaryText = "${addedJobSpecs.size} items"
     val historySummaryText = "${historyList.size} entries"
@@ -145,12 +156,21 @@ fun WorkOrderUpdateRoute(
             (workOrderSummary?.totalOtHours ?: 0.0) +
             (workOrderSummary?.totalDblOtHours ?: 0.0)
     val laborTotal = (laborRate.toDoubleOrNull() ?: 0.0) * totalHours
-    val materialsTotal = materialsSummary.sumOf { it.totalAmount }
-    val expensesTotal = expensesSummary.sumOf { it.totalAmount }
 
     val markupValue = markupRate.toDoubleOrNull() ?: 0.0
     val factor = (100.0 - markupValue) / 100.0
-    val markedUpMaterials = if (factor > 0.0) materialsTotal / factor else materialsTotal
+
+    val materialsList = materialsSummary.map { item ->
+        item.copy(
+            totalAmount = ms.mattschlenkrich.paycalculator.common.WorkOrderCalculations.calculateMaterialAmount(
+                item,
+                factor
+            )
+        )
+    }
+    val markedUpMaterials = materialsList.sumOf { it.totalAmount }
+
+    val expensesTotal = expensesSummary.sumOf { it.totalAmount }
     val markedUpExpenses = if (factor > 0.0) expensesTotal / factor else expensesTotal
 
     val grandTotal = laborTotal + markedUpMaterials + markedUpExpenses
@@ -162,7 +182,6 @@ fun WorkOrderUpdateRoute(
 
     // Need to get these from somewhere, possibly another query
     val workPerformedList = workPerformedSummary
-    val materialsList = materialsSummary
 
     val context = LocalContext.current
     val errorLabel = stringResource(R.string.prefix_error)
@@ -262,9 +281,9 @@ fun WorkOrderUpdateRoute(
         workPerformedList = workPerformedList,
         jobSpecsSummaryList = jobSpecsSummary,
         materialsList = materialsList,
-        onUpdateMaterialPrice = { materialId, newPrice ->
+        onUpdateMaterialCostAndPrice = { materialId, newCost, newPrice ->
             coroutineScope.launch {
-                materialViewModel.updateMaterialPrice(materialId, newPrice)
+                materialViewModel.updateMaterialCostAndPrice(materialId, newCost, newPrice)
             }
         },
         expensesList = expensesSummary,

@@ -37,6 +37,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.NumberOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
@@ -70,7 +72,11 @@ fun SettingsScreen(
     onMinColumnWidthChange: (Int) -> Unit,
     onRegularStartTimeChange: (String) -> Unit,
     onRegularEndTimeChange: (String) -> Unit,
-    onRegularDaysChange: (List<Int>) -> Unit
+    onRegularDaysChange: (List<Int>) -> Unit,
+    defaultLaborRate: Double,
+    defaultMarkupRate: Double,
+    onDefaultLaborRateChange: (Double) -> Unit,
+    onDefaultMarkupRateChange: (Double) -> Unit
 ) {
     val columns = calculateGridColumns(minColumnWidth)
     val dynamicPadding = (16 / columns).dp
@@ -280,6 +286,50 @@ fun SettingsScreen(
                         Text(label, style = MaterialTheme.typography.bodySmall)
                     }
                 }
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = dynamicVerticalPadding))
+
+            Text("Default Work Order Rates:", style = MaterialTheme.typography.titleMedium)
+
+            val nf = remember { NumberFunctions() }
+            var laborRateText by remember(defaultLaborRate) {
+                mutableStateOf(
+                    nf.displayNumberFromDouble(
+                        defaultLaborRate
+                    )
+                )
+            }
+            var markupRateText by remember(defaultMarkupRate) {
+                mutableStateOf(
+                    nf.displayNumberFromDouble(
+                        defaultMarkupRate
+                    )
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+            ) {
+                ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField(
+                    value = laborRateText,
+                    onValueChange = {
+                        laborRateText = it
+                        onDefaultLaborRateChange(nf.getDoubleFromDollars(it))
+                    },
+                    label = { Text("Default Labor Rate") },
+                    modifier = Modifier.weight(1f)
+                )
+                ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField(
+                    value = markupRateText,
+                    onValueChange = {
+                        markupRateText = it
+                        onDefaultMarkupRateChange(nf.getDoubleFromDollars(it))
+                    },
+                    label = { Text("Default Markup %") },
+                    modifier = Modifier.weight(1f)
+                )
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = dynamicVerticalPadding))

@@ -40,6 +40,10 @@ fun SettingsRoute(
         onMinColumnWidthChange = { viewModel.updateMinColumnWidth(it) },
         onRegularStartTimeChange = { viewModel.updateRegularStartTime(it) },
         onRegularEndTimeChange = { viewModel.updateRegularEndTime(it) },
-        onRegularDaysChange = { viewModel.updateRegularDays(it) }
+        onRegularDaysChange = { viewModel.updateRegularDays(it) },
+        defaultLaborRate = settings?.defaultLaborRate ?: 0.0,
+        defaultMarkupRate = settings?.defaultMarkupRate ?: 0.0,
+        onDefaultLaborRateChange = { viewModel.updateDefaultLaborRate(it) },
+        onDefaultMarkupRateChange = { viewModel.updateDefaultMarkupRate(it) }
     )
 }

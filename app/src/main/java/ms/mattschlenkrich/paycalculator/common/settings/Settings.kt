@@ -18,5 +18,7 @@ data class Settings(
         4,
         5,
         6
-    ) // Mon, Tue, Wed, Thu, Fri (Calendar.MONDAY=2)
+    ), // Mon, Tue, Wed, Thu, Fri (Calendar.MONDAY=2)
+    val defaultLaborRate: Double = 60.0,
+    val defaultMarkupRate: Double = 35.0
 )

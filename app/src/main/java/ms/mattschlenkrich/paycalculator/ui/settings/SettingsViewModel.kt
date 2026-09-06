@@ -101,4 +101,18 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         _settings.value = newSettings
         settingsManager.saveSettings(newSettings)
     }
+
+    fun updateDefaultLaborRate(rate: Double) {
+        val newSettings =
+            _settings.value?.copy(defaultLaborRate = rate) ?: Settings(defaultLaborRate = rate)
+        _settings.value = newSettings
+        settingsManager.saveSettings(newSettings)
+    }
+
+    fun updateDefaultMarkupRate(rate: Double) {
+        val newSettings =
+            _settings.value?.copy(defaultMarkupRate = rate) ?: Settings(defaultMarkupRate = rate)
+        _settings.value = newSettings
+        settingsManager.saveSettings(newSettings)
+    }
 }
