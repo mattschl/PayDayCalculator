@@ -2,10 +2,10 @@ import com.android.build.api.dsl.ApplicationExtension
 import java.util.Properties
 
 plugins {
-    id("com.android.application")
-    id("com.google.devtools.ksp")
-    id("kotlin-parcelize")
-    kotlin("plugin.compose") version "2.4.10"
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.parcelize)
+    alias(libs.plugins.kotlin.compose)
 }
 
 extensions.configure<ApplicationExtension> {
@@ -117,7 +117,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit.ktx)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
+    androidTestImplementation(libs.androidx.core.testing)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     implementation(libs.androidx.room.runtime)
