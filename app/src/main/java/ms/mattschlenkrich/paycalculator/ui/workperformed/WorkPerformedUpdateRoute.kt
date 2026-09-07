@@ -1,5 +1,9 @@
 package ms.mattschlenkrich.paycalculator.ui.workperformed
 
+import android.widget.Toast
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -8,6 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -39,38 +45,54 @@ fun WorkPerformedUpdateRoute(
     val workPerformedList by workPerformedViewModel.getWorkPerformedAll()
         .observeAsState(emptyList())
 
-    originalWp?.let { wp ->
-        var description by remember(wp.workPerformedId) { mutableStateOf(wp.wpDescription) }
+    if (originalWp == null) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    } else {
+        originalWp?.let { wp ->
+            var description by remember(wp.workPerformedId) { mutableStateOf(wp.wpDescription) }
 
-        WorkPerformedUpdateScreen(
-            currentDescription = description,
-            onDescriptionChange = { description = it },
-            onUpdateClick = {
-                val trimmedDescription = description.trim()
-                if (trimmedDescription.isEmpty()) return@WorkPerformedUpdateScreen
-                if (workPerformedList.any {
-                        it.wpDescription == trimmedDescription && it.workPerformedId != wp.workPerformedId
-                    }) return@WorkPerformedUpdateScreen
+            WorkPerformedUpdateScreen(
+                currentDescription = description,
+                onDescriptionChange = { description = it },
+                onUpdateClick = {
+                    val trimmedDescription = description.trim()
+                    if (trimmedDescription.isEmpty()) return@WorkPerformedUpdateScreen
+                    if (workPerformedList.any {
+                            it.wpDescription == trimmedDescription && it.workPerformedId != wp.workPerformedId
+                        }) {
+                        Toast.makeText(
+                            mainViewModel.getApplication(),
+                            "Description already exists",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@WorkPerformedUpdateScreen
+                    }
 
-                coroutineScope.launch {
-                    workPerformedViewModel.updateWorkPerformed(
-                        wp.copy(
-                            wpDescription = trimmedDescription,
-                            wpUpdateTime = df.getCurrentUTCTimeAsString()
+                    coroutineScope.launch {
+                        workPerformedViewModel.updateWorkPerformed(
+                            wp.copy(
+                                wpDescription = trimmedDescription,
+                                wpUpdateTime = df.getCurrentUTCTimeAsString()
+                            )
                         )
-                    )
+                        navController.popBackStack()
+                    }
+                },
+                onMergeClick = {
+                    mainViewModel.setWorkPerformedId(wp.workPerformedId)
+                    mainViewModel.setWorkPerformedIsMaster(true)
+                    navController.navigate(Screen.WorkPerformedMerge.route)
+                },
+                onCancelClick = {
                     navController.popBackStack()
-                }
-            },
-            onMergeClick = {
-                mainViewModel.setWorkPerformedId(wp.workPerformedId)
-                mainViewModel.setWorkPerformedIsMaster(true)
-                navController.navigate(Screen.WorkPerformedMerge.route)
-            },
-            onCancelClick = {
-                navController.popBackStack()
-            },
-            title = stringResource(R.string.prefix_update) + wp.wpDescription
-        )
+                },
+                title = stringResource(R.string.prefix_update) + wp.wpDescription
+            )
+        }
     }
 }

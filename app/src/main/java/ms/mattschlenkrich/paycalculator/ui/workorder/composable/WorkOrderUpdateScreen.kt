@@ -112,6 +112,8 @@ fun WorkOrderUpdateScreen(
     jobSpecsSummaryList: List<JobSpecAndQuantity>,
     materialsList: List<MaterialAndQuantity>,
     onUpdateMaterialCostAndPrice: (Long, Double, Double) -> Unit,
+    onWorkPerformedSummaryClick: (WorkPerformedAndQuantity) -> Unit,
+    onJobSpecSummaryClick: (JobSpecAndQuantity) -> Unit,
     expensesList: List<ExpenseSummary>,
     individualExpenses: List<WorkOrderHistoryExpense>,
     onDoneClick: () -> Unit,
@@ -481,7 +483,10 @@ fun WorkOrderUpdateScreen(
                     ) {
                         chunk.forEach { wp ->
                             Box(modifier = Modifier.weight(1f)) {
-                                WorkPerformedSummaryItem(wp)
+                                WorkPerformedSummaryItem(
+                                    wp = wp,
+                                    onClick = onWorkPerformedSummaryClick
+                                )
                             }
                         }
                         repeat(columns - chunk.size) {
@@ -510,7 +515,10 @@ fun WorkOrderUpdateScreen(
                     ) {
                         chunk.forEach { js ->
                             Box(modifier = Modifier.weight(1f)) {
-                                WorkOrderJobSpecSummaryItem(js)
+                                WorkOrderJobSpecSummaryItem(
+                                    js = js,
+                                    onClick = onJobSpecSummaryClick
+                                )
                             }
                         }
                         repeat(columns - chunk.size) {

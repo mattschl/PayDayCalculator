@@ -5,6 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class WorkPerformedAndQuantity(
+    val workPerformedId: Long,
     val description: String,
     val area: String?,
     val quantity: Int

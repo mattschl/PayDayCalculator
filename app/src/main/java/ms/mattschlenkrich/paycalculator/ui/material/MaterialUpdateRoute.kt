@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.ui.material
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -9,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -30,6 +32,7 @@ fun MaterialUpdateRoute(
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     val oldMaterial = mainViewModel.getMaterial() ?: run {
         LaunchedEffect(Unit) {
@@ -81,41 +84,64 @@ fun MaterialUpdateRoute(
             navController.navigate(Screen.Calculator.route)
         },
         onUpdateClick = {
-            if (name.isBlank() || cost.isBlank() || price.isBlank()) {
+            val trimmedName = name.trim()
+            if (trimmedName.isBlank()) {
+                Toast.makeText(
+                    context,
+                    "Material name is required",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@MaterialUpdateScreen
             }
-            if (materialList.any { it.mName == name.trim() && it.materialId != oldMaterial.materialId }) {
+            if (materialList.any {
+                    it.mName.equals(trimmedName, ignoreCase = true) &&
+                            it.materialId != oldMaterial.materialId
+                }) {
+                Toast.makeText(
+                    context,
+                    "Material name already exists",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@MaterialUpdateScreen
             }
 
             coroutineScope.launch {
-                val material = Material(
+                val updatedMaterial = Material(
                     oldMaterial.materialId,
-                    name.trim(),
+                    trimmedName,
                     nf.getDoubleFromDollars(cost.trim()),
                     nf.getDoubleFromDollars(price.trim()),
                     oldMaterial.mIsDeleted,
                     df.getCurrentUTCTimeAsString()
                 )
-                materialViewModel.updateMaterial(material)
-                mainViewModel.setMaterial(material)
+                materialViewModel.updateMaterial(updatedMaterial)
+                mainViewModel.setMaterial(updatedMaterial)
                 navController.popBackStack()
             }
         },
         onMergeClick = {
+            val trimmedName = name.trim()
+            if (trimmedName.isBlank()) {
+                Toast.makeText(
+                    context,
+                    "Material name is required",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@MaterialUpdateScreen
+            }
+
             coroutineScope.launch {
-                val material = Material(
+                val updatedMaterial = Material(
                     oldMaterial.materialId,
-                    name.trim(),
+                    trimmedName,
                     nf.getDoubleFromDollars(cost.trim()),
                     nf.getDoubleFromDollars(price.trim()),
                     oldMaterial.mIsDeleted,
                     df.getCurrentUTCTimeAsString()
                 )
-                materialViewModel.updateMaterial(material)
-                mainViewModel.setMaterial(material)
+                materialViewModel.updateMaterial(updatedMaterial)
+                mainViewModel.setMaterial(updatedMaterial)
                 mainViewModel.setMaterialId(oldMaterial.materialId)
-                // Defaulting to Master for now, or could show dialog
                 mainViewModel.setMaterialIsParent(true)
                 navController.navigate(Screen.MaterialMerge.route)
             }

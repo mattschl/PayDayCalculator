@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder.composable
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,10 +17,13 @@ import ms.mattschlenkrich.paycalculator.data.model.JobSpecAndQuantity
 
 @Composable
 fun WorkOrderJobSpecSummaryItem(
-    js: JobSpecAndQuantity
+    js: JobSpecAndQuantity,
+    onClick: (JobSpecAndQuantity) -> Unit = {}
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick(js) },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface

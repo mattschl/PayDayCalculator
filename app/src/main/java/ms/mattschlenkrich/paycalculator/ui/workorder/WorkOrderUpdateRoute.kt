@@ -286,6 +286,14 @@ fun WorkOrderUpdateRoute(
                 materialViewModel.updateMaterialCostAndPrice(materialId, newCost, newPrice)
             }
         },
+        onWorkPerformedSummaryClick = { wp ->
+            mainViewModel.setWorkPerformedId(wp.workPerformedId)
+            navController.navigate(Screen.WorkPerformedUpdate.route)
+        },
+        onJobSpecSummaryClick = { js ->
+            mainViewModel.setJobSpecId(js.jobSpecId)
+            navController.navigate(Screen.JobSpecUpdate.route)
+        },
         expensesList = expensesSummary,
         individualExpenses = individualExpenses,
         onDoneClick = {

@@ -192,7 +192,7 @@ interface WorkOrderDao {
     fun getWorkOrderMaterialsSummary(workOrderId: Long): LiveData<List<MaterialAndQuantity>>
 
     @Query(
-        "SELECT wp.wpDescription as description, null as area, COUNT(DISTINCT wowp.workOrderHistoryWorkPerformedId) as quantity " +
+        "SELECT wp.workPerformedId as workPerformedId, wp.wpDescription as description, null as area, COUNT(DISTINCT wowp.workOrderHistoryWorkPerformedId) as quantity " +
                 "FROM workOrderHistoryWorkPerformed wowp " +
                 "LEFT JOIN workPerformedMerged ON wowp.wowpWorkPerformedId = wpmChildId AND wpmIsDeleted = 0 " +
                 "INNER JOIN workPerformed wp ON wp.workPerformedId = COALESCE(wpmMasterId, wowp.wowpWorkPerformedId) " +
@@ -204,7 +204,7 @@ interface WorkOrderDao {
     fun getWorkOrderWorkPerformedSummary(workOrderId: Long): LiveData<List<WorkPerformedAndQuantity>>
 
     @Query(
-        "SELECT js.jsName as name, COUNT(DISTINCT wojs.workOrderJobSpecId) as quantity " +
+        "SELECT js.jobSpecId as jobSpecId, js.jsName as name, COUNT(DISTINCT wojs.workOrderJobSpecId) as quantity " +
                 "FROM workOrderJobSpecs wojs " +
                 "LEFT JOIN jobSpecMerged ON wojs.wojsJobSpecId = jsmChildId AND jsmIsDeleted = 0 " +
                 "INNER JOIN jobSpecs js ON js.jobSpecId = COALESCE(jsmMasterId, wojs.wojsJobSpecId) " +
