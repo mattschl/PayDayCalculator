@@ -18,6 +18,7 @@ import java.util.Locale
 import java.util.TimeZone
 
 private const val TAG = "SyncManager"
+private const val DB_IDENTITY_HASH = "73589fbc801269925e003ba706d33924"
 
 class SyncManager(
     private val application: Application,
@@ -79,7 +80,7 @@ class SyncManager(
                         SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).apply {
                             timeZone = TimeZone.getTimeZone("UTC")
                         }.parse(tsPart)
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         null
                     }
 
@@ -125,7 +126,7 @@ class SyncManager(
                 PayDatabase.checkpoint(application)
             }
 
-            val uploadedFile = performUpload(uploadTimestamp!!)
+            val uploadedFile = performUpload(uploadTimestamp)
             syncReport.append("\nMerged database uploaded: $uploadedFile")
 
             cleanupOldBackups(fileList)
@@ -140,8 +141,8 @@ class SyncManager(
                 val date = try {
                     SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).apply {
                         timeZone = TimeZone.getTimeZone("UTC")
-                    }.parse(uploadTimestamp!!)
-                } catch (e: Exception) {
+                    }.parse(uploadTimestamp)
+                } catch (_: Exception) {
                     null
                 }
                 if (date != null) df.getDateTimeStringFromDate(date) else startTime
@@ -162,46 +163,30 @@ class SyncManager(
         return allFiles.files?.asSequence()
             ?.filter { it.name.startsWith("pay_") && it.name.endsWith(".db") }
             ?.sortedByDescending { it.name }
-            ?.map { DriveFileMeta(it.id, it.name, it.size?.toLong(), it.modifiedTime?.value) }
+            ?.map { DriveFileMeta(it.id, it.name, it.size.toLong(), it.modifiedTime?.value) }
             ?.toList() ?: emptyList()
     }
 
     fun getLocalBackups(): List<File> {
-        return backupDir.listFiles()?.filter {
+        return backupDir.listFiles()?.asSequence()?.filter {
             it.name.startsWith("pay_") && it.name.endsWith(".db")
-        }?.sortedByDescending { it.name } ?: emptyList()
+        }?.sortedByDescending { it.name }?.toList() ?: emptyList()
     }
 
     suspend fun deleteBackup(file: DriveFileMeta): String {
         onProgressUpdate("Deleting ${file.name}...")
-        try {
+        return try {
             driveServiceHelper.deleteFile(file.id)
             val allFiles = driveServiceHelper.queryFiles()
-            allFiles.files?.filter { it.name == "${file.name}-wal" || it.name == "${file.name}-shm" }
+            allFiles.files?.filter { (it.name == "${file.name}-wal") || (it.name == "${file.name}-shm") }
                 ?.forEach { auxFile ->
                     driveServiceHelper.deleteFile(auxFile.id)
                 }
-            return "Successfully deleted ${file.name}."
+            "Successfully deleted ${file.name}."
         } catch (e: Exception) {
             Log.e(TAG, "Failed to delete backup", e)
             throw e
         }
-    }
-
-    suspend fun downloadBackup(fileName: String): String {
-        onProgressUpdate("Downloading $fileName...")
-        val localFile = File(backupDir, fileName)
-        driveServiceHelper.downloadBinaryFile(fileName, localFile)
-
-        val allFiles = driveServiceHelper.queryFiles()
-        allFiles.files?.find { it.name == "$fileName-wal" }?.let {
-            driveServiceHelper.downloadBinaryFile(it.name, File(backupDir, it.name))
-        }
-        allFiles.files?.find { it.name == "$fileName-shm" }?.let {
-            driveServiceHelper.downloadBinaryFile(it.name, File(backupDir, it.name))
-        }
-
-        return "Downloaded $fileName to local backup folder."
     }
 
     suspend fun restoreSpecific(fileName: String): String {
@@ -219,7 +204,7 @@ class SyncManager(
             allFiles.files?.find { it.name == "$fileName-shm" }?.let {
                 driveServiceHelper.downloadBinaryFile(it.name, localTempShm)
             }
-            return restoreFromFile(localTempFile, localTempWal, localTempShm, fileName)
+            return restoreFromFile(localTempFile, fileName)
         } catch (e: Exception) {
             Log.e(TAG, "Restore failed", e)
             throw e
@@ -230,16 +215,45 @@ class SyncManager(
         }
     }
 
-    suspend fun restoreLocal(file: File): String {
-        val wal = File(file.parent, "${file.name}-wal")
-        val shm = File(file.parent, "${file.name}-shm")
-        return restoreFromFile(file, wal, shm, file.name)
+    suspend fun repairLocalDatabase(): String {
+        return withContext(Dispatchers.IO) {
+            try {
+                onProgressUpdate("Repairing local database...")
+                val dbName = PAY_DB_NAME
+                val dbPath = application.getDatabasePath(dbName)
+                if (!dbPath.exists()) return@withContext "Local database file not found."
+
+                Log.d(TAG, "Closing database for repair...")
+                PayDatabase.closeDatabase()
+
+                val db = SQLiteDatabase.openDatabase(
+                    dbPath.absolutePath,
+                    null,
+                    SQLiteDatabase.OPEN_READWRITE,
+                )
+
+                Log.d(TAG, "Forcing identity hash...")
+                db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY, identity_hash TEXT)")
+                db.execSQL("INSERT OR REPLACE INTO room_master_table (id, identity_hash) VALUES (42, '$DB_IDENTITY_HASH')")
+
+                Log.d(TAG, "Recreating views...")
+                db.execSQL("DROP VIEW IF EXISTS `ExtraDefinitionAndType`")
+                db.execSQL("CREATE VIEW `ExtraDefinitionAndType` AS SELECT extraDef.*, extraType.* FROM workExtrasDefinitions as extraDef LEFT JOIN workExtraTypes as extraType ON extraDef.weExtraTypeId = extraType.workExtraTypeId")
+
+                // Final safety: clear WAL
+                db.execSQL("PRAGMA wal_checkpoint(TRUNCATE)")
+
+                db.close()
+                "Local database metadata repaired successfully. Restarting..."
+            } catch (e: Exception) {
+                Log.e(TAG, "Repair failed", e)
+                "Repair failed: ${e.message}"
+            }
+        }
     }
 
     private suspend fun restoreFromFile(
         dbFile: File,
-        walFile: File,
-        shmFile: File,
         displayName: String
     ): String {
         onProgressUpdate("Clearing local data...")
@@ -255,7 +269,7 @@ class SyncManager(
                 )
 
                 val syncHelper = DatabaseSyncHelper(
-                    appDb, df, deviceId, onConflict, onSyncError, isRestore = true
+                    appDb, deviceId, onConflict, onSyncError, isRestore = true
                 )
 
                 onProgressUpdate("Copying records...")
@@ -319,7 +333,7 @@ class SyncManager(
                     SQLiteDatabase.OPEN_READONLY,
                 )
                 val appDb = PayDatabase(application)
-                val syncHelper = DatabaseSyncHelper(appDb, df, deviceId, onConflict, onSyncError)
+                val syncHelper = DatabaseSyncHelper(appDb, deviceId, onConflict, onSyncError)
 
                 var totalCount = 0
                 totalCount += syncHelper.syncEmployers(backupDb).let { it.first + it.second }
@@ -384,7 +398,7 @@ class SyncManager(
 
             listOf("-wal", "-shm").forEach { suffix ->
                 val localFile = File(dbPath.path + suffix)
-                if (localFile.exists() && localFile.length() > 0) {
+                if (localFile.exists() && (localFile.length() > 0)) {
                     val driveName = "$driveBaseName$suffix"
                     val upFile = File(backupDir, "upload_$driveName")
                     localFile.inputStream().use { input ->

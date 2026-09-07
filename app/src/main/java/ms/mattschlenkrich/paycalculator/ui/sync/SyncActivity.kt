@@ -62,8 +62,8 @@ class SyncActivity : ComponentActivity() {
         val deviceId = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getLong(DEVICE_ID, 0L)
         syncViewModel.deviceId = deviceId
 
-        if (settings.driveAccount != null) {
-            initializeDriveService(settings.driveAccount)
+        settings.driveAccount?.let {
+            initializeDriveService(it)
         }
 
         setContent {
@@ -71,13 +71,11 @@ class SyncActivity : ComponentActivity() {
 
             PayCalculatorTheme(
                 fontSize = appSettings?.fontSize ?: 16f,
-                minColumnWidth = appSettings?.minColumnWidth ?: 360
+                minColumnWidth = appSettings?.minColumnWidth ?: 360,
             ) {
                 SyncScreen(
                     viewModel = syncViewModel,
-                    onBack = {
-                        handleExit()
-                    },
+                    onBack = { handleExit() },
                     onConnect = { signInWithCredentialManager() },
                     onConnectLegacy = { signInWithAccountPicker() },
                     onDisconnect = { disconnectAccount() },
@@ -98,7 +96,16 @@ class SyncActivity : ComponentActivity() {
                             restartApp()
                         }
                     },
-                    onRestoreLocal = { /* Not implemented in UI yet */ },
+                    onRepairLocal = {
+                        syncViewModel.repairDatabase {
+                            Toast.makeText(
+                                this,
+                                "Database repaired! Restarting...",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            restartApp()
+                        }
+                    },
                     onClearBackups = {
                         syncViewModel.clearBackups { e ->
                             handleError("Clear backups failed", e) { }
@@ -138,7 +145,7 @@ class SyncActivity : ComponentActivity() {
     }
 
     private val recoverAuthLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult(),
     ) { result ->
         if (result.resultCode == RESULT_OK) {
             val settings = SettingsManager(this).loadSettings()
@@ -151,7 +158,7 @@ class SyncActivity : ComponentActivity() {
     }
 
     private val legacySignInLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult(),
     ) { result ->
         if (result.resultCode == RESULT_OK) {
             val accountName = result.data?.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
@@ -163,9 +170,9 @@ class SyncActivity : ComponentActivity() {
         lifecycleScope.launch {
             val serverClientId = getString(R.string.default_web_client_id)
             val googleIdOption = GetGoogleIdOption.Builder()
-                .setFilterByAuthorizedAccounts(false)
+                .setFilterByAuthorizedAccounts(filterByAuthorizedAccounts = false)
                 .setServerClientId(serverClientId)
-                .setAutoSelectEnabled(false)
+                .setAutoSelectEnabled(autoSelectEnabled = false)
                 .build()
 
             val request = GetCredentialRequest.Builder()

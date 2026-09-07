@@ -39,7 +39,6 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.ui.sync.ConflictDialog
 import ms.mattschlenkrich.paycalculator.ui.sync.SyncViewModel
-import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,15 +50,14 @@ fun SyncScreen(
     onDisconnect: () -> Unit,
     onSync: () -> Unit,
     onRestore: (String) -> Unit,
-    onRestoreLocal: (File) -> Unit,
-    onClearBackups: () -> Unit
+    onRepairLocal: () -> Unit,
+    onClearBackups: () -> Unit,
 ) {
     var showRestoreConfirm by remember { mutableStateOf<String?>(null) }
-    var showRestoreLocalConfirm by remember { mutableStateOf<File?>(null) }
-    var showBackupList by remember { mutableStateOf(false) }
-    var showAdvancedOptions by remember { mutableStateOf(false) }
-    var isDownloadMode by remember { mutableStateOf(false) }
-    var selectedBackups by remember { mutableStateOf(setOf<String>()) }
+    var showRepairConfirm by remember { mutableStateOf(value = false) }
+    var showBackupList by remember { mutableStateOf(value = false) }
+    var showAdvancedOptions by remember { mutableStateOf(value = false) }
+    var isDownloadMode by remember { mutableStateOf(value = false) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -180,6 +178,14 @@ fun SyncScreen(
                             Button(
                                 onClick = {
                                     showAdvancedOptions = false
+                                    showRepairConfirm = true
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text("Repair Local Database") }
+
+                            Button(
+                                onClick = {
+                                    showAdvancedOptions = false
                                     onClearBackups()
                                 },
                                 modifier = Modifier.fillMaxWidth(),
@@ -192,6 +198,29 @@ fun SyncScreen(
                     confirmButton = {
                         TextButton(onClick = { showAdvancedOptions = false }) {
                             Text("Close")
+                        }
+                    }
+                )
+            }
+
+            if (showRepairConfirm) {
+                AlertDialog(
+                    onDismissRequest = { showRepairConfirm = false },
+                    title = { Text("Repair Local Database") },
+                    text = { Text("This will attempt to fix metadata errors in your current local database file. Use this if you have manually replaced the database file but the app isn't recognizing it.") },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showRepairConfirm = false
+                                onRepairLocal()
+                            }
+                        ) {
+                            Text("Repair Now")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showRepairConfirm = false }) {
+                            Text("Cancel")
                         }
                     }
                 )

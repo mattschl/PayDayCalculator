@@ -72,7 +72,7 @@ interface WorkPerformedDao {
     @Query("UPDATE workOrderHistoryWorkPerformed SET wowpIsDeleted = 1, wowpUpdateTime = :updateTime WHERE workOrderHistoryWorkPerformedId = :historyWorkPerformedId")
     suspend fun deleteWorkOrderHistoryWorkPerformed(
         historyWorkPerformedId: Long,
-        updateTime: String
+        updateTime: String,
     )
 
     @Query("SELECT * FROM workOrderHistoryWorkPerformed WHERE workOrderHistoryWorkPerformedId = :id")

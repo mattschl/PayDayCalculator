@@ -19,14 +19,14 @@ interface AreaDao {
     @Query(
         "SELECT * FROM areas " +
                 "WHERE areaIsDeleted = 0 " +
-                "ORDER BY areaName"
+                "ORDER BY areaName",
     )
     fun getAreasList(): LiveData<List<Areas>>
 
     @Query(
         "SELECT * FROM areas " +
                 "WHERE areaIsDeleted = 0 " +
-                "ORDER BY areaName"
+                "ORDER BY areaName",
     )
     suspend fun getAreasListSync(): List<Areas>
 

@@ -25,9 +25,9 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     var availableBackups by mutableStateOf<List<DriveFileMeta>>(emptyList())
     var localBackups by mutableStateOf<List<File>>(emptyList())
     var docContent by mutableStateOf(application.getString(R.string.app_name) + " Sync System")
-    var isLoading by mutableStateOf(false)
+    var isLoading by mutableStateOf(value = false)
     var errorMessage by mutableStateOf<String?>(null)
-    var syncPerformed by mutableStateOf(false)
+    var syncPerformed by mutableStateOf(value = false)
 
     private val df = DateFunctions()
     private val nf = NumberFunctions()
@@ -56,9 +56,14 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val helper = driveServiceHelper ?: return@launch
                 val manager = SyncManager(
-                    getApplication(), deviceId, helper, df, nf,
-                    { progressMessage = it }, { ConflictChoice.KEEP_DRIVE }, { }
-                )
+                    application = getApplication(),
+                    deviceId = deviceId,
+                    driveServiceHelper = helper,
+                    df = df,
+                    nf = nf,
+                    onProgressUpdate = { progressMessage = it },
+                    onConflict = { ConflictChoice.KEEP_DRIVE }
+                ) {}
                 availableBackups = manager.getAvailableBackups()
                 localBackups = manager.getLocalBackups()
 
@@ -95,7 +100,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             nf = nf,
             onProgressUpdate = { progressMessage = it },
             onConflict = { info -> showConflictDialogWrapper(info) },
-            onSyncError = { error -> Log.e(TAG, "Sync error: $error") }
+            onSyncError = { error -> Log.e(TAG, "Sync error: $error") },
         )
 
         viewModelScope.launch {
@@ -122,8 +127,14 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
         progressMessage = "Restoring from Drive..."
         val helper = driveServiceHelper ?: return
         val manager = SyncManager(
-            getApplication(), deviceId, helper, df, nf,
-            { progressMessage = it }, { ConflictChoice.KEEP_DRIVE }, { }
+            application = getApplication(),
+            deviceId = deviceId,
+            driveServiceHelper = helper,
+            df = df,
+            nf = nf,
+            onProgressUpdate = { progressMessage = it },
+            onConflict = { ConflictChoice.KEEP_DRIVE },
+            onSyncError = {}
         )
 
         viewModelScope.launch {
@@ -143,13 +154,50 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun repairDatabase(onSuccess: () -> Unit) {
+        val helper = driveServiceHelper ?: return
+        isLoading = true
+        progressMessage = "Repairing..."
+        viewModelScope.launch {
+            try {
+                val manager = SyncManager(
+                    application = getApplication(),
+                    deviceId = deviceId,
+                    driveServiceHelper = helper,
+                    df = df,
+                    nf = nf,
+                    onProgressUpdate = { progressMessage = it },
+                    onConflict = { ConflictChoice.KEEP_DRIVE },
+                    onSyncError = {}
+                )
+                val result = manager.repairLocalDatabase()
+                docContent = result
+                if (result.contains("successfully")) {
+                    onSuccess()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Repair error", e)
+                errorMessage = "Repair failed: ${e.message}"
+            } finally {
+                isLoading = false
+                progressMessage = null
+            }
+        }
+    }
+
     fun clearBackups(onAuthError: (Exception) -> Unit) {
         isLoading = true
         progressMessage = "Deleting backups..."
         val helper = driveServiceHelper ?: return
         val manager = SyncManager(
-            getApplication(), deviceId, helper, df, nf,
-            { progressMessage = it }, { ConflictChoice.KEEP_DRIVE }, { }
+            application = getApplication(),
+            deviceId = deviceId,
+            driveServiceHelper = helper,
+            df = df,
+            nf = nf,
+            onProgressUpdate = { progressMessage = it },
+            onConflict = { ConflictChoice.KEEP_DRIVE },
+            onSyncError = {}
         )
 
         viewModelScope.launch {

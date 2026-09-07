@@ -35,7 +35,7 @@ interface WorkExtraDao {
     @Query("SELECT * FROM $TABLE_WORK_EXTRAS_DEFINITIONS WHERE weEmployerId = :employerId AND weExtraTypeId = :extraTypeId AND weIsDeleted = 0 ORDER BY weEffectiveDate DESC")
     fun getActiveExtraDefinitionsFull(
         employerId: Long,
-        extraTypeId: Long
+        extraTypeId: Long,
     ): LiveData<List<ExtraDefTypeAndEmployer>>
 
     @Query("SELECT * FROM $TABLE_WORK_EXTRA_TYPES WHERE wetEmployerId = :employerId AND wetIsDeleted = 0 ORDER BY wetName COLLATE NOCASE")
