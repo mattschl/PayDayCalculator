@@ -38,6 +38,12 @@ interface WorkTaxDao {
 
     @Query(
         "SELECT * FROM $TABLE_TAX_TYPES " +
+                "WHERE taxTypeId = :taxTypeId"
+    )
+    suspend fun getTaxTypeByIdSync(taxTypeId: Long): TaxTypes?
+
+    @Query(
+        "SELECT * FROM $TABLE_TAX_TYPES " +
                 "WHERE ttIsDeleted = 0 " +
                 "ORDER BY $WORK_TAX_TYPE COLLATE NOCASE"
     )
@@ -72,6 +78,12 @@ interface WorkTaxDao {
 
     @Query(
         "SELECT * FROM $TABLE_WORK_TAX_RULES " +
+                "WHERE workTaxRuleId = :workTaxRuleId"
+    )
+    suspend fun getWorkTaxRuleSync(workTaxRuleId: Long): WorkTaxRules?
+
+    @Query(
+        "SELECT * FROM $TABLE_WORK_TAX_RULES " +
                 "WHERE $WORK_TAX_RULE_TYPE = :taxType " +
                 "AND $WORK_TAX_RULE_EFFECTIVE_DATE = :effectiveDate " +
                 "AND wtIsDeleted = 0 " +
@@ -94,6 +106,12 @@ interface WorkTaxDao {
 
     @Query(
         "SELECT * FROM $TABLE_TAX_EFFECTIVE_DATES " +
+                "WHERE tdEffectiveDate = :date"
+    )
+    suspend fun getEffectiveDateSync(date: String): TaxEffectiveDates?
+
+    @Query(
+        "SELECT * FROM $TABLE_TAX_EFFECTIVE_DATES " +
                 "WHERE tdIsDeleted = 0 " +
                 "ORDER BY $TAX_EFFECTIVE_DATE DESC"
     )
@@ -113,6 +131,13 @@ interface WorkTaxDao {
                 "etrTaxType = :taxType"
     )
     suspend fun deleteEmployerTaxType(employerId: Long, taxType: String, updateTime: String)
+
+    @Query(
+        "SELECT * FROM $TABLE_EMPLOYER_TAX_TYPES " +
+                "WHERE etrEmployerId = :employerId AND " +
+                "etrTaxType = :taxType"
+    )
+    suspend fun getEmployerTaxTypeSync(employerId: Long, taxType: String): EmployerTaxTypes?
 
     @Query(
         "SELECT * FROM $TABLE_EMPLOYER_TAX_TYPES " +

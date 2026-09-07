@@ -20,5 +20,7 @@ data class Settings(
         6
     ), // Mon, Tue, Wed, Thu, Fri (Calendar.MONDAY=2)
     val defaultLaborRate: Double = 60.0,
-    val defaultMarkupRate: Double = 35.0
+    val defaultMarkupRate: Double = 35.0,
+    val driveAccount: String? = null,
+    val deviceId: Long = 0L
 )

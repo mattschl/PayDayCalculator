@@ -1,116 +1,292 @@
 package ms.mattschlenkrich.paycalculator.ui.sync.composable
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import ms.mattschlenkrich.paycalculator.common.compose.ConfirmationBottomSheet
+import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.sync.ConflictDialog
+import ms.mattschlenkrich.paycalculator.ui.sync.SyncViewModel
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SyncScreen(
-    docContent: String,
-    isLoading: Boolean,
-    isConnected: Boolean,
-    progressMessage: String,
-    syncProgress: Int,
-    syncMax: Int,
-    errorMessage: String?,
-    onQueryClick: () -> Unit,
-    onSyncClick: () -> Unit,
-    onReturnClick: () -> Unit,
-    onChangeAccountClick: () -> Unit,
-    onClearBackupsClick: () -> Unit,
-    onLegacyConnectClick: () -> Unit = {}
+    viewModel: SyncViewModel,
+    onBack: () -> Unit,
+    onConnect: () -> Unit,
+    onConnectLegacy: () -> Unit,
+    onDisconnect: () -> Unit,
+    onSync: () -> Unit,
+    onRestore: (String) -> Unit,
+    onRestoreLocal: (File) -> Unit,
+    onClearBackups: () -> Unit
 ) {
-    var showDeleteConfirmation by remember { mutableStateOf(false) }
+    var showRestoreConfirm by remember { mutableStateOf<String?>(null) }
+    var showRestoreLocalConfirm by remember { mutableStateOf<File?>(null) }
+    var showBackupList by remember { mutableStateOf(false) }
+    var showAdvancedOptions by remember { mutableStateOf(false) }
+    var isDownloadMode by remember { mutableStateOf(false) }
+    var selectedBackups by remember { mutableStateOf(setOf<String>()) }
 
     Scaffold(
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        modifier = Modifier.safeDrawingPadding()
-    ) { innerPadding ->
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    Box(modifier = Modifier.height(300.dp)) {
-                        SyncLogDisplay(
-                            docContent = docContent
-                        )
-                    }
-
-                    if (syncMax > 0) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        LinearProgressIndicator(
-                            progress = { syncProgress.toFloat() / syncMax.toFloat() },
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
-
-                    if (!errorMessage.isNullOrBlank()) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        SyncErrorDisplay(errorMessage = errorMessage)
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    SyncActionButtons(
-                        isConnected = isConnected,
-                        isLoading = isLoading,
-                        onSyncClick = onSyncClick,
-                        onQueryClick = onQueryClick,
-                        onReturnClick = onReturnClick,
-                        onClearBackupsClick = { showDeleteConfirmation = true },
-                        onChangeAccountClick = onChangeAccountClick,
-                        onLegacyConnectClick = onLegacyConnectClick
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        stringResource(id = R.string.title_sync),
+                        style = MaterialTheme.typography.titleLarge
                     )
-
-                    // Extra padding at the bottom to ensure buttons are clear of the nav bar
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-
-                ConfirmationBottomSheet(
-                    showDialog = showDeleteConfirmation,
-                    onDismissRequest = { showDeleteConfirmation = false },
-                    title = "Confirm Deletion",
-                    message = "Are you sure you want to delete all backup files from Google Drive? This action cannot be undone.",
-                    confirmButtonText = "Delete",
-                    dismissButtonText = "Cancel",
-                    isDelete = true,
-                    onConfirm = { onClearBackupsClick() }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.action_go_back)
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            )
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                SelectAllOutlinedTextField(
+                    value = viewModel.docContent,
+                    onValueChange = { viewModel.docContent = it },
+                    label = { Text(stringResource(R.string.label_document_content)) },
+                    modifier = Modifier.weight(1f),
+                    singleLine = false
                 )
 
-                if (isLoading) {
-                    SyncLoadingOverlay(progressMessage = progressMessage)
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        if (viewModel.driveServiceHelper == null) {
+                            Button(
+                                onClick = onConnect,
+                                modifier = Modifier.weight(1f)
+                            ) { Text(stringResource(R.string.action_connect_to_drive)) }
+                            Button(
+                                onClick = onConnectLegacy,
+                                modifier = Modifier.weight(1f)
+                            ) { Text(stringResource(R.string.action_connect_to_drive_legacy)) }
+                        } else {
+                            Button(
+                                onClick = onSync,
+                                modifier = Modifier.weight(1f)
+                            ) { Text(stringResource(R.string.sync)) }
+                            Button(
+                                onClick = {
+                                    viewModel.queryDriveFiles()
+                                    showAdvancedOptions = true
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) { Text("Advanced") }
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        if (viewModel.driveServiceHelper != null) {
+                            Button(
+                                onClick = onDisconnect,
+                                modifier = Modifier.weight(1f)
+                            ) { Text(stringResource(R.string.action_disconnect)) }
+                        }
+                        Button(
+                            onClick = onBack,
+                            modifier = Modifier.weight(1f)
+                        ) { Text(stringResource(R.string.action_done)) }
+                    }
                 }
+            }
+
+            if (showAdvancedOptions) {
+                AlertDialog(
+                    onDismissRequest = { showAdvancedOptions = false },
+                    title = { Text("Advanced Options") },
+                    text = {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Button(
+                                onClick = {
+                                    showAdvancedOptions = false
+                                    isDownloadMode = false
+                                    showBackupList = true
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                    contentColor = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                            ) { Text("Restore from Drive") }
+
+                            Button(
+                                onClick = {
+                                    showAdvancedOptions = false
+                                    onClearBackups()
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.error
+                                )
+                            ) { Text("Clear All Backups from Drive") }
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showAdvancedOptions = false }) {
+                            Text("Close")
+                        }
+                    }
+                )
+            }
+
+            if (showBackupList && viewModel.availableBackups.isNotEmpty()) {
+                AlertDialog(
+                    onDismissRequest = { showBackupList = false },
+                    title = { Text("Select Backup to Restore") },
+                    text = {
+                        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                            viewModel.availableBackups.forEach { meta ->
+                                TextButton(
+                                    onClick = {
+                                        showBackupList = false
+                                        showRestoreConfirm = meta.name
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        meta.name,
+                                        textAlign = TextAlign.Start,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showBackupList = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
+
+            showRestoreConfirm?.let { fileName ->
+                AlertDialog(
+                    onDismissRequest = { showRestoreConfirm = null },
+                    title = { Text("Confirm Restore") },
+                    text = { Text("This will overwrite your local records with '$fileName'. This cannot be undone.") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showRestoreConfirm = null
+                            onRestore(fileName)
+                        }) {
+                            Text("Restore Now", color = MaterialTheme.colorScheme.error)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showRestoreConfirm = null }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
+
+            if (viewModel.progressMessage != null) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.5f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                        Text(
+                            text = viewModel.progressMessage ?: "",
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+                }
+            }
+
+            viewModel.showConflictDialog?.let { info ->
+                ConflictDialog(
+                    info = info,
+                    onChoice = { choice, applyToAll ->
+                        viewModel.onConflictChoice(choice, applyToAll)
+                    }
+                )
+            }
+
+            if (viewModel.errorMessage != null) {
+                AlertDialog(
+                    onDismissRequest = { viewModel.errorMessage = null },
+                    title = { Text("Error") },
+                    text = { Text(viewModel.errorMessage!!) },
+                    confirmButton = {
+                        TextButton(onClick = { viewModel.errorMessage = null }) {
+                            Text("OK")
+                        }
+                    }
+                )
             }
         }
     }

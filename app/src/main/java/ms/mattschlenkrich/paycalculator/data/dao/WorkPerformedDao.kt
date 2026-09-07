@@ -19,137 +19,75 @@ interface WorkPerformedDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWorkPerformed(workPerformed: WorkPerformed)
 
-    @Query(
-        "UPDATE workPerformed " +
-                "SET wpIsDeleted = 1," +
-                "wpUpdateTime = :updateTime " +
-                "WHERE workPerformedId = :workPerformedId"
-    )
+    @Query("UPDATE workPerformed SET wpIsDeleted = 1, wpUpdateTime = :updateTime WHERE workPerformedId = :workPerformedId")
     suspend fun deleteWorkPerformed(workPerformedId: Long, updateTime: String)
 
-
-    @Query(
-        "SELECT * FROM workPerformed " +
-                "WHERE wpIsDeleted = 0 " +
-                "ORDER BY wpDescription"
-    )
+    @Query("SELECT * FROM workPerformed WHERE wpIsDeleted = 0 ORDER BY wpDescription")
     fun getWorkPerformedAll(): LiveData<List<WorkPerformed>>
 
-    @Query(
-        "SELECT * FROM workPerformed " +
-                "WHERE wpIsDeleted = 0 " +
-                "ORDER BY wpDescription"
-    )
+    @Query("SELECT * FROM workPerformed WHERE wpIsDeleted = 0 ORDER BY wpDescription")
     suspend fun getWorkPerformedAllSync(): List<WorkPerformed>
 
     @Transaction
     @RewriteQueriesToDropUnusedColumns
-    @Query(
-        "SELECT * FROM workPerformedMerged " +
-                "WHERE wpmMasterId = :workPerformedId " +
-                "AND wpmIsDeleted = 0"
-    )
+    @Query("SELECT * FROM workPerformedMerged WHERE wpmMasterId = :workPerformedId AND wpmIsDeleted = 0")
     fun getWorkPerformedAndChildList(workPerformedId: Long): LiveData<List<WorkPerformedAndChild>>
-
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWorkPerformedMerged(workPerformedMerged: WorkPerformedMerged)
 
-    @Query(
-        "UPDATE workPerformedMerged " +
-                "SET wpmIsDeleted = 1, " +
-                "wpmUpdateTime = :updateTime " +
-                "WHERE workPerformedMergeId = :workPerformedMergedId"
-    )
+    @Query("UPDATE workPerformedMerged SET wpmIsDeleted = 1, wpmUpdateTime = :updateTime WHERE workPerformedMergeId = :workPerformedMergedId")
     suspend fun deleteWorkPerformedMerged(workPerformedMergedId: Long, updateTime: String)
 
-
-    @Query(
-        "Update workOrderHistoryWorkPerformed " +
-                "SET wowpWorkPerformedId = :newWorkPerformedId " +
-                "WHERE wowpWorkPerformedId = :oldWorkPerformedId"
-    )
+    @Query("Update workOrderHistoryWorkPerformed SET wowpWorkPerformedId = :newWorkPerformedId WHERE wowpWorkPerformedId = :oldWorkPerformedId")
     suspend fun updateWorkPerformedMerged(oldWorkPerformedId: Long, newWorkPerformedId: Long)
 
-    @Query(
-        "SELECT * FROM workPerformed " +
-                "WHERE wpDescription LIKE :query " +
-                "AND wpIsDeleted = 0 " +
-                "ORDER BY wpDescription"
-    )
+    @Query("SELECT * FROM workPerformed WHERE wpDescription LIKE :query AND wpIsDeleted = 0 ORDER BY wpDescription")
     fun searchFromWorkPerformed(query: String): LiveData<List<WorkPerformed>>
 
-    @Query(
-        "SELECT * FROM workPerformed " +
-                "WHERE wpDescription = :description " +
-                "AND wpIsDeleted = 0"
-    )
+    @Query("SELECT * FROM workPerformed WHERE wpDescription = :description AND wpIsDeleted = 0")
     suspend fun getWorkPerformedSync(description: String): WorkPerformed?
 
-    @Query(
-        "SELECT * FROM workPerformed " +
-                "WHERE wpDescription = :description"
-    )
+    @Query("SELECT * FROM workPerformed WHERE wpDescription = :description")
     suspend fun getWorkPerformedAnySync(description: String): WorkPerformed?
 
-    @Query(
-        "SELECT * FROM workPerformed " +
-                "WHERE workPerformedId = :workPerformedId " +
-                "AND wpIsDeleted = 0"
-    )
+    @Query("SELECT * FROM workPerformed WHERE workPerformedId = :workPerformedId AND wpIsDeleted = 0")
     fun getWorkPerformed(workPerformedId: Long): LiveData<WorkPerformed>
+
+    @Query("SELECT * FROM workPerformed WHERE workPerformedId = :workPerformedId AND wpIsDeleted = 0")
+    suspend fun getWorkPerformedByIdSync(workPerformedId: Long): WorkPerformed?
 
     @Update
     suspend fun updateWorkPerformed(workPerformed: WorkPerformed)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertWorkOrderHistoryWorkPerformed(
-        workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
-    )
+    suspend fun insertWorkOrderHistoryWorkPerformed(workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed)
 
     @Update
-    suspend fun updateWorkOrderHistoryWorkPerformed(
-        workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
-    )
+    suspend fun updateWorkOrderHistoryWorkPerformed(workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed)
 
-    @Query(
-        "UPDATE workOrderHistoryWorkPerformed  " +
-                "SET wowpIsDeleted = 1, " +
-                "wowpUpdateTime = :updateTime " +
-                "WHERE wowpHistoryId = :historyId"
-    )
+    @Query("UPDATE workOrderHistoryWorkPerformed SET wowpIsDeleted = 1, wowpUpdateTime = :updateTime WHERE wowpHistoryId = :historyId")
     suspend fun removeAllWorkPerformedFromWorkOrderHistory(historyId: Long, updateTime: String)
 
-    @Query(
-        "UPDATE workOrderHistoryWorkPerformed " +
-                "SET wowpIsDeleted = 1, " +
-                "wowpUpdateTime = :updateTime " +
-                "WHERE workOrderHistoryWorkPerformedId = :historyWorkPerformedId"
-    )
+    @Query("UPDATE workOrderHistoryWorkPerformed SET wowpIsDeleted = 1, wowpUpdateTime = :updateTime WHERE workOrderHistoryWorkPerformedId = :historyWorkPerformedId")
     suspend fun deleteWorkOrderHistoryWorkPerformed(
         historyWorkPerformedId: Long,
         updateTime: String
     )
 
-    @RewriteQueriesToDropUnusedColumns
-    @Transaction
-    @Query(
-        "SELECT * FROM workOrderHistoryWorkPerformed " +
-                "WHERE wowpIsDeleted = 0 " +
-                "AND wowpHistoryId = :historyId " +
-                "ORDER BY wowpAreaId, wowpSequence, " +
-                "wowpUpdateTime"
-    )
-    fun getWorkPerformedByWorkOrderHistory(historyId: Long):
-            LiveData<List<WorkOrderHistoryWorkPerformedCombined>>
+    @Query("SELECT * FROM workOrderHistoryWorkPerformed WHERE workOrderHistoryWorkPerformedId = :id")
+    suspend fun getWorkOrderHistoryWorkPerformedSync(id: Long): WorkOrderHistoryWorkPerformed?
 
     @RewriteQueriesToDropUnusedColumns
     @Transaction
-    @Query(
-        "SELECT * FROM workOrderHistoryWorkPerformed " +
-                "WHERE workOrderHistoryWorkPerformedId = :historyWorkPerformedId " +
-                "AND wowpIsDeleted = 0"
-    )
-    fun getWorkPerformedHistoryById(historyWorkPerformedId: Long):
-            LiveData<WorkOrderHistoryWorkPerformedCombined>
+    @Query("SELECT * FROM workOrderHistoryWorkPerformed WHERE wowpIsDeleted = 0 AND wowpHistoryId = :historyId ORDER BY wowpAreaId, wowpSequence, wowpUpdateTime")
+    fun getWorkPerformedByWorkOrderHistory(historyId: Long): LiveData<List<WorkOrderHistoryWorkPerformedCombined>>
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query("SELECT * FROM workOrderHistoryWorkPerformed WHERE workOrderHistoryWorkPerformedId = :historyWorkPerformedId AND wowpIsDeleted = 0")
+    fun getWorkPerformedHistoryById(historyWorkPerformedId: Long): LiveData<WorkOrderHistoryWorkPerformedCombined>
+
+    @Query("SELECT * FROM workPerformedMerged WHERE workPerformedMergeId = :id")
+    suspend fun getWorkPerformedMergedSync(id: Long): WorkPerformedMerged?
 }

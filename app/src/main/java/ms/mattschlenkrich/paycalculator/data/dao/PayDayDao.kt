@@ -151,6 +151,12 @@ interface PayDayDao {
 
     @Query(
         "SELECT * FROM $TABLE_WORK_DATE_EXTRAS " +
+                "WHERE workDateExtraId = :id"
+    )
+    suspend fun getWorkDateExtraSync(id: Long): WorkDateExtras?
+
+    @Query(
+        "SELECT * FROM $TABLE_WORK_DATE_EXTRAS " +
                 "WHERE wdeWorkDateId = :workDateId " +
                 "AND wdeIsDeleted = 0"
     )
@@ -205,6 +211,12 @@ interface PayDayDao {
 
     @Update
     suspend fun updatePayPeriodExtra(payPeriodExtra: WorkPayPeriodExtras)
+
+    @Query(
+        "SELECT * FROM workPayPeriodExtras " +
+                "WHERE workPayPeriodExtraId = :id"
+    )
+    suspend fun getWorkPayPeriodExtraSync(id: Long): WorkPayPeriodExtras?
 
     @Query(
         "SELECT * FROM workPayPeriodExtras " +

@@ -323,4 +323,13 @@
     <string name="expense_type_is_required">Expense type is required</string>
     <string name="amount_cannot_be_zero">Amount cannot be zero</string>
     <string name="invalid_amount">Invalid amount</string>
+    <string name="msg_sync_conflict">Conflict in %1$s: \'%2$s\'\n\nLocal (ID: %3$d, Updated: %4$s)\nDrive (ID: %5$d, Updated: %6$s)\n\nWhich version do you want to keep?</string>
+    <string name="action_apply_to_all_conflicts">Apply to all conflicts in this sync</string>
+    <string name="title_sync">Data Synchronization</string>
+    <string name="label_document_content">Sync Analysis &amp; Log</string>
+    <string name="action_connect_to_drive">Connect to Google Drive</string>
+    <string name="action_connect_to_drive_legacy">Connect (Legacy)</string>
+    <string name="action_disconnect">Disconnect Account</string>
+    <string name="action_done">Done</string>
+    <string name="action_go_back">Go Back</string>
 </resources>

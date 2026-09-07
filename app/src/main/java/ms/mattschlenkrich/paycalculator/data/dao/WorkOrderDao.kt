@@ -68,6 +68,12 @@ interface WorkOrderDao {
 
     @Query(
         "SELECT * FROM workOrders " +
+                "WHERE workOrderId = :workOrderId"
+    )
+    suspend fun getWorkOrderByIdAnySync(workOrderId: Long): WorkOrder?
+
+    @Query(
+        "SELECT * FROM workOrders " +
                 "WHERE woEmployerId = :employerId " +
                 "AND woDeleted = 0 " +
                 "ORDER BY woNumber"
@@ -281,6 +287,12 @@ interface WorkOrderDao {
                 "WHERE woHistoryExpenseId = :expenseId"
     )
     suspend fun deleteWorkOrderHistoryExpense(expenseId: Long, updateTime: String)
+
+    @Query(
+        "SELECT * FROM `workOrderHistoryExpense-*-` " +
+                "WHERE woHistoryExpenseId = :id"
+    )
+    suspend fun getWorkOrderHistoryExpenseSync(id: Long): WorkOrderHistoryExpense?
 
     @Query(
         "SELECT * FROM `workOrderHistoryExpense-*-` " +

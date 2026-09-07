@@ -32,6 +32,12 @@ interface AreaDao {
 
     @Query(
         "SELECT * FROM areas " +
+                "WHERE areaId = :id"
+    )
+    suspend fun getAreaSync(id: Long): Areas?
+
+    @Query(
+        "SELECT * FROM areas " +
                 "WHERE areaId = :areaId " +
                 "AND areaIsDeleted = 0"
     )
@@ -43,4 +49,10 @@ interface AreaDao {
                 "AND areaIsDeleted = 0"
     )
     fun searchAreas(query: String): LiveData<List<Areas>>
+
+    @Query(
+        "SELECT * FROM areas " +
+                "WHERE areaName = :name"
+    )
+    suspend fun findAreaByNameAnySync(name: String): Areas?
 }

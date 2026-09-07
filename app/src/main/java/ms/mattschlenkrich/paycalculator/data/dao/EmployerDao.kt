@@ -35,6 +35,13 @@ interface EmployerDao {
 
     @Query(
         "SELECT * FROM $TABLE_EMPLOYERS " +
+                "WHERE employerId = :employerId " +
+                "AND employerIsDeleted = 0"
+    )
+    suspend fun getEmployerSync(employerId: Long): Employers?
+
+    @Query(
+        "SELECT * FROM $TABLE_EMPLOYERS " +
                 "WHERE employerIsDeleted = 0 " +
                 "ORDER BY $EMPLOYER_NAME COLLATE NOCASE"
     )

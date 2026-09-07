@@ -19,6 +19,9 @@ interface SyncHistoryDao {
     @Query("SELECT * FROM $TABLE_SYNC_HISTORY WHERE syncId = :syncId")
     suspend fun getSyncHistory(syncId: Long): SyncHistory?
 
+    @Query("SELECT syncTime FROM $TABLE_SYNC_HISTORY WHERE syncDeviceId = :id AND syncStatus = 'Success' ORDER BY syncTime DESC LIMIT 1")
+    suspend fun getLastSyncTimeSync(id: Long): String?
+
     @Query("SELECT syncTime FROM $TABLE_SYNC_HISTORY WHERE syncDeviceId = :syncId AND syncStatus = 'Success' ORDER BY syncTime DESC LIMIT 1")
     suspend fun getLastSyncTime(syncId: Long): String?
 

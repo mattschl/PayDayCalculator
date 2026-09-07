@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paycalculator.common
 
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import kotlin.math.round
@@ -13,6 +14,10 @@ class DateFunctions {
     private val timeFormatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
     private val dateChecker = SimpleDateFormat(DATE_CHECK, Locale.CANADA)
     private val displayDateString = SimpleDateFormat(DISPLAY_DATE, Locale.CANADA)
+
+    fun getDateTimeStringFromDate(date: Date): String {
+        return timeFormatter.format(date)
+    }
 
     fun getCurrentUTCTimeAsString(): String {
         val formatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
