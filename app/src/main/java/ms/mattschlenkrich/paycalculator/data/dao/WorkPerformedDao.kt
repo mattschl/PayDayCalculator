@@ -51,6 +51,14 @@ interface WorkPerformedDao {
     @Query("SELECT * FROM workPerformed WHERE wpDescription = :description")
     suspend fun getWorkPerformedAnySync(description: String): WorkPerformed?
 
+    @Query(
+        "UPDATE workPerformed " +
+                "SET wpDescription = :newName, " +
+                "wpUpdateTime = :updateTime " +
+                "WHERE workPerformedId = :id"
+    )
+    suspend fun renameWorkPerformed(id: Long, newName: String, updateTime: String)
+
     @Query("SELECT * FROM workPerformed WHERE workPerformedId = :workPerformedId AND wpIsDeleted = 0")
     fun getWorkPerformed(workPerformedId: Long): LiveData<WorkPerformed>
 

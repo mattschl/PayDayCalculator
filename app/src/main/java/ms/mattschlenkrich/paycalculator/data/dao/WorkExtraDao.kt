@@ -53,6 +53,14 @@ interface WorkExtraDao {
     @Query("SELECT * FROM $TABLE_WORK_EXTRA_TYPES WHERE wetEmployerId = :employerId AND wetName = :name")
     suspend fun findWorkExtraTypeByNameAnySync(employerId: Long, name: String): WorkExtraTypes?
 
+    @Query(
+        "UPDATE $TABLE_WORK_EXTRA_TYPES " +
+                "SET wetName = :newName, " +
+                "wetUpdateTime = :updateTime " +
+                "WHERE workExtraTypeId = :id"
+    )
+    suspend fun renameWorkExtraType(id: Long, newName: String, updateTime: String)
+
     @Query("SELECT * FROM $TABLE_WORK_EXTRA_TYPES WHERE wetEmployerId = :employerId AND wetIsDeleted = 0 ORDER BY wetName COLLATE NOCASE")
     fun getWorkExtraTypeList(employerId: Long): LiveData<List<WorkExtraTypes>>
 

@@ -55,4 +55,12 @@ interface AreaDao {
                 "WHERE areaName = :name"
     )
     suspend fun findAreaByNameAnySync(name: String): Areas?
+
+    @Query(
+        "UPDATE areas " +
+                "SET areaName = :newName, " +
+                "areaUpdateTime = :updateTime " +
+                "WHERE areaId = :id"
+    )
+    suspend fun renameArea(id: Long, newName: String, updateTime: String)
 }

@@ -33,6 +33,14 @@ interface JobSpecDao {
     @Query("SELECT * FROM jobSpecs WHERE jsName = :name")
     suspend fun findJobSpecByNameAnySync(name: String): JobSpec?
 
+    @Query(
+        "UPDATE jobSpecs " +
+                "SET jsName = :newName, " +
+                "jsUpdateTime = :updateTime " +
+                "WHERE jobSpecId = :id"
+    )
+    suspend fun renameJobSpec(id: Long, newName: String, updateTime: String)
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertJobSpecMerged(jobSpecMerged: JobSpecMerged)
 

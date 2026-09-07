@@ -54,6 +54,14 @@ interface MaterialDao {
     @Query("SELECT * FROM materials WHERE mName = :mName")
     suspend fun getMaterialAnySync(mName: String): Material?
 
+    @Query(
+        "UPDATE materials " +
+                "SET mName = :newName, " +
+                "mUpdateTime = :updateTime " +
+                "WHERE materialId = :id"
+    )
+    suspend fun renameMaterial(id: Long, newName: String, updateTime: String)
+
     @Query("UPDATE workOrderHistoryMaterials SET wohmMaterialId = :newMaterialID, wohmUpdateTime = :updateTime WHERE wohmMaterialId = :oldMaterialID")
     suspend fun updateMaterialMerged(oldMaterialID: Long, newMaterialID: Long, updateTime: String)
 

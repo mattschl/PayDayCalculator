@@ -189,6 +189,22 @@ class SyncManager(
         }
     }
 
+    suspend fun downloadBackup(fileName: String): String {
+        onProgressUpdate("Downloading $fileName...")
+        val localFile = File(backupDir, fileName)
+        driveServiceHelper.downloadBinaryFile(fileName, localFile)
+
+        val allFiles = driveServiceHelper.queryFiles()
+        allFiles.files?.find { it.name == "$fileName-wal" }?.let {
+            driveServiceHelper.downloadBinaryFile(it.name, File(backupDir, it.name))
+        }
+        allFiles.files?.find { it.name == "$fileName-shm" }?.let {
+            driveServiceHelper.downloadBinaryFile(it.name, File(backupDir, it.name))
+        }
+
+        return "Downloaded $fileName to local backup folder."
+    }
+
     suspend fun restoreSpecific(fileName: String): String {
         onProgressUpdate("Downloading $fileName...")
         val localTempFile = File(backupDir, "restore_temp.db")
@@ -212,6 +228,37 @@ class SyncManager(
             if (localTempFile.exists()) localTempFile.delete()
             if (localTempWal.exists()) localTempWal.delete()
             if (localTempShm.exists()) localTempShm.delete()
+        }
+    }
+
+    suspend fun restoreLocal(file: File): String {
+        return restoreFromFile(file, file.name)
+    }
+
+    suspend fun manualUpload(): String {
+        Log.d(TAG, "Starting manual upload of current database.")
+        onProgressUpdate("Preparing database...")
+        return withContext(Dispatchers.IO) {
+            try {
+                // Force a full checkpoint before upload to merge WAL into DB file.
+                try {
+                    PayDatabase.checkpoint(application)
+                    Log.d(TAG, "Checkpoint successful before manual upload.")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Checkpoint failed before manual upload", e)
+                }
+
+                onProgressUpdate("Uploading...")
+                val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).apply {
+                    timeZone = TimeZone.getTimeZone("UTC")
+                }.format(Date())
+                val uploadedFile = performUpload(timestamp)
+
+                "Successfully uploaded current state as $uploadedFile"
+            } catch (e: Exception) {
+                Log.e(TAG, "Manual upload failed", e)
+                throw e
+            }
         }
     }
 
@@ -269,7 +316,7 @@ class SyncManager(
                 )
 
                 val syncHelper = DatabaseSyncHelper(
-                    appDb, deviceId, onConflict, onSyncError, isRestore = true
+                    appDb, df, deviceId, onConflict, onSyncError, isRestore = true
                 )
 
                 onProgressUpdate("Copying records...")
@@ -297,7 +344,7 @@ class SyncManager(
                 totalCount += syncHelper.syncAreas(backupDb).let { it.first + it.second }
                 totalCount += syncHelper.syncWorkOrderHistoryWorkPerformed(backupDb)
                     .let { it.first + it.second }
-                totalCount += syncHelper.syncWorkOrderJobSpecs(backupDb)
+                totalCount += syncHelper.syncWorkOrderHistoryJobSpecs(backupDb)
                     .let { it.first + it.second }
                 totalCount += syncHelper.syncMaterials(backupDb).let { it.first + it.second }
                 totalCount += syncHelper.syncWorkOrderHistoryMaterials(backupDb)
@@ -333,7 +380,7 @@ class SyncManager(
                     SQLiteDatabase.OPEN_READONLY,
                 )
                 val appDb = PayDatabase(application)
-                val syncHelper = DatabaseSyncHelper(appDb, deviceId, onConflict, onSyncError)
+                val syncHelper = DatabaseSyncHelper(appDb, df, deviceId, onConflict, onSyncError)
 
                 var totalCount = 0
                 totalCount += syncHelper.syncEmployers(backupDb).let { it.first + it.second }
@@ -358,7 +405,7 @@ class SyncManager(
                 totalCount += syncHelper.syncAreas(backupDb).let { it.first + it.second }
                 totalCount += syncHelper.syncWorkOrderHistoryWorkPerformed(backupDb)
                     .let { it.first + it.second }
-                totalCount += syncHelper.syncWorkOrderJobSpecs(backupDb)
+                totalCount += syncHelper.syncWorkOrderHistoryJobSpecs(backupDb)
                     .let { it.first + it.second }
                 totalCount += syncHelper.syncMaterials(backupDb).let { it.first + it.second }
                 totalCount += syncHelper.syncWorkOrderHistoryMaterials(backupDb)

@@ -3,6 +3,7 @@ package ms.mattschlenkrich.paycalculator.ui.sync
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
+import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.paycalculator.common.TABLE_EMPLOYER_PAY_RATES
 import ms.mattschlenkrich.paycalculator.common.TABLE_EMPLOYER_TAX_TYPES
@@ -60,10 +61,11 @@ const val TABLE_JOB_SPEC_MERGED = "jobSpecMerged"
 const val TABLE_MATERIAL_MERGED = "materialMerged"
 const val TABLE_WORK_PERFORMED_MERGED = "workPerformedMerged"
 const val TABLE_WORK_ORDER_HISTORY_TIME_WORKED = "workOrderHistoryTimeWorked"
-const val TABLE_WORK_ORDER_HISTORY_EXPENSE = "workOrderHistoryExpense-*--"
+const val TABLE_WORK_ORDER_HISTORY_EXPENSE = "workOrderHistoryExpense-*-"
 
 class DatabaseSyncHelper(
     private val appDb: PayDatabase,
+    private val df: DateFunctions,
     private val deviceId: Long,
     private val onConflict: suspend (ConflictInfo) -> ConflictChoice,
     private val onSyncError: (String) -> Unit,
@@ -121,6 +123,8 @@ class DatabaseSyncHelper(
         getId: ((T) -> Long)? = null,
         insert: suspend (T) -> Unit,
         update: suspend (T) -> Unit,
+        rename: (suspend (Long, String, String) -> Unit)? = null,
+        copyWithName: ((T, String) -> T)? = null,
     ): Pair<Int, Int> {
         var inserts = 0
         var updates = 0
@@ -159,11 +163,27 @@ class DatabaseSyncHelper(
 
                         when (choice) {
                             ConflictChoice.KEEP_LOCAL -> {
-                                // Skip backup item
+                                val newBackupName =
+                                    "${getName(backupItem)}_DRIVE_${getId(backupItem)}"
+                                val renamedItem =
+                                    copyWithName?.invoke(backupItem, newBackupName)
+                                        ?: backupItem
+                                try {
+                                    insert(renamedItem)
+                                    inserts++
+                                } catch (e: Exception) {
+                                    Log.e(TAG, "Conflict inserting $tableName", e)
+                                }
                             }
 
                             ConflictChoice.KEEP_DRIVE -> {
+                                val newLocalName = "${localName}_LOCAL_$localId"
                                 try {
+                                    rename?.invoke(
+                                        localId,
+                                        newLocalName,
+                                        df.getCurrentUTCTimeAsString()
+                                    )
                                     insert(backupItem)
                                     inserts++
                                 } catch (e: Exception) {
@@ -217,7 +237,9 @@ class DatabaseSyncHelper(
             getName = { it.employerName },
             getId = { it.employerId },
             insert = { appDb.getEmployerDao().insertEmployer(it) },
-            update = { appDb.getEmployerDao().updateEmployer(it) }
+            update = { appDb.getEmployerDao().updateEmployer(it) },
+            rename = { id, name, time -> appDb.getEmployerDao().renameEmployer(id, name, time) },
+            copyWithName = { item, name -> item.copy(employerName = name) },
         )
     }
 
@@ -240,7 +262,9 @@ class DatabaseSyncHelper(
             getName = { it.taxType },
             getId = { it.taxTypeId },
             insert = { appDb.getWorkTaxDao().insertTaxType(it) },
-            update = { appDb.getWorkTaxDao().updateWorkTaxType(it) }
+            update = { appDb.getWorkTaxDao().updateWorkTaxType(it) },
+            rename = { id, name, time -> appDb.getWorkTaxDao().renameTaxType(id, name, time) },
+            copyWithName = { item, name -> item.copy(taxType = name) },
         )
     }
 
@@ -259,7 +283,7 @@ class DatabaseSyncHelper(
             getExistingById = { appDb.getWorkTaxDao().getEffectiveDateSync(it.tdEffectiveDate) },
             getUpdateTime = { it.tdUpdateTime },
             insert = { appDb.getWorkTaxDao().insertEffectiveDate(it) },
-            update = { /* No update */ }
+            update = { /* No update */ },
         )
     }
 
@@ -285,7 +309,7 @@ class DatabaseSyncHelper(
             getExistingById = { appDb.getWorkTaxDao().getWorkTaxRuleSync(it.workTaxRuleId) },
             getUpdateTime = { it.wtUpdateTime },
             insert = { appDb.getWorkTaxDao().insertTaxRule(it) },
-            update = { appDb.getWorkTaxDao().updateTaxRule(it) }
+            update = { appDb.getWorkTaxDao().updateTaxRule(it) },
         )
     }
 
@@ -307,7 +331,7 @@ class DatabaseSyncHelper(
             },
             getUpdateTime = { it.etrUpdateTime },
             insert = { appDb.getWorkTaxDao().insertEmployerTaxType(it) },
-            update = { appDb.getWorkTaxDao().updateEmployerTaxType(it) }
+            update = { appDb.getWorkTaxDao().updateEmployerTaxType(it) },
         )
     }
 
@@ -329,7 +353,7 @@ class DatabaseSyncHelper(
             getExistingById = { /* null */ null },
             getUpdateTime = { it.eprUpdateTime },
             insert = { appDb.getEmployerDao().insertPayRate(it) },
-            update = { appDb.getEmployerDao().updatePayRate(it) }
+            update = { appDb.getEmployerDao().updatePayRate(it) },
         )
     }
 
@@ -352,8 +376,14 @@ class DatabaseSyncHelper(
             },
             getExistingById = { appDb.getWorkExtraDao().getExtraTypeSync(it.workExtraTypeId) },
             getUpdateTime = { it.wetUpdateTime },
+            getName = { it.wetName },
+            getId = { it.workExtraTypeId },
             insert = { appDb.getWorkExtraDao().insertWorkExtraType(it) },
-            update = { appDb.getWorkExtraDao().updateWorkExtraType(it) }
+            update = { appDb.getWorkExtraDao().updateWorkExtraType(it) },
+            rename = { id, name, time ->
+                appDb.getWorkExtraDao().renameWorkExtraType(id, name, time)
+            },
+            copyWithName = { item, name -> item.copy(wetName = name) },
         )
     }
 
@@ -376,7 +406,7 @@ class DatabaseSyncHelper(
             getExistingById = { appDb.getWorkExtraDao().getExtraDefinitionSync(it.workExtraDefId) },
             getUpdateTime = { it.weUpdateTime },
             insert = { appDb.getWorkExtraDao().insertWorkExtraDefinition(it) },
-            update = { appDb.getWorkExtraDao().updateWorkExtraDefinition(it) }
+            update = { appDb.getWorkExtraDao().updateWorkExtraDefinition(it) },
         )
     }
 
@@ -398,7 +428,7 @@ class DatabaseSyncHelper(
             },
             getUpdateTime = { it.ppUpdateTime },
             insert = { appDb.getPayDayDao().insertPayPeriod(it) },
-            update = { appDb.getPayDayDao().updatePayPeriod(it) }
+            update = { appDb.getPayDayDao().updatePayPeriod(it) },
         )
     }
 
@@ -425,7 +455,7 @@ class DatabaseSyncHelper(
             getExistingById = { appDb.getPayDayDao().getWorkDateByIdAnySync(it.workDateId) },
             getUpdateTime = { it.wdUpdateTime },
             insert = { appDb.getPayDayDao().insertWorkDate(it) },
-            update = { appDb.getPayDayDao().updateWorkDate(it) }
+            update = { appDb.getPayDayDao().updateWorkDate(it) },
         )
     }
 
@@ -453,7 +483,7 @@ class DatabaseSyncHelper(
             getExistingById = { appDb.getPayDayDao().getWorkDateExtraSync(it.workDateExtraId) },
             getUpdateTime = { it.wdeUpdateTime },
             insert = { appDb.getPayDayDao().insertWorkDateExtra(it) },
-            update = { appDb.getPayDayDao().updateWorkDateExtra(it) }
+            update = { appDb.getPayDayDao().updateWorkDateExtra(it) },
         )
     }
 
@@ -483,7 +513,7 @@ class DatabaseSyncHelper(
             },
             getUpdateTime = { it.ppeUpdateTime },
             insert = { appDb.getPayDayDao().insertPayPeriodExtra(it) },
-            update = { appDb.getPayDayDao().updatePayPeriodExtra(it) }
+            update = { appDb.getPayDayDao().updatePayPeriodExtra(it) },
         )
     }
 
@@ -516,7 +546,7 @@ class DatabaseSyncHelper(
                     workOrder.woAddress, workOrder.woDescription, workOrder.woDeleted,
                     workOrder.woUpdateTime
                 )
-            }
+            },
         )
     }
 
@@ -542,7 +572,7 @@ class DatabaseSyncHelper(
             },
             getUpdateTime = { it.woHistoryUpdateTime },
             insert = { appDb.getWorkOrderDao().insertWorkOrderHistory(it) },
-            update = { appDb.getWorkOrderDao().updateWorkOrderHistory(it) }
+            update = { appDb.getWorkOrderDao().updateWorkOrderHistory(it) },
         )
     }
 
@@ -568,7 +598,11 @@ class DatabaseSyncHelper(
             getName = { it.wpDescription },
             getId = { it.workPerformedId },
             insert = { appDb.getWorkPerformedDao().insertWorkPerformed(it) },
-            update = { appDb.getWorkPerformedDao().updateWorkPerformed(it) }
+            update = { appDb.getWorkPerformedDao().updateWorkPerformed(it) },
+            rename = { id, name, time ->
+                appDb.getWorkPerformedDao().renameWorkPerformed(id, name, time)
+            },
+            copyWithName = { item, name -> item.copy(wpDescription = name) },
         )
     }
 
@@ -590,7 +624,9 @@ class DatabaseSyncHelper(
             getName = { it.jsName },
             getId = { it.jobSpecId },
             insert = { appDb.getJobSpecDao().insertJobSpec(it) },
-            update = { appDb.getJobSpecDao().updateJobSpec(it) }
+            update = { appDb.getJobSpecDao().updateJobSpec(it) },
+            rename = { id, name, time -> appDb.getJobSpecDao().renameJobSpec(id, name, time) },
+            copyWithName = { item, name -> item.copy(jsName = name) },
         )
     }
 
@@ -621,11 +657,11 @@ class DatabaseSyncHelper(
             },
             getUpdateTime = { it.wowpUpdateTime },
             insert = { appDb.getWorkPerformedDao().insertWorkOrderHistoryWorkPerformed(it) },
-            update = { appDb.getWorkPerformedDao().updateWorkOrderHistoryWorkPerformed(it) }
+            update = { appDb.getWorkPerformedDao().updateWorkOrderHistoryWorkPerformed(it) },
         )
     }
 
-    suspend fun syncWorkOrderJobSpecs(backupDb: SQLiteDatabase): Pair<Int, Int> {
+    suspend fun syncWorkOrderHistoryJobSpecs(backupDb: SQLiteDatabase): Pair<Int, Int> {
         return syncTable(
             backupDb = backupDb,
             tableName = TABLE_WORK_ORDER_HISTORY_JOB_SPECS,
@@ -648,7 +684,7 @@ class DatabaseSyncHelper(
             },
             getUpdateTime = { it.wojsUpdateTime },
             insert = { appDb.getJobSpecDao().insertWorkOrderJobSpec(it) },
-            update = { appDb.getJobSpecDao().updateWorkOrderJobSpec(it) }
+            update = { appDb.getJobSpecDao().updateWorkOrderJobSpec(it) },
         )
     }
 
@@ -672,7 +708,9 @@ class DatabaseSyncHelper(
             getName = { it.mName },
             getId = { it.materialId },
             insert = { appDb.getMaterialDao().insertMaterial(it) },
-            update = { appDb.getMaterialDao().updateMaterial(it) }
+            update = { appDb.getMaterialDao().updateMaterial(it) },
+            rename = { id, name, time -> appDb.getMaterialDao().renameMaterial(id, name, time) },
+            copyWithName = { item, name -> item.copy(mName = name) },
         )
     }
 
@@ -697,7 +735,7 @@ class DatabaseSyncHelper(
             },
             getUpdateTime = { it.wohmUpdateTime },
             insert = { appDb.getMaterialDao().insertWorkOrderHistoryMaterial(it) },
-            update = { appDb.getMaterialDao().updateWorkOrderHistoryMaterial(it) }
+            update = { appDb.getMaterialDao().updateWorkOrderHistoryMaterial(it) },
         )
     }
 
@@ -719,7 +757,9 @@ class DatabaseSyncHelper(
             getName = { it.areaName },
             getId = { it.areaId },
             insert = { appDb.getAreaDao().insertArea(it) },
-            update = { appDb.getAreaDao().updateArea(it) }
+            update = { appDb.getAreaDao().updateArea(it) },
+            rename = { id, name, time -> appDb.getAreaDao().renameArea(id, name, time) },
+            copyWithName = { item, name -> item.copy(areaName = name) },
         )
     }
 
@@ -739,7 +779,7 @@ class DatabaseSyncHelper(
             getExistingById = { appDb.getJobSpecDao().getJobSpecMergedSync(it.jobSpecMergedId) },
             getUpdateTime = { it.jsmUpdateTime },
             insert = { appDb.getJobSpecDao().insertJobSpecMerged(it) },
-            update = { /* No update */ }
+            update = { /* No update */ },
         )
     }
 
@@ -759,7 +799,7 @@ class DatabaseSyncHelper(
             getExistingById = { appDb.getMaterialDao().getMaterialMergedSync(it.materialMergeId) },
             getUpdateTime = { it.mmUpdateTime },
             insert = { appDb.getMaterialDao().insertMaterialMerged(it) },
-            update = { /* No update */ }
+            update = { /* No update */ },
         )
     }
 
@@ -781,7 +821,7 @@ class DatabaseSyncHelper(
             },
             getUpdateTime = { it.wpmUpdateTime },
             insert = { appDb.getWorkPerformedDao().insertWorkPerformedMerged(it) },
-            update = { /* No update */ }
+            update = { /* No update */ },
         )
     }
 
@@ -806,7 +846,7 @@ class DatabaseSyncHelper(
             },
             getUpdateTime = { it.wohtUpdateTime },
             insert = { appDb.getWorkOrderTimeDao().insertTimeWorked(it) },
-            update = { appDb.getWorkOrderTimeDao().updateTimeWorked(it) }
+            update = { appDb.getWorkOrderTimeDao().updateTimeWorked(it) },
         )
     }
 
@@ -831,7 +871,7 @@ class DatabaseSyncHelper(
             },
             getUpdateTime = { it.woheUpdateTime },
             insert = { appDb.getWorkOrderDao().insertWorkOrderHistoryExpense(it) },
-            update = { appDb.getWorkOrderDao().updateWorkOrderHistoryExpense(it) }
+            update = { appDb.getWorkOrderDao().updateWorkOrderHistoryExpense(it) },
         )
     }
 
@@ -856,7 +896,7 @@ class DatabaseSyncHelper(
             },
             update = {
                 if (it.syncDeviceId != deviceId) appDb.getSyncHistoryDao().updateSyncHistory(it)
-            }
+            },
         )
     }
 }

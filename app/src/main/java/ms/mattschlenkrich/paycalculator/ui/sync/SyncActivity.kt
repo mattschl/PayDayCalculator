@@ -106,6 +106,11 @@ class SyncActivity : ComponentActivity() {
                             restartApp()
                         }
                     },
+                    onManualUpload = {
+                        syncViewModel.manualUpload {
+                            Toast.makeText(this, "Upload successful!", Toast.LENGTH_SHORT).show()
+                        }
+                    },
                     onClearBackups = {
                         syncViewModel.clearBackups { e ->
                             handleError("Clear backups failed", e) { }

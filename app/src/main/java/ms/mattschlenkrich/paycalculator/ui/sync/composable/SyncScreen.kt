@@ -51,6 +51,7 @@ fun SyncScreen(
     onSync: () -> Unit,
     onRestore: (String) -> Unit,
     onRepairLocal: () -> Unit,
+    onManualUpload: () -> Unit,
     onClearBackups: () -> Unit,
 ) {
     var showRestoreConfirm by remember { mutableStateOf<String?>(null) }
@@ -174,6 +175,14 @@ fun SyncScreen(
                                     contentColor = MaterialTheme.colorScheme.onErrorContainer
                                 )
                             ) { Text("Restore from Drive") }
+
+                            Button(
+                                onClick = {
+                                    showAdvancedOptions = false
+                                    onManualUpload()
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text("Upload Current State to Drive") }
 
                             Button(
                                 onClick = {

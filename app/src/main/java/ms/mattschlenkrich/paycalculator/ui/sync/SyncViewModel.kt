@@ -154,6 +154,37 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun manualUpload(onSuccess: () -> Unit) {
+        val helper = driveServiceHelper ?: return
+        isLoading = true
+        progressMessage = "Uploading current state..."
+        viewModelScope.launch {
+            try {
+                val manager = SyncManager(
+                    application = getApplication(),
+                    deviceId = deviceId,
+                    driveServiceHelper = helper,
+                    df = df,
+                    nf = nf,
+                    onProgressUpdate = { progressMessage = it },
+                    onConflict = { ConflictChoice.KEEP_DRIVE },
+                    onSyncError = {}
+                )
+                val result = manager.manualUpload()
+                docContent = result
+                if (result.startsWith("Successfully")) {
+                    onSuccess()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Manual upload failed", e)
+                errorMessage = "Upload failed: ${e.message}"
+            } finally {
+                isLoading = false
+                progressMessage = null
+            }
+        }
+    }
+
     fun repairDatabase(onSuccess: () -> Unit) {
         val helper = driveServiceHelper ?: return
         isLoading = true

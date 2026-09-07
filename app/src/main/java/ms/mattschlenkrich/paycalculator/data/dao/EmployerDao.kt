@@ -66,4 +66,12 @@ interface EmployerDao {
                 "WHERE $EMPLOYER_NAME = :name"
     )
     suspend fun findEmployerByNameAnySync(name: String): Employers?
+
+    @Query(
+        "UPDATE $TABLE_EMPLOYERS " +
+                "SET employerName = :newName, " +
+                "employerUpdateTime = :updateTime " +
+                "WHERE employerId = :employerId"
+    )
+    suspend fun renameEmployer(employerId: Long, newName: String, updateTime: String)
 }

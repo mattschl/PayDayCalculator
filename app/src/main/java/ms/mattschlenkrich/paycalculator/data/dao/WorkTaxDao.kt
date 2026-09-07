@@ -62,6 +62,14 @@ interface WorkTaxDao {
     )
     suspend fun getTaxTypeAnySync(taxType: String): TaxTypes?
 
+    @Query(
+        "UPDATE $TABLE_TAX_TYPES " +
+                "SET taxType = :newName, " +
+                "ttUpdateTime = :updateTime " +
+                "WHERE taxTypeId = :id"
+    )
+    suspend fun renameTaxType(id: Long, newName: String, updateTime: String)
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTaxRule(taxRule: WorkTaxRules)
 
