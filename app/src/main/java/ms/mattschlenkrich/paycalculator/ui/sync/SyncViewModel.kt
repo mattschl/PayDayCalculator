@@ -216,6 +216,35 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun deleteBackup(meta: DriveFileMeta, onAuthError: (Exception) -> Unit) {
+        isLoading = true
+        progressMessage = "Deleting backup..."
+        val helper = driveServiceHelper ?: return
+        val manager = SyncManager(
+            application = getApplication(),
+            deviceId = deviceId,
+            driveServiceHelper = helper,
+            df = df,
+            nf = nf,
+            onProgressUpdate = { progressMessage = it },
+            onConflict = { ConflictChoice.KEEP_DRIVE },
+            onSyncError = {}
+        )
+
+        viewModelScope.launch {
+            try {
+                val result = manager.deleteBackup(meta)
+                docContent = result
+                availableBackups = availableBackups.filter { it.id != meta.id }
+            } catch (e: Exception) {
+                onAuthError(e)
+            } finally {
+                isLoading = false
+                progressMessage = null
+            }
+        }
+    }
+
     fun clearBackups(onAuthError: (Exception) -> Unit) {
         isLoading = true
         progressMessage = "Deleting backups..."

@@ -111,6 +111,11 @@ class SyncActivity : ComponentActivity() {
                             Toast.makeText(this, "Upload successful!", Toast.LENGTH_SHORT).show()
                         }
                     },
+                    onDeleteBackup = { meta ->
+                        syncViewModel.deleteBackup(meta) { e ->
+                            handleError("Delete failed", e) { }
+                        }
+                    },
                     onClearBackups = {
                         syncViewModel.clearBackups { e ->
                             handleError("Clear backups failed", e) { }

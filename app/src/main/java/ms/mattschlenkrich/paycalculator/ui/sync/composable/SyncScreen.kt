@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.ui.sync.ConflictDialog
+import ms.mattschlenkrich.paycalculator.ui.sync.DriveFileMeta
 import ms.mattschlenkrich.paycalculator.ui.sync.SyncViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,9 +54,11 @@ fun SyncScreen(
     onRestore: (String) -> Unit,
     onRepairLocal: () -> Unit,
     onManualUpload: () -> Unit,
+    onDeleteBackup: (DriveFileMeta) -> Unit,
     onClearBackups: () -> Unit,
 ) {
     var showRestoreConfirm by remember { mutableStateOf<String?>(null) }
+    var showDeleteConfirm by remember { mutableStateOf<DriveFileMeta?>(null) }
     var showRepairConfirm by remember { mutableStateOf(value = false) }
     var showBackupList by remember { mutableStateOf(value = false) }
     var showAdvancedOptions by remember { mutableStateOf(value = false) }
@@ -242,24 +246,60 @@ fun SyncScreen(
                     text = {
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                             viewModel.availableBackups.forEach { meta ->
-                                TextButton(
-                                    onClick = {
-                                        showBackupList = false
-                                        showRestoreConfirm = meta.name
-                                    },
-                                    modifier = Modifier.fillMaxWidth()
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Text(
-                                        meta.name,
-                                        textAlign = TextAlign.Start,
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
+                                    TextButton(
+                                        onClick = {
+                                            showBackupList = false
+                                            showRestoreConfirm = meta.name
+                                        },
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Text(
+                                            meta.name,
+                                            textAlign = TextAlign.Start,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+                                    IconButton(onClick = {
+                                        showDeleteConfirm = meta
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Default.Delete,
+                                            contentDescription = "Delete backup",
+                                            tint = MaterialTheme.colorScheme.error
+                                        )
+                                    }
                                 }
                             }
                         }
                     },
                     confirmButton = {
                         TextButton(onClick = { showBackupList = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
+
+            showDeleteConfirm?.let { meta ->
+                AlertDialog(
+                    onDismissRequest = { showDeleteConfirm = null },
+                    title = { Text("Confirm Delete") },
+                    text = { Text("Are you sure you want to delete '${meta.name}'? This action cannot be undone.") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showDeleteConfirm = null
+                            onDeleteBackup(meta)
+                        }) {
+                            Text("Delete", color = MaterialTheme.colorScheme.error)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDeleteConfirm = null }) {
                             Text("Cancel")
                         }
                     }
