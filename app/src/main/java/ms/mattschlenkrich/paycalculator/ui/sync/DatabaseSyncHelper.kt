@@ -131,7 +131,7 @@ class DatabaseSyncHelper(
 
         Log.d(TAG, "Syncing table: $tableName")
 
-        backupDb.query(tableName, null, null, null, null, null, null).use { cursor ->
+        backupDb.query("`$tableName`", null, null, null, null, null, null).use { cursor ->
             while (cursor.moveToNext()) {
                 val backupItem = try {
                     mapCursorToItem(cursor)

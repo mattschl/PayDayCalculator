@@ -12,10 +12,6 @@ import ms.mattschlenkrich.paycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
 import ms.mattschlenkrich.paycalculator.data.entity.SyncHistory
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
 
 private const val TAG = "SyncManager"
 private const val DB_IDENTITY_HASH = "73589fbc801269925e003ba706d33924"
@@ -76,13 +72,7 @@ class SyncManager(
                 .mapNotNull { file ->
                     val tsPart = file.name.substringAfter("pay_").substringBefore(".db")
                         .substringBefore("_merged")
-                    val date = try {
-                        SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).apply {
-                            timeZone = TimeZone.getTimeZone("UTC")
-                        }.parse(tsPart)
-                    } catch (_: Exception) {
-                        null
-                    }
+                    val date = df.parseFileTimestamp(tsPart)
 
                     if (date != null) {
                         val sqliteTs = df.getDateTimeStringFromDate(date)
@@ -118,9 +108,7 @@ class SyncManager(
             }
 
             onProgressUpdate("Uploading merged database...")
-            uploadTimestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).apply {
-                timeZone = TimeZone.getTimeZone("UTC")
-            }.format(Date())
+            uploadTimestamp = df.getCurrentFileTimestamp()
 
             withContext(Dispatchers.IO) {
                 PayDatabase.checkpoint(application)
@@ -138,13 +126,7 @@ class SyncManager(
             throw e
         } finally {
             val finalSyncTime = if ((status == "Success") && (uploadTimestamp != null)) {
-                val date = try {
-                    SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).apply {
-                        timeZone = TimeZone.getTimeZone("UTC")
-                    }.parse(uploadTimestamp)
-                } catch (_: Exception) {
-                    null
-                }
+                val date = df.parseFileTimestamp(uploadTimestamp)
                 if (date != null) df.getDateTimeStringFromDate(date) else startTime
             } else startTime
             logSyncHistory(finalSyncTime, status, syncReport.toString())
@@ -189,22 +171,6 @@ class SyncManager(
         }
     }
 
-    suspend fun downloadBackup(fileName: String): String {
-        onProgressUpdate("Downloading $fileName...")
-        val localFile = File(backupDir, fileName)
-        driveServiceHelper.downloadBinaryFile(fileName, localFile)
-
-        val allFiles = driveServiceHelper.queryFiles()
-        allFiles.files?.find { it.name == "$fileName-wal" }?.let {
-            driveServiceHelper.downloadBinaryFile(it.name, File(backupDir, it.name))
-        }
-        allFiles.files?.find { it.name == "$fileName-shm" }?.let {
-            driveServiceHelper.downloadBinaryFile(it.name, File(backupDir, it.name))
-        }
-
-        return "Downloaded $fileName to local backup folder."
-    }
-
     suspend fun restoreSpecific(fileName: String): String {
         onProgressUpdate("Downloading $fileName...")
         val localTempFile = File(backupDir, "restore_temp.db")
@@ -231,10 +197,6 @@ class SyncManager(
         }
     }
 
-    suspend fun restoreLocal(file: File): String {
-        return restoreFromFile(file, file.name)
-    }
-
     suspend fun manualUpload(): String {
         Log.d(TAG, "Starting manual upload of current database.")
         onProgressUpdate("Preparing database...")
@@ -249,9 +211,7 @@ class SyncManager(
                 }
 
                 onProgressUpdate("Uploading...")
-                val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).apply {
-                    timeZone = TimeZone.getTimeZone("UTC")
-                }.format(Date())
+                val timestamp = df.getCurrentFileTimestamp()
                 val uploadedFile = performUpload(timestamp)
 
                 "Successfully uploaded current state as $uploadedFile"

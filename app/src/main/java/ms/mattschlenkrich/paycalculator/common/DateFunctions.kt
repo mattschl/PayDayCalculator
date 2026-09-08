@@ -15,8 +15,24 @@ class DateFunctions {
     private val dateChecker = SimpleDateFormat(DATE_CHECK, Locale.CANADA)
     private val displayDateString = SimpleDateFormat(DISPLAY_DATE, Locale.CANADA)
 
+    private val fileTimestampFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CANADA).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }
+
     fun getDateTimeStringFromDate(date: Date): String {
         return timeFormatter.format(date)
+    }
+
+    fun getCurrentFileTimestamp(): String {
+        return fileTimestampFormat.format(Calendar.getInstance().time)
+    }
+
+    fun parseFileTimestamp(timestamp: String): Date? {
+        return try {
+            fileTimestampFormat.parse(timestamp)
+        } catch (_: Exception) {
+            null
+        }
     }
 
     fun getCurrentUTCTimeAsString(): String {
