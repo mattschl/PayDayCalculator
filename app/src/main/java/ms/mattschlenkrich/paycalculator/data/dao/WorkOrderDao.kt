@@ -32,7 +32,7 @@ interface WorkOrderDao {
                 "woDescription = :description," +
                 "woDeleted = :isDeleted," +
                 "woUpdateTime = :updateTime " +
-                "WHERE workOrderId = :workOrderId"
+                "WHERE workOrderId = :workOrderId",
     )
     suspend fun updateWorkOrder(
         workOrderId: Long,
@@ -68,7 +68,7 @@ interface WorkOrderDao {
 
     @Query(
         "SELECT * FROM workOrders " +
-                "WHERE workOrderId = :workOrderId"
+                "WHERE workOrderId = :workOrderId",
     )
     suspend fun getWorkOrderByIdAnySync(workOrderId: Long): WorkOrder?
 

@@ -50,11 +50,12 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun queryDriveFiles() {
+        if (isLoading) return
+        val helper = driveServiceHelper ?: return
         isLoading = true
         progressMessage = "Querying Drive..."
         viewModelScope.launch {
             try {
-                val helper = driveServiceHelper ?: return@launch
                 val manager = SyncManager(
                     application = getApplication(),
                     deviceId = deviceId,
@@ -62,8 +63,9 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     df = df,
                     nf = nf,
                     onProgressUpdate = { progressMessage = it },
-                    onConflict = { ConflictChoice.KEEP_DRIVE }
-                ) {}
+                    onConflict = { ConflictChoice.KEEP_DRIVE },
+                    onSyncError = { error -> Log.e(TAG, "Query error: $error") }
+                )
                 availableBackups = manager.getAvailableBackups()
                 localBackups = manager.getLocalBackups()
 
@@ -87,9 +89,10 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun performSync(onAuthError: (Exception) -> Unit) {
+        if (isLoading) return
+        val helper = driveServiceHelper ?: return
         isLoading = true
         progressMessage = "Synchronizing..."
-        val helper = driveServiceHelper ?: return
         applyToAllChoice = null
 
         val manager = SyncManager(
@@ -109,8 +112,12 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 docContent = result.second
                 if (result.first == "Success") {
                     syncPerformed = true
-                } else if (result.first == "Busy") {
-                    errorMessage = "Sync already in progress on another device."
+                } else {
+                    errorMessage = if (result.first == "Busy") {
+                        "Sync already in progress on another device."
+                    } else {
+                        "Sync failed. See report for details."
+                    }
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Sync failed", e)
@@ -123,9 +130,10 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun restore(fileName: String, onSuccess: () -> Unit) {
+        if (isLoading) return
+        val helper = driveServiceHelper ?: return
         isLoading = true
         progressMessage = "Restoring from Drive..."
-        val helper = driveServiceHelper ?: return
         val manager = SyncManager(
             application = getApplication(),
             deviceId = deviceId,
@@ -134,7 +142,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             nf = nf,
             onProgressUpdate = { progressMessage = it },
             onConflict = { ConflictChoice.KEEP_DRIVE },
-            onSyncError = {}
+            onSyncError = { error -> Log.e(TAG, "Restore error: $error") }
         )
 
         viewModelScope.launch {
@@ -143,6 +151,8 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 docContent = result
                 if (result.startsWith("Successfully")) {
                     onSuccess()
+                } else {
+                    errorMessage = "Restore failed. See report for details."
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Restore failed", e)
@@ -155,6 +165,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun manualUpload(onSuccess: () -> Unit) {
+        if (isLoading) return
         val helper = driveServiceHelper ?: return
         isLoading = true
         progressMessage = "Uploading current state..."
@@ -168,12 +179,14 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     nf = nf,
                     onProgressUpdate = { progressMessage = it },
                     onConflict = { ConflictChoice.KEEP_DRIVE },
-                    onSyncError = {}
+                    onSyncError = { error -> Log.e(TAG, "Upload error: $error") }
                 )
                 val result = manager.manualUpload()
                 docContent = result
                 if (result.startsWith("Successfully")) {
                     onSuccess()
+                } else {
+                    errorMessage = "Upload failed. See report for details."
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Manual upload failed", e)
@@ -186,6 +199,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun repairDatabase(onSuccess: () -> Unit) {
+        if (isLoading) return
         val helper = driveServiceHelper ?: return
         isLoading = true
         progressMessage = "Repairing..."
@@ -199,12 +213,14 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     nf = nf,
                     onProgressUpdate = { progressMessage = it },
                     onConflict = { ConflictChoice.KEEP_DRIVE },
-                    onSyncError = {}
+                    onSyncError = { error -> Log.e(TAG, "Repair error: $error") }
                 )
                 val result = manager.repairLocalDatabase()
                 docContent = result
                 if (result.contains("successfully")) {
                     onSuccess()
+                } else {
+                    errorMessage = "Repair failed. See report for details."
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Repair error", e)
@@ -217,9 +233,10 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun deleteBackup(meta: DriveFileMeta, onAuthError: (Exception) -> Unit) {
+        if (isLoading) return
+        val helper = driveServiceHelper ?: return
         isLoading = true
         progressMessage = "Deleting backup..."
-        val helper = driveServiceHelper ?: return
         val manager = SyncManager(
             application = getApplication(),
             deviceId = deviceId,
@@ -228,7 +245,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             nf = nf,
             onProgressUpdate = { progressMessage = it },
             onConflict = { ConflictChoice.KEEP_DRIVE },
-            onSyncError = {}
+            onSyncError = { error -> Log.e(TAG, "Delete error: $error") }
         )
 
         viewModelScope.launch {
@@ -237,6 +254,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 docContent = result
                 availableBackups = availableBackups.filter { it.id != meta.id }
             } catch (e: Exception) {
+                Log.e(TAG, "Delete failed", e)
                 onAuthError(e)
             } finally {
                 isLoading = false
@@ -246,9 +264,10 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun clearBackups(onAuthError: (Exception) -> Unit) {
+        if (isLoading) return
+        val helper = driveServiceHelper ?: return
         isLoading = true
         progressMessage = "Deleting backups..."
-        val helper = driveServiceHelper ?: return
         val manager = SyncManager(
             application = getApplication(),
             deviceId = deviceId,
@@ -257,7 +276,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             nf = nf,
             onProgressUpdate = { progressMessage = it },
             onConflict = { ConflictChoice.KEEP_DRIVE },
-            onSyncError = {}
+            onSyncError = { error -> Log.e(TAG, "Clear backups error: $error") }
         )
 
         viewModelScope.launch {
@@ -266,6 +285,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 docContent = "All backups deleted from Google Drive."
                 availableBackups = emptyList()
             } catch (e: Exception) {
+                Log.e(TAG, "Clear backups failed", e)
                 onAuthError(e)
             } finally {
                 isLoading = false

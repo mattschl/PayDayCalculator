@@ -158,7 +158,7 @@ class DatabaseSyncHelper(
                                 localTime,
                                 getId(backupItem),
                                 backupTime,
-                            )
+                            ),
                         )
 
                         when (choice) {
@@ -238,9 +238,10 @@ class DatabaseSyncHelper(
             getId = { it.employerId },
             insert = { appDb.getEmployerDao().insertEmployer(it) },
             update = { appDb.getEmployerDao().updateEmployer(it) },
-            rename = { id, name, time -> appDb.getEmployerDao().renameEmployer(id, name, time) },
-            copyWithName = { item, name -> item.copy(employerName = name) },
-        )
+            rename = { id, name, time -> appDb.getEmployerDao().renameEmployer(id, name, time) }
+        ) { item, name ->
+            item.copy(employerName = name)
+        }
     }
 
     suspend fun syncTaxTypes(backupDb: SQLiteDatabase): Pair<Int, Int> {

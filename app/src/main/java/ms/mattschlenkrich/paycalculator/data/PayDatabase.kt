@@ -153,7 +153,7 @@ abstract class PayDatabase : RoomDatabase() {
                             "`syncDeviceId` INTEGER NOT NULL, " +
                             "`syncStatus` TEXT NOT NULL, " +
                             "`syncRecordsProcessed` TEXT NOT NULL, " +
-                            "PRIMARY KEY(`syncId`))"
+                            "PRIMARY KEY(`syncId`))",
                 )
             }
         }

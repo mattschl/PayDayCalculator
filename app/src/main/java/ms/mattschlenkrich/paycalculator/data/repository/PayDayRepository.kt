@@ -43,7 +43,7 @@ class PayDayRepository(private val db: PayDatabase) {
         val existing = db.getPayDayDao().getWorkDateAnySync(
             workDate.wdEmployerId,
             workDate.wdDate,
-            workDate.wdCutoffDate
+            workDate.wdCutoffDate,
         )
         if (existing != null) {
             val updated = workDate.copy(
@@ -72,7 +72,7 @@ class PayDayRepository(private val db: PayDatabase) {
 
     suspend fun updateWorkDate(workDate: WorkDates) {
         val existing = db.getPayDayDao().getWorkDateByIdAnySync(workDate.workDateId)
-        if (existing != null && (existing.wdIsDeleted && !workDate.wdIsDeleted)) {
+        if (existing != null && ((existing.wdIsDeleted && !workDate.wdIsDeleted))) {
             val updateTime = ms.mattschlenkrich.paycalculator.common.DateFunctions()
                 .getCurrentUTCTimeAsString()
             val histories =

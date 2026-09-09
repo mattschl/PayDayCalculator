@@ -91,7 +91,7 @@ class SyncActivity : ComponentActivity() {
                             Toast.makeText(
                                 this,
                                 "Restore successful! Restarting...",
-                                Toast.LENGTH_LONG
+                                Toast.LENGTH_LONG,
                             ).show()
                             restartApp()
                         }
@@ -101,7 +101,7 @@ class SyncActivity : ComponentActivity() {
                             Toast.makeText(
                                 this,
                                 "Database repaired! Restarting...",
-                                Toast.LENGTH_LONG
+                                Toast.LENGTH_LONG,
                             ).show()
                             restartApp()
                         }
@@ -116,12 +116,11 @@ class SyncActivity : ComponentActivity() {
                             handleError("Delete failed", e) { }
                         }
                     },
-                    onClearBackups = {
-                        syncViewModel.clearBackups { e ->
-                            handleError("Clear backups failed", e) { }
-                        }
+                ) {
+                    syncViewModel.clearBackups { e ->
+                        handleError("Clear backups failed", e) { }
                     }
-                )
+                }
             }
         }
     }

@@ -78,7 +78,7 @@ class MainActivity : ComponentActivity() {
     internal lateinit var settingsViewModel: SettingsViewModel
 
     private val syncLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult(),
     ) { result ->
         if (result.resultCode == RESULT_OK) {
             Log.d("MainActivity", "Sync confirmed, restarting activity to reload data.")
@@ -126,10 +126,9 @@ class MainActivity : ComponentActivity() {
                         onPasswordSet = { password ->
                             settingsViewModel.savePassword(password)
                         },
-                        onAuthenticated = {
-                            mainViewModel.setAuthenticated(true)
-                        }
-                    )
+                    ) {
+                        mainViewModel.setAuthenticated(authenticated = true)
+                    }
                 } else {
                     MainApp(
                         mainViewModel = mainViewModel,

@@ -261,7 +261,7 @@ class SyncManager(
 
     private suspend fun restoreFromFile(
         dbFile: File,
-        displayName: String
+        displayName: String,
     ): String {
         onProgressUpdate("Clearing local data...")
         return withContext(Dispatchers.IO) {

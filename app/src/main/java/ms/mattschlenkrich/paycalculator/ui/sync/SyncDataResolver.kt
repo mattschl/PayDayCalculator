@@ -10,14 +10,14 @@ fun getContentValues(
     cursor: Cursor,
     spec: TableSpec,
     idMap: Map<String, Map<Long, Long>>,
-    localId: Long = -1L
+    localId: Long = -1L,
 ): ContentValues {
     val values = ContentValues()
 
     var recordLocalEmployerId: Long? = null
     if (spec.employerIdColumn != null) {
         val idx = cursor.getColumnIndex(spec.employerIdColumn)
-        if (idx != -1 && !cursor.isNull(idx)) {
+        if ((idx != -1) && !cursor.isNull(idx)) {
             val employerFk =
                 FKSpec(spec.employerIdColumn, "employers", "employerId", "employerName")
             recordLocalEmployerId = getLocalFkValue(
@@ -79,7 +79,7 @@ fun getLocalFkValue(
 
     val remoteFkId = cursor.getLong(columnIndex)
     val localFkIdFromMap = idMap[fk.parentTable]?.get(remoteFkId)
-    if (localFkIdFromMap != null) return localFkIdFromMap.toString()
+    localFkIdFromMap?.let { return it.toString() }
 
     val parentName = getNameFromTable(
         remoteDb,

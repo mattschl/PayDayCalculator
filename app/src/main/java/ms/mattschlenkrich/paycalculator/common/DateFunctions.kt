@@ -56,10 +56,10 @@ class DateFunctions {
     fun getCalendarFromTime(time: String): Calendar {
         val cal = Calendar.getInstance()
         val tempTime = time.split(":")
-        cal.set(Calendar.HOUR_OF_DAY, tempTime[0].toInt())
-        cal.set(Calendar.MINUTE, tempTime[1].toInt())
-        cal.set(Calendar.SECOND, 0)
-        cal.set(Calendar.MILLISECOND, 0)
+        cal[Calendar.HOUR_OF_DAY] = tempTime[0].toInt()
+        cal[Calendar.MINUTE] = tempTime[1].toInt()
+        cal[Calendar.SECOND] = 0
+        cal[Calendar.MILLISECOND] = 0
         return cal
     }
 
@@ -134,7 +134,7 @@ class DateFunctions {
             val start = timeFormatter.parse(startTime)!!
             val end = timeFormatter.parse(endTime)!!
             var diff = (end.time - start.time).toDouble() / (1000.0 * 60.0 * 60.0)
-            if (diff < 0 && (startTime.substring(0, 10) == endTime.substring(0, 10))) {
+            if ((diff < 0) && (startTime.substring(0, 10) == endTime.substring(0, 10))) {
                 diff += 24.0
             }
             // Round to 4 decimal places to avoid floating point inaccuracies during sum
@@ -169,26 +169,26 @@ class DateFunctions {
 
     fun roundCalendarTimeUpTo15Minutes(time: Calendar): Calendar {
         val tempTime = time.clone() as Calendar
-        val minutes = tempTime.get(Calendar.MINUTE)
+        val minutes = tempTime[Calendar.MINUTE]
         val roundedMinute = ((minutes + 14) / 15) * 15
         if (roundedMinute == 60) {
             tempTime.add(Calendar.HOUR_OF_DAY, 1)
-            tempTime.set(Calendar.MINUTE, 0)
+            tempTime[Calendar.MINUTE] = 0
         } else {
-            tempTime.set(Calendar.MINUTE, roundedMinute)
+            tempTime[Calendar.MINUTE] = roundedMinute
         }
-        tempTime.set(Calendar.SECOND, 0)
-        tempTime.set(Calendar.MILLISECOND, 0)
+        tempTime[Calendar.SECOND] = 0
+        tempTime[Calendar.MILLISECOND] = 0
         return tempTime
     }
 
     fun roundCalendarTimeDownTo15Minutes(time: Calendar): Calendar {
         val tempTime = time.clone() as Calendar
-        val minutes = tempTime.get(Calendar.MINUTE)
+        val minutes = tempTime[Calendar.MINUTE]
         val roundedMinute = (minutes / 15) * 15
-        tempTime.set(Calendar.MINUTE, roundedMinute)
-        tempTime.set(Calendar.SECOND, 0)
-        tempTime.set(Calendar.MILLISECOND, 0)
+        tempTime[Calendar.MINUTE] = roundedMinute
+        tempTime[Calendar.SECOND] = 0
+        tempTime[Calendar.MILLISECOND] = 0
         return tempTime
     }
 
@@ -203,7 +203,7 @@ class DateFunctions {
     fun showDatePicker(
         context: android.content.Context,
         initialDate: String,
-        onDateSelected: (String) -> Unit
+        onDateSelected: (String) -> Unit,
     ) {
         val curDateAll = initialDate.split("-")
         val datePickerDialog = android.app.DatePickerDialog(

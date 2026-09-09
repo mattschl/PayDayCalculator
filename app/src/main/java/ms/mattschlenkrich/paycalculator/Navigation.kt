@@ -104,7 +104,7 @@ sealed class Screen(
         Screen(
             "workPerformedUpdate",
             R.string.update_work_performed_description,
-            R.drawable.ic_time_sheet
+            R.drawable.ic_time_sheet,
         )
 
     object WorkPerformedMerge :

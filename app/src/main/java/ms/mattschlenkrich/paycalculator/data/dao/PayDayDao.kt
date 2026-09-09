@@ -24,7 +24,7 @@ interface PayDayDao {
                 "WHERE ppEmployerId = :employerId " +
                 "AND ppIsDeleted = 0 " +
                 "ORDER BY ppCutoffDate DESC " +
-                "LIMIT :limit"
+                "LIMIT :limit",
     )
     fun getCutOffDates(employerId: Long, limit: Int): LiveData<List<PayPeriods>>
 
@@ -33,7 +33,7 @@ interface PayDayDao {
                 "WHERE ppEmployerId = :employerId " +
                 "AND ppIsDeleted = 0 " +
                 "ORDER BY ppCutoffDate DESC " +
-                "LIMIT :limit"
+                "LIMIT :limit",
     )
     suspend fun getCutOffDatesSync(employerId: Long, limit: Int): List<PayPeriods>
 

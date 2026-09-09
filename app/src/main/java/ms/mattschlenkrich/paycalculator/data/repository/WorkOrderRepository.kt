@@ -9,7 +9,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
 
-class WorkOrderRepository(private val db: PayDatabase) {
+class WorkOrderRepository(db: PayDatabase) {
     private val workOrderDao = db.getWorkOrderDao()
     private val payDayDao = db.getPayDayDao()
     private val workOrderTimeDao = db.getWorkOrderTimeDao()
@@ -21,7 +21,7 @@ class WorkOrderRepository(private val db: PayDatabase) {
     suspend fun insertWorkOrder(workOrder: WorkOrder) {
         val existing = workOrderDao.findWorkOrderAnySync(
             workOrder.woNumber,
-            workOrder.woEmployerId
+            workOrder.woEmployerId,
         )
         if (existing != null) {
             val updated = workOrder.copy(
@@ -100,7 +100,7 @@ class WorkOrderRepository(private val db: PayDatabase) {
 
     suspend fun updateWorkOrderHistory(history: WorkOrderHistory) {
         val existing = workOrderDao.getWorkOrderHistoryByIdAnySync(history.woHistoryId)
-        if (existing != null && (existing.woHistoryDeleted && !history.woHistoryDeleted)) {
+        if (existing != null && ((existing.woHistoryDeleted && !history.woHistoryDeleted))) {
             val updateTime = DateFunctions().getCurrentUTCTimeAsString()
             workPerformedDao.removeAllWorkPerformedFromWorkOrderHistory(
                 history.woHistoryId,
@@ -149,8 +149,8 @@ class WorkOrderRepository(private val db: PayDatabase) {
         workPerformedDao.removeAllWorkPerformedFromWorkOrderHistory(historyId, updateTime)
         materialDao.removeAllMaterialsFromWorkOrderHistory(historyId, updateTime)
         workOrderTimeDao.removeAllTimeWorkedFromWorkOrderHistory(historyId, updateTime)
-        if (history != null) {
-            synchronizeWorkDate(history.woHistoryWorkDateId)
+        history?.let {
+            synchronizeWorkDate(it.woHistoryWorkDateId)
         }
     }
 
@@ -264,8 +264,8 @@ class WorkOrderRepository(private val db: PayDatabase) {
         updateWorkOrderHistory(historyId, totalReg, totalOt, totalDbl, updateTime)
 
         val history = workOrderDao.getWorkOrderHistorySync(historyId)
-        if (history != null) {
-            synchronizeWorkDate(history.woHistoryWorkDateId)
+        history?.let {
+            synchronizeWorkDate(it.woHistoryWorkDateId)
         }
     }
 

@@ -14,7 +14,7 @@ enum class RecordStatus { NEW, UPDATED, EXISTS }
 fun isTableExists(db: SQLiteDatabase, tableName: String): Boolean {
     val cursor = db.rawQuery(
         "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
-        arrayOf(tableName)
+        arrayOf(tableName),
     )
     val exists = cursor.count > 0
     cursor.close()
@@ -37,7 +37,7 @@ fun getLookbackTime(localDb: SQLiteDatabase): String {
         if (cursor.moveToFirst()) time = cursor.getString(0)
         cursor.close()
         time
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         null
     }
 
@@ -87,8 +87,8 @@ fun checkRecordStatusWithId(
     var localId = -1L
 
     if (localCursor.moveToFirst()) {
-        if (spec.pkColumn != null) {
-            localId = localCursor.getLong(localCursor.getColumnIndexOrThrow(spec.pkColumn))
+        spec.pkColumn?.let {
+            localId = localCursor.getLong(localCursor.getColumnIndexOrThrow(it))
         }
 
         if (spec.updateTimeColumn != null) {
@@ -98,7 +98,7 @@ fun checkRecordStatusWithId(
                 remoteCursor.getString(remoteCursor.getColumnIndexOrThrow(spec.updateTimeColumn))
 
             status =
-                if (remoteUpdateTime != null && (localUpdateTime == null || remoteUpdateTime > localUpdateTime)) {
+                if (remoteUpdateTime != null && (localUpdateTime == null || (remoteUpdateTime > localUpdateTime))) {
                     RecordStatus.UPDATED
                 } else if (remoteUpdateTime != null && remoteUpdateTime == localUpdateTime) {
                     if (isDataDifferent(localCursor, remoteCursor, spec)) {
