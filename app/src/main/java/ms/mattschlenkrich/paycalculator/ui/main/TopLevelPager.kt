@@ -48,7 +48,7 @@ fun TopLevelPager(
 
     // Sync Pager index to ViewModel
     LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }.collect { page ->
+        snapshotFlow { pagerState.settledPage }.collect { page ->
             mainViewModel.setSelectedTopLevelIndex(page)
         }
     }
