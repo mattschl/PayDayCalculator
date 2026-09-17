@@ -136,6 +136,16 @@ class DriveServiceHelper(private val mDriveService: Drive) {
         }
 
     /**
+     * Downloads a file from Google Drive using its unique file ID directly to a local target file.
+     */
+    suspend fun downloadFileById(fileId: String, targetFile: File): Unit =
+        withContext(Dispatchers.IO) {
+            FileOutputStream(targetFile).use { outputStream ->
+                mDriveService.files().get(fileId).executeMediaAndDownloadTo(outputStream)
+            }
+        }
+
+    /**
      * Utility to fetch file content as a string.
      */
     /*suspend fun downloadFileByName(fileName: String, targetFile: File): String =

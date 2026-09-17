@@ -317,6 +317,8 @@ class SyncManager(
                     .let { it.first + it.second }
                 totalCount += syncHelper.syncWorkOrderHistoryExpense(backupDb)
                     .let { it.first + it.second }
+                totalCount += syncHelper.syncWorkOrderPictures(backupDb)
+                    .let { it.first + it.second }
                 totalCount += syncHelper.syncSyncHistory(backupDb).let { it.first + it.second }
 
                 backupDb.close()
@@ -377,6 +379,8 @@ class SyncManager(
                 totalCount += syncHelper.syncWorkOrderHistoryTimeWorked(backupDb)
                     .let { it.first + it.second }
                 totalCount += syncHelper.syncWorkOrderHistoryExpense(backupDb)
+                    .let { it.first + it.second }
+                totalCount += syncHelper.syncWorkOrderPictures(backupDb)
                     .let { it.first + it.second }
                 totalCount += syncHelper.syncSyncHistory(backupDb).let { it.first + it.second }
 

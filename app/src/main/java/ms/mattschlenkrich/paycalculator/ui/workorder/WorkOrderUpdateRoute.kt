@@ -22,6 +22,7 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.StringFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
 import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.JobSpecViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
@@ -29,6 +30,7 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.MaterialViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.workorder.composable.WorkOrderUpdateScreen
+import java.io.File
 
 @Composable
 fun WorkOrderUpdateRoute(
@@ -114,6 +116,9 @@ fun WorkOrderUpdateRoute(
     val individualExpenses by remember(initialWo.workOrderId) {
         workOrderViewModel.getWorkOrderExpensesAll(initialWo.workOrderId)
     }.observeAsState(emptyList())
+
+    val pictures by workOrderViewModel.getPicturesForWorkOrder(initialWo.workOrderId)
+        .observeAsState(emptyList())
 
     var laborRate by rememberSaveable { mutableStateOf("") }
     var markupRate by rememberSaveable { mutableStateOf("") }
@@ -296,6 +301,42 @@ fun WorkOrderUpdateRoute(
         },
         expensesList = expensesSummary,
         individualExpenses = individualExpenses,
+        pictures = pictures,
+        onPictureTaken = { file ->
+            coroutineScope.launch {
+                workOrderViewModel.insertPicture(
+                    WorkOrderPictures(
+                        pictureId = nf.generateRandomIdAsLong(),
+                        wpWorkOrderId = initialWo.workOrderId,
+                        wpHistoryId = null,
+                        wpExpenseId = null,
+                        driveFileId = null,
+                        localCachePath = file.absolutePath,
+                        isUploaded = false,
+                        wpUpdateTime = df.getCurrentUTCTimeAsString()
+                    )
+                )
+                workOrderViewModel.schedulePictureUpload()
+            }
+        },
+        onDeletePicture = { pic ->
+            coroutineScope.launch {
+                workOrderViewModel.deletePictureById(pic.pictureId)
+                pic.localCachePath?.let { File(it).delete() }
+                pic.driveFileId?.let { driveId ->
+                    mainViewModel.driveServiceHelper.value?.deleteFile(driveId)
+                }
+            }
+        },
+        onDownloadPicture = { pic ->
+            mainViewModel.driveServiceHelper.value?.let { helper ->
+                coroutineScope.launch {
+                    workOrderViewModel.downloadPicture(helper, pic, context.cacheDir)
+                }
+            } ?: run {
+                Toast.makeText(context, "Drive not connected", Toast.LENGTH_SHORT).show()
+            }
+        },
         onDoneClick = {
             val errorResId = validateWorkOrder(woNumber, address, description)
             if (errorResId != null) {

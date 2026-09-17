@@ -18,6 +18,7 @@ import ms.mattschlenkrich.paycalculator.data.dao.PayDetailDao
 import ms.mattschlenkrich.paycalculator.data.dao.SyncHistoryDao
 import ms.mattschlenkrich.paycalculator.data.dao.WorkExtraDao
 import ms.mattschlenkrich.paycalculator.data.dao.WorkOrderDao
+import ms.mattschlenkrich.paycalculator.data.dao.WorkOrderPictureDao
 import ms.mattschlenkrich.paycalculator.data.dao.WorkOrderTimeDao
 import ms.mattschlenkrich.paycalculator.data.dao.WorkPerformedDao
 import ms.mattschlenkrich.paycalculator.data.dao.WorkTaxDao
@@ -45,6 +46,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformedMerged
@@ -80,6 +82,7 @@ import ms.mattschlenkrich.paycalculator.data.model.ExtraDefinitionAndType
         WorkOrderHistoryTimeWorked::class,
         SyncHistory::class,
         WorkOrderHistoryExpense::class,
+        WorkOrderPictures::class,
     ],
     views = [ExtraDefinitionAndType::class],
 //    autoMigrations =
@@ -104,8 +107,32 @@ abstract class PayDatabase : RoomDatabase() {
     abstract fun getWorkPerformedDao(): WorkPerformedDao
     abstract fun getAreaDao(): AreaDao
     abstract fun getWorkOrderTimeDao(): WorkOrderTimeDao
+    abstract fun getWorkOrderPictureDao(): WorkOrderPictureDao
 
     companion object {
+        private val MIGRATION_19_20 = object : Migration(19, 20) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `work_order_pictures` (" +
+                            "`pictureId` INTEGER NOT NULL, " +
+                            "`wpWorkOrderId` INTEGER, " +
+                            "`wpHistoryId` INTEGER, " +
+                            "`wpExpenseId` INTEGER, " +
+                            "`driveFileId` TEXT, " +
+                            "`localCachePath` TEXT, " +
+                            "`isUploaded` INTEGER NOT NULL, " +
+                            "`wpUpdateTime` TEXT NOT NULL, " +
+                            "PRIMARY KEY(`pictureId`), " +
+                            "FOREIGN KEY(`wpWorkOrderId`) REFERENCES `workOrders`(`workOrderId`) ON UPDATE NO ACTION ON DELETE CASCADE, " +
+                            "FOREIGN KEY(`wpHistoryId`) REFERENCES `workOrderHistory`(`woHistoryId`) ON UPDATE NO ACTION ON DELETE CASCADE, " +
+                            "FOREIGN KEY(`wpExpenseId`) REFERENCES `workOrderHistoryExpense-*-`(`woHistoryExpenseId`) ON UPDATE NO ACTION ON DELETE CASCADE )"
+                )
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_work_order_pictures_wpWorkOrderId` ON `work_order_pictures` (`wpWorkOrderId`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_work_order_pictures_wpHistoryId` ON `work_order_pictures` (`wpHistoryId`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_work_order_pictures_wpExpenseId` ON `work_order_pictures` (`wpExpenseId`)")
+            }
+        }
+
         private val MIGRATION_18_19 = object : Migration(18, 19) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(
@@ -229,7 +256,8 @@ abstract class PayDatabase : RoomDatabase() {
                     MIGRATION_15_16,
                     MIGRATION_16_17,
                     MIGRATION_17_18,
-                    MIGRATION_18_19
+                    MIGRATION_18_19,
+                    MIGRATION_19_20
                 )
                 .build()
         }

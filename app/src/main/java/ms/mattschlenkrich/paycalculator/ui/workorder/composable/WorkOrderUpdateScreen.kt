@@ -45,8 +45,10 @@ import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.LocalMinColumnWidth
+import ms.mattschlenkrich.paycalculator.common.compose.PictureAttachmentManager
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
@@ -55,6 +57,7 @@ import ms.mattschlenkrich.paycalculator.common.compose.draggableFab
 import ms.mattschlenkrich.paycalculator.data.entity.Areas
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
 import ms.mattschlenkrich.paycalculator.data.model.ExpenseSummary
 import ms.mattschlenkrich.paycalculator.data.model.JobSpecAndQuantity
 import ms.mattschlenkrich.paycalculator.data.model.MaterialAndQuantity
@@ -63,6 +66,7 @@ import ms.mattschlenkrich.paycalculator.data.model.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paycalculator.data.model.WorkPerformedAndQuantity
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable.WorkOrderHistoryExpenseItem
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -116,6 +120,10 @@ fun WorkOrderUpdateScreen(
     onJobSpecSummaryClick: (JobSpecAndQuantity) -> Unit,
     expensesList: List<ExpenseSummary>,
     individualExpenses: List<WorkOrderHistoryExpense>,
+    pictures: List<WorkOrderPictures>,
+    onPictureTaken: (File) -> Unit,
+    onDeletePicture: (WorkOrderPictures) -> Unit,
+    onDownloadPicture: (WorkOrderPictures) -> Unit,
     onDoneClick: () -> Unit,
     minColumnWidth: Int = LocalMinColumnWidth.current
 ) {
@@ -165,20 +173,26 @@ fun WorkOrderUpdateScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(horizontal = SCREEN_PADDING_HORIZONTAL),
                 verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
             ) {
                 Text(
                     text = stringResource(R.string.update_material_used),
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
                 )
-                Text(material.name)
-                SelectAllOutlinedTextField(
+                Text(
+                    text = material.name,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = ELEMENT_SPACING / 2)
+                )
+                DecimalOutlinedTextField(
                     value = newCost,
                     onValueChange = { newCost = it },
                     label = { Text(stringResource(R.string.cost)) },
                     modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     trailingIcon = {
                         IconButton(onClick = {
                             isCostActive = true
@@ -192,12 +206,11 @@ fun WorkOrderUpdateScreen(
                         }
                     }
                 )
-                SelectAllOutlinedTextField(
+                DecimalOutlinedTextField(
                     value = newPrice,
                     onValueChange = { newPrice = it },
                     label = { Text(stringResource(R.string.price)) },
                     modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     trailingIcon = {
                         IconButton(onClick = {
                             isCostActive = false
@@ -277,6 +290,16 @@ fun WorkOrderUpdateScreen(
                     description = description,
                     onDescriptionChange = onDescriptionChange,
                     descriptionError = descriptionError
+                )
+            }
+
+            item {
+                PictureAttachmentManager(
+                    pictures = pictures,
+                    onPictureTaken = onPictureTaken,
+                    onDeletePicture = onDeletePicture,
+                    onDownloadPicture = onDownloadPicture,
+                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
 

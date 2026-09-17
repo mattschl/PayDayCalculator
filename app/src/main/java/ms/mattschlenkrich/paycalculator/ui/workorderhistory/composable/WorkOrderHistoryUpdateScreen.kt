@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.LocalMinColumnWidth
+import ms.mattschlenkrich.paycalculator.common.compose.PictureAttachmentManager
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
@@ -41,9 +42,11 @@ import ms.mattschlenkrich.paycalculator.data.entity.Areas
 import ms.mattschlenkrich.paycalculator.data.entity.Material
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed
 import ms.mattschlenkrich.paycalculator.data.model.MaterialInSequence
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWorkPerformedCombined
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,6 +109,13 @@ fun WorkOrderHistoryUpdateScreen(
     onUpdateWorkPerformedDefinition: (WorkOrderHistoryWorkPerformedCombined) -> Unit,
     onUpdateMaterialInHistory: (MaterialInSequence) -> Unit,
     onUpdateMaterialDefinition: (MaterialInSequence) -> Unit,
+    pictures: List<WorkOrderPictures>,
+    onPictureTaken: (File) -> Unit,
+    onDeletePicture: (WorkOrderPictures) -> Unit,
+    onDownloadPicture: (WorkOrderPictures) -> Unit,
+    expensePictures: List<WorkOrderPictures>,
+    onExpenseSelectedForPictures: (Long) -> Unit,
+    onExpensePictureTaken: (File, Long) -> Unit,
     isSaving: Boolean = false,
     minColumnWidth: Int = LocalMinColumnWidth.current,
 ) {
@@ -146,11 +156,20 @@ fun WorkOrderHistoryUpdateScreen(
         mainViewModel = mainViewModel,
         navController = navController,
         showDialog = showExpenseDialog,
-        onDismissRequest = { showExpenseDialog = false },
+        onDismissRequest = {
+            showExpenseDialog = false
+            onExpenseSelectedForPictures(-1L)
+        },
         expense = selectedExpense,
         onAddExpense = onAddExpense,
         onUpdateExpense = onUpdateExpense,
-        onDeleteExpense = onDeleteExpense
+        onDeleteExpense = onDeleteExpense,
+        pictures = expensePictures,
+        onPictureTaken = { file ->
+            selectedExpense?.let { onExpensePictureTaken(file, it.woHistoryExpenseId) }
+        },
+        onDeletePicture = onDeletePicture,
+        onDownloadPicture = onDownloadPicture
     )
 
     Scaffold(
@@ -213,6 +232,16 @@ fun WorkOrderHistoryUpdateScreen(
                     onNoteChange = { nt -> onNoteChange(nt) },
                     onAddTimeClick = onAddTimeClick,
                     addTimeButtonText = addTimeButtonText
+                )
+            }
+
+            item(span = StaggeredGridItemSpan.FullLine) {
+                PictureAttachmentManager(
+                    pictures = pictures,
+                    onPictureTaken = onPictureTaken,
+                    onDeletePicture = onDeletePicture,
+                    onDownloadPicture = onDownloadPicture,
+                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
 
@@ -314,6 +343,7 @@ fun WorkOrderHistoryUpdateScreen(
                         index = expenseActualList.indexOf(item)
                     ) {
                         selectedExpense = item
+                        onExpenseSelectedForPictures(item.woHistoryExpenseId)
                         showExpenseDialog = true
                     }
                 }

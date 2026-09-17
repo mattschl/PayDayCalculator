@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.ui.workorderhistory
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -9,7 +10,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -22,6 +25,7 @@ import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
 import ms.mattschlenkrich.paycalculator.data.model.MaterialInSequence
 import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
@@ -30,6 +34,7 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkPerformedViewModel
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable.WorkOrderHistoryUpdateScreen
+import java.io.File
 
 @Composable
 fun WorkOrderHistoryUpdateRoute(
@@ -44,6 +49,7 @@ fun WorkOrderHistoryUpdateRoute(
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     val settings by settingsViewModel.settings.observeAsState()
     val minColumnWidth = settings?.minColumnWidth ?: DEFAULT_MIN_COLUMN_WIDTH
@@ -128,6 +134,18 @@ fun WorkOrderHistoryUpdateRoute(
 
     val expenseActualList by remember(history.woHistoryId) {
         workOrderViewModel.getExpensesByHistory(history.woHistoryId)
+    }.observeAsState(emptyList())
+
+    val pictures by workOrderViewModel.getPicturesForHistory(history.woHistoryId)
+        .observeAsState(emptyList())
+
+    var selectedExpenseForPictures by remember { mutableStateOf<Long?>(null) }
+    val expensePictures by if (selectedExpenseForPictures != null) {
+        remember(selectedExpenseForPictures) {
+            workOrderViewModel.getPicturesForExpense(selectedExpenseForPictures!!)
+        }
+    } else {
+        remember { MutableLiveData(emptyList()) }
     }.observeAsState(emptyList())
 
     val timeWorkedList by remember(history.woHistoryId) {
@@ -348,6 +366,42 @@ fun WorkOrderHistoryUpdateRoute(
                 )
             }
         },
+        pictures = pictures,
+        onPictureTaken = { file ->
+            coroutineScope.launch {
+                workOrderViewModel.insertPicture(
+                    WorkOrderPictures(
+                        pictureId = nf.generateRandomIdAsLong(),
+                        wpWorkOrderId = null,
+                        wpHistoryId = history.woHistoryId,
+                        wpExpenseId = null,
+                        driveFileId = null,
+                        localCachePath = file.absolutePath,
+                        isUploaded = false,
+                        wpUpdateTime = df.getCurrentUTCTimeAsString()
+                    )
+                )
+                workOrderViewModel.schedulePictureUpload()
+            }
+        },
+        onDeletePicture = { pic ->
+            coroutineScope.launch {
+                workOrderViewModel.deletePictureById(pic.pictureId)
+                pic.localCachePath?.let { File(it).delete() }
+                pic.driveFileId?.let { driveId ->
+                    mainViewModel.driveServiceHelper.value?.deleteFile(driveId)
+                }
+            }
+        },
+        onDownloadPicture = { pic ->
+            mainViewModel.driveServiceHelper.value?.let { helper ->
+                coroutineScope.launch {
+                    workOrderViewModel.downloadPicture(helper, pic, context.cacheDir)
+                }
+            } ?: run {
+                Toast.makeText(context, "Drive not connected", Toast.LENGTH_SHORT).show()
+            }
+        },
         onDone = {
             if (!isSaving) {
                 isSaving = true
@@ -429,6 +483,25 @@ fun WorkOrderHistoryUpdateRoute(
                     mainViewModel.setMaterial(material)
                     navController.navigate(Screen.MaterialUpdate.route)
                 }
+            }
+        },
+        expensePictures = expensePictures,
+        onExpenseSelectedForPictures = { id -> selectedExpenseForPictures = id },
+        onExpensePictureTaken = { file, expenseId ->
+            coroutineScope.launch {
+                workOrderViewModel.insertPicture(
+                    WorkOrderPictures(
+                        pictureId = nf.generateRandomIdAsLong(),
+                        wpWorkOrderId = null,
+                        wpHistoryId = null,
+                        wpExpenseId = expenseId,
+                        driveFileId = null,
+                        localCachePath = file.absolutePath,
+                        isUploaded = false,
+                        wpUpdateTime = df.getCurrentUTCTimeAsString()
+                    )
+                )
+                workOrderViewModel.schedulePictureUpload()
             }
         },
         isSaving = isSaving,

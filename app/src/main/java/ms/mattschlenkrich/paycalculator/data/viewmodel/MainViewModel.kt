@@ -26,6 +26,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkTaxRules
 import ms.mattschlenkrich.paycalculator.data.model.ExtraDefTypeAndEmployer
 import ms.mattschlenkrich.paycalculator.data.model.TempWorkOrderHistoryInfo
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryTimeWorkedCombined
+import ms.mattschlenkrich.paycalculator.ui.sync.DriveServiceHelper
 
 private const val SELECTED_EMPLOYER_ID = "selected_employer_id"
 
@@ -56,6 +57,8 @@ class MainViewModel(
 
     var selectedTopLevelIndex = mutableIntStateOf(0)
         private set
+
+    var driveServiceHelper = mutableStateOf<DriveServiceHelper?>(null)
 
     var isAuthenticated = mutableStateOf(value = false)
         private set

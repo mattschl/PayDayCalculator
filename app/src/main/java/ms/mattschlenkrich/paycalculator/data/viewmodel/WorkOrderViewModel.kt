@@ -1,15 +1,24 @@
 package ms.mattschlenkrich.paycalculator.data.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
+import ms.mattschlenkrich.paycalculator.common.worker.PictureUploadWorker
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
 import ms.mattschlenkrich.paycalculator.data.repository.WorkOrderRepository
+import ms.mattschlenkrich.paycalculator.ui.sync.DriveServiceHelper
+import java.io.File
 
 class WorkOrderViewModel(
     app: Application,
@@ -194,4 +203,55 @@ class WorkOrderViewModel(
 
     fun getExpensesByHistory(historyId: Long) =
         workOrderRepository.getExpensesByHistory(historyId)
+
+    fun getPicturesForWorkOrder(workOrderId: Long) =
+        workOrderRepository.getPicturesForWorkOrder(workOrderId)
+
+    fun getPicturesForHistory(historyId: Long) =
+        workOrderRepository.getPicturesForHistory(historyId)
+
+    fun getPicturesForExpense(expenseId: Long) =
+        workOrderRepository.getPicturesForExpense(expenseId)
+
+    suspend fun insertPicture(picture: WorkOrderPictures) =
+        workOrderRepository.insertPicture(picture)
+
+    suspend fun updatePicture(picture: WorkOrderPictures) =
+        workOrderRepository.updatePicture(picture)
+
+    suspend fun deletePictureById(pictureId: Long) =
+        workOrderRepository.deletePictureById(pictureId)
+
+    suspend fun downloadPicture(
+        driveServiceHelper: DriveServiceHelper,
+        picture: WorkOrderPictures,
+        cacheDir: File
+    ): WorkOrderPictures? {
+        val fileId = picture.driveFileId ?: return null
+        val storageDir = File(cacheDir, "pictures")
+        if (!storageDir.exists()) storageDir.mkdirs()
+        val targetFile = File(storageDir, "pic_${picture.pictureId}.webp")
+
+        return try {
+            driveServiceHelper.downloadFileById(fileId, targetFile)
+            val updated = picture.copy(localCachePath = targetFile.absolutePath)
+            updatePicture(updated)
+            updated
+        } catch (e: Exception) {
+            Log.e("WorkOrderViewModel", "Failed to download picture", e)
+            null
+        }
+    }
+
+    fun schedulePictureUpload() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val uploadRequest = OneTimeWorkRequestBuilder<PictureUploadWorker>()
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(getApplication()).enqueue(uploadRequest)
+    }
 }

@@ -41,6 +41,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformedMerged
@@ -62,6 +63,7 @@ const val TABLE_MATERIAL_MERGED = "materialMerged"
 const val TABLE_WORK_PERFORMED_MERGED = "workPerformedMerged"
 const val TABLE_WORK_ORDER_HISTORY_TIME_WORKED = "workOrderHistoryTimeWorked"
 const val TABLE_WORK_ORDER_HISTORY_EXPENSE = "workOrderHistoryExpense-*-"
+const val TABLE_WORK_ORDER_PICTURES = "work_order_pictures"
 
 class DatabaseSyncHelper(
     private val appDb: PayDatabase,
@@ -898,6 +900,37 @@ class DatabaseSyncHelper(
             update = {
                 if (it.syncDeviceId != deviceId) appDb.getSyncHistoryDao().updateSyncHistory(it)
             },
+        )
+    }
+
+    suspend fun syncWorkOrderPictures(backupDb: SQLiteDatabase): Pair<Int, Int> {
+        return syncTable(
+            backupDb = backupDb,
+            tableName = TABLE_WORK_ORDER_PICTURES,
+            mapCursorToItem = { cursor ->
+                WorkOrderPictures(
+                    pictureId = getLongSafe(cursor, "pictureId"),
+                    wpWorkOrderId = getLongSafe(cursor, "wpWorkOrderId").let {
+                        if (it == -1L) null else it
+                    },
+                    wpHistoryId = getLongSafe(cursor, "wpHistoryId").let {
+                        if (it == -1L) null else it
+                    },
+                    wpExpenseId = getLongSafe(cursor, "wpExpenseId").let {
+                        if (it == -1L) null else it
+                    },
+                    driveFileId = getStringSafe(cursor, "driveFileId").let {
+                        if (it.isEmpty()) null else it
+                    },
+                    localCachePath = null,
+                    isUploaded = getBooleanSafe(cursor, "isUploaded"),
+                    wpUpdateTime = getStringSafe(cursor, "wpUpdateTime")
+                )
+            },
+            getExistingById = { appDb.getWorkOrderPictureDao().getPictureSync(it.pictureId) },
+            getUpdateTime = { it.wpUpdateTime },
+            insert = { appDb.getWorkOrderPictureDao().insertPicture(it) },
+            update = { appDb.getWorkOrderPictureDao().updatePicture(it) },
         )
     }
 }

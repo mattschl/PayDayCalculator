@@ -35,6 +35,8 @@ import ms.mattschlenkrich.paycalculator.common.PREFS_NAME
 import ms.mattschlenkrich.paycalculator.common.compose.PayCalculatorTheme
 import ms.mattschlenkrich.paycalculator.common.settings.SettingsManager
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModelFactory
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.sync.composable.SyncScreen
 
@@ -45,6 +47,7 @@ class SyncActivity : ComponentActivity() {
     private lateinit var credentialManager: CredentialManager
     private lateinit var settingsViewModel: SettingsViewModel
     private lateinit var syncViewModel: SyncViewModel
+    private lateinit var mainViewModel: MainViewModel
     private var mCurrentAccount: Account? = null
     private var pendingAction: (() -> Unit)? = null
 
@@ -55,6 +58,10 @@ class SyncActivity : ComponentActivity() {
         credentialManager = CredentialManager.create(this)
         settingsViewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
         syncViewModel = ViewModelProvider(this)[SyncViewModel::class.java]
+        mainViewModel = ViewModelProvider(
+            this,
+            MainViewModelFactory(application)
+        )[MainViewModel::class.java]
 
         val settingsManager = SettingsManager(this)
         val settings = settingsManager.loadSettings()
@@ -216,7 +223,9 @@ class SyncActivity : ComponentActivity() {
             val googleDriveService = Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                 .setApplicationName(getString(R.string.app_name))
                 .build()
-            syncViewModel.driveServiceHelper = DriveServiceHelper(googleDriveService)
+            val helper = DriveServiceHelper(googleDriveService)
+            syncViewModel.driveServiceHelper = helper
+            mainViewModel.driveServiceHelper.value = helper
             mCurrentAccount = account
 
             val settingsManager = SettingsManager(this)

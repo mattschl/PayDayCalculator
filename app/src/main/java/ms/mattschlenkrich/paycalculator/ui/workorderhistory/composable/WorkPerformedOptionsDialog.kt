@@ -16,9 +16,11 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWorkPerformedCombined
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,14 +41,21 @@ fun WorkPerformedOptionsDialog(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(horizontal = SCREEN_PADDING_HORIZONTAL),
                 verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
             ) {
                 Text(
                     text = stringResource(R.string.work_performed_options),
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
                 )
-                Text(item.workPerformed.wpDescription)
+                Text(
+                    text = item.workPerformed.wpDescription,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = ELEMENT_SPACING / 2)
+                )
                 Button(
                     onClick = {
                         onUpdateWorkPerformed(item)

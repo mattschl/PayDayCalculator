@@ -266,6 +266,32 @@ fun getTables() = listOf(
         updateTimeColumn = "wohtUpdateTime"
     ),
     TableSpec(
+        "workOrderHistoryExpense-*-",
+        listOf("woheHistoryId", "woheType", "woheSupplier", "woheInvoiceNo"),
+        listOf(
+            FKSpec("woheHistoryId", "workOrderHistory", "woHistoryId", "woHistoryId")
+        ),
+        pkColumn = "woHistoryExpenseId",
+        isDeletedColumn = "woheIsDeleted",
+        updateTimeColumn = "woheUpdateTime"
+    ),
+    TableSpec(
+        "work_order_pictures",
+        listOf("pictureId"),
+        listOf(
+            FKSpec("wpWorkOrderId", "workOrders", "workOrderId", "woNumber"),
+            FKSpec("wpHistoryId", "workOrderHistory", "woHistoryId", "woHistoryId"),
+            FKSpec(
+                "wpExpenseId",
+                "workOrderHistoryExpense-*-",
+                "woHistoryExpenseId",
+                "woHistoryExpenseId"
+            )
+        ),
+        pkColumn = "pictureId",
+        updateTimeColumn = "wpUpdateTime"
+    ),
+    TableSpec(
         "syncHistory",
         listOf("syncTime", "syncDeviceId"),
         pkColumn = "syncId",
