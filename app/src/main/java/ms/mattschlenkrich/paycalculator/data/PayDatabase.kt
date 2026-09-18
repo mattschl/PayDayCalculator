@@ -125,7 +125,7 @@ abstract class PayDatabase : RoomDatabase() {
                             "PRIMARY KEY(`pictureId`), " +
                             "FOREIGN KEY(`wpWorkOrderId`) REFERENCES `workOrders`(`workOrderId`) ON UPDATE NO ACTION ON DELETE CASCADE, " +
                             "FOREIGN KEY(`wpHistoryId`) REFERENCES `workOrderHistory`(`woHistoryId`) ON UPDATE NO ACTION ON DELETE CASCADE, " +
-                            "FOREIGN KEY(`wpExpenseId`) REFERENCES `workOrderHistoryExpense-*-`(`woHistoryExpenseId`) ON UPDATE NO ACTION ON DELETE CASCADE )"
+                            "FOREIGN KEY(`wpExpenseId`) REFERENCES `workOrderHistoryExpense-*-`(`woHistoryExpenseId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
                 )
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_work_order_pictures_wpWorkOrderId` ON `work_order_pictures` (`wpWorkOrderId`)")
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_work_order_pictures_wpHistoryId` ON `work_order_pictures` (`wpHistoryId`)")

@@ -64,8 +64,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     nf = nf,
                     onProgressUpdate = { progressMessage = it },
                     onConflict = { ConflictChoice.KEEP_DRIVE },
-                    onSyncError = { error -> Log.e(TAG, "Query error: $error") }
-                )
+                ) { error -> Log.e(TAG, "Query error: $error") }
                 availableBackups = manager.getAvailableBackups()
                 localBackups = manager.getLocalBackups()
 
@@ -103,8 +102,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             nf = nf,
             onProgressUpdate = { progressMessage = it },
             onConflict = { info -> showConflictDialogWrapper(info) },
-            onSyncError = { error -> Log.e(TAG, "Sync error: $error") },
-        )
+        ) { error -> Log.e(TAG, "Sync error: $error") }
 
         viewModelScope.launch {
             try {
@@ -142,8 +140,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             nf = nf,
             onProgressUpdate = { progressMessage = it },
             onConflict = { ConflictChoice.KEEP_DRIVE },
-            onSyncError = { error -> Log.e(TAG, "Restore error: $error") }
-        )
+        ) { error -> Log.e(TAG, "Restore error: $error") }
 
         viewModelScope.launch {
             try {
@@ -179,7 +176,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     nf = nf,
                     onProgressUpdate = { progressMessage = it },
                     onConflict = { ConflictChoice.KEEP_DRIVE },
-                    onSyncError = { error -> Log.e(TAG, "Upload error: $error") }
+                    onSyncError = { error -> Log.e(TAG, "Upload error: $error") },
                 )
                 val result = manager.manualUpload()
                 docContent = result

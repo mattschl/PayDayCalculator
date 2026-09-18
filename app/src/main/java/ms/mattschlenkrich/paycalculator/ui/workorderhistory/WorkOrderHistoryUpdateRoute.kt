@@ -44,7 +44,7 @@ fun WorkOrderHistoryUpdateRoute(
     materialViewModel: MaterialViewModel,
     areaViewModel: AreaViewModel,
     navController: NavController,
-    settingsViewModel: SettingsViewModel = viewModel()
+    settingsViewModel: SettingsViewModel = viewModel(),
 ) {
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
@@ -80,7 +80,7 @@ fun WorkOrderHistoryUpdateRoute(
 
     var regHours by rememberSaveable(
         history.woHistoryRegHours,
-        history.woHistoryUpdateTime
+        history.woHistoryUpdateTime,
     ) {
         mutableStateOf(
             nf.displayNumberFromDouble(
@@ -90,7 +90,7 @@ fun WorkOrderHistoryUpdateRoute(
     }
     var otHours by rememberSaveable(
         history.woHistoryOtHours,
-        history.woHistoryUpdateTime
+        history.woHistoryUpdateTime,
     ) {
         mutableStateOf(
             nf.displayNumberFromDouble(
@@ -154,21 +154,27 @@ fun WorkOrderHistoryUpdateRoute(
 
     val isWorkOrderValid = workOrderList.any { it.woNumber == workOrderNumber }
 
-    var isSaving by rememberSaveable { mutableStateOf(false) }
+    var isSaving by rememberSaveable { mutableStateOf(value = false) }
 
     val onRefreshHours = {
         val workedHours = timeWorkedList.filter {
             it.timeWorked.wohtTimeType != TimeWorkedTypes.BREAK.value
         }
-        regHours = nf.displayNumberFromDouble(workedHours.filter {
-            it.timeWorked.wohtTimeType == TimeWorkedTypes.REG_HOURS.value
-        }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) })
-        otHours = nf.displayNumberFromDouble(workedHours.filter {
-            it.timeWorked.wohtTimeType == TimeWorkedTypes.OT_HOURS.value
-        }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) })
-        dblOtHours = nf.displayNumberFromDouble(workedHours.filter {
-            it.timeWorked.wohtTimeType == TimeWorkedTypes.DBL_OT_HOURS.value
-        }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) })
+        regHours = nf.displayNumberFromDouble(
+            workedHours.asSequence().filter {
+                it.timeWorked.wohtTimeType == TimeWorkedTypes.REG_HOURS.value
+            }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) }
+        )
+        otHours = nf.displayNumberFromDouble(
+            workedHours.asSequence().filter {
+                it.timeWorked.wohtTimeType == TimeWorkedTypes.OT_HOURS.value
+            }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) }
+        )
+        dblOtHours = nf.displayNumberFromDouble(
+            workedHours.asSequence().filter {
+                it.timeWorked.wohtTimeType == TimeWorkedTypes.DBL_OT_HOURS.value
+            }.sumOf { df.getTimeWorked(it.timeWorked.wohtStartTime, it.timeWorked.wohtEndTime) }
+        )
     }
 
     WorkOrderHistoryUpdateScreen(
@@ -185,8 +191,8 @@ fun WorkOrderHistoryUpdateRoute(
         },
         onWorkOrderLongClick = {
             val wo = workOrderList.find { it.woNumber == workOrderNumber }
-            if (wo != null) {
-                mainViewModel.setWorkOrder(wo)
+            wo?.let {
+                mainViewModel.setWorkOrder(it)
                 navController.navigate(Screen.WorkOrderUpdate.route)
             }
         },
@@ -265,7 +271,7 @@ fun WorkOrderHistoryUpdateRoute(
                             a?.areaId,
                             workPerformedNote,
                             workPerformedActualList.size + 1,
-                            false,
+                            wowpIsDeleted = false,
                             df.getCurrentUTCTimeAsString()
                         )
                     )
@@ -345,7 +351,7 @@ fun WorkOrderHistoryUpdateRoute(
                         supplier,
                         invoiceNo,
                         nf.getDoubleFromDollars(amount),
-                        false,
+                        woheIsDeleted = false,
                         df.getCurrentUTCTimeAsString()
                     )
                 )

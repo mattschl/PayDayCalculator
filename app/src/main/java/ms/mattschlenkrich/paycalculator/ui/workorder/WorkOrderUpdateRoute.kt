@@ -40,7 +40,7 @@ fun WorkOrderUpdateRoute(
     areaViewModel: AreaViewModel,
     materialViewModel: MaterialViewModel,
     navController: NavController,
-    settingsViewModel: SettingsViewModel = viewModel()
+    settingsViewModel: SettingsViewModel = viewModel(),
 ) {
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
@@ -66,12 +66,12 @@ fun WorkOrderUpdateRoute(
 
     var woNumber by rememberSaveable(currentWo.woNumber, currentWo.woUpdateTime) {
         mutableStateOf(
-            currentWo.woNumber
+            currentWo.woNumber,
         )
     }
     var address by rememberSaveable(currentWo.woAddress, currentWo.woUpdateTime) {
         mutableStateOf(
-            currentWo.woAddress
+            currentWo.woAddress,
         )
     }
     var description by rememberSaveable(
@@ -79,9 +79,9 @@ fun WorkOrderUpdateRoute(
         currentWo.woUpdateTime
     ) { mutableStateOf(currentWo.woDescription) }
 
-    var woNumberError by rememberSaveable { mutableStateOf(false) }
-    var addressError by rememberSaveable { mutableStateOf(false) }
-    var descriptionError by rememberSaveable { mutableStateOf(false) }
+    var woNumberError by rememberSaveable { mutableStateOf(value = false) }
+    var addressError by rememberSaveable { mutableStateOf(value = false) }
+    var descriptionError by rememberSaveable { mutableStateOf(value = false) }
 
     var jobSpecText by rememberSaveable { mutableStateOf("") }
     val jobSpecSuggestions by jobSpecViewModel.searchJobSpecs("")
@@ -125,10 +125,10 @@ fun WorkOrderUpdateRoute(
 
     LaunchedEffect(settings) {
         settings?.let {
-            if (laborRate.isEmpty() && it.defaultLaborRate > 0.0) {
+            if ((laborRate.isEmpty() && it.defaultLaborRate > 0.0)) {
                 laborRate = nf.displayNumberFromDouble(it.defaultLaborRate)
             }
-            if (markupRate.isEmpty() && it.defaultMarkupRate > 0.0) {
+            if ((markupRate.isEmpty() && it.defaultMarkupRate > 0.0)) {
                 markupRate = nf.displayNumberFromDouble(it.defaultMarkupRate)
             }
         }
@@ -242,7 +242,7 @@ fun WorkOrderUpdateRoute(
                             a?.areaId,
                             workPerformedNote.trim(),
                             addedJobSpecs.size + 1,
-                            false,
+                            wojsIsDeleted = false,
                             df.getCurrentUTCTimeAsString()
                         )
                     )
@@ -365,7 +365,7 @@ fun WorkOrderUpdateRoute(
                             a?.areaId,
                             workPerformedNote.trim(),
                             addedJobSpecs.size + 1,
-                            false,
+                            wojsIsDeleted = false,
                             df.getCurrentUTCTimeAsString()
                         )
                     )

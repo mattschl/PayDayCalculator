@@ -14,19 +14,19 @@ import kotlinx.parcelize.Parcelize
             entity = WorkOrder::class,
             parentColumns = ["workOrderId"],
             childColumns = ["wpWorkOrderId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         ),
         ForeignKey(
             entity = WorkOrderHistory::class,
             parentColumns = ["woHistoryId"],
             childColumns = ["wpHistoryId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         ),
         ForeignKey(
             entity = WorkOrderHistoryExpense::class,
             parentColumns = ["woHistoryExpenseId"],
             childColumns = ["wpExpenseId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         )
     ]
 )

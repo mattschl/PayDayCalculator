@@ -276,7 +276,7 @@ class SyncManager(
                 )
 
                 val syncHelper = DatabaseSyncHelper(
-                    appDb, df, deviceId, onConflict, onSyncError, isRestore = true
+                    appDb, df, deviceId, onConflict, onSyncError, isRestore = true,
                 )
 
                 onProgressUpdate("Copying records...")

@@ -184,7 +184,7 @@ class DatabaseSyncHelper(
                                     rename?.invoke(
                                         localId,
                                         newLocalName,
-                                        df.getCurrentUTCTimeAsString()
+                                        df.getCurrentUTCTimeAsString(),
                                     )
                                     insert(backupItem)
                                     inserts++
@@ -228,7 +228,7 @@ class DatabaseSyncHelper(
                     midMonthlyDate = getIntSafe(cursor, "midMonthlyDate"),
                     mainMonthlyDate = getIntSafe(cursor, "mainMonthlyDate"),
                     employerIsDeleted = getBooleanSafe(cursor, "employerIsDeleted"),
-                    employerUpdateTime = getStringSafe(cursor, "employerUpdateTime")
+                    employerUpdateTime = getStringSafe(cursor, "employerUpdateTime"),
                 )
             },
             getExistingById = { appDb.getEmployerDao().getEmployerSync(it.employerId) },
@@ -266,9 +266,10 @@ class DatabaseSyncHelper(
             getId = { it.taxTypeId },
             insert = { appDb.getWorkTaxDao().insertTaxType(it) },
             update = { appDb.getWorkTaxDao().updateWorkTaxType(it) },
-            rename = { id, name, time -> appDb.getWorkTaxDao().renameTaxType(id, name, time) },
-            copyWithName = { item, name -> item.copy(taxType = name) },
-        )
+            rename = { id, name, time -> appDb.getWorkTaxDao().renameTaxType(id, name, time) }
+        ) { item, name ->
+            item.copy(taxType = name)
+        }
     }
 
     suspend fun syncTaxEffectiveDates(backupDb: SQLiteDatabase): Pair<Int, Int> {
@@ -385,9 +386,10 @@ class DatabaseSyncHelper(
             update = { appDb.getWorkExtraDao().updateWorkExtraType(it) },
             rename = { id, name, time ->
                 appDb.getWorkExtraDao().renameWorkExtraType(id, name, time)
-            },
-            copyWithName = { item, name -> item.copy(wetName = name) },
-        )
+            }
+        ) { item, name ->
+            item.copy(wetName = name)
+        }
     }
 
     suspend fun syncWorkExtrasDefinitions(backupDb: SQLiteDatabase): Pair<Int, Int> {
@@ -919,9 +921,7 @@ class DatabaseSyncHelper(
                     wpExpenseId = getLongSafe(cursor, "wpExpenseId").let {
                         if (it == -1L) null else it
                     },
-                    driveFileId = getStringSafe(cursor, "driveFileId").let {
-                        if (it.isEmpty()) null else it
-                    },
+                    driveFileId = getStringSafe(cursor, "driveFileId").ifEmpty { null },
                     localCachePath = null,
                     isUploaded = getBooleanSafe(cursor, "isUploaded"),
                     wpUpdateTime = getStringSafe(cursor, "wpUpdateTime")

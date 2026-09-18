@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.common.compose
 
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -55,17 +57,44 @@ fun PictureAttachmentManager(
     onPictureTaken: (File) -> Unit,
     onDeletePicture: (WorkOrderPictures) -> Unit,
     onDownloadPicture: (WorkOrderPictures) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     var showFullImage by remember { mutableStateOf<WorkOrderPictures?>(null) }
     var pictureToDelete by remember { mutableStateOf<WorkOrderPictures?>(null) }
+    var showSelectionDialog by remember { mutableStateOf(value = false) }
+    var pendingFile by remember { mutableStateOf<File?>(null) }
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
         if (success) {
-            // The file was already created before launching
+            pendingFile?.let { onPictureTaken(it) }
+        } else {
+            pendingFile?.delete()
+        }
+        pendingFile = null
+    }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            val timeStamp = System.currentTimeMillis()
+            val storageDir = File(context.cacheDir, "pictures")
+            if (!storageDir.exists()) storageDir.mkdirs()
+            val file = File(storageDir, "IMG_$timeStamp.webp")
+
+            try {
+                context.contentResolver.openInputStream(it)?.use { input ->
+                    file.outputStream().use { output ->
+                        input.copyTo(output)
+                    }
+                }
+                onPictureTaken(file)
+            } catch (e: Exception) {
+                Log.e("PictureAttachmentManager", "Failed to copy gallery image", e)
+            }
         }
     }
 
@@ -80,19 +109,7 @@ fun PictureAttachmentManager(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
-            IconButton(onClick = {
-                val timeStamp = System.currentTimeMillis()
-                val storageDir = File(context.cacheDir, "pictures")
-                if (!storageDir.exists()) storageDir.mkdirs()
-                val file = File(storageDir, "IMG_$timeStamp.webp")
-                val uri = FileProvider.getUriForFile(
-                    context,
-                    "ms.mattschlenkrich.paycalculator.fileprovider",
-                    file
-                )
-                onPictureTaken(file)
-                cameraLauncher.launch(uri)
-            }) {
+            IconButton(onClick = { showSelectionDialog = true }) {
                 Icon(
                     Icons.Default.AddAPhoto,
                     contentDescription = stringResource(R.string.take_picture)
@@ -117,13 +134,72 @@ fun PictureAttachmentManager(
                         onClick = {
                             if (pic.localCachePath != null) showFullImage = pic
                             else onDownloadPicture(pic)
-                        },
-                        onDelete = { pictureToDelete = pic },
-                        onDownload = { onDownloadPicture(pic) }
-                    )
+                        }
+                    ) { pictureToDelete = pic }
                 }
             }
         }
+    }
+
+    if (showSelectionDialog) {
+        AlertDialog(
+            onDismissRequest = { showSelectionDialog = false },
+            title = { Text(stringResource(R.string.camera_or_gallery)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    TextButton(
+                        onClick = {
+                            showSelectionDialog = false
+                            val timeStamp = System.currentTimeMillis()
+                            val storageDir = File(context.cacheDir, "pictures")
+                            if (!storageDir.exists()) storageDir.mkdirs()
+                            val file = File(storageDir, "IMG_$timeStamp.webp")
+                            val uri = FileProvider.getUriForFile(
+                                context,
+                                "ms.mattschlenkrich.paycalculator.fileprovider",
+                                file
+                            )
+                            pendingFile = file
+                            cameraLauncher.launch(uri)
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(Icons.Default.AddAPhoto, contentDescription = null)
+                            Spacer(Modifier.padding(horizontal = 8.dp))
+                            Text(stringResource(R.string.take_picture))
+                        }
+                    }
+                    TextButton(
+                        onClick = {
+                            showSelectionDialog = false
+                            galleryLauncher.launch("image/*")
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(Icons.Default.Image, contentDescription = null)
+                            Spacer(Modifier.padding(horizontal = 8.dp))
+                            Text(stringResource(R.string.select_from_gallery))
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(onClick = { showSelectionDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
     }
 
     showFullImage?.let { pic ->
@@ -139,10 +215,12 @@ fun PictureAttachmentManager(
             title = { Text(stringResource(R.string.delete_picture)) },
             text = { Text(stringResource(R.string.confirm_delete_picture)) },
             confirmButton = {
-                TextButton(onClick = {
-                    onDeletePicture(pic)
-                    pictureToDelete = null
-                }) {
+                TextButton(
+                    onClick = {
+                        onDeletePicture(pic)
+                        pictureToDelete = null
+                    }
+                ) {
                     Text(stringResource(R.string.delete))
                 }
             },
@@ -159,8 +237,7 @@ fun PictureAttachmentManager(
 fun PictureThumbnail(
     picture: WorkOrderPictures,
     onClick: () -> Unit,
-    onDelete: () -> Unit,
-    onDownload: () -> Unit
+    onDelete: () -> Unit
 ) {
     Card(
         modifier = Modifier
