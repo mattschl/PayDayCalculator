@@ -113,7 +113,7 @@ class MainActivity : ComponentActivity() {
                 isSystemTheme = settings?.isSystemTheme ?: true,
                 isDarkTheme = settings?.isDarkTheme ?: false,
                 fontSize = settings?.fontSize ?: 16f,
-                minColumnWidth = settings?.minColumnWidth ?: 360
+                minColumnWidth = settings?.minColumnWidth ?: 360,
             ) {
                 val isAuthenticated by mainViewModel.isAuthenticated
                 val isPasswordProtected = settings?.isPasswordProtected ?: false
@@ -145,11 +145,10 @@ class MainActivity : ComponentActivity() {
                         payCalculationsViewModel = payCalculationsViewModel,
                         workTimeViewModel = workTimeViewModel,
                         settingsViewModel = settingsViewModel,
-                        onSyncRequested = {
-                            val intent = Intent(this, SyncActivity::class.java)
-                            syncLauncher.launch(intent)
-                        }
-                    )
+                    ) {
+                        val intent = Intent(this, SyncActivity::class.java)
+                        syncLauncher.launch(intent)
+                    }
                 }
             }
         }
@@ -158,7 +157,7 @@ class MainActivity : ComponentActivity() {
     override fun onStop() {
         super.onStop()
         if (!isChangingConfigurations) {
-            mainViewModel.setAuthenticated(false)
+            mainViewModel.setAuthenticated(authenticated = false)
         }
     }
 

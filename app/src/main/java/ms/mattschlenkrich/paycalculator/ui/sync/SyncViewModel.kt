@@ -176,8 +176,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     nf = nf,
                     onProgressUpdate = { progressMessage = it },
                     onConflict = { ConflictChoice.KEEP_DRIVE },
-                    onSyncError = { error -> Log.e(TAG, "Upload error: $error") },
-                )
+                ) { error -> Log.e(TAG, "Upload error: $error") }
                 val result = manager.manualUpload()
                 docContent = result
                 if (result.startsWith("Successfully")) {
@@ -210,8 +209,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     nf = nf,
                     onProgressUpdate = { progressMessage = it },
                     onConflict = { ConflictChoice.KEEP_DRIVE },
-                    onSyncError = { error -> Log.e(TAG, "Repair error: $error") }
-                )
+                ) { error -> Log.e(TAG, "Repair error: $error") }
                 val result = manager.repairLocalDatabase()
                 docContent = result
                 if (result.contains("successfully")) {

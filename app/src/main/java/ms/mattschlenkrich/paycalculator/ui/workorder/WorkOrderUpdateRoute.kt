@@ -64,12 +64,18 @@ fun WorkOrderUpdateRoute(
     val addressSuggestions by workOrderViewModel.getUniqueAddresses(employer.employerId)
         .observeAsState(emptyList())
 
-    var woNumber by rememberSaveable(currentWo.woNumber, currentWo.woUpdateTime) {
+    var woNumber by rememberSaveable(
+        currentWo.woNumber,
+        currentWo.woUpdateTime,
+    ) {
         mutableStateOf(
             currentWo.woNumber,
         )
     }
-    var address by rememberSaveable(currentWo.woAddress, currentWo.woUpdateTime) {
+    var address by rememberSaveable(
+        currentWo.woAddress,
+        currentWo.woUpdateTime,
+    ) {
         mutableStateOf(
             currentWo.woAddress,
         )
@@ -117,7 +123,7 @@ fun WorkOrderUpdateRoute(
         workOrderViewModel.getWorkOrderExpensesAll(initialWo.workOrderId)
     }.observeAsState(emptyList())
 
-    val pictures by workOrderViewModel.getPicturesForWorkOrder(initialWo.workOrderId)
+    val pictures by workOrderViewModel.getPicturesByWorkOrderId(initialWo.workOrderId)
         .observeAsState(emptyList())
 
     var laborRate by rememberSaveable { mutableStateOf("") }
@@ -125,10 +131,10 @@ fun WorkOrderUpdateRoute(
 
     LaunchedEffect(settings) {
         settings?.let {
-            if ((laborRate.isEmpty() && it.defaultLaborRate > 0.0)) {
+            if ((laborRate.isEmpty() && (it.defaultLaborRate > 0.0))) {
                 laborRate = nf.displayNumberFromDouble(it.defaultLaborRate)
             }
-            if ((markupRate.isEmpty() && it.defaultMarkupRate > 0.0)) {
+            if ((markupRate.isEmpty() && (it.defaultMarkupRate > 0.0))) {
                 markupRate = nf.displayNumberFromDouble(it.defaultMarkupRate)
             }
         }

@@ -66,7 +66,7 @@ fun PictureAttachmentManager(
     var pendingFile by remember { mutableStateOf<File?>(null) }
 
     val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture()
+        contract = ActivityResultContracts.TakePicture(),
     ) { success ->
         if (success) {
             pendingFile?.let { onPictureTaken(it) }
@@ -205,8 +205,11 @@ fun PictureAttachmentManager(
     showFullImage?.let { pic ->
         FullScreenImageDialog(
             picture = pic,
-            onDismiss = { showFullImage = null }
-        )
+            onDelete = {
+                pictureToDelete = pic
+                showFullImage = null
+            }
+        ) { showFullImage = null }
     }
 
     pictureToDelete?.let { pic ->
@@ -299,6 +302,7 @@ fun PictureThumbnail(
 @Composable
 fun FullScreenImageDialog(
     picture: WorkOrderPictures,
+    onDelete: () -> Unit,
     onDismiss: () -> Unit
 ) {
     Dialog(
@@ -308,19 +312,44 @@ fun FullScreenImageDialog(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black)
-                .clickable(onClick = onDismiss),
+                .background(Color.Black),
             contentAlignment = Alignment.Center
         ) {
             SubcomposeAsyncImage(
                 model = picture.localCachePath,
                 contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable(onClick = onDismiss),
                 contentScale = ContentScale.Fit,
                 loading = {
-                    CircularProgressIndicator()
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
                 }
             )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                IconButton(
+                    onClick = onDelete,
+                    modifier = Modifier.background(
+                        Color.White.copy(alpha = 0.5f),
+                        shape = MaterialTheme.shapes.small
+                    )
+                ) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.delete),
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
         }
     }
 }

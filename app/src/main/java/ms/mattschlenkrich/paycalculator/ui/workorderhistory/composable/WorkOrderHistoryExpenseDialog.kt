@@ -57,7 +57,7 @@ fun WorkOrderHistoryExpenseDialog(
     pictures: List<WorkOrderPictures> = emptyList(),
     onPictureTaken: (File) -> Unit = {},
     onDeletePicture: (WorkOrderPictures) -> Unit = {},
-    onDownloadPicture: (WorkOrderPictures) -> Unit = {}
+    onDownloadPicture: (WorkOrderPictures) -> Unit = {},
 ) {
     if (showDialog) {
         val nf = remember { NumberFunctions() }
@@ -146,7 +146,7 @@ fun WorkOrderHistoryExpenseDialog(
                     null
                 }
                 val isAmountError =
-                    amount.isNotBlank() && (amountValue == null || amountValue == 0.0)
+                    amount.isNotBlank() && ((amountValue == null) || (amountValue == 0.0))
 
                 Column(verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING / 2)) {
                     DecimalOutlinedTextField(
@@ -155,10 +155,12 @@ fun WorkOrderHistoryExpenseDialog(
                         label = { Text(stringResource(R.string.amount)) },
                         modifier = Modifier.fillMaxWidth(),
                         trailingIcon = {
-                            IconButton(onClick = {
-                                mainViewModel.setTransferNum(nf.getDoubleFromDollars(amount))
-                                navController.navigate(Screen.Calculator.route)
-                            }) {
+                            IconButton(
+                                onClick = {
+                                    mainViewModel.setTransferNum(nf.getDoubleFromDollars(amount))
+                                    navController.navigate(Screen.Calculator.route)
+                                }
+                            ) {
                                 Icon(
                                     imageVector = Icons.Default.Calculate,
                                     contentDescription = "Calculate Amount"

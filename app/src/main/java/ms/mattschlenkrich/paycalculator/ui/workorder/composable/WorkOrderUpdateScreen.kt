@@ -43,6 +43,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
@@ -125,13 +126,13 @@ fun WorkOrderUpdateScreen(
     onDeletePicture: (WorkOrderPictures) -> Unit,
     onDownloadPicture: (WorkOrderPictures) -> Unit,
     onDoneClick: () -> Unit,
-    minColumnWidth: Int = LocalMinColumnWidth.current
+    minColumnWidth: Int = LocalMinColumnWidth.current,
 ) {
     val columns = calculateGridColumns(minColumnWidth)
     val df = DateFunctions()
     val nf = NumberFunctions()
 
-    var showJobSpecDialog by remember { mutableStateOf(false) }
+    var showJobSpecDialog by remember { mutableStateOf(value = false) }
     var selectedJobSpecCombined by remember { mutableStateOf<WorkOrderJobSpecCombined?>(null) }
 
     var showMaterialPriceDialog by rememberSaveable { mutableStateOf<MaterialAndQuantity?>(null) }
@@ -141,8 +142,7 @@ fun WorkOrderUpdateScreen(
         onDismissRequest = { showJobSpecDialog = false },
         item = selectedJobSpecCombined,
         onUpdateInWorkOrder = { onJobSpecClick(it) },
-        onUpdateDefinition = { onUpdateJobSpecDefinition(it.jobSpec) }
-    )
+    ) { onUpdateJobSpecDefinition(it.jobSpec) }
 
     if (showMaterialPriceDialog != null) {
         val material = showMaterialPriceDialog!!
@@ -194,11 +194,13 @@ fun WorkOrderUpdateScreen(
                     label = { Text(stringResource(R.string.cost)) },
                     modifier = Modifier.fillMaxWidth(),
                     trailingIcon = {
-                        IconButton(onClick = {
-                            isCostActive = true
-                            mainViewModel.setTransferNum(nf.getDoubleFromDollars(newCost))
-                            navController.navigate(ms.mattschlenkrich.paycalculator.Screen.Calculator.route)
-                        }) {
+                        IconButton(
+                            onClick = {
+                                isCostActive = true
+                                mainViewModel.setTransferNum(nf.getDoubleFromDollars(newCost))
+                                navController.navigate(Screen.Calculator.route)
+                            }
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.Calculate,
                                 contentDescription = "Calculate Cost"
@@ -215,7 +217,7 @@ fun WorkOrderUpdateScreen(
                         IconButton(onClick = {
                             isCostActive = false
                             mainViewModel.setTransferNum(nf.getDoubleFromDollars(newPrice))
-                            navController.navigate(ms.mattschlenkrich.paycalculator.Screen.Calculator.route)
+                            navController.navigate(Screen.Calculator.route)
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Calculate,
@@ -290,16 +292,6 @@ fun WorkOrderUpdateScreen(
                     description = description,
                     onDescriptionChange = onDescriptionChange,
                     descriptionError = descriptionError
-                )
-            }
-
-            item {
-                PictureAttachmentManager(
-                    pictures = pictures,
-                    onPictureTaken = onPictureTaken,
-                    onDeletePicture = onDeletePicture,
-                    onDownloadPicture = onDownloadPicture,
-                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
 
@@ -631,6 +623,16 @@ fun WorkOrderUpdateScreen(
                         onClick = {} // View only at work order level? Or navigate to history?
                     )
                 }
+            }
+
+            item {
+                PictureAttachmentManager(
+                    pictures = pictures,
+                    onPictureTaken = onPictureTaken,
+                    onDeletePicture = onDeletePicture,
+                    onDownloadPicture = onDownloadPicture,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
             }
 
             item {

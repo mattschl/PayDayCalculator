@@ -33,7 +33,7 @@ fun TopLevelPager(
     payDetailViewModel: PayDetailViewModel,
     payCalculationsViewModel: PayCalculationsViewModel,
     settingsViewModel: SettingsViewModel,
-    navController: NavController
+    navController: NavController,
 ) {
     val pagerState = rememberPagerState(
         initialPage = mainViewModel.selectedTopLevelIndex.intValue
@@ -86,10 +86,9 @@ fun TopLevelPager(
                     mainViewModel.setEmployer(employer)
                     navController.navigate(Screen.EmployerUpdate.route)
                 },
-                onAddClick = {
-                    navController.navigate(Screen.EmployerAdd.route)
-                }
-            )
+            ) {
+                navController.navigate(Screen.EmployerAdd.route)
+            }
 
             3 -> TaxRoute(
                 mainViewModel,

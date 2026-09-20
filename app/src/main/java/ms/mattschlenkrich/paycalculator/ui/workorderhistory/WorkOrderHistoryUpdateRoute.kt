@@ -224,12 +224,12 @@ fun WorkOrderHistoryUpdateRoute(
             coroutineScope.launch {
                 val wo = workOrderViewModel.findWorkOrder(
                     workOrderNumber,
-                    employer.employerId
+                    employer.employerId,
                 )
-                if (wo != null) {
+                wo?.let {
                     workOrderViewModel.updateWorkOrderHistory(
                         history.copy(
-                            woHistoryWorkOrderId = wo.workOrderId,
+                            woHistoryWorkOrderId = it.workOrderId,
                             woHistoryRegHours = regHours.toDoubleOrNull() ?: 0.0,
                             woHistoryOtHours = otHours.toDoubleOrNull() ?: 0.0,
                             woHistoryDblOtHours = dblOtHours.toDoubleOrNull() ?: 0.0,
@@ -311,7 +311,7 @@ fun WorkOrderHistoryUpdateRoute(
                             m.materialId,
                             materialQty.toDoubleOrNull() ?: 1.0,
                             materialActualList.size + 1,
-                            false,
+                            wohmIsDeleted = false,
                             df.getCurrentUTCTimeAsString()
                         )
                     )
@@ -425,7 +425,7 @@ fun WorkOrderHistoryUpdateRoute(
                                         a?.areaId,
                                         workPerformedNote,
                                         workPerformedActualList.size + 1,
-                                        false,
+                                        wowpIsDeleted = false,
                                         df.getCurrentUTCTimeAsString()
                                     )
                                 )
@@ -441,7 +441,7 @@ fun WorkOrderHistoryUpdateRoute(
                                         m.materialId,
                                         materialQty.toDoubleOrNull() ?: 1.0,
                                         materialActualList.size + 1,
-                                        false,
+                                        wohmIsDeleted = false,
                                         df.getCurrentUTCTimeAsString()
                                     )
                                 )

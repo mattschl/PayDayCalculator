@@ -12,9 +12,7 @@ import ms.mattschlenkrich.paycalculator.common.worker.PictureUploadWorker
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
-import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
-import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
 import ms.mattschlenkrich.paycalculator.data.repository.WorkOrderRepository
 import ms.mattschlenkrich.paycalculator.ui.sync.DriveServiceHelper
@@ -36,7 +34,7 @@ class WorkOrderViewModel(
             workOrder.woAddress,
             workOrder.woDescription,
             workOrder.woDeleted,
-            workOrder.woUpdateTime
+            workOrder.woUpdateTime,
         )
 
     fun getWorkOrder(workOrderId: Long) = workOrderRepository.getWorkOrder(workOrderId)
@@ -95,11 +93,6 @@ class WorkOrderViewModel(
     fun getWorkOrderExpensesAll(workOrderId: Long) =
         workOrderRepository.getWorkOrderExpensesAll(workOrderId)
 
-    val jobSpecsAll = workOrderRepository.getJobSpecs()
-    val areasList = workOrderRepository.getAreasList()
-    val workPerformedAll = workOrderRepository.getWorkPerformedAll()
-    val materialsList = workOrderRepository.getMaterialsList()
-
     suspend fun insertWorkOrderHistoryTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
         workOrderRepository.insertTimeWorked(timeWorked)
 
@@ -118,79 +111,14 @@ class WorkOrderViewModel(
     fun getTimeWorkedForWorkOrderHistory(historyId: Long) =
         workOrderRepository.getTimeWorkedForWorkOrderHistory(historyId)
 
-    fun getWorkPerformedHistoryById(historyWorkPerformedId: Long) =
-        workOrderRepository.getWorkPerformedHistoryById(historyWorkPerformedId)
-
     fun getWorkOrderHistoriesByWorkOrder(workOrderId: Long) =
         workOrderRepository.getWorkOrderHistoriesByWorkOrder(workOrderId)
-
-    suspend fun insertWorkOrderHistoryWorkPerformed(
-        workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
-    ) = workOrderRepository.insertWorkOrderHistoryWorkPerformed(
-        workOrderHistoryWorkPerformed
-    )
-
-    suspend fun updateWorkOrderHistoryWorkPerformed(
-        workOrderHistoryWorkPerformed: WorkOrderHistoryWorkPerformed
-    ) = workOrderRepository.updateWorkOrderHistoryWorkPerformed(
-        workOrderHistoryWorkPerformed
-    )
-
-    suspend fun removeAllWorkPerformedFromWorkOderHistory(historyId: Long) =
-        workOrderRepository.removeAllWorkPerformedFromWorkOrderHistory(
-            historyId,
-            DateFunctions().getCurrentUTCTimeAsString()
-        )
-
-    fun getWorkPerformedCombinedByWorkOrderHistory(historyId: Long) =
-        workOrderRepository.getWorkPerformedCombinedByWorkOrderHistory(historyId)
-
-    suspend fun updateMaterialMerged(oldMaterialID: Long, newMaterialID: Long, updateTime: String) =
-        workOrderRepository.updateMaterialMerged(
-            oldMaterialID,
-            newMaterialID,
-            updateTime
-        )
-
-    suspend fun insertWorkOrderHistoryMaterial(workOrderHistoryMaterial: WorkOrderHistoryMaterial) =
-        workOrderRepository.insertWorkOrderHistoryMaterial(workOrderHistoryMaterial)
-
-    suspend fun removeAllMaterialsFromWorkOrderHistory(historyId: Long) =
-        workOrderRepository.removeAllMaterialsFromWorkOrderHistory(
-            historyId,
-            DateFunctions().getCurrentUTCTimeAsString()
-        )
-
-    suspend fun removeAllTimeWorkedFromWorkOrderHistory(historyId: Long) =
-        workOrderRepository.removeAllTimeWorkedFromWorkOrderHistory(
-            historyId,
-            DateFunctions().getCurrentUTCTimeAsString()
-        )
 
     suspend fun deleteWorkDate(workDateId: Long) =
         workOrderRepository.deleteWorkDate(
             workDateId,
             DateFunctions().getCurrentUTCTimeAsString()
         )
-
-    suspend fun deleteWorkOrderHistoryWorkPerformed(
-        historyWorkPerformedId: Long,
-        updateTime: String = DateFunctions()
-            .getCurrentUTCTimeAsString()
-    ) = workOrderRepository.deleteWorkOrderHistoryWorkPerformed(historyWorkPerformedId, updateTime)
-
-    suspend fun updateWorkOrderHistoryMaterial(workOrderHistoryMaterial: WorkOrderHistoryMaterial) =
-        workOrderRepository.updateWorkOrderHistoryMaterial(workOrderHistoryMaterial)
-
-    suspend fun deleteWorkOrderHistoryMaterial(
-        historyMaterialId: Long, updateTime: String
-    ) = workOrderRepository.deleteWorkOrderHistoryMaterial(historyMaterialId, updateTime)
-
-    fun getMaterialsByHistory(historyId: Long) =
-        workOrderRepository.getMaterialsByHistory(historyId)
-
-    suspend fun getWorkOrderHistoryMaterialCombined(woHistoryMaterialId: Long) =
-        workOrderRepository.getWorkOrderHistoryMaterialCombined(woHistoryMaterialId)
 
     suspend fun insertWorkOrderHistoryExpense(expense: WorkOrderHistoryExpense) =
         workOrderRepository.insertWorkOrderHistoryExpense(expense)
@@ -204,8 +132,8 @@ class WorkOrderViewModel(
     fun getExpensesByHistory(historyId: Long) =
         workOrderRepository.getExpensesByHistory(historyId)
 
-    fun getPicturesForWorkOrder(workOrderId: Long) =
-        workOrderRepository.getPicturesForWorkOrder(workOrderId)
+    fun getPicturesByWorkOrderId(workOrderId: Long) =
+        workOrderRepository.getPicturesByWorkOrderId(workOrderId)
 
     fun getPicturesForHistory(historyId: Long) =
         workOrderRepository.getPicturesForHistory(historyId)

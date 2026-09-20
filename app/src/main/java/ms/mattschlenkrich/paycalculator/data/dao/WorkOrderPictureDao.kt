@@ -26,6 +26,15 @@ interface WorkOrderPictureDao {
     @Query(
         "SELECT * FROM work_order_pictures " +
                 "WHERE wpWorkOrderId = :workOrderId " +
+                "OR wpHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId) " +
+                "OR wpExpenseId IN (SELECT woHistoryExpenseId FROM `workOrderHistoryExpense-*-` WHERE woheHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId)) " +
+                "ORDER BY wpUpdateTime DESC",
+    )
+    fun getPicturesByWorkOrderId(workOrderId: Long): LiveData<List<WorkOrderPictures>>
+
+    @Query(
+        "SELECT * FROM work_order_pictures " +
+                "WHERE wpWorkOrderId = :workOrderId " +
                 "ORDER BY wpUpdateTime DESC",
     )
     suspend fun getPicturesForWorkOrderSync(workOrderId: Long): List<WorkOrderPictures>

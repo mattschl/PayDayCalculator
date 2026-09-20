@@ -106,7 +106,7 @@ fun MainApp(
         Screen.WorkOrderHistoryMaterialUpdate,
         Screen.WorkOrderHistoryTimeUpdate,
         Screen.WorkOrderHistoryTime,
-        Screen.WorkOrderJobSpecUpdate
+        Screen.WorkOrderJobSpecUpdate,
     )).find { it.route == currentDestination?.route }
 
     val displayScreen = if (currentDestination?.route == Screen.MainPager.route) {
