@@ -14,6 +14,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -30,6 +31,7 @@ fun WorkPerformedUpdateRoute(
     workPerformedViewModel: WorkPerformedViewModel,
     navController: NavController
 ) {
+    val context = LocalContext.current
     val df = remember { DateFunctions() }
     val coroutineScope = rememberCoroutineScope()
 
@@ -66,8 +68,8 @@ fun WorkPerformedUpdateRoute(
                             it.wpDescription == trimmedDescription && it.workPerformedId != wp.workPerformedId
                         }) {
                         Toast.makeText(
-                            mainViewModel.getApplication(),
-                            "Description already exists",
+                            context,
+                            R.string.msg_description_already_exists,
                             Toast.LENGTH_SHORT
                         ).show()
                         return@WorkPerformedUpdateScreen

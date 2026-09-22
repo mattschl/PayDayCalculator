@@ -82,7 +82,11 @@ class MainActivity : ComponentActivity() {
     ) { result ->
         if (result.resultCode == RESULT_OK) {
             Log.d("MainActivity", "Sync confirmed, restarting activity to reload data.")
-            Toast.makeText(this, "Data refreshed from sync.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                getString(R.string.msg_data_refreshed_from_sync),
+                Toast.LENGTH_SHORT
+            ).show()
             PayDatabase.resetInstance()
             val intent = Intent(this, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)

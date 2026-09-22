@@ -88,7 +88,7 @@ fun MaterialUpdateRoute(
             if (trimmedName.isBlank()) {
                 Toast.makeText(
                     context,
-                    "Material name is required",
+                    R.string.msg_material_name_required,
                     Toast.LENGTH_SHORT
                 ).show()
                 return@MaterialUpdateScreen
@@ -99,7 +99,7 @@ fun MaterialUpdateRoute(
                 }) {
                 Toast.makeText(
                     context,
-                    "Material name already exists",
+                    R.string.msg_material_name_exists,
                     Toast.LENGTH_SHORT
                 ).show()
                 return@MaterialUpdateScreen
@@ -124,7 +124,7 @@ fun MaterialUpdateRoute(
             if (trimmedName.isBlank()) {
                 Toast.makeText(
                     context,
-                    "Material name is required",
+                    R.string.msg_material_name_required,
                     Toast.LENGTH_SHORT
                 ).show()
                 return@MaterialUpdateScreen

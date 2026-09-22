@@ -14,6 +14,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -30,6 +31,7 @@ fun JobSpecUpdateRoute(
     jobSpecViewModel: JobSpecViewModel,
     navController: NavController
 ) {
+    val context = LocalContext.current
     val df = remember { DateFunctions() }
     val coroutineScope = rememberCoroutineScope()
 
@@ -64,8 +66,8 @@ fun JobSpecUpdateRoute(
                     if (trimmedName.isEmpty()) return@JobSpecUpdateScreen
                     if (jobSpecList.any { it.jsName == trimmedName && it.jobSpecId != js.jobSpecId }) {
                         Toast.makeText(
-                            mainViewModel.getApplication(),
-                            "Name already exists",
+                            context,
+                            R.string.msg_name_already_exists,
                             Toast.LENGTH_SHORT
                         ).show()
                         return@JobSpecUpdateScreen

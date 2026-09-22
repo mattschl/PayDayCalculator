@@ -97,7 +97,7 @@ class SyncActivity : ComponentActivity() {
                         syncViewModel.restore(fileName) {
                             Toast.makeText(
                                 this,
-                                "Restore successful! Restarting...",
+                                getString(R.string.msg_restore_successful),
                                 Toast.LENGTH_LONG,
                             ).show()
                             restartApp()
@@ -107,7 +107,7 @@ class SyncActivity : ComponentActivity() {
                         syncViewModel.repairDatabase {
                             Toast.makeText(
                                 this,
-                                "Database repaired! Restarting...",
+                                getString(R.string.msg_database_repaired),
                                 Toast.LENGTH_LONG,
                             ).show()
                             restartApp()
@@ -115,7 +115,11 @@ class SyncActivity : ComponentActivity() {
                     },
                     onManualUpload = {
                         syncViewModel.manualUpload {
-                            Toast.makeText(this, "Upload successful!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this,
+                                getString(R.string.msg_upload_successful),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     },
                     onDeleteBackup = { meta ->
@@ -146,7 +150,8 @@ class SyncActivity : ComponentActivity() {
         settingsManager.saveSettings(settings.copy(driveAccount = null))
         syncViewModel.disconnect()
         mCurrentAccount = null
-        Toast.makeText(this, "Disconnected from Google account", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.msg_disconnected_from_google), Toast.LENGTH_SHORT)
+            .show()
     }
 
     private fun handleError(message: String, e: Exception, action: (() -> Unit)) {

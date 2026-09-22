@@ -340,7 +340,7 @@ fun WorkOrderUpdateRoute(
                     workOrderViewModel.downloadPicture(helper, pic, context.cacheDir)
                 }
             } ?: run {
-                Toast.makeText(context, "Drive not connected", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_SHORT).show()
             }
         },
         onDoneClick = {

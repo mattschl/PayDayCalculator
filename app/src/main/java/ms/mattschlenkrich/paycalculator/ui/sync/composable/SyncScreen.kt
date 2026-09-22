@@ -161,7 +161,7 @@ fun SyncScreen(
             if (showAdvancedOptions) {
                 AlertDialog(
                     onDismissRequest = { showAdvancedOptions = false },
-                    title = { Text("Advanced Options") },
+                    title = { Text(stringResource(R.string.title_advanced_options)) },
                     text = {
                         Column(
                             modifier = Modifier.fillMaxWidth(),
@@ -178,7 +178,7 @@ fun SyncScreen(
                                     containerColor = MaterialTheme.colorScheme.errorContainer,
                                     contentColor = MaterialTheme.colorScheme.onErrorContainer
                                 )
-                            ) { Text("Restore from Drive") }
+                            ) { Text(stringResource(R.string.action_restore_from_drive)) }
 
                             Button(
                                 onClick = {
@@ -186,7 +186,7 @@ fun SyncScreen(
                                     onManualUpload()
                                 },
                                 modifier = Modifier.fillMaxWidth()
-                            ) { Text("Upload Current State to Drive") }
+                            ) { Text(stringResource(R.string.action_upload_current_state)) }
 
                             Button(
                                 onClick = {
@@ -194,7 +194,7 @@ fun SyncScreen(
                                     showRepairConfirm = true
                                 },
                                 modifier = Modifier.fillMaxWidth()
-                            ) { Text("Repair Local Database") }
+                            ) { Text(stringResource(R.string.action_repair_local_database)) }
 
                             Button(
                                 onClick = {
@@ -205,12 +205,12 @@ fun SyncScreen(
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.error
                                 )
-                            ) { Text("Clear All Backups from Drive") }
+                            ) { Text(stringResource(R.string.action_clear_all_backups)) }
                         }
                     },
                     confirmButton = {
                         TextButton(onClick = { showAdvancedOptions = false }) {
-                            Text("Close")
+                            Text(stringResource(R.string.action_close))
                         }
                     }
                 )
@@ -219,8 +219,8 @@ fun SyncScreen(
             if (showRepairConfirm) {
                 AlertDialog(
                     onDismissRequest = { showRepairConfirm = false },
-                    title = { Text("Repair Local Database") },
-                    text = { Text("This will attempt to fix metadata errors in your current local database file. Use this if you have manually replaced the database file but the app isn't recognizing it.") },
+                    title = { Text(stringResource(R.string.title_repair_local_database)) },
+                    text = { Text(stringResource(R.string.msg_repair_local_database_prompt)) },
                     confirmButton = {
                         TextButton(
                             onClick = {
@@ -228,12 +228,12 @@ fun SyncScreen(
                                 onRepairLocal()
                             }
                         ) {
-                            Text("Repair Now")
+                            Text(stringResource(R.string.action_repair_now))
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showRepairConfirm = false }) {
-                            Text("Cancel")
+                            Text(stringResource(R.string.cancel))
                         }
                     }
                 )
@@ -242,7 +242,7 @@ fun SyncScreen(
             if (showBackupList && viewModel.availableBackups.isNotEmpty()) {
                 AlertDialog(
                     onDismissRequest = { showBackupList = false },
-                    title = { Text("Select Backup to Restore") },
+                    title = { Text(stringResource(R.string.title_select_backup_to_restore)) },
                     text = {
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                             viewModel.availableBackups.forEach { meta ->
@@ -269,7 +269,7 @@ fun SyncScreen(
                                     }) {
                                         Icon(
                                             imageVector = Icons.Default.Delete,
-                                            contentDescription = "Delete backup",
+                                            contentDescription = stringResource(R.string.delete_picture),
                                             tint = MaterialTheme.colorScheme.error
                                         )
                                     }
@@ -279,7 +279,7 @@ fun SyncScreen(
                     },
                     confirmButton = {
                         TextButton(onClick = { showBackupList = false }) {
-                            Text("Cancel")
+                            Text(stringResource(R.string.cancel))
                         }
                     }
                 )
@@ -288,19 +288,22 @@ fun SyncScreen(
             showDeleteConfirm?.let { meta ->
                 AlertDialog(
                     onDismissRequest = { showDeleteConfirm = null },
-                    title = { Text("Confirm Delete") },
-                    text = { Text("Are you sure you want to delete '${meta.name}'? This action cannot be undone.") },
+                    title = { Text(stringResource(R.string.title_confirm_delete)) },
+                    text = { Text(stringResource(R.string.msg_confirm_delete_backup, meta.name)) },
                     confirmButton = {
                         TextButton(onClick = {
                             showDeleteConfirm = null
                             onDeleteBackup(meta)
                         }) {
-                            Text("Delete", color = MaterialTheme.colorScheme.error)
+                            Text(
+                                stringResource(R.string.delete),
+                                color = MaterialTheme.colorScheme.error
+                            )
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showDeleteConfirm = null }) {
-                            Text("Cancel")
+                            Text(stringResource(R.string.cancel))
                         }
                     }
                 )
@@ -309,19 +312,22 @@ fun SyncScreen(
             showRestoreConfirm?.let { fileName ->
                 AlertDialog(
                     onDismissRequest = { showRestoreConfirm = null },
-                    title = { Text("Confirm Restore") },
-                    text = { Text("This will overwrite your local records with '$fileName'. This cannot be undone.") },
+                    title = { Text(stringResource(R.string.title_confirm_restore)) },
+                    text = { Text(stringResource(R.string.msg_confirm_restore_backup, fileName)) },
                     confirmButton = {
                         TextButton(onClick = {
                             showRestoreConfirm = null
                             onRestore(fileName)
                         }) {
-                            Text("Restore Now", color = MaterialTheme.colorScheme.error)
+                            Text(
+                                stringResource(R.string.action_restore_now),
+                                color = MaterialTheme.colorScheme.error
+                            )
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showRestoreConfirm = null }) {
-                            Text("Cancel")
+                            Text(stringResource(R.string.cancel))
                         }
                     }
                 )

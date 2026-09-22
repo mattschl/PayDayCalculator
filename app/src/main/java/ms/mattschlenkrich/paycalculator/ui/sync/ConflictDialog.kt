@@ -31,7 +31,7 @@ fun ConflictDialog(
 
     AlertDialog(
         onDismissRequest = { /* Not dismissible */ },
-        title = { Text("Sync Conflict") },
+        title = { Text(stringResource(R.string.title_sync_conflict)) },
         text = {
             Column {
                 Text(
@@ -71,7 +71,7 @@ fun ConflictDialog(
                     applyToAll
                 )
             }) {
-                Text("Keep Local")
+                Text(stringResource(R.string.action_keep_local))
             }
         },
         dismissButton = {
@@ -81,7 +81,7 @@ fun ConflictDialog(
                     applyToAll
                 )
             }) {
-                Text("Keep Drive")
+                Text(stringResource(R.string.action_keep_drive))
             }
         }
     )
