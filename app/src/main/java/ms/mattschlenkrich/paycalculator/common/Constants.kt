@@ -62,5 +62,4 @@ const val INTERVAL_SEMI_MONTHLY = "Semi-Monthly"
 const val DEFAULT_MIN_COLUMN_WIDTH = 360
 
 const val PREFS_NAME = "PayCalculatorPrefs"
-const val SYNC_ACCOUNT_EMAIL = "sync_account_email"
 const val DEVICE_ID = "device_id"

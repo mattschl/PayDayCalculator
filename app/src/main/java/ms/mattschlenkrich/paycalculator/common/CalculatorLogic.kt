@@ -6,7 +6,7 @@ object CalculatorLogic {
         var number = currentDisplay.replace("-", "")
 
         when {
-            digit == "0" && number != "0" -> number += "0"
+            (digit == "0") && (number != "0") -> number += "0"
             number == "0" -> number = digit
             digit == "." && !number.contains(".") -> number += "."
             digit != "." && digit != "-" -> number += digit

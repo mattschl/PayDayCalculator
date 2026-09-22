@@ -80,13 +80,13 @@ class DateFunctions {
             try {
                 cal.time = dateChecker.parse(date)!!
                 val tempTime = time.split(":")
-                cal.set(Calendar.HOUR_OF_DAY, tempTime[0].toInt())
-                cal.set(Calendar.MINUTE, tempTime[1].toInt())
+                cal[Calendar.HOUR_OF_DAY] = tempTime[0].toInt()
+                cal[Calendar.MINUTE] = tempTime[1].toInt()
             } catch (_: Exception) {
             }
         }
-        cal.set(Calendar.SECOND, 0)
-        cal.set(Calendar.MILLISECOND, 0)
+        cal[Calendar.SECOND] = 0
+        cal[Calendar.MILLISECOND] = 0
         return cal
     }
 
@@ -232,7 +232,7 @@ class DateFunctions {
                     set(Calendar.MINUTE, m)
                 }
                 onTimeSelected(newTime)
-            }, initialTime.get(Calendar.HOUR_OF_DAY), initialTime.get(Calendar.MINUTE), false
+            }, initialTime[Calendar.HOUR_OF_DAY], initialTime[Calendar.MINUTE], false
         )
         timePickerDialog.show()
     }

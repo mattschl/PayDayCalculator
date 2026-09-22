@@ -197,7 +197,7 @@ class PayCalculationsAsync(
                             runningRemainder = 0.0
                         }
                         if (rule.wtHasBracket &&
-                            runningRemainder >= getTotalAdjustedForTax(rule.wtBracketAmount - previousBracket)
+                            (runningRemainder >= getTotalAdjustedForTax(rule.wtBracketAmount - previousBracket))
                         ) {
 //                            Log.d(TAG, "Bracket is ${rule.wtBracketAmount}")
                             taxable = getTotalAdjustedForTax(rule.wtBracketAmount - previousBracket)

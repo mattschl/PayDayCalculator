@@ -51,27 +51,9 @@ fun TaxTypeAddRoute(
     val taxTypeList by workTaxViewModel.getTaxTypes().observeAsState(emptyList())
     val employers by employerViewModel.getEmployers().observeAsState(emptyList())
 
-    ConfirmationBottomSheet(
-        showDialog = showNextStepDialog && savedTaxType != null,
-        onDismissRequest = { /* Prevent dismiss? No, let's allow it for consistency */ },
-        title = "${stringResource(R.string.choose_next_steps_for)} ${savedTaxType?.taxType}",
-        message = stringResource(R.string.the_tax_type_has_been_added_but_there_are_no_rules_yet_),
-        onConfirm = {
-            mainViewModel.setTaxType(savedTaxType)
-            mainViewModel.setTaxTypeString(savedTaxType!!.taxType)
-            navController.navigate(Screen.TaxRuleAdd.route) {
-                popUpTo(Screen.TaxTypeAdd.route) { inclusive = true }
-            }
-        },
-        content = {
-            /* If they choose 'No' they just go back to the list */
-        }
-    )
-
-    // Overriding the confirm/dismiss logic to match original intent
     if (showNextStepDialog && savedTaxType != null) {
         ConfirmationBottomSheet(
-            showDialog = showNextStepDialog,
+            showDialog = true,
             onDismissRequest = {
                 mainViewModel.setTaxType(savedTaxType)
                 mainViewModel.setTaxTypeString(savedTaxType!!.taxType)

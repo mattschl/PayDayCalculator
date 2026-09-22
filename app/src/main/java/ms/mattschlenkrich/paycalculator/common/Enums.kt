@@ -74,7 +74,7 @@ enum class WorkDayOfWeek(val value: Int, val day: String) {
 
     companion object {
         fun findByString(value: String): WorkDayOfWeek {
-            return entries.find { it.name == value || it.day == value }
+            return entries.find { (it.name == value) || (it.day == value) }
                 ?: FRIDAY
         }
     }

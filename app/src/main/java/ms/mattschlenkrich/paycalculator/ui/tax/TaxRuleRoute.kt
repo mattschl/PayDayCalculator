@@ -39,7 +39,7 @@ fun TaxRuleRoute(
     )
 
     val curTaxRule = if (isUpdate) mainViewModel.getTaxRule() else null
-    if (isUpdate && curTaxRule == null) {
+    if (isUpdate && (curTaxRule == null)) {
         LaunchedEffect(Unit) {
             navController.popBackStack()
         }
@@ -122,7 +122,7 @@ fun TaxRuleRoute(
                         if (hasExemption) nf.getDoubleFromDollars(exemptionAmount) else 0.0,
                         hasUpperLimit,
                         if (hasUpperLimit) nf.getDoubleFromDollars(upperLimit) else 0.0,
-                        false,
+                        wtIsDeleted = false,
                         df.getCurrentUTCTimeAsString()
                     )
                 }
