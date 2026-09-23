@@ -61,11 +61,19 @@ fun StandardNavigationBar(
                         selected = isSelected,
                         onClick = {
                             mainViewModel.setSelectedTopLevelIndex(index)
-                            navController.navigate(Screen.MainPager.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
+                            if (currentDestination?.route != Screen.MainPager.route) {
+                                val popped = navController.popBackStack(
+                                    route = Screen.MainPager.route,
                                     inclusive = false
+                                )
+                                if (!popped) {
+                                    navController.navigate(Screen.MainPager.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            inclusive = false
+                                        }
+                                        launchSingleTop = true
+                                    }
                                 }
-                                launchSingleTop = true
                             }
                         }
                     )
