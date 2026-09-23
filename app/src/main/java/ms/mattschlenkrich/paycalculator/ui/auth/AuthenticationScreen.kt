@@ -47,7 +47,7 @@ fun AuthenticationScreen(
         var resetError by remember { mutableStateOf<String?>(null) }
 
         StandardBottomSheet(
-            showDialog = showResetDialog,
+            showDialog = true,
             onDismissRequest = { /* Force reset - maybe don't allow dismiss? */ },
             title = "Reset Your Password"
         ) {

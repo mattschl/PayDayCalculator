@@ -227,7 +227,7 @@ fun SettingsScreen(
                                     m
                                 )
                             )
-                        }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false).show()
+                        }, cal[Calendar.HOUR_OF_DAY], cal[Calendar.MINUTE], false).show()
                     }) {
                         Text(df.get12HourDisplay(regularStartTime))
                     }
@@ -245,7 +245,7 @@ fun SettingsScreen(
                                     m
                                 )
                             )
-                        }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false).show()
+                        }, cal[Calendar.HOUR_OF_DAY], cal[Calendar.MINUTE], false).show()
                     }) {
                         Text(df.get12HourDisplay(regularEndTime))
                     }

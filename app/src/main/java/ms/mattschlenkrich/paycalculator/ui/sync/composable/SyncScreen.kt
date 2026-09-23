@@ -27,6 +27,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,6 +65,10 @@ fun SyncScreen(
     var showAdvancedOptions by remember { mutableStateOf(value = false) }
     var isDownloadMode by remember { mutableStateOf(value = false) }
 
+    LaunchedEffect(viewModel.deviceId) {
+        viewModel.loadLastSyncTime()
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -100,6 +105,15 @@ fun SyncScreen(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                Text(
+                    text = stringResource(
+                        R.string.label_last_sync_on_this_device,
+                        viewModel.lastSyncTimeDisplay ?: stringResource(R.string.never)
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
                 SelectAllOutlinedTextField(
                     value = viewModel.docContent,
                     onValueChange = { viewModel.docContent = it },

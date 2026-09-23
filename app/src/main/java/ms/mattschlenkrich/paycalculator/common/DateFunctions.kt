@@ -20,7 +20,10 @@ class DateFunctions {
     }
 
     fun getDateTimeStringFromDate(date: Date): String {
-        return timeFormatter.format(date)
+        val formatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
+        return formatter.format(date)
     }
 
     fun getCurrentFileTimestamp(): String {
@@ -39,6 +42,24 @@ class DateFunctions {
         val formatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
         formatter.timeZone = TimeZone.getTimeZone("UTC")
         return formatter.format(Calendar.getInstance().time)
+    }
+
+    fun convertUtcToLocalDisplay(utcDateTime: String?): String? {
+        if (utcDateTime.isNullOrBlank()) return null
+        return try {
+            val utcFormatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+            val date = utcFormatter.parse(utcDateTime) ?: return utcDateTime
+            val localFormatter = SimpleDateFormat.getDateTimeInstance(
+                SimpleDateFormat.MEDIUM,
+                SimpleDateFormat.SHORT,
+                Locale.getDefault()
+            )
+            localFormatter.format(date)
+        } catch (_: Exception) {
+            utcDateTime
+        }
     }
 
     fun getCurrentDateAsString(): String {
@@ -195,8 +216,8 @@ class DateFunctions {
     fun addHoursToCalendar(time: Calendar, hours: Double): Calendar {
         val tempTime = time.clone() as Calendar
         tempTime.add(Calendar.MINUTE, (hours * 60).toInt())
-        tempTime.set(Calendar.SECOND, 0)
-        tempTime.set(Calendar.MILLISECOND, 0)
+        tempTime[Calendar.SECOND] = 0
+        tempTime[Calendar.MILLISECOND] = 0
         return tempTime
     }
 

@@ -370,4 +370,6 @@
     <string name="title_sync_conflict">Sync Conflict</string>
     <string name="action_keep_local">Keep Local</string>
     <string name="action_keep_drive">Keep Drive</string>
+    <string name="label_last_sync_on_this_device">Last sync on this device: %1$s</string>
+    <string name="never">Never</string>
 </resources>

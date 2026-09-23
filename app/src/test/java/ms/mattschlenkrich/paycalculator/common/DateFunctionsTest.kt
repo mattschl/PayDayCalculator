@@ -3,7 +3,10 @@ package ms.mattschlenkrich.paycalculator.common
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
 
 class DateFunctionsTest {
 
@@ -24,20 +27,20 @@ class DateFunctionsTest {
     fun getCalendarFromTime_returnsCorrectCalendar() {
         val time = "08:45"
         val cal = df.getCalendarFromTime(time)
-        assertEquals(8, cal.get(Calendar.HOUR_OF_DAY))
-        assertEquals(45, cal.get(Calendar.MINUTE))
-        assertEquals(0, cal.get(Calendar.SECOND))
+        assertEquals(8, cal[Calendar.HOUR_OF_DAY])
+        assertEquals(45, cal[Calendar.MINUTE])
+        assertEquals(0, cal[Calendar.SECOND])
     }
 
     @Test
     fun getCalendarFromDateTime_returnsCorrectCalendar() {
         val dateTime = "2026-08-04 22:15:00"
         val cal = df.getCalendarFromDateTime(dateTime)
-        assertEquals(2026, cal.get(Calendar.YEAR))
-        assertEquals(7, cal.get(Calendar.MONTH)) // August is 7
-        assertEquals(4, cal.get(Calendar.DAY_OF_MONTH))
-        assertEquals(22, cal.get(Calendar.HOUR_OF_DAY))
-        assertEquals(15, cal.get(Calendar.MINUTE))
+        assertEquals(2026, cal[Calendar.YEAR])
+        assertEquals(7, cal[Calendar.MONTH]) // August is 7
+        assertEquals(4, cal[Calendar.DAY_OF_MONTH])
+        assertEquals(22, cal[Calendar.HOUR_OF_DAY])
+        assertEquals(15, cal[Calendar.MINUTE])
     }
 
     @Test
@@ -101,36 +104,62 @@ class DateFunctionsTest {
     fun roundCalendarTimeUpTo15Minutes_roundsCorrectly() {
         val cal = df.getCalendarFromTime("08:07")
         val rounded = df.roundCalendarTimeUpTo15Minutes(cal)
-        assertEquals(15, rounded.get(Calendar.MINUTE))
+        assertEquals(15, rounded[Calendar.MINUTE])
 
         val cal2 = df.getCalendarFromTime("08:46")
         val rounded2 = df.roundCalendarTimeUpTo15Minutes(cal2)
-        assertEquals(9, rounded2.get(Calendar.HOUR_OF_DAY))
-        assertEquals(0, rounded2.get(Calendar.MINUTE))
+        assertEquals(9, rounded2[Calendar.HOUR_OF_DAY])
+        assertEquals(0, rounded2[Calendar.MINUTE])
     }
 
     @Test
     fun roundCalendarTimeDownTo15Minutes_roundsCorrectly() {
         val cal = df.getCalendarFromTime("08:14")
         val rounded = df.roundCalendarTimeDownTo15Minutes(cal)
-        assertEquals(0, rounded.get(Calendar.MINUTE))
+        assertEquals(0, rounded[Calendar.MINUTE])
 
         val cal2 = df.getCalendarFromTime("08:29")
         val rounded2 = df.roundCalendarTimeDownTo15Minutes(cal2)
-        assertEquals(15, rounded2.get(Calendar.MINUTE))
+        assertEquals(15, rounded2[Calendar.MINUTE])
     }
 
     @Test
     fun addHoursToCalendar_addsCorrectly() {
         val cal = df.getCalendarFromTime("08:00")
         val result = df.addHoursToCalendar(cal, 1.5)
-        assertEquals(9, result.get(Calendar.HOUR_OF_DAY))
-        assertEquals(30, result.get(Calendar.MINUTE))
+        assertEquals(9, result[Calendar.HOUR_OF_DAY])
+        assertEquals(30, result[Calendar.MINUTE])
     }
 
     @Test
     fun getNextDate_returnsNextDay() {
         assertEquals("2026-08-05", df.getNextDate("2026-08-04"))
         assertEquals("2027-01-01", df.getNextDate("2026-12-31"))
+    }
+
+    @Test
+    fun getDateTimeStringFromDate_returnsUtcString() {
+        val cal = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
+            set(2026, Calendar.AUGUST, 4, 20, 0, 0)
+        }
+        val result = df.getDateTimeStringFromDate(cal.time)
+        assertEquals("2026-08-04 20:00:00", result)
+    }
+
+    @Test
+    fun convertUtcToLocalDisplay_correctlyTranslatesUtcToLocalTime() {
+        val utcTimeStr = "2026-08-04 20:00:00"
+        val display = df.convertUtcToLocalDisplay(utcTimeStr)
+
+        val utcCal = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
+            set(2026, Calendar.AUGUST, 4, 20, 0, 0)
+        }
+        val expected = SimpleDateFormat.getDateTimeInstance(
+            SimpleDateFormat.MEDIUM,
+            SimpleDateFormat.SHORT,
+            Locale.getDefault()
+        ).format(utcCal.time)
+
+        assertEquals(expected, display)
     }
 }

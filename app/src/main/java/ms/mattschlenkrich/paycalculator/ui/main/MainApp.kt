@@ -135,17 +135,12 @@ fun MainApp(
                     label = { Text(stringResource(screen.resourceId)) },
                     selected = isSelected,
                     onClick = {
-                        if (isPagerRoute) {
-                            mainViewModel.setSelectedTopLevelIndex(index)
-                        } else {
-                            mainViewModel.setSelectedTopLevelIndex(index)
-                            navController.navigate(Screen.MainPager.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
+                        mainViewModel.setSelectedTopLevelIndex(index)
+                        navController.navigate(Screen.MainPager.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                inclusive = false
                             }
+                            launchSingleTop = true
                         }
                     }
                 )

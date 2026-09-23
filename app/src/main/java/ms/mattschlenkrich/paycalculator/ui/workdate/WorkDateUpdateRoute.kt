@@ -538,7 +538,7 @@ fun WorkDateUpdatePageContent(
             showDeleteDateConfirmDialog = true
         },
         onDoneClick = {
-            if (curDateString != workDate.wdDate && usedWorkDatesList.any { it.wdDate == curDateString }) {
+            if ((curDateString != workDate.wdDate) && usedWorkDatesList.any { it.wdDate == curDateString }) {
                 showReplaceDateDialog = true
             } else {
                 coroutineScope.launch {

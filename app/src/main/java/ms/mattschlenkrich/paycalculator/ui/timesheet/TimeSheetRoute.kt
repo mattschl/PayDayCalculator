@@ -164,7 +164,7 @@ fun TimeSheetRoute(
         if (!initialSelectionLoaded.value) return@LaunchedEffect
 
         val index = dates.indexOfFirst { it.ppCutoffDate == selectedCutOffDate }
-        if (index != -1 && pagerState.currentPage != index) {
+        if ((index != -1) && (pagerState.currentPage != index)) {
             pagerState.scrollToPage(index)
         }
     }

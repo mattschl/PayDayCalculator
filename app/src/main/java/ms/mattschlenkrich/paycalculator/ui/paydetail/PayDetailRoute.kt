@@ -143,7 +143,7 @@ fun PayDetailRoute(
 
     // Initial selection from history
     LaunchedEffect(employers) {
-        if (selectedEmployer == null && employers.isNotEmpty()) {
+        if ((selectedEmployer == null) && employers.isNotEmpty()) {
             val savedEmployer = employers.find { it.employerId == mainViewModel.selectedEmployerId }
             mainViewModel.setEmployer(savedEmployer ?: employers.first())
         }

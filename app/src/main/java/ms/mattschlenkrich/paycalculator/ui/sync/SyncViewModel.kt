@@ -9,10 +9,13 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.data.PayDatabase
 import java.io.File
 
 private const val TAG = "SyncViewModel"
@@ -28,9 +31,21 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     var isLoading by mutableStateOf(value = false)
     var errorMessage by mutableStateOf<String?>(null)
     var syncPerformed by mutableStateOf(value = false)
+    var lastSyncTimeDisplay by mutableStateOf<String?>(null)
 
     private val df = DateFunctions()
     private val nf = NumberFunctions()
+
+    fun loadLastSyncTime() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val rawTime =
+                PayDatabase(getApplication()).getSyncHistoryDao().getLastSyncTime(deviceId)
+            val formatted = df.convertUtcToLocalDisplay(rawTime)
+            withContext(Dispatchers.Main) {
+                lastSyncTimeDisplay = formatted
+            }
+        }
+    }
 
     private var applyToAllChoice: ConflictChoice? = null
     var showConflictDialog by mutableStateOf<ConflictInfo?>(null)
@@ -110,6 +125,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 docContent = result.second
                 if (result.first == "Success") {
                     syncPerformed = true
+                    loadLastSyncTime()
                 } else {
                     errorMessage = if (result.first == "Busy") {
                         "Sync already in progress on another device."
@@ -147,6 +163,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 val result = manager.restoreSpecific(fileName)
                 docContent = result
                 if (result.startsWith("Successfully")) {
+                    loadLastSyncTime()
                     onSuccess()
                 } else {
                     errorMessage = "Restore failed. See report for details."
@@ -180,6 +197,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 val result = manager.manualUpload()
                 docContent = result
                 if (result.startsWith("Successfully")) {
+                    loadLastSyncTime()
                     onSuccess()
                 } else {
                     errorMessage = "Upload failed. See report for details."
@@ -213,6 +231,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 val result = manager.repairLocalDatabase()
                 docContent = result
                 if (result.contains("successfully")) {
+                    loadLastSyncTime()
                     onSuccess()
                 } else {
                     errorMessage = "Repair failed. See report for details."

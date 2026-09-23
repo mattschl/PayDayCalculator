@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -115,16 +116,28 @@ fun PayCalculatorTheme(
     val darkTheme = if (isSystemTheme) isSystemInDarkTheme() else isDarkTheme
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
 
+    val currentDensity = LocalDensity.current
+    val customDensity = Density(
+        density = currentDensity.density,
+        fontScale = currentDensity.fontScale * (fontSize / 16f)
+    )
+
     val typography = Typography(
-        bodyLarge = TextStyle(fontSize = fontSize.sp),
-        bodyMedium = TextStyle(fontSize = (fontSize * 0.875).sp),
-        bodySmall = TextStyle(fontSize = (fontSize * 0.75).sp),
-        titleLarge = TextStyle(fontSize = (fontSize * 1.375).sp),
-        titleMedium = TextStyle(fontSize = (fontSize * 1.125).sp),
+        displayLarge = TextStyle(fontSize = (fontSize * 3.5625f).sp),
+        displayMedium = TextStyle(fontSize = (fontSize * 2.8125f).sp),
+        displaySmall = TextStyle(fontSize = (fontSize * 2.25f).sp),
+        headlineLarge = TextStyle(fontSize = (fontSize * 2.0f).sp),
+        headlineMedium = TextStyle(fontSize = (fontSize * 1.75f).sp),
+        headlineSmall = TextStyle(fontSize = (fontSize * 1.5f).sp),
+        titleLarge = TextStyle(fontSize = (fontSize * 1.375f).sp),
+        titleMedium = TextStyle(fontSize = (fontSize * 1.125f).sp),
         titleSmall = TextStyle(fontSize = fontSize.sp),
-        labelLarge = TextStyle(fontSize = (fontSize * 0.875).sp),
-        labelMedium = TextStyle(fontSize = (fontSize * 0.75).sp),
-        labelSmall = TextStyle(fontSize = (fontSize * 0.625).sp)
+        bodyLarge = TextStyle(fontSize = fontSize.sp),
+        bodyMedium = TextStyle(fontSize = (fontSize * 0.875f).sp),
+        bodySmall = TextStyle(fontSize = (fontSize * 0.75f).sp),
+        labelLarge = TextStyle(fontSize = (fontSize * 0.875f).sp),
+        labelMedium = TextStyle(fontSize = (fontSize * 0.75f).sp),
+        labelSmall = TextStyle(fontSize = (fontSize * 0.6875f).sp)
     )
 
     val view = LocalView.current
@@ -135,10 +148,9 @@ fun PayCalculatorTheme(
         }
     }
 
-    val density = LocalDensity.current
-    val minHeight = with(density) { (fontSize * 1.1f).sp.toDp() }
-    val maxHeight = with(density) { (fontSize * 1.7).sp.toDp() }
-    val verticalPadding = with(density) { (fontSize * 0.05f).sp.toDp() }
+    val minHeight = with(customDensity) { (fontSize * 1.1f).sp.toDp() }
+    val maxHeight = with(customDensity) { (fontSize * 1.7f).sp.toDp() }
+    val verticalPadding = with(customDensity) { (fontSize * 0.05f).sp.toDp() }
 
     val dimensions = ExtendedDimensions(
         textFieldMinHeight = minHeight,
@@ -157,14 +169,18 @@ fun PayCalculatorTheme(
         )
     )
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = typography
+    CompositionLocalProvider(
+        LocalDensity provides customDensity
     ) {
-        CompositionLocalProvider(
-            LocalExtendedDimensions provides dimensions,
-            LocalMinColumnWidth provides minColumnWidth,
-            content = content
-        )
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = typography
+        ) {
+            CompositionLocalProvider(
+                LocalExtendedDimensions provides dimensions,
+                LocalMinColumnWidth provides minColumnWidth,
+                content = content
+            )
+        }
     }
 }

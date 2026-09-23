@@ -81,7 +81,7 @@ fun TaxRoute(
     var selectedEffectiveDate by remember { mutableStateOf<TaxEffectiveDates?>(null) }
 
     LaunchedEffect(taxTypes) {
-        if (selectedTaxType == null && taxTypes.isNotEmpty()) {
+        if ((selectedTaxType == null) && taxTypes.isNotEmpty()) {
             selectedTaxType = taxTypes.find { it.taxType == mainViewModel.getTaxTypeString() }
                 ?: taxTypes.first()
         }
