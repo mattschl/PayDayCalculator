@@ -82,7 +82,7 @@ fun WorkOrderUpdateRoute(
     }
     var description by rememberSaveable(
         currentWo.woDescription,
-        currentWo.woUpdateTime
+        currentWo.woUpdateTime,
     ) { mutableStateOf(currentWo.woDescription) }
 
     var woNumberError by rememberSaveable { mutableStateOf(value = false) }
@@ -270,6 +270,7 @@ fun WorkOrderUpdateRoute(
         jobSpecSummaryText = jobSpecSummaryText,
         historyList = historyList,
         onHistoryClick = { history ->
+            mainViewModel.clearWorkOrderHistoryData()
             mainViewModel.setWorkOrderHistory(history.history)
             navController.navigate(Screen.WorkOrderHistoryUpdate.route)
         },

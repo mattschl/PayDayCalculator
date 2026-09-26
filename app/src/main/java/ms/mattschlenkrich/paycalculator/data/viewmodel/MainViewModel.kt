@@ -123,7 +123,6 @@ class MainViewModel(
     }
 
     private var workDateExtraList = ArrayList<WorkDateExtras>()
-    fun getWorkDateExtraList(): ArrayList<WorkDateExtras> = workDateExtraList
     fun setWorkDateExtraList(extraList: ArrayList<WorkDateExtras>) {
         workDateExtraList = extraList
     }
@@ -141,7 +140,6 @@ class MainViewModel(
     }
 
     private var cutOffDate: String? = null
-    fun getCutOffDate(): String? = cutOffDate
     fun setCutOffDate(date: String?) {
         cutOffDate = date
         selectedCutOffDate.value = date ?: ""
@@ -255,6 +253,15 @@ class MainViewModel(
 
     fun setWorkOrderHistoryTimeWorkedCombined(newWorkOrderHistoryTimeWorkedCombined: WorkOrderHistoryTimeWorkedCombined?) {
         workOrderHistoryTimeWorkedCombined = newWorkOrderHistoryTimeWorkedCombined
+    }
+
+    fun clearWorkOrderHistoryData() {
+        tempWorkOrderHistoryInfo = null
+        workOrderHistory = null
+        workOrderNumber = null
+        workOrder = null
+        workPerformedHistoryId = null
+        workOrderHistoryTimeWorkedCombined = null
     }
 
     private var transferNum: Double = 0.0

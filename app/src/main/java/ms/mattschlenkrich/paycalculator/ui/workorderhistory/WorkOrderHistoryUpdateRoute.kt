@@ -84,7 +84,7 @@ fun WorkOrderHistoryUpdateRoute(
     ) {
         mutableStateOf(
             nf.displayNumberFromDouble(
-                history.woHistoryRegHours
+                history.woHistoryRegHours,
             )
         )
     }
@@ -416,12 +416,12 @@ fun WorkOrderHistoryUpdateRoute(
                         if (workPerformed.isNotBlank()) {
                             val wp = workPerformedViewModel.getOrCreateWorkPerformed(workPerformed)
                             val a = areaViewModel.getOrCreateArea(area)
-                            if (wp != null) {
+                            wp?.let { nonNullWp ->
                                 workPerformedViewModel.insertWorkOrderHistoryWorkPerformed(
                                     WorkOrderHistoryWorkPerformed(
                                         nf.generateRandomIdAsLong(),
                                         history.woHistoryId,
-                                        wp.workPerformedId,
+                                        nonNullWp.workPerformedId,
                                         a?.areaId,
                                         workPerformedNote,
                                         workPerformedActualList.size + 1,
@@ -463,6 +463,7 @@ fun WorkOrderHistoryUpdateRoute(
                                 )
                             )
                         }
+                        mainViewModel.clearWorkOrderHistoryData()
                         navController.popBackStack()
                     } catch (_: Exception) {
                         isSaving = false

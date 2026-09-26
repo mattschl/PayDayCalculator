@@ -26,7 +26,7 @@ fun WorkOrderHistoryAddRoute(
     mainViewModel: MainViewModel,
     employerViewModel: EmployerViewModel,
     workOrderViewModel: WorkOrderViewModel,
-    navController: NavController
+    navController: NavController,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val df = remember { DateFunctions() }
@@ -67,7 +67,7 @@ fun WorkOrderHistoryAddRoute(
     val selectedWo = mainViewModel.getWorkOrder()
     val finalWoNumber = selectedWo?.woNumber ?: initialWorkOrderNumber
 
-    var isSaving by rememberSaveable { mutableStateOf(false) }
+    var isSaving by rememberSaveable { mutableStateOf(value = false) }
 
     WorkOrderHistoryAddScreen(
         workOrderList = workOrderList,
@@ -142,8 +142,7 @@ fun WorkOrderHistoryAddRoute(
                                 df.getCurrentUTCTimeAsString()
                             )
                             workOrderViewModel.insertWorkOrderHistory(history)
-                            mainViewModel.setTempWorkOrderHistoryInfo(null)
-                            mainViewModel.setWorkOrder(null)
+                            mainViewModel.clearWorkOrderHistoryData()
                             mainViewModel.setWorkOrderHistory(history)
                             navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
                                 popUpTo(Screen.WorkOrderHistoryAdd.route) { inclusive = true }
@@ -175,8 +174,7 @@ fun WorkOrderHistoryAddRoute(
                                 df.getCurrentUTCTimeAsString()
                             )
                             workOrderViewModel.insertWorkOrderHistory(history)
-                            mainViewModel.setTempWorkOrderHistoryInfo(null)
-                            mainViewModel.setWorkOrder(null)
+                            mainViewModel.clearWorkOrderHistoryData()
                             mainViewModel.setWorkOrderHistory(history)
                             navController.navigate(Screen.WorkOrderHistoryUpdate.route) {
                                 popUpTo(Screen.WorkOrderHistoryAdd.route) { inclusive = true }

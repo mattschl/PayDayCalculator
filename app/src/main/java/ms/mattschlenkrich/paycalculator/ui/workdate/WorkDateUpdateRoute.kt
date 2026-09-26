@@ -59,7 +59,7 @@ fun WorkDateUpdateRoute(
     workExtraViewModel: WorkExtraViewModel,
     workOrderViewModel: WorkOrderViewModel,
     navController: NavController,
-    settingsViewModel: SettingsViewModel = viewModel()
+    settingsViewModel: SettingsViewModel = viewModel(),
 ) {
     val initialWorkDate = mainViewModel.getWorkDateObject() ?: run {
         LaunchedEffect(Unit) {
@@ -202,8 +202,8 @@ fun WorkDateUpdatePageContent(
                         typeDef.definition.weValue,
                         typeDef.definition.weIsFixed,
                         typeDef.extraType.wetIsCredit,
-                        true,
-                        df.getCurrentUTCTimeAsString()
+                        wdeIsDeleted = true,
+                        wdeUpdateTime = df.getCurrentUTCTimeAsString()
                     )
                 )
             }
@@ -379,6 +379,7 @@ fun WorkDateUpdatePageContent(
                 )
                 Button(
                     onClick = {
+                        mainViewModel.clearWorkOrderHistoryData()
                         mainViewModel.setWorkOrderHistory(history.history)
                         showHistoryOptionsDialog = null
                         navController.navigate(Screen.WorkOrderHistoryUpdate.route)
@@ -526,6 +527,7 @@ fun WorkDateUpdatePageContent(
         },
         onAddHistoryClick = {
             coroutineScope.launch {
+                mainViewModel.clearWorkOrderHistoryData()
                 onUpdateWorkDate(Screen.WorkOrderHistoryAdd.route)
             }
         },
@@ -548,15 +550,16 @@ fun WorkDateUpdatePageContent(
         },
         histories = histories,
         onHistoryClick = { history ->
+            mainViewModel.clearWorkOrderHistoryData()
             mainViewModel.setWorkOrderHistory(history.history)
             navController.navigate(Screen.WorkOrderHistoryUpdate.route)
         },
         onHistoryLongClick = { history ->
             showHistoryOptionsDialog = history
         },
-        workOrderSummary = if (historyRegHours > (regHours.toDoubleOrNull() ?: 0.0) ||
-            historyOtHours > (otHours.toDoubleOrNull() ?: 0.0) ||
-            historyDblOtHours > (dblOtHours.toDoubleOrNull() ?: 0.0)
+        workOrderSummary = if ((historyRegHours > (regHours.toDoubleOrNull() ?: 0.0)) ||
+            (historyOtHours > (otHours.toDoubleOrNull() ?: 0.0)) ||
+            (historyDblOtHours > (dblOtHours.toDoubleOrNull() ?: 0.0))
         ) workOrderSummary else "",
         extras = displayExtras,
         onExtraClick = { extra ->

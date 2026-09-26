@@ -36,7 +36,7 @@ fun WorkDateAddRoute(
     mainViewModel: MainViewModel,
     payDayViewModel: PayDayViewModel,
     workExtraViewModel: WorkExtraViewModel,
-    navController: NavController
+    navController: NavController,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -70,7 +70,8 @@ fun WorkDateAddRoute(
     LaunchedEffect(usedWorkDatesList) {
         if (curDateString.isEmpty()) {
             var date = LocalDate.now().toString()
-            val existingDates = usedWorkDatesList.filter { !it.wdIsDeleted }.map { it.wdDate }
+            val existingDates =
+                usedWorkDatesList.asSequence().filter { !it.wdIsDeleted }.map { it.wdDate }.toSet()
             while (existingDates.contains(date)) {
                 date = LocalDate.parse(date).plusDays(1L).toString()
             }
@@ -114,7 +115,7 @@ fun WorkDateAddRoute(
                 dblOtHours.toDoubleOrNull() ?: 0.0,
                 statHours.toDoubleOrNull() ?: 0.0,
                 note.ifBlank { null },
-                false,
+                wdIsDeleted = false,
                 df.getCurrentUTCTimeAsString()
             )
             payDayViewModel.insertWorkDate(workDate)
@@ -126,20 +127,20 @@ fun WorkDateAddRoute(
             val extraTypeAndDef = workExtraViewModel.getExtraTypeAndDefByTypeIdSync(
                 typeId, payPeriod.ppCutoffDate
             )
-            if (extraTypeAndDef != null) {
+            extraTypeAndDef?.let { nonNullDef ->
                 payDayViewModel.insertWorkDateExtra(
                     WorkDateExtras(
                         nf.generateRandomIdAsLong(),
                         workDate.workDateId,
-                        extraTypeAndDef.extraType.workExtraTypeId,
-                        extraTypeAndDef.extraType.wetName,
-                        extraTypeAndDef.extraType.wetAppliesTo,
-                        extraTypeAndDef.extraType.wetAttachTo,
-                        extraTypeAndDef.definition.weValue,
-                        extraTypeAndDef.definition.weIsFixed,
-                        extraTypeAndDef.extraType.wetIsCredit,
-                        false,
-                        df.getCurrentUTCTimeAsString()
+                        nonNullDef.extraType.workExtraTypeId,
+                        nonNullDef.extraType.wetName,
+                        nonNullDef.extraType.wetAppliesTo,
+                        nonNullDef.extraType.wetAttachTo,
+                        nonNullDef.definition.weValue,
+                        nonNullDef.definition.weIsFixed,
+                        nonNullDef.extraType.wetIsCredit,
+                        wdeIsDeleted = false,
+                        wdeUpdateTime = df.getCurrentUTCTimeAsString()
                     )
                 )
             }
@@ -177,7 +178,7 @@ fun WorkDateAddRoute(
     var existingWorkDate by rememberSaveable { mutableStateOf<WorkDates?>(null) }
 
     ConfirmationBottomSheet(
-        showDialog = showDateUsedDialog && existingWorkDate != null,
+        showDialog = (showDateUsedDialog) && (existingWorkDate != null),
         onDismissRequest = { showDateUsedDialog = false },
         title = stringResource(R.string.this_date_is_already_used),
         message = stringResource(R.string.would_you_like_to_replace_the_old_information_for_this_work_date),
@@ -233,6 +234,7 @@ fun WorkDateAddRoute(
         },
         onAddHistoryClick = {
             coroutineScope.launch {
+                mainViewModel.clearWorkOrderHistoryData()
                 onSaveWorkDate(Screen.WorkOrderHistoryAdd.route)
             }
         },
