@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.paycalculator.data
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -52,6 +53,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformedMerged
 import ms.mattschlenkrich.paycalculator.data.entity.WorkTaxRules
 import ms.mattschlenkrich.paycalculator.data.model.ExtraDefinitionAndType
+import java.io.File
 
 @Database(
     entities = [
@@ -233,11 +235,68 @@ abstract class PayDatabase : RoomDatabase() {
             synchronized(LOCK) {
                 try {
                     val db = instance ?: invoke(context)
-                    // Force a full checkpoint and then flatten the database to a single file
-                    db.query("PRAGMA wal_checkpoint(TRUNCATE)", null).close()
-                    db.query("PRAGMA journal_mode=DELETE", null).close()
+                    val sdb = db.openHelper.writableDatabase
+                    sdb.query("PRAGMA wal_checkpoint(TRUNCATE)").use { cursor ->
+                        if (cursor.moveToFirst()) {
+                            Log.d(
+                                "PayDatabase",
+                                "wal_checkpoint result: busy=${cursor.getInt(0)}, log=${
+                                    cursor.getInt(1)
+                                }, checkpointed=${cursor.getInt(2)}"
+                            )
+                        }
+                    }
                 } catch (e: Exception) {
-                    e.printStackTrace()
+                    Log.e("PayDatabase", "Checkpoint error", e)
+                }
+            }
+        }
+
+        fun exportDatabase(context: Context, targetFile: File): Boolean {
+            synchronized(LOCK) {
+                try {
+                    if (targetFile.exists()) targetFile.delete()
+                    val db = instance ?: invoke(context)
+                    val sdb = db.openHelper.writableDatabase
+
+                    // Try VACUUM INTO first (SQLite 3.27+ / Android API 30+)
+                    try {
+                        sdb.execSQL("VACUUM INTO '${targetFile.absolutePath}'")
+                        if ((targetFile.exists()) && (targetFile.length() > 0)) {
+                            Log.d(
+                                "PayDatabase",
+                                "VACUUM INTO export succeeded: ${targetFile.length()} bytes"
+                            )
+                            return true
+                        }
+                    } catch (e: Exception) {
+                        Log.w(
+                            "PayDatabase",
+                            "VACUUM INTO failed, falling back to wal_checkpoint + copy",
+                            e
+                        )
+                    }
+
+                    // Fallback: Force checkpoint then copy base file
+                    sdb.query("PRAGMA wal_checkpoint(TRUNCATE)").use { cursor ->
+                        if (cursor.moveToFirst()) {
+                            Log.d(
+                                "PayDatabase",
+                                "wal_checkpoint fallback result: busy=${cursor.getInt(0)}"
+                            )
+                        }
+                    }
+
+                    val sourceFile = context.getDatabasePath(PAY_DB_NAME)
+                    sourceFile.inputStream().use { input ->
+                        targetFile.outputStream().use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                    return targetFile.exists() && targetFile.length() > 0
+                } catch (e: Exception) {
+                    Log.e("PayDatabase", "Export database failed", e)
+                    return false
                 }
             }
         }

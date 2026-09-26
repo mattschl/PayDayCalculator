@@ -397,28 +397,17 @@ class SyncManager(
 
     private suspend fun performUpload(timestamp: String): String {
         return withContext(Dispatchers.IO) {
-            val dbPath = application.getDatabasePath(PAY_DB_NAME)
             val driveBaseName = "pay_$timestamp.db"
-
             val uploadFile = File(backupDir, "upload_$driveBaseName")
-            dbPath.inputStream().use { input ->
-                uploadFile.outputStream().use { output -> input.copyTo(output) }
+
+            val exported = PayDatabase.exportDatabase(application, uploadFile)
+            if ((!exported) || (!uploadFile.exists()) || (uploadFile.length() == 0L)) {
+                throw IllegalStateException("Failed to export database for upload")
             }
+
             driveServiceHelper.uploadFile(uploadFile, "application/vnd.sqlite3", driveBaseName)
             uploadFile.delete()
 
-            listOf("-wal", "-shm").forEach { suffix ->
-                val localFile = File(dbPath.path + suffix)
-                if (localFile.exists() && (localFile.length() > 0)) {
-                    val driveName = "$driveBaseName$suffix"
-                    val upFile = File(backupDir, "upload_$driveName")
-                    localFile.inputStream().use { input ->
-                        upFile.outputStream().use { output -> input.copyTo(output) }
-                    }
-                    driveServiceHelper.uploadFile(upFile, "application/vnd.sqlite3", driveName)
-                    upFile.delete()
-                }
-            }
             driveBaseName
         }
     }
