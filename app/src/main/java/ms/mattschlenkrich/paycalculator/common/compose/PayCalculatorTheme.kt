@@ -31,13 +31,13 @@ data class ExtendedDimensions(
         start = 8.dp,
         end = 8.dp,
         top = 4.dp,
-        bottom = 4.dp
+        bottom = 4.dp,
     ),
     val dropdownItemPadding: PaddingValues = PaddingValues(
         start = 8.dp,
         end = 8.dp,
         top = 4.dp,
-        bottom = 4.dp
+        bottom = 4.dp,
     ),
     val textFieldBorderThickness: Dp = 1.dp
 )

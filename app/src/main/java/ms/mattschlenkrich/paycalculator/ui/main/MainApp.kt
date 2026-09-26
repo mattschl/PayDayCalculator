@@ -129,7 +129,7 @@ fun MainApp(
                         Icon(
                             painterResource(id = screen.icon),
                             contentDescription = stringResource(screen.resourceId),
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(20.dp),
                         )
                     },
                     label = { Text(stringResource(screen.resourceId)) },
@@ -139,7 +139,7 @@ fun MainApp(
                         if (currentDestination?.route != Screen.MainPager.route) {
                             val popped = navController.popBackStack(
                                 route = Screen.MainPager.route,
-                                inclusive = false
+                                inclusive = false,
                             )
                             if (!popped) {
                                 navController.navigate(Screen.MainPager.route) {

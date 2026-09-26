@@ -123,14 +123,14 @@ sealed class Screen(
         Screen(
             "workOrderHistoryWorkPerformedUpdate",
             R.string.update_work_performed_description,
-            R.drawable.ic_time_sheet
+            R.drawable.ic_time_sheet,
         )
 
     object WorkOrderHistoryMaterialUpdate :
         Screen(
             "workOrderHistoryMaterialUpdate",
             R.string.update_material_used,
-            R.drawable.ic_time_sheet
+            R.drawable.ic_time_sheet,
         )
 
     object WorkOrderHistoryTimeUpdate :
@@ -152,5 +152,5 @@ val bottomNavItems = listOf(
     Screen.PayDetails,
     Screen.Employers,
     Screen.Taxes,
-    Screen.Extras
+    Screen.Extras,
 )

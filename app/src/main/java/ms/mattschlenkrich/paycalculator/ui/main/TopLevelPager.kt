@@ -36,7 +36,7 @@ fun TopLevelPager(
     navController: NavController,
 ) {
     val pagerState = rememberPagerState(
-        initialPage = mainViewModel.selectedTopLevelIndex.intValue
+        initialPage = mainViewModel.selectedTopLevelIndex.intValue,
     ) { 5 }
 
     // Sync ViewModel index to Pager
