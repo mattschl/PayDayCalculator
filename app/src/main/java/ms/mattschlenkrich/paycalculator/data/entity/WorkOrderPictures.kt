@@ -8,24 +8,24 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Entity(
-    tableName = "work_order_pictures",
+    tableName = "workOrderPictures",
     foreignKeys = [
         ForeignKey(
             entity = WorkOrder::class,
             parentColumns = ["workOrderId"],
-            childColumns = ["wpWorkOrderId"],
+            childColumns = ["wopWorkOrderId"],
             onDelete = ForeignKey.CASCADE,
         ),
         ForeignKey(
             entity = WorkOrderHistory::class,
             parentColumns = ["woHistoryId"],
-            childColumns = ["wpHistoryId"],
+            childColumns = ["wopHistoryId"],
             onDelete = ForeignKey.CASCADE,
         ),
         ForeignKey(
             entity = WorkOrderHistoryExpense::class,
             parentColumns = ["woHistoryExpenseId"],
-            childColumns = ["wpExpenseId"],
+            childColumns = ["wopExpenseId"],
             onDelete = ForeignKey.CASCADE,
         )
     ]
@@ -35,13 +35,13 @@ data class WorkOrderPictures(
     @PrimaryKey
     val pictureId: Long,
     @ColumnInfo(index = true)
-    val wpWorkOrderId: Long?,
+    val wopWorkOrderId: Long?,
     @ColumnInfo(index = true)
-    val wpHistoryId: Long?,
+    val wopHistoryId: Long?,
     @ColumnInfo(index = true)
-    val wpExpenseId: Long?,
+    val wopExpenseId: Long?,
     val driveFileId: String?,
-    val localCachePath: String?,
-    val isUploaded: Boolean,
-    val wpUpdateTime: String,
+    val wopIsDeleted: Boolean = false,
+    val wopUploadTime: String? = null,
+    val wopUpdateTime: String,
 ) : Parcelable

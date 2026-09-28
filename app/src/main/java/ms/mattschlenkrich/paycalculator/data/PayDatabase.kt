@@ -135,6 +135,87 @@ abstract class PayDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_21_22 = object : Migration(21, 22) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `workOrderHistoryExpenses` (" +
+                            "`woHistoryExpenseId` INTEGER NOT NULL, " +
+                            "`woheHistoryId` INTEGER NOT NULL, " +
+                            "`woheType` TEXT NOT NULL, " +
+                            "`woheSupplier` TEXT NOT NULL, " +
+                            "`woheInvoiceNo` TEXT NOT NULL, " +
+                            "`woheAmount` REAL NOT NULL, " +
+                            "`woheIsDeleted` INTEGER NOT NULL, " +
+                            "`woheUpdateTime` TEXT NOT NULL, " +
+                            "PRIMARY KEY(`woHistoryExpenseId`), " +
+                            "FOREIGN KEY(`woheHistoryId`) REFERENCES `workOrderHistory`(`woHistoryId`) ON UPDATE NO ACTION ON DELETE NO ACTION)",
+                )
+                db.execSQL(
+                    "INSERT INTO `workOrderHistoryExpenses` SELECT * FROM `workOrderHistoryExpense-*-`"
+                )
+                db.execSQL("DROP TABLE `workOrderHistoryExpense-*-`")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_workOrderHistoryExpenses_woheHistoryId` ON `workOrderHistoryExpenses` (`woheHistoryId`)")
+
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `workOrderPictures` (" +
+                            "`pictureId` INTEGER NOT NULL, " +
+                            "`wopWorkOrderId` INTEGER, " +
+                            "`wopHistoryId` INTEGER, " +
+                            "`wopExpenseId` INTEGER, " +
+                            "`driveFileId` TEXT, " +
+                            "`wopIsDeleted` INTEGER NOT NULL DEFAULT 0, " +
+                            "`wopUploadTime` TEXT, " +
+                            "`wopUpdateTime` TEXT NOT NULL, " +
+                            "PRIMARY KEY(`pictureId`), " +
+                            "FOREIGN KEY(`wopWorkOrderId`) REFERENCES `workOrders`(`workOrderId`) ON UPDATE NO ACTION ON DELETE CASCADE, " +
+                            "FOREIGN KEY(`wopHistoryId`) REFERENCES `workOrderHistory`(`woHistoryId`) ON UPDATE NO ACTION ON DELETE CASCADE, " +
+                            "FOREIGN KEY(`wopExpenseId`) REFERENCES `workOrderHistoryExpenses`(`woHistoryExpenseId`) ON UPDATE NO ACTION ON DELETE CASCADE)",
+                )
+                db.execSQL(
+                    "INSERT INTO `workOrderPictures` (" +
+                            "`pictureId`, `wopWorkOrderId`, `wopHistoryId`, `wopExpenseId`, `driveFileId`, `wopIsDeleted`, `wopUploadTime`, `wopUpdateTime`) " +
+                            "SELECT `pictureId`, `wopWorkOrderId`, `wopHistoryId`, `wopExpenseId`, `driveFileId`, `wopIsDeleted`, NULL, `wopUpdateTime` " +
+                            "FROM `work_order_pictures`",
+                )
+                db.execSQL("DROP TABLE `work_order_pictures`")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_workOrderPictures_wopWorkOrderId` ON `workOrderPictures` (`wopWorkOrderId`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_workOrderPictures_wopHistoryId` ON `workOrderPictures` (`wopHistoryId`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_workOrderPictures_wopExpenseId` ON `workOrderPictures` (`wopExpenseId`)")
+            }
+        }
+
+        private val MIGRATION_20_21 = object : Migration(20, 21) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `work_order_pictures_new` (" +
+                            "`pictureId` INTEGER NOT NULL, " +
+                            "`wopWorkOrderId` INTEGER, " +
+                            "`wopHistoryId` INTEGER, " +
+                            "`wopExpenseId` INTEGER, " +
+                            "`driveFileId` TEXT, " +
+                            "`localCachePath` TEXT, " +
+                            "`isUploaded` INTEGER NOT NULL, " +
+                            "`wopIsDeleted` INTEGER NOT NULL DEFAULT 0, " +
+                            "`wopUpdateTime` TEXT NOT NULL, " +
+                            "PRIMARY KEY(`pictureId`), " +
+                            "FOREIGN KEY(`wopWorkOrderId`) REFERENCES `workOrders`(`workOrderId`) ON UPDATE NO ACTION ON DELETE CASCADE, " +
+                            "FOREIGN KEY(`wopHistoryId`) REFERENCES `workOrderHistory`(`woHistoryId`) ON UPDATE NO ACTION ON DELETE CASCADE, " +
+                            "FOREIGN KEY(`wopExpenseId`) REFERENCES `workOrderHistoryExpense-*-`(`woHistoryExpenseId`) ON UPDATE NO ACTION ON DELETE CASCADE)",
+                )
+                db.execSQL(
+                    "INSERT INTO `work_order_pictures_new` (" +
+                            "`pictureId`, `wopWorkOrderId`, `wopHistoryId`, `wopExpenseId`, `driveFileId`, `localCachePath`, `isUploaded`, `wopIsDeleted`, `wopUpdateTime`) " +
+                            "SELECT `pictureId`, `wpWorkOrderId`, `wpHistoryId`, `wpExpenseId`, `driveFileId`, `localCachePath`, `isUploaded`, 0, `wpUpdateTime` " +
+                            "FROM `work_order_pictures`",
+                )
+                db.execSQL("DROP TABLE `work_order_pictures`")
+                db.execSQL("ALTER TABLE `work_order_pictures_new` RENAME TO `work_order_pictures`")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_work_order_pictures_wopWorkOrderId` ON `work_order_pictures` (`wopWorkOrderId`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_work_order_pictures_wopHistoryId` ON `work_order_pictures` (`wopHistoryId`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_work_order_pictures_wopExpenseId` ON `work_order_pictures` (`wopExpenseId`)")
+            }
+        }
+
         private val MIGRATION_18_19 = object : Migration(18, 19) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(
@@ -316,7 +397,9 @@ abstract class PayDatabase : RoomDatabase() {
                     MIGRATION_16_17,
                     MIGRATION_17_18,
                     MIGRATION_18_19,
-                    MIGRATION_19_20
+                    MIGRATION_19_20,
+                    MIGRATION_20_21,
+                    MIGRATION_21_22
                 )
                 .build()
         }

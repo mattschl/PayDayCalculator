@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paycalculator.ui.workorder
 
 import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -42,6 +43,7 @@ fun WorkOrderUpdateRoute(
     navController: NavController,
     settingsViewModel: SettingsViewModel = viewModel(),
 ) {
+    val context = LocalContext.current
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
     val sf = remember { StringFunctions() }
@@ -126,6 +128,22 @@ fun WorkOrderUpdateRoute(
     val pictures by workOrderViewModel.getPicturesByWorkOrderId(initialWo.workOrderId)
         .observeAsState(emptyList())
 
+    DisposableEffect(Unit) {
+        onDispose {
+            workOrderViewModel.clearPictureCache(context.cacheDir)
+        }
+    }
+
+    LaunchedEffect(pictures) {
+        val helper = mainViewModel.getOrInitializeDriveService(context) ?: return@LaunchedEffect
+        pictures.forEach { pic ->
+            val tempFile = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
+            if ((!tempFile.exists()) && (pic.driveFileId != null)) {
+                workOrderViewModel.downloadPicture(helper, pic, context.cacheDir)
+            }
+        }
+    }
+
     var laborRate by rememberSaveable { mutableStateOf("") }
     var markupRate by rememberSaveable { mutableStateOf("") }
 
@@ -194,7 +212,6 @@ fun WorkOrderUpdateRoute(
     // Need to get these from somewhere, possibly another query
     val workPerformedList = workPerformedSummary
 
-    val context = LocalContext.current
     val errorLabel = stringResource(R.string.prefix_error)
     val errorMessages = mapOf(
         R.string.the_work_order_must_have_a_number to stringResource(R.string.the_work_order_must_have_a_number),
@@ -310,37 +327,50 @@ fun WorkOrderUpdateRoute(
         individualExpenses = individualExpenses,
         pictures = pictures,
         onPictureTaken = { file ->
-            coroutineScope.launch {
-                workOrderViewModel.insertPicture(
-                    WorkOrderPictures(
-                        pictureId = nf.generateRandomIdAsLong(),
-                        wpWorkOrderId = initialWo.workOrderId,
-                        wpHistoryId = null,
-                        wpExpenseId = null,
-                        driveFileId = null,
-                        localCachePath = file.absolutePath,
-                        isUploaded = false,
-                        wpUpdateTime = df.getCurrentUTCTimeAsString()
+            val helper = mainViewModel.getOrInitializeDriveService(context)
+            if (helper != null) {
+                coroutineScope.launch {
+                    val pictureId = nf.generateRandomIdAsLong()
+                    val driveId = helper.uploadFile(
+                        localFile = file,
+                        mimeType = "image/webp",
+                        driveFileName = "pic_$pictureId.webp",
                     )
-                )
-                workOrderViewModel.schedulePictureUpload()
+                    val now = df.getCurrentUTCTimeAsString()
+                    workOrderViewModel.insertPicture(
+                        WorkOrderPictures(
+                            pictureId = pictureId,
+                            wopWorkOrderId = initialWo.workOrderId,
+                            wopHistoryId = null,
+                            wopExpenseId = null,
+                            driveFileId = driveId,
+                            wopIsDeleted = false,
+                            wopUploadTime = now,
+                            wopUpdateTime = now,
+                        )
+                    )
+                }
+            } else {
+                Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_SHORT).show()
             }
         },
         onDeletePicture = { pic ->
             coroutineScope.launch {
-                workOrderViewModel.deletePictureById(pic.pictureId)
-                pic.localCachePath?.let { File(it).delete() }
+                workOrderViewModel.deletePictureById(pic.pictureId, df.getCurrentUTCTimeAsString())
+                val tempFile = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
+                if (tempFile.exists()) tempFile.delete()
                 pic.driveFileId?.let { driveId ->
-                    mainViewModel.driveServiceHelper.value?.deleteFile(driveId)
+                    mainViewModel.getOrInitializeDriveService(context)?.deleteFile(driveId)
                 }
             }
         },
         onDownloadPicture = { pic ->
-            mainViewModel.driveServiceHelper.value?.let { helper ->
+            val helper = mainViewModel.getOrInitializeDriveService(context)
+            if (helper != null) {
                 coroutineScope.launch {
                     workOrderViewModel.downloadPicture(helper, pic, context.cacheDir)
                 }
-            } ?: run {
+            } else {
                 Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_SHORT).show()
             }
         },

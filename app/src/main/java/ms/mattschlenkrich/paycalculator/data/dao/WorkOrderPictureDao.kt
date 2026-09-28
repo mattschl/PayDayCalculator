@@ -17,76 +17,87 @@ interface WorkOrderPictureDao {
     suspend fun updatePicture(picture: WorkOrderPictures)
 
     @Query(
-        "SELECT * FROM work_order_pictures " +
-                "WHERE wpWorkOrderId = :workOrderId " +
-                "ORDER BY wpUpdateTime DESC",
+        "SELECT * FROM workOrderPictures " +
+                "WHERE wopWorkOrderId = :workOrderId " +
+                "AND wopIsDeleted = 0 " +
+                "ORDER BY wopUpdateTime DESC",
     )
     fun getPicturesForWorkOrder(workOrderId: Long): LiveData<List<WorkOrderPictures>>
 
     @Query(
-        "SELECT * FROM work_order_pictures " +
-                "WHERE wpWorkOrderId = :workOrderId " +
-                "OR wpHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId) " +
-                "OR wpExpenseId IN (SELECT woHistoryExpenseId FROM `workOrderHistoryExpense-*-` WHERE woheHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId)) " +
-                "ORDER BY wpUpdateTime DESC",
+        "SELECT * FROM workOrderPictures " +
+                "WHERE (wopWorkOrderId = :workOrderId " +
+                "OR wopHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId) " +
+                "OR wopExpenseId IN (SELECT woHistoryExpenseId FROM workOrderHistoryExpenses WHERE woheHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId))) " +
+                "AND wopIsDeleted = 0 " +
+                "ORDER BY wopUpdateTime DESC",
     )
     fun getPicturesByWorkOrderId(workOrderId: Long): LiveData<List<WorkOrderPictures>>
 
     @Query(
-        "SELECT * FROM work_order_pictures " +
-                "WHERE wpWorkOrderId = :workOrderId " +
-                "ORDER BY wpUpdateTime DESC",
+        "SELECT * FROM workOrderPictures " +
+                "WHERE wopWorkOrderId = :workOrderId " +
+                "AND wopIsDeleted = 0 " +
+                "ORDER BY wopUpdateTime DESC",
     )
     suspend fun getPicturesForWorkOrderSync(workOrderId: Long): List<WorkOrderPictures>
 
     @Query(
-        "SELECT * FROM work_order_pictures " +
-                "WHERE wpHistoryId = :historyId " +
-                "ORDER BY wpUpdateTime DESC",
+        "SELECT * FROM workOrderPictures " +
+                "WHERE wopHistoryId = :historyId " +
+                "AND wopIsDeleted = 0 " +
+                "ORDER BY wopUpdateTime DESC",
     )
     fun getPicturesForHistory(historyId: Long): LiveData<List<WorkOrderPictures>>
 
     @Query(
-        "SELECT * FROM work_order_pictures " +
-                "WHERE wpHistoryId = :historyId " +
-                "ORDER BY wpUpdateTime DESC",
+        "SELECT * FROM workOrderPictures " +
+                "WHERE wopHistoryId = :historyId " +
+                "AND wopIsDeleted = 0 " +
+                "ORDER BY wopUpdateTime DESC",
     )
     suspend fun getPicturesForHistorySync(historyId: Long): List<WorkOrderPictures>
 
     @Query(
-        "SELECT * FROM work_order_pictures " +
-                "WHERE wpExpenseId = :expenseId " +
-                "ORDER BY wpUpdateTime DESC",
+        "SELECT * FROM workOrderPictures " +
+                "WHERE wopExpenseId = :expenseId " +
+                "AND wopIsDeleted = 0 " +
+                "ORDER BY wopUpdateTime DESC",
     )
     fun getPicturesForExpense(expenseId: Long): LiveData<List<WorkOrderPictures>>
 
     @Query(
-        "SELECT * FROM work_order_pictures " +
-                "WHERE wpExpenseId = :expenseId " +
-                "ORDER BY wpUpdateTime DESC",
+        "SELECT * FROM workOrderPictures " +
+                "WHERE wopExpenseId = :expenseId " +
+                "AND wopIsDeleted = 0 " +
+                "ORDER BY wopUpdateTime DESC",
     )
     suspend fun getPicturesForExpenseSync(expenseId: Long): List<WorkOrderPictures>
 
     @Query(
-        "SELECT * FROM work_order_pictures " +
-                "WHERE isUploaded = 0",
+        "SELECT * FROM workOrderPictures " +
+                "WHERE (driveFileId IS NULL OR driveFileId = '') " +
+                "AND wopIsDeleted = 0",
     )
     suspend fun getPendingUploadsSync(): List<WorkOrderPictures>
 
     @Query(
-        "SELECT * FROM work_order_pictures " +
+        "SELECT * FROM workOrderPictures " +
                 "WHERE pictureId = :pictureId",
     )
     suspend fun getPictureSync(pictureId: Long): WorkOrderPictures?
 
     @Query(
-        "DELETE FROM work_order_pictures " +
+        "UPDATE workOrderPictures " +
+                "SET wopIsDeleted = 1, " +
+                "wopUpdateTime = :updateTime " +
                 "WHERE pictureId = :pictureId",
     )
-    suspend fun deletePictureById(pictureId: Long)
+    suspend fun deletePictureById(pictureId: Long, updateTime: String)
 
     @Query(
-        "SELECT * FROM work_order_pictures",
+        "SELECT * FROM workOrderPictures " +
+                "WHERE wopIsDeleted = 0",
     )
     suspend fun getAllPicturesSync(): List<WorkOrderPictures>
 }

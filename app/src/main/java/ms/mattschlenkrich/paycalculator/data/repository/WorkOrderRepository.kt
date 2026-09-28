@@ -331,6 +331,6 @@ class WorkOrderRepository(db: PayDatabase) {
     suspend fun updatePicture(picture: WorkOrderPictures) =
         workOrderPictureDao.updatePicture(picture)
 
-    suspend fun deletePictureById(pictureId: Long) =
-        workOrderPictureDao.deletePictureById(pictureId)
+    suspend fun deletePictureById(pictureId: Long, updateTime: String) =
+        workOrderPictureDao.deletePictureById(pictureId, updateTime)
 }

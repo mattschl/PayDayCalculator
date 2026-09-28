@@ -107,6 +107,9 @@ class SyncManager(
                 appDb.getSyncHistoryDao().purgeOldSyncHistory(50)
             }
 
+            downloadMissingPictures()
+            uploadPendingPictures()
+
             onProgressUpdate("Uploading merged database...")
             uploadTimestamp = df.getCurrentFileTimestamp()
 
@@ -118,6 +121,11 @@ class SyncManager(
             syncReport.append("\nMerged database uploaded: $uploadedFile")
 
             cleanupOldBackups(fileList)
+
+            val orphanReport = purgeOrphanPicturesOnDrive()
+            if (orphanReport.isNotBlank()) {
+                syncReport.append("\n$orphanReport")
+            }
 
             status = "Success"
         } catch (e: Exception) {
@@ -202,13 +210,7 @@ class SyncManager(
         onProgressUpdate("Preparing database...")
         return withContext(Dispatchers.IO) {
             try {
-                // Force a full checkpoint before upload to merge WAL into DB file.
-                try {
-                    PayDatabase.checkpoint(application)
-                    Log.d(TAG, "Checkpoint successful before manual upload.")
-                } catch (e: Exception) {
-                    Log.e(TAG, "Checkpoint failed before manual upload", e)
-                }
+                uploadPendingPictures()
 
                 onProgressUpdate("Uploading...")
                 val timestamp = df.getCurrentFileTimestamp()
@@ -218,6 +220,115 @@ class SyncManager(
             } catch (e: Exception) {
                 Log.e(TAG, "Manual upload failed", e)
                 throw e
+            }
+        }
+    }
+
+    private suspend fun uploadPendingPictures() {
+        try {
+            val appDb = PayDatabase(application)
+            val pictureDao = appDb.getWorkOrderPictureDao()
+            val pending = pictureDao.getPendingUploadsSync()
+            if (pending.isNotEmpty()) {
+                onProgressUpdate("Uploading ${pending.size} picture(s)...")
+                val storageDir = File(application.cacheDir, "pictures")
+                for (pic in pending) {
+                    val tempFile = File(storageDir, "pic_${pic.pictureId}.webp")
+                    if (tempFile.exists()) {
+                        val driveId = driveServiceHelper.uploadFile(
+                            localFile = tempFile,
+                            mimeType = "image/webp",
+                            driveFileName = "pic_${pic.pictureId}.webp",
+                        )
+                        val now = df.getCurrentUTCTimeAsString()
+                        val updated = pic.copy(
+                            driveFileId = driveId,
+                            wopUploadTime = now,
+                            wopUpdateTime = now,
+                        )
+                        pictureDao.updatePicture(updated)
+                        tempFile.delete()
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to upload pending pictures before sync", e)
+        }
+    }
+
+    private suspend fun downloadMissingPictures() {
+        try {
+            val appDb = PayDatabase(application)
+            val pictureDao = appDb.getWorkOrderPictureDao()
+            val allPictures = pictureDao.getAllPicturesSync()
+            val storageDir = File(application.cacheDir, "pictures").apply { mkdirs() }
+            val missing = allPictures.filter { pic ->
+                val driveId = pic.driveFileId
+                val tempFile = File(storageDir, "pic_${pic.pictureId}.webp")
+                (driveId != null) && (!tempFile.exists())
+            }
+
+            if (missing.isNotEmpty()) {
+                onProgressUpdate("Downloading ${missing.size} picture(s)...")
+                for (pic in missing) {
+                    val driveId = pic.driveFileId ?: continue
+                    val targetFile = File(storageDir, "pic_${pic.pictureId}.webp")
+                    try {
+                        driveServiceHelper.downloadFileById(driveId, targetFile)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Failed to download synced picture ${pic.pictureId}", e)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error downloading missing pictures during sync", e)
+        }
+    }
+
+    suspend fun purgeOrphanPicturesOnDrive(): String {
+        return withContext(Dispatchers.IO) {
+            try {
+                onProgressUpdate("Scanning for orphan pictures on Google Drive...")
+                val driveFiles = driveServiceHelper.queryFiles().files ?: emptyList()
+                val pictureFilesOnDrive = driveFiles.filter {
+                    it.name != null && (it.name.startsWith("pic_") || it.name.endsWith(".webp") || it.name.endsWith(
+                        ".jpg"
+                    ) || it.name.endsWith(".jpeg"))
+                }
+
+                if (pictureFilesOnDrive.isEmpty()) {
+                    return@withContext "No picture files found on Google Drive."
+                }
+
+                val appDb = PayDatabase(application)
+                val activePictures = appDb.getWorkOrderPictureDao().getAllPicturesSync()
+                val validDriveFileIds = activePictures.mapNotNull { it.driveFileId }.toSet()
+
+                var deletedCount = 0
+                for (driveFile in pictureFilesOnDrive) {
+                    val fileId = driveFile.id ?: continue
+                    if (!validDriveFileIds.contains(fileId)) {
+                        try {
+                            driveServiceHelper.deleteFile(fileId)
+                            deletedCount++
+                            Log.d(
+                                TAG,
+                                "Deleted orphan Drive picture file: ${driveFile.name} ($fileId)"
+                            )
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Failed to delete orphan Drive file $fileId", e)
+                        }
+                    }
+                }
+
+                if (deletedCount > 0) {
+                    "Purged $deletedCount orphan picture file(s) from Google Drive."
+                } else {
+                    "No orphan picture files found on Google Drive."
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to purge orphan pictures on Drive", e)
+                "Error purging orphan pictures: ${e.message}"
             }
         }
     }
@@ -320,6 +431,8 @@ class SyncManager(
                 totalCount += syncHelper.syncWorkOrderPictures(backupDb)
                     .let { it.first + it.second }
                 totalCount += syncHelper.syncSyncHistory(backupDb).let { it.first + it.second }
+
+                downloadMissingPictures()
 
                 backupDb.close()
                 "Successfully restored $totalCount records from $displayName."

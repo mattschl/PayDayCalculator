@@ -45,6 +45,14 @@ interface WorkOrderDao {
     )
 
     @Query(
+        "UPDATE workOrders " +
+                "SET woNumber = :newNumber, " +
+                "woUpdateTime = :updateTime " +
+                "WHERE workOrderId = :workOrderId"
+    )
+    suspend fun renameWorkOrder(workOrderId: Long, newNumber: String, updateTime: String)
+
+    @Query(
         "SELECT * FROM workOrders " +
                 "WHERE workOrderId = :workOrderId " +
                 "AND woDeleted = 0"
@@ -223,7 +231,7 @@ interface WorkOrderDao {
 
     @Query(
         "SELECT woheSupplier as supplier, woheType as type, SUM(woheAmount) as totalAmount " +
-                "FROM `workOrderHistoryExpense-*-` " +
+                "FROM workOrderHistoryExpenses " +
                 "WHERE woheHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId AND woHistoryDeleted = 0) " +
                 "AND woheIsDeleted = 0 " +
                 "GROUP BY woheSupplier, woheType " +
@@ -232,7 +240,7 @@ interface WorkOrderDao {
     fun getWorkOrderExpensesSummary(workOrderId: Long): LiveData<List<ExpenseSummary>>
 
     @Query(
-        "SELECT * FROM `workOrderHistoryExpense-*-` " +
+        "SELECT * FROM workOrderHistoryExpenses " +
                 "WHERE woheHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId AND woHistoryDeleted = 0) " +
                 "AND woheIsDeleted = 0 " +
                 "ORDER BY woheUpdateTime DESC"
@@ -281,7 +289,7 @@ interface WorkOrderDao {
     suspend fun updateWorkOrderHistoryExpense(expense: WorkOrderHistoryExpense)
 
     @Query(
-        "UPDATE `workOrderHistoryExpense-*-` " +
+        "UPDATE workOrderHistoryExpenses " +
                 "SET woheIsDeleted = 1, " +
                 "woheUpdateTime = :updateTime " +
                 "WHERE woHistoryExpenseId = :expenseId"
@@ -289,13 +297,19 @@ interface WorkOrderDao {
     suspend fun deleteWorkOrderHistoryExpense(expenseId: Long, updateTime: String)
 
     @Query(
-        "SELECT * FROM `workOrderHistoryExpense-*-` " +
+        "SELECT * FROM workOrderHistoryExpenses " +
                 "WHERE woHistoryExpenseId = :id"
     )
     suspend fun getWorkOrderHistoryExpenseSync(id: Long): WorkOrderHistoryExpense?
 
     @Query(
-        "SELECT * FROM `workOrderHistoryExpense-*-` " +
+        "SELECT * FROM workOrderHistoryExpenses " +
+                "WHERE woheHistoryId = :historyId"
+    )
+    suspend fun getExpensesByHistorySync(historyId: Long): List<WorkOrderHistoryExpense>
+
+    @Query(
+        "SELECT * FROM workOrderHistoryExpenses " +
                 "WHERE woheHistoryId = :historyId " +
                 "AND woheIsDeleted = 0 " +
                 "ORDER BY woheUpdateTime"

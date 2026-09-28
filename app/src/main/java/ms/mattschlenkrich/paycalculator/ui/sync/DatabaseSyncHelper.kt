@@ -46,6 +46,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformedMerged
 import ms.mattschlenkrich.paycalculator.data.entity.WorkTaxRules
+import kotlin.math.abs
 
 private const val TAG = "DatabaseSyncHelper"
 
@@ -62,8 +63,8 @@ const val TABLE_JOB_SPEC_MERGED = "jobSpecMerged"
 const val TABLE_MATERIAL_MERGED = "materialMerged"
 const val TABLE_WORK_PERFORMED_MERGED = "workPerformedMerged"
 const val TABLE_WORK_ORDER_HISTORY_TIME_WORKED = "workOrderHistoryTimeWorked"
-const val TABLE_WORK_ORDER_HISTORY_EXPENSE = "workOrderHistoryExpense-*-"
-const val TABLE_WORK_ORDER_PICTURES = "work_order_pictures"
+const val TABLE_WORK_ORDER_HISTORY_EXPENSE = "workOrderHistoryExpenses"
+const val TABLE_WORK_ORDER_PICTURES = "workOrderPictures"
 
 class DatabaseSyncHelper(
     private val appDb: PayDatabase,
@@ -89,6 +90,15 @@ class DatabaseSyncHelper(
             if (cursor.isNull(index)) 0L else cursor.getLong(index)
         } catch (_: Exception) {
             0L
+        }
+    }
+
+    private fun getNullableLongSafe(cursor: Cursor, columnName: String): Long? {
+        return try {
+            val index = cursor.getColumnIndexOrThrow(columnName)
+            if (cursor.isNull(index)) null else cursor.getLong(index)
+        } catch (_: Exception) {
+            null
         }
     }
 
@@ -472,9 +482,7 @@ class DatabaseSyncHelper(
                 WorkDateExtras(
                     workDateExtraId = getLongSafe(cursor, "workDateExtraId"),
                     wdeWorkDateId = getLongSafe(cursor, "wdeWorkDateId"),
-                    wdeExtraTypeId = if (cursor.isNull(cursor.getColumnIndexOrThrow("wdeExtraTypeId"))) null else cursor.getLong(
-                        cursor.getColumnIndexOrThrow("wdeExtraTypeId")
-                    ),
+                    wdeExtraTypeId = getNullableLongSafe(cursor, "wdeExtraTypeId"),
                     wdeName = getStringSafe(cursor, "wdeName"),
                     wdeAppliesTo = getIntSafe(cursor, "wdeAppliesTo"),
                     wdeAttachTo = getIntSafe(cursor, "wdeAttachTo"),
@@ -500,9 +508,7 @@ class DatabaseSyncHelper(
                 WorkPayPeriodExtras(
                     workPayPeriodExtraId = getLongSafe(cursor, "workPayPeriodExtraId"),
                     ppePayPeriodId = getLongSafe(cursor, "ppePayPeriodId"),
-                    ppeExtraTypeId = if (cursor.isNull(cursor.getColumnIndexOrThrow("ppeExtraTypeId"))) null else cursor.getLong(
-                        cursor.getColumnIndexOrThrow("ppeExtraTypeId")
-                    ),
+                    ppeExtraTypeId = getNullableLongSafe(cursor, "ppeExtraTypeId"),
                     ppeName = getStringSafe(cursor, "ppeName"),
                     ppeAppliesTo = getIntSafe(cursor, "ppeAppliesTo"),
                     ppeAttachTo = getIntSafe(cursor, "ppeAttachTo"),
@@ -520,6 +526,34 @@ class DatabaseSyncHelper(
             insert = { appDb.getPayDayDao().insertPayPeriodExtra(it) },
             update = { appDb.getPayDayDao().updatePayPeriodExtra(it) },
         )
+    }
+
+    private suspend fun remapWorkOrderHistory(
+        history: WorkOrderHistory,
+        backupDb: SQLiteDatabase
+    ): WorkOrderHistory {
+        var targetWoId = history.woHistoryWorkOrderId
+        if (targetWoId > 0L) {
+            val localWo = appDb.getWorkOrderDao().getWorkOrderByIdAnySync(targetWoId)
+            if (localWo == null) {
+                val backupWo = try {
+                    backupDb.query(
+                        TABLE_WORK_ORDERS, null, "workOrderId = ?",
+                        arrayOf(targetWoId.toString()), null, null, null
+                    ).use { c ->
+                        if (c.moveToFirst()) {
+                            val number = getStringSafe(c, "woNumber")
+                            val empId = getLongSafe(c, "woEmployerId")
+                            appDb.getWorkOrderDao().findWorkOrderAnySync(number, empId)
+                        } else null
+                    }
+                } catch (_: Exception) {
+                    null
+                }
+                backupWo?.let { targetWoId = it.workOrderId }
+            }
+        }
+        return history.copy(woHistoryWorkOrderId = targetWoId)
     }
 
     suspend fun syncWorkOrders(backupDb: SQLiteDatabase): Pair<Int, Int> {
@@ -552,6 +586,8 @@ class DatabaseSyncHelper(
                     workOrder.woUpdateTime
                 )
             },
+            rename = { id, name, time -> appDb.getWorkOrderDao().renameWorkOrder(id, name, time) },
+            copyWithName = { item, name -> item.copy(woNumber = name) }
         )
     }
 
@@ -576,8 +612,14 @@ class DatabaseSyncHelper(
                 appDb.getWorkOrderDao().getWorkOrderHistoryByIdAnySync(it.woHistoryId)
             },
             getUpdateTime = { it.woHistoryUpdateTime },
-            insert = { appDb.getWorkOrderDao().insertWorkOrderHistory(it) },
-            update = { appDb.getWorkOrderDao().updateWorkOrderHistory(it) },
+            insert = {
+                val remapped = remapWorkOrderHistory(it, backupDb)
+                appDb.getWorkOrderDao().insertWorkOrderHistory(remapped)
+            },
+            update = {
+                val remapped = remapWorkOrderHistory(it, backupDb)
+                appDb.getWorkOrderDao().updateWorkOrderHistory(remapped)
+            },
         )
     }
 
@@ -647,9 +689,7 @@ class DatabaseSyncHelper(
                     ),
                     wowpHistoryId = getLongSafe(cursor, "wowpHistoryId"),
                     wowpWorkPerformedId = getLongSafe(cursor, "wowpWorkPerformedId"),
-                    wowpAreaId = if (cursor.isNull(cursor.getColumnIndexOrThrow("wowpAreaId"))) null else cursor.getLong(
-                        cursor.getColumnIndexOrThrow("wowpAreaId")
-                    ),
+                    wowpAreaId = getNullableLongSafe(cursor, "wowpAreaId"),
                     wowpNote = getStringSafe(cursor, "wowpNote"),
                     wowpSequence = getIntSafe(cursor, "wowpSequence"),
                     wowpIsDeleted = getBooleanSafe(cursor, "wowpIsDeleted"),
@@ -675,9 +715,7 @@ class DatabaseSyncHelper(
                     workOrderJobSpecId = getLongSafe(cursor, "workOrderJobSpecId"),
                     wojsWorkOrderId = getLongSafe(cursor, "wojsWorkOrderId"),
                     wojsJobSpecId = getLongSafe(cursor, "wojsJobSpecId"),
-                    wojsAreaId = if (cursor.isNull(cursor.getColumnIndexOrThrow("wojsAreaId"))) null else cursor.getLong(
-                        cursor.getColumnIndexOrThrow("wojsAreaId")
-                    ),
+                    wojsAreaId = getNullableLongSafe(cursor, "wojsAreaId"),
                     wojsNote = getStringSafe(cursor, "wojsNote"),
                     wojsSequence = getIntSafe(cursor, "wojsSequence"),
                     wojsIsDeleted = getBooleanSafe(cursor, "wojsIsDeleted"),
@@ -905,32 +943,186 @@ class DatabaseSyncHelper(
         )
     }
 
+    private suspend fun restoreAndSanitizeWorkOrderPicture(
+        pic: WorkOrderPictures,
+        backupDb: SQLiteDatabase
+    ): WorkOrderPictures {
+        var validWoId = pic.wopWorkOrderId
+        var validHId = pic.wopHistoryId
+        var validExpId = pic.wopExpenseId
+
+        // 1. Resolve Expense ID & parent History ID
+        if ((validExpId != null) && (validExpId > 0L)) {
+            val localExpense = appDb.getWorkOrderDao().getWorkOrderHistoryExpenseSync(validExpId)
+            if (localExpense != null) {
+                validExpId = localExpense.woHistoryExpenseId
+                if (validHId == null) {
+                    validHId = localExpense.woheHistoryId
+                }
+            } else {
+                try {
+                    backupDb.query(
+                        TABLE_WORK_ORDER_HISTORY_EXPENSE, null, "woHistoryExpenseId = ?",
+                        arrayOf(validExpId.toString()), null, null, null
+                    ).use { c ->
+                        if (c.moveToFirst()) {
+                            val backupHistoryId = getLongSafe(c, "woheHistoryId")
+                            val type = getStringSafe(c, "woheType")
+                            val supplier = getStringSafe(c, "woheSupplier")
+                            val invNo = getStringSafe(c, "woheInvoiceNo")
+                            val amt = getDoubleSafe(c, "woheAmount")
+
+                            val localHist = appDb.getWorkOrderDao()
+                                .getWorkOrderHistoryByIdAnySync(backupHistoryId)
+                            if (localHist != null) {
+                                if (validHId == null) validHId = localHist.woHistoryId
+                                val expenses = appDb.getWorkOrderDao()
+                                    .getExpensesByHistorySync(localHist.woHistoryId)
+                                val match = expenses.find { exp ->
+                                    (exp.woheType == type) && (exp.woheSupplier == supplier) &&
+                                            (exp.woheInvoiceNo == invNo) && (abs(exp.woheAmount - amt) < 0.01)
+                                }
+                                match?.let { validExpId = it.woHistoryExpenseId }
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error resolving backup expense for picture", e)
+                }
+            }
+        }
+
+        // 2. Resolve History ID & parent Work Order ID
+        if ((validHId != null) && (validHId > 0L)) {
+            val localHist = appDb.getWorkOrderDao().getWorkOrderHistoryByIdAnySync(validHId)
+            if (localHist != null) {
+                validHId = localHist.woHistoryId
+                if (validWoId == null) {
+                    validWoId = localHist.woHistoryWorkOrderId
+                }
+            } else {
+                try {
+                    backupDb.query(
+                        TABLE_WORK_ORDER_HISTORY, null, "woHistoryId = ?",
+                        arrayOf(validHId.toString()), null, null, null
+                    ).use { c ->
+                        if (c.moveToFirst()) {
+                            val backupWoId = getLongSafe(c, "woHistoryWorkOrderId")
+                            val backupDateId = getLongSafe(c, "woHistoryWorkDateId")
+
+                            val localWo =
+                                appDb.getWorkOrderDao().getWorkOrderByIdAnySync(backupWoId)
+                            if (localWo != null) {
+                                val match = appDb.getWorkOrderDao()
+                                    .getWorkOrderHistoryAnySync(localWo.workOrderId, backupDateId)
+                                if (match != null) {
+                                    validHId = match.woHistoryId
+                                    if (validWoId == null) validWoId = match.woHistoryWorkOrderId
+                                }
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error resolving backup history for picture", e)
+                }
+            }
+        }
+
+        // 3. Resolve Work Order ID
+        if ((validWoId != null) && (validWoId > 0L)) {
+            val localWo = appDb.getWorkOrderDao().getWorkOrderByIdAnySync(validWoId)
+            if (localWo != null) {
+                validWoId = localWo.workOrderId
+            } else {
+                try {
+                    backupDb.query(
+                        TABLE_WORK_ORDERS, null, "workOrderId = ?",
+                        arrayOf(validWoId.toString()), null, null, null
+                    ).use { c ->
+                        if (c.moveToFirst()) {
+                            val number = getStringSafe(c, "woNumber")
+                            val empId = getLongSafe(c, "woEmployerId")
+                            val match = appDb.getWorkOrderDao().findWorkOrderAnySync(number, empId)
+                            if (match != null) {
+                                validWoId = match.workOrderId
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error resolving backup work order for picture", e)
+                }
+            }
+        }
+
+        // 4. Derive parent workOrderId from history if still null
+        if ((validWoId == null) && (validHId != null)) {
+            val localHist = appDb.getWorkOrderDao().getWorkOrderHistoryByIdAnySync(validHId)
+            if (localHist != null) {
+                validWoId = localHist.woHistoryWorkOrderId
+            }
+        }
+
+        return pic.copy(
+            wopWorkOrderId = validWoId,
+            wopHistoryId = validHId,
+            wopExpenseId = validExpId
+        )
+    }
+
     suspend fun syncWorkOrderPictures(backupDb: SQLiteDatabase): Pair<Int, Int> {
         return syncTable(
             backupDb = backupDb,
             tableName = TABLE_WORK_ORDER_PICTURES,
             mapCursorToItem = { cursor ->
+                val woId = getNullableLongSafe(cursor, "wopWorkOrderId") ?: getNullableLongSafe(
+                    cursor,
+                    "wpWorkOrderId"
+                )
+                val hId = getNullableLongSafe(cursor, "wopHistoryId") ?: getNullableLongSafe(
+                    cursor,
+                    "wpHistoryId"
+                )
+                val expId = getNullableLongSafe(cursor, "wopExpenseId") ?: getNullableLongSafe(
+                    cursor,
+                    "wpExpenseId"
+                )
+                val isDeleted = try {
+                    getBooleanSafe(cursor, "wopIsDeleted")
+                } catch (_: Exception) {
+                    false
+                }
+                val uploadTime = try {
+                    getStringSafe(cursor, "wopUploadTime").ifEmpty { null }
+                } catch (_: Exception) {
+                    null
+                }
+                val updateTime = getStringSafe(cursor, "wopUpdateTime").ifEmpty {
+                    getStringSafe(
+                        cursor,
+                        "wpUpdateTime"
+                    )
+                }
                 WorkOrderPictures(
                     pictureId = getLongSafe(cursor, "pictureId"),
-                    wpWorkOrderId = getLongSafe(cursor, "wpWorkOrderId").let {
-                        if (it == -1L) null else it
-                    },
-                    wpHistoryId = getLongSafe(cursor, "wpHistoryId").let {
-                        if (it == -1L) null else it
-                    },
-                    wpExpenseId = getLongSafe(cursor, "wpExpenseId").let {
-                        if (it == -1L) null else it
-                    },
+                    wopWorkOrderId = if ((woId == null) || (woId <= 0L)) null else woId,
+                    wopHistoryId = if ((hId == null) || (hId <= 0L)) null else hId,
+                    wopExpenseId = if ((expId == null) || (expId <= 0L)) null else expId,
                     driveFileId = getStringSafe(cursor, "driveFileId").ifEmpty { null },
-                    localCachePath = null,
-                    isUploaded = getBooleanSafe(cursor, "isUploaded"),
-                    wpUpdateTime = getStringSafe(cursor, "wpUpdateTime")
+                    wopIsDeleted = isDeleted,
+                    wopUploadTime = uploadTime,
+                    wopUpdateTime = updateTime
                 )
             },
             getExistingById = { appDb.getWorkOrderPictureDao().getPictureSync(it.pictureId) },
-            getUpdateTime = { it.wpUpdateTime },
-            insert = { appDb.getWorkOrderPictureDao().insertPicture(it) },
-            update = { appDb.getWorkOrderPictureDao().updatePicture(it) },
+            getUpdateTime = { it.wopUpdateTime },
+            insert = {
+                val sanitized = restoreAndSanitizeWorkOrderPicture(it, backupDb)
+                appDb.getWorkOrderPictureDao().insertPicture(sanitized)
+            },
+            update = {
+                val sanitized = restoreAndSanitizeWorkOrderPicture(it, backupDb)
+                appDb.getWorkOrderPictureDao().updatePicture(sanitized)
+            },
         )
     }
 }

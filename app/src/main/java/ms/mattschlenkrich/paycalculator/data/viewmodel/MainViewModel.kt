@@ -1,11 +1,19 @@
 package ms.mattschlenkrich.paycalculator.data.viewmodel
 
+import android.accounts.Account
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.http.javanet.NetHttpTransport
+import com.google.api.client.json.gson.GsonFactory
+import com.google.api.services.drive.Drive
+import com.google.api.services.drive.DriveScopes
+import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DEVICE_ID
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.PREFS_NAME
@@ -59,6 +67,31 @@ class MainViewModel(
         private set
 
     var driveServiceHelper = mutableStateOf<DriveServiceHelper?>(null)
+
+    fun getOrInitializeDriveService(context: Context): DriveServiceHelper? {
+        if (driveServiceHelper.value != null) return driveServiceHelper.value
+        val settings = settingsManager.loadSettings()
+        val email = settings.driveAccount ?: return null
+        return try {
+            val credential = GoogleAccountCredential.usingOAuth2(
+                context.applicationContext,
+                listOf(DriveScopes.DRIVE_APPDATA),
+            )
+            credential.selectedAccount = Account(email, "com.google")
+            val googleDriveService = Drive.Builder(
+                NetHttpTransport(),
+                GsonFactory.getDefaultInstance(),
+                credential,
+            ).setApplicationName(context.applicationContext.getString(R.string.app_name))
+                .build()
+            val helper = DriveServiceHelper(googleDriveService)
+            driveServiceHelper.value = helper
+            helper
+        } catch (e: Exception) {
+            Log.e("MainViewModel", "Failed to initialize Drive service", e)
+            null
+        }
+    }
 
     var isAuthenticated = mutableStateOf(value = false)
         private set

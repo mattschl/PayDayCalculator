@@ -147,27 +147,38 @@ class WorkOrderViewModel(
     suspend fun updatePicture(picture: WorkOrderPictures) =
         workOrderRepository.updatePicture(picture)
 
-    suspend fun deletePictureById(pictureId: Long) =
-        workOrderRepository.deletePictureById(pictureId)
+    suspend fun deletePictureById(pictureId: Long, updateTime: String) =
+        workOrderRepository.deletePictureById(pictureId, updateTime)
 
     suspend fun downloadPicture(
         driveServiceHelper: DriveServiceHelper,
         picture: WorkOrderPictures,
         cacheDir: File
-    ): WorkOrderPictures? {
+    ): File? {
         val fileId = picture.driveFileId ?: return null
-        val storageDir = File(cacheDir, "pictures")
-        if (!storageDir.exists()) storageDir.mkdirs()
+        val storageDir = File(cacheDir, "pictures").apply { if (!exists()) mkdirs() }
         val targetFile = File(storageDir, "pic_${picture.pictureId}.webp")
+        if (targetFile.exists() && targetFile.length() > 0) return targetFile
 
         return try {
             driveServiceHelper.downloadFileById(fileId, targetFile)
-            val updated = picture.copy(localCachePath = targetFile.absolutePath)
-            updatePicture(updated)
-            updated
+            targetFile
         } catch (e: Exception) {
             Log.e("WorkOrderViewModel", "Failed to download picture", e)
             null
+        }
+    }
+
+    fun clearPictureCache(cacheDir: File) {
+        try {
+            val storageDir = File(cacheDir, "pictures")
+            if (storageDir.exists()) {
+                storageDir.listFiles()?.forEach { file ->
+                    if (file.isFile) file.delete()
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("WorkOrderViewModel", "Failed to clear picture cache", e)
         }
     }
 

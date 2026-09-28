@@ -2,6 +2,7 @@ package ms.mattschlenkrich.paycalculator.ui.workorderhistory
 
 import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -147,6 +148,22 @@ fun WorkOrderHistoryUpdateRoute(
     } else {
         remember { MutableLiveData(emptyList()) }
     }.observeAsState(emptyList())
+
+    DisposableEffect(Unit) {
+        onDispose {
+            workOrderViewModel.clearPictureCache(context.cacheDir)
+        }
+    }
+
+    LaunchedEffect(pictures, expensePictures) {
+        val helper = mainViewModel.getOrInitializeDriveService(context) ?: return@LaunchedEffect
+        (pictures + expensePictures).forEach { pic ->
+            val tempFile = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
+            if ((!tempFile.exists()) && (pic.driveFileId != null)) {
+                workOrderViewModel.downloadPicture(helper, pic, context.cacheDir)
+            }
+        }
+    }
 
     val timeWorkedList by remember(history.woHistoryId) {
         workOrderViewModel.getTimeWorkedForWorkOrderHistory(history.woHistoryId)
@@ -374,37 +391,50 @@ fun WorkOrderHistoryUpdateRoute(
         },
         pictures = pictures,
         onPictureTaken = { file ->
-            coroutineScope.launch {
-                workOrderViewModel.insertPicture(
-                    WorkOrderPictures(
-                        pictureId = nf.generateRandomIdAsLong(),
-                        wpWorkOrderId = null,
-                        wpHistoryId = history.woHistoryId,
-                        wpExpenseId = null,
-                        driveFileId = null,
-                        localCachePath = file.absolutePath,
-                        isUploaded = false,
-                        wpUpdateTime = df.getCurrentUTCTimeAsString()
+            val helper = mainViewModel.getOrInitializeDriveService(context)
+            if (helper != null) {
+                coroutineScope.launch {
+                    val pictureId = nf.generateRandomIdAsLong()
+                    val driveId = helper.uploadFile(
+                        localFile = file,
+                        mimeType = "image/webp",
+                        driveFileName = "pic_$pictureId.webp",
                     )
-                )
-                workOrderViewModel.schedulePictureUpload()
+                    val now = df.getCurrentUTCTimeAsString()
+                    workOrderViewModel.insertPicture(
+                        WorkOrderPictures(
+                            pictureId = pictureId,
+                            wopWorkOrderId = null,
+                            wopHistoryId = history.woHistoryId,
+                            wopExpenseId = null,
+                            driveFileId = driveId,
+                            wopIsDeleted = false,
+                            wopUploadTime = now,
+                            wopUpdateTime = now,
+                        )
+                    )
+                }
+            } else {
+                Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_SHORT).show()
             }
         },
         onDeletePicture = { pic ->
             coroutineScope.launch {
-                workOrderViewModel.deletePictureById(pic.pictureId)
-                pic.localCachePath?.let { File(it).delete() }
+                workOrderViewModel.deletePictureById(pic.pictureId, df.getCurrentUTCTimeAsString())
+                val tempFile = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
+                if (tempFile.exists()) tempFile.delete()
                 pic.driveFileId?.let { driveId ->
-                    mainViewModel.driveServiceHelper.value?.deleteFile(driveId)
+                    mainViewModel.getOrInitializeDriveService(context)?.deleteFile(driveId)
                 }
             }
         },
         onDownloadPicture = { pic ->
-            mainViewModel.driveServiceHelper.value?.let { helper ->
+            val helper = mainViewModel.getOrInitializeDriveService(context)
+            if (helper != null) {
                 coroutineScope.launch {
                     workOrderViewModel.downloadPicture(helper, pic, context.cacheDir)
                 }
-            } ?: run {
+            } else {
                 Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_SHORT).show()
             }
         },
@@ -495,20 +525,31 @@ fun WorkOrderHistoryUpdateRoute(
         expensePictures = expensePictures,
         onExpenseSelectedForPictures = { id -> selectedExpenseForPictures = id },
         onExpensePictureTaken = { file, expenseId ->
-            coroutineScope.launch {
-                workOrderViewModel.insertPicture(
-                    WorkOrderPictures(
-                        pictureId = nf.generateRandomIdAsLong(),
-                        wpWorkOrderId = null,
-                        wpHistoryId = null,
-                        wpExpenseId = expenseId,
-                        driveFileId = null,
-                        localCachePath = file.absolutePath,
-                        isUploaded = false,
-                        wpUpdateTime = df.getCurrentUTCTimeAsString()
+            val helper = mainViewModel.getOrInitializeDriveService(context)
+            if (helper != null) {
+                coroutineScope.launch {
+                    val pictureId = nf.generateRandomIdAsLong()
+                    val driveId = helper.uploadFile(
+                        localFile = file,
+                        mimeType = "image/webp",
+                        driveFileName = "pic_$pictureId.webp",
                     )
-                )
-                workOrderViewModel.schedulePictureUpload()
+                    val now = df.getCurrentUTCTimeAsString()
+                    workOrderViewModel.insertPicture(
+                        WorkOrderPictures(
+                            pictureId = pictureId,
+                            wopWorkOrderId = null,
+                            wopHistoryId = null,
+                            wopExpenseId = expenseId,
+                            driveFileId = driveId,
+                            wopIsDeleted = false,
+                            wopUploadTime = now,
+                            wopUpdateTime = now,
+                        )
+                    )
+                }
+            } else {
+                Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_SHORT).show()
             }
         },
         isSaving = isSaving,

@@ -11,6 +11,7 @@ import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.settings.SettingsManager
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
 import ms.mattschlenkrich.paycalculator.data.repository.WorkOrderPictureRepository
@@ -49,24 +50,27 @@ class PictureUploadWorker(
             return Result.retry()
         }
 
+        val df = DateFunctions()
         var allSuccess = true
         for (pic in pending) {
             try {
-                pic.localCachePath?.let { path ->
-                    val file = File(path)
-                    if (file.exists()) {
-                        val driveId = driveServiceHelper.uploadFile(
-                            localFile = file,
-                            mimeType = "image/webp",
-                            driveFileName = "pic_${pic.pictureId}.webp"
+                val tempFile =
+                    File(applicationContext.cacheDir, "pictures/pic_${pic.pictureId}.webp")
+                if (tempFile.exists()) {
+                    val driveId = driveServiceHelper.uploadFile(
+                        localFile = tempFile,
+                        mimeType = "image/webp",
+                        driveFileName = "pic_${pic.pictureId}.webp"
+                    )
+                    val now = df.getCurrentUTCTimeAsString()
+                    repository.updatePicture(
+                        pic.copy(
+                            driveFileId = driveId,
+                            wopUploadTime = now,
+                            wopUpdateTime = now
                         )
-                        repository.updatePicture(
-                            pic.copy(
-                                driveFileId = driveId,
-                                isUploaded = true
-                            )
-                        )
-                    }
+                    )
+                    tempFile.delete()
                 }
             } catch (e: Exception) {
                 Log.e("PictureUploadWorker", "Failed to upload picture ${pic.pictureId}", e)

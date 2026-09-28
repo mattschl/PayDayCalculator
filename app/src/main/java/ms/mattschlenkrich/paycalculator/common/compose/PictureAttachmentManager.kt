@@ -129,10 +129,13 @@ fun PictureAttachmentManager(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(pictures, key = { it.pictureId }) { pic ->
+                    val tempFile = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
+                    val hasLocalFile = (tempFile.exists()) && (tempFile.length() > 0L)
                     PictureThumbnail(
                         picture = pic,
+                        imageFile = if (hasLocalFile) tempFile else null,
                         onClick = {
-                            if (pic.localCachePath != null) showFullImage = pic
+                            if (hasLocalFile) showFullImage = pic
                             else onDownloadPicture(pic)
                         }
                     ) { pictureToDelete = pic }
@@ -239,6 +242,7 @@ fun PictureAttachmentManager(
 @Composable
 fun PictureThumbnail(
     picture: WorkOrderPictures,
+    imageFile: File?,
     onClick: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -248,9 +252,9 @@ fun PictureThumbnail(
             .clickable(onClick = onClick)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            if (picture.localCachePath != null) {
+            if (imageFile != null) {
                 SubcomposeAsyncImage(
-                    model = picture.localCachePath,
+                    model = imageFile,
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop,
@@ -267,7 +271,7 @@ fun PictureThumbnail(
                         )
                     }
                 )
-            } else {
+            } else if (picture.driveFileId != null) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -278,6 +282,15 @@ fun PictureThumbnail(
                         Icon(Icons.Default.CloudDownload, contentDescription = null)
                         Text(text = "Download", style = MaterialTheme.typography.labelSmall)
                     }
+                }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.LightGray),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Default.Image, contentDescription = null)
                 }
             }
 
@@ -305,6 +318,9 @@ fun FullScreenImageDialog(
     onDelete: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
+    val imageFile = File(context.cacheDir, "pictures/pic_${picture.pictureId}.webp")
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -316,7 +332,7 @@ fun FullScreenImageDialog(
             contentAlignment = Alignment.Center
         ) {
             SubcomposeAsyncImage(
-                model = picture.localCachePath,
+                model = imageFile,
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()

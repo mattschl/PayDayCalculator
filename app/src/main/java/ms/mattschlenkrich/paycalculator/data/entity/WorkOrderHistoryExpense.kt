@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Entity(
-    tableName = "workOrderHistoryExpense-*-",
+    tableName = "workOrderHistoryExpenses",
     foreignKeys = [
         ForeignKey(
             entity = WorkOrderHistory::class,

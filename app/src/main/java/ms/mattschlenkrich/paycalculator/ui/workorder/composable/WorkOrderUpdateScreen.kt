@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder.composable
 
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
@@ -18,6 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -136,6 +140,10 @@ fun WorkOrderUpdateScreen(
     var selectedJobSpecCombined by remember { mutableStateOf<WorkOrderJobSpecCombined?>(null) }
 
     var showMaterialPriceDialog by rememberSaveable { mutableStateOf<MaterialAndQuantity?>(null) }
+
+    var isLaborExpanded by rememberSaveable { mutableStateOf(false) }
+    var isMaterialsExpanded by rememberSaveable { mutableStateOf(false) }
+    var isExpensesExpanded by rememberSaveable { mutableStateOf(false) }
 
     JobSpecOptionsDialog(
         showDialog = showJobSpecDialog,
@@ -426,118 +434,138 @@ fun WorkOrderUpdateScreen(
             }
 
             item {
-                Row(
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(top = 16.dp)
+                        .clickable { isLaborExpanded = !isLaborExpanded },
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    )
                 ) {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.work_order_history),
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        if (historySummaryText.isNotBlank()) {
-                            Text(
-                                text = historySummaryText,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold,
-                                fontStyle = FontStyle.Italic,
-                                color = MaterialTheme.colorScheme.secondary
-                            )
-                        }
-                        if (hoursSummaryText.isNotBlank()) {
-                            Text(
-                                text = hoursSummaryText,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.tertiary,
-                                modifier = Modifier.padding(top = 2.dp)
-                            )
-                        }
-                    }
-                    FloatingActionButton(
-                        onClick = onAddHistoryClick,
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onSecondary,
+                    Row(
                         modifier = Modifier
-                            .padding(4.dp)
-                            .draggableFab()
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = stringResource(R.string.add_new_extra)
+                        Column(modifier = Modifier.weight(1f)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = stringResource(R.string.work_order_history),
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Icon(
+                                    if (isLaborExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                            if (historySummaryText.isNotBlank()) {
+                                Text(
+                                    text = historySummaryText,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    fontStyle = FontStyle.Italic,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                            if (hoursSummaryText.isNotBlank()) {
+                                Text(
+                                    text = hoursSummaryText,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.padding(top = 2.dp)
+                                )
+                            }
+                        }
+                        FloatingActionButton(
+                            onClick = onAddHistoryClick,
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.onSecondary,
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .draggableFab()
+                        ) {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = stringResource(R.string.add_new_extra)
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (isLaborExpanded) {
+                items(historyList) { history ->
+                    HistoryItem(history, df, nf, onHistoryClick)
+                }
+
+                if (workPerformedList.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = stringResource(R.string.work_performed),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                         )
                     }
-                }
-            }
 
-            items(historyList) { history ->
-                HistoryItem(history, df, nf, onHistoryClick)
-            }
-
-            if (workPerformedList.isNotEmpty()) {
-                item {
-                    Text(
-                        text = stringResource(R.string.work_performed),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-                    )
-                }
-
-                val wpChunks = workPerformedList.chunked(columns)
-                items(wpChunks) { chunk ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
-                    ) {
-                        chunk.forEach { wp ->
-                            Box(modifier = Modifier.weight(1f)) {
-                                WorkPerformedSummaryItem(
-                                    wp = wp,
-                                    onClick = onWorkPerformedSummaryClick
-                                )
+                    val wpChunks = workPerformedList.chunked(columns)
+                    items(wpChunks) { chunk ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+                        ) {
+                            chunk.forEach { wp ->
+                                Box(modifier = Modifier.weight(1f)) {
+                                    WorkPerformedSummaryItem(
+                                        wp = wp,
+                                        onClick = onWorkPerformedSummaryClick
+                                    )
+                                }
                             }
-                        }
-                        repeat(columns - chunk.size) {
-                            Spacer(modifier = Modifier.weight(1f))
+                            repeat(columns - chunk.size) {
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
                         }
                     }
                 }
-            }
 
-            if (jobSpecsSummaryList.isNotEmpty()) {
-                item {
-                    Text(
-                        text = stringResource(R.string.job_specs),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-                    )
-                }
+                if (jobSpecsSummaryList.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = stringResource(R.string.job_specs),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                        )
+                    }
 
-                val jsChunks = jobSpecsSummaryList.chunked(columns)
-                items(jsChunks) { chunk ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
-                    ) {
-                        chunk.forEach { js ->
-                            Box(modifier = Modifier.weight(1f)) {
-                                WorkOrderJobSpecSummaryItem(
-                                    js = js,
-                                    onClick = onJobSpecSummaryClick
-                                )
+                    val jsChunks = jobSpecsSummaryList.chunked(columns)
+                    items(jsChunks) { chunk ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+                        ) {
+                            chunk.forEach { js ->
+                                Box(modifier = Modifier.weight(1f)) {
+                                    WorkOrderJobSpecSummaryItem(
+                                        js = js,
+                                        onClick = onJobSpecSummaryClick
+                                    )
+                                }
                             }
-                        }
-                        repeat(columns - chunk.size) {
-                            Spacer(modifier = Modifier.weight(1f))
+                            repeat(columns - chunk.size) {
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
                         }
                     }
                 }
@@ -545,83 +573,148 @@ fun WorkOrderUpdateScreen(
 
             if (materialsList.isNotEmpty()) {
                 item {
-                    Text(
-                        text = stringResource(R.string.materials),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-                    )
-                }
-
-                val matChunks = materialsList.chunked(columns)
-                items(matChunks) { chunk ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+                    val totalMaterialCount = materialsList.sumOf { it.quantity }
+                    val totalMaterialPrice = materialsList.sumOf { it.totalAmount }
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp)
+                            .clickable { isMaterialsExpanded = !isMaterialsExpanded },
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        )
                     ) {
-                        chunk.forEach { material ->
-                            Box(modifier = Modifier.weight(1f)) {
-                                WorkOrderMaterialSummaryItem(
-                                    material = material,
-                                    nf = nf,
-                                    onClick = { showMaterialPriceDialog = it }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.materials),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "${nf.displayNumberFromDouble(totalMaterialCount)} item(s) • Total: ${
+                                        nf.displayDollars(
+                                            totalMaterialPrice
+                                        )
+                                    }",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
-                        }
-                        repeat(columns - chunk.size) {
-                            Spacer(modifier = Modifier.weight(1f))
+                            Icon(
+                                if (isMaterialsExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
                         }
                     }
                 }
-            }
 
-            if (expensesList.isNotEmpty()) {
-                item {
-                    Text(
-                        text = stringResource(R.string.invoices),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-                    )
-                }
-
-                val expChunks = expensesList.chunked(columns)
-                items(expChunks) { chunk ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
-                    ) {
-                        chunk.forEach { expense ->
-                            Box(modifier = Modifier.weight(1f)) {
-                                WorkOrderExpenseSummaryItem(expense, nf)
+                if (isMaterialsExpanded) {
+                    val matChunks = materialsList.chunked(columns)
+                    items(matChunks) { chunk ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+                        ) {
+                            chunk.forEach { material ->
+                                Box(modifier = Modifier.weight(1f)) {
+                                    WorkOrderMaterialSummaryItem(
+                                        material = material,
+                                        nf = nf,
+                                        onClick = { showMaterialPriceDialog = it }
+                                    )
+                                }
+                            }
+                            repeat(columns - chunk.size) {
+                                Spacer(modifier = Modifier.weight(1f))
                             }
                         }
-                        repeat(columns - chunk.size) {
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
                     }
                 }
             }
 
-            if (individualExpenses.isNotEmpty()) {
+            if (expensesList.isNotEmpty() || individualExpenses.isNotEmpty()) {
                 item {
-                    Text(
-                        text = stringResource(R.string.expenses),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-                    )
+                    val totalExpensesAmount = expensesList.sumOf { it.totalAmount }
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp)
+                            .clickable { isExpensesExpanded = !isExpensesExpanded },
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.expenses),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "${individualExpenses.size} item(s) • Total: ${
+                                        nf.displayDollars(
+                                            totalExpensesAmount
+                                        )
+                                    }",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Icon(
+                                if (isExpensesExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
                 }
 
-                items(individualExpenses) { expense ->
-                    WorkOrderHistoryExpenseItem(
-                        item = expense,
-                        index = individualExpenses.indexOf(expense),
-                        onClick = {} // View only at work order level? Or navigate to history?
-                    )
+                if (isExpensesExpanded) {
+                    if (expensesList.isNotEmpty()) {
+                        val expChunks = expensesList.chunked(columns)
+                        items(expChunks) { chunk ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
+                            ) {
+                                chunk.forEach { expense ->
+                                    Box(modifier = Modifier.weight(1f)) {
+                                        WorkOrderExpenseSummaryItem(expense, nf)
+                                    }
+                                }
+                                repeat(columns - chunk.size) {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
+                            }
+                        }
+                    }
+
+                    if (individualExpenses.isNotEmpty()) {
+                        items(individualExpenses) { expense ->
+                            WorkOrderHistoryExpenseItem(
+                                item = expense,
+                                index = individualExpenses.indexOf(expense),
+                                onClick = {}
+                            )
+                        }
+                    }
                 }
             }
 
