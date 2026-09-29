@@ -278,6 +278,9 @@
     <string name="child_material">Child Material</string>
     <string name="query">Search query</string>
     <string name="sync_data">Sync Data</string>
+    <string name="action_purge_orphan_pictures">Clean Up Drive Pictures</string>
+    <string name="msg_purge_orphan_pictures_prompt">Are you sure you want to scan and remove picture files on Google Drive that are no longer referenced in your database? This action cannot be undone.</string>
+    <string name="action_clean_up">Clean Up</string>
     <string name="settings">Settings</string>
     <string name="default_web_client_id">659552924329-ihbi24aqo9kjitctefhc3lnqgkf9ajg5.apps.googleusercontent.com</string>
 

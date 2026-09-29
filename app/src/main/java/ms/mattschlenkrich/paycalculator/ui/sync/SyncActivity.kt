@@ -127,6 +127,11 @@ class SyncActivity : ComponentActivity() {
                             handleError("Delete failed", e) { }
                         }
                     },
+                    onPurgeOrphanPictures = {
+                        syncViewModel.purgeOrphanPictures { e ->
+                            handleError("Purge orphan pictures failed", e) { }
+                        }
+                    },
                 ) {
                     syncViewModel.clearBackups { e ->
                         handleError("Clear backups failed", e) { }

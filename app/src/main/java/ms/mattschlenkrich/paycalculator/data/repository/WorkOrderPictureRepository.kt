@@ -1,41 +1,42 @@
 package ms.mattschlenkrich.paycalculator.data.repository
 
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
+import ms.mattschlenkrich.paycalculator.data.entity.ExpensePictures
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryPictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
 
 class WorkOrderPictureRepository(db: PayDatabase) {
-    private val workOrderPictureDao = db.getWorkOrderPictureDao()
+    private val dao = db.getWorkOrderPictureDao()
 
-    fun getPicturesForWorkOrder(workOrderId: Long) =
-        workOrderPictureDao.getPicturesForWorkOrder(workOrderId)
+    fun getPicturesForWorkOrder(workOrderId: Long) = dao.getPicturesForWorkOrder(workOrderId)
+    suspend fun insertWorkOrderPicture(picture: WorkOrderPictures) =
+        dao.insertWorkOrderPicture(picture)
 
-    suspend fun getPicturesForWorkOrderSync(workOrderId: Long) =
-        workOrderPictureDao.getPicturesForWorkOrderSync(workOrderId)
+    suspend fun updateWorkOrderPicture(picture: WorkOrderPictures) =
+        dao.updateWorkOrderPicture(picture)
 
-    fun getPicturesForHistory(historyId: Long) =
-        workOrderPictureDao.getPicturesForHistory(historyId)
+    suspend fun deleteWorkOrderPictureById(pictureId: Long, updateTime: String) =
+        dao.deleteWorkOrderPictureById(pictureId, updateTime)
 
-    suspend fun getPicturesForHistorySync(historyId: Long) =
-        workOrderPictureDao.getPicturesForHistorySync(historyId)
+    suspend fun getPendingWorkOrderUploadsSync() = dao.getPendingWorkOrderUploadsSync()
 
-    fun getPicturesForExpense(expenseId: Long) =
-        workOrderPictureDao.getPicturesForExpense(expenseId)
+    fun getPicturesForHistory(historyId: Long) = dao.getPicturesForHistory(historyId)
+    suspend fun insertHistoryPicture(picture: WorkOrderHistoryPictures) =
+        dao.insertHistoryPicture(picture)
 
-    suspend fun getPicturesForExpenseSync(expenseId: Long) =
-        workOrderPictureDao.getPicturesForExpenseSync(expenseId)
+    suspend fun updateHistoryPicture(picture: WorkOrderHistoryPictures) =
+        dao.updateHistoryPicture(picture)
 
-    suspend fun insertPicture(picture: WorkOrderPictures) =
-        workOrderPictureDao.insertPicture(picture)
+    suspend fun deleteHistoryPictureById(pictureId: Long, updateTime: String) =
+        dao.deleteHistoryPictureById(pictureId, updateTime)
 
-    suspend fun updatePicture(picture: WorkOrderPictures) =
-        workOrderPictureDao.updatePicture(picture)
+    suspend fun getPendingHistoryUploadsSync() = dao.getPendingHistoryUploadsSync()
 
-    suspend fun deletePictureById(pictureId: Long, updateTime: String) =
-        workOrderPictureDao.deletePictureById(pictureId, updateTime)
+    fun getPicturesForExpense(expenseId: Long) = dao.getPicturesForExpense(expenseId)
+    suspend fun insertExpensePicture(picture: ExpensePictures) = dao.insertExpensePicture(picture)
+    suspend fun updateExpensePicture(picture: ExpensePictures) = dao.updateExpensePicture(picture)
+    suspend fun deleteExpensePictureById(pictureId: Long, updateTime: String) =
+        dao.deleteExpensePictureById(pictureId, updateTime)
 
-    suspend fun getPendingUploadsSync() =
-        workOrderPictureDao.getPendingUploadsSync()
-
-    suspend fun getPictureSync(pictureId: Long) =
-        workOrderPictureDao.getPictureSync(pictureId)
+    suspend fun getPendingExpenseUploadsSync() = dao.getPendingExpenseUploadsSync()
 }

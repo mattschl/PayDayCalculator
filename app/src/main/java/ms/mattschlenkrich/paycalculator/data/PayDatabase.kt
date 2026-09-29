@@ -28,6 +28,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.Areas
 import ms.mattschlenkrich.paycalculator.data.entity.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.data.entity.EmployerTaxTypes
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
+import ms.mattschlenkrich.paycalculator.data.entity.ExpensePictures
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpecMerged
 import ms.mattschlenkrich.paycalculator.data.entity.Material
@@ -44,6 +45,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryPictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec
@@ -85,6 +87,8 @@ import java.io.File
         SyncHistory::class,
         WorkOrderHistoryExpense::class,
         WorkOrderPictures::class,
+        WorkOrderHistoryPictures::class,
+        ExpensePictures::class,
     ],
     views = [ExtraDefinitionAndType::class],
 //    autoMigrations =
@@ -132,6 +136,71 @@ abstract class PayDatabase : RoomDatabase() {
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_work_order_pictures_wpWorkOrderId` ON `work_order_pictures` (`wpWorkOrderId`)")
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_work_order_pictures_wpHistoryId` ON `work_order_pictures` (`wpHistoryId`)")
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_work_order_pictures_wpExpenseId` ON `work_order_pictures` (`wpExpenseId`)")
+            }
+        }
+
+        private val MIGRATION_22_23 = object : Migration(22, 23) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `workOrderHistoryPictures` (" +
+                            "`pictureId` INTEGER NOT NULL, " +
+                            "`wohpHistoryId` INTEGER NOT NULL, " +
+                            "`driveFileId` TEXT, " +
+                            "`wohpIsDeleted` INTEGER NOT NULL DEFAULT 0, " +
+                            "`wohpUploadTime` TEXT, " +
+                            "`wohpUpdateTime` TEXT NOT NULL, " +
+                            "PRIMARY KEY(`pictureId`), " +
+                            "FOREIGN KEY(`wohpHistoryId`) REFERENCES `workOrderHistory`(`woHistoryId`) ON UPDATE NO ACTION ON DELETE CASCADE)",
+                )
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_workOrderHistoryPictures_wohpHistoryId` ON `workOrderHistoryPictures` (`wohpHistoryId`)")
+
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `expensePictures` (" +
+                            "`pictureId` INTEGER NOT NULL, " +
+                            "`epExpenseId` INTEGER NOT NULL, " +
+                            "`driveFileId` TEXT, " +
+                            "`epIsDeleted` INTEGER NOT NULL DEFAULT 0, " +
+                            "`epUploadTime` TEXT, " +
+                            "`epUpdateTime` TEXT NOT NULL, " +
+                            "PRIMARY KEY(`pictureId`), " +
+                            "FOREIGN KEY(`epExpenseId`) REFERENCES `workOrderHistoryExpenses`(`woHistoryExpenseId`) ON UPDATE NO ACTION ON DELETE CASCADE)",
+                )
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_expensePictures_epExpenseId` ON `expensePictures` (`epExpenseId`)")
+
+                db.execSQL(
+                    "INSERT INTO `workOrderHistoryPictures` (" +
+                            "`pictureId`, `wohpHistoryId`, `driveFileId`, `wohpIsDeleted`, `wohpUploadTime`, `wohpUpdateTime`) " +
+                            "SELECT `pictureId`, `wopHistoryId`, `driveFileId`, `wopIsDeleted`, `wopUploadTime`, `wopUpdateTime` " +
+                            "FROM `workOrderPictures` WHERE `wopHistoryId` IS NOT NULL AND `wopHistoryId` > 0",
+                )
+
+                db.execSQL(
+                    "INSERT INTO `expensePictures` (" +
+                            "`pictureId`, `epExpenseId`, `driveFileId`, `epIsDeleted`, `epUploadTime`, `epUpdateTime`) " +
+                            "SELECT `pictureId`, `wopExpenseId`, `driveFileId`, `wopIsDeleted`, `wopUploadTime`, `wopUpdateTime` " +
+                            "FROM `workOrderPictures` WHERE `wopExpenseId` IS NOT NULL AND `wopExpenseId` > 0",
+                )
+
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `workOrderPictures_new` (" +
+                            "`pictureId` INTEGER NOT NULL, " +
+                            "`wopWorkOrderId` INTEGER NOT NULL, " +
+                            "`driveFileId` TEXT, " +
+                            "`wopIsDeleted` INTEGER NOT NULL DEFAULT 0, " +
+                            "`wopUploadTime` TEXT, " +
+                            "`wopUpdateTime` TEXT NOT NULL, " +
+                            "PRIMARY KEY(`pictureId`), " +
+                            "FOREIGN KEY(`wopWorkOrderId`) REFERENCES `workOrders`(`workOrderId`) ON UPDATE NO ACTION ON DELETE CASCADE)",
+                )
+                db.execSQL(
+                    "INSERT INTO `workOrderPictures_new` (" +
+                            "`pictureId`, `wopWorkOrderId`, `driveFileId`, `wopIsDeleted`, `wopUploadTime`, `wopUpdateTime`) " +
+                            "SELECT `pictureId`, `wopWorkOrderId`, `driveFileId`, `wopIsDeleted`, `wopUploadTime`, `wopUpdateTime` " +
+                            "FROM `workOrderPictures` WHERE `wopWorkOrderId` IS NOT NULL AND `wopWorkOrderId` > 0",
+                )
+                db.execSQL("DROP TABLE `workOrderPictures`")
+                db.execSQL("ALTER TABLE `workOrderPictures_new` RENAME TO `workOrderPictures`")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_workOrderPictures_wopWorkOrderId` ON `workOrderPictures` (`wopWorkOrderId`)")
             }
         }
 
@@ -399,7 +468,8 @@ abstract class PayDatabase : RoomDatabase() {
                     MIGRATION_18_19,
                     MIGRATION_19_20,
                     MIGRATION_20_21,
-                    MIGRATION_21_22
+                    MIGRATION_21_22,
+                    MIGRATION_22_23
                 )
                 .build()
         }

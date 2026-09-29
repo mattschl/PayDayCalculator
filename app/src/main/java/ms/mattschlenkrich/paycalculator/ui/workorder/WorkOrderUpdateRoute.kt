@@ -24,6 +24,7 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.StringFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
+import ms.mattschlenkrich.paycalculator.data.model.PictureItem
 import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.JobSpecViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
@@ -125,8 +126,12 @@ fun WorkOrderUpdateRoute(
         workOrderViewModel.getWorkOrderExpensesAll(initialWo.workOrderId)
     }.observeAsState(emptyList())
 
-    val pictures by workOrderViewModel.getPicturesByWorkOrderId(initialWo.workOrderId)
+    val pictures by workOrderViewModel.getPicturesForWorkOrder(initialWo.workOrderId)
         .observeAsState(emptyList())
+
+    val pictureItems = remember(pictures) {
+        pictures.map { PictureItem(it.pictureId, it.driveFileId) }
+    }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -139,7 +144,12 @@ fun WorkOrderUpdateRoute(
         pictures.forEach { pic ->
             val tempFile = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
             if ((!tempFile.exists()) && (pic.driveFileId != null)) {
-                workOrderViewModel.downloadPicture(helper, pic, context.cacheDir)
+                workOrderViewModel.downloadPicture(
+                    helper,
+                    pic.pictureId,
+                    pic.driveFileId,
+                    context.cacheDir
+                )
             }
         }
     }
@@ -325,7 +335,7 @@ fun WorkOrderUpdateRoute(
         },
         expensesList = expensesSummary,
         individualExpenses = individualExpenses,
-        pictures = pictures,
+        pictures = pictureItems,
         onPictureTaken = { file ->
             val helper = mainViewModel.getOrInitializeDriveService(context)
             if (helper != null) {
@@ -337,12 +347,10 @@ fun WorkOrderUpdateRoute(
                         driveFileName = "pic_$pictureId.webp",
                     )
                     val now = df.getCurrentUTCTimeAsString()
-                    workOrderViewModel.insertPicture(
+                    workOrderViewModel.insertWorkOrderPicture(
                         WorkOrderPictures(
                             pictureId = pictureId,
                             wopWorkOrderId = initialWo.workOrderId,
-                            wopHistoryId = null,
-                            wopExpenseId = null,
                             driveFileId = driveId,
                             wopIsDeleted = false,
                             wopUploadTime = now,
@@ -354,21 +362,29 @@ fun WorkOrderUpdateRoute(
                 Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_SHORT).show()
             }
         },
-        onDeletePicture = { pic ->
+        onDeletePicture = { picItem ->
             coroutineScope.launch {
-                workOrderViewModel.deletePictureById(pic.pictureId, df.getCurrentUTCTimeAsString())
-                val tempFile = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
+                workOrderViewModel.deleteWorkOrderPictureById(
+                    picItem.pictureId,
+                    df.getCurrentUTCTimeAsString()
+                )
+                val tempFile = File(context.cacheDir, "pictures/pic_${picItem.pictureId}.webp")
                 if (tempFile.exists()) tempFile.delete()
-                pic.driveFileId?.let { driveId ->
+                picItem.driveFileId?.let { driveId ->
                     mainViewModel.getOrInitializeDriveService(context)?.deleteFile(driveId)
                 }
             }
         },
-        onDownloadPicture = { pic ->
+        onDownloadPicture = { picItem ->
             val helper = mainViewModel.getOrInitializeDriveService(context)
             if (helper != null) {
                 coroutineScope.launch {
-                    workOrderViewModel.downloadPicture(helper, pic, context.cacheDir)
+                    workOrderViewModel.downloadPicture(
+                        helper,
+                        picItem.pictureId,
+                        picItem.driveFileId,
+                        context.cacheDir
+                    )
                 }
             } else {
                 Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_SHORT).show()

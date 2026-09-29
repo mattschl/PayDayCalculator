@@ -62,10 +62,10 @@ import ms.mattschlenkrich.paycalculator.common.compose.draggableFab
 import ms.mattschlenkrich.paycalculator.data.entity.Areas
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
-import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
 import ms.mattschlenkrich.paycalculator.data.model.ExpenseSummary
 import ms.mattschlenkrich.paycalculator.data.model.JobSpecAndQuantity
 import ms.mattschlenkrich.paycalculator.data.model.MaterialAndQuantity
+import ms.mattschlenkrich.paycalculator.data.model.PictureItem
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paycalculator.data.model.WorkPerformedAndQuantity
@@ -125,10 +125,10 @@ fun WorkOrderUpdateScreen(
     onJobSpecSummaryClick: (JobSpecAndQuantity) -> Unit,
     expensesList: List<ExpenseSummary>,
     individualExpenses: List<WorkOrderHistoryExpense>,
-    pictures: List<WorkOrderPictures>,
+    pictures: List<PictureItem>,
     onPictureTaken: (File) -> Unit,
-    onDeletePicture: (WorkOrderPictures) -> Unit,
-    onDownloadPicture: (WorkOrderPictures) -> Unit,
+    onDeletePicture: (PictureItem) -> Unit,
+    onDownloadPicture: (PictureItem) -> Unit,
     onDoneClick: () -> Unit,
     minColumnWidth: Int = LocalMinColumnWidth.current,
 ) {

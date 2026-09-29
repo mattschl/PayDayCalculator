@@ -9,9 +9,11 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.worker.PictureUploadWorker
+import ms.mattschlenkrich.paycalculator.data.entity.ExpensePictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryPictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
 import ms.mattschlenkrich.paycalculator.data.repository.WorkOrderRepository
@@ -132,8 +134,8 @@ class WorkOrderViewModel(
     fun getExpensesByHistory(historyId: Long) =
         workOrderRepository.getExpensesByHistory(historyId)
 
-    fun getPicturesByWorkOrderId(workOrderId: Long) =
-        workOrderRepository.getPicturesByWorkOrderId(workOrderId)
+    fun getPicturesForWorkOrder(workOrderId: Long) =
+        workOrderRepository.getPicturesForWorkOrder(workOrderId)
 
     fun getPicturesForHistory(historyId: Long) =
         workOrderRepository.getPicturesForHistory(historyId)
@@ -141,23 +143,33 @@ class WorkOrderViewModel(
     fun getPicturesForExpense(expenseId: Long) =
         workOrderRepository.getPicturesForExpense(expenseId)
 
-    suspend fun insertPicture(picture: WorkOrderPictures) =
-        workOrderRepository.insertPicture(picture)
+    suspend fun insertWorkOrderPicture(picture: WorkOrderPictures) =
+        workOrderRepository.insertWorkOrderPicture(picture)
 
-    suspend fun updatePicture(picture: WorkOrderPictures) =
-        workOrderRepository.updatePicture(picture)
+    suspend fun deleteWorkOrderPictureById(pictureId: Long, updateTime: String) =
+        workOrderRepository.deleteWorkOrderPictureById(pictureId, updateTime)
 
-    suspend fun deletePictureById(pictureId: Long, updateTime: String) =
-        workOrderRepository.deletePictureById(pictureId, updateTime)
+    suspend fun insertHistoryPicture(picture: WorkOrderHistoryPictures) =
+        workOrderRepository.insertHistoryPicture(picture)
+
+    suspend fun deleteHistoryPictureById(pictureId: Long, updateTime: String) =
+        workOrderRepository.deleteHistoryPictureById(pictureId, updateTime)
+
+    suspend fun insertExpensePicture(picture: ExpensePictures) =
+        workOrderRepository.insertExpensePicture(picture)
+
+    suspend fun deleteExpensePictureById(pictureId: Long, updateTime: String) =
+        workOrderRepository.deleteExpensePictureById(pictureId, updateTime)
 
     suspend fun downloadPicture(
         driveServiceHelper: DriveServiceHelper,
-        picture: WorkOrderPictures,
+        pictureId: Long,
+        driveFileId: String?,
         cacheDir: File
     ): File? {
-        val fileId = picture.driveFileId ?: return null
+        val fileId = driveFileId ?: return null
         val storageDir = File(cacheDir, "pictures").apply { if (!exists()) mkdirs() }
-        val targetFile = File(storageDir, "pic_${picture.pictureId}.webp")
+        val targetFile = File(storageDir, "pic_$pictureId.webp")
         if (targetFile.exists() && targetFile.length() > 0) return targetFile
 
         return try {

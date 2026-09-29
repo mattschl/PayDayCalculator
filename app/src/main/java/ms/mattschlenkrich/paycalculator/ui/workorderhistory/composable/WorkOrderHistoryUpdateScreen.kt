@@ -42,9 +42,9 @@ import ms.mattschlenkrich.paycalculator.data.entity.Areas
 import ms.mattschlenkrich.paycalculator.data.entity.Material
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
-import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed
 import ms.mattschlenkrich.paycalculator.data.model.MaterialInSequence
+import ms.mattschlenkrich.paycalculator.data.model.PictureItem
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWorkPerformedCombined
 import java.io.File
 
@@ -109,11 +109,11 @@ fun WorkOrderHistoryUpdateScreen(
     onUpdateWorkPerformedDefinition: (WorkOrderHistoryWorkPerformedCombined) -> Unit,
     onUpdateMaterialInHistory: (MaterialInSequence) -> Unit,
     onUpdateMaterialDefinition: (MaterialInSequence) -> Unit,
-    pictures: List<WorkOrderPictures>,
+    pictures: List<PictureItem>,
     onPictureTaken: (File) -> Unit,
-    onDeletePicture: (WorkOrderPictures) -> Unit,
-    onDownloadPicture: (WorkOrderPictures) -> Unit,
-    expensePictures: List<WorkOrderPictures>,
+    onDeletePicture: (PictureItem) -> Unit,
+    onDownloadPicture: (PictureItem) -> Unit,
+    expensePictures: List<PictureItem>,
     onExpenseSelectedForPictures: (Long) -> Unit,
     onExpensePictureTaken: (File, Long) -> Unit,
     isSaving: Boolean = false,

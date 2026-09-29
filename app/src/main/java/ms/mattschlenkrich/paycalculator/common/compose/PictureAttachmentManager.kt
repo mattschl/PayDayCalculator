@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -48,20 +47,20 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.FileProvider
 import coil.compose.SubcomposeAsyncImage
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
+import ms.mattschlenkrich.paycalculator.data.model.PictureItem
 import java.io.File
 
 @Composable
 fun PictureAttachmentManager(
-    pictures: List<WorkOrderPictures>,
+    pictures: List<PictureItem>,
     onPictureTaken: (File) -> Unit,
-    onDeletePicture: (WorkOrderPictures) -> Unit,
-    onDownloadPicture: (WorkOrderPictures) -> Unit,
+    onDeletePicture: (PictureItem) -> Unit,
+    onDownloadPicture: (PictureItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    var showFullImage by remember { mutableStateOf<WorkOrderPictures?>(null) }
-    var pictureToDelete by remember { mutableStateOf<WorkOrderPictures?>(null) }
+    var showFullImage by remember { mutableStateOf<PictureItem?>(null) }
+    var pictureToDelete by remember { mutableStateOf<PictureItem?>(null) }
     var showSelectionDialog by remember { mutableStateOf(value = false) }
     var pendingFile by remember { mutableStateOf<File?>(null) }
 
@@ -148,58 +147,35 @@ fun PictureAttachmentManager(
         AlertDialog(
             onDismissRequest = { showSelectionDialog = false },
             title = { Text(stringResource(R.string.camera_or_gallery)) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    TextButton(
-                        onClick = {
-                            showSelectionDialog = false
-                            val timeStamp = System.currentTimeMillis()
-                            val storageDir = File(context.cacheDir, "pictures")
-                            if (!storageDir.exists()) storageDir.mkdirs()
-                            val file = File(storageDir, "IMG_$timeStamp.webp")
-                            val uri = FileProvider.getUriForFile(
-                                context,
-                                "ms.mattschlenkrich.paycalculator.fileprovider",
-                                file
-                            )
-                            pendingFile = file
-                            cameraLauncher.launch(uri)
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(Icons.Default.AddAPhoto, contentDescription = null)
-                            Spacer(Modifier.padding(horizontal = 8.dp))
-                            Text(stringResource(R.string.take_picture))
-                        }
+            text = { Text(stringResource(R.string.camera_or_gallery)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showSelectionDialog = false
+                        val timeStamp = System.currentTimeMillis()
+                        val storageDir = File(context.cacheDir, "pictures")
+                        if (!storageDir.exists()) storageDir.mkdirs()
+                        val file = File(storageDir, "IMG_$timeStamp.webp")
+                        pendingFile = file
+                        val uri = FileProvider.getUriForFile(
+                            context,
+                            "${context.packageName}.fileprovider",
+                            file
+                        )
+                        cameraLauncher.launch(uri)
                     }
-                    TextButton(
-                        onClick = {
-                            showSelectionDialog = false
-                            galleryLauncher.launch("image/*")
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(Icons.Default.Image, contentDescription = null)
-                            Spacer(Modifier.padding(horizontal = 8.dp))
-                            Text(stringResource(R.string.select_from_gallery))
-                        }
-                    }
+                ) {
+                    Text(stringResource(R.string.take_picture))
                 }
             },
-            confirmButton = {},
             dismissButton = {
-                TextButton(onClick = { showSelectionDialog = false }) {
-                    Text(stringResource(R.string.cancel))
+                TextButton(
+                    onClick = {
+                        showSelectionDialog = false
+                        galleryLauncher.launch("image/*")
+                    }
+                ) {
+                    Text(stringResource(R.string.pictures))
                 }
             }
         )
@@ -209,17 +185,18 @@ fun PictureAttachmentManager(
         FullScreenImageDialog(
             picture = pic,
             onDelete = {
-                pictureToDelete = pic
                 showFullImage = null
-            }
-        ) { showFullImage = null }
+                pictureToDelete = pic
+            },
+            onDismiss = { showFullImage = null }
+        )
     }
 
     pictureToDelete?.let { pic ->
         AlertDialog(
             onDismissRequest = { pictureToDelete = null },
             title = { Text(stringResource(R.string.delete_picture)) },
-            text = { Text(stringResource(R.string.confirm_delete_picture)) },
+            text = { Text(stringResource(R.string.are_you_sure_you_want_to_delete_)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -227,7 +204,7 @@ fun PictureAttachmentManager(
                         pictureToDelete = null
                     }
                 ) {
-                    Text(stringResource(R.string.delete))
+                    Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
@@ -241,7 +218,7 @@ fun PictureAttachmentManager(
 
 @Composable
 fun PictureThumbnail(
-    picture: WorkOrderPictures,
+    picture: PictureItem,
     imageFile: File?,
     onClick: () -> Unit,
     onDelete: () -> Unit
@@ -314,7 +291,7 @@ fun PictureThumbnail(
 
 @Composable
 fun FullScreenImageDialog(
-    picture: WorkOrderPictures,
+    picture: PictureItem,
     onDelete: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -352,17 +329,11 @@ fun FullScreenImageDialog(
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.End
             ) {
-                IconButton(
-                    onClick = onDelete,
-                    modifier = Modifier.background(
-                        Color.White.copy(alpha = 0.5f),
-                        shape = MaterialTheme.shapes.small
-                    )
-                ) {
+                IconButton(onClick = onDelete) {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = stringResource(R.string.delete),
-                        tint = MaterialTheme.colorScheme.error
+                        contentDescription = stringResource(R.string.delete_picture),
+                        tint = Color.Red
                     )
                 }
             }

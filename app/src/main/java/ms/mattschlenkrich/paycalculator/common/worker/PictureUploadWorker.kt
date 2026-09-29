@@ -29,8 +29,14 @@ class PictureUploadWorker(
 
         val db = PayDatabase(applicationContext)
         val repository = WorkOrderPictureRepository(db)
-        val pending = repository.getPendingUploadsSync()
-        if (pending.isEmpty()) return Result.success()
+
+        val pendingWo = repository.getPendingWorkOrderUploadsSync()
+        val pendingHist = repository.getPendingHistoryUploadsSync()
+        val pendingExp = repository.getPendingExpenseUploadsSync()
+
+        if (pendingWo.isEmpty() && pendingHist.isEmpty() && pendingExp.isEmpty()) {
+            return Result.success()
+        }
 
         val driveServiceHelper = try {
             val credential = GoogleAccountCredential.usingOAuth2(
@@ -52,10 +58,11 @@ class PictureUploadWorker(
 
         val df = DateFunctions()
         var allSuccess = true
-        for (pic in pending) {
+        val storageDir = File(applicationContext.cacheDir, "pictures")
+
+        for (pic in pendingWo) {
             try {
-                val tempFile =
-                    File(applicationContext.cacheDir, "pictures/pic_${pic.pictureId}.webp")
+                val tempFile = File(storageDir, "pic_${pic.pictureId}.webp")
                 if (tempFile.exists()) {
                     val driveId = driveServiceHelper.uploadFile(
                         localFile = tempFile,
@@ -63,7 +70,7 @@ class PictureUploadWorker(
                         driveFileName = "pic_${pic.pictureId}.webp"
                     )
                     val now = df.getCurrentUTCTimeAsString()
-                    repository.updatePicture(
+                    repository.updateWorkOrderPicture(
                         pic.copy(
                             driveFileId = driveId,
                             wopUploadTime = now,
@@ -73,7 +80,61 @@ class PictureUploadWorker(
                     tempFile.delete()
                 }
             } catch (e: Exception) {
-                Log.e("PictureUploadWorker", "Failed to upload picture ${pic.pictureId}", e)
+                Log.e(
+                    "PictureUploadWorker",
+                    "Failed to upload WorkOrder picture ${pic.pictureId}",
+                    e
+                )
+                allSuccess = false
+            }
+        }
+
+        for (pic in pendingHist) {
+            try {
+                val tempFile = File(storageDir, "pic_${pic.pictureId}.webp")
+                if (tempFile.exists()) {
+                    val driveId = driveServiceHelper.uploadFile(
+                        localFile = tempFile,
+                        mimeType = "image/webp",
+                        driveFileName = "pic_${pic.pictureId}.webp"
+                    )
+                    val now = df.getCurrentUTCTimeAsString()
+                    repository.updateHistoryPicture(
+                        pic.copy(
+                            driveFileId = driveId,
+                            wohpUploadTime = now,
+                            wohpUpdateTime = now
+                        )
+                    )
+                    tempFile.delete()
+                }
+            } catch (e: Exception) {
+                Log.e("PictureUploadWorker", "Failed to upload History picture ${pic.pictureId}", e)
+                allSuccess = false
+            }
+        }
+
+        for (pic in pendingExp) {
+            try {
+                val tempFile = File(storageDir, "pic_${pic.pictureId}.webp")
+                if (tempFile.exists()) {
+                    val driveId = driveServiceHelper.uploadFile(
+                        localFile = tempFile,
+                        mimeType = "image/webp",
+                        driveFileName = "pic_${pic.pictureId}.webp"
+                    )
+                    val now = df.getCurrentUTCTimeAsString()
+                    repository.updateExpensePicture(
+                        pic.copy(
+                            driveFileId = driveId,
+                            epUploadTime = now,
+                            epUpdateTime = now
+                        )
+                    )
+                    tempFile.delete()
+                }
+            } catch (e: Exception) {
+                Log.e("PictureUploadWorker", "Failed to upload Expense picture ${pic.pictureId}", e)
                 allSuccess = false
             }
         }

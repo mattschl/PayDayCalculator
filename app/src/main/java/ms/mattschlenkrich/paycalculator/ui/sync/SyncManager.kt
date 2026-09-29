@@ -122,11 +122,6 @@ class SyncManager(
 
             cleanupOldBackups(fileList)
 
-            val orphanReport = purgeOrphanPicturesOnDrive()
-            if (orphanReport.isNotBlank()) {
-                syncReport.append("\n$orphanReport")
-            }
-
             status = "Success"
         } catch (e: Exception) {
             status = "Error: ${e.message}"
@@ -228,27 +223,66 @@ class SyncManager(
         try {
             val appDb = PayDatabase(application)
             val pictureDao = appDb.getWorkOrderPictureDao()
-            val pending = pictureDao.getPendingUploadsSync()
-            if (pending.isNotEmpty()) {
-                onProgressUpdate("Uploading ${pending.size} picture(s)...")
-                val storageDir = File(application.cacheDir, "pictures")
-                for (pic in pending) {
-                    val tempFile = File(storageDir, "pic_${pic.pictureId}.webp")
-                    if (tempFile.exists()) {
-                        val driveId = driveServiceHelper.uploadFile(
-                            localFile = tempFile,
-                            mimeType = "image/webp",
-                            driveFileName = "pic_${pic.pictureId}.webp",
-                        )
-                        val now = df.getCurrentUTCTimeAsString()
-                        val updated = pic.copy(
+            val now = df.getCurrentUTCTimeAsString()
+            val storageDir = File(application.cacheDir, "pictures")
+
+            val pendingWo = pictureDao.getPendingWorkOrderUploadsSync()
+            for (pic in pendingWo) {
+                val tempFile = File(storageDir, "pic_${pic.pictureId}.webp")
+                if (tempFile.exists()) {
+                    val driveId = driveServiceHelper.uploadFile(
+                        localFile = tempFile,
+                        mimeType = "image/webp",
+                        driveFileName = "pic_${pic.pictureId}.webp",
+                    )
+                    pictureDao.updateWorkOrderPicture(
+                        pic.copy(
                             driveFileId = driveId,
                             wopUploadTime = now,
-                            wopUpdateTime = now,
+                            wopUpdateTime = now
                         )
-                        pictureDao.updatePicture(updated)
-                        tempFile.delete()
-                    }
+                    )
+                    tempFile.delete()
+                }
+            }
+
+            val pendingHist = pictureDao.getPendingHistoryUploadsSync()
+            for (pic in pendingHist) {
+                val tempFile = File(storageDir, "pic_${pic.pictureId}.webp")
+                if (tempFile.exists()) {
+                    val driveId = driveServiceHelper.uploadFile(
+                        localFile = tempFile,
+                        mimeType = "image/webp",
+                        driveFileName = "pic_${pic.pictureId}.webp",
+                    )
+                    pictureDao.updateHistoryPicture(
+                        pic.copy(
+                            driveFileId = driveId,
+                            wohpUploadTime = now,
+                            wohpUpdateTime = now
+                        )
+                    )
+                    tempFile.delete()
+                }
+            }
+
+            val pendingExp = pictureDao.getPendingExpenseUploadsSync()
+            for (pic in pendingExp) {
+                val tempFile = File(storageDir, "pic_${pic.pictureId}.webp")
+                if (tempFile.exists()) {
+                    val driveId = driveServiceHelper.uploadFile(
+                        localFile = tempFile,
+                        mimeType = "image/webp",
+                        driveFileName = "pic_${pic.pictureId}.webp",
+                    )
+                    pictureDao.updateExpensePicture(
+                        pic.copy(
+                            driveFileId = driveId,
+                            epUploadTime = now,
+                            epUpdateTime = now
+                        )
+                    )
+                    tempFile.delete()
                 }
             }
         } catch (e: Exception) {
@@ -260,23 +294,35 @@ class SyncManager(
         try {
             val appDb = PayDatabase(application)
             val pictureDao = appDb.getWorkOrderPictureDao()
-            val allPictures = pictureDao.getAllPicturesSync()
             val storageDir = File(application.cacheDir, "pictures").apply { mkdirs() }
-            val missing = allPictures.filter { pic ->
-                val driveId = pic.driveFileId
-                val tempFile = File(storageDir, "pic_${pic.pictureId}.webp")
-                (driveId != null) && (!tempFile.exists())
-            }
 
-            if (missing.isNotEmpty()) {
-                onProgressUpdate("Downloading ${missing.size} picture(s)...")
-                for (pic in missing) {
-                    val driveId = pic.driveFileId ?: continue
-                    val targetFile = File(storageDir, "pic_${pic.pictureId}.webp")
+            for (pic in pictureDao.getAllWorkOrderPicturesSync()) {
+                val driveId = pic.driveFileId ?: continue
+                val targetFile = File(storageDir, "pic_${pic.pictureId}.webp")
+                if (!targetFile.exists()) {
                     try {
                         driveServiceHelper.downloadFileById(driveId, targetFile)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Failed to download synced picture ${pic.pictureId}", e)
+                    } catch (_: Exception) {
+                    }
+                }
+            }
+            for (pic in pictureDao.getAllHistoryPicturesSync()) {
+                val driveId = pic.driveFileId ?: continue
+                val targetFile = File(storageDir, "pic_${pic.pictureId}.webp")
+                if (!targetFile.exists()) {
+                    try {
+                        driveServiceHelper.downloadFileById(driveId, targetFile)
+                    } catch (_: Exception) {
+                    }
+                }
+            }
+            for (pic in pictureDao.getAllExpensePicturesSync()) {
+                val driveId = pic.driveFileId ?: continue
+                val targetFile = File(storageDir, "pic_${pic.pictureId}.webp")
+                if (!targetFile.exists()) {
+                    try {
+                        driveServiceHelper.downloadFileById(driveId, targetFile)
+                    } catch (_: Exception) {
                     }
                 }
             }
@@ -291,7 +337,7 @@ class SyncManager(
                 onProgressUpdate("Scanning for orphan pictures on Google Drive...")
                 val driveFiles = driveServiceHelper.queryFiles().files ?: emptyList()
                 val pictureFilesOnDrive = driveFiles.filter {
-                    it.name != null && (it.name.startsWith("pic_") || it.name.endsWith(".webp") || it.name.endsWith(
+                    (it.name != null) && (it.name.startsWith("pic_") || it.name.endsWith(".webp") || it.name.endsWith(
                         ".jpg"
                     ) || it.name.endsWith(".jpeg"))
                 }
@@ -301,8 +347,12 @@ class SyncManager(
                 }
 
                 val appDb = PayDatabase(application)
-                val activePictures = appDb.getWorkOrderPictureDao().getAllPicturesSync()
-                val validDriveFileIds = activePictures.mapNotNull { it.driveFileId }.toSet()
+                val pictureDao = appDb.getWorkOrderPictureDao()
+                val validDriveFileIds =
+                    (pictureDao.getAllWorkOrderPicturesSync().mapNotNull { it.driveFileId } +
+                            pictureDao.getAllHistoryPicturesSync().mapNotNull { it.driveFileId } +
+                            pictureDao.getAllExpensePicturesSync()
+                                .mapNotNull { it.driveFileId }).toSet()
 
                 var deletedCount = 0
                 for (driveFile in pictureFilesOnDrive) {
@@ -430,6 +480,10 @@ class SyncManager(
                     .let { it.first + it.second }
                 totalCount += syncHelper.syncWorkOrderPictures(backupDb)
                     .let { it.first + it.second }
+                totalCount += syncHelper.syncWorkOrderHistoryPictures(backupDb)
+                    .let { it.first + it.second }
+                totalCount += syncHelper.syncExpensePictures(backupDb)
+                    .let { it.first + it.second }
                 totalCount += syncHelper.syncSyncHistory(backupDb).let { it.first + it.second }
 
                 downloadMissingPictures()
@@ -494,6 +548,10 @@ class SyncManager(
                 totalCount += syncHelper.syncWorkOrderHistoryExpense(backupDb)
                     .let { it.first + it.second }
                 totalCount += syncHelper.syncWorkOrderPictures(backupDb)
+                    .let { it.first + it.second }
+                totalCount += syncHelper.syncWorkOrderHistoryPictures(backupDb)
+                    .let { it.first + it.second }
+                totalCount += syncHelper.syncExpensePictures(backupDb)
                     .let { it.first + it.second }
                 totalCount += syncHelper.syncSyncHistory(backupDb).let { it.first + it.second }
 

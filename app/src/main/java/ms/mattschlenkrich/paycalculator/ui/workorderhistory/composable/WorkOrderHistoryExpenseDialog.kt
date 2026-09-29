@@ -40,7 +40,7 @@ import ms.mattschlenkrich.paycalculator.common.compose.PictureAttachmentManager
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
-import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
+import ms.mattschlenkrich.paycalculator.data.model.PictureItem
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,10 +54,10 @@ fun WorkOrderHistoryExpenseDialog(
     onAddExpense: (String, String, String, String) -> Unit,
     onUpdateExpense: (WorkOrderHistoryExpense) -> Unit = {},
     onDeleteExpense: (Long) -> Unit = {},
-    pictures: List<WorkOrderPictures> = emptyList(),
+    pictures: List<PictureItem> = emptyList(),
     onPictureTaken: (File) -> Unit = {},
-    onDeletePicture: (WorkOrderPictures) -> Unit = {},
-    onDownloadPicture: (WorkOrderPictures) -> Unit = {},
+    onDeletePicture: (PictureItem) -> Unit = {},
+    onDownloadPicture: (PictureItem) -> Unit = {},
 ) {
     if (showDialog) {
         val nf = remember { NumberFunctions() }

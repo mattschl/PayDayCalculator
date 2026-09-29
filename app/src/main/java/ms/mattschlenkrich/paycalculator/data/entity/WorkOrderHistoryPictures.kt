@@ -8,24 +8,24 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Entity(
-    tableName = "workOrderPictures",
+    tableName = "workOrderHistoryPictures",
     foreignKeys = [
         ForeignKey(
-            entity = WorkOrder::class,
-            parentColumns = ["workOrderId"],
-            childColumns = ["wopWorkOrderId"],
+            entity = WorkOrderHistory::class,
+            parentColumns = ["woHistoryId"],
+            childColumns = ["wohpHistoryId"],
             onDelete = ForeignKey.CASCADE,
         )
     ]
 )
 @Parcelize
-data class WorkOrderPictures(
+data class WorkOrderHistoryPictures(
     @PrimaryKey
     val pictureId: Long,
     @ColumnInfo(index = true)
-    val wopWorkOrderId: Long,
+    val wohpHistoryId: Long,
     val driveFileId: String?,
-    val wopIsDeleted: Boolean = false,
-    val wopUploadTime: String? = null,
-    val wopUpdateTime: String,
+    val wohpIsDeleted: Boolean = false,
+    val wohpUploadTime: String? = null,
+    val wohpUpdateTime: String,
 ) : Parcelable

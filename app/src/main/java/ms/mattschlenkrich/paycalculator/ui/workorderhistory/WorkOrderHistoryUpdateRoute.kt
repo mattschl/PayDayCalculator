@@ -23,11 +23,13 @@ import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
+import ms.mattschlenkrich.paycalculator.data.entity.ExpensePictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryPictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
-import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
 import ms.mattschlenkrich.paycalculator.data.model.MaterialInSequence
+import ms.mattschlenkrich.paycalculator.data.model.PictureItem
 import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MaterialViewModel
@@ -137,8 +139,12 @@ fun WorkOrderHistoryUpdateRoute(
         workOrderViewModel.getExpensesByHistory(history.woHistoryId)
     }.observeAsState(emptyList())
 
-    val pictures by workOrderViewModel.getPicturesForHistory(history.woHistoryId)
+    val historyPictures by workOrderViewModel.getPicturesForHistory(history.woHistoryId)
         .observeAsState(emptyList())
+
+    val pictureItems = remember(historyPictures) {
+        historyPictures.map { PictureItem(it.pictureId, it.driveFileId) }
+    }
 
     var selectedExpenseForPictures by remember { mutableStateOf<Long?>(null) }
     val expensePictures by if (selectedExpenseForPictures != null) {
@@ -149,18 +155,38 @@ fun WorkOrderHistoryUpdateRoute(
         remember { MutableLiveData(emptyList()) }
     }.observeAsState(emptyList())
 
+    val expensePictureItems = remember(expensePictures) {
+        expensePictures.map { PictureItem(it.pictureId, it.driveFileId) }
+    }
+
     DisposableEffect(Unit) {
         onDispose {
             workOrderViewModel.clearPictureCache(context.cacheDir)
         }
     }
 
-    LaunchedEffect(pictures, expensePictures) {
+    LaunchedEffect(historyPictures, expensePictures) {
         val helper = mainViewModel.getOrInitializeDriveService(context) ?: return@LaunchedEffect
-        (pictures + expensePictures).forEach { pic ->
+        historyPictures.forEach { pic ->
             val tempFile = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
             if ((!tempFile.exists()) && (pic.driveFileId != null)) {
-                workOrderViewModel.downloadPicture(helper, pic, context.cacheDir)
+                workOrderViewModel.downloadPicture(
+                    helper,
+                    pic.pictureId,
+                    pic.driveFileId,
+                    context.cacheDir
+                )
+            }
+        }
+        expensePictures.forEach { pic ->
+            val tempFile = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
+            if ((!tempFile.exists()) && (pic.driveFileId != null)) {
+                workOrderViewModel.downloadPicture(
+                    helper,
+                    pic.pictureId,
+                    pic.driveFileId,
+                    context.cacheDir
+                )
             }
         }
     }
@@ -389,7 +415,7 @@ fun WorkOrderHistoryUpdateRoute(
                 )
             }
         },
-        pictures = pictures,
+        pictures = pictureItems,
         onPictureTaken = { file ->
             val helper = mainViewModel.getOrInitializeDriveService(context)
             if (helper != null) {
@@ -401,16 +427,14 @@ fun WorkOrderHistoryUpdateRoute(
                         driveFileName = "pic_$pictureId.webp",
                     )
                     val now = df.getCurrentUTCTimeAsString()
-                    workOrderViewModel.insertPicture(
-                        WorkOrderPictures(
+                    workOrderViewModel.insertHistoryPicture(
+                        WorkOrderHistoryPictures(
                             pictureId = pictureId,
-                            wopWorkOrderId = null,
-                            wopHistoryId = history.woHistoryId,
-                            wopExpenseId = null,
+                            wohpHistoryId = history.woHistoryId,
                             driveFileId = driveId,
-                            wopIsDeleted = false,
-                            wopUploadTime = now,
-                            wopUpdateTime = now,
+                            wohpIsDeleted = false,
+                            wohpUploadTime = now,
+                            wohpUpdateTime = now,
                         )
                     )
                 }
@@ -418,21 +442,29 @@ fun WorkOrderHistoryUpdateRoute(
                 Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_SHORT).show()
             }
         },
-        onDeletePicture = { pic ->
+        onDeletePicture = { picItem ->
             coroutineScope.launch {
-                workOrderViewModel.deletePictureById(pic.pictureId, df.getCurrentUTCTimeAsString())
-                val tempFile = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
+                workOrderViewModel.deleteHistoryPictureById(
+                    picItem.pictureId,
+                    df.getCurrentUTCTimeAsString()
+                )
+                val tempFile = File(context.cacheDir, "pictures/pic_${picItem.pictureId}.webp")
                 if (tempFile.exists()) tempFile.delete()
-                pic.driveFileId?.let { driveId ->
+                picItem.driveFileId?.let { driveId ->
                     mainViewModel.getOrInitializeDriveService(context)?.deleteFile(driveId)
                 }
             }
         },
-        onDownloadPicture = { pic ->
+        onDownloadPicture = { picItem ->
             val helper = mainViewModel.getOrInitializeDriveService(context)
             if (helper != null) {
                 coroutineScope.launch {
-                    workOrderViewModel.downloadPicture(helper, pic, context.cacheDir)
+                    workOrderViewModel.downloadPicture(
+                        helper,
+                        picItem.pictureId,
+                        picItem.driveFileId,
+                        context.cacheDir
+                    )
                 }
             } else {
                 Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_SHORT).show()
@@ -522,7 +554,7 @@ fun WorkOrderHistoryUpdateRoute(
                 }
             }
         },
-        expensePictures = expensePictures,
+        expensePictures = expensePictureItems,
         onExpenseSelectedForPictures = { id -> selectedExpenseForPictures = id },
         onExpensePictureTaken = { file, expenseId ->
             val helper = mainViewModel.getOrInitializeDriveService(context)
@@ -535,16 +567,14 @@ fun WorkOrderHistoryUpdateRoute(
                         driveFileName = "pic_$pictureId.webp",
                     )
                     val now = df.getCurrentUTCTimeAsString()
-                    workOrderViewModel.insertPicture(
-                        WorkOrderPictures(
+                    workOrderViewModel.insertExpensePicture(
+                        ExpensePictures(
                             pictureId = pictureId,
-                            wopWorkOrderId = null,
-                            wopHistoryId = null,
-                            wopExpenseId = expenseId,
+                            epExpenseId = expenseId,
                             driveFileId = driveId,
-                            wopIsDeleted = false,
-                            wopUploadTime = now,
-                            wopUpdateTime = now,
+                            epIsDeleted = false,
+                            epUploadTime = now,
+                            epUpdateTime = now,
                         )
                     )
                 }

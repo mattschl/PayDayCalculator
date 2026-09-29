@@ -56,11 +56,13 @@ fun SyncScreen(
     onRepairLocal: () -> Unit,
     onManualUpload: () -> Unit,
     onDeleteBackup: (DriveFileMeta) -> Unit,
+    onPurgeOrphanPictures: () -> Unit = {},
     onClearBackups: () -> Unit,
 ) {
     var showRestoreConfirm by remember { mutableStateOf<String?>(null) }
     var showDeleteConfirm by remember { mutableStateOf<DriveFileMeta?>(null) }
     var showRepairConfirm by remember { mutableStateOf(value = false) }
+    var showPurgeOrphanConfirm by remember { mutableStateOf(value = false) }
     var showBackupList by remember { mutableStateOf(value = false) }
     var showAdvancedOptions by remember { mutableStateOf(value = false) }
     var isDownloadMode by remember { mutableStateOf(value = false) }
@@ -213,6 +215,14 @@ fun SyncScreen(
                             Button(
                                 onClick = {
                                     showAdvancedOptions = false
+                                    showPurgeOrphanConfirm = true
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text(stringResource(R.string.action_purge_orphan_pictures)) }
+
+                            Button(
+                                onClick = {
+                                    showAdvancedOptions = false
                                     onClearBackups()
                                 },
                                 modifier = Modifier.fillMaxWidth(),
@@ -247,6 +257,32 @@ fun SyncScreen(
                     },
                     dismissButton = {
                         TextButton(onClick = { showRepairConfirm = false }) {
+                            Text(stringResource(R.string.cancel))
+                        }
+                    }
+                )
+            }
+
+            if (showPurgeOrphanConfirm) {
+                AlertDialog(
+                    onDismissRequest = { showPurgeOrphanConfirm = false },
+                    title = { Text(stringResource(R.string.action_purge_orphan_pictures)) },
+                    text = { Text(stringResource(R.string.msg_purge_orphan_pictures_prompt)) },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showPurgeOrphanConfirm = false
+                                onPurgeOrphanPictures()
+                            }
+                        ) {
+                            Text(
+                                stringResource(R.string.action_clean_up),
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showPurgeOrphanConfirm = false }) {
                             Text(stringResource(R.string.cancel))
                         }
                     }

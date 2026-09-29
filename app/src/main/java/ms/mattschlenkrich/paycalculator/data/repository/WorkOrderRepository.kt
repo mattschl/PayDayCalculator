@@ -3,9 +3,11 @@ package ms.mattschlenkrich.paycalculator.data.repository
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
+import ms.mattschlenkrich.paycalculator.data.entity.ExpensePictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryPictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
 
@@ -316,8 +318,8 @@ class WorkOrderRepository(db: PayDatabase) {
     fun getExpensesByHistory(historyId: Long) =
         workOrderDao.getExpensesByHistory(historyId)
 
-    fun getPicturesByWorkOrderId(workOrderId: Long) =
-        workOrderPictureDao.getPicturesByWorkOrderId(workOrderId)
+    fun getPicturesForWorkOrder(workOrderId: Long) =
+        workOrderPictureDao.getPicturesForWorkOrder(workOrderId)
 
     fun getPicturesForHistory(historyId: Long) =
         workOrderPictureDao.getPicturesForHistory(historyId)
@@ -325,12 +327,21 @@ class WorkOrderRepository(db: PayDatabase) {
     fun getPicturesForExpense(expenseId: Long) =
         workOrderPictureDao.getPicturesForExpense(expenseId)
 
-    suspend fun insertPicture(picture: WorkOrderPictures) =
-        workOrderPictureDao.insertPicture(picture)
+    suspend fun insertWorkOrderPicture(picture: WorkOrderPictures) =
+        workOrderPictureDao.insertWorkOrderPicture(picture)
 
-    suspend fun updatePicture(picture: WorkOrderPictures) =
-        workOrderPictureDao.updatePicture(picture)
+    suspend fun deleteWorkOrderPictureById(pictureId: Long, updateTime: String) =
+        workOrderPictureDao.deleteWorkOrderPictureById(pictureId, updateTime)
 
-    suspend fun deletePictureById(pictureId: Long, updateTime: String) =
-        workOrderPictureDao.deletePictureById(pictureId, updateTime)
+    suspend fun insertHistoryPicture(picture: WorkOrderHistoryPictures) =
+        workOrderPictureDao.insertHistoryPicture(picture)
+
+    suspend fun deleteHistoryPictureById(pictureId: Long, updateTime: String) =
+        workOrderPictureDao.deleteHistoryPictureById(pictureId, updateTime)
+
+    suspend fun insertExpensePicture(picture: ExpensePictures) =
+        workOrderPictureDao.insertExpensePicture(picture)
+
+    suspend fun deleteExpensePictureById(pictureId: Long, updateTime: String) =
+        workOrderPictureDao.deleteExpensePictureById(pictureId, updateTime)
 }

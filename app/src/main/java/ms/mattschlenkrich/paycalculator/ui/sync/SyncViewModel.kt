@@ -308,6 +308,36 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun purgeOrphanPictures(onAuthError: (Exception) -> Unit) {
+        if (isLoading) return
+        val helper = driveServiceHelper ?: return
+        isLoading = true
+        progressMessage = "Scanning for orphan pictures on Google Drive..."
+        val manager = SyncManager(
+            application = getApplication(),
+            deviceId = deviceId,
+            driveServiceHelper = helper,
+            df = df,
+            nf = nf,
+            onProgressUpdate = { progressMessage = it },
+            onConflict = { ConflictChoice.KEEP_DRIVE },
+            onSyncError = { error -> Log.e(TAG, "Purge orphan pictures error: $error") }
+        )
+
+        viewModelScope.launch {
+            try {
+                val result = manager.purgeOrphanPicturesOnDrive()
+                docContent = result
+            } catch (e: Exception) {
+                Log.e(TAG, "Purge orphan pictures failed", e)
+                onAuthError(e)
+            } finally {
+                isLoading = false
+                progressMessage = null
+            }
+        }
+    }
+
     private suspend fun showConflictDialogWrapper(info: ConflictInfo): ConflictChoice {
         applyToAllChoice?.let { return it }
         val deferred = CompletableDeferred<ConflictChoice>()
