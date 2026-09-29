@@ -9,6 +9,7 @@ import androidx.room.Update
 import ms.mattschlenkrich.paycalculator.data.entity.ExpensePictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryPictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
+import ms.mattschlenkrich.paycalculator.data.model.PictureItem
 
 @Dao
 interface WorkOrderPictureDao {
@@ -154,4 +155,32 @@ interface WorkOrderPictureDao {
 
     @Query("SELECT * FROM expensePictures WHERE epIsDeleted = 0")
     suspend fun getAllExpensePicturesSync(): List<ExpensePictures>
+
+    // --- COMBINED PICTURE QUERIES ---
+    @Query(
+        "SELECT pictureId, driveFileId FROM workOrderPictures " +
+                "WHERE wopWorkOrderId = :workOrderId AND wopIsDeleted = 0 " +
+                "UNION ALL " +
+                "SELECT pictureId, driveFileId FROM workOrderHistoryPictures " +
+                "WHERE wohpHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId AND woHistoryDeleted = 0) AND wohpIsDeleted = 0 " +
+                "UNION ALL " +
+                "SELECT pictureId, driveFileId FROM expensePictures " +
+                "WHERE epExpenseId IN (SELECT woHistoryExpenseId FROM workOrderHistoryExpenses WHERE woheHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId AND woHistoryDeleted = 0) AND woheIsDeleted = 0) AND epIsDeleted = 0"
+    )
+    fun getPicturesByWorkOrderId(workOrderId: Long): LiveData<List<PictureItem>>
+
+    @Query(
+        "SELECT pictureId, driveFileId FROM workOrderHistoryPictures " +
+                "WHERE wohpHistoryId = :historyId AND wohpIsDeleted = 0 " +
+                "UNION ALL " +
+                "SELECT pictureId, driveFileId FROM expensePictures " +
+                "WHERE epExpenseId IN (SELECT woHistoryExpenseId FROM workOrderHistoryExpenses WHERE woheHistoryId = :historyId AND woheIsDeleted = 0) AND epIsDeleted = 0"
+    )
+    fun getPicturesByHistoryId(historyId: Long): LiveData<List<PictureItem>>
+
+    @Query(
+        "SELECT pictureId, driveFileId FROM expensePictures " +
+                "WHERE epExpenseId = :expenseId AND epIsDeleted = 0"
+    )
+    fun getPicturesByExpenseId(expenseId: Long): LiveData<List<PictureItem>>
 }

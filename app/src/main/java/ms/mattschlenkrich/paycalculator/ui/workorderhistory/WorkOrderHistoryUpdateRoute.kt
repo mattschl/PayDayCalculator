@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.ui.workorderhistory
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -384,11 +385,11 @@ fun WorkOrderHistoryUpdateRoute(
             }
         },
         expenseActualList = expenseActualList,
-        onAddExpense = { type, supplier, invoiceNo, amount ->
+        onAddExpense = { expenseId, type, supplier, invoiceNo, amount ->
             coroutineScope.launch {
                 workOrderViewModel.insertWorkOrderHistoryExpense(
                     WorkOrderHistoryExpense(
-                        nf.generateRandomIdAsLong(),
+                        expenseId,
                         history.woHistoryId,
                         type,
                         supplier,
@@ -417,29 +418,54 @@ fun WorkOrderHistoryUpdateRoute(
         },
         pictures = pictureItems,
         onPictureTaken = { file ->
-            val helper = mainViewModel.getOrInitializeDriveService(context)
-            if (helper != null) {
-                coroutineScope.launch {
-                    val pictureId = nf.generateRandomIdAsLong()
-                    val driveId = helper.uploadFile(
-                        localFile = file,
-                        mimeType = "image/webp",
-                        driveFileName = "pic_$pictureId.webp",
+            val pictureId = try {
+                file.nameWithoutExtension.removePrefix("pic_").toLong()
+            } catch (_: Exception) {
+                nf.generateRandomIdAsLong()
+            }
+            val targetFile = File(context.cacheDir, "pictures/pic_$pictureId.webp")
+            if ((file.absolutePath != targetFile.absolutePath) && file.exists()) {
+                file.copyTo(targetFile, overwrite = true)
+            }
+            val now = df.getCurrentUTCTimeAsString()
+            coroutineScope.launch {
+                workOrderViewModel.insertHistoryPicture(
+                    WorkOrderHistoryPictures(
+                        pictureId = pictureId,
+                        wohpHistoryId = history.woHistoryId,
+                        driveFileId = null,
+                        wohpIsDeleted = false,
+                        wohpUploadTime = null,
+                        wohpUpdateTime = now,
                     )
-                    val now = df.getCurrentUTCTimeAsString()
-                    workOrderViewModel.insertHistoryPicture(
-                        WorkOrderHistoryPictures(
-                            pictureId = pictureId,
-                            wohpHistoryId = history.woHistoryId,
-                            driveFileId = driveId,
-                            wohpIsDeleted = false,
-                            wohpUploadTime = now,
-                            wohpUpdateTime = now,
+                )
+
+                val helper = mainViewModel.getOrInitializeDriveService(context)
+                if (helper != null && targetFile.exists()) {
+                    try {
+                        val driveId = helper.uploadFile(
+                            localFile = targetFile,
+                            mimeType = "image/webp",
+                            driveFileName = "pic_$pictureId.webp",
                         )
-                    )
+                        val uploadTime = df.getCurrentUTCTimeAsString()
+                        workOrderViewModel.insertHistoryPicture(
+                            WorkOrderHistoryPictures(
+                                pictureId = pictureId,
+                                wohpHistoryId = history.woHistoryId,
+                                driveFileId = driveId,
+                                wohpIsDeleted = false,
+                                wohpUploadTime = uploadTime,
+                                wohpUpdateTime = uploadTime,
+                            )
+                        )
+                    } catch (e: Exception) {
+                        Log.e("WorkOrderHistoryUpdateRoute", "Background Drive upload failed", e)
+                        workOrderViewModel.schedulePictureUpload()
+                    }
+                } else {
+                    workOrderViewModel.schedulePictureUpload()
                 }
-            } else {
-                Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_SHORT).show()
             }
         },
         onDeletePicture = { picItem ->
@@ -557,29 +583,54 @@ fun WorkOrderHistoryUpdateRoute(
         expensePictures = expensePictureItems,
         onExpenseSelectedForPictures = { id -> selectedExpenseForPictures = id },
         onExpensePictureTaken = { file, expenseId ->
-            val helper = mainViewModel.getOrInitializeDriveService(context)
-            if (helper != null) {
-                coroutineScope.launch {
-                    val pictureId = nf.generateRandomIdAsLong()
-                    val driveId = helper.uploadFile(
-                        localFile = file,
-                        mimeType = "image/webp",
-                        driveFileName = "pic_$pictureId.webp",
+            val pictureId = try {
+                file.nameWithoutExtension.removePrefix("pic_").toLong()
+            } catch (_: Exception) {
+                nf.generateRandomIdAsLong()
+            }
+            val targetFile = File(context.cacheDir, "pictures/pic_$pictureId.webp")
+            if ((file.absolutePath != targetFile.absolutePath) && file.exists()) {
+                file.copyTo(targetFile, overwrite = true)
+            }
+            val now = df.getCurrentUTCTimeAsString()
+            coroutineScope.launch {
+                workOrderViewModel.insertExpensePicture(
+                    ExpensePictures(
+                        pictureId = pictureId,
+                        epExpenseId = expenseId,
+                        driveFileId = null,
+                        epIsDeleted = false,
+                        epUploadTime = null,
+                        epUpdateTime = now,
                     )
-                    val now = df.getCurrentUTCTimeAsString()
-                    workOrderViewModel.insertExpensePicture(
-                        ExpensePictures(
-                            pictureId = pictureId,
-                            epExpenseId = expenseId,
-                            driveFileId = driveId,
-                            epIsDeleted = false,
-                            epUploadTime = now,
-                            epUpdateTime = now,
+                )
+
+                val helper = mainViewModel.getOrInitializeDriveService(context)
+                if (helper != null && targetFile.exists()) {
+                    try {
+                        val driveId = helper.uploadFile(
+                            localFile = targetFile,
+                            mimeType = "image/webp",
+                            driveFileName = "pic_$pictureId.webp",
                         )
-                    )
+                        val uploadTime = df.getCurrentUTCTimeAsString()
+                        workOrderViewModel.insertExpensePicture(
+                            ExpensePictures(
+                                pictureId = pictureId,
+                                epExpenseId = expenseId,
+                                driveFileId = driveId,
+                                epIsDeleted = false,
+                                epUploadTime = uploadTime,
+                                epUpdateTime = uploadTime,
+                            )
+                        )
+                    } catch (e: Exception) {
+                        Log.e("WorkOrderHistoryUpdateRoute", "Background Drive upload failed", e)
+                        workOrderViewModel.schedulePictureUpload()
+                    }
+                } else {
+                    workOrderViewModel.schedulePictureUpload()
                 }
-            } else {
-                Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_SHORT).show()
             }
         },
         isSaving = isSaving,

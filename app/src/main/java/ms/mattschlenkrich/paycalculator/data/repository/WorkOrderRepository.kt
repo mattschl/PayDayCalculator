@@ -318,14 +318,14 @@ class WorkOrderRepository(db: PayDatabase) {
     fun getExpensesByHistory(historyId: Long) =
         workOrderDao.getExpensesByHistory(historyId)
 
-    fun getPicturesForWorkOrder(workOrderId: Long) =
-        workOrderPictureDao.getPicturesForWorkOrder(workOrderId)
+    fun getPicturesByWorkOrderId(workOrderId: Long) =
+        workOrderPictureDao.getPicturesByWorkOrderId(workOrderId)
 
-    fun getPicturesForHistory(historyId: Long) =
-        workOrderPictureDao.getPicturesForHistory(historyId)
+    fun getPicturesByHistoryId(historyId: Long) =
+        workOrderPictureDao.getPicturesByHistoryId(historyId)
 
-    fun getPicturesForExpense(expenseId: Long) =
-        workOrderPictureDao.getPicturesForExpense(expenseId)
+    fun getPicturesByExpenseId(expenseId: Long) =
+        workOrderPictureDao.getPicturesByExpenseId(expenseId)
 
     suspend fun insertWorkOrderPicture(picture: WorkOrderPictures) =
         workOrderPictureDao.insertWorkOrderPicture(picture)

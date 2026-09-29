@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -337,29 +338,54 @@ fun WorkOrderUpdateRoute(
         individualExpenses = individualExpenses,
         pictures = pictureItems,
         onPictureTaken = { file ->
-            val helper = mainViewModel.getOrInitializeDriveService(context)
-            if (helper != null) {
-                coroutineScope.launch {
-                    val pictureId = nf.generateRandomIdAsLong()
-                    val driveId = helper.uploadFile(
-                        localFile = file,
-                        mimeType = "image/webp",
-                        driveFileName = "pic_$pictureId.webp",
+            val pictureId = try {
+                file.nameWithoutExtension.removePrefix("pic_").toLong()
+            } catch (_: Exception) {
+                nf.generateRandomIdAsLong()
+            }
+            val targetFile = File(context.cacheDir, "pictures/pic_$pictureId.webp")
+            if ((file.absolutePath != targetFile.absolutePath) && file.exists()) {
+                file.copyTo(targetFile, overwrite = true)
+            }
+            val now = df.getCurrentUTCTimeAsString()
+            coroutineScope.launch {
+                workOrderViewModel.insertWorkOrderPicture(
+                    WorkOrderPictures(
+                        pictureId = pictureId,
+                        wopWorkOrderId = initialWo.workOrderId,
+                        driveFileId = null,
+                        wopIsDeleted = false,
+                        wopUploadTime = null,
+                        wopUpdateTime = now,
                     )
-                    val now = df.getCurrentUTCTimeAsString()
-                    workOrderViewModel.insertWorkOrderPicture(
-                        WorkOrderPictures(
-                            pictureId = pictureId,
-                            wopWorkOrderId = initialWo.workOrderId,
-                            driveFileId = driveId,
-                            wopIsDeleted = false,
-                            wopUploadTime = now,
-                            wopUpdateTime = now,
+                )
+
+                val helper = mainViewModel.getOrInitializeDriveService(context)
+                if (helper != null && targetFile.exists()) {
+                    try {
+                        val driveId = helper.uploadFile(
+                            localFile = targetFile,
+                            mimeType = "image/webp",
+                            driveFileName = "pic_$pictureId.webp",
                         )
-                    )
+                        val uploadTime = df.getCurrentUTCTimeAsString()
+                        workOrderViewModel.insertWorkOrderPicture(
+                            WorkOrderPictures(
+                                pictureId = pictureId,
+                                wopWorkOrderId = initialWo.workOrderId,
+                                driveFileId = driveId,
+                                wopIsDeleted = false,
+                                wopUploadTime = uploadTime,
+                                wopUpdateTime = uploadTime,
+                            )
+                        )
+                    } catch (e: Exception) {
+                        Log.e("WorkOrderUpdateRoute", "Background Drive upload failed", e)
+                        workOrderViewModel.schedulePictureUpload()
+                    }
+                } else {
+                    workOrderViewModel.schedulePictureUpload()
                 }
-            } else {
-                Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_SHORT).show()
             }
         },
         onDeletePicture = { picItem ->

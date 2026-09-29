@@ -47,6 +47,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.FileProvider
 import coil.compose.SubcomposeAsyncImage
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.model.PictureItem
 import java.io.File
 
@@ -79,10 +80,9 @@ fun PictureAttachmentManager(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         uri?.let {
-            val timeStamp = System.currentTimeMillis()
-            val storageDir = File(context.cacheDir, "pictures")
-            if (!storageDir.exists()) storageDir.mkdirs()
-            val file = File(storageDir, "IMG_$timeStamp.webp")
+            val pictureId = NumberFunctions().generateRandomIdAsLong()
+            val storageDir = File(context.cacheDir, "pictures").apply { if (!exists()) mkdirs() }
+            val file = File(storageDir, "pic_$pictureId.webp")
 
             try {
                 context.contentResolver.openInputStream(it)?.use { input ->
@@ -152,10 +152,10 @@ fun PictureAttachmentManager(
                 TextButton(
                     onClick = {
                         showSelectionDialog = false
-                        val timeStamp = System.currentTimeMillis()
-                        val storageDir = File(context.cacheDir, "pictures")
-                        if (!storageDir.exists()) storageDir.mkdirs()
-                        val file = File(storageDir, "IMG_$timeStamp.webp")
+                        val pictureId = NumberFunctions().generateRandomIdAsLong()
+                        val storageDir =
+                            File(context.cacheDir, "pictures").apply { if (!exists()) mkdirs() }
+                        val file = File(storageDir, "pic_$pictureId.webp")
                         pendingFile = file
                         val uri = FileProvider.getUriForFile(
                             context,

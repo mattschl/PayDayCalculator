@@ -51,7 +51,8 @@ fun WorkOrderHistoryExpenseDialog(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
     expense: WorkOrderHistoryExpense? = null,
-    onAddExpense: (String, String, String, String) -> Unit,
+    activeExpenseId: Long = 0L,
+    onAddExpense: (Long, String, String, String, String) -> Unit = { _, _, _, _, _ -> },
     onUpdateExpense: (WorkOrderHistoryExpense) -> Unit = {},
     onDeleteExpense: (Long) -> Unit = {},
     pictures: List<PictureItem> = emptyList(),
@@ -179,15 +180,13 @@ fun WorkOrderHistoryExpenseDialog(
                     }
                 }
 
-                if (expense != null) {
-                    PictureAttachmentManager(
-                        pictures = pictures,
-                        onPictureTaken = onPictureTaken,
-                        onDeletePicture = onDeletePicture,
-                        onDownloadPicture = onDownloadPicture,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
+                PictureAttachmentManager(
+                    pictures = pictures,
+                    onPictureTaken = onPictureTaken,
+                    onDeletePicture = onDeletePicture,
+                    onDownloadPicture = onDownloadPicture,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
 
                 Row(
                     modifier = Modifier
@@ -215,7 +214,13 @@ fun WorkOrderHistoryExpenseDialog(
                     TextButton(
                         onClick = {
                             if (expense == null) {
-                                onAddExpense(expenseType, supplier, invoiceNo, amount)
+                                onAddExpense(
+                                    activeExpenseId,
+                                    expenseType,
+                                    supplier,
+                                    invoiceNo,
+                                    amount
+                                )
                             } else {
                                 onUpdateExpense(
                                     expense.copy(

@@ -22,8 +22,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -31,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.LocalMinColumnWidth
 import ms.mattschlenkrich.paycalculator.common.compose.PictureAttachmentManager
@@ -100,7 +103,7 @@ fun WorkOrderHistoryUpdateScreen(
     onMaterialItemClick: (MaterialInSequence, Int) -> Unit,
     // Expenses
     expenseActualList: List<WorkOrderHistoryExpense>,
-    onAddExpense: (String, String, String, String) -> Unit,
+    onAddExpense: (Long, String, String, String, String) -> Unit,
     onUpdateExpense: (WorkOrderHistoryExpense) -> Unit,
     onDeleteExpense: (Long) -> Unit,
     // Actions
@@ -152,6 +155,18 @@ fun WorkOrderHistoryUpdateScreen(
         onEditMaterialDefinition = onUpdateMaterialDefinition
     )
 
+    val activeExpenseId = remember(showExpenseDialog, selectedExpense) {
+        selectedExpense?.woHistoryExpenseId ?: NumberFunctions().generateRandomIdAsLong()
+    }
+
+    LaunchedEffect(showExpenseDialog, activeExpenseId) {
+        if (showExpenseDialog) {
+            onExpenseSelectedForPictures(activeExpenseId)
+        } else {
+            onExpenseSelectedForPictures(-1L)
+        }
+    }
+
     WorkOrderHistoryExpenseDialog(
         mainViewModel = mainViewModel,
         navController = navController,
@@ -161,12 +176,13 @@ fun WorkOrderHistoryUpdateScreen(
             onExpenseSelectedForPictures(-1L)
         },
         expense = selectedExpense,
+        activeExpenseId = activeExpenseId,
         onAddExpense = onAddExpense,
         onUpdateExpense = onUpdateExpense,
         onDeleteExpense = onDeleteExpense,
         pictures = expensePictures,
         onPictureTaken = { file ->
-            selectedExpense?.let { onExpensePictureTaken(file, it.woHistoryExpenseId) }
+            onExpensePictureTaken(file, activeExpenseId)
         },
         onDeletePicture = onDeletePicture,
         onDownloadPicture = onDownloadPicture
