@@ -30,7 +30,6 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryPictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
 import ms.mattschlenkrich.paycalculator.data.model.MaterialInSequence
-import ms.mattschlenkrich.paycalculator.data.model.PictureItem
 import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MaterialViewModel
@@ -140,25 +139,17 @@ fun WorkOrderHistoryUpdateRoute(
         workOrderViewModel.getExpensesByHistory(history.woHistoryId)
     }.observeAsState(emptyList())
 
-    val historyPictures by workOrderViewModel.getPicturesForHistory(history.woHistoryId)
+    val historyPictures by workOrderViewModel.getPicturesByHistoryId(history.woHistoryId)
         .observeAsState(emptyList())
 
-    val pictureItems = remember(historyPictures) {
-        historyPictures.map { PictureItem(it.pictureId, it.driveFileId) }
-    }
-
     var selectedExpenseForPictures by remember { mutableStateOf<Long?>(null) }
-    val expensePictures by if (selectedExpenseForPictures != null) {
+    val expensePictures by if (selectedExpenseForPictures != null && selectedExpenseForPictures!! > 0L) {
         remember(selectedExpenseForPictures) {
-            workOrderViewModel.getPicturesForExpense(selectedExpenseForPictures!!)
+            workOrderViewModel.getPicturesByExpenseId(selectedExpenseForPictures!!)
         }
     } else {
         remember { MutableLiveData(emptyList()) }
     }.observeAsState(emptyList())
-
-    val expensePictureItems = remember(expensePictures) {
-        expensePictures.map { PictureItem(it.pictureId, it.driveFileId) }
-    }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -416,7 +407,7 @@ fun WorkOrderHistoryUpdateRoute(
                 )
             }
         },
-        pictures = pictureItems,
+        pictures = historyPictures,
         onPictureTaken = { file ->
             val pictureId = try {
                 file.nameWithoutExtension.removePrefix("pic_").toLong()
@@ -580,7 +571,7 @@ fun WorkOrderHistoryUpdateRoute(
                 }
             }
         },
-        expensePictures = expensePictureItems,
+        expensePictures = expensePictures,
         onExpenseSelectedForPictures = { id -> selectedExpenseForPictures = id },
         onExpensePictureTaken = { file, expenseId ->
             val pictureId = try {

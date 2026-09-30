@@ -29,10 +29,10 @@ val paddingScale = mutableFloatStateOf(1f)
 val LocalMinColumnWidth = staticCompositionLocalOf { DEFAULT_MIN_COLUMN_WIDTH }
 
 val SCREEN_PADDING_HORIZONTAL: Dp
-    get() = (6 * paddingScale.floatValue).dp
+    get() = (12 * paddingScale.floatValue).dp.coerceAtLeast(12.dp)
 
 val SCREEN_PADDING_VERTICAL: Dp
-    get() = (6 * paddingScale.floatValue).dp
+    get() = (12 * paddingScale.floatValue).dp.coerceAtLeast(12.dp)
 
 val ELEMENT_SPACING: Dp
     get() = (18 * paddingScale.floatValue).dp

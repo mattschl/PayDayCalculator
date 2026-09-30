@@ -144,6 +144,8 @@ interface WorkOrderDao {
     )
     suspend fun deleteWorkOrderHistory(historyId: Long, updateTime: String)
 
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
     @Query(
         "SELECT * FROM workOrderHistory " +
                 "WHERE woHistoryWorkDateId = :workDateId " +

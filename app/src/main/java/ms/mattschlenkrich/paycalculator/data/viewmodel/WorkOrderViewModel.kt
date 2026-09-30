@@ -134,14 +134,14 @@ class WorkOrderViewModel(
     fun getExpensesByHistory(historyId: Long) =
         workOrderRepository.getExpensesByHistory(historyId)
 
-    fun getPicturesForWorkOrder(workOrderId: Long) =
-        workOrderRepository.getPicturesForWorkOrder(workOrderId)
+    fun getPicturesByWorkOrderId(workOrderId: Long) =
+        workOrderRepository.getPicturesByWorkOrderId(workOrderId)
 
-    fun getPicturesForHistory(historyId: Long) =
-        workOrderRepository.getPicturesForHistory(historyId)
+    fun getPicturesByHistoryId(historyId: Long) =
+        workOrderRepository.getPicturesByHistoryId(historyId)
 
-    fun getPicturesForExpense(expenseId: Long) =
-        workOrderRepository.getPicturesForExpense(expenseId)
+    fun getPicturesByExpenseId(expenseId: Long) =
+        workOrderRepository.getPicturesByExpenseId(expenseId)
 
     suspend fun insertWorkOrderPicture(picture: WorkOrderPictures) =
         workOrderRepository.insertWorkOrderPicture(picture)

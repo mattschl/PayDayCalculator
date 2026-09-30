@@ -15,7 +15,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,7 +50,7 @@ fun SelectionCard(
         FlowRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(SCREEN_PADDING_HORIZONTAL / 2),
+                .padding(start = 12.dp, end = 12.dp, top = 14.dp, bottom = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
             verticalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
             maxItemsInEachRow = 2
@@ -63,13 +62,8 @@ fun SelectionCard(
                     .weight(1f)
                     .widthIn(min = 280.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.employer),
-                    modifier = Modifier.padding(end = 8.dp),
-                    style = MaterialTheme.typography.bodyLarge
-                )
                 SimpleDropdownField(
-                    label = "",
+                    label = stringResource(R.string.employer),
                     items = employers,
                     selectedItem = selectedEmployer,
                     onItemSelected = onEmployerSelected,
@@ -91,13 +85,8 @@ fun SelectionCard(
                     .weight(1f)
                     .widthIn(min = 280.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.cut_off),
-                    modifier = Modifier.padding(end = 8.dp),
-                    style = MaterialTheme.typography.bodyLarge
-                )
                 SimpleDropdownField(
-                    label = "",
+                    label = stringResource(R.string.cut_off),
                     items = cutOffDates,
                     selectedItem = selectedCutOffDate,
                     onItemSelected = onCutOffDateSelected,

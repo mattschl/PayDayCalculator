@@ -25,7 +25,6 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.StringFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderJobSpec
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
-import ms.mattschlenkrich.paycalculator.data.model.PictureItem
 import ms.mattschlenkrich.paycalculator.data.viewmodel.AreaViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.JobSpecViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
@@ -127,12 +126,8 @@ fun WorkOrderUpdateRoute(
         workOrderViewModel.getWorkOrderExpensesAll(initialWo.workOrderId)
     }.observeAsState(emptyList())
 
-    val pictures by workOrderViewModel.getPicturesForWorkOrder(initialWo.workOrderId)
+    val pictures by workOrderViewModel.getPicturesByWorkOrderId(initialWo.workOrderId)
         .observeAsState(emptyList())
-
-    val pictureItems = remember(pictures) {
-        pictures.map { PictureItem(it.pictureId, it.driveFileId) }
-    }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -336,7 +331,7 @@ fun WorkOrderUpdateRoute(
         },
         expensesList = expensesSummary,
         individualExpenses = individualExpenses,
-        pictures = pictureItems,
+        pictures = pictures,
         onPictureTaken = { file ->
             val pictureId = try {
                 file.nameWithoutExtension.removePrefix("pic_").toLong()

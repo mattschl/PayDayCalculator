@@ -165,7 +165,7 @@ fun PayPeriodExtraScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = SCREEN_PADDING_HORIZONTAL)
+                .padding(horizontal = SCREEN_PADDING_HORIZONTAL, vertical = SCREEN_PADDING_VERTICAL)
                 .verticalScroll(rememberScrollState())
         ) {
             Text(

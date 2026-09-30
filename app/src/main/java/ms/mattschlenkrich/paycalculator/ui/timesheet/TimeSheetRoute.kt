@@ -43,6 +43,7 @@ import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectionCard
 import ms.mattschlenkrich.paycalculator.common.compose.draggableFab
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
@@ -331,7 +332,9 @@ fun TimeSheetRoute(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = SCREEN_PADDING_VERTICAL + 4.dp)
     ) {
         SelectionCard(
             modifier = Modifier.padding(horizontal = SCREEN_PADDING_HORIZONTAL),
