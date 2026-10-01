@@ -29,6 +29,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
 import ms.mattschlenkrich.paycalculator.data.entity.WorkExtraTypes
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistory
+import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras
 import ms.mattschlenkrich.paycalculator.data.entity.WorkTaxRules
 import ms.mattschlenkrich.paycalculator.data.model.ExtraDefTypeAndEmployer
@@ -206,6 +207,12 @@ class MainViewModel(
     fun getWorkOrderHistory(): WorkOrderHistory? = workOrderHistory
     fun setWorkOrderHistory(newWorkOrderHistory: WorkOrderHistory?) {
         workOrderHistory = newWorkOrderHistory
+    }
+
+    private var workOrderHistoryExpense: WorkOrderHistoryExpense? = null
+    fun getWorkOrderHistoryExpense(): WorkOrderHistoryExpense? = workOrderHistoryExpense
+    fun setWorkOrderHistoryExpense(newExpense: WorkOrderHistoryExpense?) {
+        workOrderHistoryExpense = newExpense
     }
 
     private var workOrderNumber: String? = null

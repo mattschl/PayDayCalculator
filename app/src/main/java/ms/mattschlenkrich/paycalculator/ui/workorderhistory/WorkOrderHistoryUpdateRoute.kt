@@ -25,7 +25,6 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.data.entity.ExpensePictures
-import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryPictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
@@ -376,36 +375,13 @@ fun WorkOrderHistoryUpdateRoute(
             }
         },
         expenseActualList = expenseActualList,
-        onAddExpense = { expenseId, type, supplier, invoiceNo, amount ->
-            coroutineScope.launch {
-                workOrderViewModel.insertWorkOrderHistoryExpense(
-                    WorkOrderHistoryExpense(
-                        expenseId,
-                        history.woHistoryId,
-                        type,
-                        supplier,
-                        invoiceNo,
-                        nf.getDoubleFromDollars(amount),
-                        woheIsDeleted = false,
-                        df.getCurrentUTCTimeAsString()
-                    )
-                )
-            }
+        onAddExpenseClick = {
+            mainViewModel.setWorkOrderHistoryExpense(null)
+            navController.navigate(Screen.WorkOrderHistoryExpenseAdd.route)
         },
-        onUpdateExpense = { expense ->
-            coroutineScope.launch {
-                workOrderViewModel.updateWorkOrderHistoryExpense(
-                    expense.copy(woheUpdateTime = df.getCurrentUTCTimeAsString())
-                )
-            }
-        },
-        onDeleteExpense = { expenseId ->
-            coroutineScope.launch {
-                workOrderViewModel.deleteWorkOrderHistoryExpense(
-                    expenseId,
-                    df.getCurrentUTCTimeAsString()
-                )
-            }
+        onExpenseClick = { expense ->
+            mainViewModel.setWorkOrderHistoryExpense(expense)
+            navController.navigate(Screen.WorkOrderHistoryExpenseUpdate.route)
         },
         pictures = historyPictures,
         onPictureTaken = { file ->
@@ -461,15 +437,12 @@ fun WorkOrderHistoryUpdateRoute(
         },
         onDeletePicture = { picItem ->
             coroutineScope.launch {
-                workOrderViewModel.deleteHistoryPictureById(
-                    picItem.pictureId,
-                    df.getCurrentUTCTimeAsString()
-                )
+                val now = df.getCurrentUTCTimeAsString()
+                workOrderViewModel.deleteWorkOrderPictureById(picItem.pictureId, now)
+                workOrderViewModel.deleteHistoryPictureById(picItem.pictureId, now)
+                workOrderViewModel.deleteExpensePictureById(picItem.pictureId, now)
                 val tempFile = File(context.cacheDir, "pictures/pic_${picItem.pictureId}.webp")
                 if (tempFile.exists()) tempFile.delete()
-                picItem.driveFileId?.let { driveId ->
-                    mainViewModel.getOrInitializeDriveService(context)?.deleteFile(driveId)
-                }
             }
         },
         onDownloadPicture = { picItem ->

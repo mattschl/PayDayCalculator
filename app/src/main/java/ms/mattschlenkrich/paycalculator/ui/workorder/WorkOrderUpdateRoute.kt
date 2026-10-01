@@ -385,15 +385,12 @@ fun WorkOrderUpdateRoute(
         },
         onDeletePicture = { picItem ->
             coroutineScope.launch {
-                workOrderViewModel.deleteWorkOrderPictureById(
-                    picItem.pictureId,
-                    df.getCurrentUTCTimeAsString()
-                )
+                val now = df.getCurrentUTCTimeAsString()
+                workOrderViewModel.deleteWorkOrderPictureById(picItem.pictureId, now)
+                workOrderViewModel.deleteHistoryPictureById(picItem.pictureId, now)
+                workOrderViewModel.deleteExpensePictureById(picItem.pictureId, now)
                 val tempFile = File(context.cacheDir, "pictures/pic_${picItem.pictureId}.webp")
                 if (tempFile.exists()) tempFile.delete()
-                picItem.driveFileId?.let { driveId ->
-                    mainViewModel.getOrInitializeDriveService(context)?.deleteFile(driveId)
-                }
             }
         },
         onDownloadPicture = { picItem ->

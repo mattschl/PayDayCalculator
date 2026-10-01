@@ -52,6 +52,7 @@ import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderLookupRoute
 import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.workorder.WorkOrderViewRoute
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.WorkOrderHistoryAddRoute
+import ms.mattschlenkrich.paycalculator.ui.workorderhistory.WorkOrderHistoryExpenseRoute
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.WorkOrderHistoryMaterialUpdateRoute
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.WorkOrderHistoryTimeRoute
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.WorkOrderHistoryTimeUpdateRoute
@@ -435,6 +436,22 @@ fun AppNavHost(
                 jobSpecViewModel,
                 areaViewModel,
                 navController
+            )
+        }
+        composable(Screen.WorkOrderHistoryExpenseAdd.route) {
+            WorkOrderHistoryExpenseRoute(
+                mainViewModel,
+                workOrderViewModel,
+                navController,
+                isUpdate = false
+            )
+        }
+        composable(Screen.WorkOrderHistoryExpenseUpdate.route) {
+            WorkOrderHistoryExpenseRoute(
+                mainViewModel,
+                workOrderViewModel,
+                navController,
+                isUpdate = true
             )
         }
         composable(Screen.Calculator.route) {

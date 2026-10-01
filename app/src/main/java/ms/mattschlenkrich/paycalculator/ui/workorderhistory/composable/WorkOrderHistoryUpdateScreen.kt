@@ -22,10 +22,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -33,7 +31,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.LocalMinColumnWidth
 import ms.mattschlenkrich.paycalculator.common.compose.PictureAttachmentManager
@@ -103,9 +100,8 @@ fun WorkOrderHistoryUpdateScreen(
     onMaterialItemClick: (MaterialInSequence, Int) -> Unit,
     // Expenses
     expenseActualList: List<WorkOrderHistoryExpense>,
-    onAddExpense: (Long, String, String, String, String) -> Unit,
-    onUpdateExpense: (WorkOrderHistoryExpense) -> Unit,
-    onDeleteExpense: (Long) -> Unit,
+    onAddExpenseClick: () -> Unit,
+    onExpenseClick: (WorkOrderHistoryExpense) -> Unit,
     // Actions
     onDone: () -> Unit,
     onUpdateWorkPerformed: (WorkOrderHistoryWorkPerformedCombined) -> Unit,
@@ -153,39 +149,6 @@ fun WorkOrderHistoryUpdateScreen(
         onDelete = { onMaterialItemClick(it, 0) },
         onEditInHistory = onUpdateMaterialInHistory,
         onEditMaterialDefinition = onUpdateMaterialDefinition
-    )
-
-    val activeExpenseId = remember(showExpenseDialog, selectedExpense) {
-        selectedExpense?.woHistoryExpenseId ?: NumberFunctions().generateRandomIdAsLong()
-    }
-
-    LaunchedEffect(showExpenseDialog, activeExpenseId) {
-        if (showExpenseDialog) {
-            onExpenseSelectedForPictures(activeExpenseId)
-        } else {
-            onExpenseSelectedForPictures(-1L)
-        }
-    }
-
-    WorkOrderHistoryExpenseDialog(
-        mainViewModel = mainViewModel,
-        navController = navController,
-        showDialog = showExpenseDialog,
-        onDismissRequest = {
-            showExpenseDialog = false
-            onExpenseSelectedForPictures(-1L)
-        },
-        expense = selectedExpense,
-        activeExpenseId = activeExpenseId,
-        onAddExpense = onAddExpense,
-        onUpdateExpense = onUpdateExpense,
-        onDeleteExpense = onDeleteExpense,
-        pictures = expensePictures,
-        onPictureTaken = { file ->
-            onExpensePictureTaken(file, activeExpenseId)
-        },
-        onDeletePicture = onDeletePicture,
-        onDownloadPicture = onDownloadPicture
     )
 
     Scaffold(
@@ -333,10 +296,7 @@ fun WorkOrderHistoryUpdateScreen(
 
             item(span = StaggeredGridItemSpan.FullLine) {
                 Button(
-                    onClick = {
-                        selectedExpense = null
-                        showExpenseDialog = true
-                    },
+                    onClick = onAddExpenseClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(text = stringResource(R.string.add_expense))
@@ -358,9 +318,7 @@ fun WorkOrderHistoryUpdateScreen(
                         item = item,
                         index = expenseActualList.indexOf(item)
                     ) {
-                        selectedExpense = item
-                        onExpenseSelectedForPictures(item.woHistoryExpenseId)
-                        showExpenseDialog = true
+                        onExpenseClick(item)
                     }
                 }
             }
