@@ -51,8 +51,6 @@ import java.io.File
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkOrderHistoryUpdateScreen(
-    mainViewModel: ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel,
-    navController: androidx.navigation.NavController,
     workDateDisplay: String,
     employerName: String,
     workOrderNumber: String,
@@ -112,9 +110,6 @@ fun WorkOrderHistoryUpdateScreen(
     onPictureTaken: (File) -> Unit,
     onDeletePicture: (PictureItem) -> Unit,
     onDownloadPicture: (PictureItem) -> Unit,
-    expensePictures: List<PictureItem>,
-    onExpenseSelectedForPictures: (Long) -> Unit,
-    onExpensePictureTaken: (File, Long) -> Unit,
     isSaving: Boolean = false,
     minColumnWidth: Int = LocalMinColumnWidth.current,
 ) {
@@ -127,9 +122,6 @@ fun WorkOrderHistoryUpdateScreen(
 
     var showMaterialDialog by rememberSaveable { mutableStateOf(false) }
     var selectedMaterial by rememberSaveable { mutableStateOf<MaterialInSequence?>(null) }
-
-    var showExpenseDialog by rememberSaveable { mutableStateOf(false) }
-    var selectedExpense by rememberSaveable { mutableStateOf<WorkOrderHistoryExpense?>(null) }
 
     val columns = calculateGridColumns(minColumnWidth)
 

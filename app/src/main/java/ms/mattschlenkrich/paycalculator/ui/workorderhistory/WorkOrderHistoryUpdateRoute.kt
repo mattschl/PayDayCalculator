@@ -14,7 +14,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -24,7 +23,6 @@ import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
-import ms.mattschlenkrich.paycalculator.data.entity.ExpensePictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryMaterial
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryPictures
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryWorkPerformed
@@ -141,35 +139,15 @@ fun WorkOrderHistoryUpdateRoute(
     val historyPictures by workOrderViewModel.getPicturesByHistoryId(history.woHistoryId)
         .observeAsState(emptyList())
 
-    var selectedExpenseForPictures by remember { mutableStateOf<Long?>(null) }
-    val expensePictures by if (selectedExpenseForPictures != null && selectedExpenseForPictures!! > 0L) {
-        remember(selectedExpenseForPictures) {
-            workOrderViewModel.getPicturesByExpenseId(selectedExpenseForPictures!!)
-        }
-    } else {
-        remember { MutableLiveData(emptyList()) }
-    }.observeAsState(emptyList())
-
     DisposableEffect(Unit) {
         onDispose {
             workOrderViewModel.clearPictureCache(context.cacheDir)
         }
     }
 
-    LaunchedEffect(historyPictures, expensePictures) {
+    LaunchedEffect(historyPictures) {
         val helper = mainViewModel.getOrInitializeDriveService(context) ?: return@LaunchedEffect
         historyPictures.forEach { pic ->
-            val tempFile = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
-            if ((!tempFile.exists()) && (pic.driveFileId != null)) {
-                workOrderViewModel.downloadPicture(
-                    helper,
-                    pic.pictureId,
-                    pic.driveFileId,
-                    context.cacheDir
-                )
-            }
-        }
-        expensePictures.forEach { pic ->
             val tempFile = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
             if ((!tempFile.exists()) && (pic.driveFileId != null)) {
                 workOrderViewModel.downloadPicture(
@@ -212,8 +190,6 @@ fun WorkOrderHistoryUpdateRoute(
     }
 
     WorkOrderHistoryUpdateScreen(
-        mainViewModel = mainViewModel,
-        navController = navController,
         workDateDisplay = df.getDisplayDate(workDate.wdDate),
         employerName = employer.employerName,
         workOrderNumber = workOrderNumber,
@@ -541,59 +517,6 @@ fun WorkOrderHistoryUpdateRoute(
                 if (material != null) {
                     mainViewModel.setMaterial(material)
                     navController.navigate(Screen.MaterialUpdate.route)
-                }
-            }
-        },
-        expensePictures = expensePictures,
-        onExpenseSelectedForPictures = { id -> selectedExpenseForPictures = id },
-        onExpensePictureTaken = { file, expenseId ->
-            val pictureId = try {
-                file.nameWithoutExtension.removePrefix("pic_").toLong()
-            } catch (_: Exception) {
-                nf.generateRandomIdAsLong()
-            }
-            val targetFile = File(context.cacheDir, "pictures/pic_$pictureId.webp")
-            if ((file.absolutePath != targetFile.absolutePath) && file.exists()) {
-                file.copyTo(targetFile, overwrite = true)
-            }
-            val now = df.getCurrentUTCTimeAsString()
-            coroutineScope.launch {
-                workOrderViewModel.insertExpensePicture(
-                    ExpensePictures(
-                        pictureId = pictureId,
-                        epExpenseId = expenseId,
-                        driveFileId = null,
-                        epIsDeleted = false,
-                        epUploadTime = null,
-                        epUpdateTime = now,
-                    )
-                )
-
-                val helper = mainViewModel.getOrInitializeDriveService(context)
-                if (helper != null && targetFile.exists()) {
-                    try {
-                        val driveId = helper.uploadFile(
-                            localFile = targetFile,
-                            mimeType = "image/webp",
-                            driveFileName = "pic_$pictureId.webp",
-                        )
-                        val uploadTime = df.getCurrentUTCTimeAsString()
-                        workOrderViewModel.insertExpensePicture(
-                            ExpensePictures(
-                                pictureId = pictureId,
-                                epExpenseId = expenseId,
-                                driveFileId = driveId,
-                                epIsDeleted = false,
-                                epUploadTime = uploadTime,
-                                epUpdateTime = uploadTime,
-                            )
-                        )
-                    } catch (e: Exception) {
-                        Log.e("WorkOrderHistoryUpdateRoute", "Background Drive upload failed", e)
-                        workOrderViewModel.schedulePictureUpload()
-                    }
-                } else {
-                    workOrderViewModel.schedulePictureUpload()
                 }
             }
         },

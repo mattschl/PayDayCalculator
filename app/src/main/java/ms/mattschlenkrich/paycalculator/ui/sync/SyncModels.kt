@@ -19,7 +19,7 @@ data class ConflictInfo(
     val localTime: String,
     val driveId: Long,
     val driveTime: String,
-    @StringRes val messageRes: Int? = null
+    @param:StringRes val messageRes: Int? = null
 ) : Parcelable
 
 enum class ConflictChoice {

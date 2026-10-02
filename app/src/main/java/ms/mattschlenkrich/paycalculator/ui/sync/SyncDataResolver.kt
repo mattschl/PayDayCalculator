@@ -39,7 +39,7 @@ fun getContentValues(
         }
 
         val fk = spec.fks.find { it.fkColumn == colName }
-        if (fk != null && !cursor.isNull(i)) {
+        if ((fk != null) && (!cursor.isNull(i))) {
             val localFkValue = getLocalFkValue(
                 localDb, remoteDb, cursor, fk, i, idMap, recordLocalEmployerId
             )

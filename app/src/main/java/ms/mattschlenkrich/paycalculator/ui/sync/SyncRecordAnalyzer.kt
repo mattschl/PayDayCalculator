@@ -49,7 +49,7 @@ fun getLookbackTime(localDb: SQLiteDatabase): String {
         syncCal.time = formatter.parse(earliestLastSync)!!
         syncCal.add(Calendar.HOUR_OF_DAY, -2)
         formatter.format(syncCal.time)
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         hardLimit
     }
 
@@ -98,7 +98,7 @@ fun checkRecordStatusWithId(
                 remoteCursor.getString(remoteCursor.getColumnIndexOrThrow(spec.updateTimeColumn))
 
             status =
-                if (remoteUpdateTime != null && (localUpdateTime == null || (remoteUpdateTime > localUpdateTime))) {
+                if ((remoteUpdateTime != null) && ((localUpdateTime == null) || (remoteUpdateTime > localUpdateTime))) {
                     RecordStatus.UPDATED
                 } else if (remoteUpdateTime != null && remoteUpdateTime == localUpdateTime) {
                     if (isDataDifferent(localCursor, remoteCursor, spec)) {
