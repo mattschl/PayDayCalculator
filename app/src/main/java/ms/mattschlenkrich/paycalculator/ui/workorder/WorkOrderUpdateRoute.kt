@@ -356,7 +356,7 @@ fun WorkOrderUpdateRoute(
                 )
 
                 val helper = mainViewModel.getOrInitializeDriveService(context)
-                if (helper != null && targetFile.exists()) {
+                if ((helper != null) && targetFile.exists()) {
                     try {
                         val driveId = helper.uploadFile(
                             localFile = targetFile,

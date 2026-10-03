@@ -182,13 +182,15 @@ fun WorkOrderHistoryExpenseScreen(
                 }
             }
 
-            PictureAttachmentManager(
-                pictures = pictures,
-                onPictureTaken = onPictureTaken,
-                onDeletePicture = onDeletePicture,
-                onDownloadPicture = onDownloadPicture,
-                modifier = Modifier.padding(top = 8.dp)
-            )
+            if (initialExpense != null) {
+                PictureAttachmentManager(
+                    pictures = pictures,
+                    onPictureTaken = onPictureTaken,
+                    onDeletePicture = onDeletePicture,
+                    onDownloadPicture = onDownloadPicture,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
 
             Row(
                 modifier = Modifier
