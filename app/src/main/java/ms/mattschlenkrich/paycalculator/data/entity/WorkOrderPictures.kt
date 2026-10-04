@@ -14,17 +14,17 @@ import kotlinx.parcelize.Parcelize
             entity = WorkOrder::class,
             parentColumns = ["workOrderId"],
             childColumns = ["wopWorkOrderId"],
-            onDelete = ForeignKey.CASCADE,
+            onDelete = ForeignKey.NO_ACTION,
         )
     ]
 )
 @Parcelize
 data class WorkOrderPictures(
     @PrimaryKey
-    val pictureId: Long,
+    val wopPictureId: Long,
     @ColumnInfo(index = true)
     val wopWorkOrderId: Long,
-    val driveFileId: String?,
+    val wopDriveFileId: String?,
     val wopIsDeleted: Boolean = false,
     val wopUploadTime: String? = null,
     val wopUpdateTime: String,

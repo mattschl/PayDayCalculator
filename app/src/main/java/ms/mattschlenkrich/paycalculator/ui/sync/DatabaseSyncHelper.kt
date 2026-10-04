@@ -971,17 +971,27 @@ class DatabaseSyncHelper(
                         "wpUpdateTime"
                     )
                 }
+                val picId = try {
+                    getLongSafe(cursor, "wopPictureId")
+                } catch (_: Exception) {
+                    getLongSafe(cursor, "pictureId")
+                }
+                val driveId = try {
+                    getStringSafe(cursor, "wopDriveFileId").ifEmpty { null }
+                } catch (_: Exception) {
+                    getStringSafe(cursor, "driveFileId").ifEmpty { null }
+                }
                 WorkOrderPictures(
-                    pictureId = getLongSafe(cursor, "pictureId"),
+                    wopPictureId = picId,
                     wopWorkOrderId = woId,
-                    driveFileId = getStringSafe(cursor, "driveFileId").ifEmpty { null },
+                    wopDriveFileId = driveId,
                     wopIsDeleted = isDeleted,
                     wopUploadTime = uploadTime,
                     wopUpdateTime = updateTime
                 )
             },
             getExistingById = {
-                appDb.getWorkOrderPictureDao().getWorkOrderPictureSync(it.pictureId)
+                appDb.getWorkOrderPictureDao().getWorkOrderPictureSync(it.wopPictureId)
             },
             getUpdateTime = { it.wopUpdateTime },
             insert = {
@@ -1016,17 +1026,27 @@ class DatabaseSyncHelper(
                     null
                 }
                 val updateTime = getStringSafe(cursor, "wohpUpdateTime")
+                val picId = try {
+                    getLongSafe(cursor, "wohpPictureId")
+                } catch (_: Exception) {
+                    getLongSafe(cursor, "pictureId")
+                }
+                val driveId = try {
+                    getStringSafe(cursor, "wohpDriveFileId").ifEmpty { null }
+                } catch (_: Exception) {
+                    getStringSafe(cursor, "driveFileId").ifEmpty { null }
+                }
                 WorkOrderHistoryPictures(
-                    pictureId = getLongSafe(cursor, "pictureId"),
+                    wohpPictureId = picId,
                     wohpHistoryId = hId,
-                    driveFileId = getStringSafe(cursor, "driveFileId").ifEmpty { null },
+                    wohpDriveFileId = driveId,
                     wohpIsDeleted = isDeleted,
                     wohpUploadTime = uploadTime,
                     wohpUpdateTime = updateTime
                 )
             },
             getExistingById = {
-                appDb.getWorkOrderPictureDao().getHistoryPictureSync(it.pictureId)
+                appDb.getWorkOrderPictureDao().getHistoryPictureSync(it.wohpPictureId)
             },
             getUpdateTime = { it.wohpUpdateTime },
             insert = {
@@ -1063,17 +1083,27 @@ class DatabaseSyncHelper(
                     null
                 }
                 val updateTime = getStringSafe(cursor, "epUpdateTime")
+                val picId = try {
+                    getLongSafe(cursor, "epPictureId")
+                } catch (_: Exception) {
+                    getLongSafe(cursor, "pictureId")
+                }
+                val driveId = try {
+                    getStringSafe(cursor, "epDriveFileId").ifEmpty { null }
+                } catch (_: Exception) {
+                    getStringSafe(cursor, "driveFileId").ifEmpty { null }
+                }
                 ExpensePictures(
-                    pictureId = getLongSafe(cursor, "pictureId"),
+                    epPictureId = picId,
                     epExpenseId = expId,
-                    driveFileId = getStringSafe(cursor, "driveFileId").ifEmpty { null },
+                    epDriveFileId = driveId,
                     epIsDeleted = isDeleted,
                     epUploadTime = uploadTime,
                     epUpdateTime = updateTime
                 )
             },
             getExistingById = {
-                appDb.getWorkOrderPictureDao().getExpensePictureSync(it.pictureId)
+                appDb.getWorkOrderPictureDao().getExpensePictureSync(it.epPictureId)
             },
             getUpdateTime = { it.epUpdateTime },
             insert = {

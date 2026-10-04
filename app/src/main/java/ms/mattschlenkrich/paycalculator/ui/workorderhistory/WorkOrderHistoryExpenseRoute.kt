@@ -116,9 +116,9 @@ fun WorkOrderHistoryExpenseRoute(
                 workOrderViewModel.generateThumbnailBackground(context.cacheDir, pictureId)
                 workOrderViewModel.insertExpensePicture(
                     ExpensePictures(
-                        pictureId = pictureId,
+                        epPictureId = pictureId,
                         epExpenseId = activeExpenseId,
-                        driveFileId = null,
+                        epDriveFileId = null,
                         epIsDeleted = false,
                         epUploadTime = null,
                         epUpdateTime = now
@@ -139,9 +139,9 @@ fun WorkOrderHistoryExpenseRoute(
                         val uploadTime = df.getCurrentUTCTimeAsString()
                         workOrderViewModel.insertExpensePicture(
                             ExpensePictures(
-                                pictureId = pictureId,
+                                epPictureId = pictureId,
                                 epExpenseId = activeExpenseId,
-                                driveFileId = driveId,
+                                epDriveFileId = driveId,
                                 epIsDeleted = false,
                                 epUploadTime = uploadTime,
                                 epUpdateTime = uploadTime

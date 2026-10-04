@@ -228,16 +228,16 @@ class SyncManager(
 
             val pendingWo = pictureDao.getPendingWorkOrderUploadsSync()
             for (pic in pendingWo) {
-                val tempFile = File(storageDir, "pic_${pic.pictureId}.webp")
+                val tempFile = File(storageDir, "pic_${pic.wopPictureId}.webp")
                 if (tempFile.exists()) {
                     val driveId = driveServiceHelper.uploadFile(
                         localFile = tempFile,
                         mimeType = "image/webp",
-                        driveFileName = "pic_${pic.pictureId}.webp",
+                        driveFileName = "pic_${pic.wopPictureId}.webp",
                     )
                     pictureDao.updateWorkOrderPicture(
                         pic.copy(
-                            driveFileId = driveId,
+                            wopDriveFileId = driveId,
                             wopUploadTime = now,
                             wopUpdateTime = now
                         )
@@ -248,16 +248,16 @@ class SyncManager(
 
             val pendingHist = pictureDao.getPendingHistoryUploadsSync()
             for (pic in pendingHist) {
-                val tempFile = File(storageDir, "pic_${pic.pictureId}.webp")
+                val tempFile = File(storageDir, "pic_${pic.wohpPictureId}.webp")
                 if (tempFile.exists()) {
                     val driveId = driveServiceHelper.uploadFile(
                         localFile = tempFile,
                         mimeType = "image/webp",
-                        driveFileName = "pic_${pic.pictureId}.webp",
+                        driveFileName = "pic_${pic.wohpPictureId}.webp",
                     )
                     pictureDao.updateHistoryPicture(
                         pic.copy(
-                            driveFileId = driveId,
+                            wohpDriveFileId = driveId,
                             wohpUploadTime = now,
                             wohpUpdateTime = now
                         )
@@ -268,16 +268,16 @@ class SyncManager(
 
             val pendingExp = pictureDao.getPendingExpenseUploadsSync()
             for (pic in pendingExp) {
-                val tempFile = File(storageDir, "pic_${pic.pictureId}.webp")
+                val tempFile = File(storageDir, "pic_${pic.epPictureId}.webp")
                 if (tempFile.exists()) {
                     val driveId = driveServiceHelper.uploadFile(
                         localFile = tempFile,
                         mimeType = "image/webp",
-                        driveFileName = "pic_${pic.pictureId}.webp",
+                        driveFileName = "pic_${pic.epPictureId}.webp",
                     )
                     pictureDao.updateExpensePicture(
                         pic.copy(
-                            driveFileId = driveId,
+                            epDriveFileId = driveId,
                             epUploadTime = now,
                             epUpdateTime = now
                         )
@@ -297,8 +297,8 @@ class SyncManager(
             val storageDir = File(application.cacheDir, "pictures").apply { mkdirs() }
 
             for (pic in pictureDao.getAllWorkOrderPicturesSync()) {
-                val driveId = pic.driveFileId ?: continue
-                val targetFile = File(storageDir, "pic_${pic.pictureId}.webp")
+                val driveId = pic.wopDriveFileId ?: continue
+                val targetFile = File(storageDir, "pic_${pic.wopPictureId}.webp")
                 if (!targetFile.exists()) {
                     try {
                         driveServiceHelper.downloadFileById(driveId, targetFile)
@@ -307,8 +307,8 @@ class SyncManager(
                 }
             }
             for (pic in pictureDao.getAllHistoryPicturesSync()) {
-                val driveId = pic.driveFileId ?: continue
-                val targetFile = File(storageDir, "pic_${pic.pictureId}.webp")
+                val driveId = pic.wohpDriveFileId ?: continue
+                val targetFile = File(storageDir, "pic_${pic.wohpPictureId}.webp")
                 if (!targetFile.exists()) {
                     try {
                         driveServiceHelper.downloadFileById(driveId, targetFile)
@@ -317,8 +317,8 @@ class SyncManager(
                 }
             }
             for (pic in pictureDao.getAllExpensePicturesSync()) {
-                val driveId = pic.driveFileId ?: continue
-                val targetFile = File(storageDir, "pic_${pic.pictureId}.webp")
+                val driveId = pic.epDriveFileId ?: continue
+                val targetFile = File(storageDir, "pic_${pic.epPictureId}.webp")
                 if (!targetFile.exists()) {
                     try {
                         driveServiceHelper.downloadFileById(driveId, targetFile)
@@ -368,10 +368,10 @@ class SyncManager(
                 // 1. Resolve Work Order Picture references
                 val woPics = pictureDao.getAllWorkOrderPicturesSync()
                 for (pic in woPics) {
-                    val driveFile = drivePictureMap[pic.pictureId]
-                    if (driveFile != null && pic.driveFileId != driveFile.id) {
+                    val driveFile = drivePictureMap[pic.wopPictureId]
+                    if (driveFile != null && pic.wopDriveFileId != driveFile.id) {
                         val updated = pic.copy(
-                            driveFileId = driveFile.id,
+                            wopDriveFileId = driveFile.id,
                             wopUploadTime = pic.wopUploadTime ?: now,
                             wopUpdateTime = now
                         )
@@ -383,10 +383,10 @@ class SyncManager(
                 // 2. Resolve History Picture references
                 val histPics = pictureDao.getAllHistoryPicturesSync()
                 for (pic in histPics) {
-                    val driveFile = drivePictureMap[pic.pictureId]
-                    if (driveFile != null && pic.driveFileId != driveFile.id) {
+                    val driveFile = drivePictureMap[pic.wohpPictureId]
+                    if (driveFile != null && pic.wohpDriveFileId != driveFile.id) {
                         val updated = pic.copy(
-                            driveFileId = driveFile.id,
+                            wohpDriveFileId = driveFile.id,
                             wohpUploadTime = pic.wohpUploadTime ?: now,
                             wohpUpdateTime = now
                         )
@@ -398,10 +398,10 @@ class SyncManager(
                 // 3. Resolve Expense Picture references
                 val expPics = pictureDao.getAllExpensePicturesSync()
                 for (pic in expPics) {
-                    val driveFile = drivePictureMap[pic.pictureId]
-                    if (driveFile != null && pic.driveFileId != driveFile.id) {
+                    val driveFile = drivePictureMap[pic.epPictureId]
+                    if (driveFile != null && pic.epDriveFileId != driveFile.id) {
                         val updated = pic.copy(
-                            driveFileId = driveFile.id,
+                            epDriveFileId = driveFile.id,
                             epUploadTime = pic.epUploadTime ?: now,
                             epUpdateTime = now
                         )
@@ -415,9 +415,9 @@ class SyncManager(
                 val activeExpensePics = pictureDao.getAllExpensePicturesSync()
 
                 val activePictureIds = (
-                        activeWorkOrderPics.map { it.pictureId } +
-                                activeHistoryPics.map { it.pictureId } +
-                                activeExpensePics.map { it.pictureId }
+                        activeWorkOrderPics.map { it.wopPictureId } +
+                                activeHistoryPics.map { it.wohpPictureId } +
+                                activeExpensePics.map { it.epPictureId }
                         ).toSet()
 
                 onProgressUpdate("Purging orphan picture files...")

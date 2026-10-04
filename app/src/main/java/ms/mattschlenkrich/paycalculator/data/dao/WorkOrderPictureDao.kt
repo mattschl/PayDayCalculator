@@ -38,14 +38,14 @@ interface WorkOrderPictureDao {
 
     @Query(
         "SELECT * FROM workOrderPictures " +
-                "WHERE (driveFileId IS NULL OR driveFileId = '') " +
+                "WHERE (wopDriveFileId IS NULL OR wopDriveFileId = '') " +
                 "AND wopIsDeleted = 0",
     )
     suspend fun getPendingWorkOrderUploadsSync(): List<WorkOrderPictures>
 
     @Query(
         "SELECT * FROM workOrderPictures " +
-                "WHERE pictureId = :pictureId",
+                "WHERE wopPictureId = :pictureId",
     )
     suspend fun getWorkOrderPictureSync(pictureId: Long): WorkOrderPictures?
 
@@ -53,7 +53,7 @@ interface WorkOrderPictureDao {
         "UPDATE workOrderPictures " +
                 "SET wopIsDeleted = 1, " +
                 "wopUpdateTime = :updateTime " +
-                "WHERE pictureId = :pictureId",
+                "WHERE wopPictureId = :pictureId",
     )
     suspend fun deleteWorkOrderPictureById(pictureId: Long, updateTime: String)
 
@@ -86,14 +86,14 @@ interface WorkOrderPictureDao {
 
     @Query(
         "SELECT * FROM workOrderHistoryPictures " +
-                "WHERE (driveFileId IS NULL OR driveFileId = '') " +
+                "WHERE (wohpDriveFileId IS NULL OR wohpDriveFileId = '') " +
                 "AND wohpIsDeleted = 0",
     )
     suspend fun getPendingHistoryUploadsSync(): List<WorkOrderHistoryPictures>
 
     @Query(
         "SELECT * FROM workOrderHistoryPictures " +
-                "WHERE pictureId = :pictureId",
+                "WHERE wohpPictureId = :pictureId",
     )
     suspend fun getHistoryPictureSync(pictureId: Long): WorkOrderHistoryPictures?
 
@@ -101,7 +101,7 @@ interface WorkOrderPictureDao {
         "UPDATE workOrderHistoryPictures " +
                 "SET wohpIsDeleted = 1, " +
                 "wohpUpdateTime = :updateTime " +
-                "WHERE pictureId = :pictureId",
+                "WHERE wohpPictureId = :pictureId",
     )
     suspend fun deleteHistoryPictureById(pictureId: Long, updateTime: String)
 
@@ -134,14 +134,14 @@ interface WorkOrderPictureDao {
 
     @Query(
         "SELECT * FROM expensePictures " +
-                "WHERE (driveFileId IS NULL OR driveFileId = '') " +
+                "WHERE (epDriveFileId IS NULL OR epDriveFileId = '') " +
                 "AND epIsDeleted = 0",
     )
     suspend fun getPendingExpenseUploadsSync(): List<ExpensePictures>
 
     @Query(
         "SELECT * FROM expensePictures " +
-                "WHERE pictureId = :pictureId",
+                "WHERE epPictureId = :pictureId",
     )
     suspend fun getExpensePictureSync(pictureId: Long): ExpensePictures?
 
@@ -149,7 +149,7 @@ interface WorkOrderPictureDao {
         "UPDATE expensePictures " +
                 "SET epIsDeleted = 1, " +
                 "epUpdateTime = :updateTime " +
-                "WHERE pictureId = :pictureId",
+                "WHERE epPictureId = :pictureId",
     )
     suspend fun deleteExpensePictureById(pictureId: Long, updateTime: String)
 
@@ -158,28 +158,28 @@ interface WorkOrderPictureDao {
 
     // --- COMBINED PICTURE QUERIES ---
     @Query(
-        "SELECT pictureId, driveFileId FROM workOrderPictures " +
+        "SELECT wopPictureId AS pictureId, wopDriveFileId AS driveFileId FROM workOrderPictures " +
                 "WHERE wopWorkOrderId = :workOrderId AND wopIsDeleted = 0 " +
                 "UNION ALL " +
-                "SELECT pictureId, driveFileId FROM workOrderHistoryPictures " +
+                "SELECT wohpPictureId AS pictureId, wohpDriveFileId AS driveFileId FROM workOrderHistoryPictures " +
                 "WHERE wohpHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId AND woHistoryDeleted = 0) AND wohpIsDeleted = 0 " +
                 "UNION ALL " +
-                "SELECT pictureId, driveFileId FROM expensePictures " +
+                "SELECT epPictureId AS pictureId, epDriveFileId AS driveFileId FROM expensePictures " +
                 "WHERE epExpenseId IN (SELECT woHistoryExpenseId FROM workOrderHistoryExpenses WHERE woheHistoryId IN (SELECT woHistoryId FROM workOrderHistory WHERE woHistoryWorkOrderId = :workOrderId AND woHistoryDeleted = 0) AND woheIsDeleted = 0) AND epIsDeleted = 0"
     )
     fun getPicturesByWorkOrderId(workOrderId: Long): LiveData<List<PictureItem>>
 
     @Query(
-        "SELECT pictureId, driveFileId FROM workOrderHistoryPictures " +
+        "SELECT wohpPictureId AS pictureId, wohpDriveFileId AS driveFileId FROM workOrderHistoryPictures " +
                 "WHERE wohpHistoryId = :historyId AND wohpIsDeleted = 0 " +
                 "UNION ALL " +
-                "SELECT pictureId, driveFileId FROM expensePictures " +
+                "SELECT epPictureId AS pictureId, epDriveFileId AS driveFileId FROM expensePictures " +
                 "WHERE epExpenseId IN (SELECT woHistoryExpenseId FROM workOrderHistoryExpenses WHERE woheHistoryId = :historyId AND woheIsDeleted = 0) AND epIsDeleted = 0"
     )
     fun getPicturesByHistoryId(historyId: Long): LiveData<List<PictureItem>>
 
     @Query(
-        "SELECT pictureId, driveFileId FROM expensePictures " +
+        "SELECT epPictureId AS pictureId, epDriveFileId AS driveFileId FROM expensePictures " +
                 "WHERE epExpenseId = :expenseId AND epIsDeleted = 0"
     )
     fun getPicturesByExpenseId(expenseId: Long): LiveData<List<PictureItem>>

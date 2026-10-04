@@ -340,9 +340,9 @@ fun WorkOrderUpdateRoute(
                 workOrderViewModel.generateThumbnailBackground(context.cacheDir, pictureId)
                 workOrderViewModel.insertWorkOrderPicture(
                     WorkOrderPictures(
-                        pictureId = pictureId,
+                        wopPictureId = pictureId,
                         wopWorkOrderId = initialWo.workOrderId,
-                        driveFileId = null,
+                        wopDriveFileId = null,
                         wopIsDeleted = false,
                         wopUploadTime = null,
                         wopUpdateTime = now,
@@ -363,9 +363,9 @@ fun WorkOrderUpdateRoute(
                         val uploadTime = df.getCurrentUTCTimeAsString()
                         workOrderViewModel.insertWorkOrderPicture(
                             WorkOrderPictures(
-                                pictureId = pictureId,
+                                wopPictureId = pictureId,
                                 wopWorkOrderId = initialWo.workOrderId,
-                                driveFileId = driveId,
+                                wopDriveFileId = driveId,
                                 wopIsDeleted = false,
                                 wopUploadTime = uploadTime,
                                 wopUpdateTime = uploadTime,
