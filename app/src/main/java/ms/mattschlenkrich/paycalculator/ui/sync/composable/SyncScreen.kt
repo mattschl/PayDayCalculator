@@ -8,14 +8,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -35,7 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
@@ -174,71 +169,31 @@ fun SyncScreen(
                 }
             }
 
-            if (showAdvancedOptions) {
-                AlertDialog(
-                    onDismissRequest = { showAdvancedOptions = false },
-                    title = { Text(stringResource(R.string.title_advanced_options)) },
-                    text = {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Button(
-                                onClick = {
-                                    showAdvancedOptions = false
-                                    isDownloadMode = false
-                                    showBackupList = true
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                                    contentColor = MaterialTheme.colorScheme.onErrorContainer
-                                )
-                            ) { Text(stringResource(R.string.action_restore_from_drive)) }
-
-                            Button(
-                                onClick = {
-                                    showAdvancedOptions = false
-                                    onManualUpload()
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            ) { Text(stringResource(R.string.action_upload_current_state)) }
-
-                            Button(
-                                onClick = {
-                                    showAdvancedOptions = false
-                                    showRepairConfirm = true
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            ) { Text(stringResource(R.string.action_repair_local_database)) }
-
-                            Button(
-                                onClick = {
-                                    showAdvancedOptions = false
-                                    showPurgeOrphanConfirm = true
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            ) { Text(stringResource(R.string.action_purge_orphan_pictures)) }
-
-                            Button(
-                                onClick = {
-                                    showAdvancedOptions = false
-                                    onClearBackups()
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.error
-                                )
-                            ) { Text(stringResource(R.string.action_clear_all_backups)) }
-                        }
-                    },
-                    confirmButton = {
-                        TextButton(onClick = { showAdvancedOptions = false }) {
-                            Text(stringResource(R.string.action_close))
-                        }
-                    }
-                )
-            }
+            SyncAdvancedOptionsDialog(
+                showDialog = showAdvancedOptions,
+                onDismiss = { showAdvancedOptions = false },
+                onRestoreFromDriveClick = {
+                    showAdvancedOptions = false
+                    isDownloadMode = false
+                    showBackupList = true
+                },
+                onManualUploadClick = {
+                    showAdvancedOptions = false
+                    onManualUpload()
+                },
+                onRepairLocalClick = {
+                    showAdvancedOptions = false
+                    showRepairConfirm = true
+                },
+                onPurgeOrphanPicturesClick = {
+                    showAdvancedOptions = false
+                    showPurgeOrphanConfirm = true
+                },
+                onClearBackupsClick = {
+                    showAdvancedOptions = false
+                    onClearBackups()
+                }
+            )
 
             if (showRepairConfirm) {
                 AlertDialog(
@@ -289,51 +244,18 @@ fun SyncScreen(
                 )
             }
 
-            if (showBackupList && viewModel.availableBackups.isNotEmpty()) {
-                AlertDialog(
-                    onDismissRequest = { showBackupList = false },
-                    title = { Text(stringResource(R.string.title_select_backup_to_restore)) },
-                    text = {
-                        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                            viewModel.availableBackups.forEach { meta ->
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    TextButton(
-                                        onClick = {
-                                            showBackupList = false
-                                            showRestoreConfirm = meta.name
-                                        },
-                                        modifier = Modifier.weight(1f)
-                                    ) {
-                                        Text(
-                                            meta.name,
-                                            textAlign = TextAlign.Start,
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-                                    }
-                                    IconButton(onClick = {
-                                        showDeleteConfirm = meta
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Default.Delete,
-                                            contentDescription = stringResource(R.string.delete_picture),
-                                            tint = MaterialTheme.colorScheme.error
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    confirmButton = {
-                        TextButton(onClick = { showBackupList = false }) {
-                            Text(stringResource(R.string.cancel))
-                        }
-                    }
-                )
-            }
+            SyncBackupListDialog(
+                showDialog = showBackupList,
+                availableBackups = viewModel.availableBackups,
+                onDismiss = { showBackupList = false },
+                onSelectBackup = { meta ->
+                    showBackupList = false
+                    showRestoreConfirm = meta.name
+                },
+                onDeleteBackup = { meta ->
+                    showDeleteConfirm = meta
+                }
+            )
 
             showDeleteConfirm?.let { meta ->
                 AlertDialog(
