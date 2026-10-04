@@ -89,7 +89,7 @@ fun MaterialUpdateRoute(
                 Toast.makeText(
                     context,
                     R.string.msg_material_name_required,
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_LONG
                 ).show()
                 return@MaterialUpdateScreen
             }
@@ -100,7 +100,7 @@ fun MaterialUpdateRoute(
                 Toast.makeText(
                     context,
                     R.string.msg_material_name_exists,
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_LONG
                 ).show()
                 return@MaterialUpdateScreen
             }
@@ -125,7 +125,7 @@ fun MaterialUpdateRoute(
                 Toast.makeText(
                     context,
                     R.string.msg_material_name_required,
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_LONG
                 ).show()
                 return@MaterialUpdateScreen
             }

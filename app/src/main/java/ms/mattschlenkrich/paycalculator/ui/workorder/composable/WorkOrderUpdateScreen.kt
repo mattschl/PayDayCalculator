@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.paycalculator.ui.workorder.composable
 
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,18 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -38,12 +30,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.R
@@ -56,7 +45,6 @@ import ms.mattschlenkrich.paycalculator.common.compose.LocalMinColumnWidth
 import ms.mattschlenkrich.paycalculator.common.compose.PictureAttachmentManager
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
 import ms.mattschlenkrich.paycalculator.common.compose.draggableFab
 import ms.mattschlenkrich.paycalculator.data.entity.Areas
@@ -304,95 +292,16 @@ fun WorkOrderUpdateScreen(
             }
 
             item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(ELEMENT_SPACING)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.total_summary),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
-                        ) {
-                            SelectAllOutlinedTextField(
-                                value = laborRate,
-                                onValueChange = onLaborRateChange,
-                                label = { Text(stringResource(R.string.labor_rate)) },
-                                modifier = Modifier.weight(1f),
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Decimal
-                                )
-                            )
-                            SelectAllOutlinedTextField(
-                                value = markupRate,
-                                onValueChange = onMarkupRateChange,
-                                label = { Text(stringResource(R.string.markup_rate)) },
-                                modifier = Modifier.weight(1f),
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Decimal
-                                )
-                            )
-                            Column(
-                                horizontalAlignment = Alignment.End
-                            ) {
-                                Row {
-                                    Text(
-                                        text = "${stringResource(R.string.labor)}: ",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Text(
-                                        text = laborTotalText,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                                Row {
-                                    Text(
-                                        text = "${stringResource(R.string.material)}: ",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Text(
-                                        text = materialTotalText,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                                Row {
-                                    Text(
-                                        text = "${stringResource(R.string.expenses)}: ",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Text(
-                                        text = expenseTotalText,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                                Text(
-                                    text = grandTotalText,
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.tertiary
-                                )
-                            }
-                        }
-                    }
-                }
+                WorkOrderTotalsSummaryCard(
+                    laborRate = laborRate,
+                    onLaborRateChange = onLaborRateChange,
+                    markupRate = markupRate,
+                    onMarkupRateChange = onMarkupRateChange,
+                    laborTotalText = laborTotalText,
+                    materialTotalText = materialTotalText,
+                    expenseTotalText = expenseTotalText,
+                    grandTotalText = grandTotalText
+                )
             }
 
             item {
@@ -434,71 +343,14 @@ fun WorkOrderUpdateScreen(
             }
 
             item {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp)
-                        .clickable { isLaborExpanded = !isLaborExpanded },
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = stringResource(R.string.work_order_history),
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Icon(
-                                    if (isLaborExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                            if (historySummaryText.isNotBlank()) {
-                                Text(
-                                    text = historySummaryText,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    fontStyle = FontStyle.Italic,
-                                    color = MaterialTheme.colorScheme.secondary
-                                )
-                            }
-                            if (hoursSummaryText.isNotBlank()) {
-                                Text(
-                                    text = hoursSummaryText,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.tertiary,
-                                    modifier = Modifier.padding(top = 2.dp)
-                                )
-                            }
-                        }
-                        FloatingActionButton(
-                            onClick = onAddHistoryClick,
-                            containerColor = MaterialTheme.colorScheme.secondary,
-                            contentColor = MaterialTheme.colorScheme.onSecondary,
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .draggableFab()
-                        ) {
-                            Icon(
-                                Icons.Default.Add,
-                                contentDescription = stringResource(R.string.add_new_extra)
-                            )
-                        }
-                    }
-                }
+                WorkOrderLaborHeaderCard(
+                    isLaborExpanded = isLaborExpanded,
+                    onToggleExpanded = { isLaborExpanded = !isLaborExpanded },
+                    historySummaryText = historySummaryText,
+                    hoursSummaryText = hoursSummaryText,
+                    onAddHistoryClick = onAddHistoryClick,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
             }
 
             if (isLaborExpanded) {
@@ -573,48 +425,13 @@ fun WorkOrderUpdateScreen(
 
             if (materialsList.isNotEmpty()) {
                 item {
-                    val totalMaterialCount = materialsList.sumOf { it.quantity }
-                    val totalMaterialPrice = materialsList.sumOf { it.totalAmount }
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 12.dp)
-                            .clickable { isMaterialsExpanded = !isMaterialsExpanded },
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(
-                                    text = stringResource(R.string.materials),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                                Text(
-                                    text = "${nf.displayNumberFromDouble(totalMaterialCount)} item(s) • Total: ${
-                                        nf.displayDollars(
-                                            totalMaterialPrice
-                                        )
-                                    }",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                            Icon(
-                                if (isMaterialsExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    }
+                    WorkOrderMaterialsCard(
+                        isMaterialsExpanded = isMaterialsExpanded,
+                        onToggleExpanded = { isMaterialsExpanded = !isMaterialsExpanded },
+                        materialsList = materialsList,
+                        nf = nf,
+                        modifier = Modifier.padding(top = 12.dp)
+                    )
                 }
 
                 if (isMaterialsExpanded) {
@@ -643,47 +460,14 @@ fun WorkOrderUpdateScreen(
 
             if (expensesList.isNotEmpty() || individualExpenses.isNotEmpty()) {
                 item {
-                    val totalExpensesAmount = expensesList.sumOf { it.totalAmount }
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 12.dp)
-                            .clickable { isExpensesExpanded = !isExpensesExpanded },
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(
-                                    text = stringResource(R.string.expenses),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                                Text(
-                                    text = "${individualExpenses.size} item(s) • Total: ${
-                                        nf.displayDollars(
-                                            totalExpensesAmount
-                                        )
-                                    }",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                            Icon(
-                                if (isExpensesExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    }
+                    WorkOrderExpensesCard(
+                        isExpensesExpanded = isExpensesExpanded,
+                        onToggleExpanded = { isExpensesExpanded = !isExpensesExpanded },
+                        expensesList = expensesList,
+                        individualExpenses = individualExpenses,
+                        nf = nf,
+                        modifier = Modifier.padding(top = 12.dp)
+                    )
                 }
 
                 if (isExpensesExpanded) {

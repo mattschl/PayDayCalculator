@@ -1,12 +1,17 @@
 package ms.mattschlenkrich.paycalculator.data.viewmodel
 
 import android.app.Application
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.worker.PictureUploadWorker
 import ms.mattschlenkrich.paycalculator.data.entity.ExpensePictures
@@ -19,6 +24,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderPictures
 import ms.mattschlenkrich.paycalculator.data.repository.WorkOrderRepository
 import ms.mattschlenkrich.paycalculator.ui.sync.DriveServiceHelper
 import java.io.File
+import java.io.FileOutputStream
 
 class WorkOrderViewModel(
     app: Application,
@@ -170,14 +176,51 @@ class WorkOrderViewModel(
         val fileId = driveFileId ?: return null
         val storageDir = File(cacheDir, "pictures").apply { if (!exists()) mkdirs() }
         val targetFile = File(storageDir, "pic_$pictureId.webp")
-        if (targetFile.exists() && targetFile.length() > 0) return targetFile
+        if (!targetFile.exists() || targetFile.length() == 0L) {
+            try {
+                driveServiceHelper.downloadFileById(fileId, targetFile)
+            } catch (e: Exception) {
+                Log.e("WorkOrderViewModel", "Failed to download picture", e)
+                return null
+            }
+        }
 
-        return try {
-            driveServiceHelper.downloadFileById(fileId, targetFile)
-            targetFile
-        } catch (e: Exception) {
-            Log.e("WorkOrderViewModel", "Failed to download picture", e)
-            null
+        generateThumbnailBackground(cacheDir, pictureId)
+        return targetFile
+    }
+
+    suspend fun generateThumbnailBackground(cacheDir: File, pictureId: Long) =
+        withContext(Dispatchers.IO) {
+            try {
+                val storageDir = File(cacheDir, "pictures")
+                val fullFile = File(storageDir, "pic_$pictureId.webp")
+                if (!fullFile.exists() || fullFile.length() == 0L) return@withContext
+
+                val thumbFile = File(storageDir, "thumb_$pictureId.webp")
+                if (thumbFile.exists() && thumbFile.length() > 0L) return@withContext
+
+                val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                BitmapFactory.decodeFile(fullFile.absolutePath, options)
+
+                var sampleSize = 1
+                while (options.outWidth / sampleSize > 200 || options.outHeight / sampleSize > 200) {
+                    sampleSize *= 2
+                }
+
+                val decodeOptions = BitmapFactory.Options().apply { inSampleSize = sampleSize }
+                val bitmap = BitmapFactory.decodeFile(fullFile.absolutePath, decodeOptions)
+                    ?: return@withContext
+                FileOutputStream(thumbFile).use { out ->
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, 75, out)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        bitmap.compress(Bitmap.CompressFormat.WEBP, 75, out)
+                    }
+                }
+                bitmap.recycle()
+            } catch (e: Exception) {
+                Log.e("WorkOrderViewModel", "Failed to create thumbnail", e)
         }
     }
 

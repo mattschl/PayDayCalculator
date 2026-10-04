@@ -118,7 +118,7 @@ class SyncActivity : ComponentActivity() {
                             Toast.makeText(
                                 this,
                                 getString(R.string.msg_upload_successful),
-                                Toast.LENGTH_SHORT
+                                Toast.LENGTH_LONG
                             ).show()
                         }
                     },
@@ -155,7 +155,7 @@ class SyncActivity : ComponentActivity() {
         settingsManager.saveSettings(settings.copy(driveAccount = null))
         syncViewModel.disconnect()
         mCurrentAccount = null
-        Toast.makeText(this, getString(R.string.msg_disconnected_from_google), Toast.LENGTH_SHORT)
+        Toast.makeText(this, getString(R.string.msg_disconnected_from_google), Toast.LENGTH_LONG)
             .show()
     }
 

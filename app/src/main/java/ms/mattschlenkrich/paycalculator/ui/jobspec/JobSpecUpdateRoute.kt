@@ -68,7 +68,7 @@ fun JobSpecUpdateRoute(
                         Toast.makeText(
                             context,
                             R.string.msg_name_already_exists,
-                            Toast.LENGTH_SHORT
+                            Toast.LENGTH_LONG
                         ).show()
                         return@JobSpecUpdateScreen
                     }

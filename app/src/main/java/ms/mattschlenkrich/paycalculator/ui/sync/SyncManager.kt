@@ -334,7 +334,7 @@ class SyncManager(
     suspend fun purgeOrphanPicturesOnDrive(): String {
         return withContext(Dispatchers.IO) {
             try {
-                onProgressUpdate("Scanning for orphan pictures on Google Drive...")
+                onProgressUpdate("Examining picture references on Google Drive...")
                 val driveFiles = driveServiceHelper.queryFiles().files ?: emptyList()
                 val pictureFilesOnDrive = driveFiles.filter {
                     (it.name != null) && (it.name.startsWith("pic_") || it.name.endsWith(".webp") || it.name.endsWith(
@@ -342,43 +342,123 @@ class SyncManager(
                     ) || it.name.endsWith(".jpeg"))
                 }
 
-                if (pictureFilesOnDrive.isEmpty()) {
-                    return@withContext "No picture files found on Google Drive."
-                }
-
                 val appDb = PayDatabase(application)
                 val pictureDao = appDb.getWorkOrderPictureDao()
-                val validDriveFileIds =
-                    (pictureDao.getAllWorkOrderPicturesSync().mapNotNull { it.driveFileId } +
-                            pictureDao.getAllHistoryPicturesSync().mapNotNull { it.driveFileId } +
-                            pictureDao.getAllExpensePicturesSync()
-                                .mapNotNull { it.driveFileId }).toSet()
+                val now = df.getCurrentUTCTimeAsString()
 
-                var deletedCount = 0
+                val drivePictureMap = mutableMapOf<Long, com.google.api.services.drive.model.File>()
+                for (file in pictureFilesOnDrive) {
+                    val name = file.name ?: continue
+                    val picId = try {
+                        name.removePrefix("pic_")
+                            .removeSuffix(".webp")
+                            .removeSuffix(".jpg")
+                            .removeSuffix(".jpeg")
+                            .toLong()
+                    } catch (_: Exception) {
+                        null
+                    }
+                    if (picId != null && file.id != null) {
+                        drivePictureMap[picId] = file
+                    }
+                }
+
+                var repairedCount = 0
+
+                // 1. Resolve Work Order Picture references
+                val woPics = pictureDao.getAllWorkOrderPicturesSync()
+                for (pic in woPics) {
+                    val driveFile = drivePictureMap[pic.pictureId]
+                    if (driveFile != null && pic.driveFileId != driveFile.id) {
+                        val updated = pic.copy(
+                            driveFileId = driveFile.id,
+                            wopUploadTime = pic.wopUploadTime ?: now,
+                            wopUpdateTime = now
+                        )
+                        pictureDao.updateWorkOrderPicture(updated)
+                        repairedCount++
+                    }
+                }
+
+                // 2. Resolve History Picture references
+                val histPics = pictureDao.getAllHistoryPicturesSync()
+                for (pic in histPics) {
+                    val driveFile = drivePictureMap[pic.pictureId]
+                    if (driveFile != null && pic.driveFileId != driveFile.id) {
+                        val updated = pic.copy(
+                            driveFileId = driveFile.id,
+                            wohpUploadTime = pic.wohpUploadTime ?: now,
+                            wohpUpdateTime = now
+                        )
+                        pictureDao.updateHistoryPicture(updated)
+                        repairedCount++
+                    }
+                }
+
+                // 3. Resolve Expense Picture references
+                val expPics = pictureDao.getAllExpensePicturesSync()
+                for (pic in expPics) {
+                    val driveFile = drivePictureMap[pic.pictureId]
+                    if (driveFile != null && pic.driveFileId != driveFile.id) {
+                        val updated = pic.copy(
+                            driveFileId = driveFile.id,
+                            epUploadTime = pic.epUploadTime ?: now,
+                            epUpdateTime = now
+                        )
+                        pictureDao.updateExpensePicture(updated)
+                        repairedCount++
+                    }
+                }
+
+                val activeWorkOrderPics = pictureDao.getAllWorkOrderPicturesSync()
+                val activeHistoryPics = pictureDao.getAllHistoryPicturesSync()
+                val activeExpensePics = pictureDao.getAllExpensePicturesSync()
+
+                val activePictureIds = (
+                        activeWorkOrderPics.map { it.pictureId } +
+                                activeHistoryPics.map { it.pictureId } +
+                                activeExpensePics.map { it.pictureId }
+                        ).toSet()
+
+                onProgressUpdate("Purging orphan picture files...")
+                var purgedCount = 0
                 for (driveFile in pictureFilesOnDrive) {
                     val fileId = driveFile.id ?: continue
-                    if (!validDriveFileIds.contains(fileId)) {
+                    val name = driveFile.name ?: continue
+                    val picId = try {
+                        name.removePrefix("pic_")
+                            .removeSuffix(".webp")
+                            .removeSuffix(".jpg")
+                            .removeSuffix(".jpeg")
+                            .toLong()
+                    } catch (_: Exception) {
+                        null
+                    }
+
+                    if (picId != null && !activePictureIds.contains(picId)) {
                         try {
                             driveServiceHelper.deleteFile(fileId)
-                            deletedCount++
-                            Log.d(
-                                TAG,
-                                "Deleted orphan Drive picture file: ${driveFile.name} ($fileId)"
-                            )
+                            purgedCount++
+                            Log.d(TAG, "Deleted orphan Drive picture file: $name ($fileId)")
                         } catch (e: Exception) {
                             Log.e(TAG, "Failed to delete orphan Drive file $fileId", e)
                         }
                     }
                 }
 
-                if (deletedCount > 0) {
-                    "Purged $deletedCount orphan picture file(s) from Google Drive."
-                } else {
-                    "No orphan picture files found on Google Drive."
+                val report = StringBuilder()
+                if (repairedCount > 0) {
+                    report.append("Repaired $repairedCount broken picture reference(s). ")
                 }
+                if (purgedCount > 0) {
+                    report.append("Purged $purgedCount orphan picture file(s) from Google Drive.")
+                } else if (repairedCount == 0) {
+                    report.append("All picture references are healthy. No orphan files found on Google Drive.")
+                }
+                report.toString()
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to purge orphan pictures on Drive", e)
-                "Error purging orphan pictures: ${e.message}"
+                Log.e(TAG, "Failed to examine and purge picture references on Drive", e)
+                "Error examining picture references: ${e.message}"
             }
         }
     }
@@ -585,19 +665,32 @@ class SyncManager(
 
     private suspend fun cleanupOldBackups(fileList: List<com.google.api.services.drive.model.File>) {
         val driveBackups = fileList.asSequence()
-            .filter { it.name.startsWith("pay_") && it.name.endsWith(".db") }
+            .filter { (it.name != null) && it.name.startsWith("pay_") && it.name.endsWith(".db") }
             .sortedByDescending { it.name }
             .toList()
 
-        if (driveBackups.size <= 5) return
+        if (driveBackups.size <= 1) return
 
-        for (i in 5 until driveBackups.size) {
+        val twoWeeksAgoMillis = System.currentTimeMillis() - (14L * 24 * 60 * 60 * 1000L)
+
+        for (i in 1 until driveBackups.size) {
             val file = driveBackups[i]
-            driveServiceHelper.deleteFile(file.id)
-            fileList.find { it.name == "${file.name}-wal" }
-                ?.let { driveServiceHelper.deleteFile(it.id) }
-            fileList.find { it.name == "${file.name}-shm" }
-                ?.let { driveServiceHelper.deleteFile(it.id) }
+            val timestampStr = file.name.removePrefix("pay_").removeSuffix(".db")
+            val backupDate = df.parseFileTimestamp(timestampStr)
+            val fileTime = backupDate?.time ?: file.modifiedTime?.value ?: 0L
+
+            if ((fileTime > 0L) && (fileTime < twoWeeksAgoMillis)) {
+                try {
+                    driveServiceHelper.deleteFile(file.id)
+                    fileList.find { it.name == "${file.name}-wal" }
+                        ?.let { driveServiceHelper.deleteFile(it.id) }
+                    fileList.find { it.name == "${file.name}-shm" }
+                        ?.let { driveServiceHelper.deleteFile(it.id) }
+                    Log.d(TAG, "Purged backup older than 2 weeks: ${file.name}")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to purge old backup ${file.name}", e)
+                }
+            }
         }
     }
 

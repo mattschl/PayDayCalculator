@@ -372,6 +372,7 @@ fun WorkOrderHistoryUpdateRoute(
             }
             val now = df.getCurrentUTCTimeAsString()
             coroutineScope.launch {
+                workOrderViewModel.generateThumbnailBackground(context.cacheDir, pictureId)
                 workOrderViewModel.insertHistoryPicture(
                     WorkOrderHistoryPictures(
                         pictureId = pictureId,
@@ -382,6 +383,9 @@ fun WorkOrderHistoryUpdateRoute(
                         wohpUpdateTime = now,
                     )
                 )
+
+                Toast.makeText(context, R.string.msg_picture_saved_locally, Toast.LENGTH_LONG)
+                    .show()
 
                 val helper = mainViewModel.getOrInitializeDriveService(context)
                 if (helper != null && targetFile.exists()) {
@@ -402,12 +406,24 @@ fun WorkOrderHistoryUpdateRoute(
                                 wohpUpdateTime = uploadTime,
                             )
                         )
+                        Toast.makeText(
+                            context,
+                            R.string.msg_picture_uploaded_to_drive,
+                            Toast.LENGTH_LONG
+                        ).show()
                     } catch (e: Exception) {
                         Log.e("WorkOrderHistoryUpdateRoute", "Background Drive upload failed", e)
                         workOrderViewModel.schedulePictureUpload()
+                        Toast.makeText(
+                            context,
+                            R.string.msg_picture_pending_upload,
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 } else {
                     workOrderViewModel.schedulePictureUpload()
+                    Toast.makeText(context, R.string.msg_picture_pending_upload, Toast.LENGTH_LONG)
+                        .show()
                 }
             }
         },
@@ -433,7 +449,7 @@ fun WorkOrderHistoryUpdateRoute(
                     )
                 }
             } else {
-                Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_LONG).show()
             }
         },
         onDone = {

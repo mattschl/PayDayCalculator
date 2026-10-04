@@ -2,7 +2,6 @@ package ms.mattschlenkrich.paycalculator.ui.workorderhistory
 
 import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -47,12 +46,6 @@ fun WorkOrderHistoryExpenseRoute(
 
     val expensePictures by workOrderViewModel.getPicturesByExpenseId(activeExpenseId)
         .observeAsState(emptyList())
-
-    DisposableEffect(Unit) {
-        onDispose {
-            workOrderViewModel.clearPictureCache(context.cacheDir)
-        }
-    }
 
     LaunchedEffect(expensePictures) {
         val helper = mainViewModel.getOrInitializeDriveService(context) ?: return@LaunchedEffect
@@ -120,6 +113,7 @@ fun WorkOrderHistoryExpenseRoute(
             }
             val now = df.getCurrentUTCTimeAsString()
             coroutineScope.launch {
+                workOrderViewModel.generateThumbnailBackground(context.cacheDir, pictureId)
                 workOrderViewModel.insertExpensePicture(
                     ExpensePictures(
                         pictureId = pictureId,
@@ -130,6 +124,9 @@ fun WorkOrderHistoryExpenseRoute(
                         epUpdateTime = now
                     )
                 )
+
+                Toast.makeText(context, R.string.msg_picture_saved_locally, Toast.LENGTH_LONG)
+                    .show()
 
                 val helper = mainViewModel.getOrInitializeDriveService(context)
                 if (helper != null && targetFile.exists()) {
@@ -150,11 +147,23 @@ fun WorkOrderHistoryExpenseRoute(
                                 epUpdateTime = uploadTime
                             )
                         )
+                        Toast.makeText(
+                            context,
+                            R.string.msg_picture_uploaded_to_drive,
+                            Toast.LENGTH_LONG
+                        ).show()
                     } catch (_: Exception) {
                         workOrderViewModel.schedulePictureUpload()
+                        Toast.makeText(
+                            context,
+                            R.string.msg_picture_pending_upload,
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 } else {
                     workOrderViewModel.schedulePictureUpload()
+                    Toast.makeText(context, R.string.msg_picture_pending_upload, Toast.LENGTH_LONG)
+                        .show()
                 }
             }
         },
@@ -178,7 +187,7 @@ fun WorkOrderHistoryExpenseRoute(
                     )
                 }
             } else {
-                Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_LONG).show()
             }
         }
     )

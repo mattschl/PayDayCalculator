@@ -281,6 +281,11 @@
     <string name="action_purge_orphan_pictures">Clean Up Drive Pictures</string>
     <string name="msg_purge_orphan_pictures_prompt">Are you sure you want to scan and remove picture files on Google Drive that are no longer referenced in your database? This action cannot be undone.</string>
     <string name="action_clean_up">Clean Up</string>
+    <string name="msg_picture_saved_locally">Picture saved locally.</string>
+    <string name="msg_picture_uploaded_to_drive">Picture uploaded to Google Drive.</string>
+    <string name="msg_picture_pending_upload">Saved locally. Will upload to Drive when connected.</string>
+    <string name="msg_picture_link_broken">Picture link is broken or file is unavailable.</string>
+    <string name="label_link_error">Link Error</string>
     <string name="settings">Settings</string>
     <string name="default_web_client_id">659552924329-ihbi24aqo9kjitctefhc3lnqgkf9ajg5.apps.googleusercontent.com</string>
 

@@ -70,7 +70,7 @@ fun WorkPerformedUpdateRoute(
                         Toast.makeText(
                             context,
                             R.string.msg_description_already_exists,
-                            Toast.LENGTH_SHORT
+                            Toast.LENGTH_LONG
                         ).show()
                         return@WorkPerformedUpdateScreen
                     }

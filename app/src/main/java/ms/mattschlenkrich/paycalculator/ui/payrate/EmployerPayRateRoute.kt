@@ -64,7 +64,7 @@ fun EmployerPayRateRoute(
             if (wage.isBlank() || nf.getDoubleFromDollars(wage) == 0.0) {
                 Toast.makeText(
                     context, R.string.there_has_to_be_a_wage_to_save,
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_LONG
                 ).show()
             } else {
                 coroutineScope.launch {

@@ -3,7 +3,6 @@ package ms.mattschlenkrich.paycalculator.ui.workorder
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -128,12 +127,6 @@ fun WorkOrderUpdateRoute(
 
     val pictures by workOrderViewModel.getPicturesByWorkOrderId(initialWo.workOrderId)
         .observeAsState(emptyList())
-
-    DisposableEffect(Unit) {
-        onDispose {
-            workOrderViewModel.clearPictureCache(context.cacheDir)
-        }
-    }
 
     LaunchedEffect(pictures) {
         val helper = mainViewModel.getOrInitializeDriveService(context) ?: return@LaunchedEffect
@@ -344,6 +337,7 @@ fun WorkOrderUpdateRoute(
             }
             val now = df.getCurrentUTCTimeAsString()
             coroutineScope.launch {
+                workOrderViewModel.generateThumbnailBackground(context.cacheDir, pictureId)
                 workOrderViewModel.insertWorkOrderPicture(
                     WorkOrderPictures(
                         pictureId = pictureId,
@@ -354,6 +348,9 @@ fun WorkOrderUpdateRoute(
                         wopUpdateTime = now,
                     )
                 )
+
+                Toast.makeText(context, R.string.msg_picture_saved_locally, Toast.LENGTH_LONG)
+                    .show()
 
                 val helper = mainViewModel.getOrInitializeDriveService(context)
                 if ((helper != null) && targetFile.exists()) {
@@ -374,12 +371,24 @@ fun WorkOrderUpdateRoute(
                                 wopUpdateTime = uploadTime,
                             )
                         )
+                        Toast.makeText(
+                            context,
+                            R.string.msg_picture_uploaded_to_drive,
+                            Toast.LENGTH_LONG
+                        ).show()
                     } catch (e: Exception) {
                         Log.e("WorkOrderUpdateRoute", "Background Drive upload failed", e)
                         workOrderViewModel.schedulePictureUpload()
+                        Toast.makeText(
+                            context,
+                            R.string.msg_picture_pending_upload,
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 } else {
                     workOrderViewModel.schedulePictureUpload()
+                    Toast.makeText(context, R.string.msg_picture_pending_upload, Toast.LENGTH_LONG)
+                        .show()
                 }
             }
         },
@@ -405,7 +414,7 @@ fun WorkOrderUpdateRoute(
                     )
                 }
             } else {
-                Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_LONG).show()
             }
         },
         onDoneClick = {

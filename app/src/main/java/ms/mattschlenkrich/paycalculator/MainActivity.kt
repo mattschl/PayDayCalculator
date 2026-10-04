@@ -85,7 +85,7 @@ class MainActivity : ComponentActivity() {
             Toast.makeText(
                 this,
                 getString(R.string.msg_data_refreshed_from_sync),
-                Toast.LENGTH_SHORT,
+                Toast.LENGTH_LONG,
             ).show()
             PayDatabase.resetInstance()
             val intent = Intent(this, MainActivity::class.java)

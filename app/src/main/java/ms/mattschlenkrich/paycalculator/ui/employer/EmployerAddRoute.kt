@@ -109,7 +109,7 @@ fun EmployerAddRoute(
             Toast.makeText(
                 context,
                 R.string.you_cannot_add_taxes_until_the_employer_is_saved,
-                Toast.LENGTH_SHORT
+                Toast.LENGTH_LONG
             ).show()
         },
         extras = emptyList(),
@@ -118,7 +118,7 @@ fun EmployerAddRoute(
             Toast.makeText(
                 context,
                 R.string.you_cannot_add_any_extra_credits_or_deductions_until_the_employer_is_saved,
-                Toast.LENGTH_SHORT
+                Toast.LENGTH_LONG
             ).show()
         },
         onViewWagesClick = { },

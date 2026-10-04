@@ -1,31 +1,20 @@
 package ms.mattschlenkrich.paycalculator.common.compose
 
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
-import androidx.compose.material.icons.filled.CloudDownload
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,24 +22,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.FileProvider
-import coil.compose.SubcomposeAsyncImage
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.model.PictureItem
@@ -65,6 +49,9 @@ fun PictureAttachmentManager(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    var downloadingPictureIds by remember { mutableStateOf(setOf<Long>()) }
+    var downloadRefreshTrigger by remember { mutableIntStateOf(0) }
     var showFullImage by remember { mutableStateOf<PictureItem?>(null) }
     var pictureToDelete by remember { mutableStateOf<PictureItem?>(null) }
     var showSelectionDialog by remember { mutableStateOf(value = false) }
@@ -133,14 +120,53 @@ fun PictureAttachmentManager(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(pictures, key = { it.pictureId }) { pic ->
-                    val tempFile = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
-                    val hasLocalFile = (tempFile.exists()) && (tempFile.length() > 0L)
+                    val displayFile = remember(pic.pictureId, downloadRefreshTrigger) {
+                        val thumbFile =
+                            File(context.cacheDir, "pictures/thumb_${pic.pictureId}.webp")
+                        val fullFile = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
+                        when {
+                            (thumbFile.exists()) && (thumbFile.length() > 0L) -> thumbFile
+                            (fullFile.exists()) && (fullFile.length() > 0L) -> fullFile
+                            else -> null
+                        }
+                    }
+                    val hasLocalFile = displayFile != null
+                    val isDownloading = downloadingPictureIds.contains(pic.pictureId)
+
                     PictureThumbnail(
                         picture = pic,
-                        imageFile = if (hasLocalFile) tempFile else null,
+                        imageFile = displayFile,
+                        isDownloading = isDownloading,
                         onClick = {
-                            if (hasLocalFile) showFullImage = pic
-                            else onDownloadPicture(pic)
+                            if (hasLocalFile) {
+                                showFullImage = pic
+                            } else if (!pic.driveFileId.isNullOrBlank()) {
+                                if (!isDownloading) {
+                                    downloadingPictureIds = downloadingPictureIds + pic.pictureId
+                                    coroutineScope.launch {
+                                        try {
+                                            onDownloadPicture(pic)
+                                        } finally {
+                                            downloadingPictureIds =
+                                                downloadingPictureIds - pic.pictureId
+                                            downloadRefreshTrigger++
+                                        }
+                                        val downloadedFile = File(
+                                            context.cacheDir,
+                                            "pictures/pic_${pic.pictureId}.webp"
+                                        )
+                                        if ((downloadedFile.exists()) && (downloadedFile.length() > 0L)) {
+                                            showFullImage = pic
+                                        }
+                                    }
+                                }
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    R.string.msg_picture_link_broken,
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
                         }
                     ) { pictureToDelete = pic }
                 }
@@ -215,194 +241,6 @@ fun PictureAttachmentManager(
             dismissButton = {
                 TextButton(onClick = { pictureToDelete = null }) {
                     Text(stringResource(R.string.cancel))
-                }
-            }
-        )
-    }
-}
-
-@Composable
-fun PictureThumbnail(
-    picture: PictureItem,
-    imageFile: File?,
-    onClick: () -> Unit,
-    onDelete: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .size(100.dp)
-            .clickable(onClick = onClick)
-    ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            if (imageFile != null) {
-                SubcomposeAsyncImage(
-                    model = imageFile,
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop,
-                    loading = {
-                        Box(contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                        }
-                    },
-                    error = {
-                        Icon(
-                            Icons.Default.Image,
-                            contentDescription = null,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-                )
-            } else if (picture.driveFileId != null) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.LightGray),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(Icons.Default.CloudDownload, contentDescription = null)
-                        Text(text = "Download", style = MaterialTheme.typography.labelSmall)
-                    }
-                }
-            } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.LightGray),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Default.Image, contentDescription = null)
-                }
-            }
-
-            IconButton(
-                onClick = onDelete,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .background(Color.White.copy(alpha = 0.5f))
-                    .size(24.dp)
-            ) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.size(16.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun FullScreenImageDialog(
-    picture: PictureItem,
-    onDelete: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    val context = LocalContext.current
-    val imageFile = File(context.cacheDir, "pictures/pic_${picture.pictureId}.webp")
-
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black),
-            contentAlignment = Alignment.Center
-        ) {
-            ZoomableImage(
-                model = imageFile,
-                contentDescription = null,
-                onDismiss = onDismiss
-            )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.TopEnd)
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                IconButton(
-                    onClick = onDelete,
-                    modifier = Modifier
-                        .background(Color.Black.copy(alpha = 0.5f))
-                ) {
-                    Icon(
-                        Icons.Default.Delete,
-                        contentDescription = stringResource(R.string.delete_picture),
-                        tint = Color.Red
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ZoomableImage(
-    model: Any?,
-    contentDescription: String?,
-    modifier: Modifier = Modifier,
-    onDismiss: () -> Unit
-) {
-    var scale by remember { mutableFloatStateOf(1f) }
-    var offsetX by remember { mutableFloatStateOf(0f) }
-    var offsetY by remember { mutableFloatStateOf(0f) }
-
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onDoubleTap = {
-                        if (scale > 1f) {
-                            scale = 1f
-                            offsetX = 0f
-                            offsetY = 0f
-                        } else {
-                            scale = 2.5f
-                        }
-                    },
-                    onTap = {
-                        if (scale == 1f) {
-                            onDismiss()
-                        }
-                    }
-                )
-            }
-            .pointerInput(Unit) {
-                detectTransformGestures { _, pan, zoom, _ ->
-                    scale = (scale * zoom).coerceIn(1f, 5f)
-                    if (scale == 1f) {
-                        offsetX = 0f
-                        offsetY = 0f
-                    } else {
-                        offsetX += pan.x
-                        offsetY += pan.y
-                    }
-                }
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        SubcomposeAsyncImage(
-            model = model,
-            contentDescription = contentDescription,
-            modifier = Modifier
-                .fillMaxSize()
-                .graphicsLayer(
-                    scaleX = scale,
-                    scaleY = scale,
-                    translationX = offsetX,
-                    translationY = offsetY
-                ),
-            contentScale = ContentScale.Fit,
-            loading = {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = Color.White)
                 }
             }
         )
