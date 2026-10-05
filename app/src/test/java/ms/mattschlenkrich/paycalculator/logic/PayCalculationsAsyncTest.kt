@@ -1,13 +1,19 @@
 package ms.mattschlenkrich.paycalculator.logic
 
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
+import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
+import ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies
 import ms.mattschlenkrich.paycalculator.common.PayRateBasedOn
 import ms.mattschlenkrich.paycalculator.common.TaxBasedOn
 import ms.mattschlenkrich.paycalculator.data.entity.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.entity.PayPeriods
 import ms.mattschlenkrich.paycalculator.data.entity.TaxTypes
+import ms.mattschlenkrich.paycalculator.data.entity.WorkExtraTypes
+import ms.mattschlenkrich.paycalculator.data.entity.WorkExtrasDefinitions
+import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras
 import ms.mattschlenkrich.paycalculator.data.entity.WorkTaxRules
+import ms.mattschlenkrich.paycalculator.data.model.ExtraDefinitionAndType
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayCalculationsViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDetailViewModel
 import org.junit.Assert.assertEquals
@@ -15,8 +21,8 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.whenever
 
 @RunWith(MockitoJUnitRunner::class)
 class PayCalculationsAsyncTest {
@@ -43,7 +49,7 @@ class PayCalculationsAsyncTest {
     @Before
     fun setup() {
         // Default mocks to avoid NullPointerExceptions during init
-        `when`(payCalculationsViewModel.getPayRate(employerId, cutoffDate))
+        whenever(payCalculationsViewModel.getPayRate(employerId, cutoffDate))
             .thenReturn(
                 EmployerPayRates(
                     1L,
@@ -55,37 +61,37 @@ class PayCalculationsAsyncTest {
                     ""
                 )
             )
-        `when`(payCalculationsViewModel.getWorkDateList(employerId, cutoffDate))
+        whenever(payCalculationsViewModel.getWorkDateList(employerId, cutoffDate))
             .thenReturn(emptyList())
-        `when`(payDetailViewModel.getDaysWorked(employerId, cutoffDate))
+        whenever(payDetailViewModel.getDaysWorked(employerId, cutoffDate))
             .thenReturn(0)
-        `when`(payDetailViewModel.getHoursReg(employerId, cutoffDate))
+        whenever(payDetailViewModel.getHoursReg(employerId, cutoffDate))
             .thenReturn(0.0)
-        `when`(payDetailViewModel.getHoursOt(employerId, cutoffDate))
+        whenever(payDetailViewModel.getHoursOt(employerId, cutoffDate))
             .thenReturn(0.0)
-        `when`(payDetailViewModel.getHoursDblOt(employerId, cutoffDate))
+        whenever(payDetailViewModel.getHoursDblOt(employerId, cutoffDate))
             .thenReturn(0.0)
-        `when`(payDetailViewModel.getHoursStat(employerId, cutoffDate))
+        whenever(payDetailViewModel.getHoursStat(employerId, cutoffDate))
             .thenReturn(0.0)
-        `when`(payCalculationsViewModel.getWorkDateExtrasPerPay(employerId, cutoffDate))
+        whenever(payCalculationsViewModel.getWorkDateExtrasPerPay(employerId, cutoffDate))
             .thenReturn(emptyList())
-        `when`(payCalculationsViewModel.getCustomPayPeriodExtras(payPeriodId))
+        whenever(payCalculationsViewModel.getCustomPayPeriodExtras(payPeriodId))
             .thenReturn(emptyList())
-        `when`(payCalculationsViewModel.getDefaultExtraTypesAndCurrentDef(employerId, cutoffDate))
+        whenever(payCalculationsViewModel.getDefaultExtraTypesAndCurrentDef(employerId, cutoffDate))
             .thenReturn(emptyList())
-        `when`(payCalculationsViewModel.getExtraTypes(employerId))
+        whenever(payCalculationsViewModel.getExtraTypes(employerId))
             .thenReturn(emptyList())
-        `when`(payCalculationsViewModel.getTaxTypes(employerId))
+        whenever(payCalculationsViewModel.getTaxTypes(employerId))
             .thenReturn(emptyList())
-        `when`(payCalculationsViewModel.getCurrentEffectiveDate(cutoffDate))
+        whenever(payCalculationsViewModel.getCurrentEffectiveDate(cutoffDate))
             .thenReturn(null)
     }
 
     @Test
-    fun calculateBasicPay_80Hours_at_20Rate() = runBlocking {
-        `when`(payDetailViewModel.getHoursReg(employerId, cutoffDate))
+    fun calculateBasicPay_80Hours_at_20Rate() = runTest {
+        whenever(payDetailViewModel.getHoursReg(employerId, cutoffDate))
             .thenReturn(80.0)
-        `when`(payDetailViewModel.getDaysWorked(employerId, cutoffDate))
+        whenever(payDetailViewModel.getDaysWorked(employerId, cutoffDate))
             .thenReturn(10)
 
         val calculator = PayCalculationsAsync(
@@ -103,12 +109,12 @@ class PayCalculationsAsyncTest {
     }
 
     @Test
-    fun calculateOvertimePay_10HoursOT_at_20Rate() = runBlocking {
-        `when`(payDetailViewModel.getHoursReg(employerId, cutoffDate))
+    fun calculateOvertimePay_10HoursOT_at_20Rate() = runTest {
+        whenever(payDetailViewModel.getHoursReg(employerId, cutoffDate))
             .thenReturn(80.0)
-        `when`(payDetailViewModel.getHoursOt(employerId, cutoffDate))
+        whenever(payDetailViewModel.getHoursOt(employerId, cutoffDate))
             .thenReturn(10.0)
-        `when`(payDetailViewModel.getDaysWorked(employerId, cutoffDate))
+        whenever(payDetailViewModel.getDaysWorked(employerId, cutoffDate))
             .thenReturn(10)
 
         val calculator = PayCalculationsAsync(
@@ -128,10 +134,10 @@ class PayCalculationsAsyncTest {
     }
 
     @Test
-    fun calculateDoubleOvertimePay_5HoursDblOT_at_20Rate() = runBlocking {
-        `when`(payDetailViewModel.getHoursReg(employerId, cutoffDate))
+    fun calculateDoubleOvertimePay_5HoursDblOT_at_20Rate() = runTest {
+        whenever(payDetailViewModel.getHoursReg(employerId, cutoffDate))
             .thenReturn(80.0)
-        `when`(payDetailViewModel.getHoursDblOt(employerId, cutoffDate))
+        whenever(payDetailViewModel.getHoursDblOt(employerId, cutoffDate))
             .thenReturn(5.0)
 
         val calculator = PayCalculationsAsync(
@@ -150,10 +156,10 @@ class PayCalculationsAsyncTest {
     }
 
     @Test
-    fun calculateStatPay_8HoursStat_at_20Rate() = runBlocking {
-        `when`(payDetailViewModel.getHoursReg(employerId, cutoffDate))
+    fun calculateStatPay_8HoursStat_at_20Rate() = runTest {
+        whenever(payDetailViewModel.getHoursReg(employerId, cutoffDate))
             .thenReturn(72.0)
-        `when`(payDetailViewModel.getHoursStat(employerId, cutoffDate))
+        whenever(payDetailViewModel.getHoursStat(employerId, cutoffDate))
             .thenReturn(8.0)
 
         val calculator = PayCalculationsAsync(
@@ -172,21 +178,21 @@ class PayCalculationsAsyncTest {
     }
 
     @Test
-    fun calculateExtras_fixedCreditAndDebit() = runBlocking {
-        val bonus = ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras(
+    fun calculateExtras_fixedCreditAndDebit() = runTest {
+        val bonus = WorkPayPeriodExtras(
             1L, payPeriodId, null, "Bonus",
-            ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies.PER_PAY.value,
+            ExtraAttachToFrequencies.PER_PAY.value,
             0, 100.0, true, true, false, ""
         )
-        val deduction = ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras(
+        val deduction = WorkPayPeriodExtras(
             2L, payPeriodId, null, "Parking",
-            ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies.PER_PAY.value,
+            ExtraAttachToFrequencies.PER_PAY.value,
             0, 25.0, true, false, false, ""
         )
 
-        `when`(payCalculationsViewModel.getCustomPayPeriodExtras(payPeriodId))
+        whenever(payCalculationsViewModel.getCustomPayPeriodExtras(payPeriodId))
             .thenReturn(listOf(bonus, deduction))
-        `when`(payDetailViewModel.getHoursReg(employerId, cutoffDate))
+        whenever(payDetailViewModel.getHoursReg(employerId, cutoffDate))
             .thenReturn(80.0)
 
         val calculator = PayCalculationsAsync(
@@ -207,18 +213,18 @@ class PayCalculationsAsyncTest {
     }
 
     @Test
-    fun calculateTaxes_simple10PercentNoExemption() = runBlocking {
+    fun calculateTaxes_simple10PercentNoExemption() = runTest {
         val taxType = TaxTypes(1L, "Income Tax", TaxBasedOn.TIME_WORKED_ONLY.value, false, "")
         val taxRule = WorkTaxRules(
             1L, "Income Tax", 1, "2024-01-01", 0.10,
             false, 0.0, false, 0.0, false, ""
         )
 
-        `when`(payCalculationsViewModel.getTaxTypes(employerId)).thenReturn(listOf(taxType))
-        `when`(payCalculationsViewModel.getCurrentEffectiveDate(cutoffDate)).thenReturn("2024-01-01")
-        `when`(payCalculationsViewModel.getTaxRules("2024-01-01")).thenReturn(listOf(taxRule))
+        whenever(payCalculationsViewModel.getTaxTypes(employerId)).thenReturn(listOf(taxType))
+        whenever(payCalculationsViewModel.getCurrentEffectiveDate(cutoffDate)).thenReturn("2024-01-01")
+        whenever(payCalculationsViewModel.getTaxRules("2024-01-01")).thenReturn(listOf(taxRule))
 
-        `when`(payDetailViewModel.getHoursReg(employerId, cutoffDate)).thenReturn(80.0)
+        whenever(payDetailViewModel.getHoursReg(employerId, cutoffDate)).thenReturn(80.0)
 
         val calculator = PayCalculationsAsync(
             payCalculationsViewModel,
@@ -233,7 +239,7 @@ class PayCalculationsAsyncTest {
     }
 
     @Test
-    fun calculateTaxes_progressiveBrackets() = runBlocking {
+    fun calculateTaxes_progressiveBrackets() = runTest {
         // Employer frequency is Bi-Weekly (taxFactor = 26)
         val taxType = TaxTypes(1L, "Progressive Tax", TaxBasedOn.TIME_WORKED_ONLY.value, false, "")
 
@@ -248,12 +254,17 @@ class PayCalculationsAsyncTest {
             false, 0.0, false, 0.0, false, ""
         )
 
-        `when`(payCalculationsViewModel.getTaxTypes(employerId)).thenReturn(listOf(taxType))
-        `when`(payCalculationsViewModel.getCurrentEffectiveDate(cutoffDate)).thenReturn("2024-01-01")
-        `when`(payCalculationsViewModel.getTaxRules("2024-01-01")).thenReturn(listOf(rule1, rule2))
+        whenever(payCalculationsViewModel.getTaxTypes(employerId)).thenReturn(listOf(taxType))
+        whenever(payCalculationsViewModel.getCurrentEffectiveDate(cutoffDate)).thenReturn("2024-01-01")
+        whenever(payCalculationsViewModel.getTaxRules("2024-01-01")).thenReturn(
+            listOf(
+                rule1,
+                rule2
+            )
+        )
 
         // 80 hours * 20 = 1600 gross for tax calculation
-        `when`(payDetailViewModel.getHoursReg(employerId, cutoffDate)).thenReturn(80.0)
+        whenever(payDetailViewModel.getHoursReg(employerId, cutoffDate)).thenReturn(80.0)
 
         val calculator = PayCalculationsAsync(
             payCalculationsViewModel,
@@ -270,7 +281,7 @@ class PayCalculationsAsyncTest {
     }
 
     @Test
-    fun calculateTaxes_withExemption() = runBlocking {
+    fun calculateTaxes_withExemption() = runTest {
         // Employer frequency is Bi-Weekly (taxFactor = 26)
         val taxType = TaxTypes(1L, "Income Tax", TaxBasedOn.TIME_WORKED_ONLY.value, false, "")
 
@@ -280,12 +291,12 @@ class PayCalculationsAsyncTest {
             true, 15600.0, false, 0.0, false, ""
         )
 
-        `when`(payCalculationsViewModel.getTaxTypes(employerId)).thenReturn(listOf(taxType))
-        `when`(payCalculationsViewModel.getCurrentEffectiveDate(cutoffDate)).thenReturn("2024-01-01")
-        `when`(payCalculationsViewModel.getTaxRules("2024-01-01")).thenReturn(listOf(taxRule))
+        whenever(payCalculationsViewModel.getTaxTypes(employerId)).thenReturn(listOf(taxType))
+        whenever(payCalculationsViewModel.getCurrentEffectiveDate(cutoffDate)).thenReturn("2024-01-01")
+        whenever(payCalculationsViewModel.getTaxRules("2024-01-01")).thenReturn(listOf(taxRule))
 
         // 80 hours * 20 = 1600 gross
-        `when`(payDetailViewModel.getHoursReg(employerId, cutoffDate)).thenReturn(80.0)
+        whenever(payDetailViewModel.getHoursReg(employerId, cutoffDate)).thenReturn(80.0)
 
         val calculator = PayCalculationsAsync(
             payCalculationsViewModel,
@@ -301,7 +312,7 @@ class PayCalculationsAsyncTest {
     }
 
     @Test
-    fun calculateTaxes_differentBases() = runBlocking {
+    fun calculateTaxes_differentBases() = runTest {
         // One tax on Time Worked (Reg+OT+Dbl), another on Gross (Time+Stats+Credits)
         val taxType1 = TaxTypes(1L, "Work Tax", TaxBasedOn.TIME_WORKED_ONLY.value, false, "")
         val taxType2 =
@@ -312,25 +323,30 @@ class PayCalculationsAsyncTest {
         val rule2 =
             WorkTaxRules(2L, "Gross Tax", 1, "2024-01-01", 0.05, false, 0.0, false, 0.0, false, "")
 
-        `when`(payCalculationsViewModel.getTaxTypes(employerId)).thenReturn(
+        whenever(payCalculationsViewModel.getTaxTypes(employerId)).thenReturn(
             listOf(
                 taxType1,
                 taxType2
             )
         )
-        `when`(payCalculationsViewModel.getCurrentEffectiveDate(cutoffDate)).thenReturn("2024-01-01")
-        `when`(payCalculationsViewModel.getTaxRules("2024-01-01")).thenReturn(listOf(rule1, rule2))
+        whenever(payCalculationsViewModel.getCurrentEffectiveDate(cutoffDate)).thenReturn("2024-01-01")
+        whenever(payCalculationsViewModel.getTaxRules("2024-01-01")).thenReturn(
+            listOf(
+                rule1,
+                rule2
+            )
+        )
 
-        `when`(payDetailViewModel.getHoursReg(employerId, cutoffDate)).thenReturn(40.0) // 800
-        `when`(payDetailViewModel.getHoursStat(employerId, cutoffDate)).thenReturn(8.0) // 160
+        whenever(payDetailViewModel.getHoursReg(employerId, cutoffDate)).thenReturn(40.0) // 800
+        whenever(payDetailViewModel.getHoursStat(employerId, cutoffDate)).thenReturn(8.0) // 160
 
         // Add a credit extra
-        val bonus = ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras(
+        val bonus = WorkPayPeriodExtras(
             1L, payPeriodId, null, "Bonus",
-            ms.mattschlenkrich.paycalculator.common.ExtraAttachToFrequencies.PER_PAY.value,
+            ExtraAttachToFrequencies.PER_PAY.value,
             0, 40.0, true, true, false, ""
         )
-        `when`(payCalculationsViewModel.getCustomPayPeriodExtras(payPeriodId)).thenReturn(
+        whenever(payCalculationsViewModel.getCustomPayPeriodExtras(payPeriodId)).thenReturn(
             listOf(
                 bonus
             )
@@ -356,22 +372,21 @@ class PayCalculationsAsyncTest {
     }
 
     @Test
-    fun calculateExtras_percentageOfGross() = runBlocking {
+    fun calculateExtras_percentageOfGross() = runTest {
         // Pension = 5% of gross before percentage adjustments
-        val extraType = ms.mattschlenkrich.paycalculator.data.entity.WorkExtraTypes(
+        val extraType = WorkExtraTypes(
             1L, "Pension", employerId,
-            ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies.PER_PAY_PERCENTAGE_OF_ALL.value,
+            ExtraAppliesToFrequencies.PER_PAY_PERCENTAGE_OF_ALL.value,
             0, true, true, false, ""
         )
-        val extraDef = ms.mattschlenkrich.paycalculator.data.entity.WorkExtrasDefinitions(
+        val extraDef = WorkExtrasDefinitions(
             1L, employerId, 1L, 5.0, false, "2024-01-01", false, ""
         )
-        val extraAndDef =
-            ms.mattschlenkrich.paycalculator.data.model.ExtraDefinitionAndType(extraDef, extraType)
+        val extraAndDef = ExtraDefinitionAndType(extraDef, extraType)
 
-        `when`(payCalculationsViewModel.getDefaultExtraTypesAndCurrentDef(employerId, cutoffDate))
+        whenever(payCalculationsViewModel.getDefaultExtraTypesAndCurrentDef(employerId, cutoffDate))
             .thenReturn(listOf(extraAndDef))
-        `when`(payDetailViewModel.getHoursReg(employerId, cutoffDate))
+        whenever(payDetailViewModel.getHoursReg(employerId, cutoffDate))
             .thenReturn(50.0) // 1000
 
         val calculator = PayCalculationsAsync(
@@ -390,7 +405,7 @@ class PayCalculationsAsyncTest {
     }
 
     @Test
-    fun calculateTaxes_weeklyFrequency() = runBlocking {
+    fun calculateTaxes_weeklyFrequency() = runTest {
         val weeklyEmployer = Employers(
             employerId, "Weekly Corp", "Weekly", "2024-01-01",
             "Friday", 0, 7, 31, false, ""
@@ -402,12 +417,12 @@ class PayCalculationsAsyncTest {
         )
         val taxType = TaxTypes(1L, "Income Tax", TaxBasedOn.TIME_WORKED_ONLY.value, false, "")
 
-        `when`(payCalculationsViewModel.getTaxTypes(employerId)).thenReturn(listOf(taxType))
-        `when`(payCalculationsViewModel.getCurrentEffectiveDate(cutoffDate)).thenReturn("2024-01-01")
-        `when`(payCalculationsViewModel.getTaxRules("2024-01-01")).thenReturn(listOf(taxRule))
+        whenever(payCalculationsViewModel.getTaxTypes(employerId)).thenReturn(listOf(taxType))
+        whenever(payCalculationsViewModel.getCurrentEffectiveDate(cutoffDate)).thenReturn("2024-01-01")
+        whenever(payCalculationsViewModel.getTaxRules("2024-01-01")).thenReturn(listOf(taxRule))
 
         // 40 hours * 20 = 800 gross
-        `when`(payDetailViewModel.getHoursReg(employerId, cutoffDate)).thenReturn(40.0)
+        whenever(payDetailViewModel.getHoursReg(employerId, cutoffDate)).thenReturn(40.0)
 
         val calculator = PayCalculationsAsync(
             payCalculationsViewModel,

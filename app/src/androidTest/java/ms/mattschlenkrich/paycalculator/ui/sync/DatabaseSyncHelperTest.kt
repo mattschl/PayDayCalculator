@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
@@ -66,7 +66,7 @@ class DatabaseSyncHelperTest {
     }
 
     @Test
-    fun testSyncEmployers_insertsNewEmployer() = runBlocking {
+    fun testSyncEmployers_insertsNewEmployer() = runTest {
         backupDb.execSQL(
             "INSERT INTO $TABLE_EMPLOYERS " +
                     "(employerId, employerName, payFrequency, startDate, dayOfWeek, cutoffDaysBefore, midMonthlyDate, mainMonthlyDate, employerIsDeleted, employerUpdateTime) " +
@@ -83,7 +83,7 @@ class DatabaseSyncHelperTest {
     }
 
     @Test
-    fun testSyncEmployers_updatesNewerEmployer() = runBlocking {
+    fun testSyncEmployers_updatesNewerEmployer() = runTest {
         val oldEmployer = Employers(
             1, "Employer X", "Weekly", "2024-01-01", "Monday", 0, 0, 0, false, "2024-01-01 09:00:00"
         )
@@ -104,7 +104,7 @@ class DatabaseSyncHelperTest {
     }
 
     @Test
-    fun testSyncEmployers_ignoresOlderEmployer() = runBlocking {
+    fun testSyncEmployers_ignoresOlderEmployer() = runTest {
         val newEmployer = Employers(
             1,
             "Modern Name",
@@ -134,7 +134,7 @@ class DatabaseSyncHelperTest {
     }
 
     @Test
-    fun testSyncEmployers_handlesConflict_keepDrive() = runBlocking {
+    fun testSyncEmployers_handlesConflict_keepDrive() = runTest {
         // Local has "Employer A" with ID 1
         val localEmployer = Employers(
             1, "Employer A", "Weekly", "2024-01-01", "Monday", 0, 0, 0, false, "2024-01-01 09:00:00"
@@ -162,7 +162,7 @@ class DatabaseSyncHelperTest {
     }
 
     @Test
-    fun testSyncEmployers_isRestore_overwritesEverything() = runBlocking {
+    fun testSyncEmployers_isRestore_overwritesEverything() = runTest {
         // Local has "Employer A" with ID 1, newer than backup
         val localEmployer = Employers(
             1, "Local Name", "Weekly", "2024-01-01", "Monday", 0, 0, 0, false, "2024-01-01 12:00:00"

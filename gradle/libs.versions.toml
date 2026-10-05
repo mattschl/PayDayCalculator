@@ -5,7 +5,7 @@ activityCompose = "1.13.0"
 coreKtx = "1.19.1"
 credentials = "1.6.0"
 espressoCore = "3.7.0"
-googleApiServicesDrive = "v3-rev20260901-2.0.0"
+googleApiServicesDrive = "v3-rev20260916-2.0.0"
 googleid = "1.2.1"
 gsonVersion = "2.14.0"
 junit = "4.13.2"
@@ -66,6 +66,7 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesAndroid" }
 material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockitoCore" }
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }

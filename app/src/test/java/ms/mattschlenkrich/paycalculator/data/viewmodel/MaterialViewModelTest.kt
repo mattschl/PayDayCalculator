@@ -4,7 +4,7 @@ import android.app.Application
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import ms.mattschlenkrich.paycalculator.data.entity.Material
 import ms.mattschlenkrich.paycalculator.data.repository.MaterialRepository
 import org.junit.Before
@@ -22,7 +22,7 @@ class MaterialViewModelTest {
     }
 
     @Test
-    fun testUpdateMaterialCostAndPrice_UpdatesRepository() = runBlocking {
+    fun testUpdateMaterialCostAndPrice_UpdatesRepository() = runTest {
         val materialId = 1L
         val originalMaterial = Material(materialId, "Test Material", 5.0, 10.0, false, "oldTime")
         val newCost = 6.0

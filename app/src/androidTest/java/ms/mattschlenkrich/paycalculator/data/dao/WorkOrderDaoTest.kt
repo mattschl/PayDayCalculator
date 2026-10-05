@@ -7,7 +7,7 @@ import androidx.lifecycle.Observer
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.entity.Material
@@ -102,7 +102,7 @@ class WorkOrderDaoTest {
     }
 
     @Test
-    fun testGetWorkOrderMaterialsSummary_HandlesMergedMaterials() = runBlocking {
+    fun testGetWorkOrderMaterialsSummary_HandlesMergedMaterials() = runTest {
         setupPrerequisites()
 
         // 1. Setup Master and Child Materials
@@ -168,7 +168,7 @@ class WorkOrderDaoTest {
     }
 
     @Test
-    fun testGetWorkOrderSummary_CalculatesTotalHours() = runBlocking {
+    fun testGetWorkOrderSummary_CalculatesTotalHours() = runTest {
         setupPrerequisites()
         db.getWorkOrderDao()
             .insertWorkOrder(WorkOrder(1L, "WO-1", 1L, "Addr", "Desc", false, updateTime))

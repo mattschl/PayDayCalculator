@@ -1,7 +1,8 @@
 package ms.mattschlenkrich.paycalculator.ui
 
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -33,7 +34,7 @@ class NavigationTest {
         composeTestRule.waitUntil(10000) {
             composeTestRule.onAllNodes(hasText(settingsLabel)).fetchSemanticsNodes().isNotEmpty()
         }
-        composeTestRule.onNodeWithText(settingsLabel).assertExists()
+        composeTestRule.onNodeWithText(settingsLabel).assertIsDisplayed()
     }
 
     @Test
@@ -46,6 +47,6 @@ class NavigationTest {
         composeTestRule.waitUntil(10000) {
             composeTestRule.onAllNodes(hasText(taxTypeLabel)).fetchSemanticsNodes().isNotEmpty()
         }
-        composeTestRule.onNodeWithText(taxTypeLabel).assertExists()
+        composeTestRule.onNodeWithText(taxTypeLabel).assertIsDisplayed()
     }
 }

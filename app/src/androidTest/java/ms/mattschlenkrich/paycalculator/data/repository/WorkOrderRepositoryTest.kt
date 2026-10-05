@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
@@ -40,7 +40,7 @@ class WorkOrderRepositoryTest {
     }
 
     @Test
-    fun testInsertTimeWorked_RecalculatesHistoryAndDateHours() = runBlocking {
+    fun testInsertTimeWorked_RecalculatesHistoryAndDateHours() = runTest {
         // 1. Setup prerequisite data
         val employer = Employers(
             1L,
@@ -59,7 +59,6 @@ class WorkOrderRepositoryTest {
         val payPeriod = PayPeriods(1L, "2024-01-15", 1L, false, updateTime)
         db.getPayDayDao().insertPayPeriod(payPeriod)
 
-        // workDateId, wdPayPeriodId, wdEmployerId, wdCutoffDate, wdDate, wdRegHours, wdOtHours, wdDblOtHours, wdStatHours, wdNote, wdIsDeleted, wdUpdateTime
         val workDate = WorkDates(
             1L,
             1L,
@@ -105,7 +104,7 @@ class WorkOrderRepositoryTest {
     }
 
     @Test
-    fun testDeleteWorkOrderHistory_CascadesToAssociatedData() = runBlocking {
+    fun testDeleteWorkOrderHistory_CascadesToAssociatedData() = runTest {
         // 1. Setup data
         val employer = Employers(
             1L,

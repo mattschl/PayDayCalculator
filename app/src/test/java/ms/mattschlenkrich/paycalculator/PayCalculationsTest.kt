@@ -1,15 +1,18 @@
 package ms.mattschlenkrich.paycalculator
 
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
+import ms.mattschlenkrich.paycalculator.data.entity.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.entity.PayPeriods
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayCalculationsViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.logic.PayCalculationsAsync
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.whenever
 
 @RunWith(MockitoJUnitRunner::class)
 class PayCalculationsTest {
@@ -42,14 +45,14 @@ class PayCalculationsTest {
     )
 
     @Test
-    fun getPayRateFromDb_answerIs_31_93() = runBlocking {
-        org.mockito.Mockito.`when`(
+    fun getPayRateFromDb_returnsCorrectRate() = runTest {
+        whenever(
             payCalculationsViewModel.getPayRate(
                 employerMock.employerId,
                 payPeriodMock.ppCutoffDate
             )
         ).thenReturn(
-            ms.mattschlenkrich.paycalculator.data.entity.EmployerPayRates(
+            EmployerPayRates(
                 0L,
                 employerMock.employerId,
                 "2025-01-01",
@@ -67,6 +70,6 @@ class PayCalculationsTest {
             payPeriodMock
         )
 
-        assert(payCalculationsAsync.calculatePayRateFromDb() == 31.93)
+        assertEquals(31.93, payCalculationsAsync.calculatePayRateFromDb(), 0.01)
     }
 }

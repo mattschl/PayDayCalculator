@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.entity.PayPeriods
@@ -40,7 +40,7 @@ class PayDayDaoTest {
     }
 
     @Test
-    fun testGetWorkDateExtrasPerPay_JoinsCorrectly() = runBlocking {
+    fun testGetWorkDateExtrasPerPay_JoinsCorrectly() = runTest {
         // 1. Setup Employer and PayPeriod
         db.getEmployerDao().insertEmployer(
             Employers(
@@ -76,12 +76,10 @@ class PayDayDaoTest {
         db.getPayDayDao().insertWorkDate(date1)
 
         // 3. Setup Extra Type
-        // workExtraTypeId, wetName, wetEmployerId, wetAppliesTo, wetAttachTo, wetIsCredit, wetIsDefault, wetIsDeleted, wetUpdateTime
         val extraType = WorkExtraTypes(1L, "Bonus", 1L, 1, 1, true, true, false, updateTime)
         db.getWorkExtraDao().insertWorkExtraType(extraType)
 
         // 4. Setup WorkDateExtra
-        // id, dateId, typeId, name, appliesTo, attachTo, value, fixed, credit, deleted, updateTime
         val dateExtra =
             WorkDateExtras(1L, 1L, 1L, "Bonus", 1, 1, 50.0, true, true, false, updateTime)
         db.getPayDayDao().insertWorkDateExtra(dateExtra)
@@ -96,7 +94,7 @@ class PayDayDaoTest {
     }
 
     @Test
-    fun testGetPayPeriod_FiltersDeleted() = runBlocking {
+    fun testGetPayPeriod_FiltersDeleted() = runTest {
         db.getEmployerDao().insertEmployer(
             Employers(
                 1L,
