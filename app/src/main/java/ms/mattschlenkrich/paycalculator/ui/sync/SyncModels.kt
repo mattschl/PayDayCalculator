@@ -11,6 +11,18 @@ data class DriveFileMeta(
     val modifiedTime: Long? = null
 )
 
+data class DriveFileItem(
+    val id: String,
+    val name: String,
+    val size: Long? = null,
+    val sizeFormatted: String,
+    val modifiedTimeFormatted: String,
+    val isPicture: Boolean,
+    val isBackup: Boolean,
+    val workOrderReference: String? = null,
+    val isOrphan: Boolean = false
+)
+
 @Parcelize
 data class ConflictInfo(
     val tableName: String,

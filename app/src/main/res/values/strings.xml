@@ -279,6 +279,13 @@
     <string name="query">Search query</string>
     <string name="sync_data">Sync Data</string>
     <string name="action_purge_orphan_pictures">Clean Up Drive Pictures</string>
+    <string name="action_cleanup_drive">Cleanup Drive</string>
+    <string name="title_cleanup_drive">Cleanup Drive</string>
+    <string name="action_auto_cleanup_photos">Auto Cleanup Drive Photos</string>
+    <string name="msg_auto_cleanup_photos_summary">Deletes orphan photo files on Google Drive and checks/repairs database picture references.</string>
+    <string name="label_no_drive_files">No files found on Google Drive.</string>
+    <string name="msg_confirm_delete_drive_file">Are you sure you want to delete \"%1$s\" from Google Drive? This action cannot be undone.</string>
+    <string name="label_orphan_photo">Orphan (No database reference)</string>
     <string name="msg_purge_orphan_pictures_prompt">Are you sure you want to scan and remove picture files on Google Drive that are no longer referenced in your database? This action cannot be undone.</string>
     <string name="action_clean_up">Clean Up</string>
     <string name="msg_picture_saved_locally">Picture saved locally.</string>

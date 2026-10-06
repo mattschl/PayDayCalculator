@@ -22,7 +22,7 @@ fun SyncAdvancedOptionsDialog(
     onRestoreFromDriveClick: () -> Unit,
     onManualUploadClick: () -> Unit,
     onRepairLocalClick: () -> Unit,
-    onPurgeOrphanPicturesClick: () -> Unit,
+    onCleanupDriveClick: () -> Unit,
     onClearBackupsClick: () -> Unit
 ) {
     if (showDialog) {
@@ -54,9 +54,9 @@ fun SyncAdvancedOptionsDialog(
                     ) { Text(stringResource(R.string.action_repair_local_database)) }
 
                     Button(
-                        onClick = onPurgeOrphanPicturesClick,
+                        onClick = onCleanupDriveClick,
                         modifier = Modifier.fillMaxWidth()
-                    ) { Text(stringResource(R.string.action_purge_orphan_pictures)) }
+                    ) { Text(stringResource(R.string.action_cleanup_drive)) }
 
                     Button(
                         onClick = onClearBackupsClick,

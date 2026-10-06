@@ -26,6 +26,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     var deviceId by mutableLongStateOf(0L)
     var progressMessage by mutableStateOf<String?>(null)
     var availableBackups by mutableStateOf<List<DriveFileMeta>>(emptyList())
+    var driveFilesList by mutableStateOf<List<DriveFileItem>>(emptyList())
     var localBackups by mutableStateOf<List<File>>(emptyList())
     var docContent by mutableStateOf(application.getString(R.string.app_name) + " Sync System")
     var isLoading by mutableStateOf(value = false)
@@ -336,6 +337,196 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 progressMessage = null
             }
         }
+    }
+
+    fun loadDriveFilesDetails() {
+        val helper = driveServiceHelper ?: return
+        if (isLoading) return
+        isLoading = true
+        progressMessage = "Scanning files on Google Drive..."
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val appDb = PayDatabase(getApplication())
+                val pictureDao = appDb.getWorkOrderPictureDao()
+                val workOrderDao = appDb.getWorkOrderDao()
+                val payDayDao = appDb.getPayDayDao()
+
+                val files = helper.queryFiles().files ?: emptyList()
+                val items = files.map { file ->
+                    val fileId = file.id ?: ""
+                    val fileName = file.name ?: "Unnamed"
+                    val sizeBytes: Long? = file.getSize()
+                    val sizeFormatted = formatFileSize(sizeBytes)
+                    val modifiedFormatted = file.modifiedTime?.let {
+                        df.convertUtcToLocalDisplay(it.toStringRfc3339())
+                    } ?: "Unknown date"
+
+                    val isPhoto = fileName.startsWith("pic_") ||
+                            fileName.endsWith(".webp") ||
+                            fileName.endsWith(".jpg") ||
+                            fileName.endsWith(".jpeg") ||
+                            fileName.endsWith(".png")
+
+                    val isBackup = fileName.endsWith(".db") ||
+                            fileName.endsWith(".sqlite") ||
+                            fileName.endsWith(".json") ||
+                            fileName.contains("backup")
+
+                    var woRef: String? = null
+                    var isOrphan = false
+
+                    if (isPhoto) {
+                        val picId = try {
+                            fileName.removePrefix("pic_")
+                                .removeSuffix(".webp")
+                                .removeSuffix(".jpg")
+                                .removeSuffix(".jpeg")
+                                .removeSuffix(".png")
+                                .toLong()
+                        } catch (_: Exception) {
+                            null
+                        }
+
+                        if (picId != null) {
+                            // Check WorkOrderPictures
+                            val wop = pictureDao.getWorkOrderPictureSync(picId)
+                            if (wop != null && !wop.wopIsDeleted) {
+                                val wo = workOrderDao.getWorkOrderByIdAnySync(wop.wopWorkOrderId)
+                                woRef = if (wo != null) {
+                                    "Work Order #${wo.woNumber} (${wo.woAddress.ifBlank { wo.woDescription }})"
+                                } else {
+                                    "Work Order ID #${wop.wopWorkOrderId}"
+                                }
+                            } else {
+                                // Check HistoryPictures
+                                val wohp = pictureDao.getHistoryPictureSync(picId)
+                                if (wohp != null && !wohp.wohpIsDeleted) {
+                                    val hist =
+                                        workOrderDao.getWorkOrderHistoryByIdAnySync(wohp.wohpHistoryId)
+                                    val wo =
+                                        hist?.let { workOrderDao.getWorkOrderByIdAnySync(it.woHistoryWorkOrderId) }
+                                    val wd =
+                                        hist?.let { payDayDao.getWorkDateSync(it.woHistoryWorkDateId) }
+                                    woRef = if (wo != null) {
+                                        "WO #${wo.woNumber} History (${wd?.wdDate ?: "Date #${hist.woHistoryWorkDateId}"})"
+                                    } else {
+                                        "History ID #${wohp.wohpHistoryId}"
+                                    }
+                                } else {
+                                    // Check ExpensePictures
+                                    val ep = pictureDao.getExpensePictureSync(picId)
+                                    if (ep != null && !ep.epIsDeleted) {
+                                        val exp =
+                                            workOrderDao.getWorkOrderHistoryExpenseSync(ep.epExpenseId)
+                                        val hist = exp?.let {
+                                            workOrderDao.getWorkOrderHistoryByIdAnySync(it.woheHistoryId)
+                                        }
+                                        val wo =
+                                            hist?.let { workOrderDao.getWorkOrderByIdAnySync(it.woHistoryWorkOrderId) }
+                                        woRef = if (wo != null) {
+                                            "WO #${wo.woNumber} Expense (${exp.woheSupplier.ifBlank { "Expense" }})"
+                                        } else {
+                                            "Expense ID #${ep.epExpenseId}"
+                                        }
+                                    } else {
+                                        woRef = "Orphan (No database reference)"
+                                        isOrphan = true
+                                    }
+                                }
+                            }
+                        } else {
+                            woRef = "Orphan (No picture ID)"
+                            isOrphan = true
+                        }
+                    }
+
+                    DriveFileItem(
+                        id = fileId,
+                        name = fileName,
+                        size = sizeBytes,
+                        sizeFormatted = sizeFormatted,
+                        modifiedTimeFormatted = modifiedFormatted,
+                        isPicture = isPhoto,
+                        isBackup = isBackup,
+                        workOrderReference = woRef,
+                        isOrphan = isOrphan
+                    )
+                }
+
+                withContext(Dispatchers.Main) {
+                    driveFilesList = items
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to load Drive file details", e)
+                withContext(Dispatchers.Main) {
+                    errorMessage = "Failed to load Drive files: ${e.message}"
+                }
+            } finally {
+                withContext(Dispatchers.Main) {
+                    isLoading = false
+                    progressMessage = null
+                }
+            }
+        }
+    }
+
+    fun deleteDriveFileItem(item: DriveFileItem, onAuthError: (Exception) -> Unit) {
+        if (isLoading) return
+        val helper = driveServiceHelper ?: return
+        isLoading = true
+        progressMessage = "Deleting ${item.name}..."
+        viewModelScope.launch {
+            try {
+                helper.deleteFile(item.id)
+                driveFilesList = driveFilesList.filter { it.id != item.id }
+                docContent = "Deleted ${item.name} from Google Drive."
+            } catch (e: Exception) {
+                Log.e(TAG, "Delete file failed", e)
+                onAuthError(e)
+            } finally {
+                isLoading = false
+                progressMessage = null
+            }
+        }
+    }
+
+    fun autoCleanupDrivePhotos(onAuthError: (Exception) -> Unit) {
+        if (isLoading) return
+        val helper = driveServiceHelper ?: return
+        isLoading = true
+        progressMessage = "Cleaning up Drive photos & checking integrity..."
+        val manager = SyncManager(
+            application = getApplication(),
+            deviceId = deviceId,
+            driveServiceHelper = helper,
+            df = df,
+            nf = nf,
+            onProgressUpdate = { progressMessage = it },
+            onConflict = { ConflictChoice.KEEP_DRIVE },
+            onSyncError = { error -> Log.e(TAG, "Auto cleanup photos error: $error") }
+        )
+
+        viewModelScope.launch {
+            try {
+                val result = manager.purgeOrphanPicturesOnDrive()
+                docContent = result
+                loadDriveFilesDetails()
+            } catch (e: Exception) {
+                Log.e(TAG, "Auto cleanup photos failed", e)
+                onAuthError(e)
+            } finally {
+                isLoading = false
+                progressMessage = null
+            }
+        }
+    }
+
+    private fun formatFileSize(bytes: Long?): String {
+        if (bytes == null || bytes <= 0) return "0 B"
+        val kb = bytes / 1024.0
+        if (kb < 1024) return "${kb.toInt()} KB"
+        val mb = kb / 1024.0
+        return String.format(java.util.Locale.getDefault(), "%.2f MB", mb)
     }
 
     private suspend fun showConflictDialogWrapper(info: ConflictInfo): ConflictChoice {
