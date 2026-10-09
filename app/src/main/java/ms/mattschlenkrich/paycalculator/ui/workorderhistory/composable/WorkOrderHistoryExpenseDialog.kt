@@ -58,7 +58,7 @@ fun WorkOrderHistoryExpenseDialog(
     pictures: List<PictureItem> = emptyList(),
     onPictureTaken: (File) -> Unit = {},
     onDeletePicture: (PictureItem) -> Unit = {},
-    onDownloadPicture: (PictureItem) -> Unit = {},
+    onDownloadPicture: suspend (PictureItem) -> Unit = {},
 ) {
     if (showDialog) {
         val nf = remember { NumberFunctions() }
@@ -80,11 +80,11 @@ fun WorkOrderHistoryExpenseDialog(
             }
         }
 
-        LaunchedEffect(mainViewModel.getTransferNum()) {
-            val transferNum = mainViewModel.getTransferNum()
-            if (transferNum != 0.0) {
-                amount = nf.displayNumberFromDouble(transferNum)
-                mainViewModel.setTransferNum(0.0)
+        val pendingTransfer = mainViewModel.transferNumState.value
+        LaunchedEffect(pendingTransfer) {
+            if (pendingTransfer != null) {
+                amount = nf.displayNumberFromDouble(pendingTransfer)
+                mainViewModel.clearTransferNum()
             }
         }
 

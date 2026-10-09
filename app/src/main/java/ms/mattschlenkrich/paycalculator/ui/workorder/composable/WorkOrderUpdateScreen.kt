@@ -116,7 +116,7 @@ fun WorkOrderUpdateScreen(
     pictures: List<PictureItem>,
     onPictureTaken: (File) -> Unit,
     onDeletePicture: (PictureItem) -> Unit,
-    onDownloadPicture: (PictureItem) -> Unit,
+    onDownloadPicture: suspend (PictureItem) -> Unit,
     onDoneClick: () -> Unit,
     minColumnWidth: Int = LocalMinColumnWidth.current,
 ) {
@@ -151,15 +151,16 @@ fun WorkOrderUpdateScreen(
 
         var isCostActive by rememberSaveable { mutableStateOf(false) }
 
-        LaunchedEffect(mainViewModel.getTransferNum()) {
-            val transferNum = mainViewModel.getTransferNum()
-            if (transferNum != 0.0) {
+        val pendingTransfer = mainViewModel.transferNumState.value
+        LaunchedEffect(pendingTransfer) {
+            if (pendingTransfer != null) {
+                val transferNum = pendingTransfer
                 if (isCostActive) {
                     newCost = nf.displayDollars(transferNum)
                 } else {
                     newPrice = nf.displayDollars(transferNum)
                 }
-                mainViewModel.setTransferNum(0.0)
+                mainViewModel.clearTransferNum()
             }
         }
         androidx.compose.material3.ModalBottomSheet(

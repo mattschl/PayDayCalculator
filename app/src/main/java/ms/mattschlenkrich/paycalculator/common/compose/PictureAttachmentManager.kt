@@ -45,7 +45,7 @@ fun PictureAttachmentManager(
     pictures: List<PictureItem>,
     onPictureTaken: (File) -> Unit,
     onDeletePicture: (PictureItem) -> Unit,
-    onDownloadPicture: (PictureItem) -> Unit,
+    onDownloadPicture: suspend (PictureItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -121,16 +121,28 @@ fun PictureAttachmentManager(
             ) {
                 items(pictures, key = { it.pictureId }) { pic ->
                     val displayFile = remember(pic.pictureId, downloadRefreshTrigger) {
-                        val thumbFile =
-                            File(context.cacheDir, "pictures/thumb_${pic.pictureId}.webp")
-                        val fullFile = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
-                        when {
-                            (thumbFile.exists()) && (thumbFile.length() > 0L) -> thumbFile
-                            (fullFile.exists()) && (fullFile.length() > 0L) -> fullFile
-                            else -> null
-                        }
+                        val dirs = listOf(
+                            File(context.cacheDir, "pictures"),
+                            File(context.filesDir, "pictures")
+                        )
+                        val extensions = listOf("webp", "jpg", "jpeg", "png")
+
+                        val foundFull = dirs.flatMap { dir ->
+                            extensions.map { ext -> File(dir, "pic_${pic.pictureId}.$ext") }
+                        }.firstOrNull { (it.exists()) && (it.length() > 0L) }
+
+                        val foundThumb = dirs.flatMap { dir ->
+                            extensions.map { ext -> File(dir, "thumb_${pic.pictureId}.$ext") }
+                        }.firstOrNull { (it.exists()) && (it.length() > 0L) }
+
+                        foundFull ?: foundThumb
                     }
-                    val hasLocalFile = displayFile != null
+                    val fullFile = remember(displayFile) {
+                        if (displayFile != null && displayFile.name.startsWith("pic_")) displayFile else null
+                    }
+                    val thumbFile = remember(displayFile) {
+                        if (displayFile != null && displayFile.name.startsWith("thumb_")) displayFile else null
+                    }
                     val isDownloading = downloadingPictureIds.contains(pic.pictureId)
 
                     PictureThumbnail(
@@ -138,7 +150,7 @@ fun PictureAttachmentManager(
                         imageFile = displayFile,
                         isDownloading = isDownloading,
                         onClick = {
-                            if (hasLocalFile) {
+                            if (fullFile != null) {
                                 showFullImage = pic
                             } else if (!pic.driveFileId.isNullOrBlank()) {
                                 if (!isDownloading) {
@@ -146,20 +158,22 @@ fun PictureAttachmentManager(
                                     coroutineScope.launch {
                                         try {
                                             onDownloadPicture(pic)
+                                        } catch (e: Exception) {
+                                            Log.e(
+                                                "PictureAttachmentManager",
+                                                "Error downloading picture",
+                                                e
+                                            )
                                         } finally {
                                             downloadingPictureIds =
                                                 downloadingPictureIds - pic.pictureId
                                             downloadRefreshTrigger++
                                         }
-                                        val downloadedFile = File(
-                                            context.cacheDir,
-                                            "pictures/pic_${pic.pictureId}.webp"
-                                        )
-                                        if ((downloadedFile.exists()) && (downloadedFile.length() > 0L)) {
-                                            showFullImage = pic
-                                        }
+                                        showFullImage = pic
                                     }
                                 }
+                            } else if (thumbFile != null) {
+                                showFullImage = pic
                             } else {
                                 Toast.makeText(
                                     context,

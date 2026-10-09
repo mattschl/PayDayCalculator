@@ -315,6 +315,9 @@ class WorkOrderRepository(db: PayDatabase) {
     suspend fun deleteWorkOrderHistoryExpense(expenseId: Long, updateTime: String) =
         workOrderDao.deleteWorkOrderHistoryExpense(expenseId, updateTime)
 
+    suspend fun getWorkOrderHistoryExpenseSync(id: Long) =
+        workOrderDao.getWorkOrderHistoryExpenseSync(id)
+
     fun getExpensesByHistory(historyId: Long) =
         workOrderDao.getExpensesByHistory(historyId)
 

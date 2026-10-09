@@ -49,11 +49,11 @@ fun WorkOrderHistoryMaterialUpdateScreen(
 ) {
     val nf = NumberFunctions()
 
-    LaunchedEffect(mainViewModel.getTransferNum()) {
-        val transferNum = mainViewModel.getTransferNum()
-        if (transferNum != 0.0) {
-            onQuantityChange(nf.displayNumberFromDouble(transferNum))
-            mainViewModel.setTransferNum(0.0)
+    val pendingTransfer = mainViewModel.transferNumState.value
+    LaunchedEffect(pendingTransfer) {
+        if (pendingTransfer != null) {
+            onQuantityChange(nf.displayNumberFromDouble(pendingTransfer))
+            mainViewModel.clearTransferNum()
         }
     }
 

@@ -109,7 +109,7 @@ fun WorkOrderHistoryUpdateScreen(
     pictures: List<PictureItem>,
     onPictureTaken: (File) -> Unit,
     onDeletePicture: (PictureItem) -> Unit,
-    onDownloadPicture: (PictureItem) -> Unit,
+    onDownloadPicture: suspend (PictureItem) -> Unit,
     isSaving: Boolean = false,
     minColumnWidth: Int = LocalMinColumnWidth.current,
 ) {

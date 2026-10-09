@@ -50,8 +50,11 @@ fun WorkOrderHistoryExpenseRoute(
     LaunchedEffect(expensePictures) {
         val helper = mainViewModel.getOrInitializeDriveService(context) ?: return@LaunchedEffect
         expensePictures.forEach { pic ->
-            val tempFile = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
-            if ((!tempFile.exists()) && (pic.driveFileId != null)) {
+            val fullInCache = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
+            val fullInFiles = File(context.filesDir, "pictures/pic_${pic.pictureId}.webp")
+            val existsLocally = (fullInCache.exists() && fullInCache.length() > 0L) ||
+                    (fullInFiles.exists() && fullInFiles.length() > 0L)
+            if (!existsLocally && !pic.driveFileId.isNullOrBlank()) {
                 workOrderViewModel.downloadPicture(
                     helper,
                     pic.pictureId,
@@ -100,7 +103,23 @@ fun WorkOrderHistoryExpenseRoute(
                 navController.popBackStack()
             }
         },
-        onCancel = { navController.popBackStack() },
+        onCancel = {
+            if (!isUpdate) {
+                coroutineScope.launch {
+                    val existing =
+                        workOrderViewModel.getWorkOrderHistoryExpenseSync(activeExpenseId)
+                    if (existing != null && existing.woheType == "Expense" && existing.woheAmount == 0.0 && existing.woheSupplier.isEmpty()) {
+                        workOrderViewModel.deleteWorkOrderHistoryExpense(
+                            activeExpenseId,
+                            df.getCurrentUTCTimeAsString()
+                        )
+                    }
+                    navController.popBackStack()
+                }
+            } else {
+                navController.popBackStack()
+            }
+        },
         onPictureTaken = { file ->
             val pictureId = try {
                 file.nameWithoutExtension.removePrefix("pic_").toLong()
@@ -113,6 +132,22 @@ fun WorkOrderHistoryExpenseRoute(
             }
             val now = df.getCurrentUTCTimeAsString()
             coroutineScope.launch {
+                val existingExpense =
+                    workOrderViewModel.getWorkOrderHistoryExpenseSync(activeExpenseId)
+                if (existingExpense == null) {
+                    val draftExpense = WorkOrderHistoryExpense(
+                        woHistoryExpenseId = activeExpenseId,
+                        woheHistoryId = history.woHistoryId,
+                        woheType = "Expense",
+                        woheSupplier = "",
+                        woheInvoiceNo = "",
+                        woheAmount = 0.0,
+                        woheIsDeleted = false,
+                        woheUpdateTime = now
+                    )
+                    workOrderViewModel.insertWorkOrderHistoryExpense(draftExpense)
+                }
+
                 workOrderViewModel.generateThumbnailBackground(context.cacheDir, pictureId)
                 workOrderViewModel.insertExpensePicture(
                     ExpensePictures(
@@ -178,14 +213,12 @@ fun WorkOrderHistoryExpenseRoute(
         onDownloadPicture = { picItem ->
             val helper = mainViewModel.getOrInitializeDriveService(context)
             if (helper != null) {
-                coroutineScope.launch {
-                    workOrderViewModel.downloadPicture(
-                        helper,
-                        picItem.pictureId,
-                        picItem.driveFileId,
-                        context.cacheDir
-                    )
-                }
+                workOrderViewModel.downloadPicture(
+                    helper,
+                    picItem.pictureId,
+                    picItem.driveFileId,
+                    context.cacheDir
+                )
             } else {
                 Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_LONG).show()
             }

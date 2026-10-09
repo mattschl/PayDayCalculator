@@ -66,7 +66,7 @@ fun WorkOrderHistoryExpenseScreen(
     onCancel: () -> Unit,
     onPictureTaken: (File) -> Unit,
     onDeletePicture: (PictureItem) -> Unit,
-    onDownloadPicture: (PictureItem) -> Unit,
+    onDownloadPicture: suspend (PictureItem) -> Unit,
 ) {
     val nf = remember { NumberFunctions() }
     var expenseType by rememberSaveable { mutableStateOf(initialExpense?.woheType ?: "") }
@@ -76,6 +76,14 @@ fun WorkOrderHistoryExpenseScreen(
         mutableStateOf(
             initialExpense?.let { nf.displayNumberFromDouble(it.woheAmount) } ?: ""
         )
+    }
+
+    val pendingTransfer = mainViewModel.transferNumState.value
+    androidx.compose.runtime.LaunchedEffect(pendingTransfer) {
+        if (pendingTransfer != null) {
+            amount = nf.displayNumberFromDouble(pendingTransfer)
+            mainViewModel.clearTransferNum()
+        }
     }
 
     val amountValue = try {

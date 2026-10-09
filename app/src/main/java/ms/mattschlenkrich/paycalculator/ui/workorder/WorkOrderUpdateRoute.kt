@@ -131,8 +131,11 @@ fun WorkOrderUpdateRoute(
     LaunchedEffect(pictures) {
         val helper = mainViewModel.getOrInitializeDriveService(context) ?: return@LaunchedEffect
         pictures.forEach { pic ->
-            val tempFile = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
-            if ((!tempFile.exists()) && (pic.driveFileId != null)) {
+            val fullInCache = File(context.cacheDir, "pictures/pic_${pic.pictureId}.webp")
+            val fullInFiles = File(context.filesDir, "pictures/pic_${pic.pictureId}.webp")
+            val existsLocally = (fullInCache.exists() && fullInCache.length() > 0L) ||
+                    (fullInFiles.exists() && fullInFiles.length() > 0L)
+            if (!existsLocally && !pic.driveFileId.isNullOrBlank()) {
                 workOrderViewModel.downloadPicture(
                     helper,
                     pic.pictureId,
@@ -405,14 +408,12 @@ fun WorkOrderUpdateRoute(
         onDownloadPicture = { picItem ->
             val helper = mainViewModel.getOrInitializeDriveService(context)
             if (helper != null) {
-                coroutineScope.launch {
-                    workOrderViewModel.downloadPicture(
-                        helper,
-                        picItem.pictureId,
-                        picItem.driveFileId,
-                        context.cacheDir
-                    )
-                }
+                workOrderViewModel.downloadPicture(
+                    helper,
+                    picItem.pictureId,
+                    picItem.driveFileId,
+                    context.cacheDir
+                )
             } else {
                 Toast.makeText(context, R.string.msg_drive_not_connected, Toast.LENGTH_LONG).show()
             }

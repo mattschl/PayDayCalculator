@@ -14,6 +14,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.common.compose.PayCalculatorTheme
 import ms.mattschlenkrich.paycalculator.common.compose.paddingScale
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
@@ -100,6 +103,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setupViewModels()
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            workOrderViewModel.clearPictureCache(cacheDir)
+        }
 
         setContent {
             val settings by settingsViewModel.settings.observeAsState()

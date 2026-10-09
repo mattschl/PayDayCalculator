@@ -137,6 +137,9 @@ class WorkOrderViewModel(
     suspend fun deleteWorkOrderHistoryExpense(expenseId: Long, updateTime: String) =
         workOrderRepository.deleteWorkOrderHistoryExpense(expenseId, updateTime)
 
+    suspend fun getWorkOrderHistoryExpenseSync(id: Long) =
+        workOrderRepository.getWorkOrderHistoryExpenseSync(id)
+
     fun getExpensesByHistory(historyId: Long) =
         workOrderRepository.getExpensesByHistory(historyId)
 

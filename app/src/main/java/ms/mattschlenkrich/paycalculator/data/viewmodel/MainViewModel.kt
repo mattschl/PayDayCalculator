@@ -304,10 +304,17 @@ class MainViewModel(
         workOrderHistoryTimeWorkedCombined = null
     }
 
-    private var transferNum: Double = 0.0
-    fun getTransferNum(): Double = transferNum
-    fun setTransferNum(num: Double) {
-        transferNum = num
+    private val _transferNum = mutableStateOf<Double?>(null)
+    val transferNumState: androidx.compose.runtime.State<Double?> = _transferNum
+
+    fun getTransferNum(): Double = _transferNum.value ?: 0.0
+
+    fun setTransferNum(num: Double?) {
+        _transferNum.value = num
+    }
+
+    fun clearTransferNum() {
+        _transferNum.value = null
     }
 
     fun loadSettings(): Settings {

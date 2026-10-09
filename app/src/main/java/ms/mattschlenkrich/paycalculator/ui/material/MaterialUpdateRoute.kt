@@ -49,9 +49,10 @@ fun MaterialUpdateRoute(
 
     var calculatingField by rememberSaveable { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(mainViewModel.getTransferNum()) {
-        val transferNum = mainViewModel.getTransferNum()
-        if (transferNum != 0.0) {
+    val pendingTransfer = mainViewModel.transferNumState.value
+    LaunchedEffect(pendingTransfer) {
+        if (pendingTransfer != null) {
+            val transferNum = pendingTransfer
             when (calculatingField) {
                 "cost" -> {
                     cost = nf.displayDollars(transferNum)
@@ -61,7 +62,7 @@ fun MaterialUpdateRoute(
                     price = nf.displayDollars(transferNum)
                 }
             }
-            mainViewModel.setTransferNum(0.0)
+            mainViewModel.clearTransferNum()
             calculatingField = null
         }
     }

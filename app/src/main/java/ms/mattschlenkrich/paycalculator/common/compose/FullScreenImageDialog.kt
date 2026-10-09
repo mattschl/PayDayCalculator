@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,7 +32,23 @@ fun FullScreenImageDialog(
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
-    val imageFile = File(context.cacheDir, "pictures/pic_${picture.pictureId}.webp")
+    val imageFile = remember(picture.pictureId) {
+        val dirs = listOf(
+            File(context.cacheDir, "pictures"),
+            File(context.filesDir, "pictures")
+        )
+        val extensions = listOf("webp", "jpg", "jpeg", "png")
+
+        val foundFull = dirs.flatMap { dir ->
+            extensions.map { ext -> File(dir, "pic_${picture.pictureId}.$ext") }
+        }.firstOrNull { (it.exists()) && (it.length() > 0L) }
+
+        val foundThumb = dirs.flatMap { dir ->
+            extensions.map { ext -> File(dir, "thumb_${picture.pictureId}.$ext") }
+        }.firstOrNull { (it.exists()) && (it.length() > 0L) }
+
+        foundFull ?: foundThumb ?: File(context.cacheDir, "pictures/pic_${picture.pictureId}.webp")
+    }
 
     Dialog(
         onDismissRequest = onDismiss,
