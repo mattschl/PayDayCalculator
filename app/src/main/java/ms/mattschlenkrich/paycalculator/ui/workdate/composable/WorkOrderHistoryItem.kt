@@ -21,7 +21,8 @@ import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWithDates
 fun WorkOrderHistoryItem(
     history: WorkOrderHistoryWithDates,
     onClick: (WorkOrderHistoryWithDates) -> Unit,
-    onLongClick: (WorkOrderHistoryWithDates) -> Unit
+    onLongClick: (WorkOrderHistoryWithDates) -> Unit,
+    charLimit: Int = 15
 ) {
     val nf = NumberFunctions()
     Card(
@@ -40,8 +41,19 @@ fun WorkOrderHistoryItem(
                 )
                 .padding(4.dp)
         ) {
+            val rawDescription = history.workOrder.woDescription.trim()
+            val descriptionSnippet = if (charLimit > 0 && rawDescription.isNotEmpty()) {
+                rawDescription.take(charLimit)
+            } else ""
+
+            val headerTitle = if (descriptionSnippet.isNotEmpty()) {
+                "${history.workOrder.woNumber} - ${history.workOrder.woAddress} ($descriptionSnippet)"
+            } else {
+                "${history.workOrder.woNumber} - ${history.workOrder.woAddress}"
+            }
+
             Text(
-                text = "${history.workOrder.woNumber} - ${history.workOrder.woAddress}",
+                text = headerTitle,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold
             )

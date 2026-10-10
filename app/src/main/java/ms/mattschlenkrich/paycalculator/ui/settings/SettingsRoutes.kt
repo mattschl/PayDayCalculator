@@ -19,6 +19,7 @@ fun SettingsRoute(
     SettingsScreen(
         fontSize = settings?.fontSize ?: 16f,
         payPeriodsLimit = settings?.payPeriodsLimit ?: 15,
+        jobDescriptionCharLimit = settings?.jobDescriptionCharLimit ?: 15,
         isDarkTheme = settings?.isDarkTheme ?: false,
         isSystemTheme = settings?.isSystemTheme ?: true,
         isPasswordProtected = settings?.isPasswordProtected ?: false,
@@ -31,6 +32,7 @@ fun SettingsRoute(
         employers = employers,
         onFontSizeChange = { viewModel.updateFontSize(it) },
         onPayPeriodsLimitChange = { viewModel.updatePayPeriodsLimit(it) },
+        onJobDescriptionCharLimitChange = { viewModel.updateJobDescriptionCharLimit(it) },
         onIsDarkThemeChange = { viewModel.updateIsDarkTheme(it) },
         onIsSystemThemeChange = { viewModel.updateIsSystemTheme(it) },
         onIsPasswordProtectedChange = { viewModel.updateIsPasswordProtected(it) },

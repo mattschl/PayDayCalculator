@@ -51,6 +51,7 @@ import java.util.Calendar
 fun SettingsScreen(
     fontSize: Float,
     payPeriodsLimit: Int,
+    jobDescriptionCharLimit: Int,
     isDarkTheme: Boolean,
     isSystemTheme: Boolean,
     isPasswordProtected: Boolean,
@@ -63,6 +64,7 @@ fun SettingsScreen(
     employers: List<Employers>,
     onFontSizeChange: (Float) -> Unit,
     onPayPeriodsLimitChange: (Int) -> Unit,
+    onJobDescriptionCharLimitChange: (Int) -> Unit,
     onIsDarkThemeChange: (Boolean) -> Unit,
     onIsSystemThemeChange: (Boolean) -> Unit,
     onIsPasswordProtectedChange: (Boolean) -> Unit,
@@ -154,6 +156,30 @@ fun SettingsScreen(
                     }
                 },
                 label = { Text("Limit") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(dynamicVerticalPadding))
+
+            Text("Job Description Display Limit:", style = MaterialTheme.typography.titleMedium)
+
+            var charLimitText by remember(jobDescriptionCharLimit) {
+                mutableStateOf(
+                    jobDescriptionCharLimit.toString()
+                )
+            }
+
+            NumberOutlinedTextField(
+                value = charLimitText,
+                onValueChange = {
+                    charLimitText = it
+                    it.toIntOrNull()?.let { limit ->
+                        if (limit >= 0) {
+                            onJobDescriptionCharLimitChange(limit)
+                        }
+                    }
+                },
+                label = { Text("Max characters to show in history") },
                 modifier = Modifier.fillMaxWidth()
             )
 

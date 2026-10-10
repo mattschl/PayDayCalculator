@@ -79,6 +79,7 @@ fun WorkDateUpdateScreen(
     onExtraClick: (WorkDateExtras) -> Unit,
     onExtraLongClick: (WorkDateExtras) -> Unit,
     onAddExtraClick: () -> Unit,
+    jobDescriptionCharLimit: Int = 15,
     minColumnWidth: Int = LocalMinColumnWidth.current
 ) {
     val columns = calculateGridColumns(minColumnWidth)
@@ -279,7 +280,8 @@ fun WorkDateUpdateScreen(
                 WorkOrderHistoryItem(
                     history = history,
                     onClick = onHistoryClick,
-                    onLongClick = onHistoryLongClick
+                    onLongClick = onHistoryLongClick,
+                    charLimit = jobDescriptionCharLimit
                 )
             }
 

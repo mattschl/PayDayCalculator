@@ -595,6 +595,7 @@ fun WorkDateUpdatePageContent(
             mainViewModel.setWorkDateObject(workDate)
             navController.navigate(Screen.WorkDateExtraAdd.route)
         },
+        jobDescriptionCharLimit = settings?.jobDescriptionCharLimit ?: 15,
         minColumnWidth = minColumnWidth
     )
 }

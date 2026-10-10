@@ -31,6 +31,14 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         settingsManager.saveSettings(newSettings)
     }
 
+    fun updateJobDescriptionCharLimit(limit: Int) {
+        val newSettings = _settings.value?.copy(jobDescriptionCharLimit = limit) ?: Settings(
+            jobDescriptionCharLimit = limit
+        )
+        _settings.value = newSettings
+        settingsManager.saveSettings(newSettings)
+    }
+
     fun updateIsDarkTheme(isDark: Boolean) {
         val newSettings = _settings.value?.copy(isDarkTheme = isDark, isSystemTheme = false)
             ?: Settings(isDarkTheme = isDark, isSystemTheme = false)
