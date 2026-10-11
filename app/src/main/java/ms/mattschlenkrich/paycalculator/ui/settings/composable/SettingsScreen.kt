@@ -52,6 +52,7 @@ fun SettingsScreen(
     fontSize: Float,
     payPeriodsLimit: Int,
     jobDescriptionCharLimit: Int,
+    syncWarningDays: Int,
     isDarkTheme: Boolean,
     isSystemTheme: Boolean,
     isPasswordProtected: Boolean,
@@ -65,6 +66,7 @@ fun SettingsScreen(
     onFontSizeChange: (Float) -> Unit,
     onPayPeriodsLimitChange: (Int) -> Unit,
     onJobDescriptionCharLimitChange: (Int) -> Unit,
+    onSyncWarningDaysChange: (Int) -> Unit,
     onIsDarkThemeChange: (Boolean) -> Unit,
     onIsSystemThemeChange: (Boolean) -> Unit,
     onIsPasswordProtectedChange: (Boolean) -> Unit,
@@ -180,6 +182,30 @@ fun SettingsScreen(
                     }
                 },
                 label = { Text("Max characters to show in history") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(dynamicVerticalPadding))
+
+            Text("Sync Warning Threshold (Days):", style = MaterialTheme.typography.titleMedium)
+
+            var syncDaysText by remember(syncWarningDays) {
+                mutableStateOf(
+                    syncWarningDays.toString()
+                )
+            }
+
+            NumberOutlinedTextField(
+                value = syncDaysText,
+                onValueChange = {
+                    syncDaysText = it
+                    it.toIntOrNull()?.let { days ->
+                        if (days >= 1) {
+                            onSyncWarningDaysChange(days)
+                        }
+                    }
+                },
+                label = { Text("Days without sync before modal warning") },
                 modifier = Modifier.fillMaxWidth()
             )
 

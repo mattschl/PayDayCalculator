@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -57,6 +58,29 @@ fun MainApp(
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+
+    val settings by settingsViewModel.settings.observeAsState()
+
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        mainViewModel.checkSyncWarningStatus(
+            deviceId = mainViewModel.deviceId,
+            syncWarningDays = settings?.syncWarningDays ?: 3
+        )
+    }
+
+    val syncWarning = mainViewModel.syncWarningDialogInfo.value
+    if (syncWarning != null) {
+        ms.mattschlenkrich.paycalculator.ui.sync.composable.SyncWarningModalDialog(
+            warningInfo = syncWarning,
+            onSyncNow = {
+                mainViewModel.dismissSyncWarningModal()
+                onSyncRequested()
+            },
+            onDismiss = {
+                mainViewModel.dismissSyncWarningModal()
+            }
+        )
+    }
 
     val workOrderListLabel = stringResource(R.string.view_work_order_list)
     val jobSpecListLabel = stringResource(R.string.view_job_spec_list)

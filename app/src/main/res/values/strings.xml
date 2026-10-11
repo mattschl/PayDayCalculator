@@ -286,6 +286,15 @@
     <string name="label_no_drive_files">No files found on Google Drive.</string>
     <string name="msg_confirm_delete_drive_file">Are you sure you want to delete \"%1$s\" from Google Drive? This action cannot be undone.</string>
     <string name="label_orphan_photo">Orphan (No database reference)</string>
+    <string name="title_new_install_sync_warning">Database Reset / New Install</string>
+    <string name="msg_new_install_sync_warning">The app has been freshly installed or reset to the default database. If you have an existing backup on Google Drive, you can sync now to restore your data.</string>
+    <string name="title_stale_sync_warning">Sync Required</string>
+    <string name="msg_stale_sync_warning">You haven\'t synchronized your data in %1$d days (warning threshold is %2$d days). Sync now to keep your data backed up and up-to-date across your devices.</string>
+    <string name="action_connect_drive_and_sync">Sync Now</string>
+    <string name="sync_now">Sync Now</string>
+    <string name="action_ignore">Ignore</string>
+    <string name="action_start_fresh">Ignore</string>
+    <string name="action_remind_me_later">Ignore</string>
     <string name="msg_purge_orphan_pictures_prompt">Are you sure you want to scan and remove picture files on Google Drive that are no longer referenced in your database? This action cannot be undone.</string>
     <string name="action_clean_up">Clean Up</string>
     <string name="msg_picture_saved_locally">Picture saved locally.</string>

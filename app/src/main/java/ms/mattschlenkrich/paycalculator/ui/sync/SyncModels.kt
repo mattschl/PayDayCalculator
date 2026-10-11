@@ -23,6 +23,17 @@ data class DriveFileItem(
     val isOrphan: Boolean = false
 )
 
+enum class SyncWarningType {
+    NEW_INSTALL_OR_BLANK,
+    STALE_SYNC
+}
+
+data class SyncWarningInfo(
+    val type: SyncWarningType,
+    val daysSinceLastSync: Long = 0,
+    val thresholdDays: Int = 3
+)
+
 @Parcelize
 data class ConflictInfo(
     val tableName: String,

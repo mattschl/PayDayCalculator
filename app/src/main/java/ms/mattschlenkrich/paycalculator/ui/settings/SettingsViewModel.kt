@@ -39,6 +39,14 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         settingsManager.saveSettings(newSettings)
     }
 
+    fun updateSyncWarningDays(days: Int) {
+        val newSettings = _settings.value?.copy(syncWarningDays = days) ?: Settings(
+            syncWarningDays = days
+        )
+        _settings.value = newSettings
+        settingsManager.saveSettings(newSettings)
+    }
+
     fun updateIsDarkTheme(isDark: Boolean) {
         val newSettings = _settings.value?.copy(isDarkTheme = isDark, isSystemTheme = false)
             ?: Settings(isDarkTheme = isDark, isSystemTheme = false)

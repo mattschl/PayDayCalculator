@@ -8,11 +8,13 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DEVICE_ID
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
@@ -315,6 +317,54 @@ class MainViewModel(
 
     fun clearTransferNum() {
         _transferNum.value = null
+    }
+
+    var syncWarningDialogInfo =
+        mutableStateOf<ms.mattschlenkrich.paycalculator.ui.sync.SyncWarningInfo?>(null)
+    var hasPromptedSyncWarningInSession = mutableStateOf(false)
+
+    fun checkSyncWarningStatus(deviceId: Long, syncWarningDays: Int) {
+        if (hasPromptedSyncWarningInSession.value) return
+        viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            try {
+                val appDb = ms.mattschlenkrich.paycalculator.data.PayDatabase(getApplication())
+                val lastSyncTime = appDb.getSyncHistoryDao().getLastSyncTime(deviceId)
+                val df = ms.mattschlenkrich.paycalculator.common.DateFunctions()
+                val elapsedDays = df.getDaysDifferenceFromUtc(lastSyncTime)
+
+                val warning = when {
+                    lastSyncTime.isNullOrBlank() -> {
+                        ms.mattschlenkrich.paycalculator.ui.sync.SyncWarningInfo(
+                            type = ms.mattschlenkrich.paycalculator.ui.sync.SyncWarningType.NEW_INSTALL_OR_BLANK,
+                            thresholdDays = syncWarningDays
+                        )
+                    }
+
+                    elapsedDays >= syncWarningDays -> {
+                        ms.mattschlenkrich.paycalculator.ui.sync.SyncWarningInfo(
+                            type = ms.mattschlenkrich.paycalculator.ui.sync.SyncWarningType.STALE_SYNC,
+                            daysSinceLastSync = elapsedDays,
+                            thresholdDays = syncWarningDays
+                        )
+                    }
+
+                    else -> null
+                }
+
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                    if (warning != null && !hasPromptedSyncWarningInSession.value) {
+                        syncWarningDialogInfo.value = warning
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "Error checking sync warning status", e)
+            }
+        }
+    }
+
+    fun dismissSyncWarningModal() {
+        syncWarningDialogInfo.value = null
+        hasPromptedSyncWarningInSession.value = true
     }
 
     fun loadSettings(): Settings {

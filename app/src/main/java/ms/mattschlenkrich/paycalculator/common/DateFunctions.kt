@@ -62,6 +62,21 @@ class DateFunctions {
         }
     }
 
+    fun getDaysDifferenceFromUtc(utcDateTimeString: String?): Long {
+        if (utcDateTimeString.isNullOrBlank()) return Long.MAX_VALUE
+        return try {
+            val utcFormatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+            val lastDate = utcFormatter.parse(utcDateTimeString) ?: return Long.MAX_VALUE
+            val now = System.currentTimeMillis()
+            val diffMs = now - lastDate.time
+            if (diffMs < 0) 0L else diffMs / (1000L * 60 * 60 * 24)
+        } catch (_: Exception) {
+            Long.MAX_VALUE
+        }
+    }
+
     fun getCurrentDateAsString(): String {
         return dateFormat.format(Calendar.getInstance().time)
     }
