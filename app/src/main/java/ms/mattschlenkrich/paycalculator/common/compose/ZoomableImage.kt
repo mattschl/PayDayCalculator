@@ -42,6 +42,8 @@ fun ZoomableImage(
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
 
+    val isZoomed = scale > 1f
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -63,18 +65,25 @@ fun ZoomableImage(
                     }
                 )
             }
-            .pointerInput(Unit) {
-                detectTransformGestures { _, pan, zoom, _ ->
-                    scale = (scale * zoom).coerceIn(1f, 5f)
-                    if (scale == 1f) {
-                        offsetX = 0f
-                        offsetY = 0f
-                    } else {
-                        offsetX += pan.x
-                        offsetY += pan.y
+            .then(
+                if (isZoomed) {
+                    Modifier.pointerInput(scale) {
+                        detectTransformGestures { _, pan, zoom, _ ->
+                            scale = (scale * zoom).coerceIn(1f, 5f)
+                            if (scale <= 1f) {
+                                scale = 1f
+                                offsetX = 0f
+                                offsetY = 0f
+                            } else {
+                                offsetX += pan.x
+                                offsetY += pan.y
+                            }
+                        }
                     }
+                } else {
+                    Modifier
                 }
-            },
+            ),
         contentAlignment = Alignment.Center
     ) {
         SubcomposeAsyncImage(

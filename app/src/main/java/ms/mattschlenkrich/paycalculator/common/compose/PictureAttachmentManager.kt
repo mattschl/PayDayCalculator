@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material3.AlertDialog
@@ -52,7 +52,7 @@ fun PictureAttachmentManager(
     val coroutineScope = rememberCoroutineScope()
     var downloadingPictureIds by remember { mutableStateOf(setOf<Long>()) }
     var downloadRefreshTrigger by remember { mutableIntStateOf(0) }
-    var showFullImage by remember { mutableStateOf<PictureItem?>(null) }
+    var fullImageIndex by remember { mutableStateOf<Int?>(null) }
     var pictureToDelete by remember { mutableStateOf<PictureItem?>(null) }
     var showSelectionDialog by remember { mutableStateOf(value = false) }
     var pendingFile by remember { mutableStateOf<File?>(null) }
@@ -119,7 +119,10 @@ fun PictureAttachmentManager(
                 contentPadding = PaddingValues(vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(pictures, key = { it.pictureId }) { pic ->
+                itemsIndexed(
+                    items = pictures,
+                    key = { _, pic: PictureItem -> pic.pictureId }
+                ) { index, pic ->
                     val displayFile = remember(pic.pictureId, downloadRefreshTrigger) {
                         val dirs = listOf(
                             File(context.cacheDir, "pictures"),
@@ -150,8 +153,8 @@ fun PictureAttachmentManager(
                         imageFile = displayFile,
                         isDownloading = isDownloading,
                         onClick = {
-                            if (fullFile != null) {
-                                showFullImage = pic
+                            if (fullFile != null || thumbFile != null) {
+                                fullImageIndex = index
                             } else if (!pic.driveFileId.isNullOrBlank()) {
                                 if (!isDownloading) {
                                     downloadingPictureIds = downloadingPictureIds + pic.pictureId
@@ -169,11 +172,9 @@ fun PictureAttachmentManager(
                                                 downloadingPictureIds - pic.pictureId
                                             downloadRefreshTrigger++
                                         }
-                                        showFullImage = pic
+                                        fullImageIndex = index
                                     }
                                 }
-                            } else if (thumbFile != null) {
-                                showFullImage = pic
                             } else {
                                 Toast.makeText(
                                     context,
@@ -226,14 +227,16 @@ fun PictureAttachmentManager(
         )
     }
 
-    showFullImage?.let { pic ->
+    fullImageIndex?.let { index ->
         FullScreenImageDialog(
-            picture = pic,
-            onDelete = {
-                showFullImage = null
+            pictures = pictures,
+            initialIndex = index,
+            onDelete = { pic ->
+                fullImageIndex = null
                 pictureToDelete = pic
             },
-            onDismiss = { showFullImage = null }
+            onDismiss = { fullImageIndex = null },
+            onDownloadPicture = onDownloadPicture
         )
     }
 
