@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.common.compose
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -7,6 +8,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -15,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +32,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 
+private enum class TopAppBarMenuState {
+    MAIN,
+    LISTS
+}
+
 @Composable
 fun StandardTopAppBar(
     title: String,
@@ -37,6 +47,13 @@ fun StandardTopAppBar(
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     var showMenu by remember { mutableStateOf(false) }
+    var menuState by remember { mutableStateOf(TopAppBarMenuState.MAIN) }
+
+    LaunchedEffect(showMenu) {
+        if (!showMenu) {
+            menuState = TopAppBarMenuState.MAIN
+        }
+    }
 
     Surface(
         color = MaterialTheme.colorScheme.primaryContainer,
@@ -83,34 +100,85 @@ fun StandardTopAppBar(
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false }
                         ) {
-                            if (onMenuAction != null) {
-                                val menuItems = listOf(
+                            if (menuState == TopAppBarMenuState.MAIN) {
+                                if (onMenuAction != null) {
+                                    DropdownMenuItem(
+                                        text = {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(stringResource(R.string.lists))
+                                                Icon(
+                                                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                                    contentDescription = null
+                                                )
+                                            }
+                                        },
+                                        onClick = {
+                                            menuState = TopAppBarMenuState.LISTS
+                                        }
+                                    )
+
+                                    val syncDataLabel = stringResource(R.string.sync_data)
+                                    DropdownMenuItem(
+                                        text = { Text(syncDataLabel) },
+                                        onClick = {
+                                            showMenu = false
+                                            onMenuAction(syncDataLabel)
+                                        }
+                                    )
+                                }
+                                if (onSettingsClicked != null) {
+                                    DropdownMenuItem(
+                                        text = { Text(stringResource(R.string.settings)) },
+                                        onClick = {
+                                            showMenu = false
+                                            onSettingsClicked()
+                                        }
+                                    )
+                                }
+                            } else {
+                                DropdownMenuItem(
+                                    text = {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                                                contentDescription = null
+                                            )
+                                            Text(
+                                                text = stringResource(R.string.lists),
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    },
+                                    onClick = {
+                                        menuState = TopAppBarMenuState.MAIN
+                                    }
+                                )
+
+                                val listItems = listOf(
                                     R.string.view_work_order_list,
                                     R.string.view_job_spec_list,
                                     R.string.view_areas_list,
                                     R.string.view_work_performed_list,
-                                    R.string.view_material_list,
-                                    R.string.sync_data
+                                    R.string.view_material_list
                                 )
-                                menuItems.forEach { itemRes ->
+
+                                listItems.forEach { itemRes ->
                                     val label = stringResource(itemRes)
                                     DropdownMenuItem(
                                         text = { Text(label) },
                                         onClick = {
                                             showMenu = false
-                                            onMenuAction(label)
+                                            onMenuAction?.invoke(label)
                                         }
                                     )
                                 }
-                            }
-                            if (onSettingsClicked != null) {
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.settings)) },
-                                    onClick = {
-                                        showMenu = false
-                                        onSettingsClicked()
-                                    }
-                                )
                             }
                         }
                     }

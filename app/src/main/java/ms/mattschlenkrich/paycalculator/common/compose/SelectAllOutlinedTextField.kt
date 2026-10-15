@@ -19,6 +19,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 
 @Composable
@@ -35,7 +36,7 @@ fun SelectAllOutlinedTextField(
     singleLine: Boolean = true,
     readOnly: Boolean = false,
     isError: Boolean = false,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
     contentPadding: PaddingValues = StandardTextFieldDefaults.contentPadding(),
 ) {
     var textFieldValueState by remember {

@@ -278,6 +278,7 @@
     <string name="child_material">Child Material</string>
     <string name="query">Search query</string>
     <string name="sync_data">Sync Data</string>
+    <string name="lists">Lists</string>
     <string name="action_purge_orphan_pictures">Clean Up Drive Pictures</string>
     <string name="action_cleanup_drive">Cleanup Drive</string>
     <string name="title_cleanup_drive">Cleanup Drive</string>

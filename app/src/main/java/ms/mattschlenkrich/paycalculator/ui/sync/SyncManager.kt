@@ -33,6 +33,8 @@ class SyncManager(
         val syncReport = StringBuilder("Sync Report:\n")
         val startTime = df.getCurrentUTCTimeAsString()
         var uploadTimestamp: String? = null
+        var uploadedFile: String? = null
+        val usedBackupFiles = mutableListOf<String>()
 
         try {
             val appDb = PayDatabase(application)
@@ -89,6 +91,7 @@ class SyncManager(
                 syncReport.append("Found ${driveFiles.size} backups to evaluate.\n")
                 for (pair in driveFiles) {
                     val file = pair.first
+                    usedBackupFiles.add(file.name)
                     onProgressUpdate("Syncing ${file.name}...")
                     try {
                         val result = processBackupFile(file)
@@ -117,7 +120,7 @@ class SyncManager(
                 PayDatabase.checkpoint(application)
             }
 
-            val uploadedFile = performUpload(uploadTimestamp)
+            uploadedFile = performUpload(uploadTimestamp)
             syncReport.append("\nMerged database uploaded: $uploadedFile")
 
             cleanupOldBackups(fileList)
@@ -132,7 +135,15 @@ class SyncManager(
                 val date = df.parseFileTimestamp(uploadTimestamp)
                 if (date != null) df.getDateTimeStringFromDate(date) else startTime
             } else startTime
-            logSyncHistory(finalSyncTime, status, syncReport.toString())
+
+            val allSources = (usedBackupFiles + listOfNotNull(uploadedFile)).distinct()
+            val sourceName = if (allSources.isNotEmpty()) {
+                allSources.joinToString(", ")
+            } else {
+                "Google Drive"
+            }
+
+            logSyncHistory(finalSyncTime, status, syncReport.toString(), sourceName)
 
             // Release lock
             if (status != "Busy") {
@@ -694,13 +705,21 @@ class SyncManager(
         }
     }
 
-    private suspend fun logSyncHistory(time: String, status: String, records: String) {
+    private suspend fun logSyncHistory(
+        time: String,
+        status: String,
+        records: String,
+        sourceName: String = "Google Drive"
+    ) {
         withContext(Dispatchers.IO) {
             try {
                 val syncHistory = SyncHistory(
-                    syncId = nf.generateRandomIdAsLong(), syncTime = time,
-                    syncSourceName = "Google Drive", syncDeviceId = deviceId,
-                    syncStatus = status, syncRecordsProcessed = records,
+                    syncId = nf.generateRandomIdAsLong(),
+                    syncTime = time,
+                    syncSourceName = sourceName,
+                    syncDeviceId = deviceId,
+                    syncStatus = status,
+                    syncRecordsProcessed = records,
                 )
                 PayDatabase(application).getSyncHistoryDao().insertSyncHistory(syncHistory)
             } catch (e: Exception) {
