@@ -26,6 +26,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.ExpensePictures
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpecMerged
 import ms.mattschlenkrich.paycalculator.data.entity.Material
+import ms.mattschlenkrich.paycalculator.data.entity.MaterialCostHistory
 import ms.mattschlenkrich.paycalculator.data.entity.MaterialMerged
 import ms.mattschlenkrich.paycalculator.data.entity.PayPeriods
 import ms.mattschlenkrich.paycalculator.data.entity.SyncHistory
@@ -127,6 +128,19 @@ class DatabaseSyncHelper(
         return getIntSafe(cursor, columnName) != 0
     }
 
+    private fun isTableExists(db: SQLiteDatabase, tableName: String): Boolean {
+        return try {
+            db.rawQuery(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+                arrayOf(tableName)
+            ).use { cursor ->
+                cursor.moveToFirst()
+            }
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     suspend fun <T> syncTable(
         backupDb: SQLiteDatabase,
         tableName: String,
@@ -146,82 +160,91 @@ class DatabaseSyncHelper(
 
         Log.d(TAG, "Syncing table: $tableName")
 
-        backupDb.query("`$tableName`", null, null, null, null, null, null).use { cursor ->
-            while (cursor.moveToNext()) {
-                val backupItem = try {
-                    mapCursorToItem(cursor)
-                } catch (_: Exception) {
-                    onSyncError("Skipped a record in $tableName due to data error.")
-                    continue
-                }
-                val existingById = getExistingById(backupItem)
-                val backupTime = getUpdateTime(backupItem)
+        if (!isTableExists(backupDb, tableName)) {
+            Log.d(TAG, "Table $tableName does not exist in backup database, skipping.")
+            return Pair(0, 0)
+        }
 
-                if (existingById == null) {
-                    val existingByName =
-                        if (isRestore) null else getExistingByName?.invoke(backupItem)
-                    if ((existingByName != null) && (getName != null) && (getId != null)) {
-                        val localName = getName(existingByName)
-                        val localId = getId(existingByName)
-                        val localTime = getUpdateTime(existingByName)
+        try {
+            backupDb.query("`$tableName`", null, null, null, null, null, null).use { cursor ->
+                while (cursor.moveToNext()) {
+                    val backupItem = try {
+                        mapCursorToItem(cursor)
+                    } catch (_: Exception) {
+                        onSyncError("Skipped a record in $tableName due to data error.")
+                        continue
+                    }
+                    val existingById = getExistingById(backupItem)
+                    val backupTime = getUpdateTime(backupItem)
 
-                        val choice = onConflict(
-                            ConflictInfo(
-                                tableName,
-                                localName,
-                                localId,
-                                localTime,
-                                getId(backupItem),
-                                backupTime,
-                            ),
-                        )
+                    if (existingById == null) {
+                        val existingByName =
+                            if (isRestore) null else getExistingByName?.invoke(backupItem)
+                        if ((existingByName != null) && (getName != null) && (getId != null)) {
+                            val localName = getName(existingByName)
+                            val localId = getId(existingByName)
+                            val localTime = getUpdateTime(existingByName)
 
-                        when (choice) {
-                            ConflictChoice.KEEP_LOCAL -> {
-                                val newBackupName =
-                                    "${getName(backupItem)}_DRIVE_${getId(backupItem)}"
-                                val renamedItem =
-                                    copyWithName?.invoke(backupItem, newBackupName)
-                                        ?: backupItem
-                                try {
-                                    insert(renamedItem)
-                                    inserts++
-                                } catch (e: Exception) {
-                                    Log.e(TAG, "Conflict inserting $tableName", e)
+                            val choice = onConflict(
+                                ConflictInfo(
+                                    tableName,
+                                    localName,
+                                    localId,
+                                    localTime,
+                                    getId(backupItem),
+                                    backupTime,
+                                ),
+                            )
+
+                            when (choice) {
+                                ConflictChoice.KEEP_LOCAL -> {
+                                    val newBackupName =
+                                        "${getName(backupItem)}_DRIVE_${getId(backupItem)}"
+                                    val renamedItem =
+                                        copyWithName?.invoke(backupItem, newBackupName)
+                                            ?: backupItem
+                                    try {
+                                        insert(renamedItem)
+                                        inserts++
+                                    } catch (e: Exception) {
+                                        Log.e(TAG, "Conflict inserting $tableName", e)
+                                    }
+                                }
+
+                                ConflictChoice.KEEP_DRIVE -> {
+                                    val newLocalName = "${localName}_LOCAL_$localId"
+                                    try {
+                                        rename?.invoke(
+                                            localId,
+                                            newLocalName,
+                                            df.getCurrentUTCTimeAsString(),
+                                        )
+                                        insert(backupItem)
+                                        inserts++
+                                    } catch (e: Exception) {
+                                        Log.e(TAG, "Conflict inserting $tableName", e)
+                                    }
                                 }
                             }
-
-                            ConflictChoice.KEEP_DRIVE -> {
-                                val newLocalName = "${localName}_LOCAL_$localId"
-                                try {
-                                    rename?.invoke(
-                                        localId,
-                                        newLocalName,
-                                        df.getCurrentUTCTimeAsString(),
-                                    )
-                                    insert(backupItem)
-                                    inserts++
-                                } catch (e: Exception) {
-                                    Log.e(TAG, "Conflict inserting $tableName", e)
-                                }
+                        } else {
+                            try {
+                                insert(backupItem)
+                                inserts++
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Error inserting $tableName", e)
                             }
                         }
                     } else {
-                        try {
-                            insert(backupItem)
-                            inserts++
-                        } catch (e: Exception) {
-                            Log.e(TAG, "Error inserting $tableName", e)
+                        val localTime = getUpdateTime(existingById)
+                        if (isRestore || (backupTime > localTime)) {
+                            update(backupItem)
+                            updates++
                         }
-                    }
-                } else {
-                    val localTime = getUpdateTime(existingById)
-                    if (isRestore || (backupTime > localTime)) {
-                        update(backupItem)
-                        updates++
                     }
                 }
             }
+        } catch (e: Exception) {
+            Log.w(TAG, "Error syncing table $tableName: ${e.message}")
         }
         return Pair(inserts, updates)
     }
@@ -943,6 +966,30 @@ class DatabaseSyncHelper(
             update = {
                 if (it.syncDeviceId != deviceId) appDb.getSyncHistoryDao().updateSyncHistory(it)
             },
+        )
+    }
+
+    suspend fun syncMaterialCostHistory(backupDb: SQLiteDatabase): Pair<Int, Int> {
+        return syncTable(
+            backupDb = backupDb,
+            tableName = "materialCostHistory",
+            mapCursorToItem = { cursor ->
+                MaterialCostHistory(
+                    materialExpenseHistoryId = getLongSafe(cursor, "materialExpenseHistoryId"),
+                    mehMaterialId = getLongSafe(cursor, "mehMaterialId"),
+                    mehRawCost = getDoubleSafe(cursor, "mehRawCost"),
+                    mehPurchaseDate = getStringSafe(cursor, "mehPurchaseDate"),
+                    mehIsDeleted = getBooleanSafe(cursor, "mehIsDeleted"),
+                    mehUpdateTime = getStringSafe(cursor, "mehUpdateTime")
+                )
+            },
+            getExistingById = {
+                appDb.getMaterialCostHistoryDao()
+                    .getMaterialCostHistory(it.materialExpenseHistoryId)
+            },
+            getUpdateTime = { it.mehUpdateTime },
+            insert = { appDb.getMaterialCostHistoryDao().insertMaterialCostHistory(it) },
+            update = { appDb.getMaterialCostHistoryDao().updateMaterialCostHistory(it) },
         )
     }
 

@@ -292,6 +292,16 @@ fun getTables() = listOf(
         updateTimeColumn = "wpUpdateTime"
     ),
     TableSpec(
+        "materialCostHistory",
+        listOf("mehMaterialId", "mehPurchaseDate"),
+        listOf(
+            FKSpec("mehMaterialId", "materials", "materialId", "mName")
+        ),
+        pkColumn = "materialExpenseHistoryId",
+        isDeletedColumn = "mehIsDeleted",
+        updateTimeColumn = "mehUpdateTime"
+    ),
+    TableSpec(
         "syncHistory",
         listOf("syncTime", "syncDeviceId"),
         pkColumn = "syncId",

@@ -5,11 +5,14 @@ import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_NAME
 import ms.mattschlenkrich.paycalculator.common.PAY_DB_VERSION
 import ms.mattschlenkrich.paycalculator.data.dao.AreaDao
 import ms.mattschlenkrich.paycalculator.data.dao.EmployerDao
 import ms.mattschlenkrich.paycalculator.data.dao.JobSpecDao
+import ms.mattschlenkrich.paycalculator.data.dao.MaterialCostHistoryDao
 import ms.mattschlenkrich.paycalculator.data.dao.MaterialDao
 import ms.mattschlenkrich.paycalculator.data.dao.PayCalculationsDao
 import ms.mattschlenkrich.paycalculator.data.dao.PayDayDao
@@ -30,6 +33,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.ExpensePictures
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpecMerged
 import ms.mattschlenkrich.paycalculator.data.entity.Material
+import ms.mattschlenkrich.paycalculator.data.entity.MaterialCostHistory
 import ms.mattschlenkrich.paycalculator.data.entity.MaterialMerged
 import ms.mattschlenkrich.paycalculator.data.entity.PayPeriods
 import ms.mattschlenkrich.paycalculator.data.entity.SyncHistory
@@ -87,6 +91,7 @@ import java.io.File
         WorkOrderPictures::class,
         WorkOrderHistoryPictures::class,
         ExpensePictures::class,
+        MaterialCostHistory::class,
     ],
     views = [ExtraDefinitionAndType::class],
     version = PAY_DB_VERSION,
@@ -108,6 +113,7 @@ abstract class PayDatabase : RoomDatabase() {
     abstract fun getAreaDao(): AreaDao
     abstract fun getWorkOrderTimeDao(): WorkOrderTimeDao
     abstract fun getWorkOrderPictureDao(): WorkOrderPictureDao
+    abstract fun getMaterialCostHistoryDao(): MaterialCostHistoryDao
 
     companion object {
         @Volatile
@@ -202,12 +208,34 @@ abstract class PayDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_24_25 = object : Migration(24, 25) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `materialCostHistory` (" +
+                            "`materialExpenseHistoryId` INTEGER NOT NULL, " +
+                            "`mehMaterialId` INTEGER NOT NULL, " +
+                            "`mehRawCost` REAL NOT NULL, " +
+                            "`mehPurchaseDate` TEXT NOT NULL, " +
+                            "`mehIsDeleted` INTEGER NOT NULL, " +
+                            "`mehUpdateTime` TEXT NOT NULL, " +
+                            "PRIMARY KEY(`materialExpenseHistoryId`), " +
+                            "FOREIGN KEY(`mehMaterialId`) REFERENCES `materials`(`materialId`) ON UPDATE NO ACTION ON DELETE NO ACTION" +
+                            ")"
+                )
+                db.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_materialCostHistory_mehMaterialId` " +
+                            "ON `materialCostHistory` (`mehMaterialId`)"
+                )
+            }
+        }
+
         private fun createDatabase(context: Context): PayDatabase {
             return Room.databaseBuilder(
                 context.applicationContext,
                 PayDatabase::class.java,
                 PAY_DB_NAME
             )
+                .addMigrations(MIGRATION_24_25)
                 .createFromAsset(PAY_DB_NAME)
                 .fallbackToDestructiveMigrationOnDowngrade(true)
                 .build()

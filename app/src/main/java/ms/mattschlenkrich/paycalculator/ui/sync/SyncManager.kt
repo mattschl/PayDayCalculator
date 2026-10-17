@@ -575,6 +575,8 @@ class SyncManager(
                     .let { it.first + it.second }
                 totalCount += syncHelper.syncExpensePictures(backupDb)
                     .let { it.first + it.second }
+                totalCount += syncHelper.syncMaterialCostHistory(backupDb)
+                    .let { it.first + it.second }
                 totalCount += syncHelper.syncSyncHistory(backupDb).let { it.first + it.second }
 
                 downloadMissingPictures()
@@ -643,6 +645,8 @@ class SyncManager(
                 totalCount += syncHelper.syncWorkOrderHistoryPictures(backupDb)
                     .let { it.first + it.second }
                 totalCount += syncHelper.syncExpensePictures(backupDb)
+                    .let { it.first + it.second }
+                totalCount += syncHelper.syncMaterialCostHistory(backupDb)
                     .let { it.first + it.second }
                 totalCount += syncHelper.syncSyncHistory(backupDb).let { it.first + it.second }
 
