@@ -25,13 +25,19 @@ fun WorkOrderHistoryExpenseItem(
     onClick: () -> Unit
 ) {
     val nf = remember { NumberFunctions() }
+    val containerColor = if (index % 2 == 0) {
+        MaterialTheme.colorScheme.surfaceVariant
+    } else {
+        MaterialTheme.colorScheme.surfaceContainerHigh
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = containerColor
         )
     ) {
         Row(

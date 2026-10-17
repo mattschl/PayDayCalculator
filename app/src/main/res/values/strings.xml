@@ -61,6 +61,10 @@
     <string name="choose">"Choose "</string>
     <string name="confirm_adding_duplicate_extra__">"Confirm adding duplicate extra: "</string>
     <string name="cost">Cost</string>
+    <string name="cost_history">Cost History</string>
+    <string name="purchase_date">Purchase Date</string>
+    <string name="add_cost_history">Add Cost Entry</string>
+    <string name="no_cost_history">No cost history recorded.</string>
     <string name="create_work_order_">"Create Work Order: "</string>
     <string name="create">Create</string>
     <string name="credit">credit</string>

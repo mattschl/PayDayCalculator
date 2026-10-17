@@ -20,8 +20,8 @@ fun AreaViewScreen(
         onSearchQueryChange = onSearchQueryChange,
         onItemClick = onAreaClick,
         noItemsMessageRes = R.string.no_areas_in_the_list_to_view,
-        itemContent = { item, onClick ->
-            AreaItem(item, onClick)
+        itemContent = { item, onClick, index ->
+            AreaItem(item, onClick, index)
         },
         minColumnWidth = minColumnWidth
     )

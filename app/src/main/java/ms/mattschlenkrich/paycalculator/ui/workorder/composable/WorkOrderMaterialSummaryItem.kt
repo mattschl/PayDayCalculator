@@ -20,15 +20,22 @@ import ms.mattschlenkrich.paycalculator.data.model.MaterialAndQuantity
 fun WorkOrderMaterialSummaryItem(
     material: MaterialAndQuantity,
     nf: NumberFunctions,
-    onClick: (MaterialAndQuantity) -> Unit = {}
+    onClick: (MaterialAndQuantity) -> Unit = {},
+    index: Int = 0
 ) {
+    val containerColor = if (index % 2 == 0) {
+        MaterialTheme.colorScheme.surfaceVariant
+    } else {
+        MaterialTheme.colorScheme.surfaceContainerHigh
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick(material) },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = containerColor
         )
     ) {
         Column(

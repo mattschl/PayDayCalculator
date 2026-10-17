@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -276,12 +276,13 @@ fun WorkDateUpdateScreen(
                 }
             }
 
-            items(histories) { history ->
+            itemsIndexed(histories) { index, history ->
                 WorkOrderHistoryItem(
                     history = history,
                     onClick = onHistoryClick,
                     onLongClick = onHistoryLongClick,
-                    charLimit = jobDescriptionCharLimit
+                    charLimit = jobDescriptionCharLimit,
+                    index = index
                 )
             }
 

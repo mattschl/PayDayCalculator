@@ -18,15 +18,22 @@ import ms.mattschlenkrich.paycalculator.data.model.JobSpecAndQuantity
 @Composable
 fun WorkOrderJobSpecSummaryItem(
     js: JobSpecAndQuantity,
-    onClick: (JobSpecAndQuantity) -> Unit = {}
+    onClick: (JobSpecAndQuantity) -> Unit = {},
+    index: Int = 0
 ) {
+    val containerColor = if (index % 2 == 0) {
+        MaterialTheme.colorScheme.surfaceVariant
+    } else {
+        MaterialTheme.colorScheme.surfaceContainerHigh
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick(js) },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = containerColor
         )
     ) {
         Column(

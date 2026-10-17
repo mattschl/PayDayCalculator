@@ -15,12 +15,14 @@ import ms.mattschlenkrich.paycalculator.data.entity.Material
 fun MaterialItem(
     item: Material,
     nf: NumberFunctions,
-    onClick: (Material) -> Unit
+    onClick: (Material) -> Unit,
+    index: Int = 0
 ) {
     StandardItem(
         text = item.mName,
         isDeleted = item.mIsDeleted,
-        onClick = { onClick(item) }
+        onClick = { onClick(item) },
+        index = index
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

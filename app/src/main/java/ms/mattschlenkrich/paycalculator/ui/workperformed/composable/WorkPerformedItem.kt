@@ -7,11 +7,13 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed
 @Composable
 fun WorkPerformedItem(
     item: WorkPerformed,
-    onClick: (WorkPerformed) -> Unit
+    onClick: (WorkPerformed) -> Unit,
+    index: Int = 0
 ) {
     StandardItem(
         text = item.wpDescription,
         isDeleted = item.wpIsDeleted,
-        onClick = { onClick(item) }
+        onClick = { onClick(item) },
+        index = index
     )
 }

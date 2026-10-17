@@ -66,19 +66,27 @@ fun StandardItem(
     isDeleted: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    index: Int = 0,
+    containerColor: androidx.compose.ui.graphics.Color? = null,
     content: @Composable (ColumnScope.() -> Unit)? = null
 ) {
+    val defaultColor = if (index % 2 == 0) {
+        MaterialTheme.colorScheme.surfaceVariant
+    } else {
+        MaterialTheme.colorScheme.surfaceContainerHigh
+    }
+
     Card(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = containerColor ?: defaultColor
         )
     ) {
         Column(
-            modifier = Modifier.padding(4.dp),
+            modifier = Modifier.padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(

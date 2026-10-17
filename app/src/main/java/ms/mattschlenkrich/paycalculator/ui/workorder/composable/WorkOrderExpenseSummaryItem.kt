@@ -18,13 +18,20 @@ import ms.mattschlenkrich.paycalculator.data.model.ExpenseSummary
 @Composable
 fun WorkOrderExpenseSummaryItem(
     expense: ExpenseSummary,
-    nf: NumberFunctions
+    nf: NumberFunctions,
+    index: Int = 0
 ) {
+    val containerColor = if (index % 2 == 0) {
+        MaterialTheme.colorScheme.surfaceVariant
+    } else {
+        MaterialTheme.colorScheme.surfaceContainerHigh
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = containerColor
         )
     ) {
         Column(

@@ -7,11 +7,13 @@ import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
 @Composable
 fun JobSpecItem(
     item: JobSpec,
-    onClick: (JobSpec) -> Unit
+    onClick: (JobSpec) -> Unit,
+    index: Int = 0
 ) {
     StandardItem(
         text = item.jsName,
         isDeleted = item.jsIsDeleted,
-        onClick = { onClick(item) }
+        onClick = { onClick(item) },
+        index = index
     )
 }

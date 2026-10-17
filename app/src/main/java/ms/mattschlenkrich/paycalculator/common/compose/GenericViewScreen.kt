@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -34,7 +34,7 @@ fun <T> GenericViewScreen(
     onSearchQueryChange: (String) -> Unit,
     onItemClick: (T) -> Unit,
     noItemsMessageRes: Int,
-    itemContent: @Composable (T, (T) -> Unit) -> Unit,
+    itemContent: @Composable (item: T, onClick: (T) -> Unit, index: Int) -> Unit,
     minColumnWidth: Int = LocalMinColumnWidth.current
 ) {
     val columns = calculateGridColumns(minColumnWidth)
@@ -89,8 +89,8 @@ fun <T> GenericViewScreen(
                     horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
                     verticalItemSpacing = ELEMENT_SPACING
                 ) {
-                    items(itemList) { item ->
-                        itemContent(item, onItemClick)
+                    itemsIndexed(itemList) { index, item ->
+                        itemContent(item, onItemClick, index)
                     }
                 }
             }

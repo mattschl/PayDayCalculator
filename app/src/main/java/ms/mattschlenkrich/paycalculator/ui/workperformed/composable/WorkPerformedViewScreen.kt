@@ -20,8 +20,8 @@ fun WorkPerformedViewScreen(
         onSearchQueryChange = onSearchQueryChange,
         onItemClick = onWorkPerformedClick,
         noItemsMessageRes = R.string.no_work_descriptions_to_view,
-        itemContent = { item, onClick ->
-            WorkPerformedItem(item, onClick)
+        itemContent = { item, onClick, index ->
+            WorkPerformedItem(item, onClick, index)
         },
         minColumnWidth = minColumnWidth
     )

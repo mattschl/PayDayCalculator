@@ -58,4 +58,16 @@ class MaterialRepository(private val db: PayDatabase) {
 
     suspend fun removeAllMaterialsFromWorkOrderHistory(historyId: Long, updateTime: String) =
         db.getMaterialDao().removeAllMaterialsFromWorkOrderHistory(historyId, updateTime)
+
+    fun getPicturesByMaterialId(materialId: Long) =
+        db.getWorkOrderPictureDao().getPicturesByMaterialId(materialId)
+
+    fun getMaterialCostHistoryByMaterial(materialId: Long) =
+        db.getMaterialCostHistoryDao().getMaterialCostHistoryByMaterial(materialId)
+
+    suspend fun insertMaterialCostHistory(materialCostHistory: ms.mattschlenkrich.paycalculator.data.entity.MaterialCostHistory) =
+        db.getMaterialCostHistoryDao().insertMaterialCostHistory(materialCostHistory)
+
+    suspend fun updateMaterialCostHistory(materialCostHistory: ms.mattschlenkrich.paycalculator.data.entity.MaterialCostHistory) =
+        db.getMaterialCostHistoryDao().updateMaterialCostHistory(materialCostHistory)
 }

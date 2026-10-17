@@ -183,4 +183,18 @@ interface WorkOrderPictureDao {
                 "WHERE epExpenseId = :expenseId AND epIsDeleted = 0"
     )
     fun getPicturesByExpenseId(expenseId: Long): LiveData<List<PictureItem>>
+
+    @Query(
+        "SELECT DISTINCT pictureId, driveFileId FROM (" +
+                "SELECT wohpPictureId AS pictureId, wohpDriveFileId AS driveFileId FROM workOrderHistoryPictures " +
+                "WHERE wohpHistoryId IN (SELECT wohmHistoryId FROM workOrderHistoryMaterials WHERE (wohmMaterialId = :materialId OR wohmMaterialId IN (SELECT mmChildId FROM materialMerged WHERE mmMasterId = :materialId AND mmIsDeleted = 0)) AND wohmIsDeleted = 0) AND wohpIsDeleted = 0 " +
+                "UNION ALL " +
+                "SELECT wopPictureId AS pictureId, wopDriveFileId AS driveFileId FROM workOrderPictures " +
+                "WHERE wopWorkOrderId IN (SELECT woHistoryWorkOrderId FROM workOrderHistory WHERE woHistoryId IN (SELECT wohmHistoryId FROM workOrderHistoryMaterials WHERE (wohmMaterialId = :materialId OR wohmMaterialId IN (SELECT mmChildId FROM materialMerged WHERE mmMasterId = :materialId AND mmIsDeleted = 0)) AND wohmIsDeleted = 0) AND woHistoryDeleted = 0) AND wopIsDeleted = 0 " +
+                "UNION ALL " +
+                "SELECT epPictureId AS pictureId, epDriveFileId AS driveFileId FROM expensePictures " +
+                "WHERE epExpenseId IN (SELECT woHistoryExpenseId FROM workOrderHistoryExpenses WHERE woheHistoryId IN (SELECT wohmHistoryId FROM workOrderHistoryMaterials WHERE (wohmMaterialId = :materialId OR wohmMaterialId IN (SELECT mmChildId FROM materialMerged WHERE mmMasterId = :materialId AND mmIsDeleted = 0)) AND wohmIsDeleted = 0) AND woheIsDeleted = 0) AND epIsDeleted = 0" +
+                ")"
+    )
+    fun getPicturesByMaterialId(materialId: Long): LiveData<List<PictureItem>>
 }

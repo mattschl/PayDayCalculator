@@ -22,8 +22,8 @@ fun MaterialViewScreen(
         onSearchQueryChange = onSearchQueryChange,
         onItemClick = onMaterialClick,
         noItemsMessageRes = R.string.no_materials_to_view,
-        itemContent = { item, onClick ->
-            MaterialItem(item, nf, onClick)
+        itemContent = { item, onClick, index ->
+            MaterialItem(item, nf, onClick, index)
         },
         minColumnWidth = minColumnWidth
     )

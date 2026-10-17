@@ -52,6 +52,18 @@ class MaterialViewModel(
     suspend fun removeAllMaterialsFromWorkOrderHistory(historyId: Long, updateTime: String) =
         materialRepository.removeAllMaterialsFromWorkOrderHistory(historyId, updateTime)
 
+    fun getPicturesByMaterialId(materialId: Long) =
+        materialRepository.getPicturesByMaterialId(materialId)
+
+    fun getMaterialCostHistoryByMaterial(materialId: Long) =
+        materialRepository.getMaterialCostHistoryByMaterial(materialId)
+
+    suspend fun insertMaterialCostHistory(materialCostHistory: ms.mattschlenkrich.paycalculator.data.entity.MaterialCostHistory) =
+        materialRepository.insertMaterialCostHistory(materialCostHistory)
+
+    suspend fun updateMaterialCostHistory(materialCostHistory: ms.mattschlenkrich.paycalculator.data.entity.MaterialCostHistory) =
+        materialRepository.updateMaterialCostHistory(materialCostHistory)
+
     suspend fun updateMaterialCostAndPrice(materialId: Long, newCost: Double, newPrice: Double) {
         val material = materialRepository.getMaterialSync(materialId)
         if (material != null) {

@@ -20,8 +20,8 @@ fun JobSpecViewScreen(
         onSearchQueryChange = onSearchQueryChange,
         onItemClick = onJobSpecClick,
         noItemsMessageRes = R.string.no_job_specs_to_view,
-        itemContent = { item, onClick ->
-            JobSpecItem(item, onClick)
+        itemContent = { item, onClick, index ->
+            JobSpecItem(item, onClick, index)
         },
         minColumnWidth = minColumnWidth
     )

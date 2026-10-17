@@ -7,11 +7,13 @@ import ms.mattschlenkrich.paycalculator.data.entity.Areas
 @Composable
 fun AreaItem(
     area: Areas,
-    onClick: (Areas) -> Unit
+    onClick: (Areas) -> Unit,
+    index: Int = 0
 ) {
     StandardItem(
         text = area.areaName,
         isDeleted = area.areaIsDeleted,
-        onClick = { onClick(area) }
+        onClick = { onClick(area) },
+        index = index
     )
 }
