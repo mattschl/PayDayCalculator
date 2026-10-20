@@ -1,5 +1,8 @@
 package ms.mattschlenkrich.paycalculator.ui.sync.composable
 
+import android.content.Context
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,13 +22,13 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.InsertDriveFile
 import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -45,12 +48,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.compose.SubcomposeAsyncImage
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.common.compose.FullScreenImageDialog
+import ms.mattschlenkrich.paycalculator.data.model.PictureItem
 import ms.mattschlenkrich.paycalculator.ui.sync.DriveFileItem
 import ms.mattschlenkrich.paycalculator.ui.sync.SyncViewModel
+import java.io.File
 
 enum class FileFilterCategory {
     ALL, PHOTOS, BACKUPS, ORPHANS
@@ -66,6 +75,7 @@ fun DriveCleanupScreen(
     var selectedFilter by remember { mutableStateOf(FileFilterCategory.ALL) }
     var fileToDelete by remember { mutableStateOf<DriveFileItem?>(null) }
     var showAutoCleanupConfirm by remember { mutableStateOf(false) }
+    var selectedPictureIndex by remember { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(Unit) {
         viewModel.loadDriveFilesDetails()
@@ -81,6 +91,15 @@ fun DriveCleanupScreen(
         FileFilterCategory.PHOTOS -> driveFiles.filter { it.isPicture }
         FileFilterCategory.BACKUPS -> driveFiles.filter { it.isBackup }
         FileFilterCategory.ORPHANS -> driveFiles.filter { it.isOrphan }
+    }
+
+    val pictureItemsInFiltered = remember(filteredFiles) {
+        filteredFiles.filter { it.isPicture }.mapNotNull { item ->
+            val picIdStr =
+                item.name.removePrefix("pic_").removePrefix("thumb_").substringBefore(".")
+            val picId = picIdStr.toLongOrNull() ?: return@mapNotNull null
+            PictureItem(pictureId = picId, driveFileId = item.id)
+        }
     }
 
     Scaffold(
@@ -211,7 +230,15 @@ fun DriveCleanupScreen(
                         items(filteredFiles, key = { it.id }) { item ->
                             DriveFileItemRow(
                                 item = item,
-                                onDelete = { fileToDelete = item }
+                                viewModel = viewModel,
+                                onDelete = { fileToDelete = item },
+                                onImageClick = {
+                                    val idx =
+                                        pictureItemsInFiltered.indexOfFirst { it.driveFileId == item.id }
+                                    if (idx >= 0) {
+                                        selectedPictureIndex = idx
+                                    }
+                                }
                             )
                         }
                     }
@@ -221,6 +248,18 @@ fun DriveCleanupScreen(
             if (viewModel.isLoading) {
                 SyncLoadingOverlay(
                     progressMessage = viewModel.progressMessage ?: "Processing..."
+                )
+            }
+        }
+
+        // Full Screen Picture Viewer Dialog
+        selectedPictureIndex?.let { index ->
+            if (index >= 0 && pictureItemsInFiltered.isNotEmpty()) {
+                FullScreenImageDialog(
+                    pictures = pictureItemsInFiltered,
+                    initialIndex = index,
+                    onDelete = { },
+                    onDismiss = { selectedPictureIndex = null }
                 )
             }
         }
@@ -287,11 +326,30 @@ fun DriveCleanupScreen(
     }
 }
 
+private fun findLocalPictureFile(context: Context, fileName: String): File? {
+    val dirs = listOf(
+        File(context.cacheDir, "pictures"),
+        File(context.filesDir, "pictures")
+    )
+    val picIdStr = fileName.removePrefix("pic_").removePrefix("thumb_").substringBefore(".")
+    val picId = picIdStr.toLongOrNull() ?: return null
+    val extensions = listOf("webp", "jpg", "jpeg", "png")
+
+    return dirs.flatMap { dir ->
+        extensions.map { ext -> File(dir, "pic_${picId}.$ext") } +
+                extensions.map { ext -> File(dir, "thumb_${picId}.$ext") }
+    }.firstOrNull { (it.exists()) && (it.length() > 0L) }
+}
+
 @Composable
 private fun DriveFileItemRow(
     item: DriveFileItem,
-    onDelete: () -> Unit
+    viewModel: SyncViewModel,
+    onDelete: () -> Unit,
+    onImageClick: () -> Unit
 ) {
+    val context = LocalContext.current
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -305,24 +363,65 @@ private fun DriveFileItemRow(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val icon = when {
-                item.isPicture -> Icons.Default.Image
-                item.isBackup -> Icons.Default.Storage
-                else -> Icons.AutoMirrored.Filled.InsertDriveFile
-            }
+            if (item.isPicture) {
+                var imageFile by remember(item.id, item.name) {
+                    mutableStateOf(findLocalPictureFile(context, item.name))
+                }
 
-            val iconColor = when {
-                item.isOrphan -> MaterialTheme.colorScheme.error
-                item.isPicture -> MaterialTheme.colorScheme.primary
-                else -> MaterialTheme.colorScheme.secondary
-            }
+                LaunchedEffect(item.id, item.name) {
+                    if (imageFile == null) {
+                        imageFile = viewModel.downloadPictureToCache(item.id, item.name)
+                    }
+                }
 
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = iconColor,
-                modifier = Modifier.size(32.dp)
-            )
+                Card(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clickable(enabled = imageFile != null) { onImageClick() },
+                    shape = RoundedCornerShape(8.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    if (imageFile != null) {
+                        SubcomposeAsyncImage(
+                            model = imageFile,
+                            contentDescription = item.name,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize(),
+                            loading = {
+                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                                }
+                            }
+                        )
+                    } else {
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.surfaceVariant),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                        }
+                    }
+                }
+            } else {
+                val icon = when {
+                    item.isBackup -> Icons.Default.Storage
+                    else -> Icons.AutoMirrored.Filled.InsertDriveFile
+                }
+
+                val iconColor = when {
+                    item.isOrphan -> MaterialTheme.colorScheme.error
+                    else -> MaterialTheme.colorScheme.secondary
+                }
+
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = iconColor,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.width(12.dp))
 

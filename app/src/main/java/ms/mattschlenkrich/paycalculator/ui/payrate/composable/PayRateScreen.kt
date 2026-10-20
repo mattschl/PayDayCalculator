@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -199,6 +200,7 @@ fun PayRateScreen(
     selectedFrequency: PayRateBasedOn,
     onFrequencySelected: (PayRateBasedOn) -> Unit,
     onSaveClick: () -> Unit,
+    onWageCalcClick: () -> Unit = {},
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -249,7 +251,15 @@ fun PayRateScreen(
                 onValueChange = onWageChange,
                 label = { Text(stringResource(id = R.string.pay_rate)) },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                trailingIcon = {
+                    androidx.compose.material3.IconButton(onClick = onWageCalcClick) {
+                        Icon(
+                            imageVector = androidx.compose.material.icons.Icons.Default.Calculate,
+                            contentDescription = "Calculate Wage"
+                        )
+                    }
+                }
             )
 
             SimpleDropdownField(

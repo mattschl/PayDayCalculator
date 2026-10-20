@@ -1,7 +1,10 @@
 package ms.mattschlenkrich.paycalculator.common.compose
 
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,8 +45,6 @@ fun ZoomableImage(
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
 
-    val isZoomed = scale > 1f
-
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -65,25 +66,43 @@ fun ZoomableImage(
                     }
                 )
             }
-            .then(
-                if (isZoomed) {
-                    Modifier.pointerInput(scale) {
-                        detectTransformGestures { _, pan, zoom, _ ->
-                            scale = (scale * zoom).coerceIn(1f, 5f)
-                            if (scale <= 1f) {
-                                scale = 1f
-                                offsetX = 0f
-                                offsetY = 0f
-                            } else {
-                                offsetX += pan.x
-                                offsetY += pan.y
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    awaitFirstDown(requireUnconsumed = false)
+                    do {
+                        val event = awaitPointerEvent()
+                        val canceled = event.changes.any { it.isConsumed }
+                        if (!canceled) {
+                            val zoomChange = event.calculateZoom()
+                            val panChange = event.calculatePan()
+                            val pointerCount = event.changes.size
+
+                            if (scale > 1f) {
+                                // Zoomed state: Consume pan and zoom gestures
+                                val newScale = (scale * zoomChange).coerceIn(1f, 5f)
+                                if (newScale <= 1f) {
+                                    scale = 1f
+                                    offsetX = 0f
+                                    offsetY = 0f
+                                } else {
+                                    scale = newScale
+                                    offsetX += panChange.x
+                                    offsetY += panChange.y
+                                }
+                                event.changes.forEach { it.consume() }
+                            } else if (pointerCount > 1 || zoomChange != 1f) {
+                                // Unzoomed state: Only handle multi-touch pinch zoom
+                                val newScale = (scale * zoomChange).coerceIn(1f, 5f)
+                                if (newScale > 1f) {
+                                    scale = newScale
+                                    event.changes.forEach { it.consume() }
+                                }
                             }
+                            // Single-finger drag at 1x scale is left unconsumed for HorizontalPager
                         }
-                    }
-                } else {
-                    Modifier
+                    } while (event.changes.any { it.pressed })
                 }
-            ),
+            },
         contentAlignment = Alignment.Center
     ) {
         SubcomposeAsyncImage(

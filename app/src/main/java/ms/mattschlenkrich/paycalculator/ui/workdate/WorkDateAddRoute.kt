@@ -57,6 +57,23 @@ fun WorkDateAddRoute(
     var statHours by rememberSaveable { mutableStateOf("") }
     var note by rememberSaveable { mutableStateOf("") }
 
+    var activeHoursField by rememberSaveable { mutableStateOf<String?>(null) }
+
+    val pendingTransfer = mainViewModel.transferNumState.value
+    LaunchedEffect(pendingTransfer) {
+        if (pendingTransfer != null) {
+            val transferNum = pendingTransfer
+            when (activeHoursField) {
+                "reg" -> regHours = nf.displayNumberFromDouble(transferNum)
+                "ot" -> otHours = nf.displayNumberFromDouble(transferNum)
+                "dbl" -> dblOtHours = nf.displayNumberFromDouble(transferNum)
+                "stat" -> statHours = nf.displayNumberFromDouble(transferNum)
+            }
+            mainViewModel.clearTransferNum()
+            activeHoursField = null
+        }
+    }
+
     val usedWorkDatesList by payDayViewModel.getWorkDateListUsed(
         payPeriod.ppEmployerId, payPeriod.ppCutoffDate
     ).observeAsState(emptyList())
@@ -224,6 +241,26 @@ fun WorkDateAddRoute(
                 val stat = round(holidayPayCalculator.calculateStatHours() * 4) / 4
                 statHours = nf.displayNumberFromDouble(stat)
             }
+        },
+        onRegCalcClick = {
+            activeHoursField = "reg"
+            mainViewModel.setTransferNum(regHours.toDoubleOrNull() ?: 0.0)
+            navController.navigate(Screen.Calculator.route)
+        },
+        onOtCalcClick = {
+            activeHoursField = "ot"
+            mainViewModel.setTransferNum(otHours.toDoubleOrNull() ?: 0.0)
+            navController.navigate(Screen.Calculator.route)
+        },
+        onDblOtCalcClick = {
+            activeHoursField = "dbl"
+            mainViewModel.setTransferNum(dblOtHours.toDoubleOrNull() ?: 0.0)
+            navController.navigate(Screen.Calculator.route)
+        },
+        onStatCalcClick = {
+            activeHoursField = "stat"
+            mainViewModel.setTransferNum(statHours.toDoubleOrNull() ?: 0.0)
+            navController.navigate(Screen.Calculator.route)
         },
         note = note,
         onNoteChange = { note = it },

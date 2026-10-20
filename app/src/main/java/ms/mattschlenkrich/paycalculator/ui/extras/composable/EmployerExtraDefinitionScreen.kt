@@ -13,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
@@ -52,6 +53,7 @@ import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.data.entity.WorkExtrasDefinitions
 import ms.mattschlenkrich.paycalculator.data.model.ExtraDefTypeAndEmployer
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +61,9 @@ fun EmployerExtraDefinitionScreen(
     initialDefinitionFull: ExtraDefTypeAndEmployer? = null,
     onUpdate: (WorkExtrasDefinitions) -> Unit,
     onDelete: (WorkExtrasDefinitions) -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    mainViewModel: MainViewModel,
+    onValueCalcClick: (Double) -> Unit = {}
 ) {
     val nf = remember { NumberFunctions() }
     val df = remember { DateFunctions() }
@@ -83,6 +87,18 @@ fun EmployerExtraDefinitionScreen(
                 else nf.getPercentStringFromDouble(it.definition.weValue)
             } ?: ""
         )
+    }
+
+    val pendingTransfer = mainViewModel.transferNumState.value
+    androidx.compose.runtime.LaunchedEffect(pendingTransfer) {
+        if (pendingTransfer != null) {
+            val transferNum = pendingTransfer
+            valueString =
+                if (isFixed) nf.displayDollars(transferNum) else nf.getPercentStringFromDouble(
+                    transferNum
+                )
+            mainViewModel.clearTransferNum()
+        }
     }
     var effectiveDate by rememberSaveable {
         mutableStateOf(
@@ -216,7 +232,21 @@ fun EmployerExtraDefinitionScreen(
                 value = valueString,
                 onValueChange = { valueString = it },
                 label = { Text(stringResource(R.string.value)) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    IconButton(onClick = {
+                        onValueCalcClick(
+                            nf.getDoubleFromDollarOrPercentString(
+                                valueString
+                            )
+                        )
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Calculate,
+                            contentDescription = "Calculate Value"
+                        )
+                    }
+                }
             )
 
             Row(

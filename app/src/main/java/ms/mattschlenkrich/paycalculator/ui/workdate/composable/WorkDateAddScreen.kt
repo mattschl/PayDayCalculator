@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -55,6 +56,10 @@ fun WorkDateAddScreen(
     statHours: String,
     onStatHoursChange: (String) -> Unit,
     onStatHoursLongClick: () -> Unit,
+    onRegCalcClick: () -> Unit = {},
+    onOtCalcClick: () -> Unit = {},
+    onDblOtCalcClick: () -> Unit = {},
+    onStatCalcClick: () -> Unit = {},
     note: String,
     onNoteChange: (String) -> Unit,
     onUpdateTimeClick: () -> Unit,
@@ -140,13 +145,29 @@ fun WorkDateAddScreen(
                             value = regHours,
                             onValueChange = onRegHoursChange,
                             label = { Text(stringResource(R.string.reg_hours)) },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            trailingIcon = {
+                                IconButton(onClick = onRegCalcClick) {
+                                    Icon(
+                                        imageVector = androidx.compose.material.icons.Icons.Default.Calculate,
+                                        contentDescription = "Calculate Regular Hours"
+                                    )
+                                }
+                            }
                         )
                         DecimalOutlinedTextField(
                             value = otHours,
                             onValueChange = onOtHoursChange,
                             label = { Text(stringResource(R.string.overtime_hours)) },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            trailingIcon = {
+                                IconButton(onClick = onOtCalcClick) {
+                                    Icon(
+                                        imageVector = androidx.compose.material.icons.Icons.Default.Calculate,
+                                        contentDescription = "Calculate Overtime Hours"
+                                    )
+                                }
+                            }
                         )
                     }
 
@@ -158,7 +179,15 @@ fun WorkDateAddScreen(
                             value = dblOtHours,
                             onValueChange = onDblOtHoursChange,
                             label = { Text(stringResource(R.string.double_overtime)) },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            trailingIcon = {
+                                IconButton(onClick = onDblOtCalcClick) {
+                                    Icon(
+                                        imageVector = androidx.compose.material.icons.Icons.Default.Calculate,
+                                        contentDescription = "Calculate Double Overtime Hours"
+                                    )
+                                }
+                            }
                         )
                         DecimalOutlinedTextField(
                             value = statHours,
@@ -170,6 +199,14 @@ fun WorkDateAddScreen(
                                 )
                             },
                             modifier = Modifier.weight(1f),
+                            trailingIcon = {
+                                IconButton(onClick = onStatCalcClick) {
+                                    Icon(
+                                        imageVector = androidx.compose.material.icons.Icons.Default.Calculate,
+                                        contentDescription = "Calculate Other Hours"
+                                    )
+                                }
+                            }
                         )
                     }
 

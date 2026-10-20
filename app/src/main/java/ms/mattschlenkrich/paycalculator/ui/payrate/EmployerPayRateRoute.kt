@@ -49,6 +49,14 @@ fun EmployerPayRateRoute(
         )
     }
 
+    val pendingTransfer = mainViewModel.transferNumState.value
+    androidx.compose.runtime.LaunchedEffect(pendingTransfer) {
+        if (pendingTransfer != null) {
+            wage = nf.displayDollars(pendingTransfer)
+            mainViewModel.clearTransferNum()
+        }
+    }
+
     PayRateScreen(
         effectiveDate = df.getDisplayDate(effectiveDate),
         onEffectiveDateClick = {
@@ -58,6 +66,10 @@ fun EmployerPayRateRoute(
         },
         wage = wage,
         onWageChange = { wage = it },
+        onWageCalcClick = {
+            mainViewModel.setTransferNum(nf.getDoubleFromDollars(wage))
+            navController.navigate(ms.mattschlenkrich.paycalculator.Screen.Calculator.route)
+        },
         selectedFrequency = selectedFrequency,
         onFrequencySelected = { selectedFrequency = it },
         onSaveClick = {

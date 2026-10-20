@@ -66,6 +66,11 @@ fun PayPeriodExtraRoute(
             }
         },
         onCancel = { navController.popBackStack() },
-        initialIsCredit = if (isUpdate) initialExtra!!.ppeIsCredit else isCredit
+        mainViewModel = mainViewModel,
+        initialIsCredit = if (isUpdate) initialExtra!!.ppeIsCredit else isCredit,
+        onValueCalcClick = { initialVal ->
+            mainViewModel.setTransferNum(initialVal)
+            navController.navigate(ms.mattschlenkrich.paycalculator.Screen.Calculator.route)
+        }
     )
 }

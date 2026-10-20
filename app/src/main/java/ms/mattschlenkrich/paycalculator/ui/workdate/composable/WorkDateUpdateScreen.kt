@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
@@ -63,6 +64,10 @@ fun WorkDateUpdateScreen(
     statHours: String,
     onStatHoursChange: (String) -> Unit,
     onStatHoursLongClick: () -> Unit,
+    onRegCalcClick: () -> Unit = {},
+    onOtCalcClick: () -> Unit = {},
+    onDblOtCalcClick: () -> Unit = {},
+    onStatCalcClick: () -> Unit = {},
     onRefreshHours: () -> Unit,
     note: String,
     onNoteChange: (String) -> Unit,
@@ -162,14 +167,30 @@ fun WorkDateUpdateScreen(
                             onValueChange = onRegHoursChange,
                             label = { Text(stringResource(R.string.reg_hours)) },
                             onLongClick = onRefreshHours,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            trailingIcon = {
+                                IconButton(onClick = onRegCalcClick) {
+                                    Icon(
+                                        imageVector = androidx.compose.material.icons.Icons.Default.Calculate,
+                                        contentDescription = "Calculate Regular Hours"
+                                    )
+                                }
+                            }
                         )
                         DecimalOutlinedTextField(
                             value = otHours,
                             onValueChange = onOtHoursChange,
                             label = { Text(stringResource(R.string.overtime_hours)) },
                             onLongClick = onRefreshHours,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            trailingIcon = {
+                                IconButton(onClick = onOtCalcClick) {
+                                    Icon(
+                                        imageVector = androidx.compose.material.icons.Icons.Default.Calculate,
+                                        contentDescription = "Calculate Overtime Hours"
+                                    )
+                                }
+                            }
                         )
                     }
 
@@ -182,7 +203,15 @@ fun WorkDateUpdateScreen(
                             onValueChange = onDblOtHoursChange,
                             label = { Text(stringResource(R.string.double_overtime)) },
                             onLongClick = onRefreshHours,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            trailingIcon = {
+                                IconButton(onClick = onDblOtCalcClick) {
+                                    Icon(
+                                        imageVector = androidx.compose.material.icons.Icons.Default.Calculate,
+                                        contentDescription = "Calculate Double Overtime Hours"
+                                    )
+                                }
+                            }
                         )
                         DecimalOutlinedTextField(
                             value = statHours,
@@ -194,6 +223,14 @@ fun WorkDateUpdateScreen(
                                 )
                             },
                             modifier = Modifier.weight(1f),
+                            trailingIcon = {
+                                IconButton(onClick = onStatCalcClick) {
+                                    Icon(
+                                        imageVector = androidx.compose.material.icons.Icons.Default.Calculate,
+                                        contentDescription = "Calculate Other Hours"
+                                    )
+                                }
+                            }
                         )
                     }
 

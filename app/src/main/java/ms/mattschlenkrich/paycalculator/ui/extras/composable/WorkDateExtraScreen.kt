@@ -11,9 +11,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -40,6 +44,7 @@ import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
+import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +55,9 @@ fun WorkDateExtraScreen(
     existingExtras: List<WorkDateExtras>,
     onUpdate: (WorkDateExtras) -> Unit,
     onDelete: (WorkDateExtras) -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    mainViewModel: MainViewModel,
+    onValueCalcClick: (Double) -> Unit = {}
 ) {
     val nf = NumberFunctions()
     val df = DateFunctions()
@@ -70,6 +77,18 @@ fun WorkDateExtraScreen(
     }
     var isFixed by rememberSaveable { mutableStateOf(initialExtra?.wdeIsFixed ?: true) }
     var isCredit by rememberSaveable { mutableStateOf(initialExtra?.wdeIsCredit ?: false) }
+
+    val pendingTransfer = mainViewModel.transferNumState.value
+    androidx.compose.runtime.LaunchedEffect(pendingTransfer) {
+        if (pendingTransfer != null) {
+            val transferNum = pendingTransfer
+            valueString =
+                if (isFixed) nf.displayDollars(transferNum) else nf.getPercentStringFromDouble(
+                    transferNum / 100.0
+                )
+            mainViewModel.clearTransferNum()
+        }
+    }
 
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -140,7 +159,21 @@ fun WorkDateExtraScreen(
                 value = valueString,
                 onValueChange = { valueString = it },
                 label = { Text(stringResource(R.string.enter_amount_or_percentage)) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    IconButton(onClick = {
+                        onValueCalcClick(
+                            nf.getDoubleFromDollarOrPercentString(
+                                valueString
+                            )
+                        )
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Calculate,
+                            contentDescription = "Calculate Value"
+                        )
+                    }
+                }
             )
 
             Spacer(modifier = Modifier.height(ELEMENT_SPACING))

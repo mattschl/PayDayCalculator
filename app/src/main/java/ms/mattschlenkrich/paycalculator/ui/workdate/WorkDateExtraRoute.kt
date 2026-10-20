@@ -33,6 +33,7 @@ fun WorkDateExtraRoute(
         employerName = employer.employerName,
         initialExtra = initialExtra,
         existingExtras = existingExtras,
+        mainViewModel = mainViewModel,
         onUpdate = { extra ->
             coroutineScope.launch {
                 if (isUpdate) {

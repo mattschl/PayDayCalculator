@@ -521,6 +521,30 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    suspend fun downloadPictureToCache(fileId: String, fileName: String): File? {
+        val helper = driveServiceHelper ?: return null
+        return withContext(Dispatchers.IO) {
+            try {
+                val storageDir = File(getApplication<Application>().cacheDir, "pictures").apply {
+                    if (!exists()) mkdirs()
+                }
+                val picIdStr =
+                    fileName.removePrefix("pic_").removePrefix("thumb_").substringBefore(".")
+                val targetFile = File(storageDir, "pic_${picIdStr}.webp")
+                if (targetFile.exists() && targetFile.length() > 0L) {
+                    return@withContext targetFile
+                }
+                helper.downloadFileById(fileId, targetFile)
+                if (targetFile.exists() && targetFile.length() > 0L) {
+                    targetFile
+                } else null
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to download thumbnail for $fileName", e)
+                null
+            }
+        }
+    }
+
     private fun formatFileSize(bytes: Long?): String {
         if (bytes == null || bytes <= 0) return "0 B"
         val kb = bytes / 1024.0
