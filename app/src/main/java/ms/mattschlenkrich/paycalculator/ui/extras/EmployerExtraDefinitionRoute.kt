@@ -60,7 +60,7 @@ fun EmployerExtraDefinitionRoute(
         onCancel = { navController.popBackStack() },
         mainViewModel = mainViewModel,
         onValueCalcClick = { initialVal ->
-            mainViewModel.setTransferNum(initialVal)
+            mainViewModel.setCalculatorInput(initialVal)
             navController.navigate(ms.mattschlenkrich.paycalculator.Screen.Calculator.route)
         }
     )

@@ -67,7 +67,7 @@ fun WorkOrderHistoryExpenseDialog(
         var invoiceNo by rememberSaveable { mutableStateOf(expense?.woheInvoiceNo ?: "") }
         var amount by rememberSaveable {
             mutableStateOf(
-                expense?.let { nf.displayNumberFromDouble(it.woheAmount) } ?: ""
+                expense?.let { nf.displayDollars(it.woheAmount) } ?: ""
             )
         }
 
@@ -76,14 +76,14 @@ fun WorkOrderHistoryExpenseDialog(
                 expenseType = expense.woheType
                 supplier = expense.woheSupplier
                 invoiceNo = expense.woheInvoiceNo
-                amount = nf.displayNumberFromDouble(expense.woheAmount)
+                amount = nf.displayDollars(expense.woheAmount)
             }
         }
 
         val pendingTransfer = mainViewModel.transferNumState.value
         LaunchedEffect(pendingTransfer) {
             if (pendingTransfer != null) {
-                amount = nf.displayNumberFromDouble(pendingTransfer)
+                amount = nf.displayDollars(pendingTransfer)
                 mainViewModel.clearTransferNum()
             }
         }
@@ -158,7 +158,7 @@ fun WorkOrderHistoryExpenseDialog(
                         trailingIcon = {
                             IconButton(
                                 onClick = {
-                                    mainViewModel.setTransferNum(nf.getDoubleFromDollars(amount))
+                                    mainViewModel.setCalculatorInput(nf.getDoubleFromDollars(amount))
                                     navController.navigate(Screen.Calculator.route)
                                 }
                             ) {

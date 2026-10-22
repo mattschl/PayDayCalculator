@@ -309,6 +309,22 @@ class MainViewModel(
     private val _transferNum = mutableStateOf<Double?>(null)
     val transferNumState: androidx.compose.runtime.State<Double?> = _transferNum
 
+    private val _calculatorInput = mutableStateOf<Double?>(null)
+
+    fun getCalculatorInput(): Double? {
+        val num = _calculatorInput.value
+        _calculatorInput.value = null
+        return num
+    }
+
+    fun setCalculatorInput(num: Double?) {
+        _calculatorInput.value = num
+    }
+
+    fun clearCalculatorInput() {
+        _calculatorInput.value = null
+    }
+
     fun getTransferNum(): Double = _transferNum.value ?: 0.0
 
     fun setTransferNum(num: Double?) {

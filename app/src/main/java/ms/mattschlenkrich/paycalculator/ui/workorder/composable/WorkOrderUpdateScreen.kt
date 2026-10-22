@@ -194,7 +194,7 @@ fun WorkOrderUpdateScreen(
                         IconButton(
                             onClick = {
                                 isCostActive = true
-                                mainViewModel.setTransferNum(nf.getDoubleFromDollars(newCost))
+                                mainViewModel.setCalculatorInput(nf.getDoubleFromDollars(newCost))
                                 navController.navigate(Screen.Calculator.route)
                             }
                         ) {
@@ -213,7 +213,7 @@ fun WorkOrderUpdateScreen(
                     trailingIcon = {
                         IconButton(onClick = {
                             isCostActive = false
-                            mainViewModel.setTransferNum(nf.getDoubleFromDollars(newPrice))
+                            mainViewModel.setCalculatorInput(nf.getDoubleFromDollars(newPrice))
                             navController.navigate(Screen.Calculator.route)
                         }) {
                             Icon(

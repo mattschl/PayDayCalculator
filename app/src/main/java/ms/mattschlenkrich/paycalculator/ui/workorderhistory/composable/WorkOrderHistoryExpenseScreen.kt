@@ -74,14 +74,14 @@ fun WorkOrderHistoryExpenseScreen(
     var invoiceNo by rememberSaveable { mutableStateOf(initialExpense?.woheInvoiceNo ?: "") }
     var amount by rememberSaveable {
         mutableStateOf(
-            initialExpense?.let { nf.displayNumberFromDouble(it.woheAmount) } ?: ""
+            initialExpense?.let { nf.displayDollars(it.woheAmount) } ?: ""
         )
     }
 
     val pendingTransfer = mainViewModel.transferNumState.value
     androidx.compose.runtime.LaunchedEffect(pendingTransfer) {
         if (pendingTransfer != null) {
-            amount = nf.displayNumberFromDouble(pendingTransfer)
+            amount = nf.displayDollars(pendingTransfer)
             mainViewModel.clearTransferNum()
         }
     }
@@ -168,7 +168,7 @@ fun WorkOrderHistoryExpenseScreen(
                     trailingIcon = {
                         IconButton(
                             onClick = {
-                                mainViewModel.setTransferNum(nf.getDoubleFromDollars(amount))
+                                mainViewModel.setCalculatorInput(nf.getDoubleFromDollars(amount))
                                 navController.navigate(Screen.Calculator.route)
                             }
                         ) {

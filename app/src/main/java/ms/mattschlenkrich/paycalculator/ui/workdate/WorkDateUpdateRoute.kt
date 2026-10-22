@@ -532,22 +532,22 @@ fun WorkDateUpdatePageContent(
         },
         onRegCalcClick = {
             activeHoursField = "reg"
-            mainViewModel.setTransferNum(regHours.toDoubleOrNull() ?: 0.0)
+            mainViewModel.setCalculatorInput(regHours.toDoubleOrNull() ?: 0.0)
             navController.navigate(Screen.Calculator.route)
         },
         onOtCalcClick = {
             activeHoursField = "ot"
-            mainViewModel.setTransferNum(otHours.toDoubleOrNull() ?: 0.0)
+            mainViewModel.setCalculatorInput(otHours.toDoubleOrNull() ?: 0.0)
             navController.navigate(Screen.Calculator.route)
         },
         onDblOtCalcClick = {
             activeHoursField = "dbl"
-            mainViewModel.setTransferNum(dblOtHours.toDoubleOrNull() ?: 0.0)
+            mainViewModel.setCalculatorInput(dblOtHours.toDoubleOrNull() ?: 0.0)
             navController.navigate(Screen.Calculator.route)
         },
         onStatCalcClick = {
             activeHoursField = "stat"
-            mainViewModel.setTransferNum(statHours.toDoubleOrNull() ?: 0.0)
+            mainViewModel.setCalculatorInput(statHours.toDoubleOrNull() ?: 0.0)
             navController.navigate(Screen.Calculator.route)
         },
         onRefreshHours = {

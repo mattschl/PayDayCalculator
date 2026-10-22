@@ -67,7 +67,7 @@ fun EmployerPayRateRoute(
         wage = wage,
         onWageChange = { wage = it },
         onWageCalcClick = {
-            mainViewModel.setTransferNum(nf.getDoubleFromDollars(wage))
+            mainViewModel.setCalculatorInput(nf.getDoubleFromDollars(wage))
             navController.navigate(ms.mattschlenkrich.paycalculator.Screen.Calculator.route)
         },
         selectedFrequency = selectedFrequency,

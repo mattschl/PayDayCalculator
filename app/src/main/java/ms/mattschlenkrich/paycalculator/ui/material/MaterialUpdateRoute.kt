@@ -4,8 +4,12 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -80,9 +84,9 @@ fun MaterialUpdateRoute(
     var price by rememberSaveable { mutableStateOf(nf.displayDollars(oldMaterial.mPrice)) }
 
     var calculatingField by rememberSaveable { mutableStateOf<String?>(null) }
-    var showAddCostDialog by remember { mutableStateOf(false) }
-    var newCostInput by remember { mutableStateOf(cost) }
-    var newCostDateInput by remember { mutableStateOf(df.getCurrentDateAsString()) }
+    var showAddCostDialog by rememberSaveable { mutableStateOf(false) }
+    var newCostInput by rememberSaveable { mutableStateOf(cost) }
+    var newCostDateInput by rememberSaveable { mutableStateOf(df.getCurrentDateAsString()) }
 
     val pendingTransfer = mainViewModel.transferNumState.value
     LaunchedEffect(pendingTransfer) {
@@ -95,6 +99,10 @@ fun MaterialUpdateRoute(
 
                 "price" -> {
                     price = nf.displayDollars(transferNum)
+                }
+
+                "newCost" -> {
+                    newCostInput = nf.displayDollars(transferNum)
                 }
             }
             mainViewModel.clearTransferNum()
@@ -125,7 +133,23 @@ fun MaterialUpdateRoute(
                         value = newCostInput,
                         onValueChange = { newCostInput = it },
                         label = { Text(stringResource(R.string.cost)) },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        trailingIcon = {
+                            IconButton(onClick = {
+                                calculatingField = "newCost"
+                                mainViewModel.setCalculatorInput(
+                                    nf.getDoubleFromDollars(
+                                        newCostInput
+                                    )
+                                )
+                                navController.navigate(Screen.Calculator.route)
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Calculate,
+                                    contentDescription = "Calculate Cost"
+                                )
+                            }
+                        }
                     )
                 }
             },
@@ -165,12 +189,12 @@ fun MaterialUpdateRoute(
         onPriceChange = { price = it },
         onCostCalcClick = {
             calculatingField = "cost"
-            mainViewModel.setTransferNum(nf.getDoubleFromDollars(cost))
+            mainViewModel.setCalculatorInput(nf.getDoubleFromDollars(cost))
             navController.navigate(Screen.Calculator.route)
         },
         onPriceCalcClick = {
             calculatingField = "price"
-            mainViewModel.setTransferNum(nf.getDoubleFromDollars(price))
+            mainViewModel.setCalculatorInput(nf.getDoubleFromDollars(price))
             navController.navigate(Screen.Calculator.route)
         },
         onUpdateClick = {

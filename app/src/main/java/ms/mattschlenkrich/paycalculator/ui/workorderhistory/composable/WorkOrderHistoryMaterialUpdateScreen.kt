@@ -125,7 +125,7 @@ fun WorkOrderHistoryMaterialUpdateScreen(
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
                     IconButton(onClick = {
-                        mainViewModel.setTransferNum(nf.getDoubleFromDollars(quantity))
+                        mainViewModel.setCalculatorInput(nf.getDoubleFromDollars(quantity))
                         navController.navigate(ms.mattschlenkrich.paycalculator.Screen.Calculator.route)
                     }) {
                         Icon(

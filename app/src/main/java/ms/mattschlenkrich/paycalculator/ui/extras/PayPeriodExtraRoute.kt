@@ -69,7 +69,7 @@ fun PayPeriodExtraRoute(
         mainViewModel = mainViewModel,
         initialIsCredit = if (isUpdate) initialExtra!!.ppeIsCredit else isCredit,
         onValueCalcClick = { initialVal ->
-            mainViewModel.setTransferNum(initialVal)
+            mainViewModel.setCalculatorInput(initialVal)
             navController.navigate(ms.mattschlenkrich.paycalculator.Screen.Calculator.route)
         }
     )

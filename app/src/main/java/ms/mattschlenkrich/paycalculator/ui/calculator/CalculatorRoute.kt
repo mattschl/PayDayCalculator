@@ -31,7 +31,8 @@ fun CalculatorRoute(
     var transferResult by remember { mutableDoubleStateOf(0.0) }
 
     LaunchedEffect(Unit) {
-        val transferNum = mainViewModel.getTransferNum()
+        val inputNum = mainViewModel.getCalculatorInput()
+        val transferNum = inputNum ?: mainViewModel.getTransferNum()
         if (transferNum != 0.0 && !transferNum.isNaN()) {
             displayValue = nf.displayNumberFromDouble(transferNum)
             isNewNumber = true
