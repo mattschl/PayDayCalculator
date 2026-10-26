@@ -101,6 +101,9 @@ class WorkOrderViewModel(
     fun getWorkOrderExpensesAll(workOrderId: Long) =
         workOrderRepository.getWorkOrderExpensesAll(workOrderId)
 
+    fun getExpenseSuppliers() =
+        workOrderRepository.getExpenseSuppliers()
+
     suspend fun insertWorkOrderHistoryTimeWorked(timeWorked: WorkOrderHistoryTimeWorked) =
         workOrderRepository.insertTimeWorked(timeWorked)
 

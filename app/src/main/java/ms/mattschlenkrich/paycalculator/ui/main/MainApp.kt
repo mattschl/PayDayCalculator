@@ -1,12 +1,18 @@
 package ms.mattschlenkrich.paycalculator.ui.main
 
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -37,6 +43,7 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTimeViewModel
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MainApp(
     mainViewModel: MainViewModel,
@@ -141,7 +148,17 @@ fun MainApp(
         currentScreen
     }
 
+    val isImeVisible = WindowInsets.isImeVisible
+    val layoutType = if (isImeVisible) {
+        NavigationSuiteType.None
+    } else {
+        NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(
+            currentWindowAdaptiveInfo()
+        )
+    }
+
     NavigationSuiteScaffold(
+        layoutType = layoutType,
         navigationSuiteItems = {
             bottomNavItems.forEachIndexed { index, screen ->
                 val isPagerRoute = currentDestination?.route == Screen.MainPager.route

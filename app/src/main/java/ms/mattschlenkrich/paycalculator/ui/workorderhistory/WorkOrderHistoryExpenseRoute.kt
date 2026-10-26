@@ -46,6 +46,8 @@ fun WorkOrderHistoryExpenseRoute(
 
     val expensePictures by workOrderViewModel.getPicturesByExpenseId(activeExpenseId)
         .observeAsState(emptyList())
+    val supplierSuggestions by workOrderViewModel.getExpenseSuppliers()
+        .observeAsState(emptyList())
 
     LaunchedEffect(expensePictures) {
         val helper = mainViewModel.getOrInitializeDriveService(context) ?: return@LaunchedEffect
@@ -70,6 +72,7 @@ fun WorkOrderHistoryExpenseRoute(
         navController = navController,
         initialExpense = initialExpense,
         pictures = expensePictures,
+        supplierSuggestions = supplierSuggestions,
         onSaveExpense = { type, supplier, invoiceNo, amount ->
             val now = df.getCurrentUTCTimeAsString()
             val amtValue = try {

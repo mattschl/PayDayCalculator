@@ -250,6 +250,13 @@ interface WorkOrderDao {
     fun getWorkOrderExpensesAll(workOrderId: Long): LiveData<List<WorkOrderHistoryExpense>>
 
     @Query(
+        "SELECT DISTINCT woheSupplier FROM workOrderHistoryExpenses " +
+                "WHERE woheIsDeleted = 0 AND woheSupplier IS NOT NULL AND TRIM(woheSupplier) != '' " +
+                "ORDER BY woheSupplier ASC"
+    )
+    fun getExpenseSuppliers(): LiveData<List<String>>
+
+    @Query(
         "SELECT * FROM workOrderHistory " +
                 "WHERE woHistoryWorkDateId = :workDateId " +
                 "AND woHistoryDeleted = 0"

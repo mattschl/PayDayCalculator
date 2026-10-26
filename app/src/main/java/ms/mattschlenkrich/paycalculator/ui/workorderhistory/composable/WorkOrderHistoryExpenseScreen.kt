@@ -42,6 +42,7 @@ import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
 import ms.mattschlenkrich.paycalculator.common.compose.CapitalizedOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
@@ -61,6 +62,7 @@ fun WorkOrderHistoryExpenseScreen(
     navController: NavController,
     initialExpense: WorkOrderHistoryExpense?,
     pictures: List<PictureItem>,
+    supplierSuggestions: List<String> = emptyList(),
     onSaveExpense: (type: String, supplier: String, invoiceNo: String, amount: String) -> Unit,
     onDeleteExpense: () -> Unit,
     onCancel: () -> Unit,
@@ -142,10 +144,12 @@ fun WorkOrderHistoryExpenseScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            CapitalizedOutlinedTextField(
+            AutoCompleteTextField(
                 value = supplier,
                 onValueChange = { supplier = it },
-                label = { Text(stringResource(R.string.supplier)) },
+                label = stringResource(R.string.supplier),
+                suggestions = supplierSuggestions,
+                onItemSelected = { supplier = it },
                 modifier = Modifier.fillMaxWidth()
             )
 

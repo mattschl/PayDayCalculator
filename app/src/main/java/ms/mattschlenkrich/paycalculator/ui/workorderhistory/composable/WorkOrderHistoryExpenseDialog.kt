@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
+import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
 import ms.mattschlenkrich.paycalculator.common.compose.CapitalizedOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
@@ -56,6 +57,7 @@ fun WorkOrderHistoryExpenseDialog(
     onUpdateExpense: (WorkOrderHistoryExpense) -> Unit = {},
     onDeleteExpense: (Long) -> Unit = {},
     pictures: List<PictureItem> = emptyList(),
+    supplierSuggestions: List<String> = emptyList(),
     onPictureTaken: (File) -> Unit = {},
     onDeletePicture: (PictureItem) -> Unit = {},
     onDownloadPicture: suspend (PictureItem) -> Unit = {},
@@ -124,10 +126,12 @@ fun WorkOrderHistoryExpenseDialog(
                     }
                 }
 
-                CapitalizedOutlinedTextField(
+                AutoCompleteTextField(
                     value = supplier,
                     onValueChange = { supplier = it },
-                    label = { Text(stringResource(R.string.supplier)) },
+                    label = stringResource(R.string.supplier),
+                    suggestions = supplierSuggestions,
+                    onItemSelected = { supplier = it },
                     modifier = Modifier.fillMaxWidth()
                 )
 

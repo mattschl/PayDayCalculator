@@ -182,6 +182,9 @@ class WorkOrderRepository(db: PayDatabase) {
     fun getWorkOrderExpensesAll(workOrderId: Long) =
         workOrderDao.getWorkOrderExpensesAll(workOrderId)
 
+    fun getExpenseSuppliers() =
+        workOrderDao.getExpenseSuppliers()
+
     suspend fun updateWorkOrderHistory(
         historyId: Long,
         regHours: Double,
