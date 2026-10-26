@@ -1,17 +1,6 @@
 package ms.mattschlenkrich.paycalculator.ui.material
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Calculate
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,21 +10,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.data.entity.Material
 import ms.mattschlenkrich.paycalculator.data.entity.MaterialCostHistory
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MaterialViewModel
+import ms.mattschlenkrich.paycalculator.ui.material.composable.AddCostHistoryDialog
 import ms.mattschlenkrich.paycalculator.ui.material.composable.MaterialUpdateScreen
 import java.io.File
 
@@ -110,75 +97,43 @@ fun MaterialUpdateRoute(
         }
     }
 
-    if (showAddCostDialog) {
-        AlertDialog(
-            onDismissRequest = { showAddCostDialog = false },
-            title = { Text(stringResource(R.string.add_cost_history)) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = {
-                        df.showDatePicker(context, newCostDateInput) {
-                            newCostDateInput = it
-                        }
-                    }) {
-                        Text(
-                            "${stringResource(R.string.purchase_date)}: ${
-                                df.getDisplayDate(
-                                    newCostDateInput
-                                )
-                            }"
-                        )
-                    }
-                    DecimalOutlinedTextField(
-                        value = newCostInput,
-                        onValueChange = { newCostInput = it },
-                        label = { Text(stringResource(R.string.cost)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        trailingIcon = {
-                            IconButton(onClick = {
-                                calculatingField = "newCost"
-                                mainViewModel.setCalculatorInput(
-                                    nf.getDoubleFromDollars(
-                                        newCostInput
-                                    )
-                                )
-                                navController.navigate(Screen.Calculator.route)
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.Calculate,
-                                    contentDescription = "Calculate Cost"
-                                )
-                            }
-                        }
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    val costVal = nf.getDoubleFromDollars(newCostInput)
-                    coroutineScope.launch {
-                        val newEntry = MaterialCostHistory(
-                            materialExpenseHistoryId = nf.generateRandomIdAsLong(),
-                            mehMaterialId = oldMaterial.materialId,
-                            mehRawCost = costVal,
-                            mehPurchaseDate = newCostDateInput,
-                            mehIsDeleted = false,
-                            mehUpdateTime = df.getCurrentUTCTimeAsString()
-                        )
-                        materialViewModel.insertMaterialCostHistory(newEntry)
-                        showAddCostDialog = false
-                    }
-                }) {
-                    Text(stringResource(R.string.save))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showAddCostDialog = false }) {
-                    Text(stringResource(R.string.cancel))
-                }
+    AddCostHistoryDialog(
+        showDialog = showAddCostDialog,
+        onDismissRequest = { showAddCostDialog = false },
+        purchaseDate = newCostDateInput,
+        onPurchaseDateClick = {
+            df.showDatePicker(context, newCostDateInput) {
+                newCostDateInput = it
             }
-        )
-    }
+        },
+        costInput = newCostInput,
+        onCostInputChange = { newCostInput = it },
+        onCalculatorClick = {
+            calculatingField = "newCost"
+            mainViewModel.setCalculatorInput(
+                nf.getDoubleFromDollars(
+                    newCostInput
+                )
+            )
+            navController.navigate(Screen.Calculator.route)
+        },
+        onSaveClick = {
+            val costVal = nf.getDoubleFromDollars(newCostInput)
+            coroutineScope.launch {
+                val newEntry = MaterialCostHistory(
+                    materialExpenseHistoryId = nf.generateRandomIdAsLong(),
+                    mehMaterialId = oldMaterial.materialId,
+                    mehRawCost = costVal,
+                    mehPurchaseDate = newCostDateInput,
+                    mehIsDeleted = false,
+                    mehUpdateTime = df.getCurrentUTCTimeAsString()
+                )
+                materialViewModel.insertMaterialCostHistory(newEntry)
+                showAddCostDialog = false
+            }
+        },
+        df = df
+    )
 
     MaterialUpdateScreen(
         name = name,
