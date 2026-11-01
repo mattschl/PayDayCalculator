@@ -125,6 +125,7 @@ class MainActivity : ComponentActivity() {
                 isDarkTheme = settings?.isDarkTheme ?: false,
                 fontSize = settings?.fontSize ?: 16f,
                 minColumnWidth = settings?.minColumnWidth ?: 360,
+                defaultVerticalSpacing = settings?.defaultVerticalSpacing ?: 6f,
             ) {
                 val isAuthenticated by mainViewModel.isAuthenticated
                 val isPasswordProtected = settings?.isPasswordProtected ?: false

@@ -426,20 +426,17 @@ class PayCalculationsAsync(
                 for (i in customWorkDateExtras.indices) {
                     val currentExtra = customWorkDateExtras[i]
                     if (currentExtra.wdeName != workingExtra) {
+                        val prevExtra = customWorkDateExtras[i - 1]
                         val newExtraContainer = ExtraContainer(
                             workingExtra, subTotal,
                             null,
-                            currentExtra,
+                            prevExtra,
                             null
                         )
-                        if (customWorkDateExtras[i - 1].wdeIsCredit) {
-                            creditExtraContainers.add(
-                                newExtraContainer
-                            )
+                        if (prevExtra.wdeIsCredit) {
+                            creditExtraContainers.add(newExtraContainer)
                         } else {
-                            debitExtraContainers.add(
-                                newExtraContainer
-                            )
+                            debitExtraContainers.add(newExtraContainer)
                         }
                         workingExtra = currentExtra.wdeName
                         subTotal = 0.0
@@ -447,28 +444,30 @@ class PayCalculationsAsync(
                     val value = if (!currentExtra.wdeIsFixed && currentExtra.wdeValue >= 1.0)
                         currentExtra.wdeValue / 100.0
                     else currentExtra.wdeValue
-                    if (currentExtra.wdeAppliesTo == ExtraAppliesToFrequencies.HOURLY.value &&
-                        currentExtra.wdeIsFixed
-                    ) {
-                        for (date in workDates) {
-                            if (date.workDateId == currentExtra.wdeWorkDateId) {
-                                subTotal += value *
-                                        (date.wdRegHours + date.wdOtHours + date.wdDblOtHours)
+                    if (!currentExtra.wdeIsDeleted) {
+                        if (currentExtra.wdeAppliesTo == ExtraAppliesToFrequencies.HOURLY.value &&
+                            currentExtra.wdeIsFixed
+                        ) {
+                            for (date in workDates) {
+                                if (date.workDateId == currentExtra.wdeWorkDateId) {
+                                    subTotal += value *
+                                            (date.wdRegHours + date.wdOtHours + date.wdDblOtHours)
+                                }
                             }
-                        }
-                    } else if ((currentExtra.wdeAppliesTo == ExtraAppliesToFrequencies.HOURLY.value ||
-                                currentExtra.wdeAppliesTo == ExtraAppliesToFrequencies.DAILY.value) &&
-                        !currentExtra.wdeIsFixed
-                    ) {
-                        for (date in workDates) {
-                            if (date.workDateId == currentExtra.wdeWorkDateId) {
-                                subTotal += value * getPayRate() *
-                                        (date.wdRegHours + date.wdOtHours * 1.5 + date.wdDblOtHours * 2.0)
+                        } else if ((currentExtra.wdeAppliesTo == ExtraAppliesToFrequencies.HOURLY.value ||
+                                    currentExtra.wdeAppliesTo == ExtraAppliesToFrequencies.DAILY.value) &&
+                            !currentExtra.wdeIsFixed
+                        ) {
+                            for (date in workDates) {
+                                if (date.workDateId == currentExtra.wdeWorkDateId) {
+                                    subTotal += value * getPayRate() *
+                                            (date.wdRegHours + date.wdOtHours * 1.5 + date.wdDblOtHours * 2.0)
+                                }
                             }
+                        } else if (currentExtra.wdeAppliesTo == ExtraAppliesToFrequencies.DAILY.value
+                        ) {
+                            subTotal += value
                         }
-                    } else if (currentExtra.wdeAppliesTo == ExtraAppliesToFrequencies.DAILY.value
-                    ) {
-                        subTotal += value
                     }
                     if (i == customWorkDateExtras.size - 1) {
                         val newExtraContainer = ExtraContainer(
@@ -478,13 +477,9 @@ class PayCalculationsAsync(
                             null
                         )
                         if (currentExtra.wdeIsCredit) {
-                            creditExtraContainers.add(
-                                newExtraContainer
-                            )
+                            creditExtraContainers.add(newExtraContainer)
                         } else {
-                            debitExtraContainers.add(
-                                newExtraContainer
-                            )
+                            debitExtraContainers.add(newExtraContainer)
                         }
                     }
                 }

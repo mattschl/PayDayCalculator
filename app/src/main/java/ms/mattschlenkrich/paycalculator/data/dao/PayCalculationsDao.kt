@@ -46,7 +46,6 @@ interface PayCalculationsDao {
                 "WHERE wdCutoffDate = :cutOff " +
                 "AND wdEmployerId = :employerId " +
                 "AND wdIsDeleted = 0 " +
-                "AND wdeIsDeleted = 0 " +
                 "ORDER BY wdeName "
     )
     fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String):

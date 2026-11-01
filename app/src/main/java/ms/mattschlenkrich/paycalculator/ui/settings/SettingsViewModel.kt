@@ -131,4 +131,12 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         _settings.value = newSettings
         settingsManager.saveSettings(newSettings)
     }
+
+    fun updateDefaultVerticalSpacing(spacing: Float) {
+        val newSettings =
+            _settings.value?.copy(defaultVerticalSpacing = spacing)
+                ?: Settings(defaultVerticalSpacing = spacing)
+        _settings.value = newSettings
+        settingsManager.saveSettings(newSettings)
+    }
 }

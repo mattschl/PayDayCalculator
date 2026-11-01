@@ -628,9 +628,14 @@ fun WorkDateUpdatePageContent(
         onExtraLongClick = { extra ->
             showExtraOptionsDialog = extra
         },
+        onExtraEdit = { extra ->
+            mainViewModel.setWorkDateExtra(extra)
+            mainViewModel.setWorkDateExtraList(displayExtras.toCollection(ArrayList()))
+            navController.navigate(Screen.WorkDateExtraUpdate.route)
+        },
         onAddExtraClick = {
             mainViewModel.setWorkDateObject(workDate)
-            navController.navigate(Screen.WorkDateExtraAdd.route)
+            navController.navigate(Screen.WorkDateExtraAdd.createRoute(true))
         },
         jobDescriptionCharLimit = settings?.jobDescriptionCharLimit ?: 15,
         minColumnWidth = minColumnWidth

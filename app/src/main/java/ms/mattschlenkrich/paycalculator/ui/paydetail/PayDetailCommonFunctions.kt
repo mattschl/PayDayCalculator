@@ -16,21 +16,20 @@ suspend fun insertOrUpdateExtraOnChange(
 ) {
     if (extraContainer.payPeriodExtra != null) {
         val payPeriodExtra = extraContainer.payPeriodExtra!!
-        val newExtra = WorkPayPeriodExtras(
-            payPeriodExtra.workPayPeriodExtraId,
-            payPeriodExtra.ppePayPeriodId,
-            payPeriodExtra.ppeExtraTypeId,
-            payPeriodExtra.ppeName,
-            payPeriodExtra.ppeAppliesTo,
-            3,
-            payPeriodExtra.ppeValue,
-            payPeriodExtra.ppeIsFixed,
-            payPeriodExtra.ppeIsCredit,
-            delete,
-            df.getCurrentUTCTimeAsString()
+        val newExtra = payPeriodExtra.copy(
+            ppeIsDeleted = delete,
+            ppeUpdateTime = df.getCurrentUTCTimeAsString()
         )
         extraContainer.payPeriodExtra = newExtra
         payDayViewModel.updatePayPeriodExtra(newExtra)
+    } else if (extraContainer.workDateExtra != null) {
+        val workDateExtra = extraContainer.workDateExtra!!
+        val newExtra = workDateExtra.copy(
+            wdeIsDeleted = delete,
+            wdeUpdateTime = df.getCurrentUTCTimeAsString()
+        )
+        extraContainer.workDateExtra = newExtra
+        payDayViewModel.updateWorkDateExtra(newExtra)
     } else if (extraContainer.extraDefinitionAndType != null) {
         val extraAndType = extraContainer.extraDefinitionAndType!!
         val type = extraAndType.extraType

@@ -86,6 +86,13 @@ fun ExtrasCard(
 
             CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
                 extras.forEach { extra ->
+                    val isChecked = if (extra.payPeriodExtra != null) {
+                        !extra.payPeriodExtra!!.ppeIsDeleted
+                    } else if (extra.workDateExtra != null) {
+                        !extra.workDateExtra!!.wdeIsDeleted
+                    } else {
+                        extra.amount > 0.0
+                    }
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -106,7 +113,7 @@ fun ExtrasCard(
                             style = MaterialTheme.typography.bodySmall
                         )
                         Checkbox(
-                            checked = extra.amount > 0.0,
+                            checked = isChecked,
                             onCheckedChange = { onActiveChange(extra, it) },
                             modifier = Modifier.padding(start = 4.dp),
                             colors = CheckboxDefaults.colors(

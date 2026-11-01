@@ -46,10 +46,16 @@ fun PayPeriodExtraRoute(
         defaultExtras = defaultExtras,
         onUpdate = { extra ->
             coroutineScope.launch {
-                if (isUpdate) {
+                if (isUpdate && extra.workPayPeriodExtraId != 0L) {
                     payDayViewModel.updatePayPeriodExtra(extra)
                 } else {
-                    payDayViewModel.insertPayPeriodExtra(extra)
+                    val newExtra = if (extra.workPayPeriodExtraId == 0L) {
+                        extra.copy(
+                            workPayPeriodExtraId = ms.mattschlenkrich.paycalculator.common.NumberFunctions()
+                                .generateRandomIdAsLong()
+                        )
+                    } else extra
+                    payDayViewModel.insertPayPeriodExtra(newExtra)
                 }
                 navController.popBackStack()
             }

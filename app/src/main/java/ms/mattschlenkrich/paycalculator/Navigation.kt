@@ -65,7 +65,9 @@ sealed class Screen(
 
     object WorkDateTimes : Screen("workDateTimes", R.string.time_sheet, R.drawable.ic_time_sheet)
     object WorkDateExtraAdd :
-        Screen("workDateExtraAdd", R.string.add_new_extra, R.drawable.ic_extras)
+        Screen("workDateExtraAdd/{isCredit}", R.string.add_new_extra, R.drawable.ic_extras) {
+        fun createRoute(isCredit: Boolean) = "workDateExtraAdd/$isCredit"
+    }
 
     object WorkDateExtraUpdate :
         Screen("workDateExtraUpdate", R.string.update_extra_type, R.drawable.ic_extras)

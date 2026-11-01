@@ -48,6 +48,8 @@ fun SettingsRoute(
         defaultLaborRate = settings?.defaultLaborRate ?: 0.0,
         defaultMarkupRate = settings?.defaultMarkupRate ?: 0.0,
         onDefaultLaborRateChange = { viewModel.updateDefaultLaborRate(it) },
-        onDefaultMarkupRateChange = { viewModel.updateDefaultMarkupRate(it) }
+        onDefaultMarkupRateChange = { viewModel.updateDefaultMarkupRate(it) },
+        defaultVerticalSpacing = settings?.defaultVerticalSpacing ?: 6f,
+        onDefaultVerticalSpacingChange = { viewModel.updateDefaultVerticalSpacing(it) }
     )
 }

@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.paycalculator.ui.extras.composable
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,19 +20,23 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.ExtraAppliesToFrequencies
@@ -44,6 +49,8 @@ import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
+import ms.mattschlenkrich.paycalculator.data.entity.WorkPayPeriodExtras
+import ms.mattschlenkrich.paycalculator.data.model.ExtraDefinitionAndType
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,10 +60,13 @@ fun WorkDateExtraScreen(
     employerName: String,
     initialExtra: WorkDateExtras?,
     existingExtras: List<WorkDateExtras>,
+    existingPayPeriodExtras: List<WorkPayPeriodExtras> = emptyList(),
+    defaultExtras: List<ExtraDefinitionAndType> = emptyList(),
     onUpdate: (WorkDateExtras) -> Unit,
     onDelete: (WorkDateExtras) -> Unit,
     onCancel: () -> Unit,
     mainViewModel: MainViewModel,
+    initialIsCredit: Boolean = false,
     onValueCalcClick: (Double) -> Unit = {}
 ) {
     val nf = NumberFunctions()
@@ -76,7 +86,11 @@ fun WorkDateExtraScreen(
         )
     }
     var isFixed by rememberSaveable { mutableStateOf(initialExtra?.wdeIsFixed ?: true) }
-    var isCredit by rememberSaveable { mutableStateOf(initialExtra?.wdeIsCredit ?: false) }
+    var isCredit by rememberSaveable {
+        mutableStateOf(
+            initialExtra?.wdeIsCredit ?: initialIsCredit
+        )
+    }
 
     val pendingTransfer = mainViewModel.transferNumState.value
     androidx.compose.runtime.LaunchedEffect(pendingTransfer) {
@@ -91,34 +105,62 @@ fun WorkDateExtraScreen(
     }
 
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    var showDuplicateDialog by remember { mutableStateOf<Pair<String, String>?>(null) }
 
     val nameExistsError = stringResource(R.string.this_extra_name_has_already_been_used)
     val nameMissingError = stringResource(R.string.the_extra_must_have_a_name)
     val valueMissingError = stringResource(R.string.this_extra_must_have_a_value)
+
+    if (showDuplicateDialog != null) {
+        ModalBottomSheet(
+            onDismissRequest = { showDuplicateDialog = null },
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.confirm_adding_duplicate_extra__) + showDuplicateDialog!!.first,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(showDuplicateDialog!!.second)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = { showDuplicateDialog = null }) {
+                        Text(stringResource(R.string.label_no))
+                    }
+                    TextButton(onClick = {
+                        performSave(
+                            nf,
+                            df,
+                            name,
+                            appliesTo,
+                            valueString,
+                            isFixed,
+                            isCredit,
+                            initialExtra,
+                            initialWorkDate,
+                            onUpdate
+                        )
+                        showDuplicateDialog = null
+                    }) {
+                        Text(stringResource(R.string.label_yes))
+                    }
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
+    }
 
     val title = (if (initialExtra == null) stringResource(R.string.add_a_one_time_extra)
     else stringResource(R.string.prefix_update_extra) + initialExtra.wdeName)
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        /*  topBar = {
-              TopAppBar(
-                  title = {
-                      Text(
-                          text = "WorkDateExtraScreen", // title,
-                          style = MaterialTheme.typography.titleLarge,
-                      )
-                  },
-                  navigationIcon = {
-                      IconButton(onClick = onCancel) {
-                          Icon(
-                              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                              contentDescription = stringResource(R.string.go_back)
-                          )
-                      }
-                  }
-              )
-          }*/
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -196,7 +238,7 @@ fun WorkDateExtraScreen(
             if (errorMessage != null) {
                 Text(
                     text = errorMessage!!,
-                    color = Color.Red,
+                    color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(vertical = ELEMENT_SPACING)
                 )
             }
@@ -204,6 +246,11 @@ fun WorkDateExtraScreen(
             Spacer(modifier = Modifier.height(ELEMENT_SPACING * 3))
 
             Row(modifier = Modifier.fillMaxWidth()) {
+                val duplicateAddMsg =
+                    stringResource(R.string.this_is_already_used_for_this_payday__add)
+                val duplicateOverwriteMsg =
+                    stringResource(R.string.this_is_already_used_for_this_payday__overwrite)
+
                 Button(
                     onClick = {
                         val error = validate(
@@ -217,26 +264,39 @@ fun WorkDateExtraScreen(
                             nf
                         )
                         if (error == null) {
-                            var value = nf.getDoubleFromDollarOrPercentString(valueString)
-                            if (!isFixed && !valueString.contains("%") && value != 0.0) {
-                                value /= 100.0
+                            var duplicateFound = false
+                            for (extra in existingPayPeriodExtras) {
+                                if (name.trim() == extra.ppeName && extra.ppeName != initialExtra?.wdeName) {
+                                    showDuplicateDialog = extra.ppeName to duplicateAddMsg
+                                    duplicateFound = true
+                                    break
+                                }
                             }
-                            onUpdate(
-                                WorkDateExtras(
-                                    workDateExtraId = initialExtra?.workDateExtraId
-                                        ?: nf.generateRandomIdAsLong(),
-                                    wdeWorkDateId = initialWorkDate.workDateId,
-                                    wdeExtraTypeId = initialExtra?.wdeExtraTypeId,
-                                    wdeName = name.trim(),
-                                    wdeAppliesTo = appliesTo,
-                                    wdeAttachTo = initialExtra?.wdeAttachTo ?: 1,
-                                    wdeValue = value,
-                                    wdeIsFixed = isFixed,
-                                    wdeIsCredit = isCredit,
-                                    wdeIsDeleted = false,
-                                    wdeUpdateTime = df.getCurrentUTCTimeAsString()
+                            if (!duplicateFound) {
+                                for (extra in defaultExtras) {
+                                    if (name.trim() == extra.extraType.wetName && extra.extraType.wetName != initialExtra?.wdeName) {
+                                        showDuplicateDialog =
+                                            extra.extraType.wetName to duplicateOverwriteMsg
+                                        duplicateFound = true
+                                        break
+                                    }
+                                }
+                            }
+
+                            if (!duplicateFound) {
+                                performSave(
+                                    nf,
+                                    df,
+                                    name,
+                                    appliesTo,
+                                    valueString,
+                                    isFixed,
+                                    isCredit,
+                                    initialExtra,
+                                    initialWorkDate,
+                                    onUpdate
                                 )
-                            )
+                            }
                         } else {
                             errorMessage = error
                         }
@@ -266,6 +326,40 @@ fun WorkDateExtraScreen(
             }
         }
     }
+}
+
+private fun performSave(
+    nf: NumberFunctions,
+    df: DateFunctions,
+    name: String,
+    appliesTo: Int,
+    valueString: String,
+    isFixed: Boolean,
+    isCredit: Boolean,
+    initialExtra: WorkDateExtras?,
+    initialWorkDate: WorkDates,
+    onUpdate: (WorkDateExtras) -> Unit
+) {
+    var value = nf.getDoubleFromDollarOrPercentString(valueString)
+    if (!isFixed && !valueString.contains("%") && value != 0.0) {
+        value /= 100.0
+    }
+    onUpdate(
+        WorkDateExtras(
+            workDateExtraId = initialExtra?.workDateExtraId
+                ?: nf.generateRandomIdAsLong(),
+            wdeWorkDateId = initialWorkDate.workDateId,
+            wdeExtraTypeId = initialExtra?.wdeExtraTypeId,
+            wdeName = name.trim(),
+            wdeAppliesTo = appliesTo,
+            wdeAttachTo = initialExtra?.wdeAttachTo ?: 1,
+            wdeValue = value,
+            wdeIsFixed = isFixed,
+            wdeIsCredit = isCredit,
+            wdeIsDeleted = false,
+            wdeUpdateTime = df.getCurrentUTCTimeAsString()
+        )
+    )
 }
 
 private fun validate(

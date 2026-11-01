@@ -80,7 +80,9 @@ fun SettingsScreen(
     defaultLaborRate: Double,
     defaultMarkupRate: Double,
     onDefaultLaborRateChange: (Double) -> Unit,
-    onDefaultMarkupRateChange: (Double) -> Unit
+    onDefaultMarkupRateChange: (Double) -> Unit,
+    defaultVerticalSpacing: Float,
+    onDefaultVerticalSpacingChange: (Float) -> Unit
 ) {
     val columns = calculateGridColumns(minColumnWidth)
     val dynamicPadding = (16 / columns).dp
@@ -137,6 +139,16 @@ fun SettingsScreen(
             FontSizeSelector(
                 currentSize = fontSize,
                 onFontSizeChange = onFontSizeChange,
+                itemPadding = dynamicItemPadding,
+                textPadding = dynamicPadding
+            )
+
+            Spacer(modifier = Modifier.height(dynamicVerticalPadding))
+
+            Text("List Vertical Spacing:", style = MaterialTheme.typography.titleMedium)
+            VerticalSpacingSelector(
+                currentSpacing = defaultVerticalSpacing,
+                onSpacingChange = onDefaultVerticalSpacingChange,
                 itemPadding = dynamicItemPadding,
                 textPadding = dynamicPadding
             )

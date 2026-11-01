@@ -354,6 +354,31 @@ fun WorkDateAddRoute(
                 selectedExtras.remove(extra.workExtraTypeId)
             }
         },
-        onAddExtraClick = { /* Navigate to Extra Add */ }
+        onAddExtraClick = {
+            coroutineScope.launch {
+                var currentWorkDate = payDayViewModel.getWorkDateSync(
+                    payPeriod.ppEmployerId, curDateString, payPeriod.ppCutoffDate
+                )
+                if (currentWorkDate == null) {
+                    currentWorkDate = WorkDates(
+                        nf.generateRandomIdAsLong(),
+                        payPeriod.payPeriodId,
+                        payPeriod.ppEmployerId,
+                        payPeriod.ppCutoffDate,
+                        curDateString,
+                        regHours.toDoubleOrNull() ?: 0.0,
+                        otHours.toDoubleOrNull() ?: 0.0,
+                        dblOtHours.toDoubleOrNull() ?: 0.0,
+                        statHours.toDoubleOrNull() ?: 0.0,
+                        note.ifBlank { null },
+                        false,
+                        df.getCurrentUTCTimeAsString()
+                    )
+                    payDayViewModel.insertWorkDate(currentWorkDate)
+                }
+                mainViewModel.setWorkDateObject(currentWorkDate)
+                navController.navigate(Screen.WorkDateExtraAdd.createRoute(true))
+            }
+        }
     )
 }

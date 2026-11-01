@@ -30,7 +30,8 @@ class SettingsManagerTest {
             minColumnWidth = 400,
             isPasswordProtected = true,
             defaultLaborRate = 75.0,
-            defaultMarkupRate = 25.0
+            defaultMarkupRate = 25.0,
+            defaultVerticalSpacing = 10f
         )
 
         settingsManager.saveSettings(originalSettings)
@@ -42,6 +43,11 @@ class SettingsManagerTest {
         assertEquals(originalSettings.isPasswordProtected, loadedSettings.isPasswordProtected)
         assertEquals(originalSettings.defaultLaborRate, loadedSettings.defaultLaborRate, 0.01)
         assertEquals(originalSettings.defaultMarkupRate, loadedSettings.defaultMarkupRate, 0.01)
+        assertEquals(
+            originalSettings.defaultVerticalSpacing,
+            loadedSettings.defaultVerticalSpacing,
+            0.1f
+        )
     }
 
     @Test
@@ -53,5 +59,6 @@ class SettingsManagerTest {
         assertFalse(loadedSettings.isDarkTheme)
         assertEquals(16f, loadedSettings.fontSize, 0.1f)
         assertEquals(360, loadedSettings.minColumnWidth)
+        assertEquals(6f, loadedSettings.defaultVerticalSpacing, 0.1f)
     }
 }

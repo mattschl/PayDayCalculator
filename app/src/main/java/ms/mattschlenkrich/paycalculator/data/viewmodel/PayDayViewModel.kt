@@ -75,6 +75,9 @@ class PayDayViewModel(
     fun getWorkDateListUsed(employerId: Long, cutOff: String) =
         payDayRepository.getWorkDateListUsed(employerId, cutOff)
 
+    suspend fun getWorkDateSync(workDateId: Long) =
+        payDayRepository.getWorkDateSync(workDateId)
+
     suspend fun insertWorkDate(workDate: WorkDates) =
         payDayRepository.insertWorkDate(workDate)
 

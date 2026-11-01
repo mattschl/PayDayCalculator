@@ -46,7 +46,7 @@ fun WorkOrderHistoryItem(
                     onClick = { onClick(history) },
                     onLongClick = { onLongClick(history) }
                 )
-                .padding(4.dp)
+                .padding(2.dp)
         ) {
             val rawDescription = history.workOrder.woDescription.trim()
             val descriptionSnippet = if (charLimit > 0 && rawDescription.isNotEmpty()) {

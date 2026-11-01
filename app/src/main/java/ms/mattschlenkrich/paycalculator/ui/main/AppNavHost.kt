@@ -227,12 +227,16 @@ fun AppNavHost(
                 navController
             )
         }
-        composable(Screen.WorkDateExtraAdd.route) {
+        composable(Screen.WorkDateExtraAdd.route) { backStackEntry ->
+            val isCreditString = backStackEntry.arguments?.getString("isCredit")
+            val isCredit = isCreditString?.toBooleanStrictOrNull() ?: false
             WorkDateExtraRoute(
                 mainViewModel,
                 payDayViewModel,
                 navController,
-                isUpdate = false
+                isUpdate = false,
+                isCredit = isCredit,
+                workExtraViewModel = workExtraViewModel
             )
         }
         composable(Screen.WorkDateExtraUpdate.route) {
@@ -240,7 +244,8 @@ fun AppNavHost(
                 mainViewModel,
                 payDayViewModel,
                 navController,
-                isUpdate = true
+                isUpdate = true,
+                workExtraViewModel = workExtraViewModel
             )
         }
         composable(Screen.WorkOrderHistoryAdd.route) {

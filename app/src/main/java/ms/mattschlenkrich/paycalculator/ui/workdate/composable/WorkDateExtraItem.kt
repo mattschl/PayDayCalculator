@@ -7,19 +7,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkDateExtraItem(
     extra: WorkDateExtras,
     onClick: () -> Unit,
+    onEditClick: () -> Unit = onClick,
     onLongClick: () -> Unit,
     index: Int = 0
 ) {
@@ -34,7 +40,7 @@ fun WorkDateExtraItem(
         modifier = Modifier
             .fillMaxWidth()
             .combinedClickable(
-                onClick = onClick,
+                onClick = onEditClick,
                 onLongClick = onLongClick
             ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -42,30 +48,32 @@ fun WorkDateExtraItem(
             containerColor = containerColor
         )
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = !extra.wdeIsDeleted,
-                onCheckedChange = { onClick() }
-            )
-            val display = buildString {
-                append(extra.wdeName)
-                append(if (extra.wdeIsCredit) " (add) " else " (subtract) ")
-                append(
-                    if (extra.wdeIsFixed) nf.displayDollars(extra.wdeValue)
-                    else nf.getPercentStringFromDouble(extra.wdeValue)
+        CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 3.dp, horizontal = 2.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = !extra.wdeIsDeleted,
+                    onCheckedChange = { onClick() }
+                )
+                val display = buildString {
+                    append(extra.wdeName)
+                    append(if (extra.wdeIsCredit) " (add) " else " (subtract) ")
+                    append(
+                        if (extra.wdeIsFixed) nf.displayDollars(extra.wdeValue)
+                        else nf.getPercentStringFromDouble(extra.wdeValue)
+                    )
+                }
+                Text(
+                    text = display,
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = if (extra.wdeIsCredit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
                 )
             }
-            Text(
-                text = display,
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.bodyLarge,
-                color = if (extra.wdeIsCredit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
-            )
         }
     }
 }

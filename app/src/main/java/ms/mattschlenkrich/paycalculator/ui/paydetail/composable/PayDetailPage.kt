@@ -198,6 +198,16 @@ fun PayDetailPage(
             if (extra.payPeriodExtra != null) {
                 mainViewModel.setPayPeriodExtra(extra.payPeriodExtra!!)
                 navController.navigate(Screen.PayPeriodExtraUpdate.route)
+            } else if (extra.workDateExtra != null) {
+                coroutineScope.launch {
+                    val workDate =
+                        payDayViewModel.getWorkDateSync(extra.workDateExtra!!.wdeWorkDateId)
+                    if (workDate != null) {
+                        mainViewModel.setWorkDateObject(workDate)
+                    }
+                    mainViewModel.setWorkDateExtra(extra.workDateExtra!!)
+                    navController.navigate(Screen.WorkDateExtraUpdate.route)
+                }
             } else if (extra.extraDefinitionAndType != null) {
                 showOverrideDialog = extra
             }

@@ -25,14 +25,17 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
@@ -238,7 +241,10 @@ fun WorkDateAddScreen(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant
                         )
                     ) {
-                        Column(modifier = Modifier.padding(4.dp)) {
+                        Column(
+                            modifier = Modifier.padding(2.dp),
+                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
@@ -259,29 +265,31 @@ fun WorkDateAddScreen(
                                 }
                             }
 
-                            extras.forEach { extra ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            onExtraToggle(
-                                                extra,
-                                                !selectedExtras.contains(extra.workExtraTypeId)
-                                            )
-                                        },
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Checkbox(
-                                        checked = selectedExtras.contains(extra.workExtraTypeId),
-                                        onCheckedChange = {
-                                            onExtraToggle(extra, it)
-                                        }
-                                    )
-                                    Text(
-                                        text = extra.wetName,
-                                        modifier = Modifier.weight(1f),
-                                        color = if (extra.wetIsCredit) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error
-                                    )
+                            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
+                                extras.forEach { extra ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                onExtraToggle(
+                                                    extra,
+                                                    !selectedExtras.contains(extra.workExtraTypeId)
+                                                )
+                                            },
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Checkbox(
+                                            checked = selectedExtras.contains(extra.workExtraTypeId),
+                                            onCheckedChange = {
+                                                onExtraToggle(extra, it)
+                                            }
+                                        )
+                                        Text(
+                                            text = extra.wetName,
+                                            modifier = Modifier.weight(1f),
+                                            color = if (extra.wetIsCredit) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error
+                                        )
+                                    }
                                 }
                             }
                         }

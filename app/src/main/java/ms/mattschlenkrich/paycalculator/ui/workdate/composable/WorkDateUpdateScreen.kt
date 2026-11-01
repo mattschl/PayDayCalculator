@@ -83,6 +83,7 @@ fun WorkDateUpdateScreen(
     extras: List<WorkDateExtras>,
     onExtraClick: (WorkDateExtras) -> Unit,
     onExtraLongClick: (WorkDateExtras) -> Unit,
+    onExtraEdit: (WorkDateExtras) -> Unit = onExtraLongClick,
     onAddExtraClick: () -> Unit,
     jobDescriptionCharLimit: Int = 15,
     minColumnWidth: Int = LocalMinColumnWidth.current
@@ -261,7 +262,10 @@ fun WorkDateUpdateScreen(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant
                     )
                 ) {
-                    Column(modifier = Modifier.padding(4.dp)) {
+                    Column(
+                        modifier = Modifier.padding(2.dp),
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
@@ -282,11 +286,13 @@ fun WorkDateUpdateScreen(
                             }
                         }
 
-                        extras.forEach { extra ->
+                        extras.forEachIndexed { index, extra ->
                             WorkDateExtraItem(
                                 extra = extra,
                                 onClick = { onExtraClick(extra) },
-                                onLongClick = { onExtraLongClick(extra) }
+                                onEditClick = { onExtraEdit(extra) },
+                                onLongClick = { onExtraLongClick(extra) },
+                                index = index
                             )
                         }
                     }

@@ -25,24 +25,25 @@ import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 
 @Immutable
 data class ExtendedDimensions(
-    val textFieldMinHeight: Dp = 20.dp,
-    val textFieldMaxHeight: Dp = 26.dp,
+    val textFieldMinHeight: Dp = 16.dp,
+    val textFieldMaxHeight: Dp = 22.dp,
     val textFieldContentPadding: PaddingValues = PaddingValues(
-        start = 8.dp,
-        end = 8.dp,
-        top = 4.dp,
-        bottom = 4.dp,
+        start = 4.dp,
+        end = 4.dp,
+        top = 1.dp,
+        bottom = 1.dp,
     ),
     val dropdownItemPadding: PaddingValues = PaddingValues(
-        start = 8.dp,
-        end = 8.dp,
-        top = 4.dp,
-        bottom = 4.dp,
+        start = 4.dp,
+        end = 4.dp,
+        top = 1.dp,
+        bottom = 1.dp,
     ),
     val textFieldBorderThickness: Dp = 1.dp
 )
 
 val LocalExtendedDimensions = staticCompositionLocalOf { ExtendedDimensions() }
+val LocalVerticalSpacing = staticCompositionLocalOf { 6.dp }
 
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xFFD0E4FF), // Very light blue
@@ -111,6 +112,7 @@ fun PayCalculatorTheme(
     isDarkTheme: Boolean = false,
     fontSize: Float = 16f,
     minColumnWidth: Int = DEFAULT_MIN_COLUMN_WIDTH,
+    defaultVerticalSpacing: Float = 6f,
     content: @Composable () -> Unit
 ) {
     val darkTheme = if (isSystemTheme) isSystemInDarkTheme() else isDarkTheme
@@ -148,26 +150,28 @@ fun PayCalculatorTheme(
         }
     }
 
-    val minHeight = with(customDensity) { (fontSize * 1.1f).sp.toDp() }
-    val maxHeight = with(customDensity) { (fontSize * 1.7f).sp.toDp() }
-    val verticalPadding = with(customDensity) { (fontSize * 0.05f).sp.toDp() }
+    val minHeight = with(customDensity) { (fontSize * 0.9f).sp.toDp() }
+    val maxHeight = with(customDensity) { (fontSize * 1.4f).sp.toDp() }
+    val verticalPadding = with(customDensity) { (fontSize * 0.02f).sp.toDp() }
 
     val dimensions = ExtendedDimensions(
         textFieldMinHeight = minHeight,
         textFieldMaxHeight = maxHeight,
         textFieldContentPadding = PaddingValues(
-            start = 8.dp,
-            end = 8.dp,
+            start = 4.dp,
+            end = 4.dp,
             top = verticalPadding,
             bottom = verticalPadding
         ),
         dropdownItemPadding = PaddingValues(
-            start = 12.dp,
-            end = 12.dp,
+            start = 4.dp,
+            end = 4.dp,
             top = 1.dp,
             bottom = 1.dp
         )
     )
+
+    val elementSpacing = (defaultVerticalSpacing * paddingScale.floatValue).dp.coerceAtLeast(2.dp)
 
     CompositionLocalProvider(
         LocalDensity provides customDensity
@@ -179,6 +183,7 @@ fun PayCalculatorTheme(
             CompositionLocalProvider(
                 LocalExtendedDimensions provides dimensions,
                 LocalMinColumnWidth provides minColumnWidth,
+                LocalVerticalSpacing provides elementSpacing,
                 content = content
             )
         }

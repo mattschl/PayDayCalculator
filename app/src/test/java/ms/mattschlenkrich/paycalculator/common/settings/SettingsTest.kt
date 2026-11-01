@@ -16,4 +16,16 @@ class SettingsTest {
         val settings = Settings(jobDescriptionCharLimit = 25)
         assertEquals(25, settings.jobDescriptionCharLimit)
     }
+
+    @Test
+    fun testSettings_defaultVerticalSpacingIs6() {
+        val settings = Settings()
+        assertEquals(6f, settings.defaultVerticalSpacing, 0.001f)
+    }
+
+    @Test
+    fun testSettings_customVerticalSpacing() {
+        val settings = Settings(defaultVerticalSpacing = 10f)
+        assertEquals(10f, settings.defaultVerticalSpacing, 0.001f)
+    }
 }
