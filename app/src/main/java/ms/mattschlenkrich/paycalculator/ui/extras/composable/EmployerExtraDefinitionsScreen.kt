@@ -200,24 +200,23 @@ fun EmployerExtraDefinitionsScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(top = 16.dp)
                     )
-                }
-
-                LazyVerticalStaggeredGrid(
-                    columns = StaggeredGridCells.Fixed(columns),
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
-                    verticalItemSpacing = ELEMENT_SPACING,
-                    contentPadding = PaddingValues(bottom = 80.dp)
-                ) {
-                    items(
-                        sortedDefinitions,
-//                        key = { it.definition.workExtraDefId }
-                    ) { definition ->
-                        ExtraDefinitionItem(
-                            item = definition,
-                            isCurrent = definition == sortedDefinitions.firstOrNull(),
-                            onClick = { onUpdateExtraDefinition(definition) }
-                        )
+                } else {
+                    LazyVerticalStaggeredGrid(
+                        columns = StaggeredGridCells.Fixed(columns),
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING),
+                        verticalItemSpacing = ELEMENT_SPACING,
+                        contentPadding = PaddingValues(bottom = 80.dp)
+                    ) {
+                        items(
+                            sortedDefinitions
+                        ) { definition ->
+                            ExtraDefinitionItem(
+                                item = definition,
+                                isCurrent = definition == sortedDefinitions.firstOrNull(),
+                                onClick = { onUpdateExtraDefinition(definition) }
+                            )
+                        }
                     }
                 }
             }

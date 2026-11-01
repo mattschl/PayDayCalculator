@@ -89,7 +89,7 @@ interface WorkExtraDao {
     @Update
     suspend fun updateWorkDateExtra(extra: WorkDateExtras)
 
-    @Query("SELECT * FROM workDateExtras WHERE wdeWorkDateId = :workDateId AND wdeIsDeleted = 0")
+    @Query("SELECT * FROM workDateExtras WHERE wdeWorkDateId = :workDateId ORDER BY wdeName")
     fun getWorkDateExtras(workDateId: Long): LiveData<List<WorkDateExtras>>
 
     @RewriteQueriesToDropUnusedColumns

@@ -158,7 +158,7 @@ interface PayDayDao {
     @Query(
         "SELECT * FROM $TABLE_WORK_DATE_EXTRAS " +
                 "WHERE wdeWorkDateId = :workDateId " +
-                "AND wdeIsDeleted = 0"
+                "ORDER BY wdeName"
     )
     fun getWorkDateExtras(workDateId: Long): LiveData<List<WorkDateExtras>>
 
@@ -200,7 +200,6 @@ interface PayDayDao {
                 "WHERE wdCutoffDate = :cutOff " +
                 "AND wdEmployerId = :employerId " +
                 "AND wdIsDeleted = 0 " +
-                "AND wdeIsDeleted = 0 " +
                 "ORDER BY wdeName "
     )
     fun getWorkDateExtrasPerPay(employerId: Long, cutOff: String)
@@ -222,7 +221,6 @@ interface PayDayDao {
         "SELECT * FROM workPayPeriodExtras " +
                 "WHERE ppePayPeriodId = :payPeriodId " +
                 "AND ppeAttachTo = 3 " +
-                "AND ppeIsDeleted = 0 " +
                 "ORDER BY ppeName"
     )
     fun getPayPeriodExtras(payPeriodId: Long): LiveData<List<WorkPayPeriodExtras>>
