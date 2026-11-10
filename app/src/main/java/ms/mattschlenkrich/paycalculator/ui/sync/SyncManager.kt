@@ -110,6 +110,7 @@ class SyncManager(
                 appDb.getSyncHistoryDao().purgeOldSyncHistory(50)
             }
 
+            onProgressUpdate("Syncing picture attachments...")
             downloadMissingPictures()
             uploadPendingPictures()
 
@@ -123,6 +124,7 @@ class SyncManager(
             uploadedFile = performUpload(uploadTimestamp)
             syncReport.append("\nMerged database uploaded: $uploadedFile")
 
+            onProgressUpdate("Cleaning up old backups...")
             cleanupOldBackups(fileList)
 
             status = "Success"
