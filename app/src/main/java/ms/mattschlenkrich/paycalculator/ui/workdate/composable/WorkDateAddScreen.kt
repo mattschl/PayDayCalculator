@@ -76,24 +76,6 @@ fun WorkDateAddScreen(
     Scaffold(
         modifier = Modifier.imePadding(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        /* topBar = {
-             TopAppBar(
-                 title = {
-                     Text(
-                         text = stringResource(R.string.add_a_new_work_date),
-                         style = MaterialTheme.typography.titleLarge,
-                     )
-                 },
-                 navigationIcon = {
-                     IconButton(onClick = onBackClick) {
-                         Icon(
-                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                             contentDescription = stringResource(R.string.go_back)
-                         )
-                     }
-                 }
-             )
-         },*/
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onSaveClick,

@@ -161,24 +161,6 @@ fun PayPeriodExtraScreen(
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        /*     topBar = {
-                 TopAppBar(
-                     title = {
-                         Text(
-                             text = "PayPeriodExtraScreen", // title,
-                             style = MaterialTheme.typography.titleLarge,
-                         )
-                     },
-                     navigationIcon = {
-                         IconButton(onClick = onCancel) {
-                             Icon(
-                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                 contentDescription = stringResource(R.string.go_back)
-                             )
-                         }
-                     }
-                 )
-             }*/
     ) { paddingValues ->
         Column(
             modifier = Modifier

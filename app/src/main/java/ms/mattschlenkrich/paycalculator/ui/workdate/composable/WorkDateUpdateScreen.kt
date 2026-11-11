@@ -93,16 +93,6 @@ fun WorkDateUpdateScreen(
     Scaffold(
         modifier = Modifier.imePadding(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        /* topBar = {
-             TopAppBar(
-                 title = {
-                     Text(
-                         text = stringResource(R.string.update_this_work_date),
-                         style = MaterialTheme.typography.titleLarge,
-                     )
-                 }
-             )
-         },*/
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onDoneClick,

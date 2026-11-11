@@ -40,45 +40,6 @@ class DriveServiceHelper(private val mDriveService: Drive) {
     }
 
     /**
-     * Finds or creates a folder with the given name under the specified parent.
-     */
- /*   suspend fun getOrCreateFolder(folderName: String, parentId: String? = "appDataFolder"): String =
-        withContext(Dispatchers.IO) {
-            val parent = parentId ?: "appDataFolder"
-            val query =
-                "name = '$folderName' and mimeType = 'application/vnd.google-apps.folder' and '$parent' in parents and trashed = false"
-
-            Log.d("DriveServiceHelper", "Searching for folder: $folderName under parent: $parent")
-
-            val result = mDriveService.files().list()
-                .setQ(query)
-                .setSpaces("appDataFolder")
-                .setFields("files(id, name)")
-                .execute()
-
-            val files = result.files
-            if (!files.isNullOrEmpty()) {
-                Log.d(
-                    "DriveServiceHelper",
-                    "Found existing folder: ${files[0].name} with ID: ${files[0].id}"
-                )
-                return@withContext files[0].id
-            }
-
-            // Not found, create it
-            Log.d("DriveServiceHelper", "Creating new folder: $folderName under parent: $parent")
-            val metadata = com.google.api.services.drive.model.File()
-                .setName(folderName)
-                .setMimeType("application/vnd.google-apps.folder")
-                .setParents(listOf(parent))
-
-            val folder = mDriveService.files().create(metadata)
-                .setFields("id")
-                .execute() ?: throw IOException("Null result when creating folder.")
-            folder.id
-        }*/
-
-    /**
      * Finds a file ID on Google Drive by its name and folder.
      */
     suspend fun findFileIdByName(fileName: String, folderId: String? = "appDataFolder"): String? =
@@ -144,19 +105,4 @@ class DriveServiceHelper(private val mDriveService: Drive) {
                 mDriveService.files().get(fileId).executeMediaAndDownloadTo(outputStream)
             }
         }
-
-    /**
-     * Utility to fetch file content as a string.
-     */
-    /*suspend fun downloadFileByName(fileName: String, targetFile: File): String =
-        withContext(Dispatchers.IO) {
-            val fileId = findFileIdByName(fileName)
-                ?: throw IOException("File not found on Drive: $fileName")
-            FileOutputStream(targetFile).use { outputStream ->
-                mDriveService.files().get(fileId).executeMediaAndDownloadTo(outputStream)
-            }
-            mDriveService.files().get(fileId).executeMediaAsInputStream().use { inputStream ->
-                inputStream.bufferedReader().use { it.readText() }
-            }
-        }*/
 }
