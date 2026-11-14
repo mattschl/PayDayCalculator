@@ -266,18 +266,18 @@ fun PayPeriodExtraScreen(
                         if (error == null) {
                             // Check for duplicates in other categories
                             var duplicateFound = false
-                            for (extra in existingWorkDateExtras) {
-                                if (name.trim() == extra.extra.wdeName && extra.extra.wdeName != initialExtra?.ppeName) {
-                                    showDuplicateDialog = extra.extra.wdeName to duplicateAddMsg
+                            for ((extra1) in existingWorkDateExtras) {
+                                if (name.trim() == extra1.wdeName && extra1.wdeName != initialExtra?.ppeName) {
+                                    showDuplicateDialog = extra1.wdeName to duplicateAddMsg
                                     duplicateFound = true
                                     break
                                 }
                             }
                             if (!duplicateFound) {
-                                for (extra in defaultExtras) {
-                                    if (name.trim() == extra.extraType.wetName && extra.extraType.wetName != initialExtra?.ppeName) {
+                                for ((_, extraType) in defaultExtras) {
+                                    if (name.trim() == extraType.wetName && extraType.wetName != initialExtra?.ppeName) {
                                         showDuplicateDialog =
-                                            extra.extraType.wetName to duplicateOverwriteMsg
+                                            extraType.wetName to duplicateOverwriteMsg
                                         duplicateFound = true
                                         break
                                     }
@@ -380,8 +380,8 @@ private fun validate(
         return valueMissingError
     }
 
-    for (extra in existingExtras) {
-        if (extra.ppeName == name.trim() && extra.workPayPeriodExtraId != currentExtra?.workPayPeriodExtraId) {
+    for ((workPayPeriodExtraId, _, _, ppeName) in existingExtras) {
+        if (ppeName == name.trim() && workPayPeriodExtraId != currentExtra?.workPayPeriodExtraId) {
             return nameExistsError
         }
     }
