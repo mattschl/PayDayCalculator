@@ -27,8 +27,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
-import ms.mattschlenkrich.paycalculator.common.compose.StandardBottomSheet
 import ms.mattschlenkrich.paycalculator.common.security.AuthResult
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.StandardBottomSheet
 
 @Composable
 fun AuthenticationScreen(

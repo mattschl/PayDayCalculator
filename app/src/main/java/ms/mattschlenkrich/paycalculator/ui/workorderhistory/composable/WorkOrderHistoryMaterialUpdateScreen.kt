@@ -25,12 +25,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
+import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
-import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.AutoCompleteTextField
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.DecimalOutlinedTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -126,7 +127,7 @@ fun WorkOrderHistoryMaterialUpdateScreen(
                 trailingIcon = {
                     IconButton(onClick = {
                         mainViewModel.setCalculatorInput(nf.getDoubleFromDollars(quantity))
-                        navController.navigate(ms.mattschlenkrich.paycalculator.Screen.Calculator.route)
+                        navController.navigate(Screen.Calculator.route)
                     }) {
                         Icon(
                             imageVector = Icons.Default.Calculate,

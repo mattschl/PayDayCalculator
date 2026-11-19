@@ -39,14 +39,12 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.LocalMinColumnWidth
 import ms.mattschlenkrich.paycalculator.common.compose.PictureAttachmentManager
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
-import ms.mattschlenkrich.paycalculator.common.compose.draggableFab
 import ms.mattschlenkrich.paycalculator.data.entity.Areas
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
@@ -58,6 +56,8 @@ import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWithDates
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paycalculator.data.model.WorkPerformedAndQuantity
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.DecimalOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.draggableFab
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable.WorkOrderHistoryExpenseItem
 import java.io.File
 

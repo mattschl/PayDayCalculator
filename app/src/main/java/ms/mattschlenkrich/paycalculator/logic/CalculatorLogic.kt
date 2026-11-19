@@ -1,4 +1,6 @@
-package ms.mattschlenkrich.paycalculator.common
+package ms.mattschlenkrich.paycalculator.logic
+
+import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 
 object CalculatorLogic {
     fun addDigit(currentDisplay: String, digit: String): String {

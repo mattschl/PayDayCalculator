@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.common.compose
+package ms.mattschlenkrich.paycalculator.ui.basiccomponents
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.text.KeyboardOptions

@@ -55,8 +55,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.compose.FullScreenImageDialog
 import ms.mattschlenkrich.paycalculator.data.model.PictureItem
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.FullScreenImageDialog
 import ms.mattschlenkrich.paycalculator.ui.sync.DriveFileItem
 import ms.mattschlenkrich.paycalculator.ui.sync.SyncViewModel
 import java.io.File

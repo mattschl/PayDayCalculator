@@ -30,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.ui.sync.ConflictDialog
 import ms.mattschlenkrich.paycalculator.ui.sync.DriveFileMeta
 import ms.mattschlenkrich.paycalculator.ui.sync.SyncViewModel

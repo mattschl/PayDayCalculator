@@ -33,15 +33,15 @@ import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
-import ms.mattschlenkrich.paycalculator.common.compose.CapitalizedOutlinedTextField
-import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.PictureAttachmentManager
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
-import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
 import ms.mattschlenkrich.paycalculator.data.model.PictureItem
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.AutoCompleteTextField
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.CapitalizedOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.DecimalOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SelectAllOutlinedTextField
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)

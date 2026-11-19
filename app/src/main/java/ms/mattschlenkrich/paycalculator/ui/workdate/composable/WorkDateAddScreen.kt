@@ -38,12 +38,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.data.entity.WorkExtraTypes
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.DecimalOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SelectAllOutlinedTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -134,7 +134,7 @@ fun WorkDateAddScreen(
                             trailingIcon = {
                                 IconButton(onClick = onRegCalcClick) {
                                     Icon(
-                                        imageVector = androidx.compose.material.icons.Icons.Default.Calculate,
+                                        imageVector = Icons.Default.Calculate,
                                         contentDescription = "Calculate Regular Hours"
                                     )
                                 }
@@ -148,7 +148,7 @@ fun WorkDateAddScreen(
                             trailingIcon = {
                                 IconButton(onClick = onOtCalcClick) {
                                     Icon(
-                                        imageVector = androidx.compose.material.icons.Icons.Default.Calculate,
+                                        imageVector = Icons.Default.Calculate,
                                         contentDescription = "Calculate Overtime Hours"
                                     )
                                 }
@@ -168,7 +168,7 @@ fun WorkDateAddScreen(
                             trailingIcon = {
                                 IconButton(onClick = onDblOtCalcClick) {
                                     Icon(
-                                        imageVector = androidx.compose.material.icons.Icons.Default.Calculate,
+                                        imageVector = Icons.Default.Calculate,
                                         contentDescription = "Calculate Double Overtime Hours"
                                     )
                                 }
@@ -187,7 +187,7 @@ fun WorkDateAddScreen(
                             trailingIcon = {
                                 IconButton(onClick = onStatCalcClick) {
                                     Icon(
-                                        imageVector = androidx.compose.material.icons.Icons.Default.Calculate,
+                                        imageVector = Icons.Default.Calculate,
                                         contentDescription = "Calculate Other Hours"
                                     )
                                 }

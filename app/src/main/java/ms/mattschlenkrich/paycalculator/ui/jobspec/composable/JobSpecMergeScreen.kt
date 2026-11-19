@@ -3,9 +3,9 @@ package ms.mattschlenkrich.paycalculator.ui.jobspec.composable
 import androidx.compose.runtime.Composable
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
-import ms.mattschlenkrich.paycalculator.common.compose.GenericMergeScreen
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
 import ms.mattschlenkrich.paycalculator.data.model.JobSpecAndChild
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.GenericMergeScreen
 
 @Composable
 fun JobSpecMergeScreen(

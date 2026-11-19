@@ -32,11 +32,11 @@ import ms.mattschlenkrich.paycalculator.MainActivity
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DEVICE_ID
 import ms.mattschlenkrich.paycalculator.common.PREFS_NAME
-import ms.mattschlenkrich.paycalculator.common.compose.PayCalculatorTheme
 import ms.mattschlenkrich.paycalculator.common.settings.SettingsManager
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModelFactory
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.PayCalculatorTheme
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.sync.composable.SyncScreen
 

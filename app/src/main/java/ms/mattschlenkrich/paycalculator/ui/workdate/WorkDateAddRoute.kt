@@ -19,13 +19,13 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.common.compose.ConfirmationBottomSheet
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
 import ms.mattschlenkrich.paycalculator.data.util.HolidayPayCalculator
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkExtraViewModel
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ConfirmationBottomSheet
 import ms.mattschlenkrich.paycalculator.ui.workdate.composable.WorkDateAddScreen
 import java.time.LocalDate
 import kotlin.math.round

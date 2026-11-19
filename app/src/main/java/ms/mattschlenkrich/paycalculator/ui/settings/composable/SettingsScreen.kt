@@ -39,11 +39,12 @@ import androidx.compose.ui.unit.sp
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
-import ms.mattschlenkrich.paycalculator.common.compose.NumberOutlinedTextField
-import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
 import ms.mattschlenkrich.paycalculator.common.security.AuthResult
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.DecimalOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.NumberOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SimpleDropdownField
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -376,7 +377,7 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(ELEMENT_SPACING)
             ) {
-                ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField(
+                DecimalOutlinedTextField(
                     value = laborRateText,
                     onValueChange = {
                         laborRateText = it
@@ -385,7 +386,7 @@ fun SettingsScreen(
                     label = { Text("Default Labor Rate") },
                     modifier = Modifier.weight(1f)
                 )
-                ms.mattschlenkrich.paycalculator.common.compose.DecimalOutlinedTextField(
+                DecimalOutlinedTextField(
                     value = markupRateText,
                     onValueChange = {
                         markupRateText = it

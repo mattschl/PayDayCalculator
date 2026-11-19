@@ -4,8 +4,8 @@ import android.app.Application
 import android.content.SharedPreferences
 import io.mockk.every
 import io.mockk.mockk
-import ms.mattschlenkrich.paycalculator.common.CalculatorLogic
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.logic.CalculatorLogic
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Before

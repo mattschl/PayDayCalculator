@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Card
@@ -28,14 +29,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
-import ms.mattschlenkrich.paycalculator.common.compose.CapitalizedOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.compose.SelectAllOutlinedTextField
-import ms.mattschlenkrich.paycalculator.common.compose.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.AutoCompleteTextField
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.CapitalizedOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SelectAllOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SimpleDropdownField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -145,7 +146,7 @@ fun WorkOrderAddScreen(
                             onItemSelected = onAddressChange,
                             modifier = Modifier.fillMaxWidth(),
                             isError = addressError,
-                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                            keyboardOptions = KeyboardOptions(
                                 capitalization = KeyboardCapitalization.Words
                             )
                         )

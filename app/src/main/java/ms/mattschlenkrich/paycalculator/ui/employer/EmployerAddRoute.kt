@@ -19,10 +19,10 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.PayDayFrequencies
 import ms.mattschlenkrich.paycalculator.common.WorkDayOfWeek
-import ms.mattschlenkrich.paycalculator.common.compose.ConfirmationBottomSheet
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModel
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ConfirmationBottomSheet
 import ms.mattschlenkrich.paycalculator.ui.employer.composable.EmployerScreen
 
 @OptIn(ExperimentalMaterial3Api::class)

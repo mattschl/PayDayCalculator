@@ -21,11 +21,11 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.compose.AutoCompleteTextField
-import ms.mattschlenkrich.paycalculator.common.compose.CapitalizedOutlinedTextField
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.data.entity.Areas
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.AutoCompleteTextField
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.CapitalizedOutlinedTextField
 
 @Composable
 fun JobSpecsEntryCard(

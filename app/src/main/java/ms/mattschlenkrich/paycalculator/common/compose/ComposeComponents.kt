@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.LocalVerticalSpacing
 import kotlin.math.max
 
 val paddingScale = mutableFloatStateOf(1f)

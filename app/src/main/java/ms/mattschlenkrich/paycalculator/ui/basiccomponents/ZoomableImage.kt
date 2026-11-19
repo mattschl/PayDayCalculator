@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.common.compose
+package ms.mattschlenkrich.paycalculator.ui.basiccomponents
 
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown

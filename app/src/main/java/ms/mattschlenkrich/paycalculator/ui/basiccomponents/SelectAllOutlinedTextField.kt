@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.common.compose
+package ms.mattschlenkrich.paycalculator.ui.basiccomponents
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource

@@ -3,9 +3,9 @@ package ms.mattschlenkrich.paycalculator.ui.material.composable
 import androidx.compose.runtime.Composable
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
-import ms.mattschlenkrich.paycalculator.common.compose.GenericMergeScreen
 import ms.mattschlenkrich.paycalculator.data.entity.Material
 import ms.mattschlenkrich.paycalculator.data.model.MaterialAndChild
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.GenericMergeScreen
 
 @Composable
 fun MaterialMergeScreen(

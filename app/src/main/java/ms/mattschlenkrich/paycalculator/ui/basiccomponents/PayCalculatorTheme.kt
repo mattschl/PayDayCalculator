@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.common.compose
+package ms.mattschlenkrich.paycalculator.ui.basiccomponents
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
+import ms.mattschlenkrich.paycalculator.common.compose.LocalMinColumnWidth
+import ms.mattschlenkrich.paycalculator.common.compose.paddingScale
 
 @Immutable
 data class ExtendedDimensions(
