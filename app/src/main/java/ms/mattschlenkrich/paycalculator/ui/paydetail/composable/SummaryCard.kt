@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.StandardCard
+import ms.mattschlenkrich.paycalculator.ui.components.StandardCard
 import ms.mattschlenkrich.paycalculator.ui.paydetail.PaySummaryData
 
 @Composable

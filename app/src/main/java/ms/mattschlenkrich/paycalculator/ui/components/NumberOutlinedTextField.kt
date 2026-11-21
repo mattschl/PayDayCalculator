@@ -1,23 +1,18 @@
-package ms.mattschlenkrich.paycalculator.ui.basiccomponents
+package ms.mattschlenkrich.paycalculator.ui.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.input.KeyboardType
 
 @Composable
-fun DecimalOutlinedTextField(
+fun NumberOutlinedTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    onLongClick: (() -> Unit)? = null,
-    focusRequester: FocusRequester? = null,
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
-    leadingIcon: @Composable (() -> Unit)? = null,
-    trailingIcon: @Composable (() -> Unit)? = null,
     singleLine: Boolean = true,
     contentPadding: PaddingValues = StandardTextFieldDefaults.contentPadding(),
 ) {
@@ -26,14 +21,10 @@ fun DecimalOutlinedTextField(
         onValueChange = onValueChange,
         label = label,
         placeholder = placeholder,
-        leadingIcon = leadingIcon,
-        trailingIcon = trailingIcon,
         modifier = modifier,
-        onLongClick = onLongClick,
-        focusRequester = focusRequester,
         singleLine = singleLine,
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Decimal
+            keyboardType = KeyboardType.Number
         ),
         contentPadding = contentPadding
     )

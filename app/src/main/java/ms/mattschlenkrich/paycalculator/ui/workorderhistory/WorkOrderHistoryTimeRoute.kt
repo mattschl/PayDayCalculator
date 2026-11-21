@@ -38,8 +38,8 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryTimeWorked
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryTimeWorkedCombined
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ConfirmationBottomSheet
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.ui.components.ConfirmationBottomSheet
+import ms.mattschlenkrich.paycalculator.ui.components.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.ui.main.Screen
 import ms.mattschlenkrich.paycalculator.ui.workorderhistory.composable.WorkOrderHistoryTimeScreen
 import java.util.Calendar

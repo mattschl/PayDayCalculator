@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.basiccomponents
+package ms.mattschlenkrich.paycalculator.ui.components
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme

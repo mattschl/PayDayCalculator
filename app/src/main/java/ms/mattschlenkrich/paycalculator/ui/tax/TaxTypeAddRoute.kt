@@ -21,7 +21,7 @@ import ms.mattschlenkrich.paycalculator.data.entity.TaxTypes
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModel
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ConfirmationBottomSheet
+import ms.mattschlenkrich.paycalculator.ui.components.ConfirmationBottomSheet
 import ms.mattschlenkrich.paycalculator.ui.main.Screen
 import ms.mattschlenkrich.paycalculator.ui.tax.composable.TaxTypeScreen
 

@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator.ui.basiccomponents
+package ms.mattschlenkrich.paycalculator.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable

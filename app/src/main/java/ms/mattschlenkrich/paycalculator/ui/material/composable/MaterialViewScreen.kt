@@ -5,7 +5,7 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.Material
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.GenericViewScreen
+import ms.mattschlenkrich.paycalculator.ui.components.GenericViewScreen
 
 @Composable
 fun MaterialViewScreen(

@@ -43,13 +43,13 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.entity.MaterialCostHistory
 import ms.mattschlenkrich.paycalculator.data.model.PictureItem
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.DecimalOutlinedTextField
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ELEMENT_SPACING
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.FullScreenImageDialog
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.PictureThumbnail
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_HORIZONTAL
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SelectAllOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.components.DecimalOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.components.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.ui.components.FullScreenImageDialog
+import ms.mattschlenkrich.paycalculator.ui.components.PictureThumbnail
+import ms.mattschlenkrich.paycalculator.ui.components.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.ui.components.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.ui.components.SelectAllOutlinedTextField
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)

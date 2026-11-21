@@ -22,9 +22,9 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.data.entity.Material
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.AutoCompleteTextField
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.DecimalOutlinedTextField
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.ui.components.AutoCompleteTextField
+import ms.mattschlenkrich.paycalculator.ui.components.DecimalOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.components.ELEMENT_SPACING
 
 @Composable
 fun MaterialEntryCard(

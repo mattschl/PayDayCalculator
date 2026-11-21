@@ -40,11 +40,11 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.security.AuthResult
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.DecimalOutlinedTextField
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ELEMENT_SPACING
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.NumberOutlinedTextField
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.ui.calculator.composable.calculateGridColumns
+import ms.mattschlenkrich.paycalculator.ui.components.DecimalOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.components.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.ui.components.NumberOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.components.SimpleDropdownField
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)

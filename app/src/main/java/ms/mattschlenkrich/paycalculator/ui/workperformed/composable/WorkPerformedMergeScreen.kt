@@ -5,7 +5,7 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed
 import ms.mattschlenkrich.paycalculator.data.model.WorkPerformedAndChild
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.GenericMergeScreen
+import ms.mattschlenkrich.paycalculator.ui.components.GenericMergeScreen
 
 @Composable
 fun WorkPerformedMergeScreen(

@@ -38,8 +38,8 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.data.model.PictureItem
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.FullScreenImageDialog
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.PictureThumbnail
+import ms.mattschlenkrich.paycalculator.ui.components.FullScreenImageDialog
+import ms.mattschlenkrich.paycalculator.ui.components.PictureThumbnail
 import java.io.File
 
 @Composable

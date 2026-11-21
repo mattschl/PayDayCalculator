@@ -36,12 +36,12 @@ import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrder
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ELEMENT_SPACING
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.LocalMinColumnWidth
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_HORIZONTAL
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SelectAllOutlinedTextField
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.ui.calculator.composable.calculateGridColumns
+import ms.mattschlenkrich.paycalculator.ui.components.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.ui.components.LocalMinColumnWidth
+import ms.mattschlenkrich.paycalculator.ui.components.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.ui.components.SelectAllOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.components.SimpleDropdownField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

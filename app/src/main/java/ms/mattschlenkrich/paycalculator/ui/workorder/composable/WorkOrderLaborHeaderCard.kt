@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.draggableFab
+import ms.mattschlenkrich.paycalculator.ui.components.draggableFab
 
 @Composable
 fun WorkOrderLaborHeaderCard(

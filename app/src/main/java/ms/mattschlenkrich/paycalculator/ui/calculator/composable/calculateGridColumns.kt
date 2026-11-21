@@ -3,7 +3,7 @@ package ms.mattschlenkrich.paycalculator.ui.calculator.composable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.LocalMinColumnWidth
+import ms.mattschlenkrich.paycalculator.ui.components.LocalMinColumnWidth
 import kotlin.math.max
 
 @Composable

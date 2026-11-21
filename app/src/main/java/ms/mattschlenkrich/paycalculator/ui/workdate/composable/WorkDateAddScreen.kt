@@ -39,11 +39,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.data.entity.WorkExtraTypes
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.DecimalOutlinedTextField
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ELEMENT_SPACING
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_HORIZONTAL
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SelectAllOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.components.DecimalOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.components.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.ui.components.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.ui.components.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.ui.components.SelectAllOutlinedTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -40,12 +40,12 @@ import ms.mattschlenkrich.paycalculator.data.entity.WorkPerformed
 import ms.mattschlenkrich.paycalculator.data.model.MaterialInSequence
 import ms.mattschlenkrich.paycalculator.data.model.PictureItem
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWorkPerformedCombined
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ELEMENT_SPACING
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.LocalMinColumnWidth
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_HORIZONTAL
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.draggableFab
 import ms.mattschlenkrich.paycalculator.ui.calculator.composable.calculateGridColumns
+import ms.mattschlenkrich.paycalculator.ui.components.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.ui.components.LocalMinColumnWidth
+import ms.mattschlenkrich.paycalculator.ui.components.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.ui.components.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.ui.components.draggableFab
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)

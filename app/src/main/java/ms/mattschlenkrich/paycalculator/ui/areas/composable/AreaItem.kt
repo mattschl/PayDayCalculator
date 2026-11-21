@@ -2,7 +2,7 @@ package ms.mattschlenkrich.paycalculator.ui.areas.composable
 
 import androidx.compose.runtime.Composable
 import ms.mattschlenkrich.paycalculator.data.entity.Areas
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.StandardItem
+import ms.mattschlenkrich.paycalculator.ui.components.StandardItem
 
 @Composable
 fun AreaItem(

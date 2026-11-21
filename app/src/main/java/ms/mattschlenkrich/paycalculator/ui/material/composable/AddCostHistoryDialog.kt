@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.DecimalOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.components.DecimalOutlinedTextField
 
 @Composable
 fun AddCostHistoryDialog(

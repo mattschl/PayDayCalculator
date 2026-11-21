@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.GenericViewScreen
+import ms.mattschlenkrich.paycalculator.ui.components.GenericViewScreen
 
 @Composable
 fun JobSpecViewScreen(

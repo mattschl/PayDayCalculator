@@ -35,7 +35,7 @@ import ms.mattschlenkrich.paycalculator.common.settings.SettingsManager
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModelFactory
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.PayCalculatorTheme
+import ms.mattschlenkrich.paycalculator.ui.components.PayCalculatorTheme
 import ms.mattschlenkrich.paycalculator.ui.main.MainActivity
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.sync.composable.SyncScreen

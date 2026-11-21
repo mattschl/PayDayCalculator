@@ -40,12 +40,12 @@ import ms.mattschlenkrich.paycalculator.data.model.ExtraDefTypeAndEmployer
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkExtraViewModel
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ELEMENT_SPACING
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.LocalMinColumnWidth
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_HORIZONTAL
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.ui.calculator.composable.calculateGridColumns
+import ms.mattschlenkrich.paycalculator.ui.components.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.ui.components.LocalMinColumnWidth
+import ms.mattschlenkrich.paycalculator.ui.components.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.ui.components.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.ui.components.SimpleDropdownField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -52,9 +52,9 @@ import ms.mattschlenkrich.paycalculator.data.entity.TaxTypes
 import ms.mattschlenkrich.paycalculator.data.entity.WorkTaxRules
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModel
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.LocalMinColumnWidth
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.ui.calculator.composable.calculateGridColumns
+import ms.mattschlenkrich.paycalculator.ui.components.LocalMinColumnWidth
+import ms.mattschlenkrich.paycalculator.ui.components.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.ui.main.Screen
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 

@@ -35,12 +35,12 @@ import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.TimeWorkedTypes
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryTimeWorkedCombined
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.AutoCompleteTextField
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ELEMENT_SPACING
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_HORIZONTAL
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.TimeTypeRadioButton
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.TimeWorkedItem
+import ms.mattschlenkrich.paycalculator.ui.components.AutoCompleteTextField
+import ms.mattschlenkrich.paycalculator.ui.components.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.ui.components.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.ui.components.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.ui.components.TimeTypeRadioButton
+import ms.mattschlenkrich.paycalculator.ui.components.TimeWorkedItem
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)

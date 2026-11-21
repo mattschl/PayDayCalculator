@@ -38,7 +38,7 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkPerformedViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTimeViewModel
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.StandardTopAppBar
+import ms.mattschlenkrich.paycalculator.ui.components.StandardTopAppBar
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 
 @OptIn(ExperimentalLayoutApi::class)

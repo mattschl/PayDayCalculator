@@ -21,7 +21,7 @@ import ms.mattschlenkrich.paycalculator.common.WorkDayOfWeek
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModel
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ConfirmationBottomSheet
+import ms.mattschlenkrich.paycalculator.ui.components.ConfirmationBottomSheet
 import ms.mattschlenkrich.paycalculator.ui.employer.composable.EmployerScreen
 import ms.mattschlenkrich.paycalculator.ui.main.Screen
 

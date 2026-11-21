@@ -58,8 +58,8 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTaxViewModelFactory
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTimeViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTimeViewModelFactory
 import ms.mattschlenkrich.paycalculator.ui.auth.AuthenticationScreen
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.PayCalculatorTheme
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.paddingScale
+import ms.mattschlenkrich.paycalculator.ui.components.PayCalculatorTheme
+import ms.mattschlenkrich.paycalculator.ui.components.paddingScale
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.sync.SyncActivity
 

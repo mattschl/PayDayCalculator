@@ -35,12 +35,12 @@ import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.worker.PictureAttachmentManager
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
 import ms.mattschlenkrich.paycalculator.data.model.PictureItem
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.AutoCompleteTextField
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.CapitalizedOutlinedTextField
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.DecimalOutlinedTextField
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ELEMENT_SPACING
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_HORIZONTAL
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SelectAllOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.components.AutoCompleteTextField
+import ms.mattschlenkrich.paycalculator.ui.components.CapitalizedOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.components.DecimalOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.components.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.ui.components.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.ui.components.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.ui.main.Screen
 import java.io.File
 

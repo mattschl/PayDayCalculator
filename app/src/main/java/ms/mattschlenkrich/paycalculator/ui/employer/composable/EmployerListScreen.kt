@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
-import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.ui.components.SCREEN_PADDING_HORIZONTAL
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
