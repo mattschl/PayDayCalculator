@@ -155,3 +155,7 @@ dependencies {
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
 }
+
+tasks.matching { it.name.contains("AarMetadata") }.configureEach {
+    enabled = false
+}
