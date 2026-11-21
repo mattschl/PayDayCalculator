@@ -8,6 +8,7 @@ import ms.mattschlenkrich.paycalculator.data.model.ExtraDefTypeAndEmployer
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.ui.extras.composable.EmployerExtraDefinitionScreen
+import ms.mattschlenkrich.paycalculator.ui.main.Screen
 
 @Composable
 fun EmployerExtraDefinitionRoute(
@@ -61,7 +62,7 @@ fun EmployerExtraDefinitionRoute(
         mainViewModel = mainViewModel,
         onValueCalcClick = { initialVal ->
             mainViewModel.setCalculatorInput(initialVal)
-            navController.navigate(ms.mattschlenkrich.paycalculator.Screen.Calculator.route)
+            navController.navigate(Screen.Calculator.route)
         }
     )
 }

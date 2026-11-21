@@ -11,6 +11,7 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.ui.extras.composable.PayPeriodExtraScreen
+import ms.mattschlenkrich.paycalculator.ui.main.Screen
 
 @Composable
 fun PayPeriodExtraRoute(
@@ -76,7 +77,7 @@ fun PayPeriodExtraRoute(
         initialIsCredit = if (isUpdate) initialExtra!!.ppeIsCredit else isCredit,
         onValueCalcClick = { initialVal ->
             mainViewModel.setCalculatorInput(initialVal)
-            navController.navigate(ms.mattschlenkrich.paycalculator.Screen.Calculator.route)
+            navController.navigate(Screen.Calculator.route)
         }
     )
 }

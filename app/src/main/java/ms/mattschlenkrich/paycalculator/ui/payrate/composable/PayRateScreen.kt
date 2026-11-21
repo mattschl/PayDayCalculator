@@ -50,11 +50,11 @@ import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.LocalMinColumnWidth
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
-import ms.mattschlenkrich.paycalculator.common.compose.calculateGridColumns
 import ms.mattschlenkrich.paycalculator.data.entity.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.data.entity.Employers
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SimpleDropdownField
+import ms.mattschlenkrich.paycalculator.ui.calculator.composable.calculateGridColumns
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

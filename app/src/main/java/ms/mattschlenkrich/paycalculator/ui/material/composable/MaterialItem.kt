@@ -8,8 +8,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.common.compose.StandardItem
 import ms.mattschlenkrich.paycalculator.data.entity.Material
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.StandardItem
 
 @Composable
 fun MaterialItem(

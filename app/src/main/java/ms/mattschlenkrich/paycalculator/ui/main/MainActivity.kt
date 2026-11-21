@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.paycalculator
+package ms.mattschlenkrich.paycalculator.ui.main
 
 import android.content.Intent
 import android.os.Bundle
@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.compose.paddingScale
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
 import ms.mattschlenkrich.paycalculator.data.repository.AreaRepository
@@ -59,7 +60,6 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTimeViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTimeViewModelFactory
 import ms.mattschlenkrich.paycalculator.ui.auth.AuthenticationScreen
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.PayCalculatorTheme
-import ms.mattschlenkrich.paycalculator.ui.main.MainApp
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.sync.SyncActivity
 

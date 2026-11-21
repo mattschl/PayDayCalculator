@@ -18,6 +18,7 @@ import ms.mattschlenkrich.paycalculator.common.PayRateBasedOn
 import ms.mattschlenkrich.paycalculator.data.entity.EmployerPayRates
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.ui.main.Screen
 import ms.mattschlenkrich.paycalculator.ui.payrate.composable.PayRateScreen
 
 @Composable
@@ -68,7 +69,7 @@ fun EmployerPayRateRoute(
         onWageChange = { wage = it },
         onWageCalcClick = {
             mainViewModel.setCalculatorInput(nf.getDoubleFromDollars(wage))
-            navController.navigate(ms.mattschlenkrich.paycalculator.Screen.Calculator.route)
+            navController.navigate(Screen.Calculator.route)
         },
         selectedFrequency = selectedFrequency,
         onFrequencySelected = { selectedFrequency = it },

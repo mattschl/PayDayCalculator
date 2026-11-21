@@ -1,7 +1,8 @@
-package ms.mattschlenkrich.paycalculator
+package ms.mattschlenkrich.paycalculator.ui.main
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import ms.mattschlenkrich.paycalculator.R
 
 sealed class Screen(
     val route: String,

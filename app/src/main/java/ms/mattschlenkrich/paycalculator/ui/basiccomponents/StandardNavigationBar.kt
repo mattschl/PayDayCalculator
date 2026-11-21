@@ -22,9 +22,9 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import ms.mattschlenkrich.paycalculator.Screen
-import ms.mattschlenkrich.paycalculator.bottomNavItems
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
+import ms.mattschlenkrich.paycalculator.ui.main.Screen
+import ms.mattschlenkrich.paycalculator.ui.main.bottomNavItems
 
 @Composable
 fun StandardNavigationBar(

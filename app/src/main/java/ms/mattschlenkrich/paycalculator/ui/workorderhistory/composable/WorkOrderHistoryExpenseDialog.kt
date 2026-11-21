@@ -31,7 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.Screen
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
 import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.common.compose.PictureAttachmentManager
@@ -42,6 +41,7 @@ import ms.mattschlenkrich.paycalculator.ui.basiccomponents.AutoCompleteTextField
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.CapitalizedOutlinedTextField
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.DecimalOutlinedTextField
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SelectAllOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.main.Screen
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
