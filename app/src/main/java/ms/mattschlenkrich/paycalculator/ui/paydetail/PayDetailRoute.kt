@@ -35,14 +35,14 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
-import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.data.viewmodel.EmployerViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayCalculationsViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDetailViewModel
 import ms.mattschlenkrich.paycalculator.logic.PayDateProjections
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SelectionCard
 import ms.mattschlenkrich.paycalculator.ui.main.Screen
 import ms.mattschlenkrich.paycalculator.ui.paydetail.composable.PayDetailPage

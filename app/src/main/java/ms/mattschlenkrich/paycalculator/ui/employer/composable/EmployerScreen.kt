@@ -30,14 +30,14 @@ import androidx.compose.ui.res.stringResource
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.PayDayFrequencies
 import ms.mattschlenkrich.paycalculator.common.WorkDayOfWeek
-import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
-import ms.mattschlenkrich.paycalculator.common.compose.MAX_CONTENT_WIDTH
-import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
-import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.data.entity.EmployerTaxTypes
 import ms.mattschlenkrich.paycalculator.data.entity.WorkExtraTypes
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.CapitalizedOutlinedTextField
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.DecimalOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.MAX_CONTENT_WIDTH
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SelectAllOutlinedTextField
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SimpleDropdownField
 

@@ -37,7 +37,6 @@ import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DEFAULT_MIN_COLUMN_WIDTH
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDateExtras
 import ms.mattschlenkrich.paycalculator.data.entity.WorkDates
 import ms.mattschlenkrich.paycalculator.data.model.WorkOrderHistoryWithDates
@@ -47,6 +46,7 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.PayDayViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkExtraViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkOrderViewModel
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ConfirmationBottomSheet
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.ui.main.Screen
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.workdate.composable.WorkDateUpdateScreen

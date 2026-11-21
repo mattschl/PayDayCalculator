@@ -38,11 +38,7 @@ import androidx.navigation.NavController
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
-import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
-import ms.mattschlenkrich.paycalculator.common.compose.LocalMinColumnWidth
-import ms.mattschlenkrich.paycalculator.common.compose.PictureAttachmentManager
-import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_HORIZONTAL
-import ms.mattschlenkrich.paycalculator.common.compose.SCREEN_PADDING_VERTICAL
+import ms.mattschlenkrich.paycalculator.common.worker.PictureAttachmentManager
 import ms.mattschlenkrich.paycalculator.data.entity.Areas
 import ms.mattschlenkrich.paycalculator.data.entity.JobSpec
 import ms.mattschlenkrich.paycalculator.data.entity.WorkOrderHistoryExpense
@@ -55,6 +51,10 @@ import ms.mattschlenkrich.paycalculator.data.model.WorkOrderJobSpecCombined
 import ms.mattschlenkrich.paycalculator.data.model.WorkPerformedAndQuantity
 import ms.mattschlenkrich.paycalculator.data.viewmodel.MainViewModel
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.DecimalOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ELEMENT_SPACING
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.LocalMinColumnWidth
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_HORIZONTAL
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.draggableFab
 import ms.mattschlenkrich.paycalculator.ui.calculator.composable.calculateGridColumns
 import ms.mattschlenkrich.paycalculator.ui.main.Screen

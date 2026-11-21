@@ -18,7 +18,6 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.compose.paddingScale
 import ms.mattschlenkrich.paycalculator.data.PayDatabase
 import ms.mattschlenkrich.paycalculator.data.repository.AreaRepository
 import ms.mattschlenkrich.paycalculator.data.repository.EmployerRepository
@@ -60,6 +59,7 @@ import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTimeViewModel
 import ms.mattschlenkrich.paycalculator.data.viewmodel.WorkTimeViewModelFactory
 import ms.mattschlenkrich.paycalculator.ui.auth.AuthenticationScreen
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.PayCalculatorTheme
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.paddingScale
 import ms.mattschlenkrich.paycalculator.ui.settings.SettingsViewModel
 import ms.mattschlenkrich.paycalculator.ui.sync.SyncActivity
 

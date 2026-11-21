@@ -16,9 +16,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.paycalculator.R
-import ms.mattschlenkrich.paycalculator.common.compose.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.AutoCompleteTextField
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.CapitalizedOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.basiccomponents.ELEMENT_SPACING
 import ms.mattschlenkrich.paycalculator.ui.basiccomponents.SelectAllOutlinedTextField
 
 @Composable
