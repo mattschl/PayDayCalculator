@@ -12,7 +12,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -136,8 +135,7 @@ fun WorkOrderHistoryTimeUpdateRoute(
     if (showOverlapConfirmDialog != null) {
         val entry = showOverlapConfirmDialog!!
         ModalBottomSheet(
-            onDismissRequest = { showOverlapConfirmDialog = null },
-            sheetState = rememberModalBottomSheetState()
+            onDismissRequest = { showOverlapConfirmDialog = null }
         ) {
             Column(
                 modifier = Modifier

@@ -164,8 +164,7 @@ fun WorkOrderUpdateScreen(
             }
         }
         androidx.compose.material3.ModalBottomSheet(
-            onDismissRequest = { showMaterialPriceDialog = null },
-            sheetState = androidx.compose.material3.rememberModalBottomSheetState()
+            onDismissRequest = { showMaterialPriceDialog = null }
         ) {
             Column(
                 modifier = Modifier

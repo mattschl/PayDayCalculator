@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -91,8 +90,7 @@ fun WorkOrderHistoryExpenseDialog(
         }
 
         ModalBottomSheet(
-            onDismissRequest = onDismissRequest,
-            sheetState = rememberModalBottomSheetState()
+            onDismissRequest = onDismissRequest
         ) {
             Column(
                 modifier = Modifier

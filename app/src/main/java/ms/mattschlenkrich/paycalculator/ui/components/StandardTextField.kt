@@ -3,7 +3,6 @@ package ms.mattschlenkrich.paycalculator.ui.components
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextFieldColors
@@ -36,7 +35,6 @@ object StandardTextFieldDefaults {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StandardDecorationBox(
     value: String,

@@ -28,7 +28,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -110,8 +109,7 @@ fun EmployerExtraDefinitionScreen(
 
     if (showDeleteConfirm && initialDefinitionFull != null) {
         ModalBottomSheet(
-            onDismissRequest = { showDeleteConfirm = false },
-            sheetState = rememberModalBottomSheetState()
+            onDismissRequest = { showDeleteConfirm = false }
         ) {
             Column(
                 modifier = Modifier

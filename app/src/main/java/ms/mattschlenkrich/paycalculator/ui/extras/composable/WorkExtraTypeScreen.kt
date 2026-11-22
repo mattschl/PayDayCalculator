@@ -21,7 +21,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -73,8 +72,7 @@ fun WorkExtraTypeScreen(
 
     if (showDeleteConfirm && initialExtraType != null) {
         ModalBottomSheet(
-            onDismissRequest = { showDeleteConfirm = false },
-            sheetState = rememberModalBottomSheetState()
+            onDismissRequest = { showDeleteConfirm = false }
         ) {
             Column(
                 modifier = Modifier

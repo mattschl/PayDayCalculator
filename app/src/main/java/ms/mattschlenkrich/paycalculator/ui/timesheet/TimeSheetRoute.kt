@@ -21,7 +21,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -190,8 +189,7 @@ fun TimeSheetRoute(
 
     if (showDeletePayPeriodConfirmDialog) {
         ModalBottomSheet(
-            onDismissRequest = { showDeletePayPeriodConfirmDialog = false },
-            sheetState = rememberModalBottomSheetState()
+            onDismissRequest = { showDeletePayPeriodConfirmDialog = false }
         ) {
             Column(
                 modifier = Modifier
@@ -248,8 +246,7 @@ fun TimeSheetRoute(
     if (showWorkDateOptionsDialog != null) {
         val workDate = showWorkDateOptionsDialog!!
         ModalBottomSheet(
-            onDismissRequest = { showWorkDateOptionsDialog = null },
-            sheetState = rememberModalBottomSheetState()
+            onDismissRequest = { showWorkDateOptionsDialog = null }
         ) {
             Column(
                 modifier = Modifier
@@ -288,8 +285,7 @@ fun TimeSheetRoute(
     if (showDeleteWorkDateConfirmDialog != null) {
         val workDate = showDeleteWorkDateConfirmDialog!!
         ModalBottomSheet(
-            onDismissRequest = { showDeleteWorkDateConfirmDialog = null },
-            sheetState = rememberModalBottomSheetState()
+            onDismissRequest = { showDeleteWorkDateConfirmDialog = null }
         ) {
             Column(
                 modifier = Modifier
