@@ -154,11 +154,10 @@ fun WorkOrderUpdateScreen(
         val pendingTransfer = mainViewModel.transferNumState.value
         LaunchedEffect(pendingTransfer) {
             if (pendingTransfer != null) {
-                val transferNum = pendingTransfer
                 if (isCostActive) {
-                    newCost = nf.displayDollars(transferNum)
+                    newCost = nf.displayDollars(pendingTransfer)
                 } else {
-                    newPrice = nf.displayDollars(transferNum)
+                    newPrice = nf.displayDollars(pendingTransfer)
                 }
                 mainViewModel.clearTransferNum()
             }

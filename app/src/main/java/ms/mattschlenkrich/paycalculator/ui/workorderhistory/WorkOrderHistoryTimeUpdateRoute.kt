@@ -222,21 +222,23 @@ fun WorkOrderHistoryTimeUpdateRoute(
                     }
                 val newSegmentHours = df.getTimeWorked(startTime, roundedEnd)
 
-                if (selectedTimeType == TimeWorkedTypes.REG_HOURS.value &&
-                    hoursBefore + newSegmentHours > 8.0
-                ) {
-                    val allowedHours = 8.0 - hoursBefore
-                    endTime = df.addHoursToCalendar(startTime, allowedHours)
-                    errorMessage = adjustedRegHours
-                } else if (selectedTimeType == TimeWorkedTypes.OT_HOURS.value &&
-                    hoursBefore + newSegmentHours > 12.0
-                ) {
-                    val allowedHours = 12.0 - hoursBefore
-                    endTime = df.addHoursToCalendar(startTime, allowedHours)
-                    errorMessage = adjustedOtHours
-                } else {
-                    endTime = roundedEnd
-                    errorMessage = null
+                when (selectedTimeType) {
+                    TimeWorkedTypes.REG_HOURS.value if hoursBefore + newSegmentHours > 8.0 -> {
+                        val allowedHours = 8.0 - hoursBefore
+                        endTime = df.addHoursToCalendar(startTime, allowedHours)
+                        errorMessage = adjustedRegHours
+                    }
+
+                    TimeWorkedTypes.OT_HOURS.value if hoursBefore + newSegmentHours > 12.0 -> {
+                        val allowedHours = 12.0 - hoursBefore
+                        endTime = df.addHoursToCalendar(startTime, allowedHours)
+                        errorMessage = adjustedOtHours
+                    }
+
+                    else -> {
+                        endTime = roundedEnd
+                        errorMessage = null
+                    }
                 }
             }
         },

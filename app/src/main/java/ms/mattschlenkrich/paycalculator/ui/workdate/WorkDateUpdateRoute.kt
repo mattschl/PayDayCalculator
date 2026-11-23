@@ -180,12 +180,11 @@ fun WorkDateUpdatePageContent(
     val pendingTransfer = mainViewModel.transferNumState.value
     LaunchedEffect(pendingTransfer) {
         if (pendingTransfer != null) {
-            val transferNum = pendingTransfer
             when (activeHoursField) {
-                "reg" -> regHours = nf.displayNumberFromDouble(transferNum)
-                "ot" -> otHours = nf.displayNumberFromDouble(transferNum)
-                "dbl" -> dblOtHours = nf.displayNumberFromDouble(transferNum)
-                "stat" -> statHours = nf.displayNumberFromDouble(transferNum)
+                "reg" -> regHours = nf.displayNumberFromDouble(pendingTransfer)
+                "ot" -> otHours = nf.displayNumberFromDouble(pendingTransfer)
+                "dbl" -> dblOtHours = nf.displayNumberFromDouble(pendingTransfer)
+                "stat" -> statHours = nf.displayNumberFromDouble(pendingTransfer)
             }
             mainViewModel.clearTransferNum()
             activeHoursField = null

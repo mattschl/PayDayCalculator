@@ -21,7 +21,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,7 +44,6 @@ import ms.mattschlenkrich.paycalculator.ui.components.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.ui.components.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.ui.components.SelectAllOutlinedTextField
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkDateAddScreen(
     dateText: String,
