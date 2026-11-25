@@ -131,6 +131,15 @@ fun WorkDateUpdatePageContent(
 
     val settings by settingsViewModel.settings.observeAsState()
     val minColumnWidth = settings?.minColumnWidth ?: DEFAULT_MIN_COLUMN_WIDTH
+    val payPeriodsLimit = settings?.payPeriodsLimit ?: 15
+    val employer = mainViewModel.getEmployer()
+    val projections = remember { ms.mattschlenkrich.paycalculator.logic.PayDateProjections() }
+
+    val cutoffPeriods by payDayViewModel.getCutOffDates(workDate.wdEmployerId, payPeriodsLimit)
+        .observeAsState(emptyList())
+
+    val cutoffDates = remember(cutoffPeriods) { cutoffPeriods.map { it.ppCutoffDate } }
+    var selectedCutoffDate by remember(workDate.wdCutoffDate) { mutableStateOf(workDate.wdCutoffDate) }
 
     var curDateString by remember(workDate.wdDate) { mutableStateOf(workDate.wdDate) }
     var regHours by remember(
@@ -269,7 +278,16 @@ fun WorkDateUpdatePageContent(
     }
 
     val onUpdateWorkDate: suspend (String) -> Unit = { fragmentToGoTo: String ->
+        val targetCutoff = selectedCutoffDate.ifEmpty { workDate.wdCutoffDate }
+        val targetPayPeriod = payDayViewModel.findOrCreatePayPeriod(
+            targetCutoff,
+            workDate.wdEmployerId,
+            df.getCurrentUTCTimeAsString()
+        ) { nf.generateRandomIdAsLong() }
+
         val updated = workDate.copy(
+            wdPayPeriodId = targetPayPeriod.payPeriodId,
+            wdCutoffDate = targetCutoff,
             wdDate = curDateString,
             wdRegHours = regHours.toDoubleOrNull() ?: 0.0,
             wdOtHours = otHours.toDoubleOrNull() ?: 0.0,
@@ -281,6 +299,8 @@ fun WorkDateUpdatePageContent(
         )
         payDayViewModel.updateWorkDate(updated)
         mainViewModel.setWorkDateObject(updated)
+        mainViewModel.setCutOffDate(targetCutoff)
+        mainViewModel.setPayPeriod(targetPayPeriod)
 
         when (fragmentToGoTo) {
             Screen.TimeSheet.route -> {
@@ -301,7 +321,16 @@ fun WorkDateUpdatePageContent(
     // Save changes when swiping away from this page
     LaunchedEffect(isCurrentPage) {
         if (!isCurrentPage) {
+            val targetCutoff = selectedCutoffDate.ifEmpty { workDate.wdCutoffDate }
+            val targetPayPeriod = payDayViewModel.findOrCreatePayPeriod(
+                targetCutoff,
+                workDate.wdEmployerId,
+                df.getCurrentUTCTimeAsString()
+            ) { nf.generateRandomIdAsLong() }
+
             val updated = workDate.copy(
+                wdPayPeriodId = targetPayPeriod.payPeriodId,
+                wdCutoffDate = targetCutoff,
                 wdDate = curDateString,
                 wdRegHours = regHours.toDoubleOrNull() ?: 0.0,
                 wdOtHours = otHours.toDoubleOrNull() ?: 0.0,
@@ -313,6 +342,7 @@ fun WorkDateUpdatePageContent(
             )
             if (updated != workDate) {
                 payDayViewModel.updateWorkDate(updated)
+                mainViewModel.setWorkDateObject(updated)
             }
         }
     }
@@ -504,8 +534,14 @@ fun WorkDateUpdatePageContent(
     WorkDateUpdateScreen(
         dateText = df.getDisplayDate(curDateString),
         onDateClick = {
-            df.showDatePicker(context, curDateString) {
-                curDateString = it
+            df.showDatePicker(context, curDateString) { newDate ->
+                curDateString = newDate
+                if (employer != null) {
+                    val projected = projections.getCutOffForDate(employer, newDate)
+                    if (projected.isNotEmpty()) {
+                        selectedCutoffDate = projected
+                    }
+                }
             }
         },
         regHours = regHours,
@@ -633,6 +669,10 @@ fun WorkDateUpdatePageContent(
             mainViewModel.setWorkDateObject(workDate)
             navController.navigate(Screen.WorkDateExtraAdd.createRoute(true))
         },
+        cutoffDates = cutoffDates,
+        selectedCutoffDate = selectedCutoffDate,
+        onCutoffDateSelected = { selectedCutoffDate = it },
+        displayDate = { if (it.isBlank()) "" else df.getDisplayDate(it) },
         jobDescriptionCharLimit = settings?.jobDescriptionCharLimit ?: 15,
         minColumnWidth = minColumnWidth
     )

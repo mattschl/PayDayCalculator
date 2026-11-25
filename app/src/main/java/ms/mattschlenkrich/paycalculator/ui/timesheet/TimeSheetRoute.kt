@@ -159,7 +159,12 @@ fun TimeSheetRoute(
     }
 
     // Sync ViewModel selection to Pager
-    LaunchedEffect(selectedCutOffDate, cutOffDates, initialSelectionLoaded.value) {
+    LaunchedEffect(
+        selectedCutOffDate,
+        cutOffDates,
+        selectedEmployer,
+        initialSelectionLoaded.value
+    ) {
         val dates = cutOffDates ?: return@LaunchedEffect
         if (!initialSelectionLoaded.value) return@LaunchedEffect
 
@@ -167,10 +172,21 @@ fun TimeSheetRoute(
         if ((index != -1) && (pagerState.currentPage != index)) {
             pagerState.scrollToPage(index)
         }
+        if (selectedEmployer != null && selectedCutOffDate.isNotEmpty()) {
+            coroutineScope.launch {
+                val period = payDayViewModel.getPayPeriodSync(
+                    selectedCutOffDate,
+                    selectedEmployer.employerId
+                )
+                if (period != null) {
+                    mainViewModel.setPayPeriod(period)
+                }
+            }
+        }
     }
 
     // Sync Pager selection back to ViewModel (only on user interaction)
-    LaunchedEffect(pagerState, cutOffDates, initialSelectionLoaded.value) {
+    LaunchedEffect(pagerState, cutOffDates, selectedEmployer, initialSelectionLoaded.value) {
         if (!initialSelectionLoaded.value) return@LaunchedEffect
         snapshotFlow { pagerState.settledPage }.collect { page ->
             val dates = cutOffDates ?: return@collect
@@ -178,6 +194,17 @@ fun TimeSheetRoute(
                 val newDate = dates[page].ppCutoffDate
                 if (mainViewModel.selectedCutOffDate.value != newDate) {
                     mainViewModel.setCutOffDate(newDate)
+                }
+                if (selectedEmployer != null) {
+                    coroutineScope.launch {
+                        val period = payDayViewModel.getPayPeriodSync(
+                            newDate,
+                            selectedEmployer.employerId
+                        )
+                        if (period != null) {
+                            mainViewModel.setPayPeriod(period)
+                        }
+                    }
                 }
             }
         }

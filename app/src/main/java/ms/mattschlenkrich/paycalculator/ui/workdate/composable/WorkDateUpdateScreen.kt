@@ -48,6 +48,7 @@ import ms.mattschlenkrich.paycalculator.ui.components.LocalMinColumnWidth
 import ms.mattschlenkrich.paycalculator.ui.components.SCREEN_PADDING_HORIZONTAL
 import ms.mattschlenkrich.paycalculator.ui.components.SCREEN_PADDING_VERTICAL
 import ms.mattschlenkrich.paycalculator.ui.components.SelectAllOutlinedTextField
+import ms.mattschlenkrich.paycalculator.ui.components.SimpleDropdownField
 import ms.mattschlenkrich.paycalculator.ui.components.draggableFab
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,6 +86,10 @@ fun WorkDateUpdateScreen(
     onExtraLongClick: (WorkDateExtras) -> Unit,
     onExtraEdit: (WorkDateExtras) -> Unit = onExtraLongClick,
     onAddExtraClick: () -> Unit,
+    cutoffDates: List<String> = emptyList(),
+    selectedCutoffDate: String = "",
+    onCutoffDateSelected: (String) -> Unit = {},
+    displayDate: (String) -> String = { it },
     jobDescriptionCharLimit: Int = 15,
     minColumnWidth: Int = LocalMinColumnWidth.current
 ) {
@@ -147,6 +152,17 @@ fun WorkDateUpdateScreen(
                                 tint = MaterialTheme.colorScheme.error
                             )
                         }
+                    }
+
+                    if (cutoffDates.isNotEmpty()) {
+                        SimpleDropdownField(
+                            label = stringResource(R.string.pay_period_cutoff),
+                            items = cutoffDates,
+                            selectedItem = selectedCutoffDate,
+                            onItemSelected = onCutoffDateSelected,
+                            modifier = Modifier.fillMaxWidth(),
+                            itemToString = { if (it.isBlank()) "" else displayDate(it) }
+                        )
                     }
 
                     Row(

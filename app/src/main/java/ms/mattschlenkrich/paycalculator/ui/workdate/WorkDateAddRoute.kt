@@ -42,6 +42,8 @@ fun WorkDateAddRoute(
     val coroutineScope = rememberCoroutineScope()
     val df = remember { DateFunctions() }
     val nf = remember { NumberFunctions() }
+    val projections = remember { ms.mattschlenkrich.paycalculator.logic.PayDateProjections() }
+    val employer = mainViewModel.getEmployer()
 
     val payPeriod = mainViewModel.getPayPeriod() ?: run {
         LaunchedEffect(Unit) {
@@ -106,11 +108,29 @@ fun WorkDateAddRoute(
     }
 
     val onSaveWorkDate: suspend (String) -> Unit = { fragmentToGoTo: String ->
+        val targetCutoff = if (employer != null && curDateString.isNotEmpty()) {
+            val projected = projections.getCutOffForDate(employer, curDateString)
+            if (projected.isNotEmpty()) projected else payPeriod.ppCutoffDate
+        } else {
+            payPeriod.ppCutoffDate
+        }
+
+        val targetPayPeriod = payDayViewModel.findOrCreatePayPeriod(
+            targetCutoff,
+            payPeriod.ppEmployerId,
+            df.getCurrentUTCTimeAsString()
+        ) { nf.generateRandomIdAsLong() }
+
+        mainViewModel.setPayPeriod(targetPayPeriod)
+        mainViewModel.setCutOffDate(targetCutoff)
+
         var workDate = payDayViewModel.getWorkDateSync(
-            payPeriod.ppEmployerId, curDateString, payPeriod.ppCutoffDate
+            targetPayPeriod.ppEmployerId, curDateString, targetPayPeriod.ppCutoffDate
         )
         if (workDate != null) {
             workDate = workDate.copy(
+                wdPayPeriodId = targetPayPeriod.payPeriodId,
+                wdCutoffDate = targetPayPeriod.ppCutoffDate,
                 wdRegHours = regHours.toDoubleOrNull() ?: 0.0,
                 wdOtHours = otHours.toDoubleOrNull() ?: 0.0,
                 wdDblOtHours = dblOtHours.toDoubleOrNull() ?: 0.0,
@@ -123,9 +143,9 @@ fun WorkDateAddRoute(
         } else {
             workDate = WorkDates(
                 nf.generateRandomIdAsLong(),
-                payPeriod.payPeriodId,
-                payPeriod.ppEmployerId,
-                payPeriod.ppCutoffDate,
+                targetPayPeriod.payPeriodId,
+                targetPayPeriod.ppEmployerId,
+                targetPayPeriod.ppCutoffDate,
                 curDateString,
                 regHours.toDoubleOrNull() ?: 0.0,
                 otHours.toDoubleOrNull() ?: 0.0,

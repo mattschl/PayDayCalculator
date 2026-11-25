@@ -70,6 +70,7 @@
     <string name="credit">credit</string>
     <string name="credits">Credits</string>
     <string name="cut_off">Cutoff</string>
+    <string name="pay_period_cutoff">Pay Period Cutoff</string>
     <string name="day_of_week">Day of Week</string>
     <string name="dbl_ot_">"Dbl OT: "</string>
     <string name="dbl_ot_hrs">" Dbl OT hrs"</string>
