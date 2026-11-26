@@ -10,6 +10,12 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import ms.mattschlenkrich.paycalculator.R
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.settings.SettingsManager
@@ -59,91 +65,116 @@ class PictureUploadWorker(
         val df = DateFunctions()
         var allSuccess = true
         val storageDir = File(applicationContext.cacheDir, "pictures")
+        val semaphore = Semaphore(4)
 
-        for (pic in pendingWo) {
-            try {
-                val tempFile = File(storageDir, "pic_${pic.wopPictureId}.webp")
-                if (tempFile.exists()) {
-                    val driveId = driveServiceHelper.uploadFile(
-                        localFile = tempFile,
-                        mimeType = "image/webp",
-                        driveFileName = "pic_${pic.wopPictureId}.webp"
-                    )
-                    val now = df.getCurrentUTCTimeAsString()
-                    repository.updateWorkOrderPicture(
-                        pic.copy(
-                            wopDriveFileId = driveId,
-                            wopUploadTime = now,
-                            wopUpdateTime = now
-                        )
-                    )
-                    tempFile.delete()
-                }
-            } catch (e: Exception) {
-                Log.e(
-                    "PictureUploadWorker",
-                    "Failed to upload WorkOrder picture ${pic.wopPictureId}",
-                    e
-                )
-                allSuccess = false
+        if (pendingWo.isNotEmpty()) {
+            coroutineScope {
+                pendingWo.map { pic ->
+                    async(Dispatchers.IO) {
+                        semaphore.withPermit {
+                            try {
+                                val tempFile = File(storageDir, "pic_${pic.wopPictureId}.webp")
+                                if (tempFile.exists()) {
+                                    val driveId = driveServiceHelper.uploadFile(
+                                        localFile = tempFile,
+                                        mimeType = "image/webp",
+                                        driveFileName = "pic_${pic.wopPictureId}.webp"
+                                    )
+                                    val now = df.getCurrentUTCTimeAsString()
+                                    repository.updateWorkOrderPicture(
+                                        pic.copy(
+                                            wopDriveFileId = driveId,
+                                            wopUploadTime = now,
+                                            wopUpdateTime = now
+                                        )
+                                    )
+                                    tempFile.delete()
+                                }
+                            } catch (e: Exception) {
+                                Log.e(
+                                    "PictureUploadWorker",
+                                    "Failed to upload WorkOrder picture ${pic.wopPictureId}",
+                                    e
+                                )
+                                allSuccess = false
+                            }
+                        }
+                    }
+                }.awaitAll()
             }
         }
 
-        for (pic in pendingHist) {
-            try {
-                val tempFile = File(storageDir, "pic_${pic.wohpPictureId}.webp")
-                if (tempFile.exists()) {
-                    val driveId = driveServiceHelper.uploadFile(
-                        localFile = tempFile,
-                        mimeType = "image/webp",
-                        driveFileName = "pic_${pic.wohpPictureId}.webp"
-                    )
-                    val now = df.getCurrentUTCTimeAsString()
-                    repository.updateHistoryPicture(
-                        pic.copy(
-                            wohpDriveFileId = driveId,
-                            wohpUploadTime = now,
-                            wohpUpdateTime = now
-                        )
-                    )
-                    tempFile.delete()
-                }
-            } catch (e: Exception) {
-                Log.e(
-                    "PictureUploadWorker",
-                    "Failed to upload History picture ${pic.wohpPictureId}",
-                    e
-                )
-                allSuccess = false
+        if (pendingHist.isNotEmpty()) {
+            coroutineScope {
+                pendingHist.map { pic ->
+                    async(Dispatchers.IO) {
+                        semaphore.withPermit {
+                            try {
+                                val tempFile = File(storageDir, "pic_${pic.wohpPictureId}.webp")
+                                if (tempFile.exists()) {
+                                    val driveId = driveServiceHelper.uploadFile(
+                                        localFile = tempFile,
+                                        mimeType = "image/webp",
+                                        driveFileName = "pic_${pic.wohpPictureId}.webp"
+                                    )
+                                    val now = df.getCurrentUTCTimeAsString()
+                                    repository.updateHistoryPicture(
+                                        pic.copy(
+                                            wohpDriveFileId = driveId,
+                                            wohpUploadTime = now,
+                                            wohpUpdateTime = now
+                                        )
+                                    )
+                                    tempFile.delete()
+                                }
+                            } catch (e: Exception) {
+                                Log.e(
+                                    "PictureUploadWorker",
+                                    "Failed to upload History picture ${pic.wohpPictureId}",
+                                    e
+                                )
+                                allSuccess = false
+                            }
+                        }
+                    }
+                }.awaitAll()
             }
         }
 
-        for (pic in pendingExp) {
-            try {
-                val tempFile = File(storageDir, "pic_${pic.epPictureId}.webp")
-                if (tempFile.exists()) {
-                    val driveId = driveServiceHelper.uploadFile(
-                        localFile = tempFile,
-                        mimeType = "image/webp",
-                        driveFileName = "pic_${pic.epPictureId}.webp"
-                    )
-                    val now = df.getCurrentUTCTimeAsString()
-                    repository.updateExpensePicture(
-                        pic.copy(
-                            epDriveFileId = driveId,
-                            epUploadTime = now,
-                            epUpdateTime = now
-                        )
-                    )
-                    tempFile.delete()
-                }
-            } catch (e: Exception) {
-                Log.e(
-                    "PictureUploadWorker",
-                    "Failed to upload Expense picture ${pic.epPictureId}",
-                    e
-                )
-                allSuccess = false
+        if (pendingExp.isNotEmpty()) {
+            coroutineScope {
+                pendingExp.map { pic ->
+                    async(Dispatchers.IO) {
+                        semaphore.withPermit {
+                            try {
+                                val tempFile = File(storageDir, "pic_${pic.epPictureId}.webp")
+                                if (tempFile.exists()) {
+                                    val driveId = driveServiceHelper.uploadFile(
+                                        localFile = tempFile,
+                                        mimeType = "image/webp",
+                                        driveFileName = "pic_${pic.epPictureId}.webp"
+                                    )
+                                    val now = df.getCurrentUTCTimeAsString()
+                                    repository.updateExpensePicture(
+                                        pic.copy(
+                                            epDriveFileId = driveId,
+                                            epUploadTime = now,
+                                            epUpdateTime = now
+                                        )
+                                    )
+                                    tempFile.delete()
+                                }
+                            } catch (e: Exception) {
+                                Log.e(
+                                    "PictureUploadWorker",
+                                    "Failed to upload Expense picture ${pic.epPictureId}",
+                                    e
+                                )
+                                allSuccess = false
+                            }
+                        }
+                    }
+                }.awaitAll()
             }
         }
 

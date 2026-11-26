@@ -5,6 +5,11 @@ import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import com.google.api.services.drive.model.FileList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.paycalculator.common.DateFunctions
 import ms.mattschlenkrich.paycalculator.common.NumberFunctions
@@ -111,7 +116,6 @@ class SyncManager(
             }
 
             onProgressUpdate("Syncing picture attachments...")
-            downloadMissingPictures()
             uploadPendingPictures()
 
             onProgressUpdate("Uploading merged database...")
@@ -232,7 +236,7 @@ class SyncManager(
         }
     }
 
-    private suspend fun uploadPendingPictures() {
+    private suspend fun uploadPendingPictures() = withContext(Dispatchers.IO) {
         try {
             val appDb = PayDatabase(application)
             val pictureDao = appDb.getWorkOrderPictureDao()
@@ -240,107 +244,117 @@ class SyncManager(
             val storageDir = File(application.cacheDir, "pictures")
 
             val pendingWo = pictureDao.getPendingWorkOrderUploadsSync()
-            for (pic in pendingWo) {
-                val tempFile = File(storageDir, "pic_${pic.wopPictureId}.webp")
-                if (tempFile.exists()) {
-                    val driveId = driveServiceHelper.uploadFile(
-                        localFile = tempFile,
-                        mimeType = "image/webp",
-                        driveFileName = "pic_${pic.wopPictureId}.webp",
-                    )
-                    pictureDao.updateWorkOrderPicture(
-                        pic.copy(
-                            wopDriveFileId = driveId,
-                            wopUploadTime = now,
-                            wopUpdateTime = now
-                        )
-                    )
-                    tempFile.delete()
+            if (pendingWo.isNotEmpty()) {
+                val semaphore = Semaphore(4)
+                coroutineScope {
+                    pendingWo.map { pic ->
+                        async(Dispatchers.IO) {
+                            semaphore.withPermit {
+                                try {
+                                    val tempFile = File(storageDir, "pic_${pic.wopPictureId}.webp")
+                                    if (tempFile.exists()) {
+                                        val driveId = driveServiceHelper.uploadFile(
+                                            localFile = tempFile,
+                                            mimeType = "image/webp",
+                                            driveFileName = "pic_${pic.wopPictureId}.webp",
+                                        )
+                                        pictureDao.updateWorkOrderPicture(
+                                            pic.copy(
+                                                wopDriveFileId = driveId,
+                                                wopUploadTime = now,
+                                                wopUpdateTime = now
+                                            )
+                                        )
+                                        tempFile.delete()
+                                    }
+                                } catch (e: Exception) {
+                                    Log.e(
+                                        TAG,
+                                        "Failed to upload WorkOrder picture ${pic.wopPictureId}",
+                                        e
+                                    )
+                                }
+                            }
+                        }
+                    }.awaitAll()
                 }
             }
 
             val pendingHist = pictureDao.getPendingHistoryUploadsSync()
-            for (pic in pendingHist) {
-                val tempFile = File(storageDir, "pic_${pic.wohpPictureId}.webp")
-                if (tempFile.exists()) {
-                    val driveId = driveServiceHelper.uploadFile(
-                        localFile = tempFile,
-                        mimeType = "image/webp",
-                        driveFileName = "pic_${pic.wohpPictureId}.webp",
-                    )
-                    pictureDao.updateHistoryPicture(
-                        pic.copy(
-                            wohpDriveFileId = driveId,
-                            wohpUploadTime = now,
-                            wohpUpdateTime = now
-                        )
-                    )
-                    tempFile.delete()
+            if (pendingHist.isNotEmpty()) {
+                val semaphore = Semaphore(4)
+                coroutineScope {
+                    pendingHist.map { pic ->
+                        async(Dispatchers.IO) {
+                            semaphore.withPermit {
+                                try {
+                                    val tempFile = File(storageDir, "pic_${pic.wohpPictureId}.webp")
+                                    if (tempFile.exists()) {
+                                        val driveId = driveServiceHelper.uploadFile(
+                                            localFile = tempFile,
+                                            mimeType = "image/webp",
+                                            driveFileName = "pic_${pic.wohpPictureId}.webp",
+                                        )
+                                        pictureDao.updateHistoryPicture(
+                                            pic.copy(
+                                                wohpDriveFileId = driveId,
+                                                wohpUploadTime = now,
+                                                wohpUpdateTime = now
+                                            )
+                                        )
+                                        tempFile.delete()
+                                    }
+                                } catch (e: Exception) {
+                                    Log.e(
+                                        TAG,
+                                        "Failed to upload History picture ${pic.wohpPictureId}",
+                                        e
+                                    )
+                                }
+                            }
+                        }
+                    }.awaitAll()
                 }
             }
 
             val pendingExp = pictureDao.getPendingExpenseUploadsSync()
-            for (pic in pendingExp) {
-                val tempFile = File(storageDir, "pic_${pic.epPictureId}.webp")
-                if (tempFile.exists()) {
-                    val driveId = driveServiceHelper.uploadFile(
-                        localFile = tempFile,
-                        mimeType = "image/webp",
-                        driveFileName = "pic_${pic.epPictureId}.webp",
-                    )
-                    pictureDao.updateExpensePicture(
-                        pic.copy(
-                            epDriveFileId = driveId,
-                            epUploadTime = now,
-                            epUpdateTime = now
-                        )
-                    )
-                    tempFile.delete()
+            if (pendingExp.isNotEmpty()) {
+                val semaphore = Semaphore(4)
+                coroutineScope {
+                    pendingExp.map { pic ->
+                        async(Dispatchers.IO) {
+                            semaphore.withPermit {
+                                try {
+                                    val tempFile = File(storageDir, "pic_${pic.epPictureId}.webp")
+                                    if (tempFile.exists()) {
+                                        val driveId = driveServiceHelper.uploadFile(
+                                            localFile = tempFile,
+                                            mimeType = "image/webp",
+                                            driveFileName = "pic_${pic.epPictureId}.webp",
+                                        )
+                                        pictureDao.updateExpensePicture(
+                                            pic.copy(
+                                                epDriveFileId = driveId,
+                                                epUploadTime = now,
+                                                epUpdateTime = now
+                                            )
+                                        )
+                                        tempFile.delete()
+                                    }
+                                } catch (e: Exception) {
+                                    Log.e(
+                                        TAG,
+                                        "Failed to upload Expense picture ${pic.epPictureId}",
+                                        e
+                                    )
+                                }
+                            }
+                        }
+                    }.awaitAll()
                 }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to upload pending pictures before sync", e)
-        }
-    }
-
-    private suspend fun downloadMissingPictures() {
-        try {
-            val appDb = PayDatabase(application)
-            val pictureDao = appDb.getWorkOrderPictureDao()
-            val storageDir = File(application.cacheDir, "pictures").apply { mkdirs() }
-
-            for (pic in pictureDao.getAllWorkOrderPicturesSync()) {
-                val driveId = pic.wopDriveFileId ?: continue
-                val targetFile = File(storageDir, "pic_${pic.wopPictureId}.webp")
-                if (!targetFile.exists()) {
-                    try {
-                        driveServiceHelper.downloadFileById(driveId, targetFile)
-                    } catch (_: Exception) {
-                    }
-                }
-            }
-            for (pic in pictureDao.getAllHistoryPicturesSync()) {
-                val driveId = pic.wohpDriveFileId ?: continue
-                val targetFile = File(storageDir, "pic_${pic.wohpPictureId}.webp")
-                if (!targetFile.exists()) {
-                    try {
-                        driveServiceHelper.downloadFileById(driveId, targetFile)
-                    } catch (_: Exception) {
-                    }
-                }
-            }
-            for (pic in pictureDao.getAllExpensePicturesSync()) {
-                val driveId = pic.epDriveFileId ?: continue
-                val targetFile = File(storageDir, "pic_${pic.epPictureId}.webp")
-                if (!targetFile.exists()) {
-                    try {
-                        driveServiceHelper.downloadFileById(driveId, targetFile)
-                    } catch (_: Exception) {
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error downloading missing pictures during sync", e)
         }
     }
 
@@ -580,8 +594,6 @@ class SyncManager(
                 totalCount += syncHelper.syncMaterialCostHistory(backupDb)
                     .let { it.first + it.second }
                 totalCount += syncHelper.syncSyncHistory(backupDb).let { it.first + it.second }
-
-                downloadMissingPictures()
 
                 backupDb.close()
                 "Successfully restored $totalCount records from $displayName."
